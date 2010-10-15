@@ -5,7 +5,6 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import java.io.Serializable;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AbstractAutoCompleteTextRenderer;
@@ -19,18 +18,19 @@ import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.complitex.dictionaryfw.entity.DomainObject;
+import org.complitex.dictionaryfw.entity.example.ComparisonType;
 import org.complitex.dictionaryfw.entity.example.DomainObjectExample;
 import org.complitex.dictionaryfw.service.StringCultureBean;
+import org.complitex.dictionaryfw.strategy.Strategy;
 import org.complitex.dictionaryfw.strategy.StrategyFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import org.complitex.dictionaryfw.entity.example.ComparisonType;
-import org.complitex.dictionaryfw.strategy.Strategy;
 
 /**
  *
@@ -92,10 +92,10 @@ public final class SearchComponent extends Panel {
 
     /**
      * Used where some filters must have distinct from others settings. For example, some filters must be disabled but others not.
-     * @param id
-     * @param componentState
-     * @param searchFilterSettings
-     * @param callback
+     * @param id String
+     * @param componentState SearchComponentState
+     * @param searchFilterSettings List<SearchFilterSettings>
+     * @param callback ISearchCallback
      */
     public SearchComponent(String id, SearchComponentState componentState, List<SearchFilterSettings> searchFilterSettings,
             ISearchCallback callback) {
@@ -284,6 +284,7 @@ public final class SearchComponent extends Panel {
                             });
                         }
 
+                        @SuppressWarnings({"unchecked"})
                         private void setFocusOnNextFilter(AjaxRequestTarget target) {
                             ListItem<String> nextItem = (ListItem<String>) ((ListView) item.getParent()).get(index + 1);
                             target.focusComponent(nextItem.get("filter"));
@@ -330,6 +331,7 @@ public final class SearchComponent extends Panel {
     private static <T> Map<String, T> transformObjects(Map<String, DomainObject> objects) {
         return Maps.transformValues(objects, new Function<DomainObject, T>() {
 
+            @SuppressWarnings({"unchecked"})
             @Override
             public T apply(DomainObject from) {
                 return from != null ? (T) from.getId() : null;

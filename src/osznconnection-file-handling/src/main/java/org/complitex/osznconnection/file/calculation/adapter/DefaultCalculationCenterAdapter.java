@@ -8,27 +8,19 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.wicket.util.string.Strings;
-import org.complitex.osznconnection.file.entity.AccountDetail;
-import org.complitex.osznconnection.file.entity.Benefit;
-import org.complitex.osznconnection.file.entity.BenefitDBF;
-import org.complitex.osznconnection.file.entity.Payment;
-import org.complitex.osznconnection.file.entity.PaymentDBF;
-import org.complitex.osznconnection.file.entity.RequestStatus;
+import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.service.OwnershipCorrectionBean;
 import org.complitex.osznconnection.file.service.PrivilegeCorrectionBean;
 import org.complitex.osznconnection.file.service.TarifBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.*;
+
 /**
- * Класс по умолчанию для взаимодействия с ЦН.
+ *
  * @author Artem
  */
 public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAdapter {
@@ -37,10 +29,6 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
 
     protected static final String MAPPING_NAMESPACE = DefaultCalculationCenterAdapter.class.getName();
 
-    /**
-     * Группа методов для проставления "внешнего адреса", т.е. адреса для ЦН, по полному названию и коду коррекции элемента адреса, полученному из
-     * таблиц коррекций.
-     */
     @Override
     public void prepareCity(Payment payment, String city, String cityCode) {
         payment.setOutgoingCity(city);
@@ -67,12 +55,6 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
         payment.setOutgoingBuildingCorp(buildingCorp);
     }
 
-    /**
-     * Для квартиры номер проставляется напрямую из ОСЗН адреса, с обрезанием начальных и конечных пробелов.
-     * @param payment
-     * @param apartment
-     * @param apartmentCode
-     */
     @Override
     public void prepareApartment(Payment payment, String apartment, String apartmentCode) {
         String flat = (String) payment.getField(PaymentDBF.FLAT);
@@ -85,10 +67,6 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
         payment.setOutgoingApartment(flat);
     }
 
-    /**
-     * Получить номер личного счета в ЦН.
-     * @param payment
-     */
     @Override
     public void acquirePersonAccount(Payment payment) {
         SqlSession session = null;
@@ -102,7 +80,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
             params.put("pHouseNum", payment.getOutgoingBuildingNumber());
             params.put("pHousePart", payment.getOutgoingBuildingCorp());
             params.put("pFlatNum", payment.getOutgoingApartment());
-            params.put("dat1", (Date) payment.getField(PaymentDBF.DAT1));
+            params.put("dat1", payment.getField(PaymentDBF.DAT1));
 
             String result = (String) session.selectOne(MAPPING_NAMESPACE + ".acquirePersonAccount", params);
             log.info("acquirePersonAccount, parameters : {}, account number : {}", params, result);
@@ -129,21 +107,6 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
         }
     }
 
-    /**
-     * Обработка возвращаемых значений при получении л/с.
-     * 0 - нет л/с,
-     * -1 - больше 1 л/с, когда больше одного человека в ЦН, имеющие разные номера л/c, привязаны к одному адресу.
-     * -2 - нет квартиры,
-     * -3 - нет корпуса,
-     * -4 - нет дома,
-     * -5 - нет улицы,
-     * -6 - нет типа улицы,
-     * -7 - нет района,
-     * остальное - номер л/с
-     * 
-     * @param payment
-     * @param result
-     */
     protected void processPersonAccountResult(Payment payment, String result) {
         if (result.equals("0")) {
             payment.setStatus(RequestStatus.ACCOUNT_NUMBER_NOT_FOUND);
@@ -171,20 +134,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
         }
     }
 
-    /**
-     * Получить детали по л/c, если acquirePersonAccount() возвратила код -1 : больше 1 л/с.
-     * Процедура COMP.Z$RUNTIME_SZ_UTL.GETACCATTRS.
-     * Используется для уточнения в UI номера л/c, когда больше одного человека в ЦН, имеющие разные номера л/c, привязаны к одному адресу
-     * и для поиска номеров л/c в PaymentLookupPanel.
-     * См. также PaymentLookupBean.getAccounts().
-     *
-     * При возникновении ошибок при вызове процедуры проставляется статус RequestStatus.ACCOUNT_NUMBER_NOT_FOUND. Так сделано потому, что проанализировать
-     * возвращаемое из процедуры значение не удается если номер л/c не найден в ЦН по причине того что курсор в этом случае закрыт,
-     * и драйвер с соотвествии со стандартом JDBC рассматривает закрытый курсор как ошибку и выбрасывает исключение.
-     * 
-     * @param payment
-     * @return
-     */
+    @SuppressWarnings({"unchecked"})
     @Override
     public List<AccountDetail> acquireAccountCorrectionDetails(Payment payment) {
         List<AccountDetail> accountCorrectionDetails = null;
@@ -199,7 +149,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
             params.put("pHouseNum", payment.getOutgoingBuildingNumber());
             params.put("pHousePart", payment.getOutgoingBuildingCorp());
             params.put("pFlatNum", payment.getOutgoingApartment());
-            params.put("dat1", (Date) payment.getField(PaymentDBF.DAT1));
+            params.put("dat1", payment.getField(PaymentDBF.DAT1));
 
             try {
                 session.selectOne(MAPPING_NAMESPACE + ".acquireAccountCorrectionDetails", params);
@@ -244,18 +194,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
         return accountCorrectionDetails;
     }
 
-    /**
-     * Обработать payment и заполнить некоторые поля в соответсвующих данному payment benefit записях.
-     * Процедура COMP.Z$RUNTIME_SZ_UTL.GETCHARGEANDPARAMS.
-     *
-     * При возникновении ошибок при вызове процедуры проставляется статус RequestStatus.ACCOUNT_NUMBER_NOT_FOUND. Так сделано потому, что проанализировать
-     * возвращаемое из процедуры значение не удается если номер л/c не найден в ЦН по причине того что курсор в этом случае закрыт,
-     * и драйвер с соотвествии со стандартом JDBC рассматривает закрытый курсор как ошибку и выбрасывает исключение.
-     *
-     * @param payment
-     * @param benefit
-     * @param calculationCenterId
-     */
+    @SuppressWarnings({"unchecked"})
     @Override
     public void processPaymentAndBenefit(Payment payment, Benefit benefit, long calculationCenterId) {
         SqlSession session = null;
@@ -265,7 +204,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
 
             Map<String, Object> params = Maps.newHashMap();
             params.put("accountNumber", payment.getAccountNumber());
-            params.put("dat1", (Date) payment.getField(PaymentDBF.DAT1));
+            params.put("dat1", payment.getField(PaymentDBF.DAT1));
 
             try {
                 session.selectOne(MAPPING_NAMESPACE + ".processPaymentAndBenefit", params);
@@ -310,24 +249,6 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
         return getEjbBean(TarifBean.class);
     }
 
-    /**
-     * Заполнить payment и benefit записи данными из processPaymentAndBenefit().
-     * Для payment:
-     * Все поля кроме CODE2_1 проставляются напрямую из data в payment.
-     * Поле CODE2_1 заполняются не напрямую, а по таблице тарифов(метод TarifBean.getCODE2_1()).
-     * Если в тарифах не нашли, то проставляем статус RequestStatus.TARIF_CODE2_1_NOT_FOUND и значение из ЦН(T11_CS_UNI) в
-     * сalculationCenterCode2_1 для дальнейшего отображения в UI деталей. Иначе тариф сохраняется в payment и он считается обработанным.
-     *
-     * Для benefit:
-     * Все поля проставляются напрямую, кроме:
-     * поле OWN_FRM проставляется из таблицы коррекций для форм власти(ownership). На данный момент для всех форм власти в ЦН существуют коррекции,
-     * поэтому ситуации с не найденной коррекцией нет.
-     *
-     * @param calculationCenterId id ЦН
-     * @param payment
-     * @param benefit
-     * @param data данные пришедшие из ЦН.
-     */
     protected void processData(long calculationCenterId, Payment payment, Benefit benefit, Map<String, Object> data) {
         //payment
         payment.setField(PaymentDBF.FROG, data.get("FROG"));
@@ -354,15 +275,6 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
         benefit.setField(BenefitDBF.OWN_FRM, getOSZNOwnershipCode((String) data.get("OWN_FRM"), calculationCenterId, payment.getOrganizationId()));
     }
 
-    /**
-     * Получить код формы власти по схеме "код формы власти из ЦН -> объект формы власти во внутреннем справочнике -> код формы власти в ОСЗН"
-     * См. OwnershipCorrectionBean.getOSZNOwnershipCode().
-     *
-     * @param calculationCenterOwnership
-     * @param calculationCenterId
-     * @param osznId
-     * @return
-     */
     protected String getOSZNOwnershipCode(String calculationCenterOwnership, long calculationCenterId, long osznId) {
         try {
             OwnershipCorrectionBean ownershipCorrectionBean = getOwnershipCorrectionBean();
@@ -373,14 +285,6 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
         return null;
     }
 
-    /**
-     * Получить тариф.
-     * См. TarifBean.getCODE2_1().
-     *
-     * @param T11_CS_UNI
-     * @param organizationId
-     * @return
-     */
     protected Integer getCODE2_1(Double T11_CS_UNI, long organizationId) {
         try {
             TarifBean tarifBean = getTarifBean();
@@ -391,18 +295,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
         return null;
     }
 
-    /**
-     * Обработать группу benefit записей с одинаковым account number.
-     * Процедура COMP.Z$RUNTIME_SZ_UTL.GETPRIVS.
-     *
-     * При возникновении ошибок при вызове процедуры проставляется статус RequestStatus.ACCOUNT_NUMBER_NOT_FOUND. Так сделано потому, что проанализировать
-     * возвращаемое из процедуры значение не удается если номер л/c не найден в ЦН по причине того что курсор в этом случае закрыт,
-     * и драйвер с соотвествии со стандартом JDBC рассматривает закрытый курсор как ошибку и выбрасывает исключение.
-     *
-     * @param dat1 дата из поля DAT1 payment записи, соответствующей группе benefits записей со значением в поле FROG большим 0
-     * @param benefits группа benefit записей
-     * @param calculationCenterId id ЦН
-     */
+    @SuppressWarnings({"unchecked"})
     @Override
     public void processBenefit(Date dat1, List<Benefit> benefits, long calculationCenterId) {
         SqlSession session = null;
@@ -448,41 +341,15 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
         }
     }
 
-    /**
-     * Из требований заказчика: "Среди жильцов на обрабатываемом л/с по идентификационному коду (IND_COD) пытаемся найти носителя льготы, если не нашли, 
-     * то ищем по номеру паспорта (без серии). Если нашли, проставляем категорию льготы, если не нашли - метим все записи, 
-     * относящиеся к данному л/с как ошибку связывания. Надо иметь ввиду, что на одной персоне может быть более одной льготы. 
-     * В этом случае надо брать льготу с меньшим номером категории."
-     *
-     * Алгоритм:
-     * Для каждой записи из data выделяем текущий ИНН(обязательно не NULL) и текущий номер паспорта.
-     *   Если этот ИНН еще не обрабатывался, то ищем среди benefits с таким же ИНН.
-     *       Если не нашли, то ищем с текущим номером паспорта.
-     *   В итоге получим некоторое подмножество benefits - theSameBenefits.
-     *   Если theSameBenefits не пусто, то выделим из data записи с текущим ИНН - список theSameMan.
-     *   Если же theSameBenefits пусто, то помечаем все записи benefits статусом RequestStatus.WRONG_ACCOUNT_NUMBER и выходим.
-     *   В theSameMan найдем запись с наименьшим кодом привилегии  - el. Порядок сравнения: пытаемся преобразовать строковые значения
-     *       кодов привилегий в числа и сравнить как числа, иначе сравниваем как строки.
-     *   По полученному наименьшему коду привилегии(cmBenefitCode) ищем методом getOSZNPrivilegeCode код привилегии для ОСЗН(osznBenefitCode)
-     *    в таблице коррекций привилегий.
-     *   Если нашли код привилегии(osznBenefitCode != null), то проставляем во все записи в benefits: в поле PRIV_CAT - osznBenefitCode,
-     *      в поле ORD_FAM - порядок льготы из el(el.get("ORD_FAM"))
-     *   Если не нашли код привилегии, то все записи в theSameBenefits помечаются статусом RequestStatus.BENEFIT_NOT_FOUND.
-     * Наконец все записи benefits, для которых код не был проставлен в RequestStatus.BENEFIT_NOT_FOUND помечаются статусом RequestStatus.PROCESSED.
-     * 
-     * @param calculationCenterId id ЦН
-     * @param benefits Список benefit записей с одинаковым номером л/c
-     * @param data Список записей данных из ЦН
-     */
     protected void processBenefitData(long calculationCenterId, List<Benefit> benefits, List<Map<String, Object>> data) {
         List<String> processed = Lists.newArrayList();
-        Map<String, Object> el = null;
+        Map<String, Object> el;
         for (final Map<String, Object> item : data) {
             final String inn = (String) item.get("INN");
             final String passportNumber = (String) item.get("PASSPORT_NUMBER");
 //            log.info("INN : {}, Passport : {}", inn, passportNumber);
             if (!processed.contains(inn)) {
-                List<Map<String, Object>> theSameMan = null;
+                List<Map<String, Object>> theSameMan;
                 List<Benefit> theSameBenefits = findByINN(benefits, inn);
                 if (!theSameBenefits.isEmpty()) {
                     theSameMan = Lists.newArrayList(Iterables.filter(data, new Predicate<Map<String, Object>>() {
@@ -517,6 +384,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
                             try {
                                 i1 = Integer.parseInt(benefitCode1);
                             } catch (NumberFormatException e) {
+                                //oh
                             }
 
                             String benefitCode2 = (String) o2.get("BENEFIT_CODE");
@@ -524,6 +392,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
                             try {
                                 i2 = Integer.parseInt(benefitCode2);
                             } catch (NumberFormatException e) {
+                                //ah
                             }
 
                             if (i1 != null && i2 != null) {
@@ -547,11 +416,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
                 }
             }
         }
-        for (Benefit benefit : benefits) {
-            if (benefit.getStatus() != RequestStatus.BENEFIT_NOT_FOUND) {
-                benefit.setStatus(RequestStatus.PROCESSED);
-            }
-        }
+        setStatus(benefits, RequestStatus.PROCESSED);
     }
 
     protected void setStatus(List<Benefit> benefits, RequestStatus status) {

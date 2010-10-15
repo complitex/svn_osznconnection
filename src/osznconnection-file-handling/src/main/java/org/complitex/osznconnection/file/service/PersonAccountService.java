@@ -4,11 +4,6 @@
  */
 package org.complitex.osznconnection.file.service;
 
-import java.util.List;
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionaryfw.mybatis.Transactional;
 import org.complitex.dictionaryfw.service.AbstractBean;
@@ -19,32 +14,31 @@ import org.complitex.osznconnection.file.entity.CalculationCenterInfo;
 import org.complitex.osznconnection.file.entity.Payment;
 import org.complitex.osznconnection.file.entity.RequestStatus;
 
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import java.util.List;
+
 /**
- * Разрешает номер л/c
+ *
  * @author Artem
  */
 @Stateless
 public class PersonAccountService extends AbstractBean {
 
-    @EJB
+    @EJB(beanName = "PersonAccountLocalBean")
     private PersonAccountLocalBean personAccountLocalBean;
 
-    @EJB
+    @EJB(beanName = "BenefitBean")
     private BenefitBean benefitBean;
 
-    @EJB
+    @EJB(beanName = "PaymentBean")
     private PaymentBean paymentBean;
 
-    @EJB
+    @EJB(beanName = "CalculationCenterBean")
     private CalculationCenterBean calculationCenterBean;
 
-    /**
-     * Попытаться разрешить номер личного счета локально, т.е. из локальной таблицы person_account
-     * Если успешно, то просиавить account number, статус в RequestStatus.ACCOUNT_NUMBER_RESOLVED и обновить account number для всех benefit записей,
-     * соответствующих данному payment.
-     * @param payment
-     * @param calculationCenterId
-     */
     @Transactional
     public void resolveLocalAccount(Payment payment, long calculationCenterId) {
         String accountNumber = personAccountLocalBean.findLocalAccountNumber(payment, calculationCenterId);
@@ -53,17 +47,11 @@ public class PersonAccountService extends AbstractBean {
             payment.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
             benefitBean.updateAccountNumber(payment.getId(), accountNumber);
         }
+//        else {
+//            payment.setStatus(Status.ACCOUNT_NUMBER_UNRESOLVED_LOCALLY);
+//        }
     }
 
-    /**
-     * Попытаться разрешить номер л/с в ЦН.
-     * См. org.complitex.osznconnection.file.calculation.adapter.DefaultCalculationCenterAdapter.acquirePersonAccount()
-     * Если успешно, то обновить account number для всех benefit записей,
-     * соответствующих данному payment и записать в локальную таблицу номеров л/c(person_account) найденный номер.
-     * @param payment
-     * @param calculationCenterId
-     * @param adapter
-     */
     @Transactional
     public void resolveRemoteAccount(Payment payment, long calculationCenterId, ICalculationCenterAdapter adapter) {
         adapter.acquirePersonAccount(payment);
@@ -73,11 +61,6 @@ public class PersonAccountService extends AbstractBean {
         }
     }
 
-    /**
-     * Корректировать account number из UI в случае когда в ЦН большне одного человека соотвествуют номеру л/c.
-     * @param payment
-     * @param accountNumber
-     */
     @Transactional
     public void correctAccountNumber(Payment payment, String accountNumber) {
         payment.setAccountNumber(accountNumber);
@@ -94,12 +77,6 @@ public class PersonAccountService extends AbstractBean {
 //            resolveRemoteAccount(payment, adapter);
 //        }
 //    }
-    /**
-     * Получает детальную информацию о номерах л/с, фамилии, ИНН в случае когда для одной записи payment в ЦН может найтись несколько человек.
-     * См. org.complitex.osznconnection.file.calculation.adapter.DefaultCalculationCenterAdapter.acquireAccountCorrectionDetails()
-     * @param payment
-     * @return
-     */
     @Transactional
     @TransactionAttribute(TransactionAttributeType.NEVER)
     public List<AccountDetail> acquireAccountCorrectionDetails(Payment payment) {

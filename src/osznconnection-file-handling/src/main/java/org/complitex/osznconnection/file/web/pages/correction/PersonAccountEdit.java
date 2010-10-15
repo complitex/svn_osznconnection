@@ -7,8 +7,6 @@ package org.complitex.osznconnection.file.web.pages.correction;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import java.util.List;
-import javax.ejb.EJB;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.markup.html.basic.Label;
@@ -34,8 +32,11 @@ import org.complitex.osznconnection.organization.strategy.OrganizationStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ejb.EJB;
+import java.util.List;
+
 /**
- * Страница для редактирования записей в локальной таблице номеров л/c.
+ *
  * @author Artem
  */
 @AuthorizeInstantiation(SecurityRole.AUTHORIZED)
@@ -51,7 +52,7 @@ public final class PersonAccountEdit extends FormTemplatePage {
     @EJB(name = "OrganizationStrategy")
     private OrganizationStrategy organizationStrategy;
 
-    private Long correctionId;
+    private Long correctionId; //todo Field can be converted to a local variable
 
     private PersonAccount personAccount;
 

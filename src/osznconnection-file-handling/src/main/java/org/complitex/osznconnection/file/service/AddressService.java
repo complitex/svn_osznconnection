@@ -4,63 +4,44 @@
  */
 package org.complitex.osznconnection.file.service;
 
-import org.complitex.dictionaryfw.service.AbstractBean;
-import org.complitex.osznconnection.file.entity.Payment;
-import org.complitex.osznconnection.file.entity.PaymentDBF;
-
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
 import org.complitex.dictionaryfw.entity.DomainObject;
 import org.complitex.dictionaryfw.mybatis.Transactional;
+import org.complitex.dictionaryfw.service.AbstractBean;
 import org.complitex.dictionaryfw.strategy.Strategy;
 import org.complitex.dictionaryfw.strategy.StrategyFactory;
 import org.complitex.osznconnection.file.calculation.adapter.ICalculationCenterAdapter;
-import org.complitex.osznconnection.file.entity.BuildingCorrection;
-import org.complitex.osznconnection.file.entity.EntityTypeCorrection;
-import org.complitex.osznconnection.file.entity.ObjectCorrection;
-import org.complitex.osznconnection.file.entity.RequestStatus;
+import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.organization.strategy.OrganizationStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+
 /**
- * Класс разрешает адрес.
+ *
  * @author Artem
  */
-@Stateless
+@Stateless(name = "AddressService")
 public class AddressService extends AbstractBean {
 
     private static final Logger log = LoggerFactory.getLogger(AddressService.class);
 
-    @EJB
+    @EJB(beanName = "AddressCorrectionBean")
     private AddressCorrectionBean addressCorrectionBean;
 
-    @EJB
+    @EJB(beanName = "PaymentBean")
     private PaymentBean paymentBean;
 
-    @EJB
+    @EJB(beanName = "BenefitBean")
     private BenefitBean benefitBean;
 
-    @EJB
+    @EJB(beanName = "StrategyFactory")
     private StrategyFactory strategyFactory;
 
-    /**
-     * Разрешить переход "ОСЗН адрес -> локальная адресная база"
-     * Алгоритм:
-     * Сначала пытаемся поискать город в таблице коррекций по названию города, пришедшего из ОСЗН и id ОСЗН.
-     * Если не успешно, то пытаемся поискать по локальной адресной базе.
-     * Если успешно, то записать коррекцию в таблицу коррекций.
-     * Если город в итоге нашли, то проставляем его в internalCityId, иначе проставляем статус RequestStatus.CITY_UNRESOLVED_LOCALLY
-     * и выходим, т.к. без города искать далее не имеет смысла.
-     *
-     * Это алгоритм применяется и к поиску домов и с незначительными поправками к поиску улиц.
-     * 
-     * @param payment
-     */
     private void resolveLocalAddress(Payment payment) {
-        //осзн id
         long organizationId = payment.getOrganizationId();
-        Long cityId = payment.getInternalCityId();
+        Long cityId = payment.getInternalCityId(); //todo Variable 'cityId' initializer 'payment.getInternalCityId()'  is redundant
         Long streetId = payment.getInternalStreetId();
         Long buildingId = payment.getInternalBuildingId();
 //        Long apartmentId = payment.getInternalApartmentId();
@@ -83,10 +64,6 @@ public class AddressService extends AbstractBean {
 //        }
 
 //        if (streetId == null) {
-        /*
-         * Поправка к вышеописанному алгоритму:
-         * Если нашли улицу, то достаем из базы весь объект улицы, берем из него тип улицы и проставляем его в internalStreetTypeId
-         */
         String street = (String) payment.getField(PaymentDBF.VUL_NAME);
         streetId = addressCorrectionBean.findCorrectionStreet(cityId, street, organizationId);
         if (streetId == null) {
@@ -122,7 +99,7 @@ public class AddressService extends AbstractBean {
             payment.setInternalBuildingId(buildingId);
         } else {
             payment.setStatus(RequestStatus.BUILDING_UNRESOLVED_LOCALLY);
-            return;
+            return; //todo 'return' is unnecessary as the last statement in a method returning 'void'
         }
 //        }
 
@@ -138,18 +115,6 @@ public class AddressService extends AbstractBean {
 //        }
     }
 
-    /**
-     * разрешить переход "локальная адресная база -> адрес центра начислений"
-     * Алгоритм:
-     * Пытаемся найти коррекцию(строковое полное название и код) по id города в локальной адресной базе и текущему ЦН.
-     * Если не нашли, то проставляем статус RequestStatus.CITY_UNRESOLVED и выходим, т.к. без города продолжать не имеет смысла.
-     * Если нашли, то проставляем в payment информацию из коррекции(полное название, код) посредством метода
-     * adapter.prepareCity() в адаптере для взаимодействия с ЦН.
-     * См. org.complitex.osznconnection.file.calculation.adapter.DefaultCalculationCenterAdapter - адаптер по умолчанию.
-     * Квартиры не ищем, а проставляем напрямую, обрезая пробелы.
-     * Алгоритм аналогичен для поиска остальных составляющих адреса.
-     * @param payment
-     */
     @Transactional
     public void resolveOutgoingAddress(Payment payment, long calculationCenterId, ICalculationCenterAdapter adapter) {
         ObjectCorrection cityData = addressCorrectionBean.findOutgoingCity(calculationCenterId, payment.getInternalCityId());
@@ -159,7 +124,7 @@ public class AddressService extends AbstractBean {
         }
         adapter.prepareCity(payment, cityData.getCorrection(), cityData.getCode());
 
-        //поиск района
+        //district
         ObjectCorrection districtData = addressCorrectionBean.findOutgoingDistrict(calculationCenterId, payment.getOrganizationId());
         if (districtData == null) {
             payment.setStatus(RequestStatus.DISTRICT_UNRESOLVED);
@@ -167,7 +132,7 @@ public class AddressService extends AbstractBean {
         }
         adapter.prepareDistrict(payment, districtData.getCorrection(), districtData.getCode());
 
-        //поиск типа улицы
+
         if (payment.getInternalStreetTypeId() != null) {
             EntityTypeCorrection streetTypeData = addressCorrectionBean.findOutgoingStreetType(calculationCenterId,
                     payment.getInternalStreetTypeId());
@@ -178,7 +143,6 @@ public class AddressService extends AbstractBean {
             adapter.prepareStreetType(payment, streetTypeData.getCorrection(), streetTypeData.getCode());
         }
 
-        //поиск улицы
         ObjectCorrection streetData = addressCorrectionBean.findOutgoingStreet(calculationCenterId,
                 payment.getInternalStreetId());
         if (streetData == null) {
@@ -187,7 +151,6 @@ public class AddressService extends AbstractBean {
         }
         adapter.prepareStreet(payment, streetData.getCorrection(), streetData.getCode());
 
-        //поиск дома
         BuildingCorrection buildingData = addressCorrectionBean.findOutgoingBuilding(calculationCenterId,
                 payment.getInternalBuildingId());
         if (buildingData == null) {
@@ -202,61 +165,25 @@ public class AddressService extends AbstractBean {
 //            payment.setStatus(Status.APARTMENT_UNRESOLVED);
 //            return;
 //        }
-        //квартиры не ищем, а проставляем напрямую, обрезая пробелы.
         adapter.prepareApartment(payment, null, null);
         payment.setStatus(RequestStatus.ACCOUNT_NUMBER_NOT_FOUND);
     }
 
-    /**
-     * Разрешен ли адрес
-     * @param payment
-     * @return
-     */
     public boolean isAddressResolved(Payment payment) {
-        /*
-         * Адрес считаем разрешенным, если статус payment записи не входит в список статусов, указывающих на то что адрес не разрешен локально,
-         * не входит в список статусов, указывающих на то что адрес не разрешен в ЦН, и не равен RequestStatus.ADDRESS_CORRECTED,
-         * который указывает на то, что адрес откорректировали в UI.
-         * См. RequestStatus
-         */
         return !payment.getStatus().isLocalAddressCorrected() && !payment.getStatus().isOutgoingAddressCorrected()
                 && (payment.getStatus() != RequestStatus.ADDRESS_CORRECTED);
     }
 
-    /**
-     * разрешить адрес по схеме "ОСЗН адрес -> локальная адресная база -> адрес центра начислений"
-     * @param payment
-     * @param calculationCenterId
-     * @param adapter
-     */
     @Transactional
     public void resolveAddress(Payment payment, long calculationCenterId, ICalculationCenterAdapter adapter) {
 //        if (!isAddressResolved(payment)) {
-        //разрешить адрес локально
         resolveLocalAddress(payment);
-        //если адрес локально разрешен, разрешить адрес для ЦН.
         if (!payment.getStatus().isLocalAddressCorrected()) {
             resolveOutgoingAddress(payment, calculationCenterId, adapter);
         }
 //        }
     }
 
-    /**
-     * Корректирование адреса из UI.
-     * Алгоритм:
-     * Если у payment записи id города NULL и откорректированный город не NULL, то
-     * вставить коррекцию для города в таблицу коррекций городов, коррекировать payment(PaymentBean.correctCity())
-     * и benefit записи соответствующие данному payment(BenefitBean.addressCorrected()).
-     *
-     * Алгоритм аналогичен для других составляющих адреса.
-     *
-     * @param payment
-     * @param cityId Откорректированный город
-     * @param streetId Откорректированная улица
-     * @param streetTypeId Откорректированный тип улицы
-     * @param buildingId Откорректированный дом
-     * @param apartmentId Откорректированная квартира
-     */
     @Transactional
     public void correctLocalAddress(Payment payment, Long cityId, Long streetId, Long streetTypeId, Long buildingId, Long apartmentId) {
         long organizationId = payment.getOrganizationId();
@@ -275,7 +202,7 @@ public class AddressService extends AbstractBean {
             corrected = true;
         } else if ((payment.getInternalStreetId() == null) && (streetId != null)) {
             addressCorrectionBean.insertCorrectionStreet(street, streetId, organizationId, OrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID);
-            paymentBean.correctStreet(requestFileId, cityId, street, streetId, streetTypeId);
+            paymentBean.correctStreet(requestFileId, cityId, street, streetId, streetTypeId);  //todo Unboxing of 'cityId'  may produce 'java.lang.NullPointerException'
             corrected = true;
         } else if ((payment.getInternalBuildingId() == null) && (buildingId != null)) {
             addressCorrectionBean.insertCorrectionBuilding(buildingNumber, buildingCorp, buildingId, organizationId,

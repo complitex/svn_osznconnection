@@ -3,7 +3,7 @@ package org.complitex.osznconnection.file.service;
 import org.complitex.dictionaryfw.entity.Log;
 import org.complitex.dictionaryfw.service.LogBean;
 import org.complitex.osznconnection.file.Module;
-import org.complitex.osznconnection.file.entity.ConfigName;
+import org.complitex.osznconnection.file.entity.Config;
 import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.entity.RequestFileGroup;
 import org.complitex.osznconnection.file.storage.RequestFileStorage;
@@ -15,7 +15,10 @@ import javax.annotation.PostConstruct;
 import javax.ejb.*;
 import java.io.File;
 import java.io.FileFilter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.regex.Pattern;
 
@@ -33,6 +36,7 @@ import java.util.regex.Pattern;
 @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 @SuppressWarnings({"EjbProhibitedPackageUsageInspection"})
+@Deprecated
 public class LoadRequestBean extends AbstractProcessBean {
     private static final Logger log = LoggerFactory.getLogger(RequestFileBean.class);
 
@@ -42,7 +46,7 @@ public class LoadRequestBean extends AbstractProcessBean {
     @EJB(beanName = "RequestFileGroupBean")
     private RequestFileGroupBean requestFileGroupBean;
 
-    @EJB(beanName = "LoadTaskBean")
+    @EJB(beanName = "LoadTaskBean2")
     private LoadTaskBean loadTaskBean;
 
     @EJB(beanName = "LogBean")
@@ -64,7 +68,7 @@ public class LoadRequestBean extends AbstractProcessBean {
             @Override
             public boolean accept(File file) {
                 if(file.isDirectory()){
-                    return true;                   
+                    return true;
                 }
 
                 String name = file.getName();
@@ -90,12 +94,12 @@ public class LoadRequestBean extends AbstractProcessBean {
 
     @Override
     protected int getMaxErrorCount() {
-        return configBean.getInteger(ConfigName.LOAD_MAX_ERROR_FILE_COUNT, true);
+        return configBean.getInteger(Config.LOAD_MAX_ERROR_COUNT, true);
     }
 
     @Override
     protected int getThreadSize() {
-        return configBean.getInteger(ConfigName.LOAD_THREADS_SIZE, true);
+        return configBean.getInteger(Config.LOAD_THREADS_SIZE, true);
     }
 
     @Override
@@ -114,7 +118,7 @@ public class LoadRequestBean extends AbstractProcessBean {
     private RequestFile newRequestFile(File file, Long organizationId, int year){
         RequestFile requestFile = new RequestFile();
 
-        requestFile.setName(file.getName());        
+        requestFile.setName(file.getName());
         requestFile.updateTypeByName();
         requestFile.setDirectory(RequestFileStorage.getInstance().getRelativeParent(file));
         requestFile.setLength(file.length());
@@ -234,7 +238,7 @@ public class LoadRequestBean extends AbstractProcessBean {
                     if(file.getName().indexOf(RequestFile.TARIF_FILE_PREFIX) == 0){
                         //delete previous tarif
                         requestFileBean.deleteTarif(organizationId);
-                        
+
                         //fill fields
                         RequestFile requestFile = new RequestFile();
 

@@ -6,11 +6,6 @@ package org.complitex.osznconnection.file.web.pages.correction;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import java.io.Serializable;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import javax.ejb.EJB;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
@@ -35,8 +30,14 @@ import org.complitex.osznconnection.file.entity.ObjectCorrection;
 import org.complitex.osznconnection.file.service.AddressCorrectionBean;
 import org.complitex.osznconnection.file.web.component.correction.edit.AbstractCorrectionEditPanel;
 
+import javax.ejb.EJB;
+import java.io.Serializable;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
 /**
- * Страница для редактирования коррекций адресов.
+ *
  * @author Artem
  */
 @AuthorizeInstantiation(SecurityRole.AUTHORIZED)
@@ -69,10 +70,6 @@ public class AddressCorrectionEdit extends FormTemplatePage {
         }
     }
 
-    /**
-     * Стандартная панель редактирования коррекции элемента адреса.
-     * Подходит для города, улицы.
-     */
     private class AddressCorrectionEditPanel extends AbstractCorrectionEditPanel {
 
         public AddressCorrectionEditPanel(String id, String entity, Long correctionId) {
@@ -116,8 +113,7 @@ public class AddressCorrectionEdit extends FormTemplatePage {
         protected DomainObject findObject(long objectId, String entity) {
             DomainObjectExample example = new DomainObjectExample();
             example.setId(objectId);
-            DomainObject object = getStrategy(entity).find(example).get(0);
-            return object;
+            return getStrategy(entity).find(example).get(0);
         }
 
         protected List<String> getSearchFilters(String entity) {
@@ -142,9 +138,6 @@ public class AddressCorrectionEdit extends FormTemplatePage {
         }
     }
 
-    /**
-     * Панель редактирования коррекции дома.
-     */
     private class BuildingCorrectionEditPanel extends AddressCorrectionEditPanel {
 
         @EJB(name = "AddressCorrectionBean")
@@ -220,10 +213,6 @@ public class AddressCorrectionEdit extends FormTemplatePage {
 
             @Override
             protected void onClick() {
-                try {
-
-                } catch (Exception e) {
-                }
                 addressEditPanel.executeDeletion();
             }
 

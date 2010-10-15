@@ -7,9 +7,6 @@ package org.complitex.osznconnection.file.web.pages.correction;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import java.util.List;
-import java.util.Locale;
-import javax.ejb.EJB;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -29,8 +26,12 @@ import org.complitex.osznconnection.file.entity.EntityTypeCorrection;
 import org.complitex.osznconnection.file.service.CorrectionBean;
 import org.complitex.osznconnection.file.web.component.correction.edit.AbstractCorrectionEditPanel;
 
+import javax.ejb.EJB;
+import java.util.List;
+import java.util.Locale;
+
 /**
- * Страница для редактирования коррекций типов сущностей.
+ *
  * @author Artem
  */
 @AuthorizeInstantiation(SecurityRole.AUTHORIZED)

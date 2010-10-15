@@ -5,9 +5,6 @@
 package org.complitex.osznconnection.file.web.pages.correction;
 
 import com.google.common.collect.ImmutableList;
-import java.util.Iterator;
-import java.util.List;
-import javax.ejb.EJB;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -38,8 +35,12 @@ import org.complitex.osznconnection.file.entity.ObjectCorrection;
 import org.complitex.osznconnection.file.entity.example.ObjectCorrectionExample;
 import org.complitex.osznconnection.file.service.CorrectionBean;
 
+import javax.ejb.EJB;
+import java.util.Iterator;
+import java.util.List;
+
 /**
- * Абстрактный класс для списка коррекций.
+ *
  * @author Artem
  */
 @AuthorizeInstantiation(SecurityRole.AUTHORIZED)
@@ -177,7 +178,7 @@ public abstract class AbstractCorrectionList extends TemplatePage {
 
                 item.add(new Label("internalObject", correction.getInternalObject()));
                 item.add(new Label("internalOrganization", correction.getInternalOrganization()));
-                item.add(new BookmarkablePageLink("edit", getEditPage(), getEditPageParams(correction.getId())));
+                item.add(new BookmarkablePageLink<WebPage>("edit", getEditPage(), getEditPageParams(correction.getId())));
             }
         };
         filterForm.add(data);

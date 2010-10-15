@@ -4,8 +4,6 @@
  */
 package org.complitex.osznconnection.file.web.pages.payment;
 
-import java.util.List;
-import javax.ejb.EJB;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -23,8 +21,11 @@ import org.odlabs.wiquery.core.javascript.JsStatement;
 import org.odlabs.wiquery.ui.core.JsScopeUiEvent;
 import org.odlabs.wiquery.ui.dialog.Dialog;
 
+import javax.ejb.EJB;
+import java.util.List;
+
 /**
- * Панель для корректировки номера л/c вручную, когда больше одного человека в ЦН, имеющие разные номера л/c, привязаны к одному адресу.
+ *
  * @author Artem
  */
 public class PaymentAccountNumberCorrectionPanel extends Panel {

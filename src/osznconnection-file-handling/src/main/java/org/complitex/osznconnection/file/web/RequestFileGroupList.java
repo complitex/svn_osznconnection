@@ -2,7 +2,6 @@ package org.complitex.osznconnection.file.web;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import java.io.File;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.ResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -33,7 +32,8 @@ import org.complitex.osznconnection.commons.web.template.TemplatePage;
 import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.entity.RequestFileFilter;
 import org.complitex.osznconnection.file.entity.RequestFileGroup;
-import org.complitex.osznconnection.file.service.*;
+import org.complitex.osznconnection.file.service.RequestFileGroupBean;
+import org.complitex.osznconnection.file.service.process.ProcessManagerBean;
 import org.complitex.osznconnection.file.web.pages.benefit.BenefitList;
 import org.complitex.osznconnection.file.web.pages.payment.PaymentList;
 import org.complitex.osznconnection.organization.strategy.OrganizationStrategy;
@@ -57,16 +57,18 @@ public class RequestFileGroupList extends TemplatePage {
     @EJB(name = "OrganizationStrategy")
     private OrganizationStrategy organizationStrategy;
 
-    @EJB(name = "LoadRequestBean")
-    private LoadRequestBean loadRequestBean;
-
-    @EJB(name = "SaveRequestBean")
-    private SaveRequestBean saveRequestBean;
+    @EJB(name = "ProcessManagerBean")
+    private ProcessManagerBean processManagerBean;
 
     private int waitForStopTimer;
     private int timerIndex = 0;
 
+    private boolean completedDisplayed = false;
+
     private final static String ITEM_GROUP_ID_PREFIX = "item";
+
+    //Модель выбранных элементов списка
+    final Map<RequestFileGroup, IModel<Boolean>> selectModels = new HashMap<RequestFileGroup, IModel<Boolean>>();
 
     public RequestFileGroupList(PageParameters parameters){
         super();
@@ -158,9 +160,6 @@ public class RequestFileGroupList extends TemplatePage {
         //Связано записей
         filterForm.add(new TextField<Integer>("bindedRecordCount", new Model<Integer>(), Integer.class));
 
-        //Обработано записей
-        filterForm.add(new TextField<Integer>("filledRecordCount", new Model<Integer>(), Integer.class));
-
         //Статус
         filterForm.add(new DropDownChoice<RequestFile.STATUS>("status",
                 Arrays.asList(RequestFile.STATUS.values()),
@@ -177,8 +176,7 @@ public class RequestFileGroupList extends TemplatePage {
                     }
                 }));
 
-        //Модель выбранных элементов списка
-        final Map<RequestFileGroup, IModel<Boolean>> selectModels = new HashMap<RequestFileGroup, IModel<Boolean>>();
+
 
         //Модель данных списка
         final SortableDataProvider<RequestFileGroup> dataProvider = new SortableDataProvider<RequestFileGroup>() {
@@ -281,10 +279,9 @@ public class RequestFileGroupList extends TemplatePage {
                     item.add(new Label("benefitName", "—"));
                 }
 
-                //loaded, binding filled count
+                //loaded and binding count
                 item.add(new Label("loaded_record_count", StringUtil.valueOf(rfg.getLoadedRecordCount())));
                 item.add(new Label("binded_record_count", StringUtil.valueOf(rfg.getBindedRecordCount())));
-                item.add(new Label("filled_record_count", StringUtil.valueOf(rfg.getFilledRecordCount())));
 
                 //status
                 String detail = "";
@@ -293,13 +290,7 @@ public class RequestFileGroupList extends TemplatePage {
                 }
 
                 if (rfg.isProcessing()){
-                    if (FileExecutorService.get().isBinding()){
-                        detail += StringUtil.getDots(timerIndex%7);
-                    }
-
-                    if (loadRequestBean.isProcessing()){
-                        detail += StringUtil.getDots(timerIndex%7);
-                    }
+                    detail += StringUtil.getDots(timerIndex%7);
                 }
 
                 item.add(new Label("status", getStringOrKey(rfg.getStatus()) + detail));
@@ -325,7 +316,6 @@ public class RequestFileGroupList extends TemplatePage {
         filterForm.add(new ArrowOrderByBorder("header.benefitName", "benefitName", dataProvider, dataView, filterForm));
         filterForm.add(new ArrowOrderByBorder("header.loaded_record_count", "loaded_record_count", dataProvider, dataView, filterForm));
         filterForm.add(new ArrowOrderByBorder("header.binded_record_count", "binded_record_count", dataProvider, dataView, filterForm));
-        filterForm.add(new ArrowOrderByBorder("header.filled_record_count", "filled_record_count", dataProvider, dataView, filterForm));
         filterForm.add(new ArrowOrderByBorder("header.status", "status", dataProvider, dataView, filterForm));
 
         //Постраничная навигация
@@ -336,18 +326,10 @@ public class RequestFileGroupList extends TemplatePage {
 
             @Override
             public void onSubmit() {
-                for (RequestFileGroup requestFileGroup : selectModels.keySet()) {
-                    if (selectModels.get(requestFileGroup).getObject()) {
-                        requestFileGroupBean.delete(requestFileGroup);
-                        if (requestFileGroup.getBenefitFile() != null){
-                            info(getStringFormat("info.deleted", RequestFile.TYPE.BENEFIT.ordinal(),
-                                    requestFileGroup.getBenefitFile().getName(), requestFileGroup.getBenefitFile().getDirectory(), File.separator));
-                        }
-                        if (requestFileGroup.getPaymentFile() != null){
-                            info(getStringFormat("info.deleted", RequestFile.TYPE.PAYMENT.ordinal(),
-                                    requestFileGroup.getPaymentFile().getName(), requestFileGroup.getPaymentFile().getDirectory(), File.separator));
-                        }
-                    }
+                for (RequestFileGroup group : getSelectedGroup()) {
+                    requestFileGroupBean.delete(group);
+
+                    info(getStringFormat("info.group.deleted ", group.getBenefitFile().getName()));
                 }
             }
 
@@ -363,25 +345,16 @@ public class RequestFileGroupList extends TemplatePage {
 
             @Override
             public void onSubmit() {
-                List<RequestFile> requestFiles = new ArrayList<RequestFile>();
+//                todo
+//                if (requestFile.getStatus() == RequestFile.STATUS.BINDED) {
+//                      warn(getStringFormat("has_been_bound", requestFile.getName()));
+//                }
+                processManagerBean.bind(getSelectedGroup());
 
-                for (RequestFileGroup requestFileGroup : selectModels.keySet()) {
-                    if (selectModels.get(requestFileGroup).getObject()) {
-                        for (RequestFile requestFile : requestFileGroup.getRequestFiles()) {
-                            requestFiles.add(requestFile);
-                            if (requestFile.getStatus() == RequestFile.STATUS.BINDED || requestFile.getStatus() == RequestFile.STATUS.PROCESSED
-                                    || requestFile.getStatus() == RequestFile.STATUS.PROCESSED_WITH_ERRORS
-                                    || requestFile.getStatus() == RequestFile.STATUS.SAVED
-                                    || requestFile.getStatus() == RequestFile.STATUS.SAVE_ERROR) {
-                                warn(getStringFormat("has_been_bound", requestFile.getName(), requestFile.getDirectory(), File.separator));
-                            }
-                        }
-                    }
-                }
-
-                FileExecutorService.get().bind(requestFiles);
                 selectModels.clear();
                 addTimer(dataViewContainer, filterForm, messages);
+
+                completedDisplayed = false;
             }
 
             @Override
@@ -391,28 +364,21 @@ public class RequestFileGroupList extends TemplatePage {
         };
         filterForm.add(bind);
 
-        //Process
-        Button process = new Button("process") {
+        //Fill
+        Button process = new Button("fill") {
 
             @Override
             public void onSubmit() {
-                List<RequestFile> requestFiles = new ArrayList<RequestFile>();
+//                todo
+//                 if (requestFile.getStatus() == RequestFile.STATUS.PROCESSED) {
+//                      warn(getStringFormat("has_been_processed", requestFile.getName()));
+//                 }
 
-                for (RequestFileGroup requestFileGroup : selectModels.keySet()) {
-                    if (selectModels.get(requestFileGroup).getObject()) {
-                        for (RequestFile requestFile : requestFileGroup.getRequestFiles()) {
-                            requestFiles.add(requestFile);
-                            if (requestFile.getStatus() == RequestFile.STATUS.PROCESSED || requestFile.getStatus() == RequestFile.STATUS.SAVED
-                                    || requestFile.getStatus() == RequestFile.STATUS.SAVE_ERROR) {
-                                warn(getStringFormat("has_been_processed", requestFile.getName(), requestFile.getDirectory(), File.separator));
-                            }
-                        }
-                    }
-                }
-
-                FileExecutorService.get().process(requestFiles);
+                processManagerBean.fill(getSelectedGroup());
                 selectModels.clear();
                 addTimer(dataViewContainer, filterForm, messages);
+
+                completedDisplayed = false;
             }
 
             @Override
@@ -427,20 +393,14 @@ public class RequestFileGroupList extends TemplatePage {
 
             @Override
             public void onSubmit() {
-                List<RequestFile> requestFiles = new ArrayList<RequestFile>();
-
-                for (RequestFileGroup requestFileGroup : selectModels.keySet()) {
-                    if (selectModels.get(requestFileGroup).getObject()) {
-                        requestFiles.addAll(requestFileGroup.getRequestFiles());
-                    }
-                }
-
                 info(getString("info.start_saving"));
 
-                saveRequestBean.save(requestFiles);
+                processManagerBean.save(getSelectedGroup());
 
                 selectModels.clear();
                 addTimer(dataViewContainer, filterForm, messages);
+
+                completedDisplayed = false;
             }
 
             @Override
@@ -451,15 +411,24 @@ public class RequestFileGroupList extends TemplatePage {
         filterForm.add(save);
     }
 
+    public List<RequestFileGroup> getSelectedGroup(){
+        List<RequestFileGroup> groups = new ArrayList<RequestFileGroup>();
+
+        for (RequestFileGroup requestFileGroup : selectModels.keySet()) {
+            if (selectModels.get(requestFileGroup).getObject()) {
+                groups.add(requestFileGroup);
+            }
+        }
+        
+        return groups;
+    }
+
     private boolean isProcessing() {
-        return loadRequestBean.isProcessing()
-                || FileExecutorService.get().isBinding()
-                || FileExecutorService.get().isProcessing()
-                || saveRequestBean.isProcessing();
+        return processManagerBean.isProcessing();
     }
 
     private void showMessages() {
-        if (loadRequestBean.isError(true)){
+        if (processManagerBean.isCriticalError()){
             error(getString("error.load.process"));
         }
 
@@ -467,104 +436,81 @@ public class RequestFileGroupList extends TemplatePage {
     }
 
     private void showMessages(AjaxRequestTarget target) {
-        //Load
-        for (RequestFile rf : loadRequestBean.getProcessed(true)) {
-            switch (rf.getStatus()) {
+        for (RequestFileGroup g : processManagerBean.getProcessed(this)){
+            switch (g.getStatus()){
                 case LOADED:
-                    highlightProcessed(target, rf);
-                    info(getStringFormat("info.loaded", rf.getType().ordinal(), rf.getName(), rf.getDirectory(), File.separator));
+                    highlightProcessed(target, g);
+                    info(getStringFormat("info.group.loaded", g.getName()));
                     break;
-                case SKIPPED:                    
-                    info(getStringFormat("info.already_loaded", rf.getType().ordinal(), rf.getName(), rf.getDirectory(), File.separator, rf.getYear()));
+                case SKIPPED:
+                    highlightProcessed(target, g);
+                    info(getStringFormat("info.group.skipped", g.getName()));
                     break;
                 case LOAD_ERROR:
-                    highlightError(target, rf);
-                    error(getStringOrKey(rf.getStatus())
-                            + " " + getStringFormat("error.load.common", rf.getType().ordinal(), rf.getName(), rf.getDirectory(), File.separator)
-                            + ". " + getStringOrKey(rf.getStatusDetail()));
+                    highlightError(target, g);
+                    error(getStringFormat("error.group.load", g.getName()) + ". " + getStringOrKey(g.getStatusDetail()));
                     break;
-            }
-        }
-
-        //Load Error
-        if (loadRequestBean.isError(true)){
-            error(getString("error.load.process"));
-        }
-
-        //Load completed
-        if (loadRequestBean.isCompleted(true)) {
-            info(getStringFormat("info.load_completed", loadRequestBean.getProcessedCount(),
-                    loadRequestBean.getSkippedCount(), loadRequestBean.getErrorCount()));
-        }
-
-        //Save
-        for (RequestFile rf : saveRequestBean.getProcessed(true)){
-            switch (rf.getStatus()){
                 case SAVED:
-                    highlightProcessed(target, rf);
-                    info(getStringFormat("info.saved", rf.getType().ordinal(), rf.getName(), rf.getDirectory(), File.separator));
+                    highlightProcessed(target, g);
+                    info(getStringFormat("info.group.saved", g.getName()));
                     break;
                 case SAVE_ERROR:
-                    highlightError(target, rf);
-                    error(getStringFormat("error.save.common", rf.getType().ordinal(), rf.getName(), rf.getDirectory(), File.separator));
+                    highlightError(target, g);
+                    error(getStringFormat("error.group.save",  g.getName()));
                     break;
-            }
-        }
-
-        //Save Error
-        if (saveRequestBean.isError(true)){
-            error(getString("error.save.process"));
-        }
-
-        //Save completed
-        if (saveRequestBean.isCompleted(true)) {
-            info(getStringFormat("info.save_completed", saveRequestBean.getProcessedCount(), saveRequestBean.getErrorCount()));
-        }
-
-        //show messages for binding operation
-        for (RequestFile bindingFile : FileExecutorService.get().getInBinding(true)) {
-            switch (bindingFile.getStatus()) {
                 case BINDED: {
-                    highlightProcessed(target, bindingFile);
-                    info(getStringFormat("bound.success", bindingFile.getName(), bindingFile.getDirectory(), File.separator));
+                    highlightProcessed(target, g);
+                    info(getStringFormat("bound.success", g.getName()));
                     break;
                 }
                 case BOUND_WITH_ERRORS: {
-                    highlightError(target, bindingFile);
-                    error(getStringFormat("bound.error", bindingFile.getName(), bindingFile.getDirectory(), File.separator));
+                    highlightError(target, g);
+                    error(getStringFormat("bound.error", g.getName()));
                     break;
                 }
-            }
-        }
-
-        //show messages for process operation
-        for (RequestFile processingFile : FileExecutorService.get().getInProcessing(true)) {
-            switch (processingFile.getStatus()) {
                 case PROCESSED: {
-                    highlightProcessed(target, processingFile);
-                    info(getStringFormat("processed.success", processingFile.getName(), processingFile.getDirectory(), File.separator));
+                    highlightProcessed(target, g);
+                    info(getStringFormat("processed.success", g.getName()));
                     break;
                 }
                 case PROCESSED_WITH_ERRORS: {
-                    highlightError(target, processingFile);
-                    error(getStringFormat("processed.error", processingFile.getName(), processingFile.getDirectory(), File.separator));
+                    highlightError(target, g);
+                    error(getStringFormat("processed.error", g.getName()));
                     break;
                 }
             }
         }
+
+        //Process completed
+        if (processManagerBean.isCompleted() && !completedDisplayed) {
+            String completeInfo = "";
+
+            switch (processManagerBean.getProcess()){
+                case LOAD: completeInfo = getStringOrKey("info.load.complete"); break;
+                case BIND: completeInfo = getStringOrKey("info.bind.complete"); break;
+                case FILL: completeInfo = getStringOrKey("info.fill.complete"); break;
+                case SAVE: completeInfo = getStringOrKey("info.save.complete"); break;
+            }
+
+            //todo skipped
+            info(completeInfo + ". " + getStringFormat("info.completed_detail", processManagerBean.getProcessedCount(),
+                    processManagerBean.getCount(RequestFile.STATUS.SKIPPED), processManagerBean.getErrorCount()));
+
+            completedDisplayed = true;
+        }
     }
 
-    private void highlightProcessed(AjaxRequestTarget target, RequestFile requestFile){
+    private void highlightProcessed(AjaxRequestTarget target, RequestFileGroup group){
         if (target != null) {            
-            target.appendJavascript("$('#" + ITEM_GROUP_ID_PREFIX + requestFile.getGroupId() + "')"
+            target.appendJavascript("$('#" + ITEM_GROUP_ID_PREFIX + group.getId() + "')"
                     + ".animate({ backgroundColor: 'lightgreen' }, 300)"
                     + ".animate({ backgroundColor: '#E0E4E9' }, 700)");
         }
     }
 
-    private void highlightError(AjaxRequestTarget target, RequestFile requestFile){
+    private void highlightError(AjaxRequestTarget target, RequestFileGroup group){
         if (target != null) {
-            target.appendJavascript("$('#" + ITEM_GROUP_ID_PREFIX + requestFile.getGroupId() + "')"
+            target.appendJavascript("$('#" + ITEM_GROUP_ID_PREFIX + group.getId() + "')"
                     + ".animate({ backgroundColor: 'darksalmon' }, 300)"
                     + ".animate({ backgroundColor: '#E0E4E9' }, 700)");
         }
@@ -573,8 +519,8 @@ public class RequestFileGroupList extends TemplatePage {
     private void addTimer(WebMarkupContainer dataViewContainer, Form<?> filterForm, AjaxFeedbackPanel messages) {
         boolean needCreateNewTimer = true;
 
-        List<AjaxSelfUpdatingTimerBehavior> timers = null;
-        timers = Lists.newArrayList(Iterables.filter(dataViewContainer.getBehaviors(), AjaxSelfUpdatingTimerBehavior.class));
+        List<AjaxSelfUpdatingTimerBehavior> timers = Lists.newArrayList(Iterables.filter(dataViewContainer.getBehaviors(), 
+                AjaxSelfUpdatingTimerBehavior.class));
         if (timers != null && !timers.isEmpty()) {
             for (AjaxSelfUpdatingTimerBehavior timer : timers) {
                 if (!timer.isStopped()) {

@@ -4,11 +4,6 @@
  */
 package org.complitex.osznconnection.file.service;
 
-import java.util.List;
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
 import org.complitex.dictionaryfw.mybatis.Transactional;
 import org.complitex.dictionaryfw.service.AbstractBean;
 import org.complitex.osznconnection.file.calculation.adapter.ICalculationCenterAdapter;
@@ -18,24 +13,25 @@ import org.complitex.osznconnection.file.entity.CalculationCenterInfo;
 import org.complitex.osznconnection.file.entity.Payment;
 import org.complitex.osznconnection.file.entity.RequestStatus;
 
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import java.util.List;
+
 /**
- * Вспомогательный для PaymentLookupPanel бин.
+ *
  * @author Artem
  */
 @Stateless
 public class PaymentLookupBean extends AbstractBean {
 
-    @EJB
+    @EJB(beanName = "AddressService")
     private AddressService addressService;
 
-    @EJB
+    @EJB(beanName = "CalculationCenterBean")
     private CalculationCenterBean calculationCenterBean;
 
-    /**
-     * Разрешить исходящий в ЦН адрес по схеме "локальная адресная база -> адрес центра начислений"
-     * Делегирует всю работу AddressService.resolveOutgoingAddress().
-     * @param payment
-     */
     @Transactional
     public void resolveOutgoingAddress(Payment payment) {
         CalculationCenterInfo calculationCenterInfo = calculationCenterBean.getCurrentCalculationCenterInfo();
@@ -44,13 +40,6 @@ public class PaymentLookupBean extends AbstractBean {
         addressService.resolveOutgoingAddress(payment, calculationCenterId, adapter);
     }
 
-    /**
-     * Получить детальную информацию о клиентах ЦН.
-     * Вся работа по поиску делегируется адаптеру зваимодействия с ЦН.
-     * См. org.complitex.osznconnection.file.calculation.adapter.DefaultCalculationCenterAdapter.acquireAccountCorrectionDetails()
-     * @param payment
-     * @return
-     */
     @Transactional
     @TransactionAttribute(TransactionAttributeType.NEVER)
     public List<AccountDetail> getAccounts(Payment payment) {

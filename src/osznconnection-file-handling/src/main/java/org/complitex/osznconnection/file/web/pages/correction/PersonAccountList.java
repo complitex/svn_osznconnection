@@ -5,8 +5,6 @@
 package org.complitex.osznconnection.file.web.pages.correction;
 
 import com.google.common.collect.ImmutableMap;
-import java.util.Iterator;
-import javax.ejb.EJB;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -34,8 +32,11 @@ import org.complitex.osznconnection.file.entity.example.PersonAccountExample;
 import org.complitex.osznconnection.file.service.PersonAccountLocalBean;
 import org.complitex.osznconnection.organization.strategy.OrganizationStrategy;
 
+import javax.ejb.EJB;
+import java.util.Iterator;
+
 /**
- * Список записей в локальной таблице номеров л/c.
+ *
  * @author Artem
  */
 @AuthorizeInstantiation(SecurityRole.AUTHORIZED)
@@ -151,7 +152,7 @@ public class PersonAccountList extends TemplatePage {
                 item.add(new Label("ownNumSr", personAccount.getOwnNumSr()));
                 item.add(new Label("oszn", personAccount.getOszn()));
                 item.add(new Label("calculationCenter", personAccount.getCalculationCenter()));
-                item.add(new BookmarkablePageLink("edit", PersonAccountEdit.class,
+                item.add(new BookmarkablePageLink<PersonAccountEdit>("edit", PersonAccountEdit.class,
                         new PageParameters(ImmutableMap.of(PersonAccountEdit.CORRECTION_ID, personAccount.getId()))));
             }
         };

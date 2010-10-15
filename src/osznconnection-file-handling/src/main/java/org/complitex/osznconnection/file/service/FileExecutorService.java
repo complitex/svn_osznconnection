@@ -7,24 +7,26 @@ package org.complitex.osznconnection.file.service;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-
-import java.util.*;
-
-import org.complitex.osznconnection.file.entity.ConfigName;
+import org.complitex.osznconnection.file.entity.Config;
 import org.complitex.osznconnection.file.entity.RequestFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Класс для запуска потоков на связывание и обработку payment and benefit файлов.
+ *
  * @author Artem
  */
+@Deprecated
 public class FileExecutorService {
 
     private static final Logger log = LoggerFactory.getLogger(FileExecutorService.class);
@@ -52,7 +54,7 @@ public class FileExecutorService {
     private ExecutorService bindingThreadPool = initBindingThreadPool();
 
     private static ExecutorService initBindingThreadPool() {
-        return Executors.newFixedThreadPool(ConfigStatic.get().getInteger(ConfigName.BINDING_THREAD_SIZE, true));
+        return Executors.newFixedThreadPool(ConfigStatic.get().getInteger(Config.BIND_THREADS_SIZE, true));
     }
 
     public boolean isBinding() {
@@ -62,7 +64,7 @@ public class FileExecutorService {
     private ExecutorService processingThreadPool = initProcessingThreadPool();
 
     private static ExecutorService initProcessingThreadPool() {
-        return Executors.newFixedThreadPool(ConfigStatic.get().getInteger(ConfigName.PROCESSING_THREAD_SIZE, true));
+        return Executors.newFixedThreadPool(ConfigStatic.get().getInteger(Config.FILL_THREADS_SIZE, true));
     }
 
     public boolean isProcessing() {
@@ -109,16 +111,25 @@ public class FileExecutorService {
 
                 BindingRequestBean bindingRequestBean = getBindingBean();
 
-                if (paymentFile != null && benefitFile != null) {
+                if (paymentFile != null) {
                     inBinding.add(paymentFile);
-                    inBinding.add(benefitFile);
+
                     try {
-                        bindingRequestBean.bindPaymentAndBenefit(paymentFile, benefitFile);
+                        bindingRequestBean.bindPaymentFile(paymentFile);
                     } catch (Exception e) {
                         log.error("", e);
                     }
                 }
 
+                if (benefitFile != null) {
+                    inBinding.add(benefitFile);
+
+                    try {
+                        bindingRequestBean.bindBenefitFile(benefitFile);
+                    } catch (Exception e) {
+                        log.error("", e);
+                    }
+                }
             } catch (Exception e) {
                 log.error("", e);
             } finally {
@@ -153,11 +164,19 @@ public class FileExecutorService {
                 processingCounter.incrementAndGet();
 
                 ProcessingRequestBean processRequestBean = getProcessBean();
-                if (paymentFile != null && benefitFile != null) {
+                if (paymentFile != null) {
                     inProcessing.add(paymentFile);
+                    try {
+                        processRequestBean.processPayment(paymentFile);
+                    } catch (Exception e) {
+                        log.error("", e);
+                    }
+                }
+
+                if (benefitFile != null) {
                     inProcessing.add(benefitFile);
                     try {
-                        processRequestBean.processPaymentAndBenefit(paymentFile, benefitFile);
+                        processRequestBean.processBenefit(benefitFile);
                     } catch (Exception e) {
                         log.error("", e);
                     }
@@ -179,16 +198,14 @@ public class FileExecutorService {
         }
     }
 
-    /**
-     * Запускает процесс связывания файлов.
-     * @param requestFiles
-     */
     public void bind(List<RequestFile> requestFiles) {
         List<RequestFile> suitedFiles = Lists.newArrayList(Iterables.filter(requestFiles, new Predicate<RequestFile>() {
 
             @Override
             public boolean apply(RequestFile requestFile) {
-                return requestFile.getType() == RequestFile.TYPE.PAYMENT || requestFile.getType() == RequestFile.TYPE.BENEFIT;
+                return (requestFile.getType() == RequestFile.TYPE.PAYMENT || requestFile.getType() == RequestFile.TYPE.BENEFIT)
+                        && (requestFile.getStatus() == RequestFile.STATUS.LOADED || requestFile.getStatus() == RequestFile.STATUS.BOUND_WITH_ERRORS
+                        || requestFile.getStatus() == RequestFile.STATUS.BINDED);
             }
         }));
         for (final RequestFile file : suitedFiles) {
@@ -206,6 +223,7 @@ public class FileExecutorService {
                         }
                     });
                 } catch (NoSuchElementException e) {
+                    //hehe
                 }
 
                 if (benefitFile != null) {
@@ -215,19 +233,18 @@ public class FileExecutorService {
                 bindingThreadPool.submit(new BindTask(file, benefitFile));
             }
         }
+
     }
 
-    /**
-     * Запускает процесс обработки файлов
-     * @param requestFiles
-     */
     public void process(List<RequestFile> requestFiles) {
         List<RequestFile> suitedFiles = Lists.newArrayList(Iterables.filter(requestFiles, new Predicate<RequestFile>() {
 
             @Override
             public boolean apply(RequestFile requestFile) {
                 return (requestFile.getType() == RequestFile.TYPE.PAYMENT || requestFile.getType() == RequestFile.TYPE.BENEFIT)
-                        && (requestFile.getStatus() != RequestFile.STATUS.SAVED) && (requestFile.getStatus() != RequestFile.STATUS.SAVE_ERROR);
+                        && (requestFile.getStatus() == RequestFile.STATUS.BOUND_WITH_ERRORS || requestFile.getStatus() == RequestFile.STATUS.BINDED
+                        || requestFile.getStatus() == RequestFile.STATUS.PROCESSED_WITH_ERRORS
+                        || requestFile.getStatus() == RequestFile.STATUS.PROCESSED);
             }
         }));
         for (final RequestFile file : suitedFiles) {
@@ -246,6 +263,7 @@ public class FileExecutorService {
                         }
                     });
                 } catch (NoSuchElementException e) {
+                    //hehe
                 }
 
                 if (benefitFile != null) {

@@ -11,8 +11,10 @@ import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionaryfw.entity.Attribute;
 import org.complitex.dictionaryfw.entity.DomainObject;
 import org.complitex.dictionaryfw.entity.description.EntityAttributeType;
+import org.complitex.dictionaryfw.entity.description.EntityType;
 import org.complitex.dictionaryfw.entity.example.AttributeExample;
 import org.complitex.dictionaryfw.entity.example.DomainObjectExample;
+import org.complitex.dictionaryfw.service.EntityBean;
 import org.complitex.dictionaryfw.service.StringCultureBean;
 import org.complitex.dictionaryfw.strategy.Strategy;
 import org.complitex.dictionaryfw.strategy.web.DomainObjectListPanel;
@@ -32,8 +34,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import org.complitex.dictionaryfw.entity.description.EntityType;
-import org.complitex.dictionaryfw.service.EntityBean;
 
 /**
  *
@@ -45,7 +45,7 @@ public class CityStrategy extends Strategy {
     @EJB(beanName = "StringCultureBean")
     private StringCultureBean stringBean;
 
-    @EJB
+    @EJB(beanName = "EntityBean")
     private EntityBean entityBean;
 
     private static final long NAME_ATTRIBUTE_TYPE_ID = 400L;
@@ -107,7 +107,7 @@ public class CityStrategy extends Strategy {
 
     public static void configureExampleImpl(DomainObjectExample example, Map<String, Long> ids, String searchTextInput) {
         if (!Strings.isEmpty(searchTextInput)) {
-            AttributeExample attrExample = null;
+            AttributeExample attrExample;
             try {
                 attrExample = Iterables.find(example.getAttributeExamples(), new Predicate<AttributeExample>() {
 

@@ -7,9 +7,6 @@ package org.complitex.osznconnection.file.web.component.correction.edit;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import java.util.List;
-import java.util.Locale;
-import javax.ejb.EJB;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
@@ -31,8 +28,12 @@ import org.complitex.osznconnection.organization.strategy.OrganizationStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ejb.EJB;
+import java.util.List;
+import java.util.Locale;
+
 /**
- * Абстрактная панель для редактирования коррекций.
+ *
  * @author Artem
  */
 public abstract class AbstractCorrectionEditPanel extends Panel {

@@ -33,9 +33,10 @@ import static org.complitex.osznconnection.file.entity.RequestFile.STATUS_DETAIL
  * @see org.complitex.osznconnection.file.service.LoadRequestBean
  * @see org.complitex.osznconnection.file.service.ConfigBean
  */
-@Stateless(name = "LoadTaskBean")
+@Stateless(name = "LoadTaskBean2")
 @SuppressWarnings({"EjbProhibitedPackageUsageInspection"})
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+@Deprecated
 public class  LoadTaskBean {
     private static final Logger log = LoggerFactory.getLogger(LoadTaskBean.class);
 
@@ -61,7 +62,7 @@ public class  LoadTaskBean {
     public Future<RequestFile> load(RequestFile requestFile){
         String currentFieldName = "-1";
         int index = 0;
-        int batchSize = configBean.getInteger(ConfigName.LOAD_RECORD_BATCH_SIZE, true);
+        int batchSize = configBean.getInteger(Config.LOAD_RECORD_BATCH_SIZE, true);
 
         try {
             //Инициализация парсера

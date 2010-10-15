@@ -1,10 +1,11 @@
 package org.complitex.osznconnection.file.entity;
 
 import org.complitex.dictionaryfw.util.DateUtil;
-import org.complitex.dictionaryfw.util.StringUtil;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -18,7 +19,6 @@ public class RequestFileGroup implements Serializable{
 
     private int loadedRecordCount;
     private int bindedRecordCount;
-    private int filledRecordCount;
 
     public boolean isProcessing() {
        return benefitFile != null && benefitFile.isProcessing()
@@ -98,6 +98,19 @@ public class RequestFileGroup implements Serializable{
         return null;
     }
 
+    public String getName(){
+        if (paymentFile != null){
+            return paymentFile.getName().substring(2,8);           
+        }
+
+        return null;
+    }
+
+    public void updateGroupId(){
+        if (paymentFile != null) paymentFile.setGroupId(id);
+        if (benefitFile != null) benefitFile.setGroupId(id); 
+    }
+
     public Long getId() {
         return id;
     }
@@ -138,11 +151,14 @@ public class RequestFileGroup implements Serializable{
         this.bindedRecordCount = bindedRecordCount;
     }
 
-    public int getFilledRecordCount() {
-        return filledRecordCount;
-    }
-
-    public void setFilledRecordCount(int filledRecordCount) {
-        this.filledRecordCount = filledRecordCount;
+    @Override
+    public String toString() {
+        return "RequestFileGroup{" +
+                "id=" + id +
+                ", benefitFile=" + benefitFile +
+                ", paymentFile=" + paymentFile +
+                ", loadedRecordCount=" + loadedRecordCount +
+                ", bindedRecordCount=" + bindedRecordCount +
+                '}';
     }
 }
