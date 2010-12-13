@@ -120,40 +120,42 @@ public class ExecutorBean {
         }
 
         //Выполняем задачу
-        runningThread.incrementAndGet();
-        asyncTaskBean.execute(object, task, new ITaskListener<T>(){
+        if (status.equals(STATUS.RUNNING)) {
+            runningThread.incrementAndGet();
+            asyncTaskBean.execute(object, task, new ITaskListener<T>(){
 
-            @Override
-            public void done(T object, STATUS status) {
-                boolean next = true;
+                @Override
+                public void done(T object, STATUS status) {
+                    boolean next = true;
 
-                processed.add(object);
-                runningThread.decrementAndGet();
+                    processed.add(object);
+                    runningThread.decrementAndGet();
 
-                switch (status){
-                    case SUCCESS:
-                        successCount++;
-                        break;
-                    case SKIPPED:
-                        skippedCount++;
-                        break;
-                    case ERROR:
-                        errorCount++;
-                        break;
-                    case CRITICAL_ERROR:
-                        errorCount++;
-                        setStatus(ExecutorBean.STATUS.CRITICAL_ERROR);
-                        next = false;
-                        break;
+                    switch (status){
+                        case SUCCESS:
+                            successCount++;
+                            break;
+                        case SKIPPED:
+                            skippedCount++;
+                            break;
+                        case ERROR:
+                            errorCount++;
+                            break;
+                        case CRITICAL_ERROR:
+                            errorCount++;
+                            setStatus(ExecutorBean.STATUS.CRITICAL_ERROR);
+                            next = false;
+                            break;
+                    }
+
+                    if (next) {
+                        executeNext(queue, task, listener, maxErrors);
+                    }
                 }
+            });
 
-                if (next) {
-                    executeNext(queue, task, listener, maxErrors);
-                }
-            }
-        });
-
-        log.info("Выполнение процесса {} над объектом {}", task.getControllerClass().getSimpleName(), object);
+            log.info("Выполнение процесса {} над объектом {}", task.getControllerClass().getSimpleName(), object);
+        }
     }
 
     private <T extends ILoggable> void executeNext(final Queue<T> queue, final ITaskBean<T> task, final int maxErrors){
