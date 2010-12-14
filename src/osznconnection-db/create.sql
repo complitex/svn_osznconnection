@@ -1767,7 +1767,9 @@ CREATE TABLE `request_warning` (
     `request_id` BIGINT(20) NOT NULL,
     `request_file_type` VARCHAR(50) NOT NULL,
     `status` BIGINT(20) NOT NULL,
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`id`),
+    KEY `key_request_warning__request` (`request_id`),
+    KEY `key_request_warning__request_file` (`request_file_type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `request_warning_parameter`;

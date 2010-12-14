@@ -44,12 +44,11 @@ public class RequestWarningBean extends AbstractBean {
     }
 
     public void delete(long requestFileId, RequestFile.TYPE requestFileType) {
-        Map<String, Object> params = Maps.newHashMap();
-        params.put("requestFileId", requestFileId);
-        params.put("requestFileType", requestFileType);
-        params.put("requestTableName", requestFileType.name().toLowerCase());
-        sqlSession().delete(MAPPING_NAMESPACE + ".deleteParameters", params);
-        sqlSession().delete(MAPPING_NAMESPACE + ".deleteWarnings", params);
+        List<Long> warningsIds = getWarningIdsByFile(requestFileType, requestFileId);
+        for (Long warningId : warningsIds) {
+            sqlSession().delete(MAPPING_NAMESPACE + ".deleteParameter", warningId);
+            sqlSession().delete(MAPPING_NAMESPACE + ".deleteWarning", warningId);
+        }
     }
 
     /**
@@ -62,5 +61,14 @@ public class RequestWarningBean extends AbstractBean {
             warning.setParameters(Lists.newArrayList(parameters));
         }
         save(warning);
+    }
+
+    @Transactional
+    protected List<Long> getWarningIdsByFile(RequestFile.TYPE requestFileType, long requestFileId) {
+        Map<String, Object> params = Maps.newHashMap();
+        params.put("requestFileId", requestFileId);
+        params.put("requestFileType", requestFileType);
+        params.put("requestTableName", requestFileType.name().toLowerCase());
+        return sqlSession().selectList(MAPPING_NAMESPACE + ".getWarningIdsByFile", params);
     }
 }
