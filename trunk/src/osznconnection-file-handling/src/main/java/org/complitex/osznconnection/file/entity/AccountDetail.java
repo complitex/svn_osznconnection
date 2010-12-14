@@ -13,9 +13,7 @@ import java.io.Serializable;
 public class AccountDetail implements Serializable {
 
     private String accountNumber;
-
     private String ownerName;
-
     private String ownerINN;
 
     public String getAccountNumber() {

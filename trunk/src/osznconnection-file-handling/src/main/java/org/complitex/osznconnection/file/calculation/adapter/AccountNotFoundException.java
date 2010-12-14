@@ -22,6 +22,10 @@ public class AccountNotFoundException extends AbstractException {
         super(cause, MESSAGE_PATTERN);
     }
 
+    public AccountNotFoundException() {
+        super(MESSAGE_PATTERN);
+    }
+
     //todo add useful description information
     public AccountNotFoundException(Throwable cause, List<? extends AbstractRequest> requests) {
         super(cause, MESSAGE_PATTERN);

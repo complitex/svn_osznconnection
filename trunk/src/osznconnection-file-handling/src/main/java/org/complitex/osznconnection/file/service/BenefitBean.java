@@ -17,7 +17,7 @@ import java.util.Map;
 import javax.ejb.EJB;
 import org.complitex.osznconnection.file.calculation.adapter.AccountNotFoundException;
 import org.complitex.osznconnection.file.calculation.adapter.ICalculationCenterAdapter;
-import org.complitex.osznconnection.file.calculation.entity.BenefitData;
+import org.complitex.osznconnection.file.entity.BenefitData;
 import org.complitex.osznconnection.file.calculation.service.CalculationCenterBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
