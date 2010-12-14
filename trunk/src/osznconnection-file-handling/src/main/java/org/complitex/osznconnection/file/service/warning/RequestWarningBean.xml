@@ -23,7 +23,6 @@
             FROM `request_warning` w
             LEFT JOIN `request_warning_parameter` p ON w.`id` = p.`request_warning_id`
                 WHERE w.`request_id` = #{requestId} AND w.`request_file_type` = #{requestFileType}
-            ORDER BY w.`id`, p.`order`
 </select>
 
     <insert id="insertParameter" parameterType="org.complitex.osznconnection.file.entity.RequestWarningParameter">
@@ -34,17 +33,17 @@
         INSERT INTO `request_warning` (`request_id`, `request_file_type`, `status`) VALUES (#{requestId}, #{requestFileType}, #{status})
     </insert>
 
-    <delete id="deleteParameters">
-        DELETE FROM `request_warning_parameter`
-            WHERE `request_warning_id` IN (SELECT w.`id` FROM `request_warning` w WHERE
-                w.`request_file_type` = #{requestFileType} AND w.`request_id` IN (SELECT r.`id` FROM `${requestTableName}` r WHERE
-                    r.`request_file_id` = #{requestFileId}))
+    <delete id="deleteParameter" parameterType="long">
+        DELETE FROM `request_warning_parameter` WHERE `request_warning_id` = #{id}
     </delete>
 
-    <delete id="deleteWarnings">
-        DELETE FROM `request_warning`
-            WHERE `request_file_type` = #{requestFileType} AND
-                `request_id` IN (SELECT r.`id` FROM `${requestTableName}` r WHERE r.`request_file_id` = #{requestFileId})
+    <delete id="deleteWarning" parameterType="long">
+        DELETE FROM `request_warning` WHERE `id` = #{id}
     </delete>
+
+    <select id="getWarningIdsByFile" parameterType="map" resultType="long">
+        SELECT w.id FROM `request_warning` w WHERE `request_file_type` = #{requestFileType} AND
+                    `request_id` IN (SELECT r.`id` FROM `${requestTableName}` r WHERE r.`request_file_id` = #{requestFileId})
+    </select>
 
 </mapper>
