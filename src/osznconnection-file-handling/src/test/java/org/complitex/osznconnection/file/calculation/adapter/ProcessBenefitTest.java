@@ -64,7 +64,7 @@ public class ProcessBenefitTest {
             }
         };
         Benefit b = new Benefit();
-        b.setAccountNumber("1000001108");
+        b.setAccountNumber("1000000000");
         b.setField(BenefitDBF.IND_COD, "2142426432");
         b.setOrganizationId(1L);
         try {

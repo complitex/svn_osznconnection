@@ -9,7 +9,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.wicket.util.string.Strings;
-import org.complitex.osznconnection.file.calculation.entity.BenefitData;
+import org.complitex.osznconnection.file.entity.BenefitData;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.service.OwnershipCorrectionBean;
 import org.complitex.osznconnection.file.service.PrivilegeCorrectionBean;
@@ -26,6 +26,7 @@ import org.complitex.dictionaryfw.entity.Log.EVENT;
 import org.complitex.dictionaryfw.service.LocaleBean;
 import org.complitex.dictionaryfw.service.LogBean;
 import org.complitex.osznconnection.file.Module;
+import org.complitex.osznconnection.file.entity.PaymentAndBenefitData;
 import org.complitex.osznconnection.file.service.warning.RequestWarningBean;
 import org.complitex.osznconnection.file.service.warning.WebWarningRenderer;
 
@@ -127,7 +128,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
         params.put("dat1", payment.getField(PaymentDBF.DAT1));
 
         String result = (String) sqlSession().selectOne(MAPPING_NAMESPACE + ".acquirePersonAccount", params);
-        log.info("acquirePersonAccount, parameters : {}, account number : {}", params, result);
+        log.info("acquirePersonAccount. Parameters : {}, result : {}", params, result);
         processPersonAccountResult(payment, result);
     }
 
@@ -203,26 +204,39 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
         try {
             sqlSession().selectOne(MAPPING_NAMESPACE + ".acquireAccountCorrectionDetails", params);
         } catch (Exception e) {
-            throw new AccountNotFoundException(e, payment);
+            throw new RuntimeException(e);
         } finally {
-            log.info("acquireAccountCorrectionDetails, parameters : {}", params);
+            log.info("acquireAccountCorrectionDetails. Parameters : {}", params);
         }
 
-        List<AccountDetail> accountCorrectionDetails = (List<AccountDetail>) params.get("details");
-        if (accountCorrectionDetails != null) {
-            boolean isIncorrectResult = false;
-            for (AccountDetail detail : accountCorrectionDetails) {
-                if (Strings.isEmpty(detail.getAccountNumber())) {
-                    isIncorrectResult = true;
-                    break;
+        int resultCode = (Integer) params.get("resultCode");
+        if (resultCode == 1) {
+            List<AccountDetail> accountCorrectionDetails = (List<AccountDetail>) params.get("details");
+            if (accountCorrectionDetails != null) {
+                //check for correctness.
+                // TODO: find out necessity of this check.
+                boolean isIncorrectResult = false;
+                for (AccountDetail detail : accountCorrectionDetails) {
+                    if (Strings.isEmpty(detail.getAccountNumber())) {
+                        isIncorrectResult = true;
+                        log.error("acquireAccountCorrectionDetails. Account number in account details data is null. Payment id: {}, "
+                                + ", account detail item: {}", payment.getId(), detail);
+                        break;
+                    }
                 }
+                if (isIncorrectResult) {
+                    accountCorrectionDetails = null;
+                }
+            } else {
+                throw new RuntimeException("acquireAccountCorrectionDetails. Result code is 1 but account details data is null or empty. Payment id: "
+                        + payment.getId());
             }
-            if (isIncorrectResult) {
-                accountCorrectionDetails = null;
-            }
+            return accountCorrectionDetails;
+        } else {
+            // TODO: find out influence on UI
+//            processPersonAccountResult(payment, String.valueOf(resultCode));
+            return null;
         }
-
-        return accountCorrectionDetails;
     }
 
     /**
@@ -249,14 +263,24 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
         try {
             sqlSession().selectOne(MAPPING_NAMESPACE + ".processPaymentAndBenefit", params);
         } catch (Exception e) {
-            throw new AccountNotFoundException(e, payment);
+            throw new RuntimeException(e);
         } finally {
-            log.info("processPaymentAndBenefit, parameters : {}", params);
+            log.info("processPaymentAndBenefit. Parameters : {}", params);
         }
 
-        List<Map<String, Object>> data = (List<Map<String, Object>>) params.get("data");
-        if (data != null && (data.size() == 1)) {
-            processData(calculationCenterId, payment, benefits, data.get(0));
+        int resultCode = (Integer) params.get("resultCode");
+        if (resultCode == 1) {
+            List<PaymentAndBenefitData> paymentAndBenefitDatas = (List<PaymentAndBenefitData>) params.get("data");
+            if (paymentAndBenefitDatas != null && !paymentAndBenefitDatas.isEmpty()) {
+                PaymentAndBenefitData data = paymentAndBenefitDatas.get(0);
+                if(paymentAndBenefitDatas.size() > 1){
+                    log.warn("processPaymentAndBenefit. Size of list of paymentAndBenefitData is more then 1. Will be used only first entry.");
+                }
+                processData(calculationCenterId, payment, benefits, data);
+            } else {
+                throw new RuntimeException("processPaymentAndBenefit. Result code is 1 but paymentAndBenefitData is null or empty. Payment id: "
+                        + payment.getId());
+            }
         } else {
             throw new AccountNotFoundException(null, payment);
         }
@@ -280,25 +304,25 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
      * @param benefits
      * @param benefitData данные пришедшие из ЦН.
      */
-    protected void processData(long calculationCenterId, Payment payment, List<Benefit> benefits, Map<String, Object> data) {
+    protected void processData(long calculationCenterId, Payment payment, List<Benefit> benefits, PaymentAndBenefitData data) {
         //payment
-        payment.setField(PaymentDBF.FROG, data.get("FROG"));
-        payment.setField(PaymentDBF.FL_PAY, data.get("FL_PAY"));
-        payment.setField(PaymentDBF.NM_PAY, data.get("NM_PAY"));
-        payment.setField(PaymentDBF.DEBT, data.get("DEBT"));
-        payment.setField(PaymentDBF.NORM_F_1, data.get("NORM_F_1"));
-        payment.setField(PaymentDBF.NUMB, data.get("NUMB"));
-        payment.setField(PaymentDBF.MARK, data.get("MARK"));
+        payment.setField(PaymentDBF.FROG, data.getPercent());
+        payment.setField(PaymentDBF.FL_PAY, data.getCharge());
+        payment.setField(PaymentDBF.NM_PAY, data.getNormCrarge());
+        payment.setField(PaymentDBF.DEBT, data.getSaldo());
+        payment.setField(PaymentDBF.NORM_F_1, data.getReducedArea());
+        payment.setField(PaymentDBF.NUMB, data.getLodgerCount());
+        payment.setField(PaymentDBF.MARK, data.getUserCount());
 
-        Double T11_CS_UNI = (Double) data.get("T11_CS_UNI");
-        Integer CODE2_1 = getCODE2_1(T11_CS_UNI, payment.getOrganizationId());
+        Double tarif = data.getTarif();
+        Integer CODE2_1 = getCODE2_1(tarif, payment.getOrganizationId());
         if (CODE2_1 == null) {
             payment.setStatus(RequestStatus.TARIF_CODE2_1_NOT_FOUND);
 
-            log.warn("Couldn't find tarif code by calculation center's tarif: '{}' and calculation center id: {}", T11_CS_UNI, calculationCenterId);
+            log.warn("Couldn't find tarif code by calculation center's tarif: '{}' and calculation center id: {}", tarif, calculationCenterId);
 
             RequestWarning warning = new RequestWarning(payment.getId(), RequestFile.TYPE.PAYMENT, RequestWarningStatus.TARIF_NOT_FOUND);
-            warning.addParameter(new RequestWarningParameter(0, T11_CS_UNI));
+            warning.addParameter(new RequestWarningParameter(0, tarif));
             warning.addParameter(new RequestWarningParameter(1, "organization", calculationCenterId));
             warningBean.save(warning);
 
@@ -311,7 +335,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
 
         //benefits
         if (benefits != null && !benefits.isEmpty()) {
-            String calcCenterOwnershipCode = (String) data.get("OWN_FRM");
+            String calcCenterOwnershipCode = data.getOwnership();
             Long internalOwnershipId = findInternalOwnership(calcCenterOwnershipCode, calculationCenterId);
             if (internalOwnershipId == null) {
                 log.warn("Couldn't find in corrections internal ownership object by calculation center's ownership code: '{}' "
@@ -373,7 +397,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
             }
             for (Benefit benefit : benefits) {
                 benefit.setField(BenefitDBF.CM_AREA, payment.getField(PaymentDBF.NORM_F_1));
-                benefit.setField(BenefitDBF.HOSTEL, data.get("HOSTEL"));
+                benefit.setField(BenefitDBF.HOSTEL, data.getRoomCount());
             }
         }
     }
@@ -422,14 +446,20 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
         try {
             sqlSession().selectOne(MAPPING_NAMESPACE + ".processBenefit", params);
         } catch (Exception e) {
-            throw new AccountNotFoundException(e, benefits);
+            throw new RuntimeException(e);
         } finally {
-            log.info("processBenefit, parameters : {}", params);
+            log.info("processBenefit. Parameters : {}", params);
         }
 
-        List<BenefitData> benefitData = (List<BenefitData>) params.get("benefitData");
-        if (benefitData != null && !benefitData.isEmpty()) {
-            processBenefitData(calculationCenterId, benefits, benefitData);
+        int resultCode = (Integer) params.get("resultCode");
+        if (resultCode == 1) {
+            List<BenefitData> benefitData = (List<BenefitData>) params.get("benefitData");
+            if (benefitData != null && !benefitData.isEmpty()) {
+                processBenefitData(calculationCenterId, benefits, benefitData);
+            } else {
+                throw new RuntimeException("processBenefit. Result code is 1 but benefit data is null or empty. Account number: " + accountNumber
+                        + ", dat1: " + dat1);
+            }
         } else {
             throw new AccountNotFoundException(null, benefits);
         }
@@ -439,29 +469,38 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
     public Collection<BenefitData> getBenefitData(String accountNumber, Date dat1) throws AccountNotFoundException {
         Map<String, Object> params = Maps.newHashMap();
         params.put("accountNumber", accountNumber);
-        params.put("dat1", new Date());
+        params.put("dat1", dat1);
 
         try {
             sqlSession().selectOne(MAPPING_NAMESPACE + ".getBenefitData", params);
         } catch (Exception e) {
-            throw new AccountNotFoundException(e);
+            throw new RuntimeException(e);
         } finally {
-            log.info("getBenefitData, parameters : {}", params);
+            log.info("getBenefitData. Parameters : {}", params);
         }
 
-        List<BenefitData> benefitData = (List<BenefitData>) params.get("benefitData");
-        Map<String, BenefitData> innToBenefitDataMap = Maps.newHashMap();
-        for (BenefitData item : benefitData) {
-            final String inn = item.getInn();
-            if (innToBenefitDataMap.get(inn) == null) {
-                List<BenefitData> theSameMans = getBenefitDataByINN(benefitData, inn);
-                if (theSameMans != null && !theSameMans.isEmpty()) {
-                    BenefitData min = Collections.min(theSameMans, BENEFIT_DATA_COMPARATOR);
-                    innToBenefitDataMap.put(inn, min);
+        int resultCode = (Integer) params.get("resultCode");
+        if (resultCode == 1) {
+            List<BenefitData> benefitData = (List<BenefitData>) params.get("benefitData");
+            if (benefitData == null || benefitData.isEmpty()) {
+                throw new RuntimeException("getBenefitData. Result code is 1 but benefit data is null or empty. Account number: " + accountNumber
+                        + ", dat1: " + dat1);
+            }
+            Map<String, BenefitData> innToBenefitDataMap = Maps.newHashMap();
+            for (BenefitData item : benefitData) {
+                final String inn = item.getInn();
+                if (innToBenefitDataMap.get(inn) == null) {
+                    List<BenefitData> theSameMans = getBenefitDataByINN(benefitData, inn);
+                    if (theSameMans != null && !theSameMans.isEmpty()) {
+                        BenefitData min = Collections.min(theSameMans, BENEFIT_DATA_COMPARATOR);
+                        innToBenefitDataMap.put(inn, min);
+                    }
                 }
             }
+            return innToBenefitDataMap.values();
+        } else {
+            throw new AccountNotFoundException();
         }
-        return innToBenefitDataMap.values();
     }
 
     protected List<BenefitData> getBenefitDataByINN(List<BenefitData> benefitDatas, final String inn) {

@@ -1,4 +1,4 @@
-package org.complitex.osznconnection.file.calculation.entity;
+package org.complitex.osznconnection.file.entity;
 
 import java.io.Serializable;
 

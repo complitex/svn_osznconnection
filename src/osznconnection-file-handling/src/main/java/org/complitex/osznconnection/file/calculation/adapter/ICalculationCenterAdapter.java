@@ -5,7 +5,7 @@
 package org.complitex.osznconnection.file.calculation.adapter;
 
 import java.util.Collection;
-import org.complitex.osznconnection.file.calculation.entity.BenefitData;
+import org.complitex.osznconnection.file.entity.BenefitData;
 import org.complitex.osznconnection.file.entity.AccountDetail;
 import org.complitex.osznconnection.file.entity.Benefit;
 import org.complitex.osznconnection.file.entity.Payment;

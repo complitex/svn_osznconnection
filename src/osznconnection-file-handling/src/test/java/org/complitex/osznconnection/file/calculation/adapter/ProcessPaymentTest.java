@@ -74,7 +74,7 @@ public class ProcessPaymentTest {
         Payment p = new Payment();
         Benefit b = new Benefit();
         b.setId(1L);
-        p.setAccountNumber("1000001108");
+        p.setAccountNumber("1000000000");
         p.setOrganizationId(1L);
         p.setField(PaymentDBF.DAT1, new Date());
         try {

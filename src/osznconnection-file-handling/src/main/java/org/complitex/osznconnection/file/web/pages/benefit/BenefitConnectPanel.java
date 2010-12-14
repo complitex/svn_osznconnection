@@ -14,7 +14,7 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.complitex.osznconnection.file.calculation.entity.BenefitData;
+import org.complitex.osznconnection.file.entity.BenefitData;
 import org.complitex.osznconnection.file.entity.Benefit;
 import org.odlabs.wiquery.ui.dialog.Dialog;
 

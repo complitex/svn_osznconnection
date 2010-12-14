@@ -4,21 +4,16 @@
  */
 package org.complitex.osznconnection.file.calculation.adapter;
 
-import com.google.common.collect.Maps;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-import org.apache.wicket.util.string.Strings;
-import org.complitex.osznconnection.file.entity.AccountDetail;
 import org.complitex.osznconnection.file.entity.Payment;
-import org.complitex.osznconnection.file.entity.RequestStatus;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import org.complitex.osznconnection.file.entity.PaymentDBF;
 
 /**
  *
@@ -51,76 +46,68 @@ public class AcquireAccountCorrectionDetailsTest {
 
         ICalculationCenterAdapter adapter = new DefaultCalculationCenterAdapter() {
 
-//            @Override
-            protected SqlSession openSession() {
+            @Override
+            protected SqlSession sqlSession() {
                 return sqlSessionFactory.openSession(false);
             }
-
-            @Override
-            public List<AccountDetail> acquireAccountCorrectionDetails(Payment payment) {
-                List<AccountDetail> accountCorrectionDetails = null;
-                SqlSession session = null;
-                try {
-                    session = openSession();
-
-                    Map<String, Object> params = Maps.newHashMap();
-                    String districtName = "ДЗЕРЖИНСКИЙ";
-                    params.put("pDistrName", districtName);
-                    params.put("pStSortName", "УЛ");
-                    params.put("pStreetName", "АХСАРОВА");
-                    params.put("pHouseNum", "23");
-                    params.put("pHousePart", "");
-                    params.put("pFlatNum", "240");
-                    params.put("dat1", new Date());
-
-                    try {
-                        session.selectOne(MAPPING_NAMESPACE + ".acquireAccountCorrectionDetails", params);
-//                if (processAccountCorrectionDetailsResult(payment, String.valueOf(resultCode))) {
-                        accountCorrectionDetails = (List<AccountDetail>) params.get("details");
-                        if (accountCorrectionDetails != null) {
-                            boolean isIncorrectResult = false;
-                            for (AccountDetail detail : accountCorrectionDetails) {
-                                if (Strings.isEmpty(detail.getAccountNumber())) {
-                                    isIncorrectResult = true;
-                                    break;
-                                }
-                            }
-                            if (isIncorrectResult) {
-                                accountCorrectionDetails = null;
-                            }
-                        }
+//            @Override
+//            public List<AccountDetail> acquireAccountCorrectionDetails(Payment payment) {
+//                List<AccountDetail> accountCorrectionDetails = null;
+//                SqlSession session = null;
+//                try {
+//                    session = sqlSession();
+//
+//                    Map<String, Object> params = Maps.newHashMap();
+//                    String districtName = "ДЗЕРЖИНСКИЙ";
+//                    params.put("pDistrName", districtName);
+//                    params.put("pStSortName", "УЛ");
+//                    params.put("pStreetName", "АХСАРОВА");
+//                    params.put("pHouseNum", "23");
+//                    params.put("pHousePart", "");
+//                    params.put("pFlatNum", "240");
+//                    params.put("dat1", new Date());
+//
+//
+//
+//                    session.commit();
+//                } catch (Exception e) {
+//                    try {
+//                        if (session != null) {
+//                            session.rollback();
+//                        }
+//                    } catch (Exception exc) {
+//                        log.error("", exc);
+//                    }
+//                    log.error("", e);
+//                } finally {
+//                    try {
+//                        if (session != null) {
+//                            session.close();
+//                        }
+//                    } catch (Exception e) {
+//                        log.error("", e);
+//                    }
 //                }
-                    } catch (Exception e) {
-                        payment.setStatus(RequestStatus.ACCOUNT_NUMBER_NOT_FOUND);
-                    }
-
-                    session.commit();
-                } catch (Exception e) {
-                    try {
-                        if (session != null) {
-                            session.rollback();
-                        }
-                    } catch (Exception exc) {
-                        log.error("", exc);
-                    }
-                    log.error("", e);
-                } finally {
-                    try {
-                        if (session != null) {
-                            session.close();
-                        }
-                    } catch (Exception e) {
-                        log.error("", e);
-                    }
-                }
-                return accountCorrectionDetails;
-            }
+//                return accountCorrectionDetails;
+//            }
         };
-//        System.out.println(adapter.acquireAccountCorrectionDetails(newPayment()));
+        try {
+            System.out.println(adapter.acquireAccountCorrectionDetails(newPayment()));
+        } catch (AccountNotFoundException e) {
+            System.out.println("Account not found");
+        }
     }
 
     private static Payment newPayment() {
         Payment p = new Payment();
+        p.setId(1L);
+        p.setOutgoingDistrict("ЦЕНТРАЛЬНЫЙ");
+        p.setOutgoingStreet("ФРАНТИШЕКА КРАЛА");
+        p.setOutgoingStreetType("УЛ");
+        p.setOutgoingBuildingNumber("25А");
+        p.setOutgoingBuildingCorp("");
+        p.setOutgoingApartment("40");
+        p.setField(PaymentDBF.DAT1, new Date());
         return p;
     }
 }
