@@ -103,7 +103,7 @@ public class SaveUtil {
                     }
 
                     if (hasWarning || !onlyWarning){
-                        fileWriter.write("\n\t№" + request.getDbfFields().get(PaymentDBF.OWN_NUM.name())
+                        fileWriter.write("\n\tдело №" + request.getDbfFields().get(PaymentDBF.OWN_NUM.name())
                                 +  " - "  + getString(request.getStatus().name()) + warning);
                     }
                 }
