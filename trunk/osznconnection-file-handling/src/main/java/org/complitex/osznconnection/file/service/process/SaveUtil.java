@@ -1,8 +1,8 @@
 package org.complitex.osznconnection.file.service.process;
 
 
-import org.complitex.dictionaryfw.util.DateUtil;
-import org.complitex.dictionaryfw.util.ResourceUtil;
+import org.complitex.dictionary.util.DateUtil;
+import org.complitex.dictionary.util.ResourceUtil;
 import org.complitex.osznconnection.file.entity.AbstractRequest;
 import org.complitex.osznconnection.file.entity.PaymentDBF;
 import org.complitex.osznconnection.file.entity.RequestFileGroup;

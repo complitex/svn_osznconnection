@@ -5,12 +5,12 @@
 package org.complitex.osznconnection.file.service;
 
 import com.google.common.collect.Maps;
-import org.complitex.dictionaryfw.entity.DomainObject;
-import org.complitex.dictionaryfw.mybatis.Transactional;
-import org.complitex.dictionaryfw.service.AbstractBean;
-import org.complitex.dictionaryfw.service.LocaleBean;
-import org.complitex.dictionaryfw.strategy.Strategy;
-import org.complitex.dictionaryfw.strategy.StrategyFactory;
+import org.complitex.dictionary.entity.DomainObject;
+import org.complitex.dictionary.mybatis.Transactional;
+import org.complitex.dictionary.service.AbstractBean;
+import org.complitex.dictionary.service.LocaleBean;
+import org.complitex.dictionary.strategy.Strategy;
+import org.complitex.dictionary.strategy.StrategyFactory;
 import org.complitex.osznconnection.file.entity.Correction;
 import org.complitex.osznconnection.file.entity.example.CorrectionExample;
 import org.slf4j.Logger;

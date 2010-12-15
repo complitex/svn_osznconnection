@@ -2,8 +2,8 @@ package org.complitex.osznconnection.file.web;
 
 import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
-import org.complitex.osznconnection.commons.web.template.ITemplateLink;
-import org.complitex.osznconnection.commons.web.template.ResourceTemplateMenu;
+import org.complitex.template.web.template.ITemplateLink;
+import org.complitex.template.web.template.ResourceTemplateMenu;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

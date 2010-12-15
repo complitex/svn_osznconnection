@@ -1,10 +1,10 @@
 package org.complitex.osznconnection.file.service.process;
 
-import org.complitex.dictionaryfw.entity.Log;
-import org.complitex.dictionaryfw.service.LogBean;
-import org.complitex.dictionaryfw.service.executor.ExecutorBean;
-import org.complitex.dictionaryfw.service.executor.IExecutorListener;
-import org.complitex.dictionaryfw.service.executor.ITaskBean;
+import org.complitex.dictionary.entity.Log;
+import org.complitex.dictionary.service.LogBean;
+import org.complitex.dictionary.service.executor.ExecutorBean;
+import org.complitex.dictionary.service.executor.IExecutorListener;
+import org.complitex.dictionary.service.executor.ITaskBean;
 import org.complitex.osznconnection.file.Module;
 import org.complitex.osznconnection.file.entity.Config;
 import org.complitex.osznconnection.file.entity.RequestFile;

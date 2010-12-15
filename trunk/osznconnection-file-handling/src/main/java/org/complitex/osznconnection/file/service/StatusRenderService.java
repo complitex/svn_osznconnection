@@ -8,7 +8,7 @@ import java.util.Locale;
 import javax.ejb.ConcurrencyManagement;
 import javax.ejb.ConcurrencyManagementType;
 import javax.ejb.Singleton;
-import org.complitex.dictionaryfw.util.ResourceUtil;
+import org.complitex.dictionary.util.ResourceUtil;
 import org.complitex.osznconnection.file.entity.RequestStatus;
 
 /**

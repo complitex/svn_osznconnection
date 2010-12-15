@@ -2,9 +2,9 @@ package org.complitex.osznconnection.file.service.process;
 
 import com.linuxense.javadbf.DBFField;
 import com.linuxense.javadbf.DBFWriter;
-import org.complitex.dictionaryfw.entity.Log;
-import org.complitex.dictionaryfw.service.executor.ExecuteException;
-import org.complitex.dictionaryfw.service.executor.ITaskBean;
+import org.complitex.dictionary.entity.Log;
+import org.complitex.dictionary.service.executor.ExecuteException;
+import org.complitex.dictionary.service.executor.ITaskBean;
 import org.complitex.osznconnection.file.Module;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.service.BenefitBean;

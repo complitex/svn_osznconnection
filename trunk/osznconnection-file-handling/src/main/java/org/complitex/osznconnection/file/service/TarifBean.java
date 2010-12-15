@@ -1,8 +1,8 @@
 package org.complitex.osznconnection.file.service;
 
 import com.google.common.collect.Maps;
-import org.complitex.dictionaryfw.mybatis.Transactional;
-import org.complitex.dictionaryfw.service.AbstractBean;
+import org.complitex.dictionary.mybatis.Transactional;
+import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.osznconnection.file.entity.AbstractRequest;
 import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.entity.Tarif;

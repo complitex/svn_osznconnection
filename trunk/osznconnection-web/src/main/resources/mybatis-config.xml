@@ -3,12 +3,12 @@
 <!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
     <typeAliases>
-        <typeAlias type="org.complitex.dictionaryfw.entity.Locale" alias="Locale"/>
-        <typeAlias type="org.complitex.dictionaryfw.entity.StringCulture" alias="StringCulture"/>
-        <typeAlias type="org.complitex.dictionaryfw.entity.Parameter" alias="Parameter"/>
-        <typeAlias type="org.complitex.dictionaryfw.entity.DomainObject" alias="DomainObject"/>
-        <typeAlias type="org.complitex.dictionaryfw.entity.Attribute" alias="Attribute"/>
-        <typeAlias type="org.complitex.dictionaryfw.entity.example.DomainObjectExample" alias="DomainObjectExample"/>
+        <typeAlias type="org.complitex.dictionary.entity.Locale" alias="Locale"/>
+        <typeAlias type="org.complitex.dictionary.entity.StringCulture" alias="StringCulture"/>
+        <typeAlias type="org.complitex.dictionary.entity.Parameter" alias="Parameter"/>
+        <typeAlias type="org.complitex.dictionary.entity.DomainObject" alias="DomainObject"/>
+        <typeAlias type="org.complitex.dictionary.entity.Attribute" alias="Attribute"/>
+        <typeAlias type="org.complitex.dictionary.entity.example.DomainObjectExample" alias="DomainObjectExample"/>
     </typeAliases>
 
     <typeHandlers>
@@ -36,24 +36,25 @@
     </environments>
 
     <mappers>
-        <mapper resource="org/complitex/dictionaryfw/entity/Locale.xml"/>
-        <mapper resource="org/complitex/dictionaryfw/entity/Sequence.xml"/>
-        <mapper resource="org/complitex/dictionaryfw/entity/StringCulture.xml"/>
-        <mapper resource="org/complitex/dictionaryfw/entity/description/Entity.xml"/>
-        <mapper resource="org/complitex/dictionaryfw/entity/Attribute.xml"/>
-        <mapper resource="org/complitex/dictionaryfw/entity/DomainObject.xml"/>
+        <mapper resource="org/complitex/dictionary/entity/Locale.xml"/>
+        <mapper resource="org/complitex/dictionary/entity/Sequence.xml"/>
+        <mapper resource="org/complitex/dictionary/entity/StringCulture.xml"/>
+        <mapper resource="org/complitex/dictionary/entity/description/Entity.xml"/>
+        <mapper resource="org/complitex/dictionary/entity/Attribute.xml"/>
+        <mapper resource="org/complitex/dictionary/entity/DomainObject.xml"/>
 
-        <mapper resource="org/complitex/dictionaryfw/service/LogBean.xml"/>
-        <mapper resource="org/complitex/dictionaryfw/service/SessionBean.xml"/>
-        <mapper resource="org/complitex/dictionaryfw/service/PreferenceBean.xml"/>
+        <mapper resource="org/complitex/dictionary/service/LogBean.xml"/>
+        <mapper resource="org/complitex/dictionary/service/SessionBean.xml"/>
+        <mapper resource="org/complitex/dictionary/service/PreferenceBean.xml"/>
 
-        <mapper resource="org/complitex/osznconnection/information/strategy/building/Building.xml"/>
-        <mapper resource="org/complitex/osznconnection/information/strategy/street/Street.xml"/>
-        <mapper resource="org/complitex/osznconnection/information/strategy/city/City.xml"/>
+        <mapper resource="org/complitex/address/strategy/building/Building.xml"/>
+        <mapper resource="org/complitex/address/strategy/street/Street.xml"/>
+        <mapper resource="org/complitex/address/strategy/city/City.xml"/>
+
+        <mapper resource="org/complitex/admin/service/UserBean.xml"/>
+        <mapper resource="org/complitex/logging/service/LogListBean.xml"/>
 
         <mapper resource="org/complitex/osznconnection/organization/strategy/Organization.xml"/>
-        <mapper resource="org/complitex/osznconnection/admin/service/UserBean.xml"/>
-        <mapper resource="org/complitex/osznconnection/logging/service/LogListBean.xml"/>
 
         <mapper resource="org/complitex/osznconnection/file/service/AbstractRequestBean.xml"/>
         <mapper resource="org/complitex/osznconnection/file/service/PaymentBean.xml"/>

@@ -18,11 +18,11 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.util.WildcardListModel;
 import org.apache.wicket.util.string.Strings;
-import org.complitex.dictionaryfw.entity.DomainObject;
-import org.complitex.dictionaryfw.entity.example.DomainObjectExample;
-import org.complitex.dictionaryfw.strategy.StrategyFactory;
-import org.complitex.dictionaryfw.web.component.search.SearchComponent;
-import org.complitex.dictionaryfw.web.component.search.SearchComponentState;
+import org.complitex.dictionary.entity.DomainObject;
+import org.complitex.dictionary.entity.example.DomainObjectExample;
+import org.complitex.dictionary.strategy.StrategyFactory;
+import org.complitex.dictionary.web.component.search.SearchComponent;
+import org.complitex.dictionary.web.component.search.SearchComponentState;
 import org.complitex.osznconnection.file.entity.AccountDetail;
 import org.complitex.osznconnection.file.entity.Payment;
 import org.complitex.osznconnection.file.entity.PaymentDBF;
@@ -40,9 +40,9 @@ import org.slf4j.LoggerFactory;
 import javax.ejb.EJB;
 import java.util.List;
 import java.util.Map;
-import org.complitex.dictionaryfw.util.CloneUtil;
+import org.complitex.dictionary.util.CloneUtil;
 import org.complitex.osznconnection.file.service.StatusRenderService;
-import org.complitex.osznconnection.information.strategy.street.StreetStrategy;
+import org.complitex.address.strategy.street.StreetStrategy;
 
 /**
  * Панель для поиска номера л/c по различным параметрам: по адресу, по номеру лиц. счета, по номеру в мегабанке.

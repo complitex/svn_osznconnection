@@ -7,14 +7,14 @@ package org.complitex.osznconnection.privilege.web;
 import com.google.common.collect.ImmutableList;
 import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
-import org.complitex.dictionaryfw.strategy.Strategy;
-import org.complitex.osznconnection.commons.web.template.ITemplateLink;
-import org.complitex.osznconnection.commons.web.template.ResourceTemplateMenu;
+import org.complitex.dictionary.strategy.Strategy;
+import org.complitex.template.web.template.ITemplateLink;
+import org.complitex.template.web.template.ResourceTemplateMenu;
 
 import java.util.List;
 import java.util.Locale;
-import org.complitex.dictionaryfw.strategy.StrategyFactory;
-import org.complitex.dictionaryfw.util.EjbBeanLocator;
+import org.complitex.dictionary.strategy.StrategyFactory;
+import org.complitex.dictionary.util.EjbBeanLocator;
 
 /**
  *

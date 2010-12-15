@@ -4,8 +4,8 @@
  */
 package org.complitex.osznconnection.file.service;
 
-import org.complitex.dictionaryfw.mybatis.Transactional;
-import org.complitex.dictionaryfw.service.AbstractBean;
+import org.complitex.dictionary.mybatis.Transactional;
+import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.osznconnection.file.calculation.adapter.AccountNotFoundException;
 import org.complitex.osznconnection.file.calculation.adapter.ICalculationCenterAdapter;
 import org.complitex.osznconnection.file.calculation.service.CalculationCenterBean;

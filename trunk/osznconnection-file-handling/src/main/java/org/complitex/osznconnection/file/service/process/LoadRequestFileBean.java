@@ -2,8 +2,8 @@ package org.complitex.osznconnection.file.service.process;
 
 import com.linuxense.javadbf.DBFField;
 import com.linuxense.javadbf.DBFReader;
-import org.complitex.dictionaryfw.service.executor.ExecuteException;
-import org.complitex.dictionaryfw.util.DateUtil;
+import org.complitex.dictionary.service.executor.ExecuteException;
+import org.complitex.dictionary.util.DateUtil;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.service.ConfigBean;
 import org.complitex.osznconnection.file.service.RequestFileBean;

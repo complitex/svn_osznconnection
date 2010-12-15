@@ -1,7 +1,7 @@
 package org.complitex.osznconnection.file.web.component;
 
 import org.apache.wicket.ResourceReference;
-import org.complitex.osznconnection.commons.web.component.toolbar.ToolbarButton;
+import org.complitex.template.web.component.toolbar.ToolbarButton;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru

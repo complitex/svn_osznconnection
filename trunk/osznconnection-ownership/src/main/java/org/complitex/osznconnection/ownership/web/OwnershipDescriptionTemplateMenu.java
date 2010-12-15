@@ -8,15 +8,15 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
-import org.complitex.dictionaryfw.service.StringCultureBean;
-import org.complitex.osznconnection.commons.web.pages.EntityDescription;
-import org.complitex.osznconnection.commons.web.template.ITemplateLink;
-import org.complitex.osznconnection.commons.web.template.ResourceTemplateMenu;
+import org.complitex.dictionary.service.StringCultureBean;
+import org.complitex.template.web.pages.EntityDescription;
+import org.complitex.template.web.template.ITemplateLink;
+import org.complitex.template.web.template.ResourceTemplateMenu;
 
 import java.util.List;
 import java.util.Locale;
-import org.complitex.dictionaryfw.strategy.StrategyFactory;
-import org.complitex.dictionaryfw.util.EjbBeanLocator;
+import org.complitex.dictionary.strategy.StrategyFactory;
+import org.complitex.dictionary.util.EjbBeanLocator;
 
 /**
  *

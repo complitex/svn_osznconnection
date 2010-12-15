@@ -1,6 +1,6 @@
 package org.complitex.osznconnection.file.service.exception;
 
-import org.complitex.dictionaryfw.service.executor.ExecuteException;
+import org.complitex.dictionary.service.executor.ExecuteException;
 import org.complitex.osznconnection.file.entity.RequestFile;
 
 /**

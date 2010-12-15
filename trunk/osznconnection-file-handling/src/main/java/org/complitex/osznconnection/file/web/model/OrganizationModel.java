@@ -8,7 +8,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import java.util.List;
 import org.apache.wicket.model.Model;
-import org.complitex.dictionaryfw.entity.DomainObject;
+import org.complitex.dictionary.entity.DomainObject;
 
 /**
  *

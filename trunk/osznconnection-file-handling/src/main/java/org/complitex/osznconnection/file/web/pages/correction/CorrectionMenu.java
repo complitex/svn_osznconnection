@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Locale;
 import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
-import org.complitex.osznconnection.commons.web.template.ITemplateLink;
-import org.complitex.osznconnection.commons.web.template.ResourceTemplateMenu;
+import org.complitex.template.web.template.ITemplateLink;
+import org.complitex.template.web.template.ResourceTemplateMenu;
 
 /**
  *

@@ -7,9 +7,9 @@ package org.complitex.osznconnection.organization.strategy.web.edit;
 import java.text.MessageFormat;
 import java.util.Locale;
 import org.apache.wicket.Component;
-import org.complitex.dictionaryfw.entity.DomainObject;
-import org.complitex.dictionaryfw.strategy.web.DomainObjectEditPanel;
-import org.complitex.dictionaryfw.strategy.web.validate.IValidator;
+import org.complitex.dictionary.entity.DomainObject;
+import org.complitex.dictionary.strategy.web.DomainObjectEditPanel;
+import org.complitex.dictionary.strategy.web.validate.IValidator;
 import org.complitex.osznconnection.organization.strategy.OrganizationStrategy;
 
 /**

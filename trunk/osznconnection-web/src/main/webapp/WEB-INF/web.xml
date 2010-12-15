@@ -14,7 +14,7 @@
         <filter-class>org.apache.wicket.protocol.http.WicketFilter</filter-class>
         <init-param>
             <param-name>applicationClassName</param-name>
-            <param-value>org.complitex.osznconnection.commons.web.OsznConnectionWebApplication</param-value>
+            <param-value>org.complitex.template.web.OsznConnectionWebApplication</param-value>
         </init-param>
     </filter>
     <filter-mapping>
@@ -30,8 +30,8 @@
         <auth-method>FORM</auth-method>
         <realm-name>osznconnectionRealm</realm-name>
         <form-login-config>
-            <form-login-page>/?wicket:bookmarkablePage=:org.complitex.osznconnection.commons.web.pages.login.Login</form-login-page>
-            <form-error-page>/?wicket:bookmarkablePage=:org.complitex.osznconnection.commons.web.pages.login.Login&amp;error</form-error-page>
+            <form-login-page>/?wicket:bookmarkablePage=:org.complitex.template.web.pages.login.Login</form-login-page>
+            <form-error-page><![CDATA[/?wicket:bookmarkablePage=:org.complitex.template.web.pages.login.Login&amp;error]]></form-error-page>
         </form-login-config>
     </login-config>
 

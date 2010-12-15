@@ -8,14 +8,14 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.wicket.util.string.Strings;
-import org.complitex.dictionaryfw.entity.Attribute;
-import org.complitex.dictionaryfw.entity.DomainObject;
-import org.complitex.dictionaryfw.entity.example.AttributeExample;
-import org.complitex.dictionaryfw.entity.example.DomainObjectExample;
-import org.complitex.dictionaryfw.service.StringCultureBean;
-import org.complitex.dictionaryfw.strategy.web.AbstractComplexAttributesPanel;
-import org.complitex.dictionaryfw.strategy.web.validate.IValidator;
-import org.complitex.dictionaryfw.util.ResourceUtil;
+import org.complitex.dictionary.entity.Attribute;
+import org.complitex.dictionary.entity.DomainObject;
+import org.complitex.dictionary.entity.example.AttributeExample;
+import org.complitex.dictionary.entity.example.DomainObjectExample;
+import org.complitex.dictionary.service.StringCultureBean;
+import org.complitex.dictionary.strategy.web.AbstractComplexAttributesPanel;
+import org.complitex.dictionary.strategy.web.validate.IValidator;
+import org.complitex.dictionary.util.ResourceUtil;
 import org.complitex.osznconnection.organization.strategy.web.edit.OrganizationValidator;
 
 import javax.ejb.EJB;
@@ -23,9 +23,9 @@ import javax.ejb.Stateless;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import org.complitex.dictionaryfw.service.LocaleBean;
-import org.complitex.osznconnection.commons.strategy.AbstractStrategy;
-import org.complitex.osznconnection.information.strategy.district.DistrictStrategy;
+import org.complitex.dictionary.service.LocaleBean;
+import org.complitex.template.strategy.AbstractStrategy;
+import org.complitex.address.strategy.district.DistrictStrategy;
 import org.complitex.osznconnection.organization.strategy.web.edit.OrganizationEditComponent;
 
 /**
