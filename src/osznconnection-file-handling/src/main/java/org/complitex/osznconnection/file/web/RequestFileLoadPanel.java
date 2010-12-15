@@ -52,6 +52,7 @@ public class RequestFileLoadPanel extends Panel {
         dialog.setOutputMarkupId(true);
         dialog.setOutputMarkupPlaceholderTag(true);
         dialog.setTitle(title);
+        dialog.setVisible(false);
         add(dialog);
 
         dialog.add(new FeedbackPanel("messages"));
@@ -128,6 +129,7 @@ public class RequestFileLoadPanel extends Panel {
             @Override
             public void onSubmit() {
                 dialog.setAutoOpen(false);
+                dialog.setVisible(false);
                 dialog.close();
             }
         };
@@ -137,6 +139,7 @@ public class RequestFileLoadPanel extends Panel {
 
     public void open(){
         dialog.setAutoOpen(true);
+        dialog.setVisible(true);
     }
 }
 
