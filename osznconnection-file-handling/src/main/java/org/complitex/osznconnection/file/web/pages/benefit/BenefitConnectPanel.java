@@ -23,7 +23,7 @@ import java.util.List;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.model.AbstractReadOnlyModel;
-import org.complitex.dictionaryfw.util.StringUtil;
+import org.complitex.dictionary.util.StringUtil;
 import org.complitex.osznconnection.file.calculation.adapter.AccountNotFoundException;
 import org.complitex.osznconnection.file.entity.BenefitDBF;
 import org.complitex.osznconnection.file.entity.RequestFile.TYPE;

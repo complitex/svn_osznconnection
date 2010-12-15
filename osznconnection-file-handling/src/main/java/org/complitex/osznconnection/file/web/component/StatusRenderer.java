@@ -6,7 +6,7 @@ package org.complitex.osznconnection.file.web.component;
 
 import org.apache.wicket.Session;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
-import org.complitex.dictionaryfw.util.EjbBeanLocator;
+import org.complitex.dictionary.util.EjbBeanLocator;
 import org.complitex.osznconnection.file.entity.RequestStatus;
 import org.complitex.osznconnection.file.service.StatusRenderService;
 

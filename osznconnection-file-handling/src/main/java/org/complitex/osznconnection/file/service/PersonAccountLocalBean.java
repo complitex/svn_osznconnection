@@ -4,8 +4,8 @@
  */
 package org.complitex.osznconnection.file.service;
 
-import org.complitex.dictionaryfw.mybatis.Transactional;
-import org.complitex.dictionaryfw.service.AbstractBean;
+import org.complitex.dictionary.mybatis.Transactional;
+import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.osznconnection.file.entity.Payment;
 import org.complitex.osznconnection.file.entity.PaymentDBF;
 import org.complitex.osznconnection.file.entity.PersonAccount;

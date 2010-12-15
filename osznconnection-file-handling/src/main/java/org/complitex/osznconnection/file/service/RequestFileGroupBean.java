@@ -1,6 +1,6 @@
 package org.complitex.osznconnection.file.service;
 
-import org.complitex.dictionaryfw.service.AbstractBean;
+import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.osznconnection.file.entity.RequestFileGroup;
 import org.complitex.osznconnection.file.entity.RequestFileGroupFilter;
 
@@ -8,7 +8,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import java.util.HashMap;
 import java.util.List;
-import org.complitex.dictionaryfw.mybatis.Transactional;
+import org.complitex.dictionary.mybatis.Transactional;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru

@@ -1,6 +1,6 @@
 package org.complitex.osznconnection.file;
 
-import org.complitex.dictionaryfw.service.LogManager;
+import org.complitex.dictionary.service.LogManager;
 import org.complitex.osznconnection.file.entity.RequestFileGroup;
 import org.complitex.osznconnection.file.web.GroupList;
 

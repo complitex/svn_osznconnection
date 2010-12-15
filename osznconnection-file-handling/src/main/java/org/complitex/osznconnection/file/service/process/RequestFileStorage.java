@@ -9,7 +9,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.List;
-import org.complitex.dictionaryfw.util.EjbBeanLocator;
+import org.complitex.dictionary.util.EjbBeanLocator;
 import org.complitex.osznconnection.file.service.ConfigBean;
 
 /**

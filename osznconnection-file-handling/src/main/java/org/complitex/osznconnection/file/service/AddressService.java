@@ -4,10 +4,10 @@
  */
 package org.complitex.osznconnection.file.service;
 
-import org.complitex.dictionaryfw.entity.DomainObject;
-import org.complitex.dictionaryfw.mybatis.Transactional;
-import org.complitex.dictionaryfw.service.AbstractBean;
-import org.complitex.dictionaryfw.strategy.StrategyFactory;
+import org.complitex.dictionary.entity.DomainObject;
+import org.complitex.dictionary.mybatis.Transactional;
+import org.complitex.dictionary.service.AbstractBean;
+import org.complitex.dictionary.strategy.StrategyFactory;
 import org.complitex.osznconnection.file.calculation.adapter.ICalculationCenterAdapter;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.organization.strategy.OrganizationStrategy;
@@ -16,10 +16,10 @@ import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import org.complitex.dictionaryfw.strategy.Strategy;
+import org.complitex.dictionary.strategy.Strategy;
 import org.complitex.osznconnection.file.service.exception.DublicateCorrectionException;
-import org.complitex.osznconnection.information.strategy.building.entity.Building;
-import org.complitex.osznconnection.information.strategy.street.StreetStrategy;
+import org.complitex.address.strategy.building.entity.Building;
+import org.complitex.address.strategy.street.StreetStrategy;
 
 /**
  * Класс разрешает адрес.

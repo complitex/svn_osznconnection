@@ -6,7 +6,7 @@ package org.complitex.osznconnection.file.web.pages.util;
 
 import java.util.Locale;
 import org.apache.wicket.util.string.Strings;
-import org.complitex.dictionaryfw.util.ResourceUtil;
+import org.complitex.dictionary.util.ResourceUtil;
 
 /**
  *

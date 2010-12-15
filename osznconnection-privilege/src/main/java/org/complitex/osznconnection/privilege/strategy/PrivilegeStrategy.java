@@ -11,12 +11,12 @@ import java.util.Map;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import org.apache.wicket.util.string.Strings;
-import org.complitex.dictionaryfw.entity.DomainObject;
-import org.complitex.dictionaryfw.entity.example.AttributeExample;
-import org.complitex.dictionaryfw.entity.example.DomainObjectExample;
-import org.complitex.dictionaryfw.service.StringCultureBean;
-import org.complitex.dictionaryfw.util.ResourceUtil;
-import org.complitex.osznconnection.commons.strategy.AbstractStrategy;
+import org.complitex.dictionary.entity.DomainObject;
+import org.complitex.dictionary.entity.example.AttributeExample;
+import org.complitex.dictionary.entity.example.DomainObjectExample;
+import org.complitex.dictionary.service.StringCultureBean;
+import org.complitex.dictionary.util.ResourceUtil;
+import org.complitex.template.strategy.AbstractStrategy;
 
 /**
  *

@@ -10,8 +10,8 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.complitex.osznconnection.commons.web.security.SecurityRole;
-import org.complitex.osznconnection.commons.web.template.FormTemplatePage;
+import org.complitex.template.web.security.SecurityRole;
+import org.complitex.template.web.template.FormTemplatePage;
 import org.complitex.osznconnection.file.entity.Config;
 import org.complitex.osznconnection.file.service.ConfigBean;
 

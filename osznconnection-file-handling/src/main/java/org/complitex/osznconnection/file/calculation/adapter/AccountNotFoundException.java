@@ -1,6 +1,6 @@
 package org.complitex.osznconnection.file.calculation.adapter;
 
-import org.complitex.dictionaryfw.service.AbstractException;
+import org.complitex.dictionary.service.AbstractException;
 import org.complitex.osznconnection.file.entity.AbstractRequest;
 
 import java.util.List;

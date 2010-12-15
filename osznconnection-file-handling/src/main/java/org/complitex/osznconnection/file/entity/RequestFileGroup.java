@@ -1,8 +1,8 @@
 package org.complitex.osznconnection.file.entity;
 
-import org.complitex.dictionaryfw.entity.ILoggable;
-import org.complitex.dictionaryfw.entity.LogChangeList;
-import org.complitex.dictionaryfw.util.DateUtil;
+import org.complitex.dictionary.entity.ILoggable;
+import org.complitex.dictionary.entity.LogChangeList;
+import org.complitex.dictionary.util.DateUtil;
 
 import java.io.File;
 import java.util.ArrayList;
