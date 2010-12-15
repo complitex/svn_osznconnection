@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.complitex.osznconnection</groupId>
         <artifactId>osznconnection</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>2.0-SNAPSHOT</version>
     </parent>
     <groupId>org.complitex.osznconnection</groupId>
     <artifactId>osznconnection-web</artifactId>
@@ -12,32 +12,32 @@
     <name>osznconnection web</name>
     <dependencies>
         <dependency>
-            <groupId>org.complitex.framework</groupId>
-            <artifactId>dictionary-framework</artifactId>
+            <groupId>org.complitex</groupId>
+            <artifactId>complitex-dictionary</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.complitex.osznconnection</groupId>
-            <artifactId>osznconnection-resources-common</artifactId>
+            <groupId>org.complitex</groupId>
+            <artifactId>complitex-resources</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.complitex.osznconnection</groupId>
-            <artifactId>osznconnection-resources-images</artifactId>
+            <groupId>org.complitex</groupId>
+            <artifactId>complitex-images</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.complitex.osznconnection</groupId>
-            <artifactId>osznconnection-commons</artifactId>
+            <groupId>org.complitex</groupId>
+            <artifactId>complitex-template</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.complitex.osznconnection</groupId>
-            <artifactId>osznconnection-information</artifactId>
+            <groupId>org.complitex</groupId>
+            <artifactId>complitex-address</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.complitex.osznconnection</groupId>
-            <artifactId>osznconnection-admin</artifactId>
+            <groupId>org.complitex</groupId>
+            <artifactId>complitex-admin</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.complitex.osznconnection</groupId>
-            <artifactId>osznconnection-logging</artifactId>
+            <groupId>org.complitex</groupId>
+            <artifactId>complitex-logging</artifactId>
         </dependency>
         <dependency>
             <groupId>org.complitex.osznconnection</groupId>
