@@ -4056,11 +4056,11 @@ insert into `building_correction` (`object_id`, `parent_id`, `correction`, `corr
 insert into `building_correction` (`object_id`, `parent_id`, `correction`, `correction_corp`, `organization_id`, `organization_code`) values('11472','69','159',NULL,@organization_id,'1');
 insert into `building_correction` (`object_id`, `parent_id`, `correction`, `correction_corp`, `organization_id`, `organization_code`) values('12177','69','159Рђ',NULL,@organization_id,'1');
 insert into `building_correction` (`object_id`, `parent_id`, `correction`, `correction_corp`, `organization_id`, `organization_code`) values('12178','69','163Рђ',NULL,@organization_id,'1');
-insert into `building_correction` (`object_id`, `parent_id`, `correction`, `correction_corp`, `organization_id`, `organization_code`) values('12179','69','165',NULL,@organization_id,'1');
-insert into `building_correction` (`object_id`, `parent_id`, `correction`, `correction_corp`, `organization_id`, `organization_code`) values('11471','69','165',NULL,@organization_id,'1');
-insert into `building_correction` (`object_id`, `parent_id`, `correction`, `correction_corp`, `organization_id`, `organization_code`) values('10811','69','165',NULL,@organization_id,'1');
-insert into `building_correction` (`object_id`, `parent_id`, `correction`, `correction_corp`, `organization_id`, `organization_code`) values('11470','69','165',NULL,@organization_id,'1');
-insert into `building_correction` (`object_id`, `parent_id`, `correction`, `correction_corp`, `organization_id`, `organization_code`) values('12864','69','165',NULL,@organization_id,'1');
+insert into `building_correction` (`object_id`, `parent_id`, `correction`, `correction_corp`, `organization_id`, `organization_code`) values('12179','69','165','1',@organization_id,'1');
+insert into `building_correction` (`object_id`, `parent_id`, `correction`, `correction_corp`, `organization_id`, `organization_code`) values('11471','69','165','2',@organization_id,'1');
+insert into `building_correction` (`object_id`, `parent_id`, `correction`, `correction_corp`, `organization_id`, `organization_code`) values('10811','69','165','3',@organization_id,'1');
+insert into `building_correction` (`object_id`, `parent_id`, `correction`, `correction_corp`, `organization_id`, `organization_code`) values('11470','69','165','4',@organization_id,'1');
+insert into `building_correction` (`object_id`, `parent_id`, `correction`, `correction_corp`, `organization_id`, `organization_code`) values('12864','69','165','5',@organization_id,'1');
 insert into `building_correction` (`object_id`, `parent_id`, `correction`, `correction_corp`, `organization_id`, `organization_code`) values('13412','69','167',NULL,@organization_id,'1');
 insert into `building_correction` (`object_id`, `parent_id`, `correction`, `correction_corp`, `organization_id`, `organization_code`) values('13411','69','167Рђ',NULL,@organization_id,'1');
 insert into `building_correction` (`object_id`, `parent_id`, `correction`, `correction_corp`, `organization_id`, `organization_code`) values('12863','69','169Рђ',NULL,@organization_id,'1');
