@@ -11,9 +11,38 @@
     <groupId>org.complitex.osznconnection</groupId>
     <artifactId>osznconnection-file-handling</artifactId>
 
-    <name>osznconnection-file-handling</name>
+    <name>File handling</name>
 
     <dependencies>
+        <dependency>
+            <groupId>org.complitex</groupId>
+            <artifactId>complitex-template</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.complitex</groupId>
+            <artifactId>complitex-address</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.complitex</groupId>
+            <artifactId>complitex-resources</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.complitex.osznconnection</groupId>
+            <artifactId>osznconnection-organization</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.complitex.osznconnection</groupId>
+            <artifactId>osznconnection-ownership</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.complitex.osznconnection</groupId>
+            <artifactId>osznconnection-privilege</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.complitex</groupId>
+            <artifactId>complitex-dictionary</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket</artifactId>
@@ -41,7 +70,7 @@
 
         <dependency>
             <groupId>javax</groupId>
-            <artifactId>javaee-web-api</artifactId>
+            <artifactId>javaee-api</artifactId>
         </dependency>
 
         <dependency>
@@ -57,41 +86,6 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.complitex</groupId>
-            <artifactId>complitex-template</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.complitex</groupId>
-            <artifactId>complitex-address</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.complitex</groupId>
-            <artifactId>complitex-resources</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.complitex.osznconnection</groupId>
-            <artifactId>osznconnection-organization</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.complitex.osznconnection</groupId>
-            <artifactId>osznconnection-ownership</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.complitex.osznconnection</groupId>
-            <artifactId>osznconnection-privilege</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.complitex</groupId>
-            <artifactId>complitex-dictionary</artifactId>
         </dependency>
 
         <dependency>
@@ -113,13 +107,15 @@
 
         <!-- Oracle driver -->
         <dependency>
-            <groupId>oracle</groupId>
+            <groupId>com.oracle</groupId>
             <artifactId>ojdbc14_g</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
-            <groupId>oracle</groupId>
+            <groupId>com.oracle</groupId>
             <artifactId>orai18n</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>
