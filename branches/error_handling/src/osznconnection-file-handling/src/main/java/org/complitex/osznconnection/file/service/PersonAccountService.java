@@ -7,8 +7,8 @@ package org.complitex.osznconnection.file.service;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionaryfw.mybatis.Transactional;
 import org.complitex.dictionaryfw.service.AbstractBean;
-import org.complitex.osznconnection.file.calculation.adapter.AccountNotFoundException;
 import org.complitex.osznconnection.file.calculation.adapter.ICalculationCenterAdapter;
+import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
 import org.complitex.osznconnection.file.calculation.service.CalculationCenterBean;
 import org.complitex.osznconnection.file.entity.AccountDetail;
 import org.complitex.osznconnection.file.entity.Payment;
@@ -18,8 +18,8 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import java.util.Collections;
 import java.util.List;
+import org.complitex.osznconnection.file.entity.RequestFileGroup;
 
 /**
  * Разрешает номер л/c
@@ -30,15 +30,14 @@ public class PersonAccountService extends AbstractBean {
 
     @EJB(beanName = "PersonAccountLocalBean")
     private PersonAccountLocalBean personAccountLocalBean;
-
     @EJB(beanName = "BenefitBean")
     private BenefitBean benefitBean;
-
     @EJB(beanName = "PaymentBean")
     private PaymentBean paymentBean;
-
     @EJB(beanName = "CalculationCenterBean")
     private CalculationCenterBean calculationCenterBean;
+    @EJB
+    private RequestFileGroupBean requestFileGroupBean;
 
     /**
      * Попытаться разрешить номер личного счета локально, т.е. из локальной таблицы person_account
@@ -67,7 +66,7 @@ public class PersonAccountService extends AbstractBean {
      * @param adapter
      */
     @Transactional
-    public void resolveRemoteAccount(Payment payment, long calculationCenterId, ICalculationCenterAdapter adapter) {
+    public void resolveRemoteAccount(Payment payment, long calculationCenterId, ICalculationCenterAdapter adapter) throws DBException {
         adapter.acquirePersonAccount(payment);
         if (payment.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED) {
             benefitBean.updateAccountNumber(payment.getId(), payment.getAccountNumber());
@@ -86,6 +85,12 @@ public class PersonAccountService extends AbstractBean {
         payment.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
         benefitBean.updateAccountNumber(payment.getId(), accountNumber);
         paymentBean.update(payment);
+
+        long benefitFileId = requestFileGroupBean.getBenefitFileId(payment.getRequestFileId());
+        long paymentFileId = payment.getRequestFileId();
+        if (benefitBean.isBenefitFileBound(benefitFileId) && paymentBean.isPaymentFileBound(paymentFileId)) {
+            requestFileGroupBean.updateStatus(benefitFileId, RequestFileGroup.STATUS.BOUND);
+        }
     }
 
     /**
@@ -97,11 +102,7 @@ public class PersonAccountService extends AbstractBean {
      */
     @Transactional
     @TransactionAttribute(TransactionAttributeType.NEVER)
-    public List<AccountDetail> acquireAccountCorrectionDetails(Payment payment) {
-        try {
-            return calculationCenterBean.getDefaultCalculationCenterAdapter().acquireAccountCorrectionDetails(payment);
-        } catch (AccountNotFoundException e) {
-            return Collections.emptyList();
-        }
+    public List<AccountDetail> acquireAccountCorrectionDetails(Payment payment) throws DBException {
+        return calculationCenterBean.getDefaultCalculationCenterAdapter().acquireAccountCorrectionDetails(payment);
     }
 }

@@ -54,7 +54,7 @@ public class PaymentAndBenefitDataHandler implements TypeHandler {
             paymentAndBenefitData.setUserCount(rs.getInt("usr_cnt"));
             paymentAndBenefitData.setPercent(rs.getDouble("pct"));
             paymentAndBenefitData.setCharge(rs.getDouble("charge"));
-            paymentAndBenefitData.setNormCrarge(rs.getDouble("norm_charge"));
+            paymentAndBenefitData.setNormCharge(rs.getDouble("norm_charge"));
             paymentAndBenefitData.setSaldo(rs.getDouble("saldo_in"));
             paymentAndBenefitData.setReducedArea(rs.getDouble("ts"));
             paymentAndBenefitData.setRoomCount(rs.getInt("rc"));

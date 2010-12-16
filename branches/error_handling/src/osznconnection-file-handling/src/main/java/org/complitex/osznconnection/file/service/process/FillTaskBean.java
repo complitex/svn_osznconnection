@@ -5,8 +5,8 @@ import org.complitex.dictionaryfw.entity.Log;
 import org.complitex.dictionaryfw.service.executor.ExecuteException;
 import org.complitex.dictionaryfw.service.executor.ITaskBean;
 import org.complitex.osznconnection.file.Module;
-import org.complitex.osznconnection.file.calculation.adapter.AccountNotFoundException;
 import org.complitex.osznconnection.file.calculation.adapter.ICalculationCenterAdapter;
+import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
 import org.complitex.osznconnection.file.calculation.service.CalculationCenterBean;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.service.*;
@@ -33,22 +33,16 @@ import java.util.List;
 public class FillTaskBean implements ITaskBean<RequestFileGroup> {
 
     private static final Logger log = LoggerFactory.getLogger(FillTaskBean.class);
-
     @Resource
     private UserTransaction userTransaction;
-
     @EJB(beanName = "ConfigBean")
     protected ConfigBean configBean;
-
     @EJB(beanName = "PaymentBean")
     private PaymentBean paymentBean;
-
     @EJB(beanName = "BenefitBean")
     private BenefitBean benefitBean;
-
     @EJB(beanName = "CalculationCenterBean")
     private CalculationCenterBean calculationCenterBean;
-
     @EJB(beanName = "RequestFileGroupBean")
     private RequestFileGroupBean requestFileGroupBean;
 
@@ -62,10 +56,18 @@ public class FillTaskBean implements ITaskBean<RequestFileGroup> {
         benefitBean.clearBeforeProcessing(group.getBenefitFile().getId());
 
         //обработка файла payment
-        processPayment(group.getPaymentFile());
+        try {
+            processPayment(group.getPaymentFile());
+        } catch (DBException e) {
+            throw new RuntimeException(e);
+        }
 
         //обработка файла benefit
-        processBenefit(group.getBenefitFile());
+        try {
+            processBenefit(group.getBenefitFile());
+        } catch (DBException e) {
+            throw new RuntimeException(e);
+        }
 
         group.setStatus(RequestFileGroup.STATUS.FILLED);
         requestFileGroupBean.save(group);
@@ -107,18 +109,13 @@ public class FillTaskBean implements ITaskBean<RequestFileGroup> {
      * @param adapter Адаптер центра начислений
      * @param calculationCenterId Центр начислений
      */
-    private void process(Payment payment, ICalculationCenterAdapter adapter, long calculationCenterId) {
+    private void process(Payment payment, ICalculationCenterAdapter adapter, long calculationCenterId) throws DBException {
         if (RequestStatus.notBoundStatuses().contains(payment.getStatus())) {
             return;
         }
 
         List<Benefit> benefits = benefitBean.findByOSZ(payment);
-
-        try {
-            adapter.processPaymentAndBenefit(payment, benefits, calculationCenterId);
-        } catch (AccountNotFoundException e) {
-            payment.setStatus(RequestStatus.ACCOUNT_NUMBER_NOT_FOUND);
-        }
+        adapter.processPaymentAndBenefit(payment, benefits, calculationCenterId);
 
         paymentBean.update(payment);
         for (Benefit benefit : benefits) {
@@ -131,7 +128,7 @@ public class FillTaskBean implements ITaskBean<RequestFileGroup> {
      * @param paymentFile Файл запроса начислений
      * @throws FillException Ошибка обработки
      */
-    private void processPayment(RequestFile paymentFile) throws FillException {
+    private void processPayment(RequestFile paymentFile) throws FillException, DBException {
         //получаем информацию о текущем центре начисления
         Long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterInfo().getCalculationCenterId();
         ICalculationCenterAdapter adapter = calculationCenterBean.getDefaultCalculationCenterAdapter();
@@ -191,7 +188,7 @@ public class FillTaskBean implements ITaskBean<RequestFileGroup> {
      * @param benefitFile Файл запроса льгот
      * @throws FillException Ошибка обработки
      */
-    private void processBenefit(RequestFile benefitFile) throws FillException {
+    private void processBenefit(RequestFile benefitFile) throws FillException, DBException {
         //получаем информацию о текущем центре начисления
         Long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterInfo().getCalculationCenterId();
         ICalculationCenterAdapter adapter = calculationCenterBean.getDefaultCalculationCenterAdapter();
@@ -202,13 +199,7 @@ public class FillTaskBean implements ITaskBean<RequestFileGroup> {
             if (benefits != null && !benefits.isEmpty()) {
                 Date dat1 = benefitBean.findDat1(accountNumber, benefitFile.getId());
                 if (dat1 != null) {
-                    try {
-                        adapter.processBenefit(dat1, benefits, calculationCenterId);
-                    } catch (AccountNotFoundException e) {
-                        for (Benefit benefit : benefits) {
-                            benefit.setStatus(RequestStatus.ACCOUNT_NUMBER_NOT_FOUND);
-                        }
-                    }
+                    adapter.processBenefit(dat1, benefits, calculationCenterId);
                 } else {
                     for (Benefit benefit : benefits) {
                         benefit.setStatus(RequestStatus.PROCESSED);

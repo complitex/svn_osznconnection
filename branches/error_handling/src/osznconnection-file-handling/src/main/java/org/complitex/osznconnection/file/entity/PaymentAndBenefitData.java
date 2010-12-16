@@ -16,7 +16,7 @@ public class PaymentAndBenefitData implements Serializable {
     private Integer userCount;
     private Double percent;
     private Double charge;
-    private Double normCrarge;
+    private Double normCharge;
     private Double saldo;
     private Double reducedArea;
     private Integer roomCount;
@@ -39,12 +39,12 @@ public class PaymentAndBenefitData implements Serializable {
         this.lodgerCount = lodgerCount;
     }
 
-    public Double getNormCrarge() {
-        return normCrarge;
+    public Double getNormCharge() {
+        return normCharge;
     }
 
-    public void setNormCrarge(Double normCrarge) {
-        this.normCrarge = normCrarge;
+    public void setNormCharge(Double normCharge) {
+        this.normCharge = normCharge;
     }
 
     public String getOwnership() {
@@ -101,5 +101,12 @@ public class PaymentAndBenefitData implements Serializable {
 
     public void setUserCount(Integer userCount) {
         this.userCount = userCount;
+    }
+
+    @Override
+    public String toString() {
+        return "Lodger count: " + lodgerCount + ", user count: " + userCount + ", tarif: " + tarif + ", saldo: " + saldo + ", room count: " + roomCount
+                + ", reduced area: " + reducedArea + ", percent: " + percent + ", ownership: " + ownership + ", norm charge: " + normCharge +
+                ", charge: " + charge;
     }
 }

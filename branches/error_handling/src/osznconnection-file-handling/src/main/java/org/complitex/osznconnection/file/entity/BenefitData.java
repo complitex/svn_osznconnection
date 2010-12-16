@@ -1,6 +1,7 @@
 package org.complitex.osznconnection.file.entity;
 
 import java.io.Serializable;
+import org.apache.wicket.util.string.Strings;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -115,6 +116,11 @@ public class BenefitData implements Serializable {
 
     public void setCalcCenterId(Long calcCenterId) {
         this.calcCenterId = calcCenterId;
+    }
+
+    public boolean isEmpty() {
+        return Strings.isEmpty(inn) && Strings.isEmpty(firstName) && Strings.isEmpty(middleName)
+                && Strings.isEmpty(lastName) && Strings.isEmpty(passportSerial) && Strings.isEmpty(passportNumber);
     }
 
     @Override
