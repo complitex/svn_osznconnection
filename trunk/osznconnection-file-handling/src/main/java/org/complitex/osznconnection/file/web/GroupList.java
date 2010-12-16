@@ -306,7 +306,7 @@ public class GroupList extends TemplatePage {
                 String dots = "";
                 if (group.isProcessing()){
                     if (processManagerBean.isProcessing()){
-                        dots += StringUtil.getDots(timerIndex%7);
+                        dots += StringUtil.getDots(timerIndex%5);
                     }
                 }
 
