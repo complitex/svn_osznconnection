@@ -6,12 +6,11 @@ package org.complitex.osznconnection.file.service;
 
 import org.complitex.dictionaryfw.mybatis.Transactional;
 import org.complitex.dictionaryfw.service.AbstractBean;
-import org.complitex.osznconnection.file.calculation.adapter.AccountNotFoundException;
 import org.complitex.osznconnection.file.calculation.adapter.ICalculationCenterAdapter;
+import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
 import org.complitex.osznconnection.file.calculation.service.CalculationCenterBean;
 import org.complitex.osznconnection.file.entity.AccountDetail;
 import org.complitex.osznconnection.file.entity.Payment;
-import org.complitex.osznconnection.file.entity.RequestStatus;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -28,7 +27,6 @@ public class PaymentLookupBean extends AbstractBean {
 
     @EJB(beanName = "AddressService")
     private AddressService addressService;
-
     @EJB(beanName = "CalculationCenterBean")
     private CalculationCenterBean calculationCenterBean;
 
@@ -54,23 +52,8 @@ public class PaymentLookupBean extends AbstractBean {
      */
     @Transactional
     @TransactionAttribute(TransactionAttributeType.NEVER)
-    public List<AccountDetail> getAccounts(Payment payment) {
+    public List<AccountDetail> getAccounts(Payment payment) throws DBException {
         ICalculationCenterAdapter adapter = calculationCenterBean.getDefaultCalculationCenterAdapter();
-
-        List<AccountDetail> accounts = null;
-
-        try {
-            accounts = adapter.acquireAccountCorrectionDetails(payment);
-        } catch (AccountNotFoundException e) {
-            //todo add log
-        }
-
-        if (accounts == null || accounts.isEmpty()) {
-            payment.setStatus(RequestStatus.ACCOUNT_NUMBER_NOT_FOUND);
-        } else {
-            payment.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
-        }
-
-        return accounts;
+        return adapter.acquireAccountCorrectionDetails(payment);
     }
 }

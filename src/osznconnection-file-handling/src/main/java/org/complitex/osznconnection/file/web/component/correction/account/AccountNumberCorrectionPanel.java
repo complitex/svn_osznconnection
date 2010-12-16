@@ -17,6 +17,7 @@ import org.complitex.dictionaryfw.util.ResourceUtil;
 import org.complitex.osznconnection.file.entity.AccountDetail;
 
 import java.util.List;
+import org.complitex.dictionaryfw.util.StringUtil;
 
 /**
  * Панель для показа возможных вариантов выбора л/c по детальной информации,
@@ -24,20 +25,19 @@ import java.util.List;
  * @author Artem
  */
 public abstract class AccountNumberCorrectionPanel extends Panel {
-    private static final String RESOURCE_BUNDLE = AccountNumberCorrectionPanel.class.getName();
 
+    private static final String RESOURCE_BUNDLE = AccountNumberCorrectionPanel.class.getName();
     private IModel<List<? extends AccountDetail>> accountDetailsModel;
+    private IModel<AccountDetail> model;
 
     public AccountNumberCorrectionPanel(String id, IModel<List<? extends AccountDetail>> accountDetailsModel) {
         super(id);
-
         this.accountDetailsModel = accountDetailsModel;
-
         init();
     }
 
     private void init() {
-        final IModel<AccountDetail> model = new Model<AccountDetail>();
+        model = new Model<AccountDetail>();
         IChoiceRenderer<AccountDetail> renderer = new IChoiceRenderer<AccountDetail>() {
 
             @Override
@@ -51,8 +51,13 @@ public abstract class AccountNumberCorrectionPanel extends Panel {
             }
         };
 
-        RadioChoice<AccountDetail> accounts = new RadioChoice<AccountDetail>("accounts", model,
-                accountDetailsModel, renderer);
+        RadioChoice<AccountDetail> accounts = new RadioChoice<AccountDetail>("accounts", model, accountDetailsModel, renderer) {
+
+            @Override
+            protected boolean isDisabled(AccountDetail object, int index, String selected) {
+                return Strings.isEmpty(object.getAccountNumber());
+            }
+        };
         accounts.add(new AjaxFormChoiceComponentUpdatingBehavior() {
 
             @Override
@@ -64,15 +69,12 @@ public abstract class AccountNumberCorrectionPanel extends Panel {
     }
 
     public static String displayAccountDetail(AccountDetail accountDetail) {
-        StringBuilder displayValueBuilder = new StringBuilder().append(accountDetail.getAccountNumber());
-
-        if (!Strings.isEmpty(accountDetail.getOwnerName())) {
-            displayValueBuilder.append(", ").append(accountDetail.getOwnerName());
+        String display = StringUtil.valueOf(accountDetail.getAccountNumber()) + " ";
+        display += StringUtil.valueOf(accountDetail.getOwnerName()) + " ";
+        if (accountDetail.getOwnerINN() != null) {
+            display += getStringResource("INN") + " : " + StringUtil.valueOf(accountDetail.getOwnerINN());
         }
-        if (!Strings.isEmpty(accountDetail.getOwnerINN())) {
-            displayValueBuilder.append(", ").append(getStringResource("INN")).append(" : ").append(accountDetail.getOwnerINN());
-        }
-        return displayValueBuilder.toString();
+        return display;
     }
 
     private static String getStringResource(String resourceKey) {
@@ -83,5 +85,9 @@ public abstract class AccountNumberCorrectionPanel extends Panel {
 
     public IModel<List<? extends AccountDetail>> getAccountDetailsModel() {
         return accountDetailsModel;
+    }
+
+    public void clear(){
+        model.setObject(null);
     }
 }

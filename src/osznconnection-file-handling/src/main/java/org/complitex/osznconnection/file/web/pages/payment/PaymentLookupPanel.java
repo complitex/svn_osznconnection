@@ -41,6 +41,7 @@ import javax.ejb.EJB;
 import java.util.List;
 import java.util.Map;
 import org.complitex.dictionaryfw.util.CloneUtil;
+import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
 import org.complitex.osznconnection.file.service.StatusRenderService;
 import org.complitex.osznconnection.information.strategy.street.StreetStrategy;
 
@@ -51,16 +52,12 @@ import org.complitex.osznconnection.information.strategy.street.StreetStrategy;
 public abstract class PaymentLookupPanel extends Panel {
 
     private static final Logger log = LoggerFactory.getLogger(PaymentLookupPanel.class);
-
     @EJB(name = "StrategyFactory")
     private StrategyFactory strategyFactory;
-
     @EJB(name = "PaymentLookupBean")
     private PaymentLookupBean paymentLookupBean;
-
     @EJB(name = "StatusRenderService")
     private StatusRenderService statusRenderService;
-
     private IModel<String> accountInfoModel;
     private IModel<String> apartmentModel;
     private IModel<String> ownNumSrModel;
@@ -137,37 +134,38 @@ public abstract class PaymentLookupPanel extends Panel {
                     paymentLookupBean.resolveOutgoingAddress(payment);
 
                     if (payment.getStatus() == RequestStatus.ACCOUNT_NUMBER_NOT_FOUND) {
-                        List<AccountDetail> accountList = paymentLookupBean.getAccounts(payment);
+                        try {
+                            List<AccountDetail> accountList = paymentLookupBean.getAccounts(payment);
 
-                        if (payment.getStatus() == RequestStatus.ACCOUNT_NUMBER_NOT_FOUND) {
-                            accountInfoModel.setObject(null);
-                            accountModel.setObject(null);
-
-                            error(statusRenderService.displayStatus(RequestStatus.ACCOUNT_NUMBER_NOT_FOUND, getLocale()));
-
-                            target.addComponent(messages);
-                            target.addComponent(accountInfo);
-                        } else {
-                            if (accountList.size() == 1) {
-                                accountModel.setObject(accountList.get(0));
-                                accountInfoModel.setObject(AccountNumberCorrectionPanel.displayAccountDetail(accountList.get(0)));
-
+                            if (accountList == null || accountList.isEmpty()) {
+                                error(statusRenderService.displayStatus(payment.getStatus(), getLocale()));
+                                accountInfoModel.setObject(null);
+                                accountModel.setObject(null);
+                                target.addComponent(messages);
                                 target.addComponent(accountInfo);
+                            } else {
+                                if (accountList.size() == 1) {
+                                    accountModel.setObject(accountList.get(0));
+                                    accountInfoModel.setObject(AccountNumberCorrectionPanel.displayAccountDetail(accountList.get(0)));
 
-                                if (accountNumberCorrectionPanel.isVisible()) {
-                                    accountNumberCorrectionPanel.setVisible(false);
+                                    target.addComponent(accountInfo);
 
+                                    if (accountNumberCorrectionPanel.isVisible()) {
+                                        accountNumberCorrectionPanel.setVisible(false);
+                                        target.addComponent(accordion);
+                                    }
+                                } else {
+                                    accountModel.setObject(null);
+                                    accountInfoModel.setObject(null);
+                                    accountsModel.setObject(accountList);
+                                    accountNumberCorrectionPanel.setVisible(true);
+
+                                    target.addComponent(accountInfo);
                                     target.addComponent(accordion);
                                 }
-                            } else {
-                                accountModel.setObject(null);
-                                accountInfoModel.setObject(null);
-                                accountsModel.setObject(accountList);
-                                accountNumberCorrectionPanel.setVisible(true);
-
-                                target.addComponent(accountInfo);
-                                target.addComponent(accordion);
                             }
+                        } catch (DBException e) {
+                            error(getString("db_error"));
                         }
                     } else {
                         error(statusRenderService.displayStatus(payment.getStatus(), getLocale()));
@@ -374,6 +372,7 @@ public abstract class PaymentLookupPanel extends Panel {
         if (accountNumberCorrectionPanel.isVisible()) {
             accountNumberCorrectionPanel.setVisible(false);
         }
+        accountNumberCorrectionPanel.clear();
 
         //lookup by OWN_NUM_SR
         ownNumSrModel.setObject(null);

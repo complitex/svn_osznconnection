@@ -14,6 +14,7 @@ import org.complitex.osznconnection.file.entity.Benefit;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Date;
+import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
 import org.complitex.osznconnection.file.entity.BenefitDBF;
 
 /**
@@ -69,8 +70,8 @@ public class ProcessBenefitTest {
         b.setOrganizationId(1L);
         try {
             adapter.processBenefit(new Date(), Lists.newArrayList(b), 2);
-        } catch (AccountNotFoundException e) {
-            System.out.println("Account not found");
+        } catch (DBException e){
+            System.out.println("DB error.");
         }
         System.out.println("Status : " + b.getStatus());
     }

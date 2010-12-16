@@ -13,6 +13,7 @@ import org.complitex.osznconnection.file.entity.Payment;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Date;
+import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
 import org.complitex.osznconnection.file.entity.PaymentDBF;
 
 /**
@@ -50,51 +51,11 @@ public class AcquireAccountCorrectionDetailsTest {
             protected SqlSession sqlSession() {
                 return sqlSessionFactory.openSession(false);
             }
-//            @Override
-//            public List<AccountDetail> acquireAccountCorrectionDetails(Payment payment) {
-//                List<AccountDetail> accountCorrectionDetails = null;
-//                SqlSession session = null;
-//                try {
-//                    session = sqlSession();
-//
-//                    Map<String, Object> params = Maps.newHashMap();
-//                    String districtName = "ДЗЕРЖИНСКИЙ";
-//                    params.put("pDistrName", districtName);
-//                    params.put("pStSortName", "УЛ");
-//                    params.put("pStreetName", "АХСАРОВА");
-//                    params.put("pHouseNum", "23");
-//                    params.put("pHousePart", "");
-//                    params.put("pFlatNum", "240");
-//                    params.put("dat1", new Date());
-//
-//
-//
-//                    session.commit();
-//                } catch (Exception e) {
-//                    try {
-//                        if (session != null) {
-//                            session.rollback();
-//                        }
-//                    } catch (Exception exc) {
-//                        log.error("", exc);
-//                    }
-//                    log.error("", e);
-//                } finally {
-//                    try {
-//                        if (session != null) {
-//                            session.close();
-//                        }
-//                    } catch (Exception e) {
-//                        log.error("", e);
-//                    }
-//                }
-//                return accountCorrectionDetails;
-//            }
         };
         try {
             System.out.println(adapter.acquireAccountCorrectionDetails(newPayment()));
-        } catch (AccountNotFoundException e) {
-            System.out.println("Account not found");
+        } catch (DBException e) {
+            System.out.println("DB error.");
         }
     }
 
