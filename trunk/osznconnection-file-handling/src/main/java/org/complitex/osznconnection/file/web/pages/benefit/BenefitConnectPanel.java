@@ -24,7 +24,7 @@ import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.complitex.dictionary.util.StringUtil;
-import org.complitex.osznconnection.file.calculation.adapter.AccountNotFoundException;
+import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
 import org.complitex.osznconnection.file.entity.BenefitDBF;
 import org.complitex.osznconnection.file.entity.RequestFile.TYPE;
 import org.complitex.osznconnection.file.entity.RequestStatus;
@@ -46,13 +46,10 @@ import org.slf4j.LoggerFactory;
 public class BenefitConnectPanel extends Panel {
 
     private static final Logger log = LoggerFactory.getLogger(BenefitConnectPanel.class);
-
     @EJB(name = "BenefitBean")
     private BenefitBean benefitBean;
-
     @EJB(name = "StatusRenderService")
     private StatusRenderService statusRenderService;
-    
     @EJB(name = "WebWarningRenderer")
     private WebWarningRenderer webWarningRenderer;
 
@@ -61,15 +58,23 @@ public class BenefitConnectPanel extends Panel {
         private List<BenefitData> benefitData;
 
         protected List<BenefitData> load() {
+            List<BenefitData> data = null;
             try {
-                return Lists.newArrayList(benefitBean.getBenefitData(benefit));
-            } catch (AccountNotFoundException e) {
-                error(statusRenderService.displayStatus(RequestStatus.ACCOUNT_NUMBER_NOT_FOUND, getLocale()));
-            } catch (Exception e) {
-                log.error("", e);
-                error(getString("common_db_error"));
+                data = Lists.newArrayList(benefitBean.getBenefitData(benefit));
+            } catch (DBException e) {
+                error(getString("db_error"));
             }
-            return null;
+
+            switch (benefit.getStatus()) {
+                case ACCOUNT_NUMBER_NOT_FOUND:
+                    error(statusRenderService.displayStatus(RequestStatus.ACCOUNT_NUMBER_NOT_FOUND, getLocale()));
+                    break;
+                case INVALID_FORMAT:
+                    error(statusRenderService.displayStatus(RequestStatus.INVALID_FORMAT, getLocale()));
+                    break;
+            }
+
+            return data;
         }
 
         @Override
@@ -177,14 +182,14 @@ public class BenefitConnectPanel extends Panel {
             protected void populateItem(ListItem<BenefitData> item) {
                 BenefitData benefitData = item.getModelObject();
 
-                item.add(new Radio<BenefitData>("radio", item.getModel(), radioGroup));
+                item.add(new Radio<BenefitData>("radio", item.getModel(), radioGroup).setEnabled(!benefitData.isEmpty()));
                 item.add(new Label("firstName", StringUtil.valueOf(benefitData.getFirstName())));
                 item.add(new Label("lastName", StringUtil.valueOf(benefitData.getLastName())));
                 item.add(new Label("middleName", StringUtil.valueOf(benefitData.getMiddleName())));
-                item.add(new Label("inn", benefitData.getInn()));
+                item.add(new Label("inn", StringUtil.valueOf(benefitData.getInn())));
                 item.add(new Label("passport", StringUtil.valueOf(benefitData.getPassportSerial()) + " "
                         + StringUtil.valueOf(benefitData.getPassportNumber())));
-                item.add(new Label("orderFamily", StringUtil.valueOf(benefitData.getOrderFamily())));
+                item.add(new Label("orderFamily", benefitData.getOrderFamily()));
                 item.add(new Label("code", StringUtil.valueOf(benefitData.getCode())));
                 item.add(new Label("userCount", StringUtil.valueOf(benefitData.getUserCount())));
             }
@@ -197,17 +202,30 @@ public class BenefitConnectPanel extends Panel {
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 BenefitData selectedBenefitData = benefitDataModel.getObject();
                 if (validateBenefitData(selectedBenefitData)) {
-                    benefitBean.connectBenefit(benefit, selectedBenefitData, dataModel.getObject().size() > 1);
+                    try {
+                        benefitBean.connectBenefit(benefit, selectedBenefitData, dataModel.getObject().size() > 1);
 
-                    if (toUpdate != null) {
-                        for (MarkupContainer container : toUpdate) {
-                            target.addComponent(container);
+                        switch (benefit.getStatus()) {
+                            case ACCOUNT_NUMBER_NOT_FOUND:
+                                error(statusRenderService.displayStatus(RequestStatus.ACCOUNT_NUMBER_NOT_FOUND, getLocale()));
+                                break;
+                            case INVALID_FORMAT:
+                                error(statusRenderService.displayStatus(RequestStatus.INVALID_FORMAT, getLocale()));
+                                break;
+                            default:
+                                if (toUpdate != null) {
+                                    for (MarkupContainer container : toUpdate) {
+                                        target.addComponent(container);
+                                    }
+                                }
+                                closeDialog(target);
+                                return;
                         }
+                    } catch (DBException e) {
+                        error(getString("db_error"));
                     }
-                    closeDialog(target);
-                } else {
-                    target.addComponent(messages);
                 }
+                target.addComponent(messages);
             }
 
             @Override

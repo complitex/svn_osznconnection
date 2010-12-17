@@ -13,6 +13,7 @@ import org.complitex.osznconnection.file.entity.Payment;
 import javax.ejb.Local;
 import java.util.Date;
 import java.util.List;
+import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
 
 /**
  * Базовый интерфейс для реализаций адаптера взаимодействия с ЦН.
@@ -33,13 +34,13 @@ public interface ICalculationCenterAdapter {
 
     void prepareApartment(Payment payment, String apartment, String apartmentCode);
 
-    void acquirePersonAccount(Payment payment);
+    void acquirePersonAccount(Payment payment) throws DBException;
 
-    public List<AccountDetail> acquireAccountCorrectionDetails(Payment payment) throws AccountNotFoundException;
+    public List<AccountDetail> acquireAccountCorrectionDetails(Payment payment) throws DBException;
 
-    public void processPaymentAndBenefit(Payment payment, List<Benefit> benefits, long calculationCenterId) throws AccountNotFoundException;
+    public void processPaymentAndBenefit(Payment payment, List<Benefit> benefits, long calculationCenterId) throws DBException;
 
-    public void processBenefit(Date dat1, List<Benefit> benefits, long calculationCenterId) throws AccountNotFoundException;
+    public void processBenefit(Date dat1, List<Benefit> benefits, long calculationCenterId) throws DBException;
 
-    public Collection<BenefitData> getBenefitData(String accountNumber, Date dat1) throws AccountNotFoundException;
+    public Collection<BenefitData> getBenefitData(Benefit benefit, Date dat1) throws DBException;
 }
