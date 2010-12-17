@@ -35,3 +35,5 @@ update `log` set `model` = 'org.complitex.dictionary.entity.DomainObject#privile
   where `model` = 'org.complitex.dictionaryfw.entity.DomainObject#privilege';
 update `log` set `model` = 'org.complitex.dictionary.entity.DomainObject#district'
   where `model` = 'org.complitex.dictionaryfw.entity.DomainObject#district';
+
+INSERT INTO `update` (`version`) VALUE ('20101216_452_0.0.16');
