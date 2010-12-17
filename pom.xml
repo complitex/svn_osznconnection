@@ -9,6 +9,10 @@
         <relativePath>../complitex/pom.xml</relativePath>
     </parent>
 
+    <properties>
+        <complitex.version>2.0.1-SNAPSHOT</complitex.version>
+    </properties>
+
     <groupId>org.complitex.osznconnection</groupId>
     <artifactId>osznconnection</artifactId>
     <version>2.0.0-SNAPSHOT</version>
@@ -55,37 +59,37 @@
             <dependency>
                 <groupId>org.complitex</groupId>
                 <artifactId>complitex-dictionary</artifactId>
-                <version>2.0.1-SNAPSHOT</version>
+                <version>${complitex.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.complitex</groupId>
                 <artifactId>complitex-template</artifactId>
-                <version>2.0.1-SNAPSHOT</version>
+                <version>${complitex.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.complitex</groupId>
                 <artifactId>complitex-admin</artifactId>
-                <version>2.0.1-SNAPSHOT</version>
+                <version>${complitex.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.complitex</groupId>
                 <artifactId>complitex-address</artifactId>
-                <version>2.0.1-SNAPSHOT</version>
+                <version>${complitex.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.complitex</groupId>
                 <artifactId>complitex-logging</artifactId>
-                <version>2.0.1-SNAPSHOT</version>
+                <version>${complitex.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.complitex</groupId>
                 <artifactId>complitex-resources</artifactId>
-                <version>2.0.1-SNAPSHOT</version>
+                <version>${complitex.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.complitex</groupId>
                 <artifactId>complitex-images</artifactId>
-                <version>2.0.1-SNAPSHOT</version>
+                <version>${complitex.version}</version>
             </dependency>
 
             <!-- OsznConnection Modules-->
