@@ -17,6 +17,7 @@ import org.complitex.osznconnection.file.entity.PaymentDBF;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Date;
+import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
 
 /**
  *
@@ -79,8 +80,8 @@ public class ProcessPaymentTest {
         p.setField(PaymentDBF.DAT1, new Date());
         try {
             adapter.processPaymentAndBenefit(p, Lists.newArrayList(b), 2);
-        } catch (AccountNotFoundException e) {
-            System.out.println("Account not found");
+        } catch (DBException e) {
+            System.out.println("DB error.");
         }
         System.out.println("Status : " + p.getStatus() + ", FROG : " + p.getField(PaymentDBF.FROG) + ", FL_PAY : " + p.getField(PaymentDBF.FL_PAY)
                 + ", NM_PAY : " + p.getField(PaymentDBF.NM_PAY) + ", DEBT : " + p.getField(PaymentDBF.DEBT) + ", NORM_F_1 : "

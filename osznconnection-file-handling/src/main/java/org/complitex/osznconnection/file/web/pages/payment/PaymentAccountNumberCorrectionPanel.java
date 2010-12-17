@@ -23,6 +23,8 @@ import org.odlabs.wiquery.ui.dialog.Dialog;
 
 import javax.ejb.EJB;
 import java.util.List;
+import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
+import org.complitex.osznconnection.file.service.StatusRenderService;
 
 /**
  * Панель для корректировки номера л/c вручную, когда больше одного человека в ЦН, имеющие разные номера л/c, привязаны к одному адресу.
@@ -32,17 +34,13 @@ public class PaymentAccountNumberCorrectionPanel extends Panel {
 
     @EJB(name = "PersonAccountService")
     private PersonAccountService personAccountService;
-
+    @EJB(name = "StatusRenderService")
+    private StatusRenderService statusRenderService;
     private Payment payment;
-
     private Dialog dialog;
-
     private IModel<String> accountNumberModel;
-
     private AccountNumberCorrectionPanel accountNumberCorrectionPanel;
-
     private List<AccountDetail> accountCorrectionDetails;
-
     private WebMarkupContainer infoContainer;
 
     public PaymentAccountNumberCorrectionPanel(String id, final MarkupContainer... toUpdate) {
@@ -68,7 +66,8 @@ public class PaymentAccountNumberCorrectionPanel extends Panel {
         infoContainer.add(messages);
 
         accountNumberCorrectionPanel = new AccountNumberCorrectionPanel("accountNumberCorrectionPanel",
-                Model.ofList(accountCorrectionDetails)){
+                Model.ofList(accountCorrectionDetails)) {
+
             @Override
             protected void correctAccountNumber(AccountDetail accountDetail, AjaxRequestTarget target) {
                 accountNumberModel.setObject(accountDetail.getAccountNumber());
@@ -88,13 +87,13 @@ public class PaymentAccountNumberCorrectionPanel extends Panel {
             public void onClick(AjaxRequestTarget target) {
                 if (validate()) {
                     personAccountService.correctAccountNumber(payment, accountNumberModel.getObject());
-
-                    dialog.close(target);
+                    
                     if (toUpdate != null) {
                         for (MarkupContainer container : toUpdate) {
                             target.addComponent(container);
                         }
                     }
+                    dialog.close(target);
                 } else {
                     target.addComponent(messages);
                 }
@@ -132,15 +131,19 @@ public class PaymentAccountNumberCorrectionPanel extends Panel {
     public void open(AjaxRequestTarget target, Payment payment) {
         this.payment = payment;
 
-        accountCorrectionDetails = personAccountService.acquireAccountCorrectionDetails(payment);
-        accountNumberCorrectionPanel.getAccountDetailsModel().setObject(accountCorrectionDetails);
-
-        if (accountCorrectionDetails == null || accountCorrectionDetails.isEmpty()){
-            error(getString("no_info"));
+        try {
+            accountCorrectionDetails = personAccountService.acquireAccountCorrectionDetails(payment);
+            if (accountCorrectionDetails == null || accountCorrectionDetails.isEmpty()) {
+                error(statusRenderService.displayStatus(payment.getStatus(), getLocale()));
+            }
+        } catch (DBException e) {
+            error(getString("db_error"));
         }
 
+        accountNumberCorrectionPanel.getAccountDetailsModel().setObject(accountCorrectionDetails);
+        accountNumberCorrectionPanel.clear();
+        accountNumberModel.setObject(null);
         target.addComponent(infoContainer);
-
         dialog.open(target);
     }
 }

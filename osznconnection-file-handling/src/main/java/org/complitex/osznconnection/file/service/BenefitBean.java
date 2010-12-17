@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import java.util.Collection;
 import org.complitex.dictionary.mybatis.Transactional;
+import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.entity.example.BenefitExample;
 
@@ -15,7 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.EJB;
-import org.complitex.osznconnection.file.calculation.adapter.AccountNotFoundException;
 import org.complitex.osznconnection.file.calculation.adapter.ICalculationCenterAdapter;
 import org.complitex.osznconnection.file.entity.BenefitData;
 import org.complitex.osznconnection.file.calculation.service.CalculationCenterBean;
@@ -32,18 +32,13 @@ import org.slf4j.LoggerFactory;
 public class BenefitBean extends AbstractRequestBean {
 
     private static final Logger log = LoggerFactory.getLogger(BenefitBean.class);
-
     public static final String MAPPING_NAMESPACE = BenefitBean.class.getName();
-
     @EJB
     private PaymentBean paymentBean;
-
     @EJB
     private CalculationCenterBean calculationCenterBean;
-
     @EJB
     private PrivilegeCorrectionBean privilegeCorrectionBean;
-
     @EJB
     private RequestFileGroupBean requestFileGroupBean;
 
@@ -296,38 +291,38 @@ public class BenefitBean extends AbstractRequestBean {
         clearWarnings(fileId, RequestFile.TYPE.BENEFIT);
     }
 
-    public Collection<BenefitData> getBenefitData(Benefit benefit) throws AccountNotFoundException {
+    public Collection<BenefitData> getBenefitData(Benefit benefit) throws DBException {
         long osznId = benefit.getOrganizationId();
         long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterInfo().getCalculationCenterId();
         ICalculationCenterAdapter adapter = calculationCenterBean.getDefaultCalculationCenterAdapter();
-        Collection<BenefitData> benefitData = adapter.getBenefitData(benefit.getAccountNumber(),
-                findDat1(benefit.getAccountNumber(), benefit.getRequestFileId()));
+        Date dat1 = findDat1(benefit.getAccountNumber(), benefit.getRequestFileId());
+        Collection<BenefitData> benefitData = adapter.getBenefitData(benefit, dat1);
         Collection<BenefitData> notConnectedBenefitData = Lists.newArrayList();
         List<Benefit> benefits = findByAccountNumber(benefit.getAccountNumber(), benefit.getRequestFileId());
 
         for (BenefitData benefitDataItem : benefitData) {
             boolean suitable = true;
 
-            String osznBenefitCode = null;
-            Long internalPrivilege = privilegeCorrectionBean.findInternalPrivilege(benefitDataItem.getCode(), calculationCenterId);
-            if (internalPrivilege != null) {
-                osznBenefitCode = privilegeCorrectionBean.findPrivilegeCode(internalPrivilege, osznId);
-            }
-
-            Integer benefitCodeAsInt = null;
+            String benefitOrderFam = benefitDataItem.getOrderFamily();
+            Integer benefitOrderFamAsInt = null;
             try {
-                benefitCodeAsInt = Integer.valueOf(osznBenefitCode);
+                benefitOrderFamAsInt = Integer.valueOf(benefitOrderFam);
             } catch (NumberFormatException e) {
             }
 
             for (Benefit benefitItem : benefits) {
-                Integer benefitItemCode = (Integer) benefitItem.getField(BenefitDBF.PRIV_CAT);
-                if (benefitItemCode != null && benefitItemCode.equals(benefitCodeAsInt)) {
+                Integer benefitItemOrderFam = (Integer) benefitItem.getField(BenefitDBF.ORD_FAM);
+                if (benefitItemOrderFam != null && benefitItemOrderFam.equals(benefitOrderFamAsInt)) {
                     suitable = false;
                 }
             }
 
             if (suitable) {
+                String osznBenefitCode = null;
+                Long internalPrivilege = privilegeCorrectionBean.findInternalPrivilege(benefitDataItem.getCode(), calculationCenterId);
+                if (internalPrivilege != null) {
+                    osznBenefitCode = privilegeCorrectionBean.findPrivilegeCode(internalPrivilege, osznId);
+                }
                 benefitDataItem.setPrivilegeObjectId(internalPrivilege);
                 benefitDataItem.setOsznPrivilegeCode(osznBenefitCode);
                 benefitDataItem.setCalcCenterId(calculationCenterId);
@@ -338,7 +333,7 @@ public class BenefitBean extends AbstractRequestBean {
         return notConnectedBenefitData;
     }
 
-    public void connectBenefit(Benefit benefit, final BenefitData selectedBenefitData, boolean checkBenefitData) {
+    public void connectBenefit(Benefit benefit, final BenefitData selectedBenefitData, boolean checkBenefitData) throws DBException {
         String osznBenefitCode = selectedBenefitData.getOsznPrivilegeCode();
         benefit.setField(BenefitDBF.PRIV_CAT, Integer.valueOf(osznBenefitCode));
         benefit.setField(BenefitDBF.ORD_FAM, Integer.valueOf(selectedBenefitData.getOrderFamily()));
@@ -347,12 +342,9 @@ public class BenefitBean extends AbstractRequestBean {
         update(benefit);
 
         if (checkBenefitData) {
-            try {
-                Collection<BenefitData> leftBenefitData = getBenefitData(benefit);
-                if (leftBenefitData == null || leftBenefitData.isEmpty()) {
-                    updateStatusByAccountNumber(benefit.getRequestFileId(), benefit.getAccountNumber(), RequestStatus.PROCESSED);
-                }
-            } catch (AccountNotFoundException e) {
+            Collection<BenefitData> leftBenefitData = getBenefitData(benefit);
+            if (leftBenefitData == null || leftBenefitData.isEmpty()) {
+                updateStatusByAccountNumber(benefit.getRequestFileId(), benefit.getAccountNumber(), RequestStatus.PROCESSED);
             }
         } else {
             updateStatusByAccountNumber(benefit.getRequestFileId(), benefit.getAccountNumber(), RequestStatus.PROCESSED);
