@@ -46,4 +46,6 @@ my_complitex_projects
 |   
 `--osznconnection  <-- checkout from http://osznconnection.googlecode.com/svn/trunk/
 }}}
+
+[http://osznconnection.googlecode.com/svn/wiki/images/overview.png]
   
