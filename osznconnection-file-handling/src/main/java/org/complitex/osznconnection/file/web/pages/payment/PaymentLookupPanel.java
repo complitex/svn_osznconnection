@@ -178,7 +178,7 @@ public abstract class PaymentLookupPanel extends Panel {
         searchComponent = new SearchComponent("searchComponent", componentState,
                 ImmutableList.of("city", "street", "building"), null, true);
         searchComponent.setOutputMarkupPlaceholderTag(true);
-        searchComponent.setVisible(false);
+        //searchComponent.setVisible(false); bug fix: do not work ajax auto complete
         accordion.add(searchComponent);
 
         accountModel = new Model<AccountDetail>();
