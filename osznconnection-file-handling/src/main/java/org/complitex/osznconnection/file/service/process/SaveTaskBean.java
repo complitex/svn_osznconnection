@@ -9,7 +9,6 @@ import org.complitex.osznconnection.file.Module;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.service.BenefitBean;
 import org.complitex.osznconnection.file.service.PaymentBean;
-import org.complitex.osznconnection.file.service.RequestFileBean;
 import org.complitex.osznconnection.file.service.RequestFileGroupBean;
 import org.complitex.osznconnection.file.service.exception.SaveException;
 import org.complitex.osznconnection.file.service.exception.SqlSessionException;
@@ -36,9 +35,6 @@ public class SaveTaskBean implements ITaskBean<RequestFileGroup>{
 
     @EJB(beanName = "BenefitBean")
     private BenefitBean benefitBean;
-
-    @EJB(beanName = "RequestFileBean")
-    private RequestFileBean requestFileBean;
 
     @EJB(beanName = "RequestFileGroupBean")
     private RequestFileGroupBean requestFileGroupBean;

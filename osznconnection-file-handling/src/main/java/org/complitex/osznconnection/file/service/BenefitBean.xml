@@ -244,7 +244,7 @@
         WHERE `id` = #{id}
     </update>
 
-    <select id="findByOSZ" parameterType="org.complitex.osznconnection.file.entity.Payment" resultMap="benefitResultMap">
+    <select id="findByOZN" parameterType="org.complitex.osznconnection.file.entity.Payment" resultMap="benefitResultMap">
         SELECT b.`id`, b.`status`, b.`account_number`, bf.`organization_id` organization_id, b.`request_file_id`
             FROM `benefit` b
             JOIN `request_file` bf ON b.`request_file_id` = bf.`id`

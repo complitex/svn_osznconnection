@@ -10,7 +10,6 @@ import org.complitex.osznconnection.file.entity.Config;
 import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.entity.RequestFileGroup;
 import org.complitex.osznconnection.file.service.ConfigBean;
-import org.complitex.osznconnection.file.service.RequestFileBean;
 import org.complitex.osznconnection.file.service.exception.StorageNotFoundException;
 import org.complitex.osznconnection.file.service.warning.WebWarningRenderer;
 import org.slf4j.Logger;
@@ -23,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import org.complitex.osznconnection.file.service.warning.ReportWarningRenderer;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -58,14 +58,11 @@ public class ProcessManagerBean {
     @EJB(beanName = "ConfigBean")
     private ConfigBean configBean;
 
-    @EJB(beanName = "RequestFileBean")
-    private RequestFileBean requestFileBean;
-
     @EJB(beanName = "LogBean")
     private LogBean logBean;
 
     @EJB
-    private WebWarningRenderer webWarningRenderer;
+    private ReportWarningRenderer reportWarningRenderer;
 
     private List<RequestFile> linkError = new CopyOnWriteArrayList<RequestFile>();
 
@@ -261,7 +258,7 @@ public class ProcessManagerBean {
                     @Override
                     public void onComplete(List<RequestFileGroup> processed) {
                         try {
-                            SaveUtil.createResult(processed, webWarningRenderer);
+                            SaveUtil.createResult(processed, reportWarningRenderer);
                         } catch (StorageNotFoundException e) {
                             log.error("Ошибка создания файла Result.txt.", e);
                             logBean.error(Module.NAME, ProcessManagerBean.class, RequestFileGroup.class, null,
