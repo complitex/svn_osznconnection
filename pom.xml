@@ -5,13 +5,13 @@
     <parent>
         <groupId>org.complitex</groupId>
         <artifactId>complitex</artifactId>
-        <version>2.0-SNAPSHOT</version>
-        <relativePath>../../complitex/trunk/pom.xml</relativePath>
+        <version>2.0.1-SNAPSHOT</version>
+        <relativePath>../complitex/pom.xml</relativePath>
     </parent>
 
     <groupId>org.complitex.osznconnection</groupId>
     <artifactId>osznconnection</artifactId>
-    <version>2.0-SNAPSHOT</version>
+    <version>2.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>OsznConnection</name>
@@ -28,6 +28,14 @@
         <module>osznconnection-privilege</module>
         <module>osznconnection-file-handling</module>
         <module>osznconnection-web</module>
+
+        <module>../complitex/complitex-dictionary</module>
+        <module>../complitex/complitex-template</module>
+        <module>../complitex/complitex-admin</module>
+        <module>../complitex/complitex-address</module>
+        <module>../complitex/complitex-logging</module>
+        <module>../complitex/complitex-resources</module>
+        <module>../complitex/complitex-images</module>
     </modules>
 
     <distributionManagement>
@@ -47,37 +55,37 @@
             <dependency>
                 <groupId>org.complitex</groupId>
                 <artifactId>complitex-dictionary</artifactId>
-                <version>${project.parent.version}</version>
+                <version>2.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.complitex</groupId>
                 <artifactId>complitex-template</artifactId>
-                <version>${project.parent.version}</version>
+                <version>2.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.complitex</groupId>
                 <artifactId>complitex-admin</artifactId>
-                <version>${project.parent.version}</version>
+                <version>2.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.complitex</groupId>
                 <artifactId>complitex-address</artifactId>
-                <version>${project.parent.version}</version>
+                <version>2.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.complitex</groupId>
                 <artifactId>complitex-logging</artifactId>
-                <version>${project.parent.version}</version>
+                <version>2.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.complitex</groupId>
                 <artifactId>complitex-resources</artifactId>
-                <version>${project.parent.version}</version>
+                <version>2.0.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.complitex</groupId>
                 <artifactId>complitex-images</artifactId>
-                <version>${project.parent.version}</version>
+                <version>2.0.1-SNAPSHOT</version>
             </dependency>
 
             <!-- OsznConnection Modules-->
