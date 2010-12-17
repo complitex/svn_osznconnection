@@ -40,11 +40,11 @@
 По умолчанию проекты должны находиться в одной папке и иметь названия `complitex` и `osznconnection`:
 
 {{{
-my_complitex_projects
-|
-`--complitex       <-- checkout from http://complitex.googlecode.com/svn/trunk/
-|   
-`--osznconnection  <-- checkout from http://osznconnection.googlecode.com/svn/trunk/
+# my_complitex_projects
+# |
+# `--complitex       <-- checkout from http://complitex.googlecode.com/svn/trunk/
+# |   
+# `--osznconnection  <-- checkout from http://osznconnection.googlecode.com/svn/trunk/
 }}}
 
 [http://osznconnection.googlecode.com/svn/wiki/images/overview.png]
