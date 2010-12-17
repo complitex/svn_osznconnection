@@ -114,7 +114,7 @@ public class FillTaskBean implements ITaskBean<RequestFileGroup> {
             return;
         }
 
-        List<Benefit> benefits = benefitBean.findByOSZ(payment);
+        List<Benefit> benefits = benefitBean.findByOZN(payment);
         adapter.processPaymentAndBenefit(payment, benefits, calculationCenterId);
 
         paymentBean.update(payment);

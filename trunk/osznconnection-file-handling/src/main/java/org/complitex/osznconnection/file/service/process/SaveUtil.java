@@ -75,7 +75,7 @@ public class SaveUtil {
                 writer.write("\n" + group.getPaymentFile().getName() + ", " + group.getBenefitFile().getName()
                         + " - Запросов: " + count);
                 writeErrorStatus(group.getPaymentFile().getRequests(), writer, warningRenderer, false);
-                writeErrorStatus(group.getBenefitFile().getRequests(), writer, warningRenderer, true);
+                writeErrorStatus(group.getBenefitFile().getRequests(), writer, warningRenderer, false);
 
                 requestCount += count;
             }

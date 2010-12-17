@@ -261,8 +261,8 @@ public class BenefitBean extends AbstractRequestBean {
         sqlSession().update(MAPPING_NAMESPACE + ".updateStatusByAccountNumber", params);
     }
 
-    public List<Benefit> findByOSZ(Payment payment) {
-        return sqlSession().selectList(MAPPING_NAMESPACE + ".findByOSZ", payment);
+    public List<Benefit> findByOZN(Payment payment) {
+        return sqlSession().selectList(MAPPING_NAMESPACE + ".findByOZN", payment);
     }
 
     /**
