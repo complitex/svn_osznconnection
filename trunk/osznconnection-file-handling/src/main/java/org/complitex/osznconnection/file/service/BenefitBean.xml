@@ -209,7 +209,7 @@
                 WHERE b.`OWN_NUM_SR` = p.`OWN_NUM_SR` AND bf.`id` = b.request_file_id AND pf.`id` = p.`request_file_id`
                     AND bf.`group_id` = pf.`group_id`),
                '-1')
-            WHEN '-1' THEN b.`status`
+            WHEN '-1' THEN 220
             <foreach collection="statuses" item="status">
                 WHEN #{status} THEN #{status}
             </foreach>

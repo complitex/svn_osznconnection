@@ -5,7 +5,9 @@
 package org.complitex.osznconnection.file.web.pages.payment;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import java.util.ArrayList;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -178,7 +180,7 @@ public abstract class PaymentLookupPanel extends Panel {
         searchComponent = new SearchComponent("searchComponent", componentState,
                 ImmutableList.of("city", "street", "building"), null, true);
         searchComponent.setOutputMarkupPlaceholderTag(true);
-        //searchComponent.setVisible(false); bug fix: do not work ajax auto complete
+        searchComponent.setVisible(false);
         accordion.add(searchComponent);
 
         accountModel = new Model<AccountDetail>();
