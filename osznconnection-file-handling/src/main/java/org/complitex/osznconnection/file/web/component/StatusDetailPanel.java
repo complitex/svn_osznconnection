@@ -129,20 +129,23 @@ public class StatusDetailPanel extends Panel {
                 break;
             case CITY_UNRESOLVED_LOCALLY:
             case CITY_UNRESOLVED:
+            case CITY_NOT_FOUND:
                 paymentExample.setCity(statusDetail.getCity());
                 break;
             case STREET_UNRESOLVED_LOCALLY:
             case STREET_UNRESOLVED:
+            case STREET_NOT_FOUND:
                 paymentExample.setCity(statusDetail.getCity());
                 paymentExample.setStreet(statusDetail.getStreet());
                 break;
             case BUILDING_UNRESOLVED_LOCALLY:
             case BUILDING_UNRESOLVED:
+            case BUILDING_NOT_FOUND:
                 paymentExample.setCity(statusDetail.getCity());
                 paymentExample.setStreet(statusDetail.getStreet());
                 paymentExample.setBuilding(statusDetail.getBuilding());
                 break;
-            case BUILDING_CORP_UNRESOLVED:
+            case BUILDING_CORP_NOT_FOUND:
                 paymentExample.setCity(statusDetail.getCity());
                 paymentExample.setStreet(statusDetail.getStreet());
                 paymentExample.setBuilding(statusDetail.getBuilding());

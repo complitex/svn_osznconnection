@@ -28,14 +28,17 @@ public class StatusDetail implements Serializable{
                 return account + countString;
             case CITY_UNRESOLVED_LOCALLY:
             case CITY_UNRESOLVED:
+            case CITY_NOT_FOUND:
                 return city + countString;
             case STREET_UNRESOLVED_LOCALLY:
             case STREET_UNRESOLVED:
+            case STREET_NOT_FOUND:
                 return city + ", " + street + countString;
             case BUILDING_UNRESOLVED_LOCALLY:
             case BUILDING_UNRESOLVED:
+            case BUILDING_NOT_FOUND:
                 return city + ", " + street + ", " + building + countString;
-            case BUILDING_CORP_UNRESOLVED:
+            case BUILDING_CORP_NOT_FOUND:
                 return city + ", " + street + ", " + building  + ", " + corp + countString;
         }
 

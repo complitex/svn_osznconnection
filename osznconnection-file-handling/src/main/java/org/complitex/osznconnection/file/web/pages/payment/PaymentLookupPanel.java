@@ -5,9 +5,7 @@
 package org.complitex.osznconnection.file.web.pages.payment;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import java.util.ArrayList;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -143,19 +141,12 @@ public abstract class PaymentLookupPanel extends Panel {
                                 error(statusRenderService.displayStatus(payment.getStatus(), getLocale()));
                                 accountInfoModel.setObject(null);
                                 accountModel.setObject(null);
-                                target.addComponent(messages);
                                 target.addComponent(accountInfo);
                             } else {
                                 if (accountList.size() == 1) {
                                     accountModel.setObject(accountList.get(0));
                                     accountInfoModel.setObject(AccountNumberCorrectionPanel.displayAccountDetail(accountList.get(0)));
-
                                     target.addComponent(accountInfo);
-
-                                    if (accountNumberCorrectionPanel.isVisible()) {
-                                        accountNumberCorrectionPanel.setVisible(false);
-                                        target.addComponent(accordion);
-                                    }
                                 } else {
                                     accountModel.setObject(null);
                                     accountInfoModel.setObject(null);
@@ -163,7 +154,9 @@ public abstract class PaymentLookupPanel extends Panel {
                                     accountNumberCorrectionPanel.setVisible(true);
 
                                     target.addComponent(accountInfo);
+                                    target.addComponent(messages);
                                     target.addComponent(accordion);
+                                    return;
                                 }
                             }
                         } catch (DBException e) {
@@ -174,6 +167,10 @@ public abstract class PaymentLookupPanel extends Panel {
                     }
                 }
                 target.addComponent(messages);
+                if (accountNumberCorrectionPanel.isVisible()) {
+                    accountNumberCorrectionPanel.setVisible(false);
+                    target.addComponent(accordion);
+                }
             }
         };
         accordion.add(lookupByAddress);
@@ -297,7 +294,7 @@ public abstract class PaymentLookupPanel extends Panel {
         return validated;
     }
 
-    private static Long getObjectId(DomainObject object) {
+    private Long getObjectId(DomainObject object) {
         return object == null ? null : object.getId();
     }
 
@@ -305,7 +302,7 @@ public abstract class PaymentLookupPanel extends Panel {
         payment.setField(PaymentDBF.FLAT, apartment != null ? apartment : "");
     }
 
-    private static Long getStreetType(DomainObject streetObject) {
+    private Long getStreetType(DomainObject streetObject) {
         return streetObject == null ? null : StreetStrategy.getStreetType(streetObject);
     }
 
