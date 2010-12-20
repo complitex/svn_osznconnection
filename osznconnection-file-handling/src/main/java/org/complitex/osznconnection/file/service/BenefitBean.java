@@ -297,39 +297,42 @@ public class BenefitBean extends AbstractRequestBean {
         ICalculationCenterAdapter adapter = calculationCenterBean.getDefaultCalculationCenterAdapter();
         Date dat1 = findDat1(benefit.getAccountNumber(), benefit.getRequestFileId());
         Collection<BenefitData> benefitData = adapter.getBenefitData(benefit, dat1);
-        Collection<BenefitData> notConnectedBenefitData = Lists.newArrayList();
-        List<Benefit> benefits = findByAccountNumber(benefit.getAccountNumber(), benefit.getRequestFileId());
 
-        for (BenefitData benefitDataItem : benefitData) {
-            boolean suitable = true;
+        Collection<BenefitData> notConnectedBenefitData = null;
+        if (benefitData != null && !benefitData.isEmpty()) {
+            notConnectedBenefitData = Lists.newArrayList();
+            List<Benefit> benefits = findByAccountNumber(benefit.getAccountNumber(), benefit.getRequestFileId());
 
-            String benefitOrderFam = benefitDataItem.getOrderFamily();
-            Integer benefitOrderFamAsInt = null;
-            try {
-                benefitOrderFamAsInt = Integer.valueOf(benefitOrderFam);
-            } catch (NumberFormatException e) {
-            }
+            for (BenefitData benefitDataItem : benefitData) {
+                boolean suitable = true;
 
-            for (Benefit benefitItem : benefits) {
-                Integer benefitItemOrderFam = (Integer) benefitItem.getField(BenefitDBF.ORD_FAM);
-                if (benefitItemOrderFam != null && benefitItemOrderFam.equals(benefitOrderFamAsInt)) {
-                    suitable = false;
+                String benefitOrderFam = benefitDataItem.getOrderFamily();
+                Integer benefitOrderFamAsInt = null;
+                try {
+                    benefitOrderFamAsInt = Integer.valueOf(benefitOrderFam);
+                } catch (NumberFormatException e) {
                 }
-            }
 
-            if (suitable) {
-                String osznBenefitCode = null;
-                Long internalPrivilege = privilegeCorrectionBean.findInternalPrivilege(benefitDataItem.getCode(), calculationCenterId);
-                if (internalPrivilege != null) {
-                    osznBenefitCode = privilegeCorrectionBean.findPrivilegeCode(internalPrivilege, osznId);
+                for (Benefit benefitItem : benefits) {
+                    Integer benefitItemOrderFam = (Integer) benefitItem.getField(BenefitDBF.ORD_FAM);
+                    if (benefitItemOrderFam != null && benefitItemOrderFam.equals(benefitOrderFamAsInt)) {
+                        suitable = false;
+                    }
                 }
-                benefitDataItem.setPrivilegeObjectId(internalPrivilege);
-                benefitDataItem.setOsznPrivilegeCode(osznBenefitCode);
-                benefitDataItem.setCalcCenterId(calculationCenterId);
-                notConnectedBenefitData.add(benefitDataItem);
+
+                if (suitable) {
+                    String osznBenefitCode = null;
+                    Long internalPrivilege = privilegeCorrectionBean.findInternalPrivilege(benefitDataItem.getCode(), calculationCenterId);
+                    if (internalPrivilege != null) {
+                        osznBenefitCode = privilegeCorrectionBean.findPrivilegeCode(internalPrivilege, osznId);
+                    }
+                    benefitDataItem.setPrivilegeObjectId(internalPrivilege);
+                    benefitDataItem.setOsznPrivilegeCode(osznBenefitCode);
+                    benefitDataItem.setCalcCenterId(calculationCenterId);
+                    notConnectedBenefitData.add(benefitDataItem);
+                }
             }
         }
-
         return notConnectedBenefitData;
     }
 

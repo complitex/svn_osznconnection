@@ -1,6 +1,7 @@
 package org.complitex.osznconnection.file.web.pages.benefit;
 
 import com.google.common.collect.Lists;
+import java.util.Collection;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -60,7 +61,10 @@ public class BenefitConnectPanel extends Panel {
         protected List<BenefitData> load() {
             List<BenefitData> data = null;
             try {
-                data = Lists.newArrayList(benefitBean.getBenefitData(benefit));
+                Collection<BenefitData> benefitDataCollection = benefitBean.getBenefitData(benefit);
+                if (benefitDataCollection != null) {
+                    data = Lists.newArrayList(benefitDataCollection);
+                }
             } catch (DBException e) {
                 error(getString("db_error"));
             }

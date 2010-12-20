@@ -53,7 +53,9 @@ public enum RequestStatus implements IEnumCode {
      */
     BENEFIT_NOT_FOUND(218, false, false),
 
-    INVALID_FORMAT(219, false, false);
+    INVALID_FORMAT(219, false, false),
+
+    PAYMENT_NOT_EXISTS(220, false, false);
 
     private boolean localAddressCorrected;
 
@@ -92,7 +94,7 @@ public enum RequestStatus implements IEnumCode {
                 ADDRESS_CORRECTED, APARTMENT_UNRESOLVED, APARTMENT_UNRESOLVED_LOCALLY, BUILDING_CORP_UNRESOLVED,
                 BUILDING_UNRESOLVED, BUILDING_UNRESOLVED_LOCALLY, CITY_UNRESOLVED, CITY_UNRESOLVED_LOCALLY,
                 DISTRICT_UNRESOLVED, MORE_ONE_ACCOUNTS, STREET_TYPE_UNRESOLVED, STREET_UNRESOLVED,
-                STREET_UNRESOLVED_LOCALLY, INVALID_FORMAT);
+                STREET_UNRESOLVED_LOCALLY, INVALID_FORMAT, PAYMENT_NOT_EXISTS);
     }
 
     /**
