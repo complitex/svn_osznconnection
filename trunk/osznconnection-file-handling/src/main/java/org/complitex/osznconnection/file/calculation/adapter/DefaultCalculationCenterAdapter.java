@@ -147,17 +147,17 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
         } else if (result.equals("-1")) {
             payment.setStatus(RequestStatus.MORE_ONE_ACCOUNTS);
         } else if (result.equals("-2")) {
-            payment.setStatus(RequestStatus.APARTMENT_UNRESOLVED);
+            payment.setStatus(RequestStatus.APARTMENT_NOT_FOUND);
         } else if (result.equals("-3")) {
-            payment.setStatus(RequestStatus.BUILDING_CORP_UNRESOLVED);
+            payment.setStatus(RequestStatus.BUILDING_CORP_NOT_FOUND);
         } else if (result.equals("-4")) {
-            payment.setStatus(RequestStatus.BUILDING_UNRESOLVED);
+            payment.setStatus(RequestStatus.BUILDING_NOT_FOUND);
         } else if (result.equals("-5")) {
-            payment.setStatus(RequestStatus.STREET_UNRESOLVED);
+            payment.setStatus(RequestStatus.STREET_NOT_FOUND);
         } else if (result.equals("-6")) {
-            payment.setStatus(RequestStatus.STREET_TYPE_UNRESOLVED);
+            payment.setStatus(RequestStatus.STREET_TYPE_NOT_FOUND);
         } else if (result.equals("-7")) {
-            payment.setStatus(RequestStatus.DISTRICT_UNRESOLVED);
+            payment.setStatus(RequestStatus.DISTRICT_NOT_FOUND);
         } else {
             if (Strings.isEmpty(result)) {
                 log.error("acquirePersonAccount. Unexpected result code: {}. Payment id: {}", payment.getId());
@@ -230,22 +230,22 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
                     payment.setStatus(RequestStatus.ACCOUNT_NUMBER_NOT_FOUND);
                     break;
                 case -2:
-                    payment.setStatus(RequestStatus.APARTMENT_UNRESOLVED);
+                    payment.setStatus(RequestStatus.APARTMENT_NOT_FOUND);
                     break;
                 case -3:
-                    payment.setStatus(RequestStatus.BUILDING_CORP_UNRESOLVED);
+                    payment.setStatus(RequestStatus.BUILDING_CORP_NOT_FOUND);
                     break;
                 case -4:
-                    payment.setStatus(RequestStatus.BUILDING_UNRESOLVED);
+                    payment.setStatus(RequestStatus.BUILDING_NOT_FOUND);
                     break;
                 case -5:
-                    payment.setStatus(RequestStatus.STREET_UNRESOLVED);
+                    payment.setStatus(RequestStatus.STREET_NOT_FOUND);
                     break;
                 case -6:
-                    payment.setStatus(RequestStatus.STREET_TYPE_UNRESOLVED);
+                    payment.setStatus(RequestStatus.STREET_TYPE_NOT_FOUND);
                     break;
                 case -7:
-                    payment.setStatus(RequestStatus.DISTRICT_UNRESOLVED);
+                    payment.setStatus(RequestStatus.DISTRICT_NOT_FOUND);
                     break;
                 default:
                     log.error("acquireAccountCorrectionDetails. Unexpected result code: {}. Payment id: {}", resultCode, payment.getId());

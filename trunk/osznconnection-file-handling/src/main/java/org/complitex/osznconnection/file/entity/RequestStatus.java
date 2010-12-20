@@ -15,16 +15,19 @@ public enum RequestStatus implements IEnumCode {
 
     /* группа "локально неразрешимых" статусов, т.е. любой статус из группы указывает на то, что какя-то часть внутреннего адреса у записи не разрешена */
     CITY_UNRESOLVED_LOCALLY(200, true, false), STREET_UNRESOLVED_LOCALLY(201, true, false), BUILDING_UNRESOLVED_LOCALLY(202, true, false),
-    APARTMENT_UNRESOLVED_LOCALLY(203, true, false),
 
     /*  указывает на то, что адрес откорректирован вручную в UI */
     ADDRESS_CORRECTED(204, false, false),
 
-    /* группа "неразрешимых" статусов, т.е. любой статус из группы указывает на то, что какая-то часть исходящего в ЦН адреса у записи не разрешена,
-        либо на то, что запрос на получение л/c в ЦН был сделан, но часть адреса не распознана в ЦН */
+    /* группа "неразрешимых" статусов, т.е. любой статус из группы указывает на то, что какая-то часть исходящего в ЦН адреса у записи не разрешена */
     CITY_UNRESOLVED(205, false, true), DISTRICT_UNRESOLVED(206, false, true), STREET_TYPE_UNRESOLVED(207, false, true),
-    STREET_UNRESOLVED(208, false, true), BUILDING_UNRESOLVED(209, false, true), BUILDING_CORP_UNRESOLVED(210, false, true),
-    APARTMENT_UNRESOLVED(211, false, true),
+    STREET_UNRESOLVED(208, false, true), BUILDING_UNRESOLVED(209, false, true),
+
+    /* группа "ненайденных" статусов, т.е. любой статус из группы указывает на то, что запрос на получение л/c в ЦН был сделан,
+     но часть адреса не распознана в ЦН */
+    CITY_NOT_FOUND(221, false, false), DISTRICT_NOT_FOUND(222, false, false), STREET_TYPE_NOT_FOUND(223, false, false),
+    STREET_NOT_FOUND(224, false, false), BUILDING_NOT_FOUND(225, false, false), BUILDING_CORP_NOT_FOUND(226, false, false),
+    APARTMENT_NOT_FOUND(227, false, false),
 
     /* Номер л/c не найден */
     ACCOUNT_NUMBER_NOT_FOUND(212, false, false),
@@ -91,10 +94,14 @@ public enum RequestStatus implements IEnumCode {
      */
     public static List<RequestStatus> notBoundStatuses() {
         return Lists.newArrayList(ACCOUNT_NUMBER_NOT_FOUND,
-                ADDRESS_CORRECTED, APARTMENT_UNRESOLVED, APARTMENT_UNRESOLVED_LOCALLY, BUILDING_CORP_UNRESOLVED,
-                BUILDING_UNRESOLVED, BUILDING_UNRESOLVED_LOCALLY, CITY_UNRESOLVED, CITY_UNRESOLVED_LOCALLY,
-                DISTRICT_UNRESOLVED, MORE_ONE_ACCOUNTS, STREET_TYPE_UNRESOLVED, STREET_UNRESOLVED,
-                STREET_UNRESOLVED_LOCALLY, INVALID_FORMAT, PAYMENT_NOT_EXISTS);
+                ADDRESS_CORRECTED, 
+                BUILDING_CORP_NOT_FOUND, BUILDING_NOT_FOUND, BUILDING_UNRESOLVED, BUILDING_UNRESOLVED_LOCALLY,
+                CITY_UNRESOLVED, CITY_UNRESOLVED_LOCALLY, CITY_NOT_FOUND,
+                DISTRICT_UNRESOLVED, DISTRICT_NOT_FOUND,
+                STREET_TYPE_UNRESOLVED, STREET_UNRESOLVED, STREET_TYPE_NOT_FOUND,
+                STREET_NOT_FOUND, STREET_UNRESOLVED_LOCALLY,
+                APARTMENT_NOT_FOUND,
+                MORE_ONE_ACCOUNTS, INVALID_FORMAT, PAYMENT_NOT_EXISTS);
     }
 
     /**
