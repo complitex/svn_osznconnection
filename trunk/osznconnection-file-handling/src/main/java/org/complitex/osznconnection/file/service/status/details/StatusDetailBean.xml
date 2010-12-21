@@ -9,6 +9,7 @@
     </resultMap>
 
     <resultMap id="statusDetail" type="org.complitex.osznconnection.file.entity.StatusDetail">
+        <id column="id" property="id"/>
         <result column="count" property="count"/>
     </resultMap>
 
@@ -40,44 +41,45 @@
         <choose>
             <!--account number -->
             <when test="status == 212 or status == 213">
-                SELECT COUNT(*) `count`, `OWN_NUM_SR` `account` FROM `payment`
+                SELECT CONCAT(`OWN_NUM_SR`, '') `id`, COUNT(*) `count`, `OWN_NUM_SR` `account` FROM `payment`
                 WHERE `request_file_id` = #{id} AND `status` = #{status}
                 GROUP BY `OWN_NUM_SR`
             </when>
 
             <!--city-->
             <when test="status == 200 or status == 205 or status == 221">
-                SELECT COUNT(*) `count`, `N_NAME` `city` FROM `payment`
+                SELECT `N_NAME` `id`, COUNT(*) `count`, `N_NAME` `city` FROM `payment`
                 WHERE `request_file_id` = #{id} AND `status` = #{status}
                 GROUP BY `N_NAME`
             </when>
 
             <!--street-->
             <when test="status == 201 or status == 208 or status == 207 or status == 223 or status == 224">
-                SELECT COUNT(*) `count`, `N_NAME` `city`, `VUL_NAME` `street` FROM `payment`
+                SELECT CONCAT(`N_NAME`, `VUL_NAME`) `id`, COUNT(*) `count`, `N_NAME` `city`, `VUL_NAME` `street` FROM `payment`
                 WHERE `request_file_id` = #{id} AND `status` = #{status}
                 GROUP BY `N_NAME`, `VUL_NAME`
             </when>
 
             <!--building-->
             <when test="status == 202 or status == 209 or status == 225">
-                SELECT COUNT(*) `count`, `N_NAME` `city`, `VUL_NAME` `street`, `BLD_NUM` `building` FROM `payment`
+                SELECT CONCAT(`N_NAME`, `VUL_NAME`, `BLD_NUM`) `id`, COUNT(*) `count`, `N_NAME` `city`, `VUL_NAME` `street`, `BLD_NUM` `building`
+                FROM `payment`
                 WHERE `request_file_id` = #{id} AND `status` = #{status}
                 GROUP BY `N_NAME`, `VUL_NAME`, `BLD_NUM`
             </when>
 
             <!--building corp-->
             <when test="status == 226">
-                SELECT COUNT(*) `count`, `N_NAME` `city`, `VUL_NAME` `street`, `BLD_NUM` `building`,
-                `CORP_NUM` `buildingCorp` FROM `payment`
+                SELECT CONCAT(`N_NAME`, `VUL_NAME`, `BLD_NUM`, `CORP_NUM`) `id`, COUNT(*) `count`, `N_NAME` `city`, `VUL_NAME` `street`,
+                `BLD_NUM` `building`, `CORP_NUM` `buildingCorp` FROM `payment`
                 WHERE `request_file_id` = #{id} AND `status` = #{status}
                 GROUP BY `N_NAME`, `VUL_NAME`, `BLD_NUM`, `CORP_NUM`
             </when>
 
             <!-- apartment -->
             <when test="status == 227">
-                SELECT COUNT(*) `count`, `N_NAME` `city`, `VUL_NAME` `street`, `BLD_NUM` `building`,
-                `CORP_NUM` `buildingCorp`, `FLAT` `apartment` FROM `payment`
+                SELECT CONCAT(`N_NAME`, `VUL_NAME`, `BLD_NUM`, `CORP_NUM`, `FLAT`) `id`, COUNT(*) `count`, `N_NAME` `city`, `VUL_NAME` `street`,
+                `BLD_NUM` `building`, `CORP_NUM` `buildingCorp`, `FLAT` `apartment` FROM `payment`
                 WHERE `request_file_id` = #{id} AND `status` = #{status}
                 GROUP BY `N_NAME`, `VUL_NAME`, `BLD_NUM`, `CORP_NUM`, `FLAT`
             </when>
@@ -113,14 +115,14 @@
         <choose>
             <!--account number -->
             <when test="status == 212 or status == 213">
-                SELECT COUNT(*) `count`, `OWN_NUM_SR` `account` FROM `benefit`
+                SELECT CONCAT(`OWN_NUM_SR`, '') `id`, COUNT(*) `count`, `OWN_NUM_SR` `account` FROM `benefit`
                 WHERE `request_file_id` = #{id} AND `status` = #{status}
                 GROUP BY `OWN_NUM_SR`
             </when>
 
             <!--city-->
             <when test="status == 200 or status == 205 or status == 221">
-                SELECT COUNT(DISTINCT b.id) `count`, p.`N_NAME` `city` FROM `benefit` b
+                SELECT p.`N_NAME` `id`, COUNT(DISTINCT b.id) `count`, p.`N_NAME` `city` FROM `benefit` b
                     <include refid="org.complitex.osznconnection.file.service.StatusDetailBean.joinPaymentByAccount"/>
                 WHERE b.`request_file_id` = #{id} AND b.`status` = #{status}
                 GROUP BY p.`N_NAME`
@@ -128,7 +130,7 @@
 
             <!--street-->
             <when test="status == 201 or status == 208 or status == 207 or status == 223 or status == 224">
-                SELECT COUNT(DISTINCT b.id) `count`, p.`N_NAME` `city`, p.`VUL_NAME` `street` FROM `benefit` b
+                SELECT CONCAT(p.`N_NAME`, p.`VUL_NAME`) `id`, COUNT(DISTINCT b.id) `count`, p.`N_NAME` `city`, p.`VUL_NAME` `street` FROM `benefit` b
                     <include refid="org.complitex.osznconnection.file.service.StatusDetailBean.joinPaymentByAccount"/>
                 WHERE b.`request_file_id` = #{id} AND b.`status` = #{status}
                 GROUP BY p.`N_NAME`, p.`VUL_NAME`
@@ -136,7 +138,8 @@
 
             <!--building-->
             <when test="status == 202 or status == 209 or status == 225">
-                SELECT COUNT(DISTINCT b.id) `count`, p.`N_NAME` `city`, p.`VUL_NAME` `street`, p.`BLD_NUM` `building` FROM `benefit` b
+                SELECT CONCAT(p.`N_NAME`, p.`VUL_NAME`, p.`BLD_NUM`) `id`,  COUNT(DISTINCT b.id) `count`, p.`N_NAME` `city`, p.`VUL_NAME` `street`,
+                p.`BLD_NUM` `building` FROM `benefit` b
                     <include refid="org.complitex.osznconnection.file.service.StatusDetailBean.joinPaymentByAccount"/>
                 WHERE b.`request_file_id` = #{id} AND b.`status` = #{status}
                 GROUP BY p.`N_NAME`, p.`VUL_NAME`, p.`BLD_NUM`
@@ -144,8 +147,8 @@
 
             <!--building corp-->
             <when test="status == 226">
-                SELECT COUNT(DISTINCT b.id) `count`, p.`N_NAME` `city`, p.`VUL_NAME` `street`, p.`BLD_NUM` `building`,
-                p.`CORP_NUM` `buildingCorp` FROM `benefit` b
+                SELECT CONCAT(p.`N_NAME`, p.`VUL_NAME`, p.`BLD_NUM`, p.`CORP_NUM`) `id`, COUNT(DISTINCT b.id) `count`, p.`N_NAME` `city`, p.`VUL_NAME` `street`,
+                p.`BLD_NUM` `building`, p.`CORP_NUM` `buildingCorp` FROM `benefit` b
                     <include refid="org.complitex.osznconnection.file.service.StatusDetailBean.joinPaymentByAccount"/>
                 WHERE b.`request_file_id` = #{id} AND b.`status` = #{status}
                 GROUP BY p.`N_NAME`, p.`VUL_NAME`, p.`BLD_NUM`, p.`CORP_NUM`
@@ -153,8 +156,8 @@
 
             <!-- apartment -->
             <when test="status == 227">
-                SELECT COUNT(DISTINCT b.id) `count`, p.`N_NAME` `city`, p.`VUL_NAME` `street`, p.`BLD_NUM` `building`,
-                p.`CORP_NUM` `buildingCorp`, p.`FLAT` `apartment` FROM `benefit` b
+                SELECT CONCAT(p.`N_NAME`, p.`VUL_NAME`, p.`BLD_NUM`, p.`CORP_NUM`, p.`FLAT`) `id`, COUNT(DISTINCT b.id) `count`, p.`N_NAME` `city`,
+                p.`VUL_NAME` `street`, p.`BLD_NUM` `building`, p.`CORP_NUM` `buildingCorp`, p.`FLAT` `apartment` FROM `benefit` b
                     <include refid="org.complitex.osznconnection.file.service.StatusDetailBean.joinPaymentByAccount"/>
                 WHERE b.`request_file_id` = #{id} AND b.`status` = #{status}
                 GROUP BY p.`N_NAME`, p.`VUL_NAME`, p.`BLD_NUM`, p.`CORP_NUM`, p.`FLAT`
