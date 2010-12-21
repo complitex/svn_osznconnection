@@ -179,6 +179,11 @@ public class AddressCorrectionEdit extends FormTemplatePage {
         }
 
         @Override
+        protected boolean validateExistence() {
+            return addressCorrectionBean.checkExistence(getModel());
+        }
+
+        @Override
         protected boolean freezeOrganization() {
             return "city".equals(getModel().getEntity()) ? false : true;
         }
