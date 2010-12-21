@@ -10,147 +10,120 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
-import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.entity.StatusDetail;
-import org.complitex.osznconnection.file.entity.example.PaymentExample;
-import org.complitex.osznconnection.file.service.StatusDetailBean;
 
 import javax.ejb.EJB;
 import java.util.List;
+import org.complitex.osznconnection.file.entity.StatusDetailInfo;
+import org.complitex.osznconnection.file.entity.example.AbstractRequestExample;
 import org.complitex.osznconnection.file.service.StatusRenderService;
+import org.complitex.osznconnection.file.service.status.details.ExampleConfigurator;
+import org.complitex.osznconnection.file.service.status.details.StatusDetailRenderer;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 24.11.10 15:49
  */
-public class StatusDetailPanel extends Panel {
-    
-    @EJB(name = "StatusDetailBean")
-    private StatusDetailBean statusDetailBean;
+public abstract class StatusDetailPanel<T extends AbstractRequestExample> extends Panel {
 
     @EJB(name = "StatusRenderService")
     private StatusRenderService statusRenderService;
+    @EJB(name = "StatusDetailRenderer")
+    private StatusDetailRenderer statusDetailRenderer;
 
-    public StatusDetailPanel(String id, final RequestFile requestFile, final IModel<PaymentExample> exampleModel,
-                             final Component... update) {
+    public StatusDetailPanel(String id, final Class<T> exampleClass, final IModel<T> exampleModel, final ExampleConfigurator<T> exampleConfigurator,
+            final Component... update) {
         super(id);
+        setOutputMarkupId(true);
 
         WebMarkupContainer container = new WebMarkupContainer("container");
-        container.setOutputMarkupId(true);
         add(container);
 
-        IModel<List<StatusDetail>> model = new LoadableDetachableModel<List<StatusDetail>>() {
+        IModel<List<StatusDetailInfo>> model = new LoadableDetachableModel<List<StatusDetailInfo>>() {
+
             @Override
-            protected List<StatusDetail> load() {
-                return statusDetailBean.getPaymentStatusDetails(requestFile);
+            protected List<StatusDetailInfo> load() {
+                return loadStatusDetails();
             }
         };
 
-        ListView<StatusDetail> rootStatusDetails = new ListView<StatusDetail>("root_status_details", model){
+        ListView<StatusDetailInfo> statusDetailsInfo = new ListView<StatusDetailInfo>("statusDetailsInfo", model) {
 
             @Override
-            protected void populateItem(ListItem<StatusDetail> rootItem) {
-                final StatusDetail root = rootItem.getModelObject();
+            protected void populateItem(ListItem<StatusDetailInfo> item) {
+                final StatusDetailInfo statusDetailInfo = item.getModelObject();
 
                 //Контейнер для ajax обновления вложенного списка
-                final WebMarkupContainer statusDetailContainer = new WebMarkupContainer("status_detail_container");
-                statusDetailContainer.setOutputMarkupId(true);
-                statusDetailContainer.setOutputMarkupPlaceholderTag(true);
-                rootItem.add(statusDetailContainer);
+                final WebMarkupContainer statusDetailsContainer = new WebMarkupContainer("statusDetailsContainer");
+                statusDetailsContainer.setOutputMarkupPlaceholderTag(true);
+                item.add(statusDetailsContainer);
 
-                AjaxLink expandRoot = new AjaxLink("expand_root"){
+                AjaxLink expand = new AjaxLink("expand") {
 
                     @Override
                     public void onClick(AjaxRequestTarget target) {
-                        for (Component component : update){
+                        for (Component component : update) {
                             target.addComponent(component);
                         }
 
-                        filter(requestFile, exampleModel, root);
+                        filterByStatusDetailInfo(statusDetailInfo, exampleClass, exampleModel, exampleConfigurator);
 
-                        if (root.getStatusDetails() != null && !root.getStatusDetails().isEmpty()) {
-                            statusDetailContainer.setVisible(!statusDetailContainer.isVisible());
-                            target.addComponent(statusDetailContainer);
+                        if (statusDetailInfo.getStatusDetails() != null && !statusDetailInfo.getStatusDetails().isEmpty()) {
+                            statusDetailsContainer.setVisible(!statusDetailsContainer.isVisible());
+                            target.addComponent(statusDetailsContainer);
                         }
                     }
                 };
-                rootItem.add(expandRoot);
+                item.add(expand);
 
-                String rootName = statusRenderService.displayStatus(root.getRequestStatus(), getLocale()) +
-                        " (" + root.getCount() + ")";
-                expandRoot.add(new Label("root_name", rootName));
+                String info = statusRenderService.displayStatus(statusDetailInfo.getStatus(), getLocale())
+                        + statusDetailRenderer.displayCount(statusDetailInfo.getCount());
+                expand.add(new Label("info", info));
 
-                ListView<StatusDetail> statusDetails = new ListView<StatusDetail>("status_details",
-                        root.getStatusDetails()){
+                ListView<StatusDetail> statusDetails = new ListView<StatusDetail>("statusDetails",
+                        statusDetailInfo.getStatusDetails()) {
 
                     @Override
                     protected void populateItem(ListItem<StatusDetail> item) {
                         final StatusDetail statusDetail = item.getModelObject();
 
-                        AjaxLink filterLink = new AjaxLink("filter_link"){
+                        AjaxLink filter = new AjaxLink("filter") {
 
                             @Override
                             public void onClick(AjaxRequestTarget target) {
-                                filter(requestFile, exampleModel, statusDetail);
+                                filterByStatusDetail(statusDetail, exampleModel, exampleConfigurator);
 
-                                for (Component component : update){
+                                for (Component component : update) {
                                     target.addComponent(component);
                                 }
                             }
                         };
-                        item.add(filterLink);
+                        item.add(filter);
 
-                        filterLink.add(new Label("name", statusDetail.getDisplayName()));
+                        filter.add(new Label("name", statusDetailRenderer.displayStatusDetail(statusDetail, statusDetailInfo.getStatus())));
                     }
                 };
-                statusDetailContainer.setVisible(false);
-                statusDetailContainer.add(statusDetails);
+                statusDetailsContainer.setVisible(false);
+                statusDetailsContainer.add(statusDetails);
             }
         };
 
-        container.add(rootStatusDetails);
+        container.add(statusDetailsInfo);
     }
 
-    private void filter(RequestFile requestFile, IModel<PaymentExample> exampleModel, StatusDetail statusDetail){
-        if (exampleModel == null){
-            return;
-        }
-
-        PaymentExample paymentExample = new PaymentExample();
-        paymentExample.setRequestFileId(requestFile.getId());
-        paymentExample.setStatus(statusDetail.getRequestStatus());
-        exampleModel.setObject(paymentExample);
-
-        switch (statusDetail.getRequestStatus()){
-            case ACCOUNT_NUMBER_NOT_FOUND:
-            case MORE_ONE_ACCOUNTS:
-            case BENEFIT_OWNER_NOT_ASSOCIATED:
-                paymentExample.setAccount(statusDetail.getAccount());
-                break;
-            case CITY_UNRESOLVED_LOCALLY:
-            case CITY_UNRESOLVED:
-            case CITY_NOT_FOUND:
-                paymentExample.setCity(statusDetail.getCity());
-                break;
-            case STREET_UNRESOLVED_LOCALLY:
-            case STREET_UNRESOLVED:
-            case STREET_NOT_FOUND:
-                paymentExample.setCity(statusDetail.getCity());
-                paymentExample.setStreet(statusDetail.getStreet());
-                break;
-            case BUILDING_UNRESOLVED_LOCALLY:
-            case BUILDING_UNRESOLVED:
-            case BUILDING_NOT_FOUND:
-                paymentExample.setCity(statusDetail.getCity());
-                paymentExample.setStreet(statusDetail.getStreet());
-                paymentExample.setBuilding(statusDetail.getBuilding());
-                break;
-            case BUILDING_CORP_NOT_FOUND:
-                paymentExample.setCity(statusDetail.getCity());
-                paymentExample.setStreet(statusDetail.getStreet());
-                paymentExample.setBuilding(statusDetail.getBuilding());
-                paymentExample.setCorp(statusDetail.getCorp());
-                break;
-        }
+    protected void filterByStatusDetailInfo(StatusDetailInfo statusDetailInfo, Class<T> exampleClass, IModel<T> exampleModel,
+            ExampleConfigurator<T> exampleConfigurator) {
+        T example = exampleConfigurator.createExample(exampleClass, statusDetailInfo);
+        example.setRequestFileId(exampleModel.getObject().getRequestFileId());
+        exampleModel.setObject(example);
     }
+
+    protected void filterByStatusDetail(StatusDetail statusDetail, IModel<T> exampleModel,
+            ExampleConfigurator<T> exampleConfigurator) {
+        T example = exampleConfigurator.createExample(statusDetail);
+        example.setRequestFileId(exampleModel.getObject().getRequestFileId());
+        exampleModel.setObject(example);
+    }
+
+    public abstract List<StatusDetailInfo> loadStatusDetails();
 }

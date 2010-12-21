@@ -1,6 +1,6 @@
 package org.complitex.osznconnection.file.service.process;
 
-
+import com.google.common.collect.ImmutableSet;
 import org.complitex.dictionary.util.DateUtil;
 import org.complitex.dictionary.util.ResourceUtil;
 import org.complitex.osznconnection.file.entity.AbstractRequest;
@@ -22,8 +22,8 @@ import java.util.*;
  *         Date: 06.12.10 14:59
  */
 public class SaveUtil {
-    private final static Logger log = LoggerFactory.getLogger(SaveUtil.class);
 
+    private final static Logger log = LoggerFactory.getLogger(SaveUtil.class);
     private final static String FILE_ENCODING = "cp1251";
     private final static String RESULT_FILE_NAME = "Result";
     private final static String RESULT_FILE_EXT = "txt";
@@ -32,16 +32,19 @@ public class SaveUtil {
     private final static SimpleDateFormat sdfFile = new SimpleDateFormat("yyyyMMdd_HHmmss");
 
     private final static Locale SYSTEM = new Locale("ru");
+    
+    private final static Set<RequestStatus> NOT_REPORTABLE_STATUSES = ImmutableSet.of(RequestStatus.PROCESSED, RequestStatus.ACCOUNT_NUMBER_RESOLVED,
+            RequestStatus.ADDRESS_CORRECTED);
 
     public static void createResult(List<RequestFileGroup> processed, IWarningRenderer warningRenderer)
             throws StorageNotFoundException {
         Map<String, List<RequestFileGroup>> catalog = new HashMap<String, List<RequestFileGroup>>();
 
         //sort groups by directory
-        for (RequestFileGroup group : processed){
+        for (RequestFileGroup group : processed) {
             List<RequestFileGroup> list = catalog.get(group.getDirectory());
 
-            if (list == null){
+            if (list == null) {
                 list = new ArrayList<RequestFileGroup>();
                 catalog.put(group.getDirectory(), list);
             }
@@ -49,14 +52,14 @@ public class SaveUtil {
             list.add(group);
         }
 
-        for (String directory : catalog.keySet()){
+        for (String directory : catalog.keySet()) {
             writeDirectory(directory, catalog.get(directory), warningRenderer);
         }
     }
 
     private static void writeDirectory(String directory, List<RequestFileGroup> groups, IWarningRenderer warningRenderer)
             throws StorageNotFoundException {
-        try{
+        try {
             Date now = DateUtil.getCurrentDate();
             String name = RESULT_FILE_NAME + "_" + sdfFile.format(now) + "." + RESULT_FILE_EXT;
 
@@ -69,7 +72,7 @@ public class SaveUtil {
 
             int requestCount = 0;
 
-            for (RequestFileGroup group : groups){
+            for (RequestFileGroup group : groups) {
                 int count = group.getPaymentFile().getDbfRecordCount();
 
                 writer.write("\n" + group.getPaymentFile().getName() + ", " + group.getBenefitFile().getName()
@@ -90,29 +93,28 @@ public class SaveUtil {
     }
 
     private static void writeErrorStatus(List<AbstractRequest> requests, Writer fileWriter,
-                                         IWarningRenderer warningRenderer, boolean onlyWarning)
-            throws IOException {
+            IWarningRenderer warningRenderer, boolean onlyWarning) throws IOException {
         if (requests != null) {
-            for (AbstractRequest request : requests){
-                if (!request.getStatus().equals(RequestStatus.PROCESSED)){
+            for (AbstractRequest request : requests) {
+                if (!NOT_REPORTABLE_STATUSES.contains(request.getStatus())) {
                     boolean hasWarning = request.getWarnings() != null && !request.getWarnings().isEmpty();
 
                     String warning = "";
-                    if (hasWarning){
+                    if (hasWarning) {
                         warning = " (" + warningRenderer.display(request.getWarnings(), SYSTEM) + ")";
                     }
 
-                    if (hasWarning || !onlyWarning){
+                    if (hasWarning || !onlyWarning) {
                         fileWriter.write("\n\tдело №" + request.getDbfFields().get(PaymentDBF.OWN_NUM.name())
-                                +  " - "  + getString(request.getStatus().name()) + warning);
+                                + " - " + getString(request.getStatus().name()) + warning);
                     }
                 }
             }
         }
     }
 
-    private static String getString(String key){
-        String s =  ResourceUtil.getString(StatusRenderService.class.getName(), key, SYSTEM);
+    private static String getString(String key) {
+        String s = ResourceUtil.getString(StatusRenderService.class.getName(), key, SYSTEM);
 
         return s != null ? s : key;
     }

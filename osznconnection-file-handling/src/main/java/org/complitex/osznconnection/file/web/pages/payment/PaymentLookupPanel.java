@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
 import javax.ejb.EJB;
 import java.util.List;
 import java.util.Map;
+import org.apache.wicket.Component;
 import org.complitex.dictionary.util.CloneUtil;
 import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
 import org.complitex.osznconnection.file.service.StatusRenderService;
@@ -75,12 +76,12 @@ public abstract class PaymentLookupPanel extends Panel {
     private Payment payment;
     private Payment initialPayment;
 
-    public PaymentLookupPanel(String id) {
+    public PaymentLookupPanel(String id, Component... toUpdate) {
         super(id);
-        init();
+        init(toUpdate);
     }
 
-    private void init() {
+    private void init(final Component... toUpdate) {
         dialog = new Dialog("dialog");
         dialog.setModal(true);
         dialog.setWidth(600);
@@ -248,6 +249,10 @@ public abstract class PaymentLookupPanel extends Panel {
             public void onClick(AjaxRequestTarget target) {
                 if (validate()) {
                     updateAccountNumber(initialPayment, accountModel.getObject().getAccountNumber(), target);
+
+                    for (Component component : toUpdate) {
+                        target.addComponent(component);
+                    }
                     closeDialog(target);
                 } else {
                     target.addComponent(messages);

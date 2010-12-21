@@ -4,6 +4,7 @@
  */
 package org.complitex.osznconnection.file.web.pages.payment;
 
+import java.util.List;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -25,6 +26,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
+import org.complitex.osznconnection.file.entity.StatusDetailInfo;
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.TemplatePage;
 import org.complitex.osznconnection.file.entity.Payment;
@@ -43,6 +45,8 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Iterator;
 import org.complitex.osznconnection.file.service.StatusRenderService;
+import org.complitex.osznconnection.file.service.status.details.PaymentExampleConfigurator;
+import org.complitex.osznconnection.file.service.status.details.StatusDetailBean;
 import org.complitex.osznconnection.file.service.warning.WebWarningRenderer;
 
 /**
@@ -53,19 +57,16 @@ import org.complitex.osznconnection.file.service.warning.WebWarningRenderer;
 public final class PaymentList extends TemplatePage {
 
     public static final String FILE_ID = "request_file_id";
-
     @EJB(name = "PaymentBean")
     private PaymentBean paymentBean;
-
     @EJB(name = "RequestFileBean")
     private RequestFileBean requestFileBean;
-
     @EJB(name = "StatusRenderService")
     private StatusRenderService statusRenderService;
-
     @EJB(name = "WebWarningRenderer")
     private WebWarningRenderer webWarningRenderer;
-    
+    @EJB(name = "StatusDetailBean")
+    private StatusDetailBean statusDetailBean;
     private IModel<PaymentExample> example;
     private long fileId;
 
@@ -100,7 +101,15 @@ public final class PaymentList extends TemplatePage {
         content.add(filterForm);
         example = new Model<PaymentExample>(newExample());
 
-        add(new StatusDetailPanel("status_detail", requestFile, example, content));
+        StatusDetailPanel<PaymentExample> statusDetailPanel = new StatusDetailPanel<PaymentExample>("statusDetailsPanel",
+                PaymentExample.class, example, new PaymentExampleConfigurator(), content) {
+
+            @Override
+            public List<StatusDetailInfo> loadStatusDetails() {
+                return statusDetailBean.getPaymentStatusDetails(fileId);
+            }
+        };
+        add(statusDetailPanel);
 
         final SortableDataProvider<Payment> dataProvider = new SortableDataProvider<Payment>() {
 
@@ -160,26 +169,24 @@ public final class PaymentList extends TemplatePage {
         filterForm.add(submit);
 
         //Панель коррекции адреса
-        final AddressCorrectionPanel addressCorrectionPanel = new AddressCorrectionPanel("addressCorrectionPanel", content);
+        final AddressCorrectionPanel addressCorrectionPanel = new AddressCorrectionPanel("addressCorrectionPanel", content, statusDetailPanel);
         add(addressCorrectionPanel);
 
         //Панель поиска
-        final PaymentLookupPanel lookupPanel = new PaymentLookupPanel("lookupPanel") {
+        final PaymentLookupPanel lookupPanel = new PaymentLookupPanel("lookupPanel", content, statusDetailPanel) {
 
             @Override
             protected void updateAccountNumber(Payment payment, String accountNumber, AjaxRequestTarget target) {
                 payment.setAccountNumber(accountNumber);
                 payment.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
                 paymentBean.updateAccountNumber(payment);
-
-                target.addComponent(content);
             }
         };
         add(lookupPanel);
 
         //Коррекция личного счета
         final PaymentAccountNumberCorrectionPanel paymentAccountNumberCorrectionPanel =
-                new PaymentAccountNumberCorrectionPanel("paymentAccountNumberCorrectionPanel", content);
+                new PaymentAccountNumberCorrectionPanel("paymentAccountNumberCorrectionPanel", content, statusDetailPanel);
         add(paymentAccountNumberCorrectionPanel);
 
         DataView<Payment> data = new DataView<Payment>("data", dataProvider, 1) {

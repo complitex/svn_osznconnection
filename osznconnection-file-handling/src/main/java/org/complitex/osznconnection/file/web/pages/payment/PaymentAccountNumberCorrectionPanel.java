@@ -4,7 +4,6 @@
  */
 package org.complitex.osznconnection.file.web.pages.payment;
 
-import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -23,6 +22,7 @@ import org.odlabs.wiquery.ui.dialog.Dialog;
 
 import javax.ejb.EJB;
 import java.util.List;
+import org.apache.wicket.Component;
 import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
 import org.complitex.osznconnection.file.service.StatusRenderService;
 
@@ -43,7 +43,7 @@ public class PaymentAccountNumberCorrectionPanel extends Panel {
     private List<AccountDetail> accountCorrectionDetails;
     private WebMarkupContainer infoContainer;
 
-    public PaymentAccountNumberCorrectionPanel(String id, final MarkupContainer... toUpdate) {
+    public PaymentAccountNumberCorrectionPanel(String id, final Component... toUpdate) {
         super(id);
         accountNumberModel = new Model<String>();
 
@@ -89,8 +89,8 @@ public class PaymentAccountNumberCorrectionPanel extends Panel {
                     personAccountService.correctAccountNumber(payment, accountNumberModel.getObject());
                     
                     if (toUpdate != null) {
-                        for (MarkupContainer container : toUpdate) {
-                            target.addComponent(container);
+                        for (Component component : toUpdate) {
+                            target.addComponent(component);
                         }
                     }
                     dialog.close(target);
