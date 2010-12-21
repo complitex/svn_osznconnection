@@ -86,11 +86,14 @@ public class PersonAccountService extends AbstractBean {
         benefitBean.updateAccountNumber(payment.getId(), accountNumber);
         paymentBean.update(payment);
 
-        long benefitFileId = requestFileGroupBean.getBenefitFileId(payment.getRequestFileId());
         long paymentFileId = payment.getRequestFileId();
+        long benefitFileId = requestFileGroupBean.getBenefitFileId(paymentFileId);
         if (benefitBean.isBenefitFileBound(benefitFileId) && paymentBean.isPaymentFileBound(paymentFileId)) {
             requestFileGroupBean.updateStatus(benefitFileId, RequestFileGroup.STATUS.BOUND);
         }
+
+        long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterInfo().getCalculationCenterId();
+        personAccountLocalBean.saveOrUpdate(payment, calculationCenterId);
     }
 
     /**
