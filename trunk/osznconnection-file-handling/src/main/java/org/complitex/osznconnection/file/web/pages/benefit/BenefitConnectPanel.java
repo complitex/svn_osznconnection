@@ -21,7 +21,7 @@ import org.odlabs.wiquery.ui.dialog.Dialog;
 
 import javax.ejb.EJB;
 import java.util.List;
-import org.apache.wicket.MarkupContainer;
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.complitex.dictionary.util.StringUtil;
@@ -41,8 +41,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author Anatoly A. Ivanov java@inheaven.ru
- *         Date: 18.10.2010 14:46:58
+ * 
+ * @author Artem
  */
 public class BenefitConnectPanel extends Panel {
 
@@ -98,7 +98,7 @@ public class BenefitConnectPanel extends Panel {
     private WebMarkupContainer container;
     private BenefitDataModel dataModel;
 
-    public BenefitConnectPanel(String id, final MarkupContainer... toUpdate) {
+    public BenefitConnectPanel(String id, final Component... toUpdate) {
         super(id);
 
         dialog = new Dialog("dialog");
@@ -218,8 +218,8 @@ public class BenefitConnectPanel extends Panel {
                                 break;
                             default:
                                 if (toUpdate != null) {
-                                    for (MarkupContainer container : toUpdate) {
-                                        target.addComponent(container);
+                                    for (Component component : toUpdate) {
+                                        target.addComponent(component);
                                     }
                                 }
                                 closeDialog(target);

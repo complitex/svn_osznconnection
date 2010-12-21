@@ -4,14 +4,11 @@
  */
 package org.complitex.osznconnection.file.entity.example;
 
-import java.io.Serializable;
-import org.complitex.osznconnection.file.entity.RequestStatus;
-
 /**
  *
  * @author Artem
  */
-public class BenefitExample implements Serializable {
+public class BenefitExample extends AbstractRequestExample {
 
     private String privilege;
     private String firstName;
@@ -22,8 +19,6 @@ public class BenefitExample implements Serializable {
     private String building;
     private String corp;
     private String apartment;
-    private RequestStatus status;
-    private Long requestFileId;
     private int start;
     private int size;
     private String orderByClause;
@@ -110,14 +105,6 @@ public class BenefitExample implements Serializable {
         this.orderByClause = orderByClause;
     }
 
-    public Long getRequestFileId() {
-        return requestFileId;
-    }
-
-    public void setRequestFileId(Long requestFileId) {
-        this.requestFileId = requestFileId;
-    }
-
     public int getSize() {
         return size;
     }
@@ -132,14 +119,6 @@ public class BenefitExample implements Serializable {
 
     public void setStart(int start) {
         this.start = start;
-    }
-
-    public RequestStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(RequestStatus status) {
-        this.status = status;
     }
 
     public String getStreet() {

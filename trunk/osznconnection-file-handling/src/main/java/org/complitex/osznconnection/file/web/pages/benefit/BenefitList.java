@@ -41,9 +41,14 @@ import org.complitex.osznconnection.file.web.component.StatusRenderer;
 import javax.ejb.EJB;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import org.complitex.dictionary.util.StringUtil;
+import org.complitex.osznconnection.file.entity.StatusDetailInfo;
 import org.complitex.osznconnection.file.service.StatusRenderService;
+import org.complitex.osznconnection.file.service.status.details.BenefitExampleConfigurator;
+import org.complitex.osznconnection.file.service.status.details.StatusDetailBean;
 import org.complitex.osznconnection.file.service.warning.WebWarningRenderer;
+import org.complitex.osznconnection.file.web.component.StatusDetailPanel;
 
 /**
  *
@@ -53,19 +58,16 @@ import org.complitex.osznconnection.file.service.warning.WebWarningRenderer;
 public final class BenefitList extends TemplatePage {
 
     public static final String FILE_ID = "request_file_id";
-
     @EJB(name = "BenefitBean")
     private BenefitBean benefitBean;
-
     @EJB(name = "RequestFileBean")
     private RequestFileBean requestFileBean;
-
     @EJB(name = "StatusRenderService")
     private StatusRenderService statusRenderService;
-
     @EJB(name = "WebWarningRenderer")
     private WebWarningRenderer webWarningRenderer;
-    
+    @EJB(name = "StatusDetailBean")
+    private StatusDetailBean statusDetailBean;
     private IModel<BenefitExample> example;
     private long fileId;
 
@@ -98,6 +100,16 @@ public final class BenefitList extends TemplatePage {
         final Form filterForm = new Form("filterForm");
         content.add(filterForm);
         example = new Model<BenefitExample>(newExample());
+
+        StatusDetailPanel<BenefitExample> statusDetailPanel = new StatusDetailPanel<BenefitExample>("statusDetailsPanel",
+                BenefitExample.class, example, new BenefitExampleConfigurator(), content) {
+
+            @Override
+            public List<StatusDetailInfo> loadStatusDetails() {
+                return statusDetailBean.getBenefitStatusDetails(fileId);
+            }
+        };
+        add(statusDetailPanel);
 
         final SortableDataProvider<Benefit> dataProvider = new SortableDataProvider<Benefit>() {
 
@@ -157,7 +169,7 @@ public final class BenefitList extends TemplatePage {
         };
         filterForm.add(submit);
 
-        final BenefitConnectPanel benefitConnectPanel = new BenefitConnectPanel("benefitConnectPanel", content);
+        final BenefitConnectPanel benefitConnectPanel = new BenefitConnectPanel("benefitConnectPanel", content, statusDetailPanel);
         add(benefitConnectPanel);
 
         DataView<Benefit> data = new DataView<Benefit>("data", dataProvider, 1) {

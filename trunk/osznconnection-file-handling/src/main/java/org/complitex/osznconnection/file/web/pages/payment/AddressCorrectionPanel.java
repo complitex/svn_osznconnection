@@ -6,7 +6,6 @@ package org.complitex.osznconnection.file.web.pages.payment;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
-import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -30,6 +29,7 @@ import org.odlabs.wiquery.ui.dialog.Dialog;
 import javax.ejb.EJB;
 import java.util.List;
 import java.util.Map;
+import org.apache.wicket.Component;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.complitex.osznconnection.file.service.exception.DublicateCorrectionException;
 import org.slf4j.Logger;
@@ -61,7 +61,7 @@ public class AddressCorrectionPanel extends Panel {
     private WebMarkupContainer container;
     private Payment payment;
 
-    public AddressCorrectionPanel(String id, final MarkupContainer... toUpdate) {
+    public AddressCorrectionPanel(String id, final Component... toUpdate) {
         super(id);
 
         //Диалог
@@ -125,8 +125,8 @@ public class AddressCorrectionPanel extends Panel {
                                 getObjectId(componentState.get("building")),
                                 getObjectId(componentState.get("apartment")));
                         if (toUpdate != null) {
-                            for (MarkupContainer container : toUpdate) {
-                                target.addComponent(container);
+                            for (Component component : toUpdate) {
+                                target.addComponent(component);
                             }
                         }
                         closeDialog(target);
