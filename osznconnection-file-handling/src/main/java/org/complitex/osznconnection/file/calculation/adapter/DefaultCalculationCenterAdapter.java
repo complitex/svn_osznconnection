@@ -492,7 +492,8 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
                 case 1:
                     List<BenefitData> benefitData = (List<BenefitData>) params.get("benefitData");
                     if (benefitData != null && !benefitData.isEmpty()) {
-                        if (checkOrderFam("getBenefitData", benefitData, Lists.newArrayList(benefit), dat1)) {
+                        if (checkOrderFam("getBenefitData", benefitData, Lists.newArrayList(benefit), dat1) &&
+                                checkBenefitCode("getBenefitData", benefitData, Lists.newArrayList(benefit), dat1)) {
                             Collection<BenefitData> emptyList = getEmptyBenefitData(benefitData);
                             if (emptyList != null && !emptyList.isEmpty()) {
                                 logEmptyBenefitData("getBenefitData", Lists.newArrayList(benefit), dat1);
@@ -614,6 +615,23 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
                 return false;
             } else {
                 orderFams.put(orderFam, data);
+            }
+        }
+        return true;
+    }
+
+    protected boolean checkBenefitCode(String method, List<BenefitData> benefitData, List<Benefit> benefits, Date dat1){
+        String accountNumber = benefits.get(0).getAccountNumber();
+        for (BenefitData data : benefitData) {
+            if (Strings.isEmpty(data.getCode())) {
+                log.error(method + ". BenefitData's code is null. Account number: {}, dat1: {}", accountNumber, dat1);
+                for (Benefit benefit : benefits) {
+                    benefit.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
+                    logBean.error(Module.NAME, getClass(), Benefit.class, benefit.getId(), EVENT.GETTING_DATA,
+                            ResourceUtil.getFormatString(RESOURCE_BUNDLE, "benefit_code_null", localeBean.getSystemLocale(), "GETPRIVS",
+                            accountNumber, dat1));
+                }
+                return false;
             }
         }
         return true;
@@ -752,7 +770,8 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
                 case 1:
                     List<BenefitData> benefitData = (List<BenefitData>) params.get("benefitData");
                     if (benefitData != null && !benefitData.isEmpty()) {
-                        if (checkOrderFam("processBenefit", benefitData, benefits, dat1)) {
+                        if (checkOrderFam("processBenefit", benefitData, benefits, dat1) &&
+                                checkBenefitCode("processBenefit", benefitData, benefits, dat1)) {
                             processBenefitData(calculationCenterId, benefits, benefitData, dat1);
                         }
                     } else {
