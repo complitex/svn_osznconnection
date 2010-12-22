@@ -198,7 +198,7 @@ insert into ownership_correction(organization_id, correction, object_id, organiz
 
 -- Privileges corrections
 insert into privilege_correction(organization_id, correction, object_id, organization_code, internal_organization_id) values
-(2,'ПЕНСИОНЕР ПО ВОЗРАСТУ',15,'34',0),
+--(2,'ПЕНСИОНЕР ПО ВОЗРАСТУ',15,'34',0),
 (1,'ПЕНСИОНЕР ПО ВОЗРАСТУ',15,'1000',0);
 
 -- Tarif

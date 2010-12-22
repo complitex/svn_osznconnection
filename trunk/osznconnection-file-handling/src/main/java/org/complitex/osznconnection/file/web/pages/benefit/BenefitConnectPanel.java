@@ -71,10 +71,8 @@ public class BenefitConnectPanel extends Panel {
 
             switch (benefit.getStatus()) {
                 case ACCOUNT_NUMBER_NOT_FOUND:
-                    error(statusRenderService.displayStatus(RequestStatus.ACCOUNT_NUMBER_NOT_FOUND, getLocale()));
-                    break;
                 case PROCESSING_INVALID_FORMAT:
-                    error(statusRenderService.displayStatus(RequestStatus.PROCESSING_INVALID_FORMAT, getLocale()));
+                    error(statusRenderService.displayStatus(benefit.getStatus(), getLocale()));
                     break;
             }
 
