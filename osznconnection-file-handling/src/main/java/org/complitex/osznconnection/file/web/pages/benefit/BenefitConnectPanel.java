@@ -73,8 +73,8 @@ public class BenefitConnectPanel extends Panel {
                 case ACCOUNT_NUMBER_NOT_FOUND:
                     error(statusRenderService.displayStatus(RequestStatus.ACCOUNT_NUMBER_NOT_FOUND, getLocale()));
                     break;
-                case INVALID_FORMAT:
-                    error(statusRenderService.displayStatus(RequestStatus.INVALID_FORMAT, getLocale()));
+                case PROCESSING_INVALID_FORMAT:
+                    error(statusRenderService.displayStatus(RequestStatus.PROCESSING_INVALID_FORMAT, getLocale()));
                     break;
             }
 
@@ -213,8 +213,8 @@ public class BenefitConnectPanel extends Panel {
                             case ACCOUNT_NUMBER_NOT_FOUND:
                                 error(statusRenderService.displayStatus(RequestStatus.ACCOUNT_NUMBER_NOT_FOUND, getLocale()));
                                 break;
-                            case INVALID_FORMAT:
-                                error(statusRenderService.displayStatus(RequestStatus.INVALID_FORMAT, getLocale()));
+                            case PROCESSING_INVALID_FORMAT:
+                                error(statusRenderService.displayStatus(RequestStatus.PROCESSING_INVALID_FORMAT, getLocale()));
                                 break;
                             default:
                                 if (toUpdate != null) {
