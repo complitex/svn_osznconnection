@@ -164,7 +164,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
                 logBean.error(Module.NAME, getClass(), Payment.class, payment.getId(), EVENT.GETTING_DATA,
                         ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_unexpected", localeBean.getSystemLocale(), "GETMNCODEBYADDRESS",
                         result));
-                payment.setStatus(RequestStatus.INVALID_FORMAT);
+                payment.setStatus(RequestStatus.BINDING_INVALID_FORMAT);
             } else {
                 payment.setAccountNumber(result);
                 payment.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
@@ -213,7 +213,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
             log.error("acquireAccountCorrectionDetails. Result code is null. Payment id: {}", payment.getId());
             logBean.error(Module.NAME, getClass(), Payment.class, payment.getId(), EVENT.GETTING_DATA,
                     ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_unexpected", localeBean.getSystemLocale(), "GETACCATTRS", "null"));
-            payment.setStatus(RequestStatus.INVALID_FORMAT);
+            payment.setStatus(RequestStatus.BINDING_INVALID_FORMAT);
         } else {
             switch (resultCode) {
                 case 1:
@@ -223,7 +223,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
                                 payment.getId());
                         logBean.error(Module.NAME, getClass(), Payment.class, payment.getId(), EVENT.GETTING_DATA,
                                 ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_inconsistent", localeBean.getSystemLocale(), "GETACCATTRS"));
-                        payment.setStatus(RequestStatus.INVALID_FORMAT);
+                        payment.setStatus(RequestStatus.BINDING_INVALID_FORMAT);
                     }
                     break;
                 case 0:
@@ -252,7 +252,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
                     logBean.error(Module.NAME, getClass(), Payment.class, payment.getId(), EVENT.GETTING_DATA,
                             ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_unexpected", localeBean.getSystemLocale(), "GETACCATTRS",
                             resultCode));
-                    payment.setStatus(RequestStatus.INVALID_FORMAT);
+                    payment.setStatus(RequestStatus.BINDING_INVALID_FORMAT);
             }
         }
         return accountCorrectionDetails;
@@ -293,7 +293,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
             log.error("processPaymentAndBenefit. Result code is null. Payment id: {}", payment.getId());
             logBean.error(Module.NAME, getClass(), Payment.class, payment.getId(), EVENT.GETTING_DATA,
                     ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_unexpected", localeBean.getSystemLocale(), "GETCHARGEANDPARAMS", "null"));
-            payment.setStatus(RequestStatus.INVALID_FORMAT);
+            payment.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
         } else {
             switch (resultCode) {
                 case 1:
@@ -313,7 +313,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
                         logBean.error(Module.NAME, getClass(), Payment.class, payment.getId(), EVENT.GETTING_DATA,
                                 ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_inconsistent", localeBean.getSystemLocale(),
                                 "GETCHARGEANDPARAMS"));
-                        payment.setStatus(RequestStatus.INVALID_FORMAT);
+                        payment.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
                     }
                     break;
                 case -1:
@@ -324,7 +324,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
                     logBean.error(Module.NAME, getClass(), Payment.class, payment.getId(), EVENT.GETTING_DATA,
                             ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_unexpected", localeBean.getSystemLocale(), "GETCHARGEANDPARAMS",
                             resultCode));
-                    payment.setStatus(RequestStatus.INVALID_FORMAT);
+                    payment.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
             }
         }
     }
@@ -486,7 +486,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
             logBean.error(Module.NAME, getClass(), Benefit.class, benefit.getId(), EVENT.GETTING_DATA,
                     ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_unexpected", localeBean.getSystemLocale(),
                     "GETPRIVS", "null"));
-            benefit.setStatus(RequestStatus.INVALID_FORMAT);
+            benefit.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
         } else {
             switch (resultCode) {
                 case 1:
@@ -508,7 +508,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
                         logBean.error(Module.NAME, getClass(), Benefit.class, benefit.getId(), EVENT.GETTING_DATA,
                                 ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_inconsistent", localeBean.getSystemLocale(),
                                 "GETPRIVS"));
-                        benefit.setStatus(RequestStatus.INVALID_FORMAT);
+                        benefit.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
                     }
                     break;
                 case -1:
@@ -519,7 +519,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
                     logBean.error(Module.NAME, getClass(), Benefit.class, benefit.getId(), EVENT.GETTING_DATA,
                             ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_unexpected", localeBean.getSystemLocale(), "GETPRIVS",
                             resultCode));
-                    benefit.setStatus(RequestStatus.INVALID_FORMAT);
+                    benefit.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
             }
         }
         return null;
@@ -589,7 +589,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
             if (Strings.isEmpty(data.getOrderFamily())) {
                 log.error(method + ". Order fam is null. Account number: {}, dat1: {}", accountNumber, dat1);
                 for (Benefit benefit : benefits) {
-                    benefit.setStatus(RequestStatus.INVALID_FORMAT);
+                    benefit.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
                     logBean.error(Module.NAME, getClass(), Benefit.class, benefit.getId(), EVENT.GETTING_DATA,
                             ResourceUtil.getFormatString(RESOURCE_BUNDLE, "benefit_order_fam_null", localeBean.getSystemLocale(), "GETPRIVS",
                             accountNumber, dat1));
@@ -606,7 +606,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
                 log.error(method + ". Order fam is not unique. At least two benefit data have the same order fam. First: {}, second {}. "
                         + "Account number: {}, dat1: {}", new Object[]{data, dublicate, accountNumber, dat1});
                 for (Benefit benefit : benefits) {
-                    benefit.setStatus(RequestStatus.INVALID_FORMAT);
+                    benefit.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
                     logBean.error(Module.NAME, getClass(), Benefit.class, benefit.getId(), EVENT.GETTING_DATA,
                             ResourceUtil.getFormatString(RESOURCE_BUNDLE, "benefit_order_fam_not_unique", localeBean.getSystemLocale(), "GETPRIVS",
                             accountNumber, dat1));
@@ -745,7 +745,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
                 logBean.error(Module.NAME, getClass(), Benefit.class, benefit.getId(), EVENT.GETTING_DATA,
                         ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_unexpected", localeBean.getSystemLocale(),
                         "GETPRIVS", "null"));
-                benefit.setStatus(RequestStatus.INVALID_FORMAT);
+                benefit.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
             }
         } else {
             switch (resultCode) {
@@ -762,7 +762,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
                             logBean.error(Module.NAME, getClass(), Benefit.class, benefit.getId(), EVENT.GETTING_DATA,
                                     ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_inconsistent", localeBean.getSystemLocale(),
                                     "GETPRIVS"));
-                            benefit.setStatus(RequestStatus.INVALID_FORMAT);
+                            benefit.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
                         }
                     }
                     break;
@@ -775,7 +775,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
                         logBean.error(Module.NAME, getClass(), Benefit.class, benefit.getId(), EVENT.GETTING_DATA,
                                 ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_unexpected", localeBean.getSystemLocale(), "GETPRIVS",
                                 resultCode));
-                        benefit.setStatus(RequestStatus.INVALID_FORMAT);
+                        benefit.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
                     }
             }
         }
@@ -914,7 +914,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
                     }
 
                     if (benefitCodeAsInt == null) {
-                        setStatus(foundBenefits, RequestStatus.INVALID_FORMAT);
+                        setStatus(foundBenefits, RequestStatus.PROCESSING_INVALID_FORMAT);
                     } else {
                         for (Benefit benefit : foundBenefits) {
                             benefit.setField(BenefitDBF.PRIV_CAT, benefitCodeAsInt);
@@ -922,7 +922,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
                     }
 
                     if (ordFamAsInt == null) {
-                        setStatus(foundBenefits, RequestStatus.INVALID_FORMAT);
+                        setStatus(foundBenefits, RequestStatus.PROCESSING_INVALID_FORMAT);
                     } else {
                         for (Benefit benefit : foundBenefits) {
                             benefit.setField(BenefitDBF.ORD_FAM, ordFamAsInt);
@@ -933,7 +933,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
         }
 
         for (Benefit benefit : benefits) {
-            if (benefit.getStatus() != RequestStatus.BENEFIT_NOT_FOUND && benefit.getStatus() != RequestStatus.INVALID_FORMAT) {
+            if (benefit.getStatus() != RequestStatus.BENEFIT_NOT_FOUND && benefit.getStatus() != RequestStatus.PROCESSING_INVALID_FORMAT) {
                 benefit.setStatus(RequestStatus.PROCESSED);
             }
         }

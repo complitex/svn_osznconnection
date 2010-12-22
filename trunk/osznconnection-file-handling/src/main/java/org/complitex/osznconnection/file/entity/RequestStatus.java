@@ -56,7 +56,9 @@ public enum RequestStatus implements IEnumCode {
      */
     BENEFIT_NOT_FOUND(218, false, false),
 
-    INVALID_FORMAT(219, false, false),
+    PROCESSING_INVALID_FORMAT(219, false, false),
+
+    BINDING_INVALID_FORMAT(203, false, false),
 
     PAYMENT_NOT_EXISTS(220, false, false);
 
@@ -101,7 +103,7 @@ public enum RequestStatus implements IEnumCode {
                 STREET_TYPE_UNRESOLVED, STREET_UNRESOLVED, STREET_TYPE_NOT_FOUND,
                 STREET_NOT_FOUND, STREET_UNRESOLVED_LOCALLY,
                 APARTMENT_NOT_FOUND,
-                MORE_ONE_ACCOUNTS, INVALID_FORMAT, PAYMENT_NOT_EXISTS);
+                MORE_ONE_ACCOUNTS, BINDING_INVALID_FORMAT, PAYMENT_NOT_EXISTS);
     }
 
     /**
@@ -114,6 +116,7 @@ public enum RequestStatus implements IEnumCode {
         result.add(TARIF_CODE2_1_NOT_FOUND);
         result.add(BENEFIT_OWNER_NOT_ASSOCIATED);
         result.add(BENEFIT_NOT_FOUND);
+        result.add(PROCESSING_INVALID_FORMAT);
         return result;
     }
 
