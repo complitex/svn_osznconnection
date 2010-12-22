@@ -973,17 +973,13 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
     }
 
     protected List<Benefit> findByPassportNumber(List<Benefit> benefits, final String passportNumber) {
-        if (!Strings.isEmpty(passportNumber)) {
-            return Lists.newArrayList(Iterables.filter(benefits, new Predicate<Benefit>() {
+        return Lists.newArrayList(Iterables.filter(benefits, new Predicate<Benefit>() {
 
-                @Override
-                public boolean apply(Benefit benefit) {
-                    return passportNumber.equals(benefit.getField(BenefitDBF.PSP_NUM));
-                }
-            }));
-        } else {
-            return Collections.emptyList();
-        }
+            @Override
+            public boolean apply(Benefit benefit) {
+                return passportNumber.equals(benefit.getField(BenefitDBF.PSP_NUM));
+            }
+        }));
     }
 
     protected List<Benefit> findByINN(List<Benefit> benefits, final String inn) {
