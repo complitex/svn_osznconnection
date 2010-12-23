@@ -4,12 +4,12 @@
  */
 package org.complitex.osznconnection.file.web.pages.payment;
 
+import org.complitex.osznconnection.file.web.pages.payment.component.account.AccountNumberLookupPanel;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
@@ -17,7 +17,6 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.util.WildcardListModel;
-import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.entity.example.DomainObjectExample;
 import org.complitex.dictionary.strategy.StrategyFactory;
@@ -28,7 +27,7 @@ import org.complitex.osznconnection.file.entity.Payment;
 import org.complitex.osznconnection.file.entity.PaymentDBF;
 import org.complitex.osznconnection.file.entity.RequestStatus;
 import org.complitex.osznconnection.file.service.PaymentLookupBean;
-import org.complitex.osznconnection.file.web.component.correction.account.AccountNumberCorrectionPanel;
+import org.complitex.osznconnection.file.web.pages.payment.component.account.AccountNumberCorrectionPanel;
 import org.odlabs.wiquery.core.javascript.JsStatement;
 import org.odlabs.wiquery.ui.accordion.Accordion;
 import org.odlabs.wiquery.ui.accordion.AccordionAnimated;
@@ -41,40 +40,50 @@ import javax.ejb.EJB;
 import java.util.List;
 import java.util.Map;
 import org.apache.wicket.Component;
+import org.apache.wicket.model.AbstractReadOnlyModel;
+import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.util.CloneUtil;
 import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
 import org.complitex.osznconnection.file.service.StatusRenderService;
 import org.complitex.address.strategy.street.StreetStrategy;
+import org.complitex.osznconnection.file.service.PaymentBean;
+import org.odlabs.wiquery.ui.accordion.AccordionActive;
 
 /**
  * Панель для поиска номера л/c по различным параметрам: по адресу, по номеру лиц. счета, по номеру в мегабанке.
  * @author Artem
  */
-public abstract class PaymentLookupPanel extends Panel {
+public class PaymentLookupPanel extends Panel {
 
     private static final Logger log = LoggerFactory.getLogger(PaymentLookupPanel.class);
+
     @EJB(name = "StrategyFactory")
     private StrategyFactory strategyFactory;
+
     @EJB(name = "PaymentLookupBean")
     private PaymentLookupBean paymentLookupBean;
+
     @EJB(name = "StatusRenderService")
     private StatusRenderService statusRenderService;
+
+    @EJB(name = "PaymentBean")
+    private PaymentBean paymentBean;
+    
     private IModel<String> accountInfoModel;
     private IModel<String> apartmentModel;
-    private IModel<String> ownNumSrModel;
-    private IModel<String> megabankModel;
     private IModel<List<? extends AccountDetail>> accountsModel;
     private IModel<AccountDetail> accountModel;
     private AccountNumberCorrectionPanel accountNumberCorrectionPanel;
-    private WebMarkupContainer container;
     private FeedbackPanel messages;
     private Dialog dialog;
     private Accordion accordion;
     private Label accountInfo;
-    private SearchComponentState componentState;
-    private SearchComponent searchComponent;
+    private SearchComponentState addressSearchComponentState;
+    private SearchComponent addressSearchComponent;
     private Payment payment;
     private Payment initialPayment;
+    private AccountNumberLookupPanel ownNumSrAccountLookupPanel;
+    private AccountNumberLookupPanel megabankAccountLookupPanel;
 
     public PaymentLookupPanel(String id, Component... toUpdate) {
         super(id);
@@ -91,27 +100,23 @@ public abstract class PaymentLookupPanel extends Panel {
         dialog.setCloseOnEscape(false);
         add(dialog);
 
-        //Контейнер для ajax
-        container = new WebMarkupContainer("container");
-        container.setOutputMarkupId(true);
-        dialog.add(container);
-
         messages = new FeedbackPanel("messages");
         messages.setOutputMarkupId(true);
-        container.add(messages);
+        dialog.add(messages);
 
         accordion = new Accordion("accordion");
         accordion.setAnimationEffect(new AccordionAnimated(false));
         accordion.setOutputMarkupPlaceholderTag(true);
-        container.add(accordion);
+        accordion.setAutoHeight(false);
+        dialog.add(accordion);
 
         //lookup by address
-        componentState = new SearchComponentState();
+        addressSearchComponentState = new SearchComponentState();
 
         accountInfoModel = new Model<String>();
         accountInfo = new Label("accountInfo", accountInfoModel);
         accountInfo.setOutputMarkupId(true);
-        container.add(accountInfo);
+        dialog.add(accountInfo);
 
         apartmentModel = new Model<String>();
         TextField<String> apartment = new TextField<String>("apartment", apartmentModel);
@@ -128,36 +133,27 @@ public abstract class PaymentLookupPanel extends Panel {
 
             @Override
             public void onClick(AjaxRequestTarget target) {
-                initInternalAddress(componentState);
+                initInternalAddress(addressSearchComponentState);
                 initApartment(apartmentModel.getObject());
 
+                boolean visible = accountNumberCorrectionPanel.isVisible();
+                AccountDetail detail = null;
+                accountNumberCorrectionPanel.setVisible(false);
                 if (validateInternalAddress()) {
                     paymentLookupBean.resolveOutgoingAddress(payment);
 
                     if (payment.getStatus() == RequestStatus.ACCOUNT_NUMBER_NOT_FOUND) {
                         try {
-                            List<AccountDetail> accountList = paymentLookupBean.getAccounts(payment);
-
+                            List<AccountDetail> accountList = paymentLookupBean.acquireAccountDetailsByAddress(payment);
                             if (accountList == null || accountList.isEmpty()) {
                                 error(statusRenderService.displayStatus(payment.getStatus(), getLocale()));
-                                accountInfoModel.setObject(null);
-                                accountModel.setObject(null);
-                                target.addComponent(accountInfo);
                             } else {
-                                if (accountList.size() == 1) {
-                                    accountModel.setObject(accountList.get(0));
-                                    accountInfoModel.setObject(AccountNumberCorrectionPanel.displayAccountDetail(accountList.get(0)));
-                                    target.addComponent(accountInfo);
+                                if (accountList.size() == 1 && !Strings.isEmpty(accountList.get(0).getAccountNumber())) {
+                                    detail = accountList.get(0);
                                 } else {
-                                    accountModel.setObject(null);
-                                    accountInfoModel.setObject(null);
                                     accountsModel.setObject(accountList);
+                                    accountNumberCorrectionPanel.clear();
                                     accountNumberCorrectionPanel.setVisible(true);
-
-                                    target.addComponent(accountInfo);
-                                    target.addComponent(messages);
-                                    target.addComponent(accordion);
-                                    return;
                                 }
                             }
                         } catch (DBException e) {
@@ -167,88 +163,104 @@ public abstract class PaymentLookupPanel extends Panel {
                         error(statusRenderService.displayStatus(payment.getStatus(), getLocale()));
                     }
                 }
+
+                accountModel.setObject(detail);
+                accountInfoModel.setObject(AccountNumberCorrectionPanel.displayAccountDetail(detail));
+                target.addComponent(accountInfo);
                 target.addComponent(messages);
-                if (accountNumberCorrectionPanel.isVisible()) {
-                    accountNumberCorrectionPanel.setVisible(false);
+                if (accountNumberCorrectionPanel.isVisible() || visible) {
+                    accordion.setActive(new AccordionActive(0));
                     target.addComponent(accordion);
                 }
             }
         };
         accordion.add(lookupByAddress);
-        searchComponent = new SearchComponent("searchComponent", componentState,
+        addressSearchComponent = new SearchComponent("addressSearchComponent", addressSearchComponentState,
                 ImmutableList.of("city", "street", "building"), null, true);
-        searchComponent.setOutputMarkupPlaceholderTag(true);
-        searchComponent.setVisible(false);
-        accordion.add(searchComponent);
+        addressSearchComponent.setOutputMarkupPlaceholderTag(true);
+        addressSearchComponent.setVisible(false);
+        accordion.add(addressSearchComponent);
 
         accountModel = new Model<AccountDetail>();
         accountsModel = new WildcardListModel<AccountDetail>();
         accountNumberCorrectionPanel = new AccountNumberCorrectionPanel("accountNumberCorrectionPanel", accountsModel) {
 
             @Override
-            protected void correctAccountNumber(AccountDetail accountDetail, AjaxRequestTarget target) {
+            protected void updateAccountNumber(AccountDetail accountDetail, AjaxRequestTarget target) {
                 accountModel.setObject(accountDetail);
                 accountInfoModel.setObject(AccountNumberCorrectionPanel.displayAccountDetail(accountDetail));
                 target.addComponent(accountInfo);
             }
         };
-        accountNumberCorrectionPanel.setOutputMarkupPlaceholderTag(true);
         accountNumberCorrectionPanel.setVisible(false);
         accordion.add(accountNumberCorrectionPanel);
 
-        //lookup by OWN_NUM_SR
-        ownNumSrModel = new Model<String>();
-        TextField<String> ownNumSr = new TextField<String>("ownNumSr", ownNumSrModel);
-        ownNumSr.add(new AjaxFormComponentUpdatingBehavior("onblur") {
+        class SimpleResourceModel extends AbstractReadOnlyModel<String> {
 
-            @Override
-            protected void onUpdate(AjaxRequestTarget target) {
+            private String resourceKey;
+
+            public SimpleResourceModel(String resourceKey) {
+                this.resourceKey = resourceKey;
             }
-        });
-        ownNumSr.setOutputMarkupId(true);
-
-        accordion.add(ownNumSr);
-
-        AjaxLink lookupByOwnNumSr = new AjaxLink("lookupByOwnNumSr") {
 
             @Override
-            public void onClick(AjaxRequestTarget target) {
-                if (validateOwnNumSr()) {
+            public String getObject() {
+                return PaymentLookupPanel.this.getString(resourceKey);
+            }
+        }
+
+        //lookup by OWN_NUM_SR
+        ownNumSrAccountLookupPanel = new AccountNumberLookupPanel("ownNumSrAccountLookupPanel",
+                new SimpleResourceModel("own_num_sr_label"), new SimpleResourceModel("own_num_sr_required"), messages) {
+
+            @Override
+            protected List<AccountDetail> acquireAccountDetailsByAccCode(Payment payment, String account) throws DBException {
+                payment.setField(PaymentDBF.OWN_NUM_SR, account);
+                return paymentLookupBean.acquireAccountDetailsByOsznAccount(payment);
+            }
+
+            @Override
+            protected void updateAccountNumber(AccountDetail accountDetail, AjaxRequestTarget target, boolean refresh) {
+                accountModel.setObject(accountDetail);
+                accountInfoModel.setObject(AccountNumberLookupPanel.displayAccountDetail(accountDetail));
+                target.addComponent(accountInfo);
+                if (refresh) {
+                    accordion.setActive(new AccordionActive(1));
+                    target.addComponent(accordion);
                 }
-                target.addComponent(messages);
             }
         };
-        accordion.add(lookupByOwnNumSr);
+        accordion.add(ownNumSrAccountLookupPanel);
 
         //lookup by megabank
-        megabankModel = new Model<String>();
-        TextField<String> megabank = new TextField<String>("megabank", megabankModel);
-        megabank.add(new AjaxFormComponentUpdatingBehavior("onblur") {
+        megabankAccountLookupPanel = new AccountNumberLookupPanel("megabankAccountLookupPanel",
+                new SimpleResourceModel("megabank_label"), new SimpleResourceModel("megabank_required"), messages) {
 
             @Override
-            protected void onUpdate(AjaxRequestTarget target) {
+            protected List<AccountDetail> acquireAccountDetailsByAccCode(Payment payment, String account) throws DBException {
+                return paymentLookupBean.acquireAccountDetailsByMegabankAccount(payment, account);
             }
-        });
-        megabank.setOutputMarkupId(true);
-        accordion.add(megabank);
-        AjaxLink lookupByMegabank = new AjaxLink("lookupByMegabank") {
 
             @Override
-            public void onClick(AjaxRequestTarget target) {
-                if (validateMegabank()) {
+            protected void updateAccountNumber(AccountDetail accountDetail, AjaxRequestTarget target, boolean refresh) {
+                accountModel.setObject(accountDetail);
+                accountInfoModel.setObject(AccountNumberLookupPanel.displayAccountDetail(accountDetail));
+                target.addComponent(accountInfo);
+                if (refresh) {
+                    accordion.setActive(new AccordionActive(2));
+                    target.addComponent(accordion);
                 }
-                target.addComponent(messages);
             }
         };
-        accordion.add(lookupByMegabank);
+        accordion.add(megabankAccountLookupPanel);
 
         // save/cancel
-        container.add(new AjaxLink("save") {
+        dialog.add(new AjaxLink("save") {
 
             @Override
             public void onClick(AjaxRequestTarget target) {
                 if (validate()) {
-                    updateAccountNumber(initialPayment, accountModel.getObject().getAccountNumber(), target);
+                    updateAccountNumber(target);
 
                     for (Component component : toUpdate) {
                         target.addComponent(component);
@@ -259,36 +271,20 @@ public abstract class PaymentLookupPanel extends Panel {
                 }
             }
         });
-        container.add(new AjaxLink("cancel") {
+
+        dialog.add(new AjaxLink("cancel") {
 
             @Override
             public void onClick(AjaxRequestTarget target) {
                 closeDialog(target);
             }
         });
-
     }
 
     private void closeDialog(AjaxRequestTarget target) {
-        searchComponent.setVisible(false);
-        target.addComponent(searchComponent);
+        addressSearchComponent.setVisible(false);
+        target.addComponent(addressSearchComponent);
         dialog.close(target);
-    }
-
-    private boolean validateOwnNumSr() {
-        boolean validated = !Strings.isEmpty(ownNumSrModel.getObject());
-        if (!validated) {
-            error(getString("own_num_sr_required"));
-        }
-        return validated;
-    }
-
-    private boolean validateMegabank() {
-        boolean validated = !Strings.isEmpty(megabankModel.getObject());
-        if (!validated) {
-            error(getString("megabank_required"));
-        }
-        return validated;
     }
 
     private boolean validate() {
@@ -369,9 +365,9 @@ public abstract class PaymentLookupPanel extends Panel {
 
         //lookup by address
         apartmentModel.setObject((String) payment.getField(PaymentDBF.FLAT));
-        initSearchComponentState(componentState, payment);
-        searchComponent.reinitialize(target);
-        searchComponent.setVisible(true);
+        initSearchComponentState(addressSearchComponentState, payment);
+        addressSearchComponent.reinitialize(target);
+        addressSearchComponent.setVisible(true);
 
         if (accountNumberCorrectionPanel.isVisible()) {
             accountNumberCorrectionPanel.setVisible(false);
@@ -379,15 +375,19 @@ public abstract class PaymentLookupPanel extends Panel {
         accountNumberCorrectionPanel.clear();
 
         //lookup by OWN_NUM_SR
-        ownNumSrModel.setObject(null);
+        ownNumSrAccountLookupPanel.initialize(payment, (String) initialPayment.getField(PaymentDBF.OWN_NUM_SR));
 
         //lookup by megabank
-        megabankModel.setObject(null);
+        megabankAccountLookupPanel.initialize(payment, null);
 
         target.addComponent(accordion);
         target.addComponent(messages);
         dialog.open(target);
     }
 
-    protected abstract void updateAccountNumber(Payment payment, String accountNumber, AjaxRequestTarget target);
+    protected void updateAccountNumber(AjaxRequestTarget target) {
+        initialPayment.setAccountNumber(accountModel.getObject().getAccountNumber());
+        initialPayment.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
+        paymentBean.updateAccountNumber(initialPayment);
+    }
 }

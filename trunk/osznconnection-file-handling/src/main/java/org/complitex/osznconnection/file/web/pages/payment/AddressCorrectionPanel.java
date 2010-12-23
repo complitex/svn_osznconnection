@@ -20,7 +20,7 @@ import org.complitex.dictionary.web.component.search.SearchComponentState;
 import org.complitex.osznconnection.file.entity.Payment;
 import org.complitex.osznconnection.file.entity.PaymentDBF;
 import org.complitex.osznconnection.file.service.AddressService;
-import org.complitex.osznconnection.file.web.pages.util.BuildingFormatter;
+import org.complitex.osznconnection.file.web.pages.util.AddressRenderer;
 import org.complitex.address.strategy.street.StreetStrategy;
 import org.odlabs.wiquery.core.javascript.JsStatement;
 import org.odlabs.wiquery.ui.core.JsScopeUiEvent;
@@ -102,7 +102,7 @@ public class AddressCorrectionPanel extends Panel {
             public String getObject() {
                 return payment.getField(PaymentDBF.N_NAME) + ", "
                         + payment.getField(PaymentDBF.VUL_NAME) + ", "
-                        + BuildingFormatter.formatBuilding((String) payment.getField(PaymentDBF.BLD_NUM),
+                        + AddressRenderer.displayBuilding((String) payment.getField(PaymentDBF.BLD_NUM),
                         (String) payment.getField(PaymentDBF.CORP_NUM), getLocale()) + ", "
                         + payment.getField(PaymentDBF.FLAT);
             }

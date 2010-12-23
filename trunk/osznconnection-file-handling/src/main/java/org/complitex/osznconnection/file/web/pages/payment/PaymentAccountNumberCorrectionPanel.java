@@ -15,7 +15,7 @@ import org.apache.wicket.util.string.Strings;
 import org.complitex.osznconnection.file.entity.AccountDetail;
 import org.complitex.osznconnection.file.entity.Payment;
 import org.complitex.osznconnection.file.service.PersonAccountService;
-import org.complitex.osznconnection.file.web.component.correction.account.AccountNumberCorrectionPanel;
+import org.complitex.osznconnection.file.web.pages.payment.component.account.AccountNumberCorrectionPanel;
 import org.odlabs.wiquery.core.javascript.JsStatement;
 import org.odlabs.wiquery.ui.core.JsScopeUiEvent;
 import org.odlabs.wiquery.ui.dialog.Dialog;
@@ -69,7 +69,7 @@ public class PaymentAccountNumberCorrectionPanel extends Panel {
                 Model.ofList(accountCorrectionDetails)) {
 
             @Override
-            protected void correctAccountNumber(AccountDetail accountDetail, AjaxRequestTarget target) {
+            protected void updateAccountNumber(AccountDetail accountDetail, AjaxRequestTarget target) {
                 accountNumberModel.setObject(accountDetail.getAccountNumber());
             }
 

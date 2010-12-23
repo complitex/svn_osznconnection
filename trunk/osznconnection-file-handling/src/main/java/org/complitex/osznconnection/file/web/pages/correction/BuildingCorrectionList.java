@@ -10,7 +10,7 @@ import org.complitex.osznconnection.file.entity.Correction;
 import org.complitex.osznconnection.file.entity.example.BuildingCorrectionExample;
 import org.complitex.osznconnection.file.entity.example.CorrectionExample;
 import org.complitex.osznconnection.file.service.AddressCorrectionBean;
-import org.complitex.osznconnection.file.web.pages.util.BuildingFormatter;
+import org.complitex.osznconnection.file.web.pages.util.AddressRenderer;
 
 import javax.ejb.EJB;
 import java.util.List;
@@ -55,6 +55,6 @@ public class BuildingCorrectionList extends AddressCorrectionList {
         }
 
         BuildingCorrection bc = (BuildingCorrection) correction;
-        return parentAddress + BuildingFormatter.formatBuilding(bc.getCorrection(), bc.getCorrectionCorp(), getLocale());
+        return parentAddress + AddressRenderer.displayBuilding(bc.getCorrection(), bc.getCorrectionCorp(), getLocale());
     }
 }

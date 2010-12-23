@@ -36,7 +36,11 @@ public interface ICalculationCenterAdapter {
 
     void acquirePersonAccount(Payment payment) throws DBException;
 
-    public List<AccountDetail> acquireAccountCorrectionDetails(Payment payment) throws DBException;
+    public List<AccountDetail> acquireAccountDetailsByAddress(Payment payment) throws DBException;
+
+    public List<AccountDetail> acquireAccountDetailsByOsznAccount(Payment payment) throws DBException;
+
+    public List<AccountDetail> acquireAccountDetailsByMegabankAccount(Payment payment, String megabankAccount) throws DBException;
 
     public void processPaymentAndBenefit(Payment payment, List<Benefit> benefits, long calculationCenterId) throws DBException;
 

@@ -20,9 +20,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author Artem
  */
-public class AccountDetailHandler implements TypeHandler {
+public class AccountDetailsByAccCodeHandler implements TypeHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(AccountDetailHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(AccountDetailsByAccCodeHandler.class);
 
     @Override
     public void setParameter(PreparedStatement ps, int i, Object parameter, JdbcType jdbcType) throws SQLException {
@@ -50,9 +50,15 @@ public class AccountDetailHandler implements TypeHandler {
         List<AccountDetail> accountDetails = Lists.newArrayList();
         while (rs.next()) {
             AccountDetail detail = new AccountDetail();
-            detail.setAccountNumber(rs.getString("acc_code"));
-            detail.setOwnerName(rs.getString("owner_fio"));
-            detail.setOwnerINN(rs.getString("owner_inn"));
+            detail.setAccountNumber(rs.getString("mn_code"));
+            detail.setOwnerName(rs.getString("FIO"));
+            detail.setMegabankAccountNumber(rs.getString("ERC_CODE"));
+            detail.setOwnNumSr(rs.getString("zheu_code"));
+            detail.setStreetType(rs.getString("STREET_SORT"));
+            detail.setStreet(rs.getString("STREET_NAME"));
+            detail.setBuildingNumber(rs.getString("HOUSE_NAME"));
+            detail.setBuildingCorp(rs.getString("HOUSE_PART"));
+            detail.setApartment(rs.getString("FLAT"));
             accountDetails.add(detail);
         }
 

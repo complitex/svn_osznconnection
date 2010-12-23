@@ -21,7 +21,7 @@
         </environment>
     </environments>
     <mappers>
-        <mapper resource="org/complitex/osznconnection/file/service/AbstractRequestBean.xml"/>
+         <mapper resource="org/complitex/osznconnection/file/service/AbstractRequestBean.xml"/>
         <mapper resource="org/complitex/osznconnection/file/service/PaymentBean.xml"/>
         <mapper resource="org/complitex/osznconnection/file/service/CorrectionBean.xml"/>
         <mapper resource="org/complitex/osznconnection/file/service/AddressCorrectionBean.xml"/>
@@ -33,7 +33,7 @@
         <mapper resource="org/complitex/osznconnection/file/service/TarifBean.xml"/>
         <mapper resource="org/complitex/osznconnection/file/service/PersonAccountLocalBean.xml"/>
         <mapper resource="org/complitex/osznconnection/file/service/ConfigBean.xml"/>
-        <mapper resource="org/complitex/osznconnection/file/service/StatusDetailBean.xml"/>
+        <mapper resource="org/complitex/osznconnection/file/service/status/details/StatusDetailBean.xml"/>
         <mapper resource="org/complitex/osznconnection/file/service/warning/RequestWarningBean.xml"/>
 
         <mapper resource="org/complitex/osznconnection/file/calculation/service/CalculationCenterBean.xml"/>
