@@ -7,6 +7,7 @@ package org.complitex.osznconnection.file.web.pages.util;
 import java.util.Locale;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.util.ResourceUtil;
+import org.complitex.dictionary.util.StringUtil;
 
 /**
  *
@@ -45,11 +46,38 @@ public final class AddressRenderer {
         }
     }
 
+    public static String displayCity(String cityType, String city, Locale locale) {
+        if (Strings.isEmpty(cityType)) {
+            return city;
+        } else {
+            return cityType + " " + city;
+        }
+    }
+
+    public static String displayDistrict(String district, Locale locale) {
+        return StringUtil.valueOf(district);
+    }
+
     public static String displayAddress(String streetType, String street, String buildingNumber, String buildingCorp, String apartment, Locale locale) {
         String displayStreet = displayStreet(streetType, street, locale);
         String displayBuilding = displayBuilding(buildingNumber, buildingCorp, locale);
         String displayApartment = displayApartment(apartment, locale);
         return displayStrings(displayStreet, displayBuilding, displayApartment);
+    }
+
+    public static String displayAddress(String cityType, String city, String streetType, String street, String buildingNumber,
+            String buildingCorp, String apartment, Locale locale) {
+        String displayCity = displayCity(cityType, city, locale);
+        String displayStreet = displayStreet(streetType, street, locale);
+        String displayBuilding = displayBuilding(buildingNumber, buildingCorp, locale);
+        String displayApartment = displayApartment(apartment, locale);
+        return displayStrings(displayCity, displayStreet, displayBuilding, displayApartment);
+    }
+
+    public static String displayAddress(String cityType, String city, String district, Locale locale) {
+        String displayCity = displayCity(cityType, city, locale);
+        String displayDistrict = displayDistrict(district, locale);
+        return displayStrings(displayCity, displayDistrict);
     }
 
     private static String displayStrings(String... strings) {
