@@ -47,14 +47,14 @@ public class BuildingCorrectionList extends AddressCorrectionList {
 
     @Override
     protected String displayCorrection(Correction correction) {
-        String parentAddress = "";
+        String city = null;
+        String street = null;
         if (correction.getParent() != null && correction.getParent().getParent() != null) {
-            parentAddress = correction.getParent().getParent().getCorrection()
-                    + ", " + correction.getParent().getCorrection()
-                    + ", ";
+            city = correction.getParent().getParent().getCorrection();
+            street = correction.getParent().getCorrection();
         }
 
         BuildingCorrection bc = (BuildingCorrection) correction;
-        return parentAddress + AddressRenderer.displayBuilding(bc.getCorrection(), bc.getCorrectionCorp(), getLocale());
+        return AddressRenderer.displayAddress(null, city, null, street, bc.getCorrection(), bc.getCorrectionCorp(), null, getLocale());
     }
 }

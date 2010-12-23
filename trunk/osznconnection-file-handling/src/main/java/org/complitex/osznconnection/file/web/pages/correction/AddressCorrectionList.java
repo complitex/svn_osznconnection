@@ -12,6 +12,7 @@ import org.complitex.osznconnection.file.service.AddressCorrectionBean;
 
 import javax.ejb.EJB;
 import java.util.List;
+import org.complitex.osznconnection.file.web.pages.util.AddressRenderer;
 
 /**
  * Страница для списка коррекций элементов адреса(город, улица).
@@ -53,11 +54,14 @@ public class AddressCorrectionList extends AbstractCorrectionList {
 
     @Override
     protected String displayCorrection(Correction correction) {
-        boolean districtOrStreet = "street".equals(this.getEntity()) || "district".equals(this.getEntity());
-        if (districtOrStreet && correction.getParent() != null) {
-            return correction.getParent().getCorrection() + ", " + correction.getCorrection();
+        if ("street".equals(this.getEntity())) {
+            String city = correction.getParent().getCorrection();
+            return AddressRenderer.displayAddress(null, city, null, correction.getCorrection(), null, null, null, getLocale());
+        } else if ("district".equals(this.getEntity())) {
+            String city = correction.getParent().getCorrection();
+            return AddressRenderer.displayAddress(null, city, correction.getCorrection(), getLocale());
+        } else {
+            return super.displayCorrection(correction);
         }
-
-        return super.displayCorrection(correction);
     }
 }

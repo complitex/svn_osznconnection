@@ -139,13 +139,15 @@ public class AddressCorrectionEdit extends FormTemplatePage {
         protected String displayCorrection() {
             Correction correction = getModel();
 
-            boolean districtOrStreet = "street".equals(correction.getEntity()) || "district".equals(correction.getEntity());
-            if (districtOrStreet && correction.getParent() != null) {
-                return correction.getParent().getCorrection()
-                        + ", " + correction.getCorrection();
+            if ("street".equals(correction.getEntity())) {
+                String city = correction.getParent().getCorrection();
+                return AddressRenderer.displayAddress(null, city, null, correction.getCorrection(), null, null, null, getLocale());
+            } else if ("district".equals(correction.getEntity())) {
+                String city = correction.getParent().getCorrection();
+                return AddressRenderer.displayAddress(null, city, correction.getCorrection(), getLocale());
+            } else {
+                return super.displayCorrection();
             }
-
-            return super.displayCorrection();
         }
 
         protected DomainObject findObject(long objectId, String entity) {
@@ -226,13 +228,15 @@ public class AddressCorrectionEdit extends FormTemplatePage {
         @Override
         protected String displayCorrection() {
             BuildingCorrection correction = getModel();
-            String parentAddress = "";
-            if (correction.getParent() != null && correction.getParent().getParent() != null) {
-                parentAddress = correction.getParent().getParent().getCorrection()
-                        + ", " + correction.getParent().getCorrection() + ", ";
-            }
 
-            return parentAddress + AddressRenderer.displayBuilding(correction.getCorrection(), correction.getCorrectionCorp(), getLocale());
+            String city = null;
+            String street = null;
+            if (correction.getParent() != null && correction.getParent().getParent() != null) {
+                city = correction.getParent().getParent().getCorrection();
+                street = correction.getParent().getCorrection();
+            }
+            return AddressRenderer.displayAddress(null, city, null, street, correction.getCorrection(), correction.getCorrectionCorp(), null,
+                    getLocale());
         }
 
         @Override

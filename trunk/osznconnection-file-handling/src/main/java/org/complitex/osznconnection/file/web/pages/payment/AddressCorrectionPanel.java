@@ -47,6 +47,7 @@ public class AddressCorrectionPanel extends Panel {
 
         CITY, STREET, BUILDING;
     }
+    
     @EJB(name = "StrategyFactory")
     private StrategyFactory strategyFactory;
 
@@ -100,11 +101,15 @@ public class AddressCorrectionPanel extends Panel {
 
             @Override
             public String getObject() {
-                return payment.getField(PaymentDBF.N_NAME) + ", "
-                        + payment.getField(PaymentDBF.VUL_NAME) + ", "
-                        + AddressRenderer.displayBuilding((String) payment.getField(PaymentDBF.BLD_NUM),
-                        (String) payment.getField(PaymentDBF.CORP_NUM), getLocale()) + ", "
-                        + payment.getField(PaymentDBF.FLAT);
+                return AddressRenderer.displayAddress(null, (String) payment.getField(PaymentDBF.N_NAME), null,
+                        (String) payment.getField(PaymentDBF.VUL_NAME), (String) payment.getField(PaymentDBF.BLD_NUM),
+                        (String) payment.getField(PaymentDBF.CORP_NUM), (String) payment.getField(PaymentDBF.FLAT), getLocale());
+
+//                return payment.getField(PaymentDBF.N_NAME) + ", "
+//                        + payment.getField(PaymentDBF.VUL_NAME) + ", "
+//                        + AddressRenderer.displayBuilding((String) payment.getField(PaymentDBF.BLD_NUM),
+//                        (String) payment.getField(PaymentDBF.CORP_NUM), getLocale()) + ", "
+//                        + payment.getField(PaymentDBF.FLAT);
             }
         }));
 
