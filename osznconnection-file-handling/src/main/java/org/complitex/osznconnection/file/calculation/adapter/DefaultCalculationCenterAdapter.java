@@ -43,18 +43,25 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
     protected static final Logger log = LoggerFactory.getLogger(DefaultCalculationCenterAdapter.class);
     protected static final String RESOURCE_BUNDLE = DefaultCalculationCenterAdapter.class.getName();
     protected static final String MAPPING_NAMESPACE = DefaultCalculationCenterAdapter.class.getName();
+
     @EJB(beanName = "OwnershipCorrectionBean")
     private OwnershipCorrectionBean ownershipCorrectionBean;
+
     @EJB(beanName = "TarifBean")
     private TarifBean tarifBean;
+
     @EJB(beanName = "PrivilegeCorrectionBean")
     private PrivilegeCorrectionBean privilegeCorrectionBean;
+
     @EJB
     private LogBean logBean;
+
     @EJB
     private LocaleBean localeBean;
+
     @EJB
     private RequestWarningBean warningBean;
+    
     @EJB
     private WebWarningRenderer webWarningRenderer;
 
@@ -188,7 +195,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
      * @return
      */
     @Override
-    public List<AccountDetail> acquireAccountCorrectionDetails(Payment payment) throws DBException {
+    public List<AccountDetail> acquireAccountDetailsByAddress(Payment payment) throws DBException {
         List<AccountDetail> accountCorrectionDetails = null;
 
         Map<String, Object> params = Maps.newHashMap();
@@ -201,16 +208,16 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
         params.put("dat1", payment.getField(PaymentDBF.DAT1));
 
         try {
-            sqlSession().selectOne(MAPPING_NAMESPACE + ".acquireAccountCorrectionDetails", params);
+            sqlSession().selectOne(MAPPING_NAMESPACE + ".acquireAccountDetailsByAddress", params);
         } catch (Exception e) {
             throw new DBException(e);
         } finally {
-            log.info("acquireAccountCorrectionDetails. Parameters : {}", params);
+            log.info("acquireAccountDetailsByAddress. Parameters : {}", params);
         }
 
         Integer resultCode = (Integer) params.get("resultCode");
         if (resultCode == null) {
-            log.error("acquireAccountCorrectionDetails. Result code is null. Payment id: {}", payment.getId());
+            log.error("acquireAccountDetailsByAddress. Result code is null. Payment id: {}", payment.getId());
             logBean.error(Module.NAME, getClass(), Payment.class, payment.getId(), EVENT.GETTING_DATA,
                     ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_unexpected", localeBean.getSystemLocale(), "GETACCATTRS", "null"));
             payment.setStatus(RequestStatus.BINDING_INVALID_FORMAT);
@@ -219,7 +226,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
                 case 1:
                     accountCorrectionDetails = (List<AccountDetail>) params.get("details");
                     if (accountCorrectionDetails == null || accountCorrectionDetails.isEmpty()) {
-                        log.error("acquireAccountCorrectionDetails. Result code is 1 but account details data is null or empty. Payment id: {}",
+                        log.error("acquireAccountDetailsByAddress. Result code is 1 but account details data is null or empty. Payment id: {}",
                                 payment.getId());
                         logBean.error(Module.NAME, getClass(), Payment.class, payment.getId(), EVENT.GETTING_DATA,
                                 ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_inconsistent", localeBean.getSystemLocale(), "GETACCATTRS"));
@@ -248,7 +255,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
                     payment.setStatus(RequestStatus.DISTRICT_NOT_FOUND);
                     break;
                 default:
-                    log.error("acquireAccountCorrectionDetails. Unexpected result code: {}. Payment id: {}", resultCode, payment.getId());
+                    log.error("acquireAccountDetailsByAddress. Unexpected result code: {}. Payment id: {}", resultCode, payment.getId());
                     logBean.error(Module.NAME, getClass(), Payment.class, payment.getId(), EVENT.GETTING_DATA,
                             ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_unexpected", localeBean.getSystemLocale(), "GETACCATTRS",
                             resultCode));
@@ -492,8 +499,8 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
                 case 1:
                     List<BenefitData> benefitData = (List<BenefitData>) params.get("benefitData");
                     if (benefitData != null && !benefitData.isEmpty()) {
-                        if (checkOrderFam("getBenefitData", benefitData, Lists.newArrayList(benefit), dat1) &&
-                                checkBenefitCode("getBenefitData", benefitData, Lists.newArrayList(benefit), dat1)) {
+                        if (checkOrderFam("getBenefitData", benefitData, Lists.newArrayList(benefit), dat1)
+                                && checkBenefitCode("getBenefitData", benefitData, Lists.newArrayList(benefit), dat1)) {
                             Collection<BenefitData> emptyList = getEmptyBenefitData(benefitData);
                             if (emptyList != null && !emptyList.isEmpty()) {
                                 logEmptyBenefitData("getBenefitData", Lists.newArrayList(benefit), dat1);
@@ -620,7 +627,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
         return true;
     }
 
-    protected boolean checkBenefitCode(String method, List<BenefitData> benefitData, List<Benefit> benefits, Date dat1){
+    protected boolean checkBenefitCode(String method, List<BenefitData> benefitData, List<Benefit> benefits, Date dat1) {
         String accountNumber = benefits.get(0).getAccountNumber();
         for (BenefitData data : benefitData) {
             if (Strings.isEmpty(data.getCode())) {
@@ -770,8 +777,8 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
                 case 1:
                     List<BenefitData> benefitData = (List<BenefitData>) params.get("benefitData");
                     if (benefitData != null && !benefitData.isEmpty()) {
-                        if (checkOrderFam("processBenefit", benefitData, benefits, dat1) &&
-                                checkBenefitCode("processBenefit", benefitData, benefits, dat1)) {
+                        if (checkOrderFam("processBenefit", benefitData, benefits, dat1)
+                                && checkBenefitCode("processBenefit", benefitData, benefits, dat1)) {
                             processBenefitData(calculationCenterId, benefits, benefitData, dat1);
                         }
                     } else {
@@ -990,5 +997,77 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
                 return inn.equals(benefit.getField(BenefitDBF.IND_COD));
             }
         }));
+    }
+    private static final int OSZN_ACCOUNT_TYPE = 0;
+    private static final int MEGABANK_ACCOUNT_TYPE = 1;
+
+    @Override
+    public List<AccountDetail> acquireAccountDetailsByMegabankAccount(Payment payment, String megabankAccount) throws DBException {
+        return acquireAccountDetailsByAccCode(payment, "acquireAccountDetailsByMegabankAccount", megabankAccount, MEGABANK_ACCOUNT_TYPE);
+    }
+
+    @Override
+    public List<AccountDetail> acquireAccountDetailsByOsznAccount(Payment payment) throws DBException {
+        return acquireAccountDetailsByAccCode(payment, "acquireAccountDetailsByOsznAccount", (String) payment.getField(PaymentDBF.OWN_NUM_SR),
+                OSZN_ACCOUNT_TYPE);
+    }
+
+    public List<AccountDetail> acquireAccountDetailsByAccCode(Payment payment, String method, String account, int accountType)
+            throws DBException {
+        List<AccountDetail> accountCorrectionDetails = null;
+
+        Map<String, Object> params = Maps.newHashMap();
+        params.put("pDistrName", payment.getOutgoingDistrict());
+        params.put("pAccCode", account);
+        params.put("pAccCodeType", accountType);
+
+        try {
+            sqlSession().selectOne(MAPPING_NAMESPACE + ".getAttrsByAccCode", params);
+        } catch (Exception e) {
+            throw new DBException(e);
+        } finally {
+            log.info("{}. Parameters : {}", method, params);
+        }
+
+        Integer resultCode = (Integer) params.get("resultCode");
+        if (resultCode == null) {
+            log.error("{}. Result code is null. Payment id: {}", method, payment.getId());
+            logBean.error(Module.NAME, getClass(), Payment.class, payment.getId(), EVENT.GETTING_DATA,
+                    ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_unexpected", localeBean.getSystemLocale(), "GETATTRSBYACCCODE", "null"));
+            payment.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
+        } else {
+            switch (resultCode) {
+                case 1:
+                    accountCorrectionDetails = (List<AccountDetail>) params.get("details");
+                    if (accountCorrectionDetails == null || accountCorrectionDetails.isEmpty()) {
+                        log.error("{}. Result code is 1 but account details data is null or empty. Payment id: {}", method, payment.getId());
+                        logBean.error(Module.NAME, getClass(), Payment.class, payment.getId(), EVENT.GETTING_DATA,
+                                ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_inconsistent", localeBean.getSystemLocale(),
+                                "GETATTRSBYACCCODE"));
+                        payment.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
+                    }
+                    break;
+                case 0:
+                    payment.setStatus(RequestStatus.ACCOUNT_NUMBER_NOT_FOUND);
+                    break;
+                case -1:
+                    log.error("{}. Result code is -1 but account type code is {}. Payment id: {}", new Object[]{method, accountType, payment.getId()});
+                    logBean.error(Module.NAME, getClass(), Payment.class, payment.getId(), EVENT.GETTING_DATA,
+                            ResourceUtil.getFormatString(RESOURCE_BUNDLE, "wrong_account_type_code", localeBean.getSystemLocale(), "GETATTRSBYACCCODE",
+                            accountType));
+                    payment.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
+                    break;
+                case -2:
+                    payment.setStatus(RequestStatus.DISTRICT_NOT_FOUND);
+                    break;
+                default:
+                    log.error("{}. Unexpected result code: {}. Payment id: {}", new Object[]{method, resultCode, payment.getId()});
+                    logBean.error(Module.NAME, getClass(), Payment.class, payment.getId(), EVENT.GETTING_DATA,
+                            ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_unexpected", localeBean.getSystemLocale(), "GETATTRSBYACCCODE",
+                            resultCode));
+                    payment.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
+            }
+        }
+        return accountCorrectionDetails;
     }
 }

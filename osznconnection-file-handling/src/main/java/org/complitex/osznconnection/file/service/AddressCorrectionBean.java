@@ -33,7 +33,6 @@ import java.util.Map;
 public class AddressCorrectionBean extends CorrectionBean {
 
     private static final Logger log = LoggerFactory.getLogger(AddressCorrectionBean.class);
-
     private static final String ADDRESS_BEAN_MAPPING_NAMESPACE = AddressCorrectionBean.class.getName();
     
     @EJB
@@ -129,9 +128,6 @@ public class AddressCorrectionBean extends CorrectionBean {
                 + ", correction = " + correction + ", organizationId = " + parent.getOrganizationId() + "]. Corrections are in inconsistent state.");
     }
 
-//    public Long findCorrectionApartment(long buildingId, String apartment, long organizationId) {
-//        return findCorrectionAddressId("apartment", apartment, organizationId, buildingId);
-//    }
     /**
      * Находит данные о коррекции(полное название, код) по сущности(entityTable), ОСЗН(organizationId) и id внутреннего объекта системы(internalObjectId)
      * Используется для разрешения адреса для ЦН.
@@ -199,9 +195,6 @@ public class AddressCorrectionBean extends CorrectionBean {
         return null;
     }
 
-//    public Correction findOutgoingApartment(long organizationId, long internalApartmentId) {
-//        return findOutgoingAddress("apartment", organizationId, internalApartmentId);
-//    }
     /**
      * Найти данные о коррекции для района.
      * @param calculationCenterId
@@ -256,24 +249,6 @@ public class AddressCorrectionBean extends CorrectionBean {
         return correction;
     }
 
-//    public void insertCorrectionApartment(long parentId, String apartment, long objectId, long organizationId, long internalOrganizationId) {
-//        insert("apartment", parentId, apartment, objectId, organizationId, internalOrganizationId);
-//    }
-
-//    @Transactional
-//    public void insertCorrectionBuilding(Correction parent, String buildingNumber, String buildingCorp, long objectId) {
-//        BuildingCorrection correction = new BuildingCorrection();
-//
-//        correction.setParentId(parent.getId());
-//        correction.setCorrection(buildingNumber);
-//        correction.setCorrectionCorp(buildingCorp);
-//        correction.setOrganizationId(parent.getOrganizationId());
-//        correction.setInternalOrganizationId(parent.getInternalOrganizationId());
-//        correction.setObjectId(objectId);
-//
-//        insertBuilding(correction);
-//    }
-
     /**
      * Вставка коррекции дома.
      * Если значение корпуса дома null, то вставляется пустая строка.
@@ -288,15 +263,7 @@ public class AddressCorrectionBean extends CorrectionBean {
         sqlSession().insert(ADDRESS_BEAN_MAPPING_NAMESPACE + ".insertBuilding", correction);
     }
 
-//    public Correction insertCorrectionStreet(Correction parent, String street, long objectId) {
-//        return insert("street", parent.getId(), street, objectId, parent.getOrganizationId(), parent.getInternalOrganizationId());
-//    }
-//
-//    public Correction insertCorrectionCity(String city, long objectId, long organizationId, long internalOrganizationId) {
-//        return insert("city", null, city, objectId, organizationId, internalOrganizationId);
-//    }
-
-    public Correction createCityCorrection(String city, long cityObjectId, long organizationId, long internalOrganizationId){
+    public Correction createCityCorrection(String city, long cityObjectId, long organizationId, long internalOrganizationId) {
         Correction correction = new Correction("city");
         correction.setParentId(null);
         correction.setCorrection(city);
@@ -306,7 +273,7 @@ public class AddressCorrectionBean extends CorrectionBean {
         return correction;
     }
 
-    public Correction createStreetCorrection(String street, long cityCorrectionId, long streetObjectId, long organizationId, long internalOrganizationId){
+    public Correction createStreetCorrection(String street, long cityCorrectionId, long streetObjectId, long organizationId, long internalOrganizationId) {
         Correction correction = new Correction("street");
         correction.setParentId(cityCorrectionId);
         correction.setCorrection(street);
@@ -317,7 +284,7 @@ public class AddressCorrectionBean extends CorrectionBean {
     }
 
     public BuildingCorrection createBuildingCorrection(String number, String corp, long streetCorrectionId, long buildingObjectId, long organizationId,
-            long internalOrganizationId){
+            long internalOrganizationId) {
         BuildingCorrection correction = new BuildingCorrection();
         correction.setParentId(streetCorrectionId);
         correction.setCorrection(number);

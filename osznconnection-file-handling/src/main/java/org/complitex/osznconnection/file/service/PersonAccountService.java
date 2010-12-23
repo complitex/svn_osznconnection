@@ -106,6 +106,6 @@ public class PersonAccountService extends AbstractBean {
     @Transactional
     @TransactionAttribute(TransactionAttributeType.NEVER)
     public List<AccountDetail> acquireAccountCorrectionDetails(Payment payment) throws DBException {
-        return calculationCenterBean.getDefaultCalculationCenterAdapter().acquireAccountCorrectionDetails(payment);
+        return calculationCenterBean.getDefaultCalculationCenterAdapter().acquireAccountDetailsByAddress(payment);
     }
 }

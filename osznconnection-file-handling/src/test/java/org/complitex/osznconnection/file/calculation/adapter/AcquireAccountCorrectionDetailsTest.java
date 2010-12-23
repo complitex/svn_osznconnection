@@ -23,6 +23,7 @@ import org.complitex.osznconnection.file.entity.PaymentDBF;
 public class AcquireAccountCorrectionDetailsTest {
 
     private static SqlSessionFactory sqlSessionFactory;
+    private static ICalculationCenterAdapter adapter;
 
     private static void init() {
         Reader reader = null;
@@ -40,23 +41,36 @@ public class AcquireAccountCorrectionDetailsTest {
                 }
             }
         }
-    }
 
-    public static void main(String[] args) {
-        init();
-
-        ICalculationCenterAdapter adapter = new DefaultCalculationCenterAdapter() {
+        adapter = new DefaultCalculationCenterAdapter() {
 
             @Override
             protected SqlSession sqlSession() {
                 return sqlSessionFactory.openSession(false);
             }
         };
+    }
+
+    public static void main(String[] args) {
+        init();
+
         try {
-            System.out.println(adapter.acquireAccountCorrectionDetails(newPayment()));
+            testByOsznAccount();
         } catch (DBException e) {
             System.out.println("DB error.");
         }
+    }
+
+    private static void testByAddress() throws DBException {
+        System.out.println(adapter.acquireAccountDetailsByAddress(newPayment()));
+    }
+
+    private static void testByOsznAccount() throws DBException {
+        System.out.println(adapter.acquireAccountDetailsByOsznAccount(newPayment()));
+    }
+
+    private static void testByMegabankAccount() throws DBException {
+        System.out.println(adapter.acquireAccountDetailsByMegabankAccount(newPayment(), "9876543"));
     }
 
     private static Payment newPayment() {
@@ -69,6 +83,7 @@ public class AcquireAccountCorrectionDetailsTest {
         p.setOutgoingBuildingCorp("");
         p.setOutgoingApartment("40");
         p.setField(PaymentDBF.DAT1, new Date());
+        p.setField(PaymentDBF.OWN_NUM_SR, "1234567");
         return p;
     }
 }

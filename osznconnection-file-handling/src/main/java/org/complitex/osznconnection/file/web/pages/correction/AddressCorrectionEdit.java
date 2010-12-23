@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import org.complitex.osznconnection.file.web.component.correction.edit.AddressCorrectionInputPanel;
-import org.complitex.osznconnection.file.web.pages.util.BuildingFormatter;
+import org.complitex.osznconnection.file.web.pages.util.AddressRenderer;
 
 /**
  * Страница для редактирования коррекций адресов.
@@ -232,7 +232,7 @@ public class AddressCorrectionEdit extends FormTemplatePage {
                         + ", " + correction.getParent().getCorrection() + ", ";
             }
 
-            return parentAddress + BuildingFormatter.formatBuilding(correction.getCorrection(), correction.getCorrectionCorp(), getLocale());
+            return parentAddress + AddressRenderer.displayBuilding(correction.getCorrection(), correction.getCorrectionCorp(), getLocale());
         }
 
         @Override
