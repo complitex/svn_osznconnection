@@ -5,9 +5,12 @@
                extends="org.complitex.osznconnection.file.service.CorrectionBean.correction">
     </resultMap>
 
-    <resultMap id="streetCorrection" type="org.complitex.osznconnection.file.entity.Correction"
+    <resultMap id="streetCorrection" type="org.complitex.osznconnection.file.entity.StreetCorrection"
                extends="org.complitex.osznconnection.file.service.CorrectionBean.correction">
+        <result column="street_type_correction_id" property="streetTypeCorrectionId"/>
         <association property="parent" column="parent_id" select="selectCityCorrection"
+                javaType="org.complitex.osznconnection.file.entity.Correction"/>
+        <association property="streetTypeCorrection" column="street_type_correction_id" select="selectStreetTypeCorrection"
                 javaType="org.complitex.osznconnection.file.entity.Correction"/>
     </resultMap>
 
@@ -39,11 +42,20 @@
         select * from `street_correction` where `id` = #{id}
     </select>
 
+    <select id="selectStreetTypeCorrection" resultMap="org.complitex.osznconnection.file.service.CorrectionBean.correction" parameterType="long">
+        select * from `street_type_correction` where `id` = #{id}
+    </select>
+
     <select id="selectStreetCorrections" resultMap="streetCorrection" parameterType="org.complitex.osznconnection.file.entity.example.CorrectionExample">
         select * from `street_correction` c where c.`organization_id` = #{organizationId} and c.`parent_id` = #{parentId} and
             c.`correction` like concat('%', #{correction},'%')
             order by c.`correction`
             limit #{start}, #{size}
+    </select>
+
+    <select id="selectStreetTypeCorrections" resultMap="correction" parameterType="long">
+        select * from `street_type_correction` c where c.`organization_id` = #{organizationId}
+            order by c.`correction`
     </select>
 
     <select id="selectDistrictCorrection" resultMap="districtCorrection" parameterType="long">
@@ -78,6 +90,21 @@
                 AND TRIM(`correction_corp`) = TRIM(#{correctionCorp}) AND `parent_id` = #{parentId}
     </select>
 
+    <select id="findCorrectionStreet" parameterType="map" resultMap="streetCorrection">
+        SELECT * FROM `street_correction`
+        WHERE
+            `organization_id` = #{organizationId} AND TRIM(`correction`) = TRIM(#{correction}) AND `parent_id` = #{parentId}
+            AND
+            <choose>
+                <when test="streetTypeCorrectionId != null">
+                    `street_type_correction_id` = #{streetTypeCorrectionId}
+                </when>
+                <otherwise>
+                    `street_type_correction_id` IS NULL
+                </otherwise>
+            </choose>
+    </select>
+
     <select id="findCorrectionEntityType" resultType="long" parameterType="long">
         SELECT etc.`entity_type_id` typeId
         FROM `entity_type_correction` etc
@@ -85,7 +112,14 @@
         AND EXISTS(SELECT 1 FROM `entity_type` et WHERE et.`id` = etc.`entity_type_id` AND et.`end_date` IS NULL)
     </select>
 
-    <insert id="insertBuilding" parameterType="org.complitex.osznconnection.file.entity.BuildingCorrection">
+    <insert id="insertStreet" parameterType="org.complitex.osznconnection.file.entity.StreetCorrection" keyProperty="id" useGeneratedKeys="true">
+        INSERT INTO `street_correction`(`organization_id`, `parent_id`, `correction`, `object_id`,
+            `organization_code`, `internal_organization_id`, `street_type_correction_id`)
+         VALUES (#{organizationId}, #{parentId}, #{correction}, #{objectId}, #{code},
+            #{internalOrganizationId}, #{streetTypeCorrectionId})
+    </insert>
+
+    <insert id="insertBuilding" parameterType="org.complitex.osznconnection.file.entity.BuildingCorrection" keyProperty="id" useGeneratedKeys="true">
         INSERT INTO `building_correction`(`organization_id`, `parent_id`, `correction`, `correction_corp`, `object_id`,
             `organization_code`, `internal_organization_id`)
          VALUES (#{organizationId}, #{parentId}, #{correction}, #{correctionCorp}, #{objectId}, #{code},
@@ -106,6 +140,13 @@
         AND c.`object_id` = #{objectId}
     </select>
 
+    <select id="findOutgoingStreet" resultMap="org.complitex.osznconnection.file.service.AddressCorrectionBean.streetCorrection"
+            parameterType="org.complitex.osznconnection.file.entity.example.CorrectionExample">
+        SELECT c.`correction`, c.`street_type_correction_id`, c.`organization_code` FROM `street_correction` c
+        WHERE c.`organization_id` = #{organizationId}
+        AND c.`object_id` = #{objectId}
+    </select>
+
     <select id="findOutgoingDistrict" resultMap="org.complitex.osznconnection.file.service.CorrectionBean.correction"
             parameterType="hashmap">
         SELECT c.`correction`, c.`organization_code` FROM `district_correction` c
@@ -115,7 +156,7 @@
         AND oa.`object_id` = #{osznId})
     </select>
 
-    <select id="findInternalObjectId" parameterType="hashmap" resultType="long">
+    <select id="findInternalObjectId" parameterType="map" resultType="long">
         SELECT DISTINCT e.`object_id` FROM `${entity}` e WHERE e.`status` = 'ACTIVE'
         <if test="parentId != null">
             AND e.`parent_id` = #{parentId}
@@ -127,7 +168,25 @@
         SELECT sc.`id` FROM `${entity}_string_culture` sc WHERE sc.`value` = TRIM(TO_CYRILLIC(#{correction}))))
     </select>
 
-    <select id="findInternalBuilding" parameterType="hashmap" resultType="long">
+    <select id="findInternalStreetId" parameterType="map" resultType="long">
+        SELECT DISTINCT s.`object_id`
+            FROM `street` s
+            JOIN `street_attribute` a_name ON (a_name.`status` = 'ACTIVE' AND s.`object_id` = a_name.`object_id`
+                AND a_name.`attribute_type_id` = 300)
+            JOIN `street_string_culture` name ON (name.`id` = a_name.`value_id`)
+            <if test="streetTypeId != null">
+                JOIN `street_attribute` a_type ON (a_type.`status` = 'ACTIVE' AND s.`object_id` = a_type.`object_id`
+                    AND a_type.`attribute_type_id` = 301)
+            </if>
+        WHERE s.`status` = 'ACTIVE'
+            AND s.`parent_id` = #{parentId}
+            AND name.`value` =  TRIM(TO_CYRILLIC(#{correction}))
+            <if test="streetTypeId != null">
+                AND a_type.`value_id` = {streetTypeId}
+            </if>
+    </select>
+
+    <select id="findInternalBuilding" parameterType="map" resultType="long">
         SELECT DISTINCT b.`object_id` FROM `building` b
             JOIN `building_address` addr ON (((b.`parent_id` = addr.`object_id`) OR
             EXISTS(SELECT 1 FROM `building_attribute` ba WHERE ba.`object_id` = b.`object_id` AND ba.`status` = 'ACTIVE' AND ba.`attribute_type_id` = 501
@@ -157,7 +216,23 @@
         WHERE `id` = #{id}
     </update>
 
-    <select id="findBuildingById" parameterType="_long" resultMap="buildingCorrection">
+    <update id="updateStreet" parameterType="org.complitex.osznconnection.file.entity.StreetCorrection">
+        UPDATE `street_correction` SET `organization_id` = #{organizationId}, `correction` = #{correction}, `object_id` = #{objectId},
+        `organization_code` = #{code}, `internal_organization_id` = #{internalOrganizationId}, `street_type_correction_id` = #{streetTypeCorrectionId}
+        WHERE `id` = #{id}
+    </update>
+
+    <select id="findStreets" parameterType="org.complitex.osznconnection.file.entity.example.CorrectionExample"
+            resultMap="streetCorrection">
+        <include refid="org.complitex.osznconnection.file.service.CorrectionBean.find"/>
+    </select>
+
+    <select id="findDistricts" parameterType="org.complitex.osznconnection.file.entity.example.CorrectionExample"
+            resultMap="districtCorrection">
+        <include refid="org.complitex.osznconnection.file.service.CorrectionBean.find"/>
+    </select>
+
+    <select id="findBuildingById" parameterType="long" resultMap="buildingCorrection">
         SELECT * FROM `building_correction` WHERE `id` = #{id}
     </select>
 
@@ -274,13 +349,8 @@
     <select id="countBuildings" resultType="int" parameterType="org.complitex.osznconnection.file.entity.example.CorrectionExample">
         SELECT COUNT(distinct c.`id`) FROM `building_correction` c
         <include refid="buildingJoin"/>
-
         <include refid="buildingFilter"/>
     </select>
-
-    <delete id="deleteBuilding" parameterType="org.complitex.osznconnection.file.entity.BuildingCorrection">
-        DELETE FROM `building_correction` WHERE `id` = #{id}
-    </delete>
 
     <select id="checkBuildingExistence" resultType="int" parameterType="org.complitex.osznconnection.file.entity.BuildingCorrection">
         SELECT COUNT(*) FROM `building_correction` WHERE `object_id` = #{objectId} AND
@@ -288,20 +358,26 @@
         AND TRIM(`correction`) = TRIM(#{correction}) AND `organization_id` = #{organizationId}
         AND
         <choose>
-            <when test="code != null">
-                TRIM(`organization_code`) = TRIM(#{code})
-            </when>
-            <otherwise>
-                `organization_code` IS NULL
-            </otherwise>
-        </choose>
-        AND
-        <choose>
             <when test="correctionCorp != null">
                 TRIM(`correction_corp`) = TRIM(#{correctionCorp})
             </when>
             <otherwise>
-                `correction_corp` IS NULL
+                `correction_corp` = ''
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="checkStreetExistence" resultType="int" parameterType="org.complitex.osznconnection.file.entity.StreetCorrection">
+        SELECT COUNT(*) FROM `street_correction` WHERE `object_id` = #{objectId} AND
+        `parent_id` = #{parentId}
+        AND TRIM(`correction`) = TRIM(#{correction}) AND `organization_id` = #{organizationId}
+        AND
+        <choose>
+            <when test="streetTypeCorrectionId != null">
+                `street_type_correction_id` = #{streetTypeCorrectionId}
+            </when>
+            <otherwise>
+                `street_type_correction_id` IS NULL
             </otherwise>
         </choose>
     </select>

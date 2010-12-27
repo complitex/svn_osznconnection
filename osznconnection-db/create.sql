@@ -1561,20 +1561,23 @@ CREATE TABLE `street_correction` (
     `parent_id` BIGINT(20),
     `object_id` BIGINT(20) NOT NULL,
     `correction` VARCHAR(100) NOT NULL,
+    `street_type_correction_id` BIGINT(20) NULL,
     `organization_id` BIGINT(20) NOT NULL,
     `organization_code` VARCHAR(100),
     `internal_organization_id` BIGINT(20) NOT NULL,
     PRIMARY KEY (`id`),
-    UNIQUE KEY `uk_street_correction` (`parent_id`, `object_id`, `correction`, `organization_id`, `internal_organization_id`),
+    UNIQUE KEY `uk_street_correction` (`parent_id`, `object_id`, `correction`, `organization_id`, `internal_organization_id`, `street_type_correction_id`),
     KEY `key_object_id` (`object_id`),
     KEY `key_parent_id` (`parent_id`),
     KEY `key_correction` (`correction`),
     KEY `key_organization_id` (`organization_id`),
     KEY `key_internal_organization_id` (`internal_organization_id`),
+    KEY `key_street_type_correction_id` (`street_type_correction_id`),
     CONSTRAINT `fk_street_correction__street` FOREIGN KEY (`object_id`) REFERENCES `street` (`object_id`),
     CONSTRAINT `fk_street_correction__city_correction` FOREIGN KEY (`parent_id`) REFERENCES `city_correction` (`id`),
     CONSTRAINT `fk_street_correction__internal_organization` FOREIGN KEY (`internal_organization_id`) REFERENCES `organization` (`object_id`),
-    CONSTRAINT `fk_street_correction__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`object_id`)
+    CONSTRAINT `fk_street_correction__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`object_id`),
+    CONSTRAINT `fk_street_correction__street_type_correctionn` FOREIGN KEY (`street_type_correction_id`) REFERENCES `street_type_correction` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `street_type_correction`;

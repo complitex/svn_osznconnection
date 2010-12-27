@@ -71,28 +71,27 @@
         </if>
     </sql>
 
-    <select id="find" parameterType="org.complitex.osznconnection.file.entity.example.CorrectionExample"
-            resultMap="correction">
+    <sql id="find">
         SELECT
             distinct c.*, IFNULL(osc.`value`, osc_sys.`value`) organization, IFNULL(osc_i.`value`, osc_i_sys.`value`) internalOrganization
         FROM `${entity}_correction` c
 
-        <include refid="join"/>
+        <include refid="org.complitex.osznconnection.file.service.CorrectionBean.join"/>
 
-        <include refid="filter"/>
+        <include refid="org.complitex.osznconnection.file.service.CorrectionBean.filter"/>
 
         <if test="orderByClause != null">
             ORDER BY
             <choose>
                 <when test="orderByClause == 'object'">
                     <if test="parentEntity != null">
-                        psc.`value` <include refid="asc"/>,
+                        psc.`value` <include refid="org.complitex.osznconnection.file.service.CorrectionBean.asc"/>,
                     </if>
                     esc.`value`
                 </when>
                 <when test="orderByClause == 'correction'">
                     <if test="parentEntity != null">
-                        ec.`correction` <include refid="asc"/>,
+                        ec.`correction` <include refid="org.complitex.osznconnection.file.service.CorrectionBean.asc"/>,
                     </if>
                     c.`correction`
                 </when>
@@ -101,10 +100,15 @@
                 </otherwise>
             </choose>
 
-            <include refid="asc"/>
+            <include refid="org.complitex.osznconnection.file.service.CorrectionBean.asc"/>
         </if>
 
         LIMIT #{start},#{size}
+    </sql>
+
+    <select id="find" parameterType="org.complitex.osznconnection.file.entity.example.CorrectionExample"
+            resultMap="correction">
+        <include refid="org.complitex.osznconnection.file.service.CorrectionBean.find"/>
     </select>
 
     <sql id="asc">
@@ -113,8 +117,8 @@
 
     <select id="count" resultType="int" parameterType="org.complitex.osznconnection.file.entity.example.CorrectionExample">
         SELECT COUNT(distinct c.`id`) FROM `${entity}_correction` c
-        <include refid="join"/>
-        <include refid="filter"/>
+        <include refid="org.complitex.osznconnection.file.service.CorrectionBean.join"/>
+        <include refid="org.complitex.osznconnection.file.service.CorrectionBean.filter"/>
     </select>
 
     <select id="findById" parameterType="hashmap" resultMap="correction">

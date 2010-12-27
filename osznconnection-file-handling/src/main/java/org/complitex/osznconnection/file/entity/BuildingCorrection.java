@@ -9,9 +9,8 @@ package org.complitex.osznconnection.file.entity;
  * @author Artem
  */
 public class BuildingCorrection extends Correction {
-    private String correctionCorp;
 
-    private Long internalStreetId;
+    private String correctionCorp;
 
     public BuildingCorrection() {
         setEntity("building");
@@ -23,13 +22,5 @@ public class BuildingCorrection extends Correction {
 
     public void setCorrectionCorp(String correctionCorp) {
         this.correctionCorp = correctionCorp;
-    }
-
-    public Long getInternalStreetId() {
-        return internalStreetId;
-    }
-
-    public void setInternalStreetId(Long internalStreetId) {
-        this.internalStreetId = internalStreetId;
     }
 }

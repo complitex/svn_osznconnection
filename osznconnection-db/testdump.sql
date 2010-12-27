@@ -148,26 +148,26 @@ values
 -- Payments
 insert into payment(OWN_NUM, OWN_NUM_SR, F_NAM, M_NAM, SUR_NAM, N_NAME, VUL_NAME, BLD_NUM, CORP_NUM, FLAT, DAT1, request_file_id)
 values
- (6, 1,'Иван', 'Иванович', 'Иванов', 'Новосибирск', 'Терешковой1', '18','1', '10', '2010-09-08',1),
+-- (6, 1,'Иван', 'Иванович', 'Иванов', 'Новосибирск', 'Терешковой1', '18','1', '10', '2010-09-08',1),
 -- (7, 2,'Сидор', 'Сидорович', 'Сидоров', 'Новосибирск', 'ул. Терешковой', 'д. 11','', 'кв. 11', '2010-09-08',1),
 -- (8, 3,'Петр', 'Петрович', 'Петров', 'Харьков', 'Косиора', '154A','', '1', '2010-09-08',1),
 -- (9, 3,'Петр1', 'Петрович1', 'Петров1', 'Харьков', 'Kоcиорa', '154A','', '1', '2010-09-08',1),
 -- (10, 3,'Матвей1', 'Матвеевич1', 'Матвеев1', 'Харьков', 'ФРАНТИШЕКА КРАЛА', '25А','', '40', '2010-09-09',1),
-(11, 4,'Матвей2', 'Матвеевич2', 'Матвеев2', 'Харьков', 'ФРАНТИШЕКА КРАЛА', '25А','', '19', '2010-09-09',1);
---(12, 4,'Матвей', 'Матвеевич', 'Матвеев', 'Харьков', 'ФРАНТИШЕКА КРАЛА', '  2 5А','  ', '19', '2010-09-09',1);
+--(11, 4,'Матвей2', 'Матвеевич2', 'Матвеев2', 'Харьков', 'ФРАНТИШЕКА КРАЛА', '25А','', '19', '2010-09-09',1);
+(12, 4,'Матвей', 'Матвеевич', 'Матвеев', 'Харьков', 'ФРАНТИШЕКА КРАЛА', '  2 5А','  ', '19', '2010-09-09',1);
 -- (13, 4,'Матвей22', 'Матвеевич22', 'Матвеев22', 'Харьков', 'ФРАНТИШЕКА КРАЛА', '  2 5А','  ', '19', '2010-09-09',1);
 -- (14, 4,'Матвей', 'Матвеевич', 'Матвеев', 'Новосибирск', 'Терешковой', '25','  ', '19', '2010-09-09',1);
 
 --insert into `person_account` (`first_name`, `middle_name`, `last_name`, `city`, `street`, `building_num`, `building_corp`, `apartment`, `account_number`, `own_num_sr`, `oszn_id`, `calc_center_id`) values('Матвей','Матвеевич','Матвеев','Харьков','ФРАНТИШЕКА КРАЛА','  2 5А','  ','19','1000001108','4','1','2');
 
 -- Address corrections
-INSERT INTO `street_type_correction`(`object_id`, `correction`, `organization_id`, `organization_code`, `internal_organization_id`) VALUES
-(10000,'Б-Р',2,'1',0), (10001,'М',2,'1',0), (10002,'М-Н',2,'1',0), (10003,'ПЕР',2,'1',0), (10004,'ПЛ',2,'1',0), (10005,'П',2,'1',0)
-, (10006,'ПОС',2,'1',0), (10007,'ПР-Д',2,'1',0), (10008,'ПРОСП',2,'1',0), (10009,'СП',2,'1',0), (10010,'Т',2,'1',0), (10011,'ТУП',2,'1',0)
-, (10012,'УЛ',2,'1',0), (10013,'ШОССЕ',2,'1',0), (10014,'НАБ',2,'1',0), (10015,'В-Д',2,'1',0), (10016,'СТ',2,'1',0);
+INSERT INTO `street_type_correction`(`id`, `object_id`, `correction`, `organization_id`, `organization_code`, `internal_organization_id`) VALUES
+(1,10000,'Б-Р',2,'1',0), (2,10001,'М',2,'1',0), (3,10002,'М-Н',2,'1',0), (4,10003,'ПЕР',2,'1',0), (5,10004,'ПЛ',2,'1',0), (6,10005,'П',2,'1',0),
+(7,10006,'ПОС',2,'1',0), (8,10007,'ПР-Д',2,'1',0), (9,10008,'ПРОСП',2,'1',0), (10,10009,'СП',2,'1',0), (11,10010,'Т',2,'1',0), (12,10011,'ТУП',2,'1',0),
+(13,10012,'УЛ',2,'1',0), (14,10013,'ШОССЕ',2,'1',0), (15,10014,'НАБ',2,'1',0), (16,10015,'В-Д',2,'1',0), (17,10016,'СТ',2,'1',0);
 
 insert into city_correction(id, organization_id, correction, object_id, internal_organization_id) values (1,2,UPPER('Новосибирск'),1,0);
-insert into street_correction(id, organization_id, correction, object_id, internal_organization_id, parent_id) values (1,2,UPPER('Терешковой'),1,0,1);
+insert into street_correction(id, organization_id, correction, object_id, internal_organization_id, parent_id, street_type_correction_id) values (1,2,UPPER('Терешковой'),1,0,1,13);
 insert into building_correction(organization_id, correction, correction_corp, object_id, internal_organization_id, parent_id) values (2,'10','1',3,0,1);
 
 insert into city_correction(id, organization_id, correction, object_id, internal_organization_id) values (2,2,UPPER('Харьков'),3,0);
@@ -198,7 +198,7 @@ insert into ownership_correction(organization_id, correction, object_id, organiz
 
 -- Privileges corrections
 insert into privilege_correction(organization_id, correction, object_id, organization_code, internal_organization_id) values
---(2,'ПЕНСИОНЕР ПО ВОЗРАСТУ',15,'34',0),
+(2,'ПЕНСИОНЕР ПО ВОЗРАСТУ',15,'34',0),
 (1,'ПЕНСИОНЕР ПО ВОЗРАСТУ',15,'1000',0);
 
 -- Tarif
