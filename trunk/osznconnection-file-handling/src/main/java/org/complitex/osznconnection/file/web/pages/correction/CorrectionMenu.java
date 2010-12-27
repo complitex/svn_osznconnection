@@ -60,13 +60,13 @@ public class CorrectionMenu extends ResourceTemplateMenu {
 
             @Override
             public Class<? extends Page> getPage() {
-                return AddressCorrectionList.class;
+                return DistrictCorrectionList.class;
             }
 
             @Override
             public PageParameters getParameters() {
                 PageParameters pageParameters = new PageParameters();
-                pageParameters.put(AddressCorrectionList.CORRECTED_ENTITY, "district");
+                pageParameters.put(DistrictCorrectionList.CORRECTED_ENTITY, "district");
                 return pageParameters;
             }
 
@@ -84,13 +84,13 @@ public class CorrectionMenu extends ResourceTemplateMenu {
 
             @Override
             public Class<? extends Page> getPage() {
-                return AddressCorrectionList.class;
+                return StreetCorrectionList.class;
             }
 
             @Override
             public PageParameters getParameters() {
                 PageParameters pageParameters = new PageParameters();
-                pageParameters.put(AddressCorrectionList.CORRECTED_ENTITY, "street");
+                pageParameters.put(StreetCorrectionList.CORRECTED_ENTITY, "street");
                 return pageParameters;
             }
 

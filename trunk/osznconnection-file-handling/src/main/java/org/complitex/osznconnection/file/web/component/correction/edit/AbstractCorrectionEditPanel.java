@@ -44,16 +44,14 @@ import org.complitex.osznconnection.file.web.model.OrganizationModel;
 public abstract class AbstractCorrectionEditPanel extends Panel {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractCorrectionEditPanel.class);
-
     @EJB(name = "CorrectionBean")
     private CorrectionBean correctionBean;
-
     @EJB(name = "OrganizationStrategy")
     private OrganizationStrategy organizationStrategy;
-    
     private Long correctionId;
     private Correction correction;
     private WebMarkupContainer form;
+    private Panel correctionInputPanel;
 
     public AbstractCorrectionEditPanel(String id, String entity, Long correctionId) {
         super(id);
@@ -93,11 +91,11 @@ public abstract class AbstractCorrectionEditPanel extends Panel {
 
     protected abstract String getNullObjectErrorMessage();
 
-    protected String getNullCorrectionErroMessage(){
+    protected String getNullCorrectionErroMessage() {
         return new StringResourceModel("Required", Model.ofMap(ImmutableMap.of("label", getString("correction")))).getObject();
-    };
+    }
 
-    protected boolean freezeOrganization(){
+    protected boolean freezeOrganization() {
         return false;
     }
 
@@ -120,7 +118,7 @@ public abstract class AbstractCorrectionEditPanel extends Panel {
         return valid;
     }
 
-    protected boolean validateExistence(){
+    protected boolean validateExistence() {
         return correctionBean.checkExistence(getModel());
     }
 
@@ -238,6 +236,9 @@ public abstract class AbstractCorrectionEditPanel extends Panel {
                 protected void onUpdate(AjaxRequestTarget target) {
                     organization.setEnabled(false);
                     target.addComponent(organization);
+                    if (correctionInputPanel.isVisible() && freezeOrganization()) {
+                        target.addComponent(correctionInputPanel);
+                    }
                 }
             });
         }
@@ -275,8 +276,13 @@ public abstract class AbstractCorrectionEditPanel extends Panel {
         form.add(new Label("internalObjectLabel", internalObjectLabel(getLocale())));
         form.add(internalObjectPanel("internalObject"));
 
-        // correction input panel
-        form.add(getCorrectionInputPanel("correctionInput").setVisible(isNew()));
+        //correction input panel
+        correctionInputPanel = getCorrectionInputPanel("correctionInput");
+        correctionInputPanel.setVisible(isNew());
+        if (correctionInputPanel.isVisible() && freezeOrganization()) {
+            correctionInputPanel.setOutputMarkupId(true);
+        }
+        form.add(correctionInputPanel);
         //correction label
         form.add(new Label("correctionLabel", displayCorrection()).setVisible(!isNew()));
 

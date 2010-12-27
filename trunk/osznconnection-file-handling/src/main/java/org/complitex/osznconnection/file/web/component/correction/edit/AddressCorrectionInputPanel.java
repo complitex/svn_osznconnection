@@ -13,75 +13,80 @@ import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AbstractAutoCo
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteSettings;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
+import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.service.EntityBean;
 import org.complitex.dictionary.service.StringCultureBean;
 import org.complitex.dictionary.web.component.AbstractAutoCompleteTextField;
 import org.complitex.osznconnection.file.entity.Correction;
+import org.complitex.osznconnection.file.entity.StreetCorrection;
 import org.complitex.osznconnection.file.entity.example.CorrectionExample;
 import org.complitex.osznconnection.file.service.AddressCorrectionBean;
+import org.complitex.osznconnection.file.web.pages.util.AddressRenderer;
 
 /**
  *
  * @author Artem
  */
-public final class AddressCorrectionInputPanel extends Panel {
+public class AddressCorrectionInputPanel extends Panel {
 
     @EJB(name = "AddressCorrectionBean")
     private AddressCorrectionBean addressCorrectionBean;
-
     @EJB(name = "StringCultureBean")
     private StringCultureBean stringBean;
-    
     @EJB(name = "EntityBean")
     private EntityBean entityBean;
 
-    private static class CorrectionRenderer extends AbstractAutoCompleteTextRenderer<Correction> {
+    private static class CorrectionRenderer<T extends Correction> extends AbstractAutoCompleteTextRenderer<T> {
 
         @Override
-        protected String getTextValue(Correction correction) {
-            return asText(correction);
-        }
-
-        public static String asText(Correction correction) {
+        protected String getTextValue(T correction) {
             return correction.getCorrection();
         }
     }
-    private static final CorrectionRenderer CORRECTION_RENDERER = new CorrectionRenderer();
 
-    private static abstract class AutoCompleteCorrectionTextField extends AbstractAutoCompleteTextField<Correction> {
+    private static abstract class AutoCompleteCorrectionTextField<T extends Correction> extends AbstractAutoCompleteTextField<T> {
 
-        public AutoCompleteCorrectionTextField(String id, CorrectionModel model, AutoCompleteSettings settings) {
-            super(id, null, String.class, CORRECTION_RENDERER, settings);
+        private CorrectionRenderer<T> renderer;
+
+        public AutoCompleteCorrectionTextField(String id, CorrectionModel model, CorrectionRenderer<T> renderer, AutoCompleteSettings settings) {
+            super(id, null, String.class, renderer, settings);
             model.setAutoComplete(this);
             this.setModel(model);
+            this.renderer = renderer;
         }
 
         @Override
-        protected String getChoiceValue(Correction choice) throws Throwable {
-            return CorrectionRenderer.asText(choice);
+        protected String getChoiceValue(T choice) throws Throwable {
+            return renderer.getTextValue(choice);
+        }
+
+        public CorrectionRenderer<T> getRenderer() {
+            return renderer;
         }
     }
 
-    private static class CorrectionModel extends Model<String> {
+    private static class CorrectionModel<T extends Correction> extends Model<String> {
 
-        private AutoCompleteCorrectionTextField autoComplete;
-        private IModel<Correction> model;
+        private AutoCompleteCorrectionTextField<T> autoComplete;
+        private IModel<T> model;
 
-        public CorrectionModel(IModel<Correction> model) {
+        public CorrectionModel(IModel<T> model) {
             this.model = model;
         }
 
         @Override
         public String getObject() {
-            Correction object = model.getObject();
+            T object = model.getObject();
             if (object != null) {
-                return CorrectionRenderer.asText(object);
+                return autoComplete.getRenderer().getTextValue(object);
             }
             return null;
         }
@@ -145,7 +150,8 @@ public final class AddressCorrectionInputPanel extends Panel {
         }));
 
         final IModel<Correction> cityModel = new Model<Correction>();
-        AutoCompleteCorrectionTextField city = new AutoCompleteCorrectionTextField("city", new CorrectionModel(cityModel), settings) {
+        AutoCompleteCorrectionTextField<Correction> city = new AutoCompleteCorrectionTextField<Correction>("city",
+                new CorrectionModel<Correction>(cityModel), new CorrectionRenderer<Correction>(), settings) {
 
             @Override
             protected List<Correction> getChoiceList(String cityInput) {
@@ -180,17 +186,51 @@ public final class AddressCorrectionInputPanel extends Panel {
         WebMarkupContainer streetContainer = new WebMarkupContainer("streetContainer");
         streetContainer.setVisible(isStreet || isBuilding);
         add(streetContainer);
-        final IModel<Correction> streetModel = new Model<Correction>();
+
+        IModel<Correction> streetTypeModel = new PropertyModel<Correction>(correction, "streetTypeCorrection");
+        IModel<List<Correction>> allStreetTypeCorrectionsModel = new AbstractReadOnlyModel<List<Correction>>() {
+
+            @Override
+            public List<Correction> getObject() {
+                if (correction.getOrganizationId() != null) {
+                    return addressCorrectionBean.getStreetTypeCorrections(correction.getOrganizationId());
+                } else {
+                    return Collections.emptyList();
+                }
+            }
+        };
+        final DropDownChoice<Correction> streetType = new DropDownChoice<Correction>("streetType", streetTypeModel, allStreetTypeCorrectionsModel,
+                new ChoiceRenderer<Correction>("correction", "id"));
+        streetType.setOutputMarkupId(true);
+        streetType.setVisible(isStreet);
+
+        final IModel<StreetCorrection> streetModel = new Model<StreetCorrection>();
         TextField street = null;
         if (isBuilding) {
-            street = new AutoCompleteCorrectionTextField("street", new CorrectionModel(streetModel), settings) {
+            CorrectionRenderer<StreetCorrection> streetCorrectionRenderer = new CorrectionRenderer<StreetCorrection>() {
 
                 @Override
-                protected List<Correction> getChoiceList(String streetInput) {
+                protected String getTextValue(StreetCorrection streetCorrection) {
+                    String streetType = null;
+                    if (streetCorrection.getStreetTypeCorrection() != null) {
+                        streetType = streetCorrection.getStreetTypeCorrection().getCorrection();
+                    }
+                    if (Strings.isEmpty(streetType)) {
+                        streetType = null;
+                    }
+
+                    return AddressRenderer.displayStreet(streetType, streetCorrection.getCorrection(), getLocale());
+                }
+            };
+            street = new AutoCompleteCorrectionTextField<StreetCorrection>("street", new CorrectionModel<StreetCorrection>(streetModel),
+                    streetCorrectionRenderer, settings) {
+
+                @Override
+                protected List<StreetCorrection> getChoiceList(String streetInput) {
                     Correction cityCorrection = cityModel.getObject();
                     if (cityCorrection != null && correction.getOrganizationId() != null) {
                         CorrectionExample example = createExample(streetInput, correction.getOrganizationId(), cityCorrection.getId());
-                        List<Correction> streetCorrections = addressCorrectionBean.getStreetCorrections(example);
+                        List<StreetCorrection> streetCorrections = addressCorrectionBean.getStreetCorrections(example);
                         return streetCorrections;
                     }
                     return Collections.emptyList();
@@ -212,6 +252,7 @@ public final class AddressCorrectionInputPanel extends Panel {
                 }
             });
         }
+        streetContainer.add(streetType);
         streetContainer.add(street);
 
         WebMarkupContainer buildingContainer = new WebMarkupContainer("buildingContainer");

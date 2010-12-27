@@ -34,6 +34,9 @@
                         <input wicket:id="district" type="text" style="margin-right: 5px"/>
                     </td>
                     <td wicket:id="streetContainer">
+                        <select wicket:id="streetType">
+                            <option></option>
+                        </select>
                         <input wicket:id="street" type="text" style="margin-right: 5px"/>
                     </td>
                     <wicket:container wicket:id="buildingContainer">
@@ -46,7 +49,6 @@
                     </wicket:container>
                 </tr>
             </table>
-
         </wicket:panel>
     </body>
 </html>

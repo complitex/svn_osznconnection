@@ -33,6 +33,8 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import org.apache.wicket.util.string.Strings;
+import org.complitex.osznconnection.file.entity.StreetCorrection;
 import org.complitex.osznconnection.file.web.component.correction.edit.AddressCorrectionInputPanel;
 import org.complitex.osznconnection.file.web.pages.util.AddressRenderer;
 
@@ -45,7 +47,7 @@ public class AddressCorrectionEdit extends FormTemplatePage {
 
     public static final String CORRECTED_ENTITY = "entity";
     public static final String CORRECTION_ID = "correction_id";
-    
+
     @EJB(name = "StrategyFactory")
     private StrategyFactory strategyFactory;
 
@@ -70,12 +72,8 @@ public class AddressCorrectionEdit extends FormTemplatePage {
 
     /**
      * Стандартная панель редактирования коррекции элемента адреса.
-     * Подходит для города, улицы.
      */
-    private class AddressCorrectionEditPanel extends AbstractCorrectionEditPanel {
-
-        @EJB(name = "AddressCorrectionBean")
-        private AddressCorrectionBean addressCorrectionBean;
+    private abstract class AddressCorrectionEditPanel extends AbstractCorrectionEditPanel {
 
         public AddressCorrectionEditPanel(String id, String entity, Long correctionId) {
             super(id, entity, correctionId);
@@ -99,7 +97,7 @@ public class AddressCorrectionEdit extends FormTemplatePage {
                     componentState.put(entity, findObject(objectId, entity));
                 }
             }
-            return new SearchComponent(id, componentState, getSearchFilters(entity), new Callback(correction, entity), true);
+            return new SearchComponent(id, componentState, getSearchFilters(), new Callback(correction, entity), true);
         }
 
         @Override
@@ -107,47 +105,8 @@ public class AddressCorrectionEdit extends FormTemplatePage {
             return getString("address_required");
         }
 
-        @Override
-        protected boolean validate() {
-            boolean valid = true;
-
-            if (!"city".equals(getModel().getEntity()) && getModel().getParentId() == null) {
-                error(getString("correction_required"));
-                valid = false;
-            }
-            return valid && super.validate();
-        }
-
         protected Strategy getStrategy(String entity) {
             return strategyFactory.getStrategy(entity);
-        }
-
-        @Override
-        protected Correction initObjectCorrection(String entity, Long correctionId) {
-            if ("city".equals(entity)) {
-                return addressCorrectionBean.getCityCorrection(correctionId);
-            } else if ("street".equals(entity)) {
-                return addressCorrectionBean.getStreetCorrection(correctionId);
-            } else if ("district".equals(entity)) {
-                return addressCorrectionBean.getDistrictCorrection(correctionId);
-            }
-
-            return super.initObjectCorrection(entity, correctionId);
-        }
-
-        @Override
-        protected String displayCorrection() {
-            Correction correction = getModel();
-
-            if ("street".equals(correction.getEntity())) {
-                String city = correction.getParent().getCorrection();
-                return AddressRenderer.displayAddress(null, city, null, correction.getCorrection(), null, null, null, getLocale());
-            } else if ("district".equals(correction.getEntity())) {
-                String city = correction.getParent().getCorrection();
-                return AddressRenderer.displayAddress(null, city, correction.getCorrection(), getLocale());
-            } else {
-                return super.displayCorrection();
-            }
         }
 
         protected DomainObject findObject(long objectId, String entity) {
@@ -156,45 +115,194 @@ public class AddressCorrectionEdit extends FormTemplatePage {
             return getStrategy(entity).find(example).get(0);
         }
 
-        protected List<String> getSearchFilters(String entity) {
-            if (entity.equals("city")) {
-                return ImmutableList.of("city");
-            } else if (entity.equals("district")) {
-                return ImmutableList.of("city", "district");
-            } else if (entity.equals("street")) {
-                return ImmutableList.of("city", "street");
-            } else if (entity.equals("building")) {
-                return ImmutableList.of("city", "street", "building");
-            } else {
-                return ImmutableList.of("city", "street", "building", "apartment");
-            }
-        }
-
-        @Override
-        protected Panel getCorrectionInputPanel(String id) {
-            String entity = getModel().getEntity();
-            if ("street".equals(entity) || "district".equals(entity)) {
-                return new AddressCorrectionInputPanel(id, getModel());
-            } else {
-                return super.getCorrectionInputPanel(id);
-            }
-        }
-
-        @Override
-        protected boolean validateExistence() {
-            return addressCorrectionBean.checkExistence(getModel());
-        }
-
-        @Override
-        protected boolean freezeOrganization() {
-            return "city".equals(getModel().getEntity()) ? false : true;
-        }
+        protected abstract List<String> getSearchFilters();
 
         @Override
         protected void back() {
             PageParameters parameters = new PageParameters();
             parameters.put(AddressCorrectionList.CORRECTED_ENTITY, getModel().getEntity());
             setResponsePage(AddressCorrectionList.class, parameters);
+        }
+    }
+
+    /**
+     * Панель редактирования коррекции населенного пункта.
+     */
+    private class CityCorrectionEditPanel extends AddressCorrectionEditPanel {
+
+        @EJB(name = "AddressCorrectionBean")
+        private AddressCorrectionBean addressCorrectionBean;
+
+        public CityCorrectionEditPanel(String id, Long correctionId) {
+            super(id, "city", correctionId);
+        }
+
+        @Override
+        protected Correction initObjectCorrection(String entity, Long correctionId) {
+            return addressCorrectionBean.getCityCorrection(correctionId);
+        }
+
+        @Override
+        protected List<String> getSearchFilters() {
+            return ImmutableList.of("city");
+        }
+    }
+
+    /**
+     * Панель редактирования коррекции района.
+     */
+    private class DistrictCorrectionEditPanel extends AddressCorrectionEditPanel {
+
+        @EJB(name = "AddressCorrectionBean")
+        private AddressCorrectionBean addressCorrectionBean;
+
+        public DistrictCorrectionEditPanel(String id, Long correctionId) {
+            super(id, "district", correctionId);
+        }
+
+        @Override
+        protected Correction initObjectCorrection(String entity, Long correctionId) {
+            return addressCorrectionBean.getDistrictCorrection(correctionId);
+        }
+
+        @Override
+        protected List<String> getSearchFilters() {
+            return ImmutableList.of("city", "district");
+        }
+
+        @Override
+        protected boolean freezeOrganization() {
+            return true;
+        }
+
+        @Override
+        protected void back() {
+            PageParameters parameters = new PageParameters();
+            parameters.put(DistrictCorrectionList.CORRECTED_ENTITY, getModel().getEntity());
+            setResponsePage(DistrictCorrectionList.class, parameters);
+        }
+
+        @Override
+        protected boolean validate() {
+            boolean valid = true;
+            if (getModel().getParentId() == null) {
+                error(getString("correction_required"));
+                valid = false;
+            }
+            return valid && super.validate();
+        }
+
+        @Override
+        protected String displayCorrection() {
+            Correction correction = getModel();
+            String city = null;
+            if (correction.getParent() != null) {
+                city = correction.getParent().getCorrection();
+            }
+            return AddressRenderer.displayAddress(null, city, correction.getCorrection(), getLocale());
+        }
+
+        @Override
+        protected Panel getCorrectionInputPanel(String id) {
+            return new AddressCorrectionInputPanel(id, getModel());
+        }
+    }
+
+    /**
+     * Панель редактирования коррекции улицы.
+     */
+    private class StreetCorrectionEditPanel extends AddressCorrectionEditPanel {
+
+        @EJB(name = "AddressCorrectionBean")
+        private AddressCorrectionBean addressCorrectionBean;
+
+        public StreetCorrectionEditPanel(String id, Long correctionId) {
+            super(id, "street", correctionId);
+        }
+
+        @Override
+        protected StreetCorrection getModel() {
+            return (StreetCorrection) super.getModel();
+        }
+
+        @Override
+        protected StreetCorrection newObjectCorrection(String entity) {
+            return new StreetCorrection();
+        }
+
+        @Override
+        protected StreetCorrection initObjectCorrection(String entity, Long correctionId) {
+            return addressCorrectionBean.getStreetCorrection(correctionId);
+        }
+
+        @Override
+        protected String displayCorrection() {
+            StreetCorrection correction = getModel();
+
+            String city = null;
+            if (correction.getParent() != null) {
+                city = correction.getParent().getCorrection();
+            }
+            String streetType = null;
+            if (correction.getStreetTypeCorrection() != null) {
+                streetType = correction.getStreetTypeCorrection().getCorrection();
+            }
+            if (Strings.isEmpty(streetType)) {
+                streetType = null;
+            }
+            return AddressRenderer.displayAddress(null, city, streetType, correction.getCorrection(), null, null, null, getLocale());
+        }
+
+        @Override
+        protected void back() {
+            PageParameters parameters = new PageParameters();
+            parameters.put(StreetCorrectionList.CORRECTED_ENTITY, getModel().getEntity());
+            setResponsePage(StreetCorrectionList.class, parameters);
+        }
+
+        @Override
+        protected void save() {
+            addressCorrectionBean.insertStreet(getModel());
+        }
+
+        @Override
+        protected void update() {
+            addressCorrectionBean.updateStreet(getModel());
+        }
+
+        @Override
+        protected void delete() {
+            addressCorrectionBean.delete(getModel());
+        }
+
+        @Override
+        protected boolean validateExistence() {
+            return addressCorrectionBean.checkStreetExistence(getModel());
+        }
+
+        @Override
+        protected Panel getCorrectionInputPanel(String id) {
+            return new AddressCorrectionInputPanel(id, getModel());
+        }
+
+        @Override
+        protected boolean freezeOrganization() {
+            return true;
+        }
+
+        @Override
+        protected List<String> getSearchFilters() {
+            return ImmutableList.of("city", "street");
+        }
+
+        @Override
+        protected boolean validate() {
+            boolean valid = true;
+            if (getModel().getParentId() == null) {
+                error(getString("correction_required"));
+                valid = false;
+            }
+            return valid && super.validate();
         }
     }
 
@@ -258,17 +366,37 @@ public class AddressCorrectionEdit extends FormTemplatePage {
 
         @Override
         protected void delete() {
-            addressCorrectionBean.deleteBuilding(getModel());
+            addressCorrectionBean.delete(getModel());
         }
 
         @Override
         protected boolean validateExistence() {
-            return addressCorrectionBean.checkExistence(getModel());
+            return addressCorrectionBean.checkBuildingExistence(getModel());
         }
 
         @Override
         protected Panel getCorrectionInputPanel(String id) {
             return new AddressCorrectionInputPanel(id, getModel());
+        }
+
+        @Override
+        protected List<String> getSearchFilters() {
+            return ImmutableList.of("city", "street", "building");
+        }
+
+        @Override
+        protected boolean freezeOrganization() {
+            return true;
+        }
+
+        @Override
+        protected boolean validate() {
+            boolean valid = true;
+            if (getModel().getParentId() == null) {
+                error(getString("correction_required"));
+                valid = false;
+            }
+            return valid && super.validate();
         }
     }
     private AbstractCorrectionEditPanel addressEditPanel;
@@ -276,8 +404,15 @@ public class AddressCorrectionEdit extends FormTemplatePage {
     public AddressCorrectionEdit(PageParameters params) {
         String entity = params.getString(CORRECTED_ENTITY);
         Long correctionId = params.getAsLong(CORRECTION_ID);
-        addressEditPanel = entity.equals("building") ? new BuildingCorrectionEditPanel("addressEditPanel", correctionId)
-                : new AddressCorrectionEditPanel("addressEditPanel", entity, correctionId);
+        if ("city".equals(entity)) {
+            addressEditPanel = new CityCorrectionEditPanel("addressEditPanel", correctionId);
+        } else if ("district".equals(entity)) {
+            addressEditPanel = new DistrictCorrectionEditPanel("addressEditPanel", correctionId);
+        } else if ("street".equals(entity)) {
+            addressEditPanel = new StreetCorrectionEditPanel("addressEditPanel", correctionId);
+        } else if ("building".equals(entity)) {
+            addressEditPanel = new BuildingCorrectionEditPanel("addressEditPanel", correctionId);
+        }
         add(addressEditPanel);
     }
 

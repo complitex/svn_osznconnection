@@ -32,7 +32,7 @@ public class CorrectionBean extends AbstractBean {
 
     protected static final String CORRECTION_BEAN_MAPPING_NAMESPACE = CorrectionBean.class.getName();
 
-    @EJB(beanName = "StrategyFactory")
+    @EJB
     protected StrategyFactory strategyFactory;
     
     @EJB
@@ -58,17 +58,20 @@ public class CorrectionBean extends AbstractBean {
 
     @Transactional
     public List<Correction> find(CorrectionExample example) {
-        return (List<Correction>) find(example, CORRECTION_BEAN_MAPPING_NAMESPACE + ".find");
+        List<Correction> corrections = sqlSession().selectList(CORRECTION_BEAN_MAPPING_NAMESPACE + ".find", example);
+        setUpDisplayObject(corrections, example.getEntity(), example.getLocaleId());
+        return corrections;
     }
 
-    protected List<? extends Correction> find(CorrectionExample example, String queryId) {
-        Strategy strategy = strategyFactory.getStrategy(example.getEntity());
-        List<Correction> results = sqlSession().selectList(queryId, example);
-        for (Correction correction : results) {
-            DomainObject object = strategy.findById(correction.getObjectId());
-            correction.setDisplayObject(strategy.displayDomainObject(object, localeBean.convert(localeBean.getLocale(example.getLocaleId()))));
+    protected void setUpDisplayObject(List<? extends Correction> corrections, String entity, Long localeId) {
+        if (corrections != null && !corrections.isEmpty()) {
+            Strategy strategy = strategyFactory.getStrategy(entity);
+            for (Correction correction : corrections) {
+                DomainObject object = strategy.findById(correction.getObjectId());
+                correction.setDisplayObject(strategy.displayDomainObject(object, localeBean.convert(localeBean.getLocale(localeId))));
+            }
         }
-        return results;
+
     }
 
     @Transactional
