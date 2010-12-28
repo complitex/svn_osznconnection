@@ -73,17 +73,17 @@ public class AddressCorrectionBean extends CorrectionBean {
 
     /**
      * Найти id локальной улицы в таблице коррекций.
-     * @param parent
+     * @param parentId
      * @param street
-     * @param parent
+     * @param parentId
      * @return
      */
-    public List<StreetCorrection> findStreetLocalCorrections(Correction parent, Long streetTypeCorrectionId, String street) {
+    public List<StreetCorrection> findStreetLocalCorrections(Long parentId, Long streetTypeCorrectionId, String street, long organizationId) {
         Map<String, Object> params = Maps.newHashMap();
-        params.put("parentId", parent.getId());
+        params.put("parentId", parentId);
         params.put("correction", street);
         params.put("streetTypeCorrectionId", streetTypeCorrectionId);
-        params.put("organizationId", parent.getOrganizationId());
+        params.put("organizationId", organizationId);
         List<StreetCorrection> corrections = sqlSession().selectList(ADDRESS_BEAN_MAPPING_NAMESPACE + ".findStreetLocalCorrections", params);
         return corrections;
     }
@@ -91,19 +91,18 @@ public class AddressCorrectionBean extends CorrectionBean {
     /**
      * Найти id локального дома в таблице коррекций.
      * При поиске для номера и корпуса дома применяется SQL функция TRIM().
-     * @param parent
+     * @param parentId
      * @param correction
      * @param buildingNumber
      * @return
      */
     @Transactional
-    public List<BuildingCorrection> findBuildingLocalCorrections(Correction parent, String buildingNumber, String buildingCorp) {
+    public List<BuildingCorrection> findBuildingLocalCorrections(Long parentId, String buildingNumber, String buildingCorp, long organizationId) {
         Map<String, Object> params = Maps.newHashMap();
-        params.put("parentId", parent.getId());
+        params.put("parentId", parentId);
         params.put("correction", buildingNumber);
         params.put("correctionCorp", buildingCorp);
-        params.put("organizationId", parent.getOrganizationId());
-
+        params.put("organizationId", organizationId);
         List<BuildingCorrection> corrections = sqlSession().selectList(ADDRESS_BEAN_MAPPING_NAMESPACE + ".findBuildingLocalCorrections", params);
         return corrections;
     }
