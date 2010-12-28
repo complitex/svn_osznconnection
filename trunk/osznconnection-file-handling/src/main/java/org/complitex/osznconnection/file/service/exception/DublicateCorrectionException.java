@@ -4,12 +4,9 @@
  */
 package org.complitex.osznconnection.file.service.exception;
 
-import javax.ejb.ApplicationException;
-
 /**
  *
  * @author Artem
  */
-@ApplicationException(rollback = true)
-public class DublicateCorrectionException extends RuntimeException {
+public class DublicateCorrectionException extends Exception {
 }

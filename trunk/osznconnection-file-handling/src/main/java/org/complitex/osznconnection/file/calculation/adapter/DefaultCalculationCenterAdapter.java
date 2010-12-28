@@ -313,7 +313,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
                                     ResourceUtil.getFormatString(RESOURCE_BUNDLE, "payment_and_benefit_data_size", localeBean.getSystemLocale(),
                                     "GETCHARGEANDPARAMS"));
                         }
-                        processData(calculationCenterId, payment, benefits, data);
+                        processPaymentAndBenefitData(calculationCenterId, payment, benefits, data);
                     } else {
                         log.error("processPaymentAndBenefit. Result code is 1 but paymentAndBenefitData is null or empty. Payment id: {}",
                                 payment.getId());
@@ -354,7 +354,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
      * @param benefits
      * @param benefitData данные пришедшие из ЦН.
      */
-    protected void processData(long calculationCenterId, Payment payment, List<Benefit> benefits, PaymentAndBenefitData data) {
+    protected void processPaymentAndBenefitData(long calculationCenterId, Payment payment, List<Benefit> benefits, PaymentAndBenefitData data) {
         //payment
         payment.setField(PaymentDBF.FROG, data.getPercent());
         payment.setField(PaymentDBF.FL_PAY, data.getCharge());

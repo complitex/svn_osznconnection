@@ -20,6 +20,8 @@ import org.complitex.dictionary.web.component.search.SearchComponentState;
 import org.complitex.osznconnection.file.entity.Payment;
 import org.complitex.osznconnection.file.entity.PaymentDBF;
 import org.complitex.osznconnection.file.service.AddressService;
+import org.complitex.osznconnection.file.service.exception.MoreOneCorrectionException;
+import org.complitex.osznconnection.file.service.exception.NotFoundCorrectionException;
 import org.complitex.osznconnection.file.web.pages.util.AddressRenderer;
 import org.complitex.address.strategy.street.StreetStrategy;
 import org.odlabs.wiquery.core.javascript.JsStatement;
@@ -31,6 +33,8 @@ import java.util.List;
 import java.util.Map;
 import org.apache.wicket.Component;
 import org.apache.wicket.model.AbstractReadOnlyModel;
+import org.complitex.osznconnection.file.entity.RequestStatus;
+import org.complitex.osznconnection.file.service.StatusRenderService;
 import org.complitex.osznconnection.file.service.exception.DublicateCorrectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,13 +51,12 @@ public class AddressCorrectionPanel extends Panel {
 
         CITY, STREET, BUILDING;
     }
-    
     @EJB(name = "StrategyFactory")
     private StrategyFactory strategyFactory;
-
     @EJB(name = "AddressService")
     private AddressService addressService;
-    
+    @EJB(name = "StatusRenderService")
+    private StatusRenderService statusRenderService;
     private CORRECTED_ENTITY correctedEntity;
     private Dialog dialog;
     private SearchComponent searchComponent;
@@ -104,12 +107,6 @@ public class AddressCorrectionPanel extends Panel {
                 return AddressRenderer.displayAddress(null, (String) payment.getField(PaymentDBF.N_NAME), null,
                         (String) payment.getField(PaymentDBF.VUL_NAME), (String) payment.getField(PaymentDBF.BLD_NUM),
                         (String) payment.getField(PaymentDBF.CORP_NUM), (String) payment.getField(PaymentDBF.FLAT), getLocale());
-
-//                return payment.getField(PaymentDBF.N_NAME) + ", "
-//                        + payment.getField(PaymentDBF.VUL_NAME) + ", "
-//                        + AddressRenderer.displayBuilding((String) payment.getField(PaymentDBF.BLD_NUM),
-//                        (String) payment.getField(PaymentDBF.CORP_NUM), getLocale()) + ", "
-//                        + payment.getField(PaymentDBF.FLAT);
             }
         }));
 
@@ -124,11 +121,10 @@ public class AddressCorrectionPanel extends Panel {
             public void onClick(AjaxRequestTarget target) {
                 if (validate(componentState)) {
                     try {
-                        correctAddress(getObjectId(componentState.get("city")),
-                                getObjectId(componentState.get("street")),
-                                getStreetTypeId(componentState.get("street")),
-                                getObjectId(componentState.get("building")),
+                        correctAddress(getObjectId(componentState.get("city")), getObjectId(componentState.get("street")),
+                                getStreetTypeId(componentState.get("street")), getObjectId(componentState.get("building")),
                                 getObjectId(componentState.get("apartment")));
+
                         if (toUpdate != null) {
                             for (Component component : toUpdate) {
                                 target.addComponent(component);
@@ -138,6 +134,14 @@ public class AddressCorrectionPanel extends Panel {
                         return;
                     } catch (DublicateCorrectionException e) {
                         error(getString("dublicate_correction_error"));
+                    } catch (MoreOneCorrectionException e) {
+                        if ("city".equals(e.getEntity())) {
+                            error(statusRenderService.displayStatus(RequestStatus.MORE_ONE_LOCAL_CITY_CORRECTION, getLocale()));
+                        } else if ("street".equals(e.getEntity())) {
+                            error(statusRenderService.displayStatus(RequestStatus.MORE_ONE_LOCAL_STREET_CORRECTION, getLocale()));
+                        }
+                    } catch (NotFoundCorrectionException e) {
+                        error(getString(e.getEntity() + "_not_found_correction"));
                     } catch (Exception e) {
                         error(getString("db_error"));
                         log.error("", e);
@@ -166,7 +170,8 @@ public class AddressCorrectionPanel extends Panel {
         return streetObject == null ? null : StreetStrategy.getStreetType(streetObject);
     }
 
-    protected void correctAddress(Long cityId, Long streetId, Long streetTypeId, Long buildingId, Long apartmentId) {
+    protected void correctAddress(Long cityId, Long streetId, Long streetTypeId, Long buildingId, Long apartmentId)
+            throws DublicateCorrectionException, MoreOneCorrectionException, NotFoundCorrectionException {
         addressService.correctLocalAddress(payment, cityId, streetId, streetTypeId, buildingId);
     }
 

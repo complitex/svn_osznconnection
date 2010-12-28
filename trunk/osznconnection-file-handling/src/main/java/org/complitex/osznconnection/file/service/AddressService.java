@@ -4,6 +4,7 @@
  */
 package org.complitex.osznconnection.file.service;
 
+import java.util.List;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.AbstractBean;
@@ -20,6 +21,8 @@ import org.complitex.dictionary.strategy.Strategy;
 import org.complitex.osznconnection.file.service.exception.DublicateCorrectionException;
 import org.complitex.address.strategy.building.entity.Building;
 import org.complitex.address.strategy.street.StreetStrategy;
+import org.complitex.osznconnection.file.service.exception.MoreOneCorrectionException;
+import org.complitex.osznconnection.file.service.exception.NotFoundCorrectionException;
 
 /**
  * Класс разрешает адрес.
@@ -29,16 +32,12 @@ import org.complitex.address.strategy.street.StreetStrategy;
 public class AddressService extends AbstractBean {
 
     private static final Logger log = LoggerFactory.getLogger(AddressService.class);
-
     @EJB(beanName = "AddressCorrectionBean")
     private AddressCorrectionBean addressCorrectionBean;
-
     @EJB(beanName = "PaymentBean")
     private PaymentBean paymentBean;
-
     @EJB(beanName = "BenefitBean")
     private BenefitBean benefitBean;
-
     @EJB(beanName = "StrategyFactory")
     private StrategyFactory strategyFactory;
 
@@ -60,43 +59,60 @@ public class AddressService extends AbstractBean {
         long organizationId = payment.getOrganizationId();
 
         //Связывание города
-        Long cityId;
         String city = (String) payment.getField(PaymentDBF.N_NAME);
-
-        Correction cityCorrection = addressCorrectionBean.findCorrectionCity(city, organizationId);
-        if (cityCorrection != null) {
+        Long cityId = null;
+        Correction cityCorrection = null;
+        List<Correction> cityCorrections = addressCorrectionBean.findCityLocalCorrections(city, organizationId);
+        if (cityCorrections.size() == 1) {
+            cityCorrection = cityCorrections.get(0);
             cityId = cityCorrection.getObjectId();
+        } else if (cityCorrections.size() > 1) {
+            payment.setStatus(RequestStatus.MORE_ONE_LOCAL_CITY_CORRECTION);
+            return;
         } else {
-            cityId = addressCorrectionBean.findInternalCity(city);
-
-            if (cityId != null) {
+            List<Long> cityIds = addressCorrectionBean.findInternalCityIds(city);
+            if (cityIds.size() == 1) {
+                cityId = cityIds.get(0);
                 cityCorrection = addressCorrectionBean.createCityCorrection(city, cityId, organizationId,
                         OrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID);
                 addressCorrectionBean.insert(cityCorrection);
+            } else if (cityIds.size() > 1) {
+                payment.setStatus(RequestStatus.MORE_ONE_LOCAL_CITY);
+                return;
+            } else {
+                payment.setStatus(RequestStatus.CITY_UNRESOLVED_LOCALLY);
+                return;
             }
         }
 
         if (cityId != null) {
             payment.setInternalCityId(cityId);
-        } else {
-            payment.setStatus(RequestStatus.CITY_UNRESOLVED_LOCALLY);
-            return;
         }
 
         //Связывание улицы
-        Long streetId;
         String street = (String) payment.getField(PaymentDBF.VUL_NAME);
-
-        StreetCorrection streetCorrection = addressCorrectionBean.findCorrectionStreet(cityCorrection, null, street);
-        if (streetCorrection != null) {
+        Long streetId = null;
+        StreetCorrection streetCorrection = null;
+        List<StreetCorrection> streetCorrections = addressCorrectionBean.findStreetLocalCorrections(cityCorrection, null, street);
+        if (streetCorrections.size() == 1) {
+            streetCorrection = streetCorrections.get(0);
             streetId = streetCorrection.getObjectId();
+        } else if (streetCorrections.size() > 1) {
+            payment.setStatus(RequestStatus.MORE_ONE_LOCAL_STREET_CORRECTION);
+            return;
         } else {
-            streetId = addressCorrectionBean.findInternalStreet(null, street, cityId);
-
-            if (streetId != null) {
+            List<Long> streetIds = addressCorrectionBean.findInternalStreetIds(null, street, cityId);
+            if (streetIds.size() == 1) {
+                streetId = streetIds.get(0);
                 streetCorrection = addressCorrectionBean.createStreetCorrection(street, cityCorrection.getId(), streetId, organizationId,
                         OrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID);
                 addressCorrectionBean.insert(streetCorrection);
+            } else if (streetIds.size() > 1) {
+                payment.setStatus(RequestStatus.MORE_ONE_LOCAL_STREET);
+                return;
+            } else {
+                payment.setStatus(RequestStatus.STREET_UNRESOLVED_LOCALLY);
+                return;
             }
         }
 
@@ -106,26 +122,33 @@ public class AddressService extends AbstractBean {
             payment.setInternalStreetId(streetId);
             payment.setInternalStreetTypeId(StreetStrategy.getStreetType(streetObject));
             payment.setInternalCityId(streetObject.getParentId());
-        } else {
-            payment.setStatus(RequestStatus.STREET_UNRESOLVED_LOCALLY);
-            return;
         }
 
         //Связывание дома
-        Long buildingId;
         String buildingNumber = (String) payment.getField(PaymentDBF.BLD_NUM);
         String buildingCorp = (String) payment.getField(PaymentDBF.CORP_NUM);
-
-        BuildingCorrection buildingCorrection = addressCorrectionBean.findCorrectionBuilding(streetCorrection,
-                buildingNumber, buildingCorp);
-        if (buildingCorrection != null) {
+        Long buildingId = null;
+        BuildingCorrection buildingCorrection = null;
+        List<BuildingCorrection> buildingCorrections = addressCorrectionBean.findBuildingLocalCorrections(streetCorrection, buildingNumber, buildingCorp);
+        if (buildingCorrections.size() == 1) {
+            buildingCorrection = buildingCorrections.get(0);
             buildingId = buildingCorrection.getObjectId();
+        } else if (buildingCorrections.size() > 1) {
+            payment.setStatus(RequestStatus.MORE_ONE_LOCAL_BUILDING_CORRECTION);
+            return;
         } else {
-            buildingId = addressCorrectionBean.findInternalBuilding(buildingNumber, buildingCorp, streetId, cityId);
-            if (buildingId != null) {
+            List<Long> buildingIds = addressCorrectionBean.findInternalBuildingIds(buildingNumber, buildingCorp, streetId, cityId);
+            if (buildingIds.size() == 1) {
+                buildingId = buildingIds.get(0);
                 buildingCorrection = addressCorrectionBean.createBuildingCorrection(buildingNumber, buildingCorp, streetCorrection.getId(), buildingId,
-                         organizationId, OrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID);
+                        organizationId, OrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID);
                 addressCorrectionBean.insertBuilding(buildingCorrection);
+            } else if (buildingIds.size() > 1) {
+                payment.setStatus(RequestStatus.MORE_ONE_LOCAL_BUILDING);
+                return;
+            } else {
+                payment.setStatus(RequestStatus.BUILDING_UNRESOLVED_LOCALLY);
+                return;
             }
         }
 
@@ -142,10 +165,7 @@ public class AddressService extends AbstractBean {
                 Long internalCityId = streetObject.getParentId();
                 payment.setInternalCityId(internalCityId);
             }
-
             payment.setStatus(RequestStatus.CITY_UNRESOLVED);
-        } else {
-            payment.setStatus(RequestStatus.BUILDING_UNRESOLVED_LOCALLY);
         }
     }
 
@@ -163,47 +183,69 @@ public class AddressService extends AbstractBean {
      */
     @Transactional
     public void resolveOutgoingAddress(Payment payment, long calculationCenterId, ICalculationCenterAdapter adapter) {
-        Correction cityData = addressCorrectionBean.findOutgoingCity(calculationCenterId, payment.getInternalCityId());
-        if (cityData == null) {
+        List<Correction> cityCorrections = addressCorrectionBean.findCityRemoteCorrections(calculationCenterId, payment.getInternalCityId());
+        if (cityCorrections.size() == 1) {
+            Correction cityCorrection = cityCorrections.get(0);
+            adapter.prepareCity(payment, cityCorrection.getCorrection(), cityCorrection.getCode());
+        } else if (cityCorrections.size() > 1) {
+            payment.setStatus(RequestStatus.MORE_ONE_REMOTE_CITY_CORRECTION);
+            return;
+        } else {
             payment.setStatus(RequestStatus.CITY_UNRESOLVED);
             return;
         }
-        adapter.prepareCity(payment, cityData.getCorrection(), cityData.getCode());
 
         //поиск района
-        Correction districtData = addressCorrectionBean.findOutgoingDistrict(calculationCenterId, payment.getOrganizationId());
-        if (districtData == null) {
+        List<Correction> districtCorrections = addressCorrectionBean.findDistrictRemoteCorrections(calculationCenterId, payment.getOrganizationId());
+        if (districtCorrections.size() == 1) {
+            Correction districtCorrection = districtCorrections.get(0);
+            adapter.prepareDistrict(payment, districtCorrection.getCorrection(), districtCorrection.getCode());
+        } else if (districtCorrections.size() > 1) {
+            payment.setStatus(RequestStatus.MORE_ONE_REMOTE_DISTRICT_CORRECTION);
+            return;
+        } else {
             payment.setStatus(RequestStatus.DISTRICT_UNRESOLVED);
             return;
         }
-        adapter.prepareDistrict(payment, districtData.getCorrection(), districtData.getCode());
 
         //поиск типа улицы
-        Correction streetTypeData = addressCorrectionBean.findOutgoingStreetType(calculationCenterId,
-                payment.getInternalStreetTypeId());
-        if (streetTypeData == null) {
+        List<Correction> streetTypeCorrections = addressCorrectionBean.findStreetTypeRemoteCorrections(calculationCenterId, payment.getInternalStreetTypeId());
+        if (streetTypeCorrections.size() == 1) {
+            Correction streetTypeCorrection = streetTypeCorrections.get(0);
+            adapter.prepareStreetType(payment, streetTypeCorrection.getCorrection(), streetTypeCorrection.getCode());
+        } else if (streetTypeCorrections.size() > 1) {
+            payment.setStatus(RequestStatus.MORE_ONE_REMOTE_STREET_TYPE_CORRECTION);
+            return;
+        } else {
             payment.setStatus(RequestStatus.STREET_TYPE_UNRESOLVED);
             return;
         }
-        adapter.prepareStreetType(payment, streetTypeData.getCorrection(), streetTypeData.getCode());
 
         //поиск улицы
-        StreetCorrection streetData = addressCorrectionBean.findOutgoingStreet(calculationCenterId,
-                payment.getInternalStreetId());
-        if (streetData == null) {
+        List<StreetCorrection> streetCorrections = addressCorrectionBean.findStreetRemoteCorrections(calculationCenterId, payment.getInternalStreetId());
+        if (streetCorrections.size() == 1) {
+            StreetCorrection streetCorrection = streetCorrections.get(0);
+            adapter.prepareStreet(payment, streetCorrection.getCorrection(), streetCorrection.getCode());
+        } else if (streetCorrections.size() > 1) {
+            payment.setStatus(RequestStatus.MORE_ONE_REMOTE_STREET_CORRECTION);
+            return;
+        } else {
             payment.setStatus(RequestStatus.STREET_UNRESOLVED);
             return;
         }
-        adapter.prepareStreet(payment, streetData.getCorrection(), streetData.getCode());
 
         //поиск дома
-        BuildingCorrection buildingData = addressCorrectionBean.findOutgoingBuilding(calculationCenterId,
-                payment.getInternalBuildingId());
-        if (buildingData == null) {
+        List<BuildingCorrection> buildingCorrections = addressCorrectionBean.findBuildingRemoteCorrections(calculationCenterId, payment.getInternalBuildingId());
+        if (buildingCorrections.size() == 1) {
+            BuildingCorrection buildingCorrection = buildingCorrections.get(0);
+            adapter.prepareBuilding(payment, buildingCorrection.getCorrection(), buildingCorrection.getCorrectionCorp(), buildingCorrection.getCode());
+        } else if (buildingCorrections.size() > 1) {
+            payment.setStatus(RequestStatus.MORE_ONE_REMOTE_BUILDING_CORRECTION);
+            return;
+        } else {
             payment.setStatus(RequestStatus.BUILDING_UNRESOLVED);
             return;
         }
-        adapter.prepareBuilding(payment, buildingData.getCorrection(), buildingData.getCorrectionCorp(), buildingData.getCode());
 
         //квартиры не ищем, а проставляем напрямую, обрезая пробелы.
         adapter.prepareApartment(payment, null, null);
@@ -222,8 +264,7 @@ public class AddressService extends AbstractBean {
          * который указывает на то, что адрес откорректировали в UI.
          * См. RequestStatus
          */
-        return !payment.getStatus().isLocalAddressCorrected() && !payment.getStatus().isOutgoingAddressCorrected()
-                && (payment.getStatus() != RequestStatus.ADDRESS_CORRECTED);
+        return payment.getStatus().isAddressResolved();
     }
 
     /**
@@ -237,7 +278,7 @@ public class AddressService extends AbstractBean {
         //разрешить адрес локально
         resolveLocalAddress(payment);
         //если адрес локально разрешен, разрешить адрес для ЦН.
-        if (!payment.getStatus().isLocalAddressCorrected()) {
+        if (payment.getStatus().isAddressResolvedLocally()) {
             resolveOutgoingAddress(payment, calculationCenterId, adapter);
         }
     }
@@ -258,7 +299,8 @@ public class AddressService extends AbstractBean {
      * @param buildingId Откорректированный дом
      */
     @Transactional
-    public void correctLocalAddress(Payment payment, Long cityId, Long streetId, Long streetTypeId, Long buildingId) throws DublicateCorrectionException {
+    public void correctLocalAddress(Payment payment, Long cityId, Long streetId, Long streetTypeId, Long buildingId)
+            throws DublicateCorrectionException, MoreOneCorrectionException, NotFoundCorrectionException {
         long organizationId = payment.getOrganizationId();
         long requestFileId = payment.getRequestFileId();
 
@@ -277,26 +319,48 @@ public class AddressService extends AbstractBean {
             paymentBean.markCorrected(requestFileId, city);
             benefitBean.markCorrected(requestFileId);
         } else if (buildingId == null) { //откорректировали улицу
-            Correction cityCorrection = addressCorrectionBean.findCorrectionCity(city, organizationId);
-            StreetCorrection streetCorrection = addressCorrectionBean.createStreetCorrection(street, cityCorrection.getId(), streetId, organizationId,
-                    OrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID);
-            if (addressCorrectionBean.checkStreetExistence(streetCorrection)) {
-                throw new DublicateCorrectionException();
+            List<Correction> cityCorrections = addressCorrectionBean.findCityLocalCorrections(city, organizationId);
+            if (cityCorrections.size() == 1) {
+                Correction cityCorrection = cityCorrections.get(0);
+                StreetCorrection streetCorrection = addressCorrectionBean.createStreetCorrection(street, cityCorrection.getId(), streetId, organizationId,
+                        OrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID);
+                if (addressCorrectionBean.checkStreetExistence(streetCorrection)) {
+                    throw new DublicateCorrectionException();
+                }
+                addressCorrectionBean.insert(streetCorrection);
+                paymentBean.markCorrected(requestFileId, city, street);
+                benefitBean.markCorrected(requestFileId);
+            } else if (cityCorrections.size() > 1) {
+                throw new MoreOneCorrectionException("city");
+            } else {
+                throw new NotFoundCorrectionException("city");
             }
-            addressCorrectionBean.insert(streetCorrection);
-            paymentBean.markCorrected(requestFileId, city, street);
-            benefitBean.markCorrected(requestFileId);
+
         } else {  //откорректировали здание
-            Correction cityCorrection = addressCorrectionBean.findCorrectionCity(city, organizationId);
-            StreetCorrection streetCorrection = addressCorrectionBean.findCorrectionStreet(cityCorrection, null, street);
-            BuildingCorrection buildingCorrection = addressCorrectionBean.createBuildingCorrection(buildingNumber, buildingCorp, streetCorrection.getId(),
-                    buildingId, organizationId, OrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID);
-            if (addressCorrectionBean.checkBuildingExistence(buildingCorrection)) {
-                throw new DublicateCorrectionException();
+            List<Correction> cityCorrections = addressCorrectionBean.findCityLocalCorrections(city, organizationId);
+            if (cityCorrections.size() == 1) {
+                Correction cityCorrection = cityCorrections.get(0);
+                List<StreetCorrection> streetCorrections = addressCorrectionBean.findStreetLocalCorrections(cityCorrection, null, street);
+                if (streetCorrections.size() == 1) {
+                    StreetCorrection streetCorrection = streetCorrections.get(0);
+                    BuildingCorrection buildingCorrection = addressCorrectionBean.createBuildingCorrection(buildingNumber, buildingCorp, streetCorrection.getId(),
+                            buildingId, organizationId, OrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID);
+                    if (addressCorrectionBean.checkBuildingExistence(buildingCorrection)) {
+                        throw new DublicateCorrectionException();
+                    }
+                    addressCorrectionBean.insertBuilding(buildingCorrection);
+                    paymentBean.markCorrected(requestFileId, city, street, buildingNumber, buildingCorp);
+                    benefitBean.markCorrected(requestFileId);
+                } else if (streetCorrections.size() > 1) {
+                    throw new MoreOneCorrectionException("street");
+                } else {
+                    throw new NotFoundCorrectionException("street");
+                }
+            } else if (cityCorrections.size() > 1) {
+                throw new MoreOneCorrectionException("city");
+            } else {
+                throw new NotFoundCorrectionException("city");
             }
-            addressCorrectionBean.insertBuilding(buildingCorrection);
-            paymentBean.markCorrected(requestFileId, city, street, buildingNumber, buildingCorp);
-            benefitBean.markCorrected(requestFileId);
         }
     }
 }
