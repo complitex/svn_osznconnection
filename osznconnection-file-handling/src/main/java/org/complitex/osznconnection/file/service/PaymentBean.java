@@ -12,9 +12,9 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Обработка записей файла запроса начислений
@@ -117,7 +117,7 @@ public class PaymentBean extends AbstractRequestBean {
      */
     @Transactional
     public List<Payment> findForOperation(long fileId, List<Long> ids) {
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = Maps.newHashMap();
         params.put("requestFileId", fileId);
         params.put("ids", ids);
         return sqlSession().selectList(MAPPING_NAMESPACE + ".findForOperation", params);
@@ -159,7 +159,7 @@ public class PaymentBean extends AbstractRequestBean {
      * @return
      */
     private int unboundCount(long fileId) {
-        return countByFile(fileId, RequestStatus.notBoundStatuses());
+        return countByFile(fileId, RequestStatus.unboundStatuses());
     }
 
     /**
@@ -167,8 +167,8 @@ public class PaymentBean extends AbstractRequestBean {
      * @param fileId
      * @return
      */
-    private int processedCount(long fileId) {
-        return countByFile(fileId, RequestStatus.notProcessedStatuses());
+    private int unprocessedCount(long fileId) {
+        return countByFile(fileId, RequestStatus.unprocessedStatuses());
     }
 
     /**
@@ -177,8 +177,8 @@ public class PaymentBean extends AbstractRequestBean {
      * @param statuses
      * @return
      */
-    private int countByFile(long fileId, List<RequestStatus> statuses) {
-        Map<String, Object> params = new HashMap<String, Object>();
+    private int countByFile(long fileId, Set<RequestStatus> statuses) {
+        Map<String, Object> params = Maps.newHashMap();
         params.put("requestFileId", fileId);
         params.put("statuses", statuses);
         return (Integer) sqlSession().selectOne(MAPPING_NAMESPACE + ".countByFile", params);
@@ -200,7 +200,7 @@ public class PaymentBean extends AbstractRequestBean {
      */
     @Transactional
     public boolean isPaymentFileProcessed(long fileId) {
-        return processedCount(fileId) == 0;
+        return unprocessedCount(fileId) == 0;
     }
 
     @Transactional
@@ -215,7 +215,7 @@ public class PaymentBean extends AbstractRequestBean {
 
     @Transactional
     public void markCorrected(long fileId, String city, String street, String buildingNumber, String buildingCorp) {
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = Maps.newHashMap();
         params.put("fileId", fileId);
         params.put("city", city);
         params.put("street", street);
@@ -264,7 +264,7 @@ public class PaymentBean extends AbstractRequestBean {
     @Transactional
     public void clearBeforeProcessing(long fileId) {
         Map<String, Object> params = Maps.newHashMap();
-        params.put("statuses", RequestStatus.notBoundStatuses());
+        params.put("statuses", RequestStatus.unboundStatuses());
         params.put("fileId", fileId);
         sqlSession().update(MAPPING_NAMESPACE + ".clearBeforeProcessing", params);
         clearWarnings(fileId, RequestFile.TYPE.PAYMENT);

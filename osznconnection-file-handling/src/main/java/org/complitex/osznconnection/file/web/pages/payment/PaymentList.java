@@ -215,7 +215,7 @@ public final class PaymentList extends TemplatePage {
                         addressCorrectionPanel.open(target, payment);
                     }
                 };
-                addressCorrectionLink.setVisible(payment.getStatus().isLocallyCorrectable());
+                addressCorrectionLink.setVisible(payment.getStatus().isAddressCorrectable());
                 item.add(addressCorrectionLink);
 
                 AjaxLink accountCorrectionLink = new IndicatingAjaxLink("accountCorrectionLink") {
