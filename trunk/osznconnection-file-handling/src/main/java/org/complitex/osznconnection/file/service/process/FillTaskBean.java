@@ -110,7 +110,7 @@ public class FillTaskBean implements ITaskBean<RequestFileGroup> {
      * @param calculationCenterId Центр начислений
      */
     private void process(Payment payment, ICalculationCenterAdapter adapter, long calculationCenterId) throws DBException {
-        if (RequestStatus.notBoundStatuses().contains(payment.getStatus())) {
+        if (RequestStatus.unboundStatuses().contains(payment.getStatus())) {
             return;
         }
 

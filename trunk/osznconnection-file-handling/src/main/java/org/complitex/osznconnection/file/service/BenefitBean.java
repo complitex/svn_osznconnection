@@ -12,9 +12,9 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.ejb.EJB;
 import org.complitex.osznconnection.file.calculation.adapter.ICalculationCenterAdapter;
 import org.complitex.osznconnection.file.entity.BenefitData;
@@ -77,7 +77,7 @@ public class BenefitBean extends AbstractRequestBean {
      * @return
      */
     private int unboundCount(long fileId) {
-        return countByFile(fileId, RequestStatus.notBoundStatuses());
+        return countByFile(fileId, RequestStatus.unboundStatuses());
     }
 
     /**
@@ -137,7 +137,7 @@ public class BenefitBean extends AbstractRequestBean {
      */
     @Transactional
     public void updateAccountNumber(long paymentId, String accountNumber) {
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = Maps.newHashMap();
         params.put("paymentId", paymentId);
         params.put("accountNumber", accountNumber);
         params.put("status", RequestStatus.ACCOUNT_NUMBER_RESOLVED);
@@ -151,9 +151,9 @@ public class BenefitBean extends AbstractRequestBean {
      */
     @Transactional
     public void updateBindingStatus(long fileId) {
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = Maps.newHashMap();
         params.put("fileId", fileId);
-        params.put("statuses", RequestStatus.notBoundStatuses());
+        params.put("statuses", RequestStatus.unboundStatuses());
         sqlSession().update(MAPPING_NAMESPACE + ".updateBindingStatus", params);
     }
 
@@ -173,8 +173,8 @@ public class BenefitBean extends AbstractRequestBean {
      * @param fileId
      * @return
      */
-    private int processedCount(long fileId) {
-        return countByFile(fileId, RequestStatus.notProcessedStatuses());
+    private int unprocessedCount(long fileId) {
+        return countByFile(fileId, RequestStatus.unprocessedStatuses());
     }
 
     /**
@@ -184,7 +184,7 @@ public class BenefitBean extends AbstractRequestBean {
      */
     @Transactional
     public boolean isBenefitFileProcessed(long fileId) {
-        return processedCount(fileId) == 0;
+        return unprocessedCount(fileId) == 0;
     }
 
     /**
@@ -193,8 +193,8 @@ public class BenefitBean extends AbstractRequestBean {
      * @param statuses
      * @return
      */
-    private int countByFile(long fileId, List<RequestStatus> statuses) {
-        Map<String, Object> params = new HashMap<String, Object>();
+    private int countByFile(long fileId, Set<RequestStatus> statuses) {
+        Map<String, Object> params = Maps.newHashMap();
         params.put("requestFileId", fileId);
         params.put("statuses", statuses);
         return (Integer) sqlSession().selectOne(MAPPING_NAMESPACE + ".countByFile", params);
@@ -285,7 +285,7 @@ public class BenefitBean extends AbstractRequestBean {
     @Transactional
     public void clearBeforeProcessing(long fileId) {
         Map<String, Object> params = Maps.newHashMap();
-        params.put("statuses", RequestStatus.notBoundStatuses());
+        params.put("statuses", RequestStatus.unboundStatuses());
         params.put("fileId", fileId);
         sqlSession().update(MAPPING_NAMESPACE + ".clearBeforeProcessing", params);
         clearWarnings(fileId, RequestFile.TYPE.BENEFIT);

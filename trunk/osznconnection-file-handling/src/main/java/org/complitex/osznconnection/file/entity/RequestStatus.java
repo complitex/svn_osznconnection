@@ -4,8 +4,12 @@
  */
 package org.complitex.osznconnection.file.entity;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Перечисление статусов для записей файлов payment и benefit.
@@ -71,63 +75,67 @@ public enum RequestStatus implements IEnumCode {
 
     private int code;
 
-    private RequestStatus(int code){
+    private RequestStatus(int code) {
         this.code = code;
     }
+    private static final Set<RequestStatus> ADDRESS_UNRESOLVED_STATUSES = Sets.immutableEnumSet(ImmutableList.of(ADDRESS_CORRECTED,
+            CITY_UNRESOLVED_LOCALLY, STREET_UNRESOLVED_LOCALLY, BUILDING_UNRESOLVED_LOCALLY, MORE_ONE_LOCAL_CITY, MORE_ONE_LOCAL_STREET,
+            MORE_ONE_LOCAL_BUILDING, MORE_ONE_LOCAL_CITY_CORRECTION, MORE_ONE_LOCAL_STREET_CORRECTION, MORE_ONE_LOCAL_BUILDING_CORRECTION,
+            CITY_UNRESOLVED, DISTRICT_UNRESOLVED, STREET_TYPE_UNRESOLVED, STREET_UNRESOLVED, BUILDING_UNRESOLVED, MORE_ONE_REMOTE_CITY_CORRECTION,
+            MORE_ONE_REMOTE_DISTRICT_CORRECTION, MORE_ONE_REMOTE_STREET_TYPE_CORRECTION, MORE_ONE_REMOTE_STREET_CORRECTION,
+            MORE_ONE_REMOTE_BUILDING_CORRECTION));
 
     public boolean isAddressResolved() {
-        return !Lists.newArrayList(ADDRESS_CORRECTED, 
-                CITY_UNRESOLVED_LOCALLY, STREET_UNRESOLVED_LOCALLY, BUILDING_UNRESOLVED_LOCALLY, MORE_ONE_LOCAL_CITY, MORE_ONE_LOCAL_STREET,
-                MORE_ONE_LOCAL_BUILDING, MORE_ONE_LOCAL_CITY_CORRECTION, MORE_ONE_LOCAL_STREET_CORRECTION, MORE_ONE_LOCAL_BUILDING_CORRECTION,
-                CITY_UNRESOLVED, DISTRICT_UNRESOLVED, STREET_TYPE_UNRESOLVED, STREET_UNRESOLVED, BUILDING_UNRESOLVED, MORE_ONE_REMOTE_CITY_CORRECTION,
-                MORE_ONE_REMOTE_DISTRICT_CORRECTION, MORE_ONE_REMOTE_STREET_TYPE_CORRECTION, MORE_ONE_REMOTE_STREET_CORRECTION,
-                MORE_ONE_REMOTE_BUILDING_CORRECTION).
-                contains(this);
+        return !ADDRESS_UNRESOLVED_STATUSES.contains(this);
     }
+    private static final Set<RequestStatus> ADDRESS_UNRESOLVED_LOCALLY_STATUSES = Sets.immutableEnumSet(ImmutableList.of(ADDRESS_CORRECTED,
+            CITY_UNRESOLVED_LOCALLY, STREET_UNRESOLVED_LOCALLY, BUILDING_UNRESOLVED_LOCALLY,
+            MORE_ONE_LOCAL_CITY, MORE_ONE_LOCAL_STREET, MORE_ONE_LOCAL_BUILDING, MORE_ONE_LOCAL_BUILDING_CORRECTION,
+            MORE_ONE_LOCAL_STREET_CORRECTION, MORE_ONE_LOCAL_CITY_CORRECTION));
 
-    public boolean isAddressResolvedLocally(){
-        return !Lists.newArrayList(ADDRESS_CORRECTED, CITY_UNRESOLVED_LOCALLY, STREET_UNRESOLVED_LOCALLY, BUILDING_UNRESOLVED_LOCALLY,
-                MORE_ONE_LOCAL_CITY, MORE_ONE_LOCAL_STREET, MORE_ONE_LOCAL_BUILDING, MORE_ONE_LOCAL_BUILDING_CORRECTION,
-                MORE_ONE_LOCAL_STREET_CORRECTION, MORE_ONE_LOCAL_CITY_CORRECTION).
-                contains(this);
+    public boolean isAddressResolvedLocally() {
+        return !ADDRESS_UNRESOLVED_LOCALLY_STATUSES.contains(this);
     }
+    private static final Set<RequestStatus> ADDRESS_CORRECTABLE_STATUSES =
+            Sets.immutableEnumSet(ImmutableList.of(CITY_UNRESOLVED_LOCALLY, STREET_UNRESOLVED_LOCALLY, BUILDING_UNRESOLVED_LOCALLY,
+            MORE_ONE_LOCAL_CITY, MORE_ONE_LOCAL_STREET, MORE_ONE_LOCAL_BUILDING));
 
-    public boolean isLocallyCorrectable() {
-        return Lists.newArrayList(CITY_UNRESOLVED_LOCALLY, STREET_UNRESOLVED_LOCALLY, BUILDING_UNRESOLVED_LOCALLY, MORE_ONE_LOCAL_CITY,
-                MORE_ONE_LOCAL_STREET, MORE_ONE_LOCAL_BUILDING).
-                contains(this);
+    public boolean isAddressCorrectable() {
+        return ADDRESS_CORRECTABLE_STATUSES.contains(this);
     }
+    private static final Set<RequestStatus> UNBOUND_STATUSES = Sets.immutableEnumSet(ImmutableList.of(ACCOUNT_NUMBER_NOT_FOUND,
+            ADDRESS_CORRECTED,
+            BUILDING_CORP_NOT_FOUND, BUILDING_NOT_FOUND, BUILDING_UNRESOLVED, BUILDING_UNRESOLVED_LOCALLY, MORE_ONE_LOCAL_BUILDING_CORRECTION,
+            MORE_ONE_REMOTE_BUILDING_CORRECTION, MORE_ONE_LOCAL_BUILDING,
+            CITY_UNRESOLVED, CITY_UNRESOLVED_LOCALLY, CITY_NOT_FOUND, MORE_ONE_LOCAL_CITY_CORRECTION, MORE_ONE_REMOTE_CITY_CORRECTION,
+            MORE_ONE_LOCAL_CITY,
+            DISTRICT_UNRESOLVED, DISTRICT_NOT_FOUND, MORE_ONE_REMOTE_DISTRICT_CORRECTION,
+            STREET_TYPE_UNRESOLVED, STREET_UNRESOLVED, STREET_TYPE_NOT_FOUND, MORE_ONE_REMOTE_STREET_TYPE_CORRECTION, MORE_ONE_LOCAL_STREET,
+            STREET_NOT_FOUND, STREET_UNRESOLVED_LOCALLY, MORE_ONE_LOCAL_STREET_CORRECTION, MORE_ONE_REMOTE_STREET_CORRECTION,
+            APARTMENT_NOT_FOUND,
+            MORE_ONE_ACCOUNTS, BINDING_INVALID_FORMAT, PAYMENT_NOT_EXISTS));
 
     /**
      * Возвращает список статусов которые могут иметь несвязанные записи.
      * @return
      */
-    public static List<RequestStatus> notBoundStatuses() {
-        return Lists.newArrayList(ACCOUNT_NUMBER_NOT_FOUND,
-                ADDRESS_CORRECTED, 
-                BUILDING_CORP_NOT_FOUND, BUILDING_NOT_FOUND, BUILDING_UNRESOLVED, BUILDING_UNRESOLVED_LOCALLY, MORE_ONE_LOCAL_BUILDING_CORRECTION,
-                MORE_ONE_REMOTE_BUILDING_CORRECTION, MORE_ONE_LOCAL_BUILDING,
-                CITY_UNRESOLVED, CITY_UNRESOLVED_LOCALLY, CITY_NOT_FOUND, MORE_ONE_LOCAL_CITY_CORRECTION, MORE_ONE_REMOTE_CITY_CORRECTION,
-                MORE_ONE_LOCAL_CITY,
-                DISTRICT_UNRESOLVED, DISTRICT_NOT_FOUND, MORE_ONE_REMOTE_DISTRICT_CORRECTION,
-                STREET_TYPE_UNRESOLVED, STREET_UNRESOLVED, STREET_TYPE_NOT_FOUND, MORE_ONE_REMOTE_STREET_TYPE_CORRECTION, MORE_ONE_LOCAL_STREET,
-                STREET_NOT_FOUND, STREET_UNRESOLVED_LOCALLY, MORE_ONE_LOCAL_STREET_CORRECTION, MORE_ONE_REMOTE_STREET_CORRECTION,
-                APARTMENT_NOT_FOUND,
-                MORE_ONE_ACCOUNTS, BINDING_INVALID_FORMAT, PAYMENT_NOT_EXISTS);
+    public static Set<RequestStatus> unboundStatuses() {
+        return UNBOUND_STATUSES;
     }
+    private static final List<RequestStatus> UNPROCESSED_LIST_STATUSES = ImmutableList.<RequestStatus>builder().addAll(UNBOUND_STATUSES).
+            add(ACCOUNT_NUMBER_RESOLVED).
+            add(TARIF_CODE2_1_NOT_FOUND).
+            add(BENEFIT_OWNER_NOT_ASSOCIATED).
+            add(BENEFIT_NOT_FOUND).
+            add(PROCESSING_INVALID_FORMAT).build();
+    private static final Set<RequestStatus> UNPROCESSED_SET_STATUSES = Sets.immutableEnumSet(UNPROCESSED_LIST_STATUSES);
 
     /**
      * Возвращает список статусов которые могут иметь необработанные записи.
      * @return
      */
-    public static List<RequestStatus> notProcessedStatuses() {
-        List<RequestStatus> result = notBoundStatuses();
-        result.add(ACCOUNT_NUMBER_RESOLVED);
-        result.add(TARIF_CODE2_1_NOT_FOUND);
-        result.add(BENEFIT_OWNER_NOT_ASSOCIATED);
-        result.add(BENEFIT_NOT_FOUND);
-        result.add(PROCESSING_INVALID_FORMAT);
-        return result;
+    public static Set<RequestStatus> unprocessedStatuses() {
+        return UNPROCESSED_SET_STATUSES;
     }
 
     @Override
