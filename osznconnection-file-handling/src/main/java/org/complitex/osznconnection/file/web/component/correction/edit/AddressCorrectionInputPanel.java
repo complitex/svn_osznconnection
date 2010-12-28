@@ -157,7 +157,7 @@ public class AddressCorrectionInputPanel extends Panel {
             protected List<Correction> getChoiceList(String cityInput) {
                 if (correction.getOrganizationId() != null) {
                     CorrectionExample example = createExample(cityInput, correction.getOrganizationId(), null);
-                    List<Correction> cityCorrections = addressCorrectionBean.getCityCorrections(example);
+                    List<Correction> cityCorrections = addressCorrectionBean.findCityCorrections(example);
                     return cityCorrections;
                 }
                 return Collections.emptyList();
@@ -193,7 +193,7 @@ public class AddressCorrectionInputPanel extends Panel {
             @Override
             public List<Correction> getObject() {
                 if (correction.getOrganizationId() != null) {
-                    return addressCorrectionBean.getStreetTypeCorrections(correction.getOrganizationId());
+                    return addressCorrectionBean.findStreetTypeCorrections(correction.getOrganizationId());
                 } else {
                     return Collections.emptyList();
                 }
@@ -230,7 +230,7 @@ public class AddressCorrectionInputPanel extends Panel {
                     Correction cityCorrection = cityModel.getObject();
                     if (cityCorrection != null && correction.getOrganizationId() != null) {
                         CorrectionExample example = createExample(streetInput, correction.getOrganizationId(), cityCorrection.getId());
-                        List<StreetCorrection> streetCorrections = addressCorrectionBean.getStreetCorrections(example);
+                        List<StreetCorrection> streetCorrections = addressCorrectionBean.findStreetCorrections(example);
                         return streetCorrections;
                     }
                     return Collections.emptyList();

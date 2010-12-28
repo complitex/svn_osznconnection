@@ -115,13 +115,14 @@ public abstract class AccountNumberLookupPanel extends Panel {
 
             @Override
             public void onClick(AjaxRequestTarget target) {
+                payment.setStatus(RequestStatus.CITY_UNRESOLVED_LOCALLY);
                 AccountDetail detail = null;
                 boolean visible = detailsContainer.isVisible();
-
                 detailsContainer.setVisible(false);
                 if (validateAccount()) {
-                    String outgoingDistrict = paymentLookupBean.findOutgoingDistrict(payment.getOrganizationId());
-                    if (!Strings.isEmpty(outgoingDistrict)) {
+                    paymentLookupBean.setupOutgoingDistrict(payment);
+                    if (!(payment.getStatus() == RequestStatus.MORE_ONE_REMOTE_DISTRICT_CORRECTION || 
+                            payment.getStatus() == RequestStatus.DISTRICT_UNRESOLVED)) {
                         try {
                             List<AccountDetail> accountDetails = acquireAccountDetailsByAccCode(payment, accountModel.getObject());
                             if (accountDetails == null || accountDetails.isEmpty()) {
@@ -141,7 +142,7 @@ public abstract class AccountNumberLookupPanel extends Panel {
                             error(getString("db_error"));
                         }
                     } else {
-                        error(statusRenderService.displayStatus(RequestStatus.DISTRICT_UNRESOLVED, getLocale()));
+                        error(statusRenderService.displayStatus(payment.getStatus(), getLocale()));
                     }
                 }
 

@@ -18,6 +18,7 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import java.util.List;
 import org.complitex.osznconnection.file.entity.Correction;
+import org.complitex.osznconnection.file.entity.RequestStatus;
 
 /**
  * Вспомогательный для PaymentLookupPanel бин.
@@ -44,7 +45,6 @@ public class PaymentLookupBean extends AbstractBean {
     public void resolveOutgoingAddress(Payment payment) {
         Long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterInfo().getCalculationCenterId();
         ICalculationCenterAdapter adapter = calculationCenterBean.getDefaultCalculationCenterAdapter();
-
         addressService.resolveOutgoingAddress(payment, calculationCenterId, adapter);
     }
 
@@ -63,13 +63,17 @@ public class PaymentLookupBean extends AbstractBean {
     }
 
     @Transactional
-    public String findOutgoingDistrict(long osznId) {
+    public void setupOutgoingDistrict(Payment payment) {
         Long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterInfo().getCalculationCenterId();
-        Correction districtCorrection = addressCorrectionBean.findOutgoingDistrict(calculationCenterId, osznId);
-        if (districtCorrection != null) {
-            return districtCorrection.getCorrection();
+        ICalculationCenterAdapter adapter = calculationCenterBean.getDefaultCalculationCenterAdapter();
+        List<Correction> districtCorrections = addressCorrectionBean.findDistrictRemoteCorrections(calculationCenterId, payment.getOrganizationId());
+        if(districtCorrections.isEmpty()){
+            payment.setStatus(RequestStatus.DISTRICT_UNRESOLVED);
+        } else if(districtCorrections.size() > 1){
+            payment.setStatus(RequestStatus.MORE_ONE_REMOTE_DISTRICT_CORRECTION);
         } else {
-            return null;
+            Correction districtCorrection = districtCorrections.get(0);
+            adapter.prepareDistrict(payment, districtCorrection.getCorrection(), districtCorrection.getCode());
         }
     }
 

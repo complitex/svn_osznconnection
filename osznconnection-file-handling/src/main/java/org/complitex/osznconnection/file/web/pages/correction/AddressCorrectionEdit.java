@@ -139,7 +139,7 @@ public class AddressCorrectionEdit extends FormTemplatePage {
 
         @Override
         protected Correction initObjectCorrection(String entity, Long correctionId) {
-            return addressCorrectionBean.getCityCorrection(correctionId);
+            return addressCorrectionBean.findCityCorrectionById(correctionId);
         }
 
         @Override
@@ -162,7 +162,7 @@ public class AddressCorrectionEdit extends FormTemplatePage {
 
         @Override
         protected Correction initObjectCorrection(String entity, Long correctionId) {
-            return addressCorrectionBean.getDistrictCorrection(correctionId);
+            return addressCorrectionBean.findDistrictCorrectionById(correctionId);
         }
 
         @Override
@@ -232,7 +232,7 @@ public class AddressCorrectionEdit extends FormTemplatePage {
 
         @Override
         protected StreetCorrection initObjectCorrection(String entity, Long correctionId) {
-            return addressCorrectionBean.getStreetCorrection(correctionId);
+            return addressCorrectionBean.findStreetCorrectionById(correctionId);
         }
 
         @Override
@@ -325,7 +325,7 @@ public class AddressCorrectionEdit extends FormTemplatePage {
 
         @Override
         protected BuildingCorrection initObjectCorrection(String entity, Long correctionId) {
-            return addressCorrectionBean.getBuildingCorrection(correctionId);
+            return addressCorrectionBean.findBuildingCorrectionById(correctionId);
         }
 
         @Override

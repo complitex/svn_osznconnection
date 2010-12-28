@@ -1468,26 +1468,6 @@ CREATE TABLE `person_account` (
 -- ------------------------------
 -- Corrections
 -- ------------------------------
-DROP TABLE IF EXISTS `entity_type_correction`;
-
-CREATE TABLE `entity_type_correction` (
-    `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
-    `organization_id` BIGINT(20) NOT NULL,
-    `type` VARCHAR(100) NOT NULL,
-    `entity_type_id` BIGINT(20) NOT NULL,
-    `organization_type_code` VARCHAR(100),
-    `internal_organization_id` BIGINT(20) NOT NULL,
-    PRIMARY KEY (`id`),
-    UNIQUE KEY `uk_entity_type_correction` (`entity_type_id`, `type`, `organization_id`, `internal_organization_id`),
-    KEY `key_organization_id` (`organization_id`),
-    KEY `key_internal_organization_id` (`internal_organization_id`),
-    KEY `key_entity_type_id` (`entity_type_id`),
-    KEY `key_type` (`type`),
-    CONSTRAINT `fk_entity_type_correction__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`object_id`),
-    CONSTRAINT `fk_entity_type_correction__internal_organization` FOREIGN KEY (`internal_organization_id`) REFERENCES `organization` (`object_id`),
-    CONSTRAINT `fk_entity_type_correction__entity_type` FOREIGN KEY (`entity_type_id`) REFERENCES `entity_type` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 DROP TABLE IF EXISTS `city_correction`;
 
 CREATE TABLE `city_correction` (
@@ -1499,7 +1479,7 @@ CREATE TABLE `city_correction` (
     `organization_code` VARCHAR(100),
     `internal_organization_id` BIGINT(20) NOT NULL,
     PRIMARY KEY (`id`),
-    UNIQUE KEY `uk_city_correction` (`parent_id`, `object_id`, `correction`, `organization_id`, `internal_organization_id`),
+    UNIQUE KEY `uk_city_correction` (`object_id`, `correction`, `organization_id`, `internal_organization_id`),
     KEY `key_object_id` (`object_id`),
     KEY `key_correction` (`correction`),
     KEY `key_organization_id` (`organization_id`),
@@ -1520,9 +1500,8 @@ CREATE TABLE `city_type_correction` (
     `organization_code` VARCHAR(100),
     `internal_organization_id` BIGINT(20) NOT NULL,
     PRIMARY KEY (`id`),
-    UNIQUE KEY `uk_city_type_correction` (`parent_id`, `object_id`, `correction`, `organization_id`, `internal_organization_id`),
+    UNIQUE KEY `uk_city_type_correction` (`object_id`, `correction`, `organization_id`, `internal_organization_id`),
     KEY `key_object_id` (`object_id`),
-    KEY `key_parent_id` (`parent_id`),
     KEY `key_correction` (`correction`),
     KEY `key_organization_id` (`organization_id`),
     KEY `key_internal_organization_id` (`internal_organization_id`),
@@ -1591,9 +1570,8 @@ CREATE TABLE `street_type_correction` (
     `organization_code` VARCHAR(100),
     `internal_organization_id` BIGINT(20) NOT NULL,
     PRIMARY KEY (`id`),
-    UNIQUE KEY `uk_street_type_correction` (`parent_id`, `object_id`, `correction`, `organization_id`, `internal_organization_id`),
+    UNIQUE KEY `uk_street_type_correction` (`object_id`, `correction`, `organization_id`, `internal_organization_id`),
     KEY `key_object_id` (`object_id`),
-    KEY `key_parent_id` (`parent_id`),
     KEY `key_correction` (`correction`),
     KEY `key_organization_id` (`organization_id`),
     KEY `key_internal_organization_id` (`internal_organization_id`),
@@ -1609,7 +1587,7 @@ CREATE TABLE `building_correction` (
     `parent_id` BIGINT(20),
     `object_id` BIGINT(20) NOT NULL,
     `correction` VARCHAR(20) NOT NULL,
-    `correction_corp` VARCHAR(20),
+    `correction_corp` VARCHAR(20) NOT NULL DEFAULT '',
     `organization_id` BIGINT(20) NOT NULL,
     `organization_code` VARCHAR(100),
     `internal_organization_id` BIGINT(20) NOT NULL,
@@ -1626,27 +1604,6 @@ CREATE TABLE `building_correction` (
     CONSTRAINT `fk_building_correction__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`object_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-DROP TABLE IF EXISTS `apartment_correction`;
-
-CREATE TABLE `apartment_correction` (
-    `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
-    `parent_id` BIGINT(20),
-    `object_id` BIGINT(20) NOT NULL,
-    `correction` VARCHAR(100) NOT NULL,
-    `organization_id` BIGINT(20) NOT NULL,
-    `organization_code` VARCHAR(100),
-    `internal_organization_id` BIGINT(20) NOT NULL,
-    PRIMARY KEY (`id`),
-    UNIQUE KEY `uk_apartment_correction` (`parent_id`, `object_id`, `correction`, `organization_id`, `internal_organization_id`),
-    KEY `key_object_id` (`object_id`),
-    KEY `key_correction` (`correction`),
-    KEY `key_organization_id` (`organization_id`),
-    KEY `key_internal_organization_id` (`internal_organization_id`),
-    CONSTRAINT `fk_apartment_correction` FOREIGN KEY (`object_id`) REFERENCES `apartment` (`object_id`),
-    CONSTRAINT `fk_apartment_correction__internal_organization` FOREIGN KEY (`internal_organization_id`) REFERENCES `organization` (`object_id`),
-    CONSTRAINT `fk_apartment_correction__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`object_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 DROP TABLE IF EXISTS `ownership_correction`;
 
 CREATE TABLE `ownership_correction` (
@@ -1658,7 +1615,7 @@ CREATE TABLE `ownership_correction` (
     `organization_code` VARCHAR(100),
     `internal_organization_id` BIGINT(20) NOT NULL,
     PRIMARY KEY (`id`),
-    UNIQUE KEY `uk_ownership_correction` (`parent_id`, `object_id`, `correction`, `organization_id`, `internal_organization_id`),
+    UNIQUE KEY `uk_ownership_correction` (`object_id`, `correction`, `organization_id`, `internal_organization_id`, `organization_code`),
     KEY `key_object_id` (`object_id`),
     KEY `key_correction` (`correction`),
     KEY `key_organization_id` (`organization_id`),
@@ -1679,7 +1636,7 @@ CREATE TABLE `privilege_correction` (
     `organization_code` VARCHAR(100),
     `internal_organization_id` BIGINT(20) NOT NULL,
     PRIMARY KEY (`id`),
-    UNIQUE KEY `uk_privilege_correction` (`parent_id`, `object_id`, `correction`, `organization_id`, `internal_organization_id`),
+    UNIQUE KEY `uk_privilege_correction` (`object_id`, `correction`, `organization_id`, `internal_organization_id`, `organization_code`),
     KEY `key_object_id` (`object_id`),
     KEY `key_correction` (`correction`),
     KEY `key_organization_id` (`organization_id`),
