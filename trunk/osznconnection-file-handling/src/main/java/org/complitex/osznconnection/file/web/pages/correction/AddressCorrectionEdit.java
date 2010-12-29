@@ -6,6 +6,7 @@ package org.complitex.osznconnection.file.web.pages.correction;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
@@ -47,7 +48,6 @@ public class AddressCorrectionEdit extends FormTemplatePage {
 
     public static final String CORRECTED_ENTITY = "entity";
     public static final String CORRECTION_ID = "correction_id";
-
     @EJB(name = "StrategyFactory")
     private StrategyFactory strategyFactory;
 
@@ -118,10 +118,15 @@ public class AddressCorrectionEdit extends FormTemplatePage {
         protected abstract List<String> getSearchFilters();
 
         @Override
-        protected void back() {
+        protected Class<? extends Page> getBackPageClass() {
+            return AddressCorrectionList.class;
+        }
+
+        @Override
+        protected PageParameters getBackPageParameters() {
             PageParameters parameters = new PageParameters();
             parameters.put(AddressCorrectionList.CORRECTED_ENTITY, getModel().getEntity());
-            setResponsePage(AddressCorrectionList.class, parameters);
+            return parameters;
         }
     }
 
@@ -176,10 +181,8 @@ public class AddressCorrectionEdit extends FormTemplatePage {
         }
 
         @Override
-        protected void back() {
-            PageParameters parameters = new PageParameters();
-            parameters.put(DistrictCorrectionList.CORRECTED_ENTITY, getModel().getEntity());
-            setResponsePage(DistrictCorrectionList.class, parameters);
+        protected Class<? extends Page> getBackPageClass() {
+            return DistrictCorrectionList.class;
         }
 
         @Override
@@ -254,10 +257,8 @@ public class AddressCorrectionEdit extends FormTemplatePage {
         }
 
         @Override
-        protected void back() {
-            PageParameters parameters = new PageParameters();
-            parameters.put(StreetCorrectionList.CORRECTED_ENTITY, getModel().getEntity());
-            setResponsePage(StreetCorrectionList.class, parameters);
+        protected Class<? extends Page> getBackPageClass() {
+            return StreetCorrectionList.class;
         }
 
         @Override
@@ -348,10 +349,8 @@ public class AddressCorrectionEdit extends FormTemplatePage {
         }
 
         @Override
-        protected void back() {
-            PageParameters parameters = new PageParameters();
-            parameters.put(BuildingCorrectionList.CORRECTED_ENTITY, getModel().getEntity());
-            setResponsePage(BuildingCorrectionList.class, parameters);
+        protected Class<? extends Page> getBackPageClass() {
+            return BuildingCorrectionList.class;
         }
 
         @Override

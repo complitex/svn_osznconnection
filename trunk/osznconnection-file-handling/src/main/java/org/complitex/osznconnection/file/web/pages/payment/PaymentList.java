@@ -174,15 +174,6 @@ public final class PaymentList extends TemplatePage {
 
         //Панель поиска
         final PaymentLookupPanel lookupPanel = new PaymentLookupPanel("lookupPanel", content, statusDetailPanel);
-//        {
-//
-//            @Override
-//            protected void updateAccountNumber(Payment payment, String accountNumber, AjaxRequestTarget target) {
-//                payment.setAccountNumber(accountNumber);
-//                payment.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
-//                paymentBean.updateAccountNumber(payment);
-//            }
-//        };
         add(lookupPanel);
 
         //Коррекция личного счета
@@ -255,7 +246,9 @@ public final class PaymentList extends TemplatePage {
 
             @Override
             public void onSubmit() {
-                setResponsePage(GroupList.class);
+                PageParameters params = new PageParameters();
+                params.put(GroupList.SCROLL_PARAMETER, fileId);
+                setResponsePage(GroupList.class, params);
             }
         };
         back.setDefaultFormProcessing(false);

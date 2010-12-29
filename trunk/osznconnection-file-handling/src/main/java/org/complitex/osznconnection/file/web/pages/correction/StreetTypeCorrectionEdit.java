@@ -11,6 +11,7 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Locale;
 import javax.ejb.EJB;
+import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -88,7 +89,6 @@ public class StreetTypeCorrectionEdit extends FormTemplatePage {
             return streetTypeStrategy.find(example);
         }
     }
-
     private AbstractCorrectionEditPanel correctionEditPanel;
 
     public StreetTypeCorrectionEdit(PageParameters params) {
@@ -111,10 +111,15 @@ public class StreetTypeCorrectionEdit extends FormTemplatePage {
             }
 
             @Override
-            protected void back() {
+            protected Class<? extends Page> getBackPageClass() {
+                return StreetTypeCorrectionList.class;
+            }
+
+            @Override
+            protected PageParameters getBackPageParameters() {
                 PageParameters parameters = new PageParameters();
                 parameters.put(StreetTypeCorrectionList.CORRECTED_ENTITY, getModel().getEntity());
-                setResponsePage(StreetTypeCorrectionList.class, parameters);
+                return parameters;
             }
         });
     }

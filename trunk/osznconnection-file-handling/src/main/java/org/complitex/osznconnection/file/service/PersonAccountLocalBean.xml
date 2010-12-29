@@ -64,7 +64,7 @@
         </where>
     </sql>
 
-    <insert id="insert" parameterType="org.complitex.osznconnection.file.entity.PersonAccount">
+    <insert id="insert" parameterType="org.complitex.osznconnection.file.entity.PersonAccount" keyProperty="id" useGeneratedKeys="true">
         INSERT INTO `person_account` (`city`, `street`, `building_num`, `building_corp`, `apartment`,
                 `account_number`, `first_name`, `middle_name`, `last_name`, `own_num_sr`, `oszn_id`, `calc_center_id`)
         VALUES (#{city}, #{street}, #{buildingNumber}, #{buildingCorp}, #{apartment},
