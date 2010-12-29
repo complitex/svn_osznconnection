@@ -6,6 +6,7 @@ package org.complitex.osznconnection.file.web.pages.correction;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
@@ -39,7 +40,6 @@ import java.util.Map;
 public final class PrivilegeCorrectionEdit extends FormTemplatePage {
 
     public static final String CORRECTION_ID = "correction_id";
-
     @EJB(name = "PrivilegeStrategy")
     private PrivilegeStrategy privilegeStrategy;
 
@@ -59,7 +59,6 @@ public final class PrivilegeCorrectionEdit extends FormTemplatePage {
             }
         }
     }
-
     private AbstractCorrectionEditPanel correctionEditPanel;
 
     public PrivilegeCorrectionEdit(PageParameters params) {
@@ -102,10 +101,15 @@ public final class PrivilegeCorrectionEdit extends FormTemplatePage {
             }
 
             @Override
-            protected void back() {
+            protected Class<? extends Page> getBackPageClass() {
+                return PrivilegeCorrectionList.class;
+            }
+
+            @Override
+            protected PageParameters getBackPageParameters() {
                 PageParameters parameters = new PageParameters();
                 parameters.put(PrivilegeCorrectionList.CORRECTED_ENTITY, getModel().getEntity());
-                setResponsePage(PrivilegeCorrectionList.class, parameters);
+                return parameters;
             }
         });
     }

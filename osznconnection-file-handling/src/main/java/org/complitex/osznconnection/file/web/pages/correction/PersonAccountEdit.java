@@ -41,15 +41,11 @@ import org.slf4j.LoggerFactory;
 public final class PersonAccountEdit extends FormTemplatePage {
 
     private static final Logger log = LoggerFactory.getLogger(PersonAccountEdit.class);
-
     public static final String CORRECTION_ID = "correction_id";
-
     @EJB(name = "PersonAccountLocalBean")
     private PersonAccountLocalBean personAccountLocalBean;
-
     @EJB(name = "OrganizationStrategy")
     private OrganizationStrategy organizationStrategy;
-    
     private Long correctionId;
     private PersonAccount personAccount;
 
@@ -62,7 +58,7 @@ public final class PersonAccountEdit extends FormTemplatePage {
     private void saveOrUpdate() {
         try {
             personAccountLocalBean.update(personAccount);
-            setResponsePage(PersonAccountList.class);
+            back(true);
         } catch (Exception e) {
             error(getString("db_error"));
             log.error("", e);
@@ -72,10 +68,20 @@ public final class PersonAccountEdit extends FormTemplatePage {
     private void delete() {
         try {
             personAccountLocalBean.delete(personAccount);
-            setResponsePage(PersonAccountList.class);
+            back(false);
         } catch (Exception e) {
             error(getString("db_error"));
             log.error("", e);
+        }
+    }
+
+    private void back(boolean useScrolling) {
+        if (useScrolling) {
+            PageParameters backPageParameters = new PageParameters();
+            backPageParameters.put(AbstractCorrectionList.SCROLL_PARAMETER, personAccount.getId());
+            setResponsePage(PersonAccountList.class, backPageParameters);
+        } else {
+            setResponsePage(PersonAccountList.class);
         }
     }
 
@@ -182,7 +188,7 @@ public final class PersonAccountEdit extends FormTemplatePage {
 
             @Override
             public void onClick() {
-                setResponsePage(PersonAccountList.class);
+                back(true);
             }
         };
         form.add(cancel);

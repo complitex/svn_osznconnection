@@ -33,7 +33,6 @@ import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
 import org.complitex.template.web.component.toolbar.ToolbarButton;
 import org.complitex.template.web.security.SecurityRole;
-import org.complitex.template.web.template.TemplatePage;
 import org.complitex.osznconnection.file.Module;
 import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.entity.RequestFileGroup;
@@ -47,13 +46,15 @@ import org.complitex.osznconnection.organization.strategy.OrganizationStrategy;
 
 import javax.ejb.EJB;
 import java.util.*;
+import org.complitex.dictionary.web.component.scroll.ScrollListBehavior;
+import org.complitex.template.web.pages.ScrollListPage;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 25.08.2010 13:35:35
  */
 @AuthorizeInstantiation(SecurityRole.AUTHORIZED)
-public class GroupList extends TemplatePage {
+public class GroupList extends ScrollListPage {
 
     private final static String IMAGE_AJAX_LOADER = "images/ajax-loader2.gif";
 
@@ -77,9 +78,9 @@ public class GroupList extends TemplatePage {
 
     private RequestFileLoadPanel requestFileLoadPanel;
 
-    public GroupList(PageParameters parameters){
-        super();
-        init(parameters.getAsLong("group_id"));
+    public GroupList(PageParameters params){
+        super(params);
+        init(params.getAsLong("group_id"));
     }
 
     public GroupList() {
@@ -285,7 +286,8 @@ public class GroupList extends TemplatePage {
                 //payment name link
                 if (group.getPaymentFile() != null){
                     item.add(new BookmarkablePageLinkPanel<RequestFile>("paymentName", group.getPaymentFile().getName(),
-                            PaymentList.class, new PageParameters("request_file_id=" + group.getPaymentFile().getId())));
+                            ScrollListBehavior.SCROLL_PREFIX+String.valueOf(group.getPaymentFile().getId()), PaymentList.class,
+                            new PageParameters("request_file_id=" + group.getPaymentFile().getId())));
                 }else{
                     item.add(new Label("paymentName", "—"));
                 }
@@ -293,7 +295,8 @@ public class GroupList extends TemplatePage {
                 //benefit name link
                 if (group.getBenefitFile() != null){
                     item.add(new BookmarkablePageLinkPanel<RequestFile>("benefitName", group.getBenefitFile().getName(),
-                            BenefitList.class, new PageParameters("request_file_id=" + group.getBenefitFile().getId())));
+                             ScrollListBehavior.SCROLL_PREFIX+String.valueOf(group.getBenefitFile().getId()), BenefitList.class,
+                             new PageParameters("request_file_id=" + group.getBenefitFile().getId())));
                 }else{
                     item.add(new Label("benefitName", "—"));
                 }

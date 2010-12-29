@@ -15,7 +15,6 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.IModel;
@@ -27,7 +26,6 @@ import org.complitex.dictionary.service.LocaleBean;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
 import org.complitex.template.web.security.SecurityRole;
-import org.complitex.template.web.template.TemplatePage;
 import org.complitex.osznconnection.file.entity.PersonAccount;
 import org.complitex.osznconnection.file.entity.example.PersonAccountExample;
 import org.complitex.osznconnection.file.service.PersonAccountLocalBean;
@@ -40,14 +38,16 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
 import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
+import org.complitex.dictionary.web.component.scroll.ScrollBookmarkablePageLink;
 import org.complitex.osznconnection.file.web.model.OrganizationModel;
+import org.complitex.template.web.pages.ScrollListPage;
 
 /**
  * Список записей в локальной таблице номеров л/c.
  * @author Artem
  */
 @AuthorizeInstantiation(SecurityRole.AUTHORIZED)
-public class PersonAccountList extends TemplatePage {
+public class PersonAccountList extends ScrollListPage {
 
     @EJB(name = "PersonAccountLocalBean")
     private PersonAccountLocalBean personAccountLocalBean;
@@ -61,6 +61,11 @@ public class PersonAccountList extends TemplatePage {
     private IModel<PersonAccountExample> example;
 
     public PersonAccountList() {
+        init();
+    }
+
+    public PersonAccountList(PageParameters params) {
+        super(params);
         init();
     }
 
@@ -229,8 +234,9 @@ public class PersonAccountList extends TemplatePage {
                 item.add(new Label("ownNumSr", personAccount.getOwnNumSr()));
                 item.add(new Label("oszn", personAccount.getOszn()));
                 item.add(new Label("calculationCenter", personAccount.getCalculationCenter()));
-                item.add(new BookmarkablePageLink("edit", PersonAccountEdit.class,
-                        new PageParameters(ImmutableMap.of(PersonAccountEdit.CORRECTION_ID, personAccount.getId()))));
+                item.add(new ScrollBookmarkablePageLink("edit", PersonAccountEdit.class,
+                        new PageParameters(ImmutableMap.of(PersonAccountEdit.CORRECTION_ID, personAccount.getId())),
+                        String.valueOf(personAccount.getId())));
             }
         };
         filterForm.add(data);

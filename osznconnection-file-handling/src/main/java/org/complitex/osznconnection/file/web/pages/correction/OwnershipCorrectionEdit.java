@@ -7,6 +7,7 @@ package org.complitex.osznconnection.file.web.pages.correction;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -81,7 +82,6 @@ public final class OwnershipCorrectionEdit extends FormTemplatePage {
             add(ownership);
         }
     }
-
     private AbstractCorrectionEditPanel correctionEditPanel;
 
     public OwnershipCorrectionEdit(PageParameters params) {
@@ -109,10 +109,15 @@ public final class OwnershipCorrectionEdit extends FormTemplatePage {
             }
 
             @Override
-            protected void back() {
+            protected Class<? extends Page> getBackPageClass() {
+                return OwnershipCorrectionList.class;
+            }
+
+            @Override
+            protected PageParameters getBackPageParameters() {
                 PageParameters parameters = new PageParameters();
                 parameters.put(OwnershipCorrectionList.CORRECTED_ENTITY, getModel().getEntity());
-                setResponsePage(OwnershipCorrectionList.class, parameters);
+                return parameters;
             }
         });
     }

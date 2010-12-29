@@ -19,7 +19,6 @@ import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.IModel;
@@ -32,7 +31,6 @@ import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
 import org.complitex.template.web.component.toolbar.ToolbarButton;
 import org.complitex.template.web.security.SecurityRole;
-import org.complitex.template.web.template.TemplatePage;
 import org.complitex.osznconnection.file.entity.Correction;
 import org.complitex.osznconnection.file.entity.example.CorrectionExample;
 import org.complitex.osznconnection.file.service.CorrectionBean;
@@ -44,16 +42,18 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
 import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
+import org.complitex.dictionary.web.component.scroll.ScrollBookmarkablePageLink;
 import org.complitex.template.web.component.toolbar.AddItemButton;
 import org.complitex.osznconnection.file.web.model.OrganizationModel;
 import org.complitex.osznconnection.organization.strategy.OrganizationStrategy;
+import org.complitex.template.web.pages.ScrollListPage;
 
 /**
  * Абстрактный класс для списка коррекций.
  * @author Artem
  */
 @AuthorizeInstantiation(SecurityRole.AUTHORIZED)
-public abstract class AbstractCorrectionList extends TemplatePage {
+public abstract class AbstractCorrectionList extends ScrollListPage {
 
     public static final String CORRECTED_ENTITY = "entity";
 
@@ -71,10 +71,9 @@ public abstract class AbstractCorrectionList extends TemplatePage {
     private IModel<CorrectionExample> example;
 
     public AbstractCorrectionList(PageParameters params) {
+        super(params);
         entity = params.getString(CORRECTED_ENTITY);
-
         setPreferencesPage(getClass().getName() + "#" + entity);
-
         init();
     }
 
@@ -255,7 +254,8 @@ public abstract class AbstractCorrectionList extends TemplatePage {
 
                 item.add(new Label("internalObject", displayInternalObject(correction)));
                 item.add(new Label("internalOrganization", correction.getInternalOrganization()));
-                item.add(new BookmarkablePageLink("edit", getEditPage(), getEditPageParams(correction.getId())));
+                item.add(new ScrollBookmarkablePageLink("edit", getEditPage(), getEditPageParams(correction.getId()),
+                        String.valueOf(correction.getId())));
             }
         };
         filterForm.add(data);

@@ -29,6 +29,8 @@ import org.slf4j.LoggerFactory;
 import javax.ejb.EJB;
 import java.util.List;
 import java.util.Locale;
+import org.apache.wicket.Page;
+import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.model.LoadableDetachableModel;
@@ -36,6 +38,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.osznconnection.file.web.model.OrganizationModel;
+import org.complitex.osznconnection.file.web.pages.correction.AbstractCorrectionList;
 
 /**
  * Абстрактная панель для редактирования коррекций.
@@ -122,7 +125,24 @@ public abstract class AbstractCorrectionEditPanel extends Panel {
         return correctionBean.checkExistence(getModel());
     }
 
-    protected abstract void back();
+    protected void back(boolean useScrolling) {
+        PageParameters backPageParameters = getBackPageParameters();
+        if (backPageParameters == null && useScrolling) {
+            backPageParameters = new PageParameters();
+        }
+        if (useScrolling) {
+            backPageParameters.put(AbstractCorrectionList.SCROLL_PARAMETER, getModel().getId());
+        }
+        if (backPageParameters != null) {
+            setResponsePage(getBackPageClass(), backPageParameters);
+        } else {
+            setResponsePage(getBackPageClass());
+        }
+    }
+
+    protected abstract Class<? extends Page> getBackPageClass();
+
+    protected abstract PageParameters getBackPageParameters();
 
     protected void saveOrUpdate() {
         try {
@@ -131,7 +151,7 @@ public abstract class AbstractCorrectionEditPanel extends Panel {
             } else {
                 update();
             }
-            back();
+            back(true);
         } catch (Exception e) {
             error(getString("db_error"));
             log.error("", e);
@@ -153,7 +173,7 @@ public abstract class AbstractCorrectionEditPanel extends Panel {
     public void executeDeletion() {
         try {
             delete();
-            back();
+            back(false);
         } catch (Exception e) {
             error(getString("db_error"));
             log.error("", e);
@@ -301,7 +321,7 @@ public abstract class AbstractCorrectionEditPanel extends Panel {
 
             @Override
             public void onClick() {
-                back();
+                back(true);
             }
         };
         form.add(cancel);
