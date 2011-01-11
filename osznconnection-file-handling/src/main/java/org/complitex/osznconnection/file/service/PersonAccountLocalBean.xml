@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.complitex.osznconnection.file.service.PersonAccountLocalBean">
 
-    <select id="findAccountNumber" parameterType="org.complitex.osznconnection.file.entity.PersonAccount" 
+    <select id="findAccountNumber" parameterType="org.complitex.osznconnection.file.entity.PersonAccount"
                 resultType="org.complitex.osznconnection.file.entity.PersonAccount">
         SELECT pa.`id`, pa.`account_number` accountNumber
         FROM `person_account` pa
@@ -12,14 +12,39 @@
     <sql id="filter">
         WHERE
         TRIM(pa.`city`) = TRIM(#{city})
-         AND TRIM(pa.`street`) = TRIM(#{street})
+        <choose>
+            <when test="streetType != null">
+                AND TRIM(pa.`street_type`) = TRIM(`streetType`)
+            </when>
+            <otherwise>
+                AND pa.`street_type` IS NULL
+            </otherwise>
+        </choose>
+        <choose>
+            <when test="street != null">
+                AND TRIM(pa.`street`) = TRIM(#{street})
+                AND pa.`street_code` IS NULL
+            </when>
+            <otherwise>
+                AND pa.`street` IS NULL
+                AND TRIM(pa.`street_code`) = TRIM(#{streetCode})
+            </otherwise>
+        </choose>
+
          AND TRIM(pa.`building_num`) = TRIM(#{buildingNumber})
          AND TRIM(pa.`building_corp`) = TRIM(#{buildingCorp})
          AND TRIM(pa.`apartment`) = TRIM(#{apartment})
          AND TRIM(pa.`first_name`) = TRIM(#{firstName})
          AND TRIM(pa.`middle_name`) = TRIM(#{middleName})
          AND TRIM(pa.`last_name`) = TRIM(#{lastName})
-         AND TRIM(pa.`own_num_sr`) = TRIM(#{ownNumSr})
+         <choose>
+             <when test="ownNumSr != null">
+                 AND TRIM(pa.`own_num_sr`) = TRIM(#{ownNumSr})
+             </when>
+             <otherwise>
+                 AND pa.`own_num_sr` IS NULL
+             </otherwise>
+         </choose>
          AND pa.`oszn_id` = #{osznId} AND pa.`calc_center_id` = #{calculationCenterId}
     </sql>
 

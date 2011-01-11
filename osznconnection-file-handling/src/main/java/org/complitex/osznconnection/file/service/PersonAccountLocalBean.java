@@ -6,10 +6,7 @@ package org.complitex.osznconnection.file.service;
 
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.AbstractBean;
-import org.complitex.osznconnection.file.entity.Payment;
-import org.complitex.osznconnection.file.entity.PaymentDBF;
 import org.complitex.osznconnection.file.entity.PersonAccount;
-import org.complitex.osznconnection.file.entity.example.PersonAccountExample;
 
 import javax.ejb.Stateless;
 import java.util.List;
@@ -28,7 +25,6 @@ public class PersonAccountLocalBean extends AbstractBean {
         FIRST_NAME("first_name"), MIDDLE_NAME("middle_name"), LAST_NAME("last_name"), CITY("city"), STREET("street"), BUILDING_NUMBER("building_num"),
         BUILDING_CORP("building_corp"), APARTMENT("apartment"), ACCOUNT_NUMBER("account_number"), OWN_NUM_SR("own_num_sr"),
         OSZN("oszn"), CALCULATION_CENTER("calculation_center");
-
         private String orderBy;
 
         private OrderBy(String orderBy) {
@@ -49,13 +45,25 @@ public class PersonAccountLocalBean extends AbstractBean {
      * @return
      */
     @Transactional
-    public String findLocalAccountNumber(Payment payment, long calculationCenterId) {
-        PersonAccount example = new PersonAccount((String) payment.getField(PaymentDBF.F_NAM),
-                (String) payment.getField(PaymentDBF.M_NAM), (String) payment.getField(PaymentDBF.SUR_NAM),
-                (String) payment.getField(PaymentDBF.OWN_NUM_SR), (String) payment.getField(PaymentDBF.N_NAME),
-                (String) payment.getField(PaymentDBF.VUL_NAME), (String) payment.getField(PaymentDBF.BLD_NUM),
-                (String) payment.getField(PaymentDBF.CORP_NUM), (String) payment.getField(PaymentDBF.FLAT), payment.getOrganizationId(),
-                calculationCenterId);
+    public String findLocalAccountNumber(String firstName, String middleName, String lastName, String city, String streetType,
+            String street, String streetCode, String buildingNumber, String buildingCorp, String apartment, String ownNumSr, long organizationId,
+            long calculationCenterId) {
+
+        PersonAccount example = new PersonAccount();
+        example.setFirstName(firstName);
+        example.setMiddleName(middleName);
+        example.setLastName(lastName);
+        example.setCity(city);
+        example.setStreetType(streetType);
+        example.setStreet(street);
+        example.setStreetCode(streetCode);
+        example.setBuildingNumber(buildingNumber);
+        example.setBuildingCorp(buildingCorp);
+        example.setApartment(apartment);
+        example.setOwnNumSr(ownNumSr);
+        example.setOsznId(organizationId);
+        example.setCalculationCenterId(calculationCenterId);
+
         List<PersonAccount> results = sqlSession().selectList(MAPPING_NAMESPACE + ".findAccountNumber", example);
         if (results.isEmpty()) {
             return null;
@@ -74,31 +82,44 @@ public class PersonAccountLocalBean extends AbstractBean {
      * @param calculationCenterId
      */
     @Transactional
-    public void saveOrUpdate(Payment payment, long calculationCenterId) {
-        PersonAccount param = new PersonAccount((String) payment.getField(PaymentDBF.F_NAM),
-                (String) payment.getField(PaymentDBF.M_NAM), (String) payment.getField(PaymentDBF.SUR_NAM),
-                (String) payment.getField(PaymentDBF.OWN_NUM_SR), (String) payment.getField(PaymentDBF.N_NAME),
-                (String) payment.getField(PaymentDBF.VUL_NAME), (String) payment.getField(PaymentDBF.BLD_NUM),
-                (String) payment.getField(PaymentDBF.CORP_NUM), (String) payment.getField(PaymentDBF.FLAT), payment.getAccountNumber(),
-                payment.getOrganizationId(), calculationCenterId);
-        List<PersonAccount> results = sqlSession().selectList(MAPPING_NAMESPACE + ".findAccountNumber", param);
+    public void saveOrUpdate(String accountNumber, String firstName, String middleName, String lastName, String city, String streetType,
+            String street, String streetCode, String buildingNumber, String buildingCorp, String apartment, String ownNumSr, long organizationId,
+            long calculationCenterId) {
+
+        PersonAccount personAccount = new PersonAccount();
+        personAccount.setFirstName(firstName);
+        personAccount.setMiddleName(middleName);
+        personAccount.setLastName(lastName);
+        personAccount.setCity(city);
+        personAccount.setStreetType(streetType);
+        personAccount.setStreet(street);
+        personAccount.setStreetCode(streetCode);
+        personAccount.setBuildingNumber(buildingNumber);
+        personAccount.setBuildingCorp(buildingCorp);
+        personAccount.setApartment(apartment);
+        personAccount.setOwnNumSr(ownNumSr);
+        personAccount.setOsznId(organizationId);
+        personAccount.setCalculationCenterId(calculationCenterId);
+        personAccount.setAccountNumber(accountNumber);
+
+        List<PersonAccount> results = sqlSession().selectList(MAPPING_NAMESPACE + ".findAccountNumber", personAccount);
         if (results.isEmpty()) {
-            insert(param);
+            insert(personAccount);
         } else if (results.size() == 1) {
-            param.setId(results.get(0).getId());
-            update(param);
+            personAccount.setId(results.get(0).getId());
+            update(personAccount);
         } else {
             throw new RuntimeException("More one entry in person_account table with the same data. Table person_account is in inconsistent state!");
         }
     }
 
     @Transactional
-    public int count(PersonAccountExample example) {
+    public int count(PersonAccount example) {
         return (Integer) sqlSession().selectOne(MAPPING_NAMESPACE + ".count", example);
     }
 
     @Transactional
-    public List<PersonAccount> find(PersonAccountExample example) {
+    public List<PersonAccount> find(PersonAccount example) {
         return sqlSession().selectList(MAPPING_NAMESPACE + ".find", example);
     }
 
@@ -126,7 +147,7 @@ public class PersonAccountLocalBean extends AbstractBean {
     }
 
     @Transactional
-    public void delete(PersonAccount personAccount){
-        sqlSession().delete(MAPPING_NAMESPACE+".delete", personAccount);
+    public void delete(PersonAccount personAccount) {
+        sqlSession().delete(MAPPING_NAMESPACE + ".delete", personAccount);
     }
 }

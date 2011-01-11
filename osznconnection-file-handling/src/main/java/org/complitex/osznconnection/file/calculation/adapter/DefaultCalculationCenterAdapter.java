@@ -97,7 +97,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
 
     /**
      * Для квартиры номер проставляется напрямую из ОСЗН адреса, с обрезанием начальных и конечных пробелов.
-     * @param payment
+     * @param actualPayment
      * @param apartment
      * @param apartmentCode
      */
@@ -111,6 +111,50 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
             flat = "";
         }
         payment.setOutgoingApartment(flat);
+    }
+
+    @Override
+    public void prepareCity(ActualPayment actualPayment, String city, String cityCode) {
+        actualPayment.setOutgoingCity(city);
+    }
+
+    @Override
+    public void prepareDistrict(ActualPayment actualPayment, String district, String districtCode) {
+        actualPayment.setOutgoingDistrict(district);
+    }
+
+    @Override
+    public void prepareStreet(ActualPayment actualPayment, String street, String streetCode) {
+        actualPayment.setOutgoingStreet(street);
+    }
+
+    @Override
+    public void prepareStreetType(ActualPayment actualPayment, String streetType, String streetTypeCode) {
+        actualPayment.setOutgoingStreetType(streetType);
+    }
+
+    @Override
+    public void prepareBuilding(ActualPayment actualPayment, String buildingNumber, String buildingCorp, String buildingCode) {
+        actualPayment.setOutgoingBuildingNumber(buildingNumber);
+        actualPayment.setOutgoingBuildingCorp(buildingCorp);
+    }
+
+    /**
+     * Для квартиры номер проставляется напрямую из ОСЗН адреса, с обрезанием начальных и конечных пробелов.
+     * @param actualPayment
+     * @param apartment
+     * @param apartmentCode
+     */
+    @Override
+    public void prepareApartment(ActualPayment actualPayment, String apartment, String apartmentCode) {
+        String flat = (String) actualPayment.getField(ActualPaymentDBF.FLAT);
+        if (flat != null) {
+            flat = flat.trim();
+        }
+        if (Strings.isEmpty(flat)) {
+            flat = "";
+        }
+        actualPayment.setOutgoingApartment(flat);
     }
 
     /**
@@ -127,7 +171,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
      * -7 - нет района,
      * остальное - номер л/с
      *
-     * @param payment запрос начислений
+     * @param actualPayment запрос начислений
      */
     @Override
     public void acquirePersonAccount(Payment payment) throws DBException {
@@ -191,7 +235,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
      * в ЦН по причине того что курсор в этом случае закрыт,
      * и драйвер с соотвествии со стандартом JDBC рассматривает закрытый курсор как ошибку и выбрасывает исключение.
      * 
-     * @param payment
+     * @param actualPayment
      * @return
      */
     @Override
@@ -274,7 +318,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
      * в ЦН по причине того что курсор в этом случае закрыт, и драйвер с соотвествии со стандартом JDBC рассматривает
      * закрытый курсор как ошибку и выбрасывает исключение.
      *
-     * @param payment
+     * @param actualPayment
      * @param benefits
      * @param calculationCenterId
      */
@@ -350,7 +394,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
      * поэтому ситуации с не найденной коррекцией нет.
      *
      * @param calculationCenterId id ЦН
-     * @param payment
+     * @param actualPayment
      * @param benefits
      * @param benefitData данные пришедшие из ЦН.
      */
