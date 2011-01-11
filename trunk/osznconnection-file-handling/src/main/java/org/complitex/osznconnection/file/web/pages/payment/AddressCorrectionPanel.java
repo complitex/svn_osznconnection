@@ -17,9 +17,6 @@ import org.complitex.dictionary.entity.example.DomainObjectExample;
 import org.complitex.dictionary.strategy.StrategyFactory;
 import org.complitex.dictionary.web.component.search.SearchComponent;
 import org.complitex.dictionary.web.component.search.SearchComponentState;
-import org.complitex.osznconnection.file.entity.Payment;
-import org.complitex.osznconnection.file.entity.PaymentDBF;
-import org.complitex.osznconnection.file.service.AddressService;
 import org.complitex.osznconnection.file.service.exception.MoreOneCorrectionException;
 import org.complitex.osznconnection.file.service.exception.NotFoundCorrectionException;
 import org.complitex.osznconnection.file.web.pages.util.AddressRenderer;
@@ -33,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import org.apache.wicket.Component;
 import org.apache.wicket.model.AbstractReadOnlyModel;
+import org.complitex.osznconnection.file.entity.AbstractRequest;
 import org.complitex.osznconnection.file.entity.RequestStatus;
 import org.complitex.osznconnection.file.service.StatusRenderService;
 import org.complitex.osznconnection.file.service.exception.DublicateCorrectionException;
@@ -43,7 +41,7 @@ import org.slf4j.LoggerFactory;
  * Панель для корректировки адреса вручную, когда нет соответствующей коррекции и поиск по локальной адресной базе не дал результатов.
  * @author Artem
  */
-public class AddressCorrectionPanel extends Panel {
+public abstract class AddressCorrectionPanel extends Panel {
 
     private static final Logger log = LoggerFactory.getLogger(AddressCorrectionPanel.class);
 
@@ -53,17 +51,34 @@ public class AddressCorrectionPanel extends Panel {
     }
     @EJB(name = "StrategyFactory")
     private StrategyFactory strategyFactory;
-    @EJB(name = "AddressService")
-    private AddressService addressService;
+    
     @EJB(name = "StatusRenderService")
     private StatusRenderService statusRenderService;
+    
     private CORRECTED_ENTITY correctedEntity;
     private Dialog dialog;
     private SearchComponent searchComponent;
     private SearchComponentState componentState;
     private FeedbackPanel messages;
     private WebMarkupContainer container;
-    private Payment payment;
+
+    private String firstName;
+    private String middleName;
+    private String lastName;
+    
+    private String city;
+    private String streetType;
+    private String street;
+    private String buildingNumber;
+    private String buildingCorp;
+    private String apartment;
+    
+    private Long cityId;
+    private Long streetTypeId;
+    private Long streetId;
+    private Long buildingId;
+
+    private AbstractRequest request;
 
     public AddressCorrectionPanel(String id, final Component... toUpdate) {
         super(id);
@@ -94,9 +109,7 @@ public class AddressCorrectionPanel extends Panel {
 
             @Override
             public String getObject() {
-                return payment.getField(PaymentDBF.SUR_NAM) + " "
-                        + payment.getField(PaymentDBF.F_NAM) + " "
-                        + payment.getField(PaymentDBF.M_NAM);
+                return lastName + " " + firstName + " " + middleName;
             }
         }));
 
@@ -104,9 +117,7 @@ public class AddressCorrectionPanel extends Panel {
 
             @Override
             public String getObject() {
-                return AddressRenderer.displayAddress(null, (String) payment.getField(PaymentDBF.N_NAME), null,
-                        (String) payment.getField(PaymentDBF.VUL_NAME), (String) payment.getField(PaymentDBF.BLD_NUM),
-                        (String) payment.getField(PaymentDBF.CORP_NUM), (String) payment.getField(PaymentDBF.FLAT), getLocale());
+                return AddressRenderer.displayAddress(null, city, streetType, street, buildingNumber, buildingCorp, apartment, getLocale());
             }
         }));
 
@@ -121,9 +132,8 @@ public class AddressCorrectionPanel extends Panel {
             public void onClick(AjaxRequestTarget target) {
                 if (validate(componentState)) {
                     try {
-                        correctAddress(getObjectId(componentState.get("city")), getObjectId(componentState.get("street")),
-                                getStreetTypeId(componentState.get("street")), getObjectId(componentState.get("building")),
-                                getObjectId(componentState.get("apartment")));
+                        correctAddress(request, getObjectId(componentState.get("city")), getObjectId(componentState.get("street")),
+                                getStreetTypeId(componentState.get("street")), getObjectId(componentState.get("building")));
 
                         if (toUpdate != null) {
                             for (Component component : toUpdate) {
@@ -170,23 +180,24 @@ public class AddressCorrectionPanel extends Panel {
         return streetObject == null ? null : StreetStrategy.getStreetType(streetObject);
     }
 
-    protected void correctAddress(Long cityId, Long streetId, Long streetTypeId, Long buildingId, Long apartmentId)
-            throws DublicateCorrectionException, MoreOneCorrectionException, NotFoundCorrectionException {
-        addressService.correctLocalAddress(payment, cityId, streetId, streetTypeId, buildingId);
-    }
+    protected abstract void correctAddress(AbstractRequest request, Long cityId, Long streetId, Long streetTypeId, Long buildingId)
+            throws DublicateCorrectionException, MoreOneCorrectionException, NotFoundCorrectionException;
+//    {
+//        addressService.correctLocalAddress(request, cityId, streetId, streetTypeId, buildingId);
+//    }
 
     protected boolean validate(SearchComponentState componentState) {
         boolean validated = true;
         switch (correctedEntity) {
             case BUILDING:
-                DomainObject building = componentState.get("building");
-                validated &= building != null && building.getId() != null && building.getId() > 0;
+                DomainObject buildingObject = componentState.get("building");
+                validated &= buildingObject != null && buildingObject.getId() != null && buildingObject.getId() > 0;
             case STREET:
-                DomainObject street = componentState.get("street");
-                validated &= street != null && street.getId() != null && street.getId() > 0;
+                DomainObject streetObject = componentState.get("street");
+                validated &= streetObject != null && streetObject.getId() != null && streetObject.getId() > 0;
             case CITY:
-                DomainObject city = componentState.get("city");
-                validated &= city != null && city.getId() != null && city.getId() > 0;
+                DomainObject cityObject = componentState.get("city");
+                validated &= cityObject != null && cityObject.getId() != null && cityObject.getId() > 0;
                 break;
         }
         if (!validated) {
@@ -199,19 +210,19 @@ public class AddressCorrectionPanel extends Panel {
         componentState.clear();
         Map<String, Long> ids = Maps.newHashMap();
 
-        if (payment.getInternalCityId() != null) {
-            ids.put("city", payment.getInternalCityId());
-            componentState.put("city", findObject(payment.getInternalCityId(), "city", ids));
+        if (cityId != null) {
+            ids.put("city", cityId);
+            componentState.put("city", findObject(cityId, "city", ids));
         }
 
-        if (payment.getInternalStreetId() != null) {
-            ids.put("street", payment.getInternalStreetId());
-            componentState.put("street", findObject(payment.getInternalStreetId(), "street", ids));
+        if (streetId != null) {
+            ids.put("street", streetId);
+            componentState.put("street", findObject(streetId, "street", ids));
         }
 
-        if (payment.getInternalBuildingId() != null) {
-            ids.put("building", payment.getInternalBuildingId());
-            componentState.put("building", findObject(payment.getInternalBuildingId(), "building", ids));
+        if (buildingId != null) {
+            ids.put("building", buildingId);
+            componentState.put("building", findObject(buildingId, "building", ids));
         }
     }
 
@@ -237,11 +248,11 @@ public class AddressCorrectionPanel extends Panel {
     }
 
     protected void initCorrectedEntity() {
-        if (payment.getInternalCityId() == null) {
+        if (cityId == null) {
             correctedEntity = CORRECTED_ENTITY.CITY;
             return;
         }
-        if (payment.getInternalStreetId() == null) {
+        if (streetId == null) {
             correctedEntity = CORRECTED_ENTITY.STREET;
             return;
         }
@@ -254,8 +265,25 @@ public class AddressCorrectionPanel extends Panel {
         dialog.close(target);
     }
 
-    public void open(AjaxRequestTarget target, Payment payment) {
-        this.payment = payment;
+    public void open(AjaxRequestTarget target, AbstractRequest request, String firstName, String middleName, String lastName, String city,
+            String streetType, String street, String buildingNumber, String buildingCorp, String apartment, Long cityId, Long streetTypeId,
+            Long streetId, Long buildingId) {
+
+        this.request = request;
+            
+        this.firstName = firstName;
+        this.middleName = middleName;
+        this.lastName = lastName;
+        this.city = city;
+        this.streetType = streetType;
+        this.street = street;
+        this.buildingNumber = buildingNumber;
+        this.buildingCorp = buildingCorp;
+        this.apartment = apartment;
+        this.cityId = cityId;
+        this.streetTypeId = streetTypeId;
+        this.streetId = streetId;
+        this.buildingId = buildingId;
 
         initCorrectedEntity();
         initSearchComponentState(componentState);

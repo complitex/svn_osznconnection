@@ -84,16 +84,25 @@
 
     <select id="findStreetLocalCorrections" parameterType="map" resultMap="streetCorrection">
         SELECT * FROM `street_correction`
-        WHERE `organization_id` = #{organizationId} AND TRIM(`correction`) = TRIM(#{correction}) AND `parent_id` = #{parentId}
-            AND
-            <choose>
-                <when test="streetTypeCorrectionId != null">
-                    `street_type_correction_id` = #{streetTypeCorrectionId}
-                </when>
-                <otherwise>
-                    `street_type_correction_id` IS NULL
-                </otherwise>
-            </choose>
+        WHERE `organization_id` = #{organizationId}
+        AND `parent_id` = #{parentId}
+        <choose>
+            <when test="code != null">
+                AND TRIM(`organization_code`) = TRIM(#{code})
+            </when>
+            <otherwise>
+                AND TRIM(`correction`) = TRIM(#{correction})
+            </otherwise>
+        </choose>
+        AND
+        <choose>
+            <when test="streetTypeCorrectionId != null">
+                `street_type_correction_id` = #{streetTypeCorrectionId}
+            </when>
+            <otherwise>
+                `street_type_correction_id` IS NULL
+            </otherwise>
+        </choose>
     </select>
 
     <insert id="insertStreet" parameterType="org.complitex.osznconnection.file.entity.StreetCorrection" keyProperty="id" useGeneratedKeys="true">
@@ -148,8 +157,7 @@
         AND EXISTS(
             SELECT 1 FROM `${entity}_attribute` attr WHERE attr.`status` = 'ACTIVE' AND e.`object_id` = attr.`object_id`
             AND attr.`attribute_type_id` = #{attributeTypeId}
-            AND attr.`value_id` IN (
-            SELECT sc.`id` FROM `${entity}_string_culture` sc WHERE sc.`value` = TRIM(TO_CYRILLIC(#{correction}))))
+            AND attr.`value_id` IN (SELECT sc.`id` FROM `${entity}_string_culture` sc WHERE sc.`value` = TRIM(TO_CYRILLIC(#{correction}))))
     </select>
 
     <select id="findInternalStreetIds" parameterType="map" resultType="long">

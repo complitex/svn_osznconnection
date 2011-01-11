@@ -19,6 +19,7 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import java.util.List;
+import org.complitex.osznconnection.file.entity.PaymentDBF;
 import org.complitex.osznconnection.file.entity.RequestFileGroup;
 
 /**
@@ -48,7 +49,12 @@ public class PersonAccountService extends AbstractBean {
      */
     @Transactional
     public void resolveLocalAccount(Payment payment, long calculationCenterId) {
-        String accountNumber = personAccountLocalBean.findLocalAccountNumber(payment, calculationCenterId);
+        String accountNumber = personAccountLocalBean.findLocalAccountNumber((String) payment.getField(PaymentDBF.F_NAM),
+                (String) payment.getField(PaymentDBF.M_NAM), (String) payment.getField(PaymentDBF.SUR_NAM),
+                (String) payment.getField(PaymentDBF.N_NAME), null, (String) payment.getField(PaymentDBF.VUL_NAME), null,
+                (String) payment.getField(PaymentDBF.BLD_NUM), (String) payment.getField(PaymentDBF.CORP_NUM),
+                (String) payment.getField(PaymentDBF.FLAT), (String) payment.getField(PaymentDBF.OWN_NUM_SR),
+                payment.getOrganizationId(), calculationCenterId);
         if (!Strings.isEmpty(accountNumber)) {
             payment.setAccountNumber(accountNumber);
             payment.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
@@ -70,7 +76,12 @@ public class PersonAccountService extends AbstractBean {
         adapter.acquirePersonAccount(payment);
         if (payment.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED) {
             benefitBean.updateAccountNumber(payment.getId(), payment.getAccountNumber());
-            personAccountLocalBean.saveOrUpdate(payment, calculationCenterId);
+            personAccountLocalBean.saveOrUpdate(payment.getAccountNumber(), (String) payment.getField(PaymentDBF.F_NAM),
+                    (String) payment.getField(PaymentDBF.M_NAM), (String) payment.getField(PaymentDBF.SUR_NAM),
+                    (String) payment.getField(PaymentDBF.N_NAME), null, (String) payment.getField(PaymentDBF.VUL_NAME), null,
+                    (String) payment.getField(PaymentDBF.BLD_NUM), (String) payment.getField(PaymentDBF.CORP_NUM),
+                    (String) payment.getField(PaymentDBF.FLAT), (String) payment.getField(PaymentDBF.OWN_NUM_SR),
+                    payment.getOrganizationId(), calculationCenterId);
         }
     }
 
@@ -93,7 +104,12 @@ public class PersonAccountService extends AbstractBean {
         }
 
         long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterInfo().getCalculationCenterId();
-        personAccountLocalBean.saveOrUpdate(payment, calculationCenterId);
+        personAccountLocalBean.saveOrUpdate(payment.getAccountNumber(), (String) payment.getField(PaymentDBF.F_NAM),
+                (String) payment.getField(PaymentDBF.M_NAM), (String) payment.getField(PaymentDBF.SUR_NAM),
+                (String) payment.getField(PaymentDBF.N_NAME), null, (String) payment.getField(PaymentDBF.VUL_NAME), null,
+                (String) payment.getField(PaymentDBF.BLD_NUM), (String) payment.getField(PaymentDBF.CORP_NUM),
+                (String) payment.getField(PaymentDBF.FLAT), (String) payment.getField(PaymentDBF.OWN_NUM_SR),
+                payment.getOrganizationId(), calculationCenterId);
     }
 
     /**

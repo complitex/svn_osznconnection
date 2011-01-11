@@ -115,11 +115,6 @@ public class BenefitBean extends AbstractRequestBean {
         sqlSession().insert(MAPPING_NAMESPACE + ".insertBenefit", benefit);
     }
 
-    @Transactional
-    public void delete(RequestFile requestFile) {
-        sqlSession().delete(MAPPING_NAMESPACE + ".deleteBenefits", requestFile.getId());
-    }
-
     /**
      * Когда у payment записи в UI вручную меняют адрес, у этой записи и у всех соотвествующих benefit записей статус проставляется в ADDRESS_CORRECTED.
      * Данный метод проставляет статус для benefit записей.

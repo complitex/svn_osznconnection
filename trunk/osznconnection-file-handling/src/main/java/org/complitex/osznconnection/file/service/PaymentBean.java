@@ -26,7 +26,6 @@ import java.util.Set;
 public class PaymentBean extends AbstractRequestBean {
 
     private static final Logger log = LoggerFactory.getLogger(PaymentBean.class);
-
     public static final String MAPPING_NAMESPACE = PaymentBean.class.getName();
 
     public enum OrderBy {
@@ -41,7 +40,6 @@ public class PaymentBean extends AbstractRequestBean {
         CORP(PaymentDBF.CORP_NUM.name()),
         APARTMENT(PaymentDBF.FLAT.name()),
         STATUS("status");
-
         private String orderBy;
 
         private OrderBy(String orderBy) {
@@ -52,16 +50,12 @@ public class PaymentBean extends AbstractRequestBean {
             return orderBy;
         }
     }
-
     @EJB(beanName = "BenefitBean")
     private BenefitBean benefitBean;
-
     @EJB(beanName = "CalculationCenterBean")
     private CalculationCenterBean calculationCenterBean;
-
     @EJB(beanName = "PersonAccountLocalBean")
     private PersonAccountLocalBean personAccountLocalBean;
-
     @EJB
     private RequestFileGroupBean requestFileGroupBean;
 
@@ -98,15 +92,6 @@ public class PaymentBean extends AbstractRequestBean {
     @Transactional
     public void update(Payment payment) {
         sqlSession().update(MAPPING_NAMESPACE + ".update", payment);
-    }
-
-    public void delete(RequestFile requestFile) {
-        sqlSession().delete(MAPPING_NAMESPACE + ".deletePayments", requestFile.getId());
-    }
-
-    @Transactional
-    public Payment findById(long id) {
-        return (Payment) sqlSession().selectOne(MAPPING_NAMESPACE + ".findById", id);
     }
 
     /**
@@ -235,7 +220,12 @@ public class PaymentBean extends AbstractRequestBean {
 
         long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterInfo().getCalculationCenterId();
 
-        personAccountLocalBean.saveOrUpdate(payment, calculationCenterId);
+        personAccountLocalBean.saveOrUpdate(payment.getAccountNumber(), (String) payment.getField(PaymentDBF.F_NAM),
+                (String) payment.getField(PaymentDBF.M_NAM), (String) payment.getField(PaymentDBF.SUR_NAM),
+                (String) payment.getField(PaymentDBF.N_NAME), null, (String) payment.getField(PaymentDBF.VUL_NAME), null,
+                (String) payment.getField(PaymentDBF.BLD_NUM), (String) payment.getField(PaymentDBF.CORP_NUM),
+                (String) payment.getField(PaymentDBF.FLAT), (String) payment.getField(PaymentDBF.OWN_NUM_SR),
+                payment.getOrganizationId(), calculationCenterId);
 
         long paymentFileId = payment.getRequestFileId();
         long benefitFileId = requestFileGroupBean.getBenefitFileId(paymentFileId);

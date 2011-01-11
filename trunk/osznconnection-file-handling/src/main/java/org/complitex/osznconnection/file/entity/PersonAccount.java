@@ -13,65 +13,24 @@ import java.io.Serializable;
 public class PersonAccount implements Serializable {
 
     private Long id;
-
     private String firstName;
-
     private String middleName;
-
     private String lastName;
-
     private String ownNumSr;
-
     private String city;
-
+    private String streetType;
+    private String streetCode;
     private String street;
-
     private String buildingNumber;
-
     private String buildingCorp;
-
     private String apartment;
-
     private String accountNumber;
-
     private Long osznId;
-
     private Long calculationCenterId;
-
     private String oszn;
-
     private String calculationCenter;
 
     public PersonAccount() {
-    }
-
-    public PersonAccount(String firstName, String middleName, String lastName, String ownNumSr, String city, String street, String buildingNumber, String buildingCorp, String apartment, Long osznId, Long calculationCenterId) {
-        this.firstName = firstName;
-        this.middleName = middleName;
-        this.lastName = lastName;
-        this.ownNumSr = ownNumSr;
-        this.city = city;
-        this.street = street;
-        this.buildingNumber = buildingNumber;
-        this.buildingCorp = buildingCorp;
-        this.apartment = apartment;
-        this.osznId = osznId;
-        this.calculationCenterId = calculationCenterId;
-    }
-
-    public PersonAccount(String firstName, String middleName, String lastName, String ownNumSr, String city, String street, String buildingNumber, String buildingCorp, String apartment, String accountNumber, Long osznId, Long calculationCenterId) {
-        this.firstName = firstName;
-        this.middleName = middleName;
-        this.lastName = lastName;
-        this.ownNumSr = ownNumSr;
-        this.city = city;
-        this.street = street;
-        this.buildingNumber = buildingNumber;
-        this.buildingCorp = buildingCorp;
-        this.apartment = apartment;
-        this.accountNumber = accountNumber;
-        this.osznId = osznId;
-        this.calculationCenterId = calculationCenterId;
     }
 
     public Long getId() {
@@ -192,5 +151,21 @@ public class PersonAccount implements Serializable {
 
     public void setOszn(String oszn) {
         this.oszn = oszn;
+    }
+
+    public String getStreetCode() {
+        return streetCode;
+    }
+
+    public void setStreetCode(String streetCode) {
+        this.streetCode = streetCode;
+    }
+
+    public String getStreetType() {
+        return streetType;
+    }
+
+    public void setStreetType(String streetType) {
+        this.streetType = streetType;
     }
 }

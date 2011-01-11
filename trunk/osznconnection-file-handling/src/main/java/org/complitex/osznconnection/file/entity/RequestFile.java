@@ -15,7 +15,7 @@ import java.util.List;
  */
 public class RequestFile implements ILoggable {
     public static enum TYPE {
-        BENEFIT, PAYMENT, TARIF
+        BENEFIT, PAYMENT, TARIF, ACTUAL_PAYMENT
     }
 
     public final static String PAYMENT_FILE_PREFIX = "A_";

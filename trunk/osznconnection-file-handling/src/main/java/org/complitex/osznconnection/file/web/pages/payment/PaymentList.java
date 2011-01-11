@@ -27,6 +27,9 @@ import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
 import org.complitex.osznconnection.file.entity.StatusDetailInfo;
+import org.complitex.osznconnection.file.service.exception.DublicateCorrectionException;
+import org.complitex.osznconnection.file.service.exception.MoreOneCorrectionException;
+import org.complitex.osznconnection.file.service.exception.NotFoundCorrectionException;
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.TemplatePage;
 import org.complitex.osznconnection.file.entity.Payment;
@@ -44,6 +47,8 @@ import javax.ejb.EJB;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Iterator;
+import org.complitex.osznconnection.file.entity.AbstractRequest;
+import org.complitex.osznconnection.file.service.AddressService;
 import org.complitex.osznconnection.file.service.StatusRenderService;
 import org.complitex.osznconnection.file.service.status.details.PaymentExampleConfigurator;
 import org.complitex.osznconnection.file.service.status.details.StatusDetailBean;
@@ -67,6 +72,8 @@ public final class PaymentList extends TemplatePage {
     private WebWarningRenderer webWarningRenderer;
     @EJB(name = "StatusDetailBean")
     private StatusDetailBean statusDetailBean;
+    @EJB(name = "AddressService")
+    private AddressService addressService;
     private IModel<PaymentExample> example;
     private long fileId;
 
@@ -169,7 +176,15 @@ public final class PaymentList extends TemplatePage {
         filterForm.add(submit);
 
         //Панель коррекции адреса
-        final AddressCorrectionPanel addressCorrectionPanel = new AddressCorrectionPanel("addressCorrectionPanel", content, statusDetailPanel);
+        final AddressCorrectionPanel addressCorrectionPanel = new AddressCorrectionPanel("addressCorrectionPanel", content, statusDetailPanel){
+
+            @Override
+            protected void correctAddress(AbstractRequest request, Long cityId, Long streetId, Long streetTypeId, Long buildingId)
+                    throws DublicateCorrectionException, MoreOneCorrectionException, NotFoundCorrectionException {
+                Payment payment = Payment.class.cast(request);
+                addressService.correctLocalAddress(payment, cityId, streetId, streetTypeId, buildingId);
+            }
+        };
         add(addressCorrectionPanel);
 
         //Панель поиска
@@ -203,7 +218,12 @@ public final class PaymentList extends TemplatePage {
 
                     @Override
                     public void onClick(AjaxRequestTarget target) {
-                        addressCorrectionPanel.open(target, payment);
+                        addressCorrectionPanel.open(target, payment, (String) payment.getField(PaymentDBF.F_NAM),
+                                (String)payment.getField(PaymentDBF.M_NAM), (String) payment.getField(PaymentDBF.SUR_NAM),
+                                (String)payment.getField(PaymentDBF.N_NAME), null, (String)payment.getField(PaymentDBF.VUL_NAME),
+                                (String)payment.getField(PaymentDBF.BLD_NUM), (String)payment.getField(PaymentDBF.CORP_NUM),
+                                (String)payment.getField(PaymentDBF.FLAT), payment.getInternalCityId(), payment.getInternalStreetTypeId(),
+                                payment.getInternalStreetId(), payment.getInternalBuildingId());
                     }
                 };
                 addressCorrectionLink.setVisible(payment.getStatus().isAddressCorrectable());

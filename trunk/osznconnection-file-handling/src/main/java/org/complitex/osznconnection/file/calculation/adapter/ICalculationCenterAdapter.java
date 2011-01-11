@@ -14,6 +14,7 @@ import javax.ejb.Local;
 import java.util.Date;
 import java.util.List;
 import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
+import org.complitex.osznconnection.file.entity.ActualPayment;
 
 /**
  * Базовый интерфейс для реализаций адаптера взаимодействия с ЦН.
@@ -33,6 +34,18 @@ public interface ICalculationCenterAdapter {
     void prepareBuilding(Payment payment, String buildingNumber, String buildingCorp, String buildingCode);
 
     void prepareApartment(Payment payment, String apartment, String apartmentCode);
+
+    void prepareCity(ActualPayment actualPayment, String city, String cityCode);
+
+    void prepareDistrict(ActualPayment actualPayment, String district, String districtCode);
+
+    void prepareStreet(ActualPayment actualPayment, String street, String streetCode);
+
+    void prepareStreetType(ActualPayment actualPayment, String streetType, String streetTypeCode);
+
+    void prepareBuilding(ActualPayment actualPayment, String buildingNumber, String buildingCorp, String buildingCode);
+
+    void prepareApartment(ActualPayment actualPayment, String apartment, String apartmentCode);
 
     void acquirePersonAccount(Payment payment) throws DBException;
 
