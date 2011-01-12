@@ -170,9 +170,14 @@ public class ActualPaymentBean extends AbstractRequestBean {
     public void updateAccountNumber(ActualPayment actualPayment) {
         sqlSession().update(MAPPING_NAMESPACE + ".updateAccountNumber", actualPayment);
 
-        //TODO: fix it
-//        long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterInfo().getCalculationCenterId();
-//        personAccountLocalBean.saveOrUpdate(actualPayment, calculationCenterId);
+        long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterInfo().getCalculationCenterId();
+        personAccountLocalBean.saveOrUpdate(actualPayment.getAccountNumber(), (String) actualPayment.getField(ActualPaymentDBF.F_NAM),
+                (String) actualPayment.getField(ActualPaymentDBF.M_NAM), (String) actualPayment.getField(ActualPaymentDBF.SUR_NAM),
+                (String) actualPayment.getField(ActualPaymentDBF.N_NAME), (String) actualPayment.getField(ActualPaymentDBF.VUL_CAT),
+                (String) actualPayment.getField(ActualPaymentDBF.VUL_NAME), (String) actualPayment.getField(ActualPaymentDBF.VUL_CODE),
+                (String) actualPayment.getField(ActualPaymentDBF.BLD_NUM), (String) actualPayment.getField(ActualPaymentDBF.CORP_NUM),
+                (String) actualPayment.getField(ActualPaymentDBF.FLAT), null,
+                actualPayment.getOrganizationId(), calculationCenterId);
 
 
         long actualPaymentFileId = actualPayment.getRequestFileId();
