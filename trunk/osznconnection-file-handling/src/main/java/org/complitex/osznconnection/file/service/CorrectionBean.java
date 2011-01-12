@@ -29,12 +29,9 @@ import java.util.Map;
 public class CorrectionBean extends AbstractBean {
 
     private static final Logger log = LoggerFactory.getLogger(CorrectionBean.class);
-
     protected static final String CORRECTION_BEAN_MAPPING_NAMESPACE = CorrectionBean.class.getName();
-
     @EJB
     protected StrategyFactory strategyFactory;
-    
     @EJB
     private LocaleBean localeBean;
 

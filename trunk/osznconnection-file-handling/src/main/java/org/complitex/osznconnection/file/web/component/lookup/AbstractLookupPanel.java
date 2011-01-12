@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.complitex.osznconnection.file.web.pages.component;
+package org.complitex.osznconnection.file.web.component.lookup;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
@@ -43,6 +43,7 @@ import org.complitex.osznconnection.file.calculation.adapter.exception.DBExcepti
 import org.complitex.osznconnection.file.service.StatusRenderService;
 import org.complitex.address.strategy.street.StreetStrategy;
 import org.complitex.osznconnection.file.entity.AbstractRequest;
+import org.complitex.osznconnection.file.web.component.account.AccountNumberPickerPanel;
 import org.odlabs.wiquery.ui.accordion.AccordionActive;
 
 /**
@@ -339,7 +340,6 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
 
     protected abstract boolean validateInternalAddress(T request);
 
-
     public void open(AjaxRequestTarget target, T request, Long cityId, Long streetId, Long buildingId, String apartment,
             String ownNumSr) {
         this.request = CloneUtil.cloneObject(request);
@@ -374,7 +374,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
         dialog.open(target);
     }
 
-    public void open(AjaxRequestTarget target, T request, Long cityId, Long streetId, Long buildingId, String apartment){
+    public void open(AjaxRequestTarget target, T request, Long cityId, Long streetId, Long buildingId, String apartment) {
         open(target, request, cityId, streetId, buildingId, apartment, null);
     }
 

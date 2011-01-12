@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.complitex.osznconnection.file.web.pages.component;
+package org.complitex.osznconnection.file.web.component.lookup;
 
 import java.util.List;
 import javax.ejb.EJB;
@@ -115,7 +115,6 @@ public abstract class AccountNumberLookupPanel<T extends AbstractRequest> extend
                 boolean visible = detailsContainer.isVisible();
                 detailsContainer.setVisible(false);
                 if (validateAccount()) {
-//                    paymentLookupBean.setupOutgoingDistrict(request);
                     setupOutgoingDistrict(request);
                     if (!(request.getStatus() == RequestStatus.MORE_ONE_REMOTE_DISTRICT_CORRECTION
                             || request.getStatus() == RequestStatus.DISTRICT_UNRESOLVED)) {

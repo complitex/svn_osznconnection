@@ -4,12 +4,13 @@
  */
 package org.complitex.osznconnection.file.web.pages.payment;
 
+import java.util.Date;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.complitex.osznconnection.file.entity.AccountDetail;
 import org.complitex.osznconnection.file.entity.Payment;
 import org.complitex.osznconnection.file.entity.PaymentDBF;
 import org.complitex.osznconnection.file.entity.RequestStatus;
-import org.complitex.osznconnection.file.service.PaymentLookupBean;
+import org.complitex.osznconnection.file.service.LookupBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,7 +19,7 @@ import java.util.List;
 import org.apache.wicket.Component;
 import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
 import org.complitex.osznconnection.file.service.PaymentBean;
-import org.complitex.osznconnection.file.web.pages.component.AbstractLookupPanel;
+import org.complitex.osznconnection.file.web.component.lookup.AbstractLookupPanel;
 
 /**
  * Панель для поиска номера л/c по различным параметрам: по адресу, по номеру лиц. счета, по номеру в мегабанке.
@@ -28,7 +29,7 @@ public class PaymentLookupPanel extends AbstractLookupPanel<Payment> {
 
     private static final Logger log = LoggerFactory.getLogger(PaymentLookupPanel.class);
     @EJB(name = "PaymentLookupBean")
-    private PaymentLookupBean paymentLookupBean;
+    private LookupBean paymentLookupBean;
     @EJB(name = "PaymentBean")
     private PaymentBean paymentBean;
 
@@ -70,7 +71,9 @@ public class PaymentLookupPanel extends AbstractLookupPanel<Payment> {
 
     @Override
     protected List<AccountDetail> acquireAccountDetailsByAddress(Payment payment) throws DBException {
-        return paymentLookupBean.acquireAccountDetailsByAddress(payment);
+        return paymentLookupBean.acquireAccountDetailsByAddress(payment, payment.getOutgoingDistrict(), payment.getOutgoingStreetType(),
+                payment.getOutgoingStreet(), payment.getOutgoingBuildingNumber(), payment.getOutgoingBuildingCorp(),
+                payment.getOutgoingApartment(), (Date) payment.getField(PaymentDBF.DAT1));
     }
 
     @Override
@@ -81,7 +84,7 @@ public class PaymentLookupPanel extends AbstractLookupPanel<Payment> {
 
     @Override
     protected List<AccountDetail> acquireAccountDetailsByMegabankAccount(Payment payment, String account) throws DBException {
-        return paymentLookupBean.acquireAccountDetailsByMegabankAccount(payment, account);
+        return paymentLookupBean.acquireAccountDetailsByMegabankAccount(payment, payment.getOutgoingDistrict(), account);
     }
 
     @Override

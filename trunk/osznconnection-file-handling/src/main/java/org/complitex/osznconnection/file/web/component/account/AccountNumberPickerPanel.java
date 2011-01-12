@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.complitex.osznconnection.file.web.pages.component;
+package org.complitex.osznconnection.file.web.component.account;
 
 import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -69,10 +69,10 @@ public abstract class AccountNumberPickerPanel extends Panel {
     }
 
     public static String displayAccountDetail(AccountDetail accountDetail) {
-        if(accountDetail == null){
+        if (accountDetail == null) {
             return null;
         }
-        
+
         String display = StringUtil.valueOf(accountDetail.getAccountNumber()) + " ";
         display += StringUtil.valueOf(accountDetail.getOwnerName()) + " ";
         if (accountDetail.getOwnerINN() != null) {
@@ -91,7 +91,7 @@ public abstract class AccountNumberPickerPanel extends Panel {
         return accountDetailsModel;
     }
 
-    public void clear(){
+    public void clear() {
         model.setObject(null);
     }
 }

@@ -23,7 +23,7 @@ public class PersonAccountLocalBean extends AbstractBean {
     public static enum OrderBy {
 
         FIRST_NAME("first_name"), MIDDLE_NAME("middle_name"), LAST_NAME("last_name"), CITY("city"), STREET("street"), STREET_CODE("street_code"),
-        BUILDING_NUMBER("building_num"),BUILDING_CORP("building_corp"), APARTMENT("apartment"),
+        BUILDING_NUMBER("building_num"), BUILDING_CORP("building_corp"), APARTMENT("apartment"),
         ACCOUNT_NUMBER("account_number"), OWN_NUM_SR("own_num_sr"),
         OSZN("oszn"), CALCULATION_CENTER("calculation_center");
         private String orderBy;

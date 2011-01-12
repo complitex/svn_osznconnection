@@ -55,8 +55,8 @@ import org.complitex.osznconnection.file.service.status.details.ActualPaymentExa
 import org.complitex.osznconnection.file.service.status.details.StatusDetailBean;
 import org.complitex.osznconnection.file.service.warning.WebWarningRenderer;
 import org.complitex.osznconnection.file.web.component.StatusDetailPanel;
-import org.complitex.osznconnection.file.web.pages.component.AddressCorrectionPanel;
-import org.complitex.osznconnection.file.web.pages.component.AccountNumberCorrectionPanel;
+import org.complitex.osznconnection.file.web.component.address.AddressCorrectionPanel;
+import org.complitex.osznconnection.file.web.component.account.AccountNumberCorrectionPanel;
 import org.complitex.osznconnection.file.web.pages.util.AddressRenderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -204,15 +204,15 @@ public final class ActualPaymentList extends TemplatePage {
         add(lookupPanel);
 
         //Коррекция личного счета
-        final AccountNumberCorrectionPanel<ActualPayment> paymentAccountNumberCorrectionPanel =
-                new AccountNumberCorrectionPanel<ActualPayment>("paymentAccountNumberCorrectionPanel", content, statusDetailPanel) {
+        final AccountNumberCorrectionPanel<ActualPayment> accountNumberCorrectionPanel =
+                new AccountNumberCorrectionPanel<ActualPayment>("accountNumberCorrectionPanel", content, statusDetailPanel) {
 
                     @Override
                     protected void correctAccountNumber(ActualPayment actualPayment, String accountNumber) {
                         personAccountService.correctAccountNumber(actualPayment, accountNumber);
                     }
                 };
-        add(paymentAccountNumberCorrectionPanel);
+        add(accountNumberCorrectionPanel);
 
         DataView<ActualPayment> data = new DataView<ActualPayment>("data", dataProvider, 1) {
 
@@ -252,7 +252,7 @@ public final class ActualPaymentList extends TemplatePage {
 
                     @Override
                     public void onClick(AjaxRequestTarget target) {
-                        paymentAccountNumberCorrectionPanel.open(target, actualPayment, actualPayment.getOutgoingDistrict(),
+                        accountNumberCorrectionPanel.open(target, actualPayment, actualPayment.getOutgoingDistrict(),
                                 actualPayment.getOutgoingStreetType(), actualPayment.getOutgoingStreet(),
                                 actualPayment.getOutgoingBuildingNumber(), actualPayment.getOutgoingBuildingCorp(),
                                 actualPayment.getOutgoingApartment(), (Date) actualPayment.getField(ActualPaymentDBF.DAT_BEG));

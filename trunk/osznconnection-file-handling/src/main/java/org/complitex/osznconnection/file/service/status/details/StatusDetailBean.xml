@@ -199,7 +199,7 @@
         <choose>
             <!--account number -->
             <when test="status == 212 or status == 213">
-                SELECT CONCAT(`SUR_NAM`, `F_NAME`, `M_NAM`) `id`, `SUR_NAM`, `F_NAM`, `M_NAM`, COUNT(*) `count` FROM `actual_payment`
+                SELECT CONCAT(`SUR_NAM`, `F_NAM`, `M_NAM`) `id`, `SUR_NAM`, `F_NAM`, `M_NAM`, COUNT(*) `count` FROM `actual_payment`
                 WHERE `request_file_id` = #{id} AND `status` = #{status}
                 GROUP BY 1
             </when>

@@ -99,7 +99,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
         String flat = (String) payment.getField(PaymentDBF.FLAT);
         if (flat != null) {
             flat = flat.trim();
-    }
+        }
         if (Strings.isEmpty(flat)) {
             flat = "";
         }
@@ -166,8 +166,8 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
      *
      */
     @Override
-    public void acquirePersonAccount(String district, String streetType, String street, String buildingNumber, String buildingCorp,
-            String apartment, AbstractRequest request, Date date) throws DBException {
+    public void acquirePersonAccount(AbstractRequest request, String district, String streetType, String street, String buildingNumber,
+            String buildingCorp, String apartment, Date date) throws DBException {
         Map<String, Object> params = Maps.newHashMap();
         params.put("pDistrName", district);
         params.put("pStSortName", streetType);
@@ -233,8 +233,8 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
      * @return
      */
     @Override
-    public List<AccountDetail> acquireAccountDetailsByAddress(String district, String streetType, String street, String buildingNumber,
-            String buildingCorp, String apartment, AbstractRequest request, Date date) throws DBException {
+    public List<AccountDetail> acquireAccountDetailsByAddress(AbstractRequest request, String district, String streetType, String street,
+            String buildingNumber, String buildingCorp, String apartment, Date date) throws DBException {
         List<AccountDetail> accountCorrectionDetails = null;
 
         Map<String, Object> params = Maps.newHashMap();
@@ -1042,7 +1042,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
     private static final int MEGABANK_ACCOUNT_TYPE = 1;
 
     @Override
-    public List<AccountDetail> acquireAccountDetailsByMegabankAccount(String district, AbstractRequest request, String megabankAccount)
+    public List<AccountDetail> acquireAccountDetailsByMegabankAccount(AbstractRequest request, String district, String megabankAccount)
             throws DBException {
         return acquireAccountDetailsByAccCode(district, request, "acquireAccountDetailsByMegabankAccount", megabankAccount, MEGABANK_ACCOUNT_TYPE);
     }
@@ -1072,7 +1072,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
 
         Integer resultCode = (Integer) params.get("resultCode");
         if (resultCode == null) {
-            log.error("{}. Result code is null. Request id: {}, request class: {}", new Object[]{ method, request.getId(), request.getClass()});
+            log.error("{}. Result code is null. Request id: {}, request class: {}", new Object[]{method, request.getId(), request.getClass()});
             logBean.error(Module.NAME, getClass(), request.getClass(), request.getId(), EVENT.GETTING_DATA,
                     ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_unexpected", localeBean.getSystemLocale(), "GETATTRSBYACCCODE", "null"));
             request.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
@@ -1082,7 +1082,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
                     accountCorrectionDetails = (List<AccountDetail>) params.get("details");
                     if (accountCorrectionDetails == null || accountCorrectionDetails.isEmpty()) {
                         log.error("{}. Result code is 1 but account details data is null or empty. Request id: {}, request class: {}",
-                                new Object[]{ method, request.getId(), request.getClass()});
+                                new Object[]{method, request.getId(), request.getClass()});
                         logBean.error(Module.NAME, getClass(), request.getClass(), request.getId(), EVENT.GETTING_DATA,
                                 ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_inconsistent", localeBean.getSystemLocale(),
                                 "GETATTRSBYACCCODE"));

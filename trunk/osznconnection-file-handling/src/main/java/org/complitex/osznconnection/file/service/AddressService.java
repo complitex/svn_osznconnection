@@ -629,7 +629,7 @@ public class AddressService extends AbstractBean {
             List<Correction> cityCorrections = addressCorrectionBean.findCityLocalCorrections(city, organizationId);
             if (cityCorrections.size() == 1) {
                 Correction cityCorrection = cityCorrections.get(0);
-                
+
                 long streetTypeCorrectionId;
                 if (actualPayment.getInternalStreetTypeId() == null) { //откорректировали тип улицы
                     Correction streetTypeCorrection = addressCorrectionBean.createStreetTypeCorrection(streetType, streetTypeId, organizationId,
@@ -647,7 +647,7 @@ public class AddressService extends AbstractBean {
                     } else if (streetTypeCorrections.size() > 1) {
                         throw new MoreOneCorrectionException("street_type");
                     } else {
-                         throw new NotFoundCorrectionException("street_type");
+                        throw new NotFoundCorrectionException("street_type");
                     }
                 }
 

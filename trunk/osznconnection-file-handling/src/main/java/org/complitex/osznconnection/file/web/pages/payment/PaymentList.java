@@ -4,8 +4,8 @@
  */
 package org.complitex.osznconnection.file.web.pages.payment;
 
-import org.complitex.osznconnection.file.web.pages.component.AccountNumberCorrectionPanel;
-import org.complitex.osznconnection.file.web.pages.component.AddressCorrectionPanel;
+import org.complitex.osznconnection.file.web.component.account.AccountNumberCorrectionPanel;
+import org.complitex.osznconnection.file.web.component.address.AddressCorrectionPanel;
 import java.util.List;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -197,15 +197,15 @@ public final class PaymentList extends TemplatePage {
         add(lookupPanel);
 
         //Коррекция личного счета
-        final AccountNumberCorrectionPanel<Payment> paymentAccountNumberCorrectionPanel =
-                new AccountNumberCorrectionPanel<Payment>("paymentAccountNumberCorrectionPanel", content, statusDetailPanel) {
+        final AccountNumberCorrectionPanel<Payment> accountNumberCorrectionPanel =
+                new AccountNumberCorrectionPanel<Payment>("accountNumberCorrectionPanel", content, statusDetailPanel) {
 
                     @Override
                     protected void correctAccountNumber(Payment payment, String accountNumber) {
                         personAccountService.correctAccountNumber(payment, accountNumber);
                     }
                 };
-        add(paymentAccountNumberCorrectionPanel);
+        add(accountNumberCorrectionPanel);
 
         DataView<Payment> data = new DataView<Payment>("data", dataProvider, 1) {
 
@@ -244,7 +244,7 @@ public final class PaymentList extends TemplatePage {
 
                     @Override
                     public void onClick(AjaxRequestTarget target) {
-                        paymentAccountNumberCorrectionPanel.open(target, payment, payment.getOutgoingDistrict(), payment.getOutgoingStreetType(),
+                        accountNumberCorrectionPanel.open(target, payment, payment.getOutgoingDistrict(), payment.getOutgoingStreetType(),
                                 payment.getOutgoingStreet(), payment.getOutgoingBuildingNumber(), payment.getOutgoingBuildingCorp(),
                                 payment.getOutgoingApartment(), (Date) payment.getField(PaymentDBF.DAT1));
                     }

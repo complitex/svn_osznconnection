@@ -21,7 +21,6 @@ import org.complitex.osznconnection.file.entity.example.CorrectionExample;
 public class OwnershipCorrectionBean extends AbstractBean {
 
     private static final Logger log = LoggerFactory.getLogger(OwnershipCorrectionBean.class);
-    
     private static final String MAPPING_NAMESPACE = OwnershipCorrectionBean.class.getName();
 
     /**
