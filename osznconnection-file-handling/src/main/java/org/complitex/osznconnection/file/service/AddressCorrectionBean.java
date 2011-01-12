@@ -33,9 +33,7 @@ import org.complitex.osznconnection.file.entity.StreetCorrection;
 public class AddressCorrectionBean extends CorrectionBean {
 
     private static final Logger log = LoggerFactory.getLogger(AddressCorrectionBean.class);
-
     private static final String ADDRESS_BEAN_MAPPING_NAMESPACE = AddressCorrectionBean.class.getName();
-    
     @EJB
     private LocaleBean localeBean;
 
@@ -71,7 +69,7 @@ public class AddressCorrectionBean extends CorrectionBean {
         return findAddressLocalCorrections("city", null, city, organizationId);
     }
 
-    public List<Correction> findStreetTypeLocalCorrection(String streetType, long organizationId){
+    public List<Correction> findStreetTypeLocalCorrection(String streetType, long organizationId) {
         return findAddressLocalCorrections("street_type", null, streetType, organizationId);
     }
 
@@ -217,7 +215,7 @@ public class AddressCorrectionBean extends CorrectionBean {
         return correction;
     }
 
-    public Correction createStreetTypeCorrection(String streetType, long streetTypeObjectId, long organizationId, long internalOrganizationId){
+    public Correction createStreetTypeCorrection(String streetType, long streetTypeObjectId, long organizationId, long internalOrganizationId) {
         Correction correction = new Correction("street_type");
         correction.setParentId(null);
         correction.setCorrection(streetType);
@@ -285,7 +283,7 @@ public class AddressCorrectionBean extends CorrectionBean {
     }
 
     @Transactional
-    public List<Long> findInternalStreetTypeIds(String streetType){
+    public List<Long> findInternalStreetTypeIds(String streetType) {
         return findInternalObjectIds("street_type", streetType, 1400, null);
     }
 

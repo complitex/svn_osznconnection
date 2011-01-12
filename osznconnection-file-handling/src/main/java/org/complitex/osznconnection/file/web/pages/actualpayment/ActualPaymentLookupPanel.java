@@ -4,6 +4,7 @@
  */
 package org.complitex.osznconnection.file.web.pages.actualpayment;
 
+import java.util.Date;
 import java.util.List;
 import javax.ejb.EJB;
 import org.apache.wicket.Component;
@@ -14,8 +15,8 @@ import org.complitex.osznconnection.file.entity.ActualPayment;
 import org.complitex.osznconnection.file.entity.ActualPaymentDBF;
 import org.complitex.osznconnection.file.entity.RequestStatus;
 import org.complitex.osznconnection.file.service.ActualPaymentBean;
-import org.complitex.osznconnection.file.service.PaymentLookupBean;
-import org.complitex.osznconnection.file.web.pages.component.AbstractLookupPanel;
+import org.complitex.osznconnection.file.service.LookupBean;
+import org.complitex.osznconnection.file.web.component.lookup.AbstractLookupPanel;
 
 /**
  *
@@ -24,7 +25,7 @@ import org.complitex.osznconnection.file.web.pages.component.AbstractLookupPanel
 public class ActualPaymentLookupPanel extends AbstractLookupPanel<ActualPayment> {
 
     @EJB(name = "PaymentLookupBean")
-    private PaymentLookupBean paymentLookupBean;
+    private LookupBean paymentLookupBean;
     @EJB(name = "ActualPaymentBean")
     private ActualPaymentBean actualPaymentBean;
 
@@ -59,7 +60,9 @@ public class ActualPaymentLookupPanel extends AbstractLookupPanel<ActualPayment>
 
     @Override
     protected List<AccountDetail> acquireAccountDetailsByAddress(ActualPayment actualPayment) throws DBException {
-        return paymentLookupBean.acquireAccountDetailsByAddress(actualPayment);
+        return paymentLookupBean.acquireAccountDetailsByAddress(actualPayment, actualPayment.getOutgoingDistrict(), actualPayment.getOutgoingStreetType(),
+                actualPayment.getOutgoingStreet(), actualPayment.getOutgoingBuildingNumber(), actualPayment.getOutgoingBuildingCorp(),
+                actualPayment.getOutgoingApartment(), (Date) actualPayment.getField(ActualPaymentDBF.DAT_BEG));
     }
 
     @Override
@@ -76,7 +79,7 @@ public class ActualPaymentLookupPanel extends AbstractLookupPanel<ActualPayment>
 
     @Override
     protected List<AccountDetail> acquireAccountDetailsByMegabankAccount(ActualPayment actualPayment, String account) throws DBException {
-        return paymentLookupBean.acquireAccountDetailsByMegabankAccount(actualPayment, account);
+        return paymentLookupBean.acquireAccountDetailsByMegabankAccount(actualPayment, actualPayment.getOutgoingDistrict(), account);
     }
 
     @Override

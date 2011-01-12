@@ -18,10 +18,9 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import java.util.List;
+import org.complitex.osznconnection.file.entity.AbstractRequest;
 import org.complitex.osznconnection.file.entity.ActualPayment;
-import org.complitex.osznconnection.file.entity.ActualPaymentDBF;
 import org.complitex.osznconnection.file.entity.Correction;
-import org.complitex.osznconnection.file.entity.PaymentDBF;
 import org.complitex.osznconnection.file.entity.RequestStatus;
 
 /**
@@ -29,11 +28,11 @@ import org.complitex.osznconnection.file.entity.RequestStatus;
  * @author Artem
  */
 @Stateless
-public class PaymentLookupBean extends AbstractBean {
+public class LookupBean extends AbstractBean {
 
-    @EJB(beanName = "AddressService")
+    @EJB
     private AddressService addressService;
-    @EJB(beanName = "CalculationCenterBean")
+    @EJB
     private CalculationCenterBean calculationCenterBean;
     @EJB
     private AddressCorrectionBean addressCorrectionBean;
@@ -41,7 +40,7 @@ public class PaymentLookupBean extends AbstractBean {
     /**
      * Разрешить исходящий в ЦН адрес по схеме "локальная адресная база -> адрес центра начислений"
      * Делегирует всю работу AddressService.resolveOutgoingAddress().
-     * @param actualPayment
+     * @param request
      */
     @Transactional
     public void resolveOutgoingAddress(Payment payment) {
@@ -61,25 +60,15 @@ public class PaymentLookupBean extends AbstractBean {
      * Получить детальную информацию о клиентах ЦН.
      * Вся работа по поиску делегируется адаптеру взаимодействия с ЦН.
      * См. org.complitex.osznconnection.file.calculation.adapter.DefaultCalculationCenterAdapter.acquireAccountCorrectionDetails()
-     * @param actualPayment
+     * @param request
      * @return
      */
     @Transactional
     @TransactionAttribute(TransactionAttributeType.NEVER)
-    public List<AccountDetail> acquireAccountDetailsByAddress(Payment payment) throws DBException {
+    public List<AccountDetail> acquireAccountDetailsByAddress(AbstractRequest request, String district, String streetType, String street,
+            String buildingNumber, String buildingCorp, String apartment, Date date) throws DBException {
         ICalculationCenterAdapter adapter = calculationCenterBean.getDefaultCalculationCenterAdapter();
-        return adapter.acquireAccountDetailsByAddress(payment.getOutgoingDistrict(), payment.getOutgoingStreetType(), payment.getOutgoingStreet(),
-                payment.getOutgoingBuildingNumber(), payment.getOutgoingBuildingCorp(), payment.getOutgoingApartment(), payment,
-                (Date) payment.getField(PaymentDBF.DAT1));
-    }
-
-    @Transactional
-    @TransactionAttribute(TransactionAttributeType.NEVER)
-    public List<AccountDetail> acquireAccountDetailsByAddress(ActualPayment actualPayment) throws DBException {
-        ICalculationCenterAdapter adapter = calculationCenterBean.getDefaultCalculationCenterAdapter();
-        return adapter.acquireAccountDetailsByAddress(actualPayment.getOutgoingDistrict(), actualPayment.getOutgoingStreetType(),
-                actualPayment.getOutgoingStreet(), actualPayment.getOutgoingBuildingNumber(), actualPayment.getOutgoingBuildingCorp(),
-                actualPayment.getOutgoingApartment(), actualPayment, (Date) actualPayment.getField(ActualPaymentDBF.DAT_BEG));
+        return adapter.acquireAccountDetailsByAddress(request, district, streetType, street, buildingNumber, buildingCorp, apartment, date);
     }
 
     @Transactional
@@ -122,15 +111,9 @@ public class PaymentLookupBean extends AbstractBean {
 
     @Transactional
     @TransactionAttribute(TransactionAttributeType.NEVER)
-    public List<AccountDetail> acquireAccountDetailsByMegabankAccount(Payment payment, String megabankAccount) throws DBException {
+    public List<AccountDetail> acquireAccountDetailsByMegabankAccount(AbstractRequest request, String district, String megabankAccount)
+            throws DBException {
         ICalculationCenterAdapter adapter = calculationCenterBean.getDefaultCalculationCenterAdapter();
-        return adapter.acquireAccountDetailsByMegabankAccount(payment.getOutgoingDistrict(), payment, megabankAccount);
-    }
-
-    @Transactional
-    @TransactionAttribute(TransactionAttributeType.NEVER)
-    public List<AccountDetail> acquireAccountDetailsByMegabankAccount(ActualPayment actualPayment, String megabankAccount) throws DBException {
-        ICalculationCenterAdapter adapter = calculationCenterBean.getDefaultCalculationCenterAdapter();
-        return adapter.acquireAccountDetailsByMegabankAccount(actualPayment.getOutgoingDistrict(), actualPayment, megabankAccount);
+        return adapter.acquireAccountDetailsByMegabankAccount(request, district, megabankAccount);
     }
 }

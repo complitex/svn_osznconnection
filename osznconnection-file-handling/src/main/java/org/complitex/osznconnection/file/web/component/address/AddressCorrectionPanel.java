@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.complitex.osznconnection.file.web.pages.component;
+package org.complitex.osznconnection.file.web.component.address;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
@@ -51,32 +51,26 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
     }
     @EJB(name = "StrategyFactory")
     private StrategyFactory strategyFactory;
-    
     @EJB(name = "StatusRenderService")
     private StatusRenderService statusRenderService;
-    
     private CORRECTED_ENTITY correctedEntity;
     private Dialog dialog;
     private SearchComponent searchComponent;
     private SearchComponentState componentState;
     private FeedbackPanel messages;
     private WebMarkupContainer container;
-
     private String firstName;
     private String middleName;
     private String lastName;
-    
     private String city;
     private String streetType;
     private String street;
     private String buildingNumber;
     private String buildingCorp;
     private String apartment;
-    
     private Long cityId;
     private Long streetId;
     private Long buildingId;
-
     private T request;
 
     public AddressCorrectionPanel(String id, final Component... toUpdate) {
@@ -148,7 +142,7 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
                             error(statusRenderService.displayStatus(RequestStatus.MORE_ONE_LOCAL_CITY_CORRECTION, getLocale()));
                         } else if ("street".equals(e.getEntity())) {
                             error(statusRenderService.displayStatus(RequestStatus.MORE_ONE_LOCAL_STREET_CORRECTION, getLocale()));
-                        } else if ("street_type".equals(e.getEntity())){
+                        } else if ("street_type".equals(e.getEntity())) {
                             error(statusRenderService.displayStatus(RequestStatus.MORE_ONE_LOCAL_STREET_TYPE_CORRECTION, getLocale()));
                         }
                     } catch (NotFoundCorrectionException e) {
@@ -267,7 +261,7 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
             String streetType, String street, String buildingNumber, String buildingCorp, String apartment, Long cityId, Long streetId, Long buildingId) {
 
         this.request = request;
-            
+
         this.firstName = firstName;
         this.middleName = middleName;
         this.lastName = lastName;

@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.complitex.osznconnection.file.web.pages.component;
+package org.complitex.osznconnection.file.web.component.account;
 
 import java.util.Date;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -14,7 +14,6 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.osznconnection.file.entity.AccountDetail;
-import org.complitex.osznconnection.file.service.PersonAccountService;
 import org.odlabs.wiquery.core.javascript.JsStatement;
 import org.odlabs.wiquery.ui.core.JsScopeUiEvent;
 import org.odlabs.wiquery.ui.dialog.Dialog;
@@ -24,6 +23,7 @@ import java.util.List;
 import org.apache.wicket.Component;
 import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
 import org.complitex.osznconnection.file.entity.AbstractRequest;
+import org.complitex.osznconnection.file.service.LookupBean;
 import org.complitex.osznconnection.file.service.StatusRenderService;
 
 /**
@@ -32,8 +32,8 @@ import org.complitex.osznconnection.file.service.StatusRenderService;
  */
 public abstract class AccountNumberCorrectionPanel<T extends AbstractRequest> extends Panel {
 
-    @EJB(name = "PersonAccountService")
-    private PersonAccountService personAccountService;
+    @EJB(name = "LookupBean")
+    private LookupBean lookupBean;
     @EJB(name = "StatusRenderService")
     private StatusRenderService statusRenderService;
     private T request;
@@ -135,8 +135,8 @@ public abstract class AccountNumberCorrectionPanel<T extends AbstractRequest> ex
 
         this.request = request;
         try {
-            accountCorrectionDetails = personAccountService.acquireAccountCorrectionDetails(district, streetType, street, buildingNumber,
-                    buildingCorp, apartment, request, date);
+            accountCorrectionDetails = lookupBean.acquireAccountDetailsByAddress(request, district, streetType, street, buildingNumber, buildingCorp,
+                    apartment, date);
             if (accountCorrectionDetails == null || accountCorrectionDetails.isEmpty()) {
                 error(statusRenderService.displayStatus(request.getStatus(), getLocale()));
             }

@@ -48,15 +48,15 @@ public interface ICalculationCenterAdapter {
 
     void prepareApartment(ActualPayment actualPayment, String apartment, String apartmentCode);
 
-    void acquirePersonAccount(String district, String streetType, String street, String buildingNumber, String buildingCorp,
-            String apartment, AbstractRequest request, Date date) throws DBException;
+    void acquirePersonAccount(AbstractRequest request, String district, String streetType, String street, String buildingNumber, String buildingCorp,
+            String apartment, Date date) throws DBException;
 
-    public List<AccountDetail> acquireAccountDetailsByAddress(String district, String streetType, String street, String buildingNumber,
-            String buildingCorp, String apartment, AbstractRequest request, Date date) throws DBException;
+    public List<AccountDetail> acquireAccountDetailsByAddress(AbstractRequest request, String district, String streetType, String street,
+            String buildingNumber, String buildingCorp, String apartment, Date date) throws DBException;
 
     public List<AccountDetail> acquireAccountDetailsByOsznAccount(Payment payment) throws DBException;
 
-    public List<AccountDetail> acquireAccountDetailsByMegabankAccount(String district, AbstractRequest request, String megabankAccount) throws DBException;
+    public List<AccountDetail> acquireAccountDetailsByMegabankAccount(AbstractRequest request, String district, String megabankAccount) throws DBException;
 
     public void processPaymentAndBenefit(Payment payment, List<Benefit> benefits, long calculationCenterId) throws DBException;
 

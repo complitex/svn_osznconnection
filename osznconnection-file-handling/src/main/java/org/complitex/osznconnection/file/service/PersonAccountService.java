@@ -11,16 +11,11 @@ import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.osznconnection.file.calculation.adapter.ICalculationCenterAdapter;
 import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
 import org.complitex.osznconnection.file.calculation.service.CalculationCenterBean;
-import org.complitex.osznconnection.file.entity.AccountDetail;
 import org.complitex.osznconnection.file.entity.Payment;
 import org.complitex.osznconnection.file.entity.RequestStatus;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import java.util.List;
-import org.complitex.osznconnection.file.entity.AbstractRequest;
 import org.complitex.osznconnection.file.entity.ActualPayment;
 import org.complitex.osznconnection.file.entity.ActualPaymentDBF;
 import org.complitex.osznconnection.file.entity.PaymentDBF;
@@ -95,8 +90,8 @@ public class PersonAccountService extends AbstractBean {
      */
     @Transactional
     public void resolveRemoteAccount(Payment payment, long calculationCenterId, ICalculationCenterAdapter adapter) throws DBException {
-        adapter.acquirePersonAccount(payment.getOutgoingDistrict(), payment.getOutgoingStreetType(), payment.getOutgoingStreet(),
-                payment.getOutgoingBuildingNumber(), payment.getOutgoingBuildingCorp(), payment.getOutgoingApartment(), payment,
+        adapter.acquirePersonAccount(payment, payment.getOutgoingDistrict(), payment.getOutgoingStreetType(), payment.getOutgoingStreet(),
+                payment.getOutgoingBuildingNumber(), payment.getOutgoingBuildingCorp(), payment.getOutgoingApartment(),
                 (Date) payment.getField(PaymentDBF.DAT1));
         if (payment.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED) {
             benefitBean.updateAccountNumber(payment.getId(), payment.getAccountNumber());
@@ -111,9 +106,9 @@ public class PersonAccountService extends AbstractBean {
 
     @Transactional
     public void resolveRemoteAccount(ActualPayment actualPayment, long calculationCenterId, ICalculationCenterAdapter adapter) throws DBException {
-        adapter.acquirePersonAccount(actualPayment.getOutgoingDistrict(), actualPayment.getOutgoingStreetType(), actualPayment.getOutgoingStreet(),
-                actualPayment.getOutgoingBuildingNumber(), actualPayment.getOutgoingBuildingCorp(), actualPayment.getOutgoingApartment(), actualPayment,
-                (Date) actualPayment.getField(ActualPaymentDBF.DAT_BEG));
+        adapter.acquirePersonAccount(actualPayment, actualPayment.getOutgoingDistrict(), actualPayment.getOutgoingStreetType(),
+                actualPayment.getOutgoingStreet(), actualPayment.getOutgoingBuildingNumber(), actualPayment.getOutgoingBuildingCorp(),
+                actualPayment.getOutgoingApartment(), (Date) actualPayment.getField(ActualPaymentDBF.DAT_BEG));
         if (actualPayment.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED) {
             benefitBean.updateAccountNumber(actualPayment.getId(), actualPayment.getAccountNumber());
             personAccountLocalBean.saveOrUpdate(actualPayment.getAccountNumber(), (String) actualPayment.getField(ActualPaymentDBF.F_NAM),
@@ -174,20 +169,5 @@ public class PersonAccountService extends AbstractBean {
                 (String) actualPayment.getField(ActualPaymentDBF.BLD_NUM), (String) actualPayment.getField(ActualPaymentDBF.CORP_NUM),
                 (String) actualPayment.getField(ActualPaymentDBF.FLAT), null,
                 actualPayment.getOrganizationId(), calculationCenterId);
-    }
-
-    /**
-     * Получает детальную информацию о номерах л/с, фамилии, ИНН в случае когда к одному адресу в ЦН привязано несколько человек.
-     * Делегирует всю работу реализации адаптера взаимодействия с ЦН.
-     * См. org.complitex.osznconnection.file.calculation.adapter.DefaultCalculationCenterAdapter.acquireAccountCorrectionDetails()
-     * @param actualPayment
-     * @return
-     */
-    @Transactional
-    @TransactionAttribute(TransactionAttributeType.NEVER)
-    public List<AccountDetail> acquireAccountCorrectionDetails(String district, String streetType, String street, String buildingNumber,
-            String buildingCorp, String apartment, AbstractRequest request, Date date) throws DBException {
-        return calculationCenterBean.getDefaultCalculationCenterAdapter().acquireAccountDetailsByAddress(district, streetType, street, buildingNumber,
-                buildingCorp, apartment, request, date);
     }
 }
