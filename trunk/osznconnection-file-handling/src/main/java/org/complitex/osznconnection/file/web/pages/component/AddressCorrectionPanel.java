@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.complitex.osznconnection.file.web.pages.payment;
+package org.complitex.osznconnection.file.web.pages.component;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  * Панель для корректировки адреса вручную, когда нет соответствующей коррекции и поиск по локальной адресной базе не дал результатов.
  * @author Artem
  */
-public abstract class AddressCorrectionPanel extends Panel {
+public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends Panel {
 
     private static final Logger log = LoggerFactory.getLogger(AddressCorrectionPanel.class);
 
@@ -74,11 +74,10 @@ public abstract class AddressCorrectionPanel extends Panel {
     private String apartment;
     
     private Long cityId;
-    private Long streetTypeId;
     private Long streetId;
     private Long buildingId;
 
-    private AbstractRequest request;
+    private T request;
 
     public AddressCorrectionPanel(String id, final Component... toUpdate) {
         super(id);
@@ -149,6 +148,8 @@ public abstract class AddressCorrectionPanel extends Panel {
                             error(statusRenderService.displayStatus(RequestStatus.MORE_ONE_LOCAL_CITY_CORRECTION, getLocale()));
                         } else if ("street".equals(e.getEntity())) {
                             error(statusRenderService.displayStatus(RequestStatus.MORE_ONE_LOCAL_STREET_CORRECTION, getLocale()));
+                        } else if ("street_type".equals(e.getEntity())){
+                            error(statusRenderService.displayStatus(RequestStatus.MORE_ONE_LOCAL_STREET_TYPE_CORRECTION, getLocale()));
                         }
                     } catch (NotFoundCorrectionException e) {
                         error(getString(e.getEntity() + "_not_found_correction"));
@@ -180,11 +181,8 @@ public abstract class AddressCorrectionPanel extends Panel {
         return streetObject == null ? null : StreetStrategy.getStreetType(streetObject);
     }
 
-    protected abstract void correctAddress(AbstractRequest request, Long cityId, Long streetId, Long streetTypeId, Long buildingId)
+    protected abstract void correctAddress(T request, Long cityId, Long streetId, Long streetTypeId, Long buildingId)
             throws DublicateCorrectionException, MoreOneCorrectionException, NotFoundCorrectionException;
-//    {
-//        addressService.correctLocalAddress(request, cityId, streetId, streetTypeId, buildingId);
-//    }
 
     protected boolean validate(SearchComponentState componentState) {
         boolean validated = true;
@@ -265,9 +263,8 @@ public abstract class AddressCorrectionPanel extends Panel {
         dialog.close(target);
     }
 
-    public void open(AjaxRequestTarget target, AbstractRequest request, String firstName, String middleName, String lastName, String city,
-            String streetType, String street, String buildingNumber, String buildingCorp, String apartment, Long cityId, Long streetTypeId,
-            Long streetId, Long buildingId) {
+    public void open(AjaxRequestTarget target, T request, String firstName, String middleName, String lastName, String city,
+            String streetType, String street, String buildingNumber, String buildingCorp, String apartment, Long cityId, Long streetId, Long buildingId) {
 
         this.request = request;
             
@@ -281,7 +278,6 @@ public abstract class AddressCorrectionPanel extends Panel {
         this.buildingCorp = buildingCorp;
         this.apartment = apartment;
         this.cityId = cityId;
-        this.streetTypeId = streetTypeId;
         this.streetId = streetId;
         this.buildingId = buildingId;
 

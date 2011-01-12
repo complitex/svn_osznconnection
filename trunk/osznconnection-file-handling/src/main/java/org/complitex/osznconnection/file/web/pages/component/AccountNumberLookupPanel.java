@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.complitex.osznconnection.file.web.pages.payment.component.account;
+package org.complitex.osznconnection.file.web.pages.component;
 
 import java.util.List;
 import javax.ejb.EJB;
@@ -27,10 +27,9 @@ import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.util.CloneUtil;
 import org.complitex.dictionary.util.StringUtil;
 import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
+import org.complitex.osznconnection.file.entity.AbstractRequest;
 import org.complitex.osznconnection.file.entity.AccountDetail;
-import org.complitex.osznconnection.file.entity.Payment;
 import org.complitex.osznconnection.file.entity.RequestStatus;
-import org.complitex.osznconnection.file.service.PaymentLookupBean;
 import org.complitex.osznconnection.file.service.StatusRenderService;
 import org.complitex.osznconnection.file.web.pages.util.AddressRenderer;
 
@@ -38,17 +37,13 @@ import org.complitex.osznconnection.file.web.pages.util.AddressRenderer;
  *
  * @author Artem
  */
-public abstract class AccountNumberLookupPanel extends Panel {
-
-    @EJB(name = "PaymentLookupBean")
-    private PaymentLookupBean paymentLookupBean;
+public abstract class AccountNumberLookupPanel<T extends AbstractRequest> extends Panel {
 
     @EJB(name = "StatusRenderService")
     private StatusRenderService statusRenderService;
-    
     private IModel<String> accountModel;
     private IModel<List<? extends AccountDetail>> accountDetailsModel;
-    private Payment payment;
+    private T request;
     private FeedbackPanel messages;
     private IModel<String> accountRequiredModel;
     private WebMarkupContainer detailsContainer;
@@ -115,18 +110,19 @@ public abstract class AccountNumberLookupPanel extends Panel {
 
             @Override
             public void onClick(AjaxRequestTarget target) {
-                payment.setStatus(RequestStatus.CITY_UNRESOLVED_LOCALLY);
+                request.setStatus(RequestStatus.CITY_UNRESOLVED_LOCALLY);
                 AccountDetail detail = null;
                 boolean visible = detailsContainer.isVisible();
                 detailsContainer.setVisible(false);
                 if (validateAccount()) {
-                    paymentLookupBean.setupOutgoingDistrict(payment);
-                    if (!(payment.getStatus() == RequestStatus.MORE_ONE_REMOTE_DISTRICT_CORRECTION || 
-                            payment.getStatus() == RequestStatus.DISTRICT_UNRESOLVED)) {
+//                    paymentLookupBean.setupOutgoingDistrict(request);
+                    setupOutgoingDistrict(request);
+                    if (!(request.getStatus() == RequestStatus.MORE_ONE_REMOTE_DISTRICT_CORRECTION
+                            || request.getStatus() == RequestStatus.DISTRICT_UNRESOLVED)) {
                         try {
-                            List<AccountDetail> accountDetails = acquireAccountDetailsByAccCode(payment, accountModel.getObject());
+                            List<AccountDetail> accountDetails = acquireAccountDetailsByAccCode(request, accountModel.getObject());
                             if (accountDetails == null || accountDetails.isEmpty()) {
-                                error(statusRenderService.displayStatus(payment.getStatus(), getLocale()));
+                                error(statusRenderService.displayStatus(request.getStatus(), getLocale()));
                                 accountDetailsModel.setObject(null);
                             } else {
                                 if (accountDetails.size() == 1 && !Strings.isEmpty(accountDetails.get(0).getAccountNumber())) {
@@ -142,7 +138,7 @@ public abstract class AccountNumberLookupPanel extends Panel {
                             error(getString("db_error"));
                         }
                     } else {
-                        error(statusRenderService.displayStatus(payment.getStatus(), getLocale()));
+                        error(statusRenderService.displayStatus(request.getStatus(), getLocale()));
                     }
                 }
 
@@ -161,8 +157,8 @@ public abstract class AccountNumberLookupPanel extends Panel {
         return validated;
     }
 
-    public void initialize(Payment payment, String account) {
-        this.payment = CloneUtil.cloneObject(payment);
+    public void initialize(T request, String account) {
+        this.request = CloneUtil.cloneObject(request);
         accountModel.setObject(Strings.isEmpty(account) ? null : account);
         accountDetailModel.setObject(null);
         accountDetailsModel.setObject(null);
@@ -187,7 +183,9 @@ public abstract class AccountNumberLookupPanel extends Panel {
         return display;
     }
 
-    protected abstract List<AccountDetail> acquireAccountDetailsByAccCode(Payment payment, String account) throws DBException;
+    protected abstract void setupOutgoingDistrict(T request);
+
+    protected abstract List<AccountDetail> acquireAccountDetailsByAccCode(T request, String account) throws DBException;
 
     protected abstract void updateAccountNumber(AccountDetail accountDetail, AjaxRequestTarget target, boolean refresh);
 }

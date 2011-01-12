@@ -227,12 +227,13 @@ public class AddressCorrectionBean extends CorrectionBean {
         return correction;
     }
 
-    public StreetCorrection createStreetCorrection(String street, String streetCode, long cityCorrectionId, long streetObjectId, long organizationId,
-            long internalOrganizationId) {
+    public StreetCorrection createStreetCorrection(String street, String streetCode, Long streetTypeCorrectionId, long cityCorrectionId,
+            long streetObjectId, long organizationId, long internalOrganizationId) {
         StreetCorrection correction = new StreetCorrection();
         correction.setParentId(cityCorrectionId);
         correction.setCorrection(street);
         correction.setCode(streetCode);
+        correction.setStreetTypeCorrectionId(streetTypeCorrectionId);
         correction.setOrganizationId(organizationId);
         correction.setInternalOrganizationId(internalOrganizationId);
         correction.setObjectId(streetObjectId);

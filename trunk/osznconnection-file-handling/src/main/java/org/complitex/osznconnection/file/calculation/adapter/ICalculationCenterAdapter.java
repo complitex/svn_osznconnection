@@ -14,6 +14,7 @@ import javax.ejb.Local;
 import java.util.Date;
 import java.util.List;
 import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
+import org.complitex.osznconnection.file.entity.AbstractRequest;
 import org.complitex.osznconnection.file.entity.ActualPayment;
 
 /**
@@ -47,13 +48,15 @@ public interface ICalculationCenterAdapter {
 
     void prepareApartment(ActualPayment actualPayment, String apartment, String apartmentCode);
 
-    void acquirePersonAccount(Payment payment) throws DBException;
+    void acquirePersonAccount(String district, String streetType, String street, String buildingNumber, String buildingCorp,
+            String apartment, AbstractRequest request, Date date) throws DBException;
 
-    public List<AccountDetail> acquireAccountDetailsByAddress(Payment payment) throws DBException;
+    public List<AccountDetail> acquireAccountDetailsByAddress(String district, String streetType, String street, String buildingNumber,
+            String buildingCorp, String apartment, AbstractRequest request, Date date) throws DBException;
 
     public List<AccountDetail> acquireAccountDetailsByOsznAccount(Payment payment) throws DBException;
 
-    public List<AccountDetail> acquireAccountDetailsByMegabankAccount(Payment payment, String megabankAccount) throws DBException;
+    public List<AccountDetail> acquireAccountDetailsByMegabankAccount(String district, AbstractRequest request, String megabankAccount) throws DBException;
 
     public void processPaymentAndBenefit(Payment payment, List<Benefit> benefits, long calculationCenterId) throws DBException;
 

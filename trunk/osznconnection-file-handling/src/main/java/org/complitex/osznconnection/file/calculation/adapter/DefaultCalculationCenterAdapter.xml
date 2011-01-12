@@ -10,7 +10,7 @@
         #{pHouseNum, javaType=string, jdbcType=VARCHAR},
         #{pHousePart, javaType=string, jdbcType=VARCHAR},
         #{pFlatNum, javaType=string, jdbcType=VARCHAR},
-        #{dat1, javaType=date, jdbcType=DATE})
+        #{date, javaType=date, jdbcType=DATE})
         as account_number from dual
     </select>
 
@@ -23,7 +23,7 @@
             #{pHouseNum, mode=IN, javaType=string, jdbcType=VARCHAR},
             #{pHousePart, mode=IN, javaType=string, jdbcType=VARCHAR},
             #{pFlatNum, mode=IN, javaType=string, jdbcType=VARCHAR},
-            #{dat1, mode=IN, javaType=date, jdbcType=DATE},
+            #{date, mode=IN, javaType=date, jdbcType=DATE},
             #{details, mode=OUT, jdbcType=CURSOR, 
                 typeHandler=org.complitex.osznconnection.file.calculation.adapter.mybatis.handler.AccountDetailsByAddressHandler})
         }

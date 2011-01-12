@@ -1547,7 +1547,7 @@ CREATE TABLE `person_account` (
     `building_corp` VARCHAR(100) NOT NULL DEFAULT '',
     `apartment` VARCHAR(100) NOT NULL,
     `account_number` VARCHAR(100) NOT NULL,
-    `own_num_sr` VARCHAR(15) NOT NULL,
+    `own_num_sr` VARCHAR(15) NULL,
     `oszn_id` bigint(20) NOT NULL,
     `calc_center_id` bigint(20) NOT NULL,
     PRIMARY KEY (`id`)

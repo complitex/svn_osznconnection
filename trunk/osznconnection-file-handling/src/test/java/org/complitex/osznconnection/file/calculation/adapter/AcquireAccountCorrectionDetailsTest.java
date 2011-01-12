@@ -62,7 +62,10 @@ public class AcquireAccountCorrectionDetailsTest {
     }
 
     private static void testByAddress() throws DBException {
-        System.out.println(adapter.acquireAccountDetailsByAddress(newPayment()));
+        Payment payment = newPayment();
+        System.out.println(adapter.acquireAccountDetailsByAddress(payment.getOutgoingDistrict(), payment.getOutgoingStreetType(),
+                payment.getOutgoingStreet(), payment.getOutgoingBuildingNumber(), payment.getOutgoingBuildingCorp(),
+                payment.getOutgoingApartment(), payment, (Date)payment.getField(PaymentDBF.DAT1)));
     }
 
     private static void testByOsznAccount() throws DBException {
@@ -70,7 +73,8 @@ public class AcquireAccountCorrectionDetailsTest {
     }
 
     private static void testByMegabankAccount() throws DBException {
-        System.out.println(adapter.acquireAccountDetailsByMegabankAccount(newPayment(), "9876543"));
+        Payment payment = newPayment();
+        System.out.println(adapter.acquireAccountDetailsByMegabankAccount(payment.getOutgoingDistrict(), payment, "9876543"));
     }
 
     private static Payment newPayment() {

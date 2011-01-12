@@ -167,4 +167,83 @@
             </otherwise>
         </choose>
     </select>
+
+    <!-- actualPayment status detail objects -->
+    <resultMap id="actualPaymentStatusDetailInfo" type="org.complitex.osznconnection.file.entity.StatusDetailInfo" extends="statusDetailInfo">
+        <collection property="statusDetails" column="status=status,id=request_file_id"
+                    ofType="org.complitex.osznconnection.file.entity.StatusDetail"
+                    select="getActualPaymentStatusDetails"/>
+    </resultMap>
+
+    <resultMap id="actualPaymentStatusDetail" type="org.complitex.osznconnection.file.entity.StatusDetail" extends="statusDetail">
+        <association property="details" javaType="map">
+            <result column="SUR_NAM" property="lastName"/>
+            <result column="M_NAM" property="middleName"/>
+            <result column="F_NAM" property="firstName"/>
+            <result column="N_NAME" property="city"/>
+            <result column="VUL_NAME" property="street"/>
+            <result column="VUL_CAT" property="streetType"/>
+            <result column="BLD_NUM" property="building"/>
+            <result column="CORP_NUM" property="buildingCorp"/>
+            <result column="FLAT" property="apartment"/>
+        </association>
+    </resultMap>
+
+    <select id="getActualPaymentStatusDetailInfo" parameterType="long" resultMap="actualPaymentStatusDetailInfo">
+        SELECT COUNT(*) `count`, `status`, `request_file_id` FROM `actual_payment` WHERE `request_file_id` = #{id}
+        GROUP BY `status`
+        ORDER BY `count` DESC
+    </select>
+
+    <select id="getActualPaymentStatusDetails" parameterType="map" resultMap="actualPaymentStatusDetail">
+        <choose>
+            <!--account number -->
+            <when test="status == 212 or status == 213">
+                SELECT CONCAT(`SUR_NAM`, `F_NAME`, `M_NAM`) `id`, `SUR_NAM`, `F_NAM`, `M_NAM`, COUNT(*) `count` FROM `actual_payment`
+                WHERE `request_file_id` = #{id} AND `status` = #{status}
+                GROUP BY 1
+            </when>
+
+            <!--city-->
+            <when test="status == 200 or status == 205 or status == 221">
+                SELECT `N_NAME` `id`, COUNT(*) `count`, `N_NAME` FROM `actual_payment`
+                WHERE `request_file_id` = #{id} AND `status` = #{status}
+                GROUP BY 1
+            </when>
+
+            <!--street-->
+            <when test="status == 201 or status == 237 or status == 208 or status == 207 or status == 223 or status == 224">
+                SELECT CONCAT(`N_NAME`, `VUL_CAT`, `VUL_NAME`) `id`, COUNT(*) `count`, `N_NAME`, `VUL_CAT`, `VUL_NAME` FROM `actual_payment`
+                WHERE `request_file_id` = #{id} AND `status` = #{status}
+                GROUP BY 1
+            </when>
+
+            <!--building-->
+            <when test="status == 202 or status == 209 or status == 225">
+                SELECT CONCAT(`N_NAME`, `VUL_CAT`, `VUL_NAME`, `BLD_NUM`) `id`, COUNT(*) `count`, `N_NAME`, `VUL_CAT`, `VUL_NAME`, `BLD_NUM`
+                FROM `actual_payment`
+                WHERE `request_file_id` = #{id} AND `status` = #{status}
+                GROUP BY 1
+            </when>
+
+            <!--building corp-->
+            <when test="status == 226">
+                SELECT CONCAT(`N_NAME`, `VUL_CAT`, `VUL_NAME`, `BLD_NUM`, `CORP_NUM`) `id`, COUNT(*) `count`, `N_NAME`, `VUL_CAT`, `VUL_NAME`,
+                `BLD_NUM`, `CORP_NUM` FROM `actual_payment`
+                WHERE `request_file_id` = #{id} AND `status` = #{status}
+                GROUP BY 1
+            </when>
+
+            <!-- apartment -->
+            <when test="status == 227">
+                SELECT CONCAT(`N_NAME`, `VUL_CAT`, `VUL_NAME`, `BLD_NUM`, `CORP_NUM`, `FLAT`) `id`, COUNT(*) `count`, `N_NAME`, `VUL_CAT`, `VUL_NAME`,
+                `BLD_NUM`, `CORP_NUM`, `FLAT` FROM `actual_payment`
+                WHERE `request_file_id` = #{id} AND `status` = #{status}
+                GROUP BY 1
+            </when>
+            <otherwise>
+                SELECT 1 FROM DUAL where 1=0;
+            </otherwise>
+        </choose>
+    </select>
 </mapper>
