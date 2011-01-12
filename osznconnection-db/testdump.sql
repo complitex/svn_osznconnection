@@ -160,9 +160,9 @@ values
 -- (14, 4,'Матвей', 'Матвеевич', 'Матвеев', 'Новосибирск', 'Терешковой', '25','  ', '19', '2010-09-09',1);
 
 -- Actual payments
-insert into actual_payment(OWN_NUM, F_NAM, M_NAM, SUR_NAM, N_NAME, VUL_CAT, VUL_NAME, VUL_CODE, BLD_NUM, CORP_NUM, FLAT, request_file_id)
+insert into actual_payment(OWN_NUM, F_NAM, M_NAM, SUR_NAM, N_NAME, VUL_CAT, VUL_NAME, VUL_CODE, BLD_NUM, CORP_NUM, FLAT, DAT_BEG, request_file_id)
 values
-    (123,'Матвей', 'Матвеевич', 'Матвеев', 'Харьков', 'УЛ', 'ФРАНТИШЕКА КРАЛА', 123, '  2 5',' ', '40', 4);
+    (123,'Матвей', 'Матвеевич', 'Матвеев', 'Харьков', 'УЛ', 'ФРАНТИШЕКА КРАЛА', 123, '  2 5A',' ', '19', '2011-01-12', 4);
 
 
 --insert into `person_account` (`first_name`, `middle_name`, `last_name`, `city`, `street`, `building_num`, `building_corp`, `apartment`, `account_number`, `own_num_sr`, `oszn_id`, `calc_center_id`) values('Матвей','Матвеевич','Матвеев','Харьков','ФРАНТИШЕКА КРАЛА','  2 5А','  ','19','1000001108','4','1','2');
