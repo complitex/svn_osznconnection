@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.complitex.osznconnection.file.web.pages.payment.component.account;
+package org.complitex.osznconnection.file.web.pages.component;
 
 import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -24,13 +24,13 @@ import org.complitex.dictionary.util.StringUtil;
  * когда больше одного человека в ЦН, имеющие разные номера л/c, привязаны к одному адресу.
  * @author Artem
  */
-public abstract class AccountNumberCorrectionPanel extends Panel {
+public abstract class AccountNumberPickerPanel extends Panel {
 
-    private static final String RESOURCE_BUNDLE = AccountNumberCorrectionPanel.class.getName();
+    private static final String RESOURCE_BUNDLE = AccountNumberPickerPanel.class.getName();
     private IModel<List<? extends AccountDetail>> accountDetailsModel;
     private IModel<AccountDetail> model;
 
-    public AccountNumberCorrectionPanel(String id, IModel<List<? extends AccountDetail>> accountDetailsModel) {
+    public AccountNumberPickerPanel(String id, IModel<List<? extends AccountDetail>> accountDetailsModel) {
         super(id);
         this.accountDetailsModel = accountDetailsModel;
         init();
@@ -62,7 +62,7 @@ public abstract class AccountNumberCorrectionPanel extends Panel {
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
-                AccountNumberCorrectionPanel.this.updateAccountNumber(model.getObject(), target);
+                AccountNumberPickerPanel.this.updateAccountNumber(model.getObject(), target);
             }
         });
         add(accounts);

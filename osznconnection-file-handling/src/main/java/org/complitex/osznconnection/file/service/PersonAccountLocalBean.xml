@@ -14,20 +14,19 @@
         TRIM(pa.`city`) = TRIM(#{city})
         <choose>
             <when test="streetType != null">
-                AND TRIM(pa.`street_type`) = TRIM(`streetType`)
+                AND TRIM(pa.`street_type`) = TRIM(#{streetType})
             </when>
             <otherwise>
                 AND pa.`street_type` IS NULL
             </otherwise>
         </choose>
         <choose>
-            <when test="street != null">
-                AND TRIM(pa.`street`) = TRIM(#{street})
-                AND pa.`street_code` IS NULL
+            <when test="streetCode != null">
+                AND TRIM(pa.`street_code`) = TRIM(#{streetCode})
             </when>
             <otherwise>
-                AND pa.`street` IS NULL
-                AND TRIM(pa.`street_code`) = TRIM(#{streetCode})
+                AND TRIM(pa.`street`) = TRIM(#{street})
+                AND pa.`street_code` IS NULL
             </otherwise>
         </choose>
 
@@ -55,6 +54,9 @@
             </if>
             <if test="street != null">
                 AND pa.`street` LIKE CONCAT('%', #{street}, '%')
+            </if>
+            <if test="streetCode != null">
+                AND pa.`street_code` LIKE CONCAT(#{streetCode}, '%')
             </if>
             <if test="buildingNumber != null">
                 AND pa.`building_num` LIKE CONCAT('%', #{buildingNumber}, '%')
@@ -90,9 +92,9 @@
     </sql>
 
     <insert id="insert" parameterType="org.complitex.osznconnection.file.entity.PersonAccount" keyProperty="id" useGeneratedKeys="true">
-        INSERT INTO `person_account` (`city`, `street`, `building_num`, `building_corp`, `apartment`,
+        INSERT INTO `person_account` (`city`, `street_type`, `street`, `street_code`, `building_num`, `building_corp`, `apartment`,
                 `account_number`, `first_name`, `middle_name`, `last_name`, `own_num_sr`, `oszn_id`, `calc_center_id`)
-        VALUES (#{city}, #{street}, #{buildingNumber}, #{buildingCorp}, #{apartment},
+        VALUES (#{city}, #{streetType}, #{street}, #{streetCode}, #{buildingNumber}, #{buildingCorp}, #{apartment},
                 #{accountNumber}, #{firstName}, #{middleName}, #{lastName}, #{ownNumSr}, #{osznId}, #{calculationCenterId})
     </insert>
 
@@ -103,7 +105,8 @@
 
     <select id="find" parameterType="org.complitex.osznconnection.file.entity.example.PersonAccountExample"
                 resultType="org.complitex.osznconnection.file.entity.PersonAccount">
-        SELECT pa.`id`, pa.`city`, pa.`street`, pa.`building_num` buildingNumber, pa.`building_corp` buildingCorp, pa.`apartment`,
+        SELECT pa.`id`, pa.`city`, pa.`street`, pa.`street_type` streetType, pa.`street_code` streetCode,
+                pa.`building_num` buildingNumber, pa.`building_corp` buildingCorp, pa.`apartment`,
                 pa.`first_name` firstName, pa.`middle_name` middleName, pa.`last_name` lastName, pa.`own_num_sr` ownNumSr,
                 pa.`account_number` accountNumber,
                 IFNULL(oszn_value.`value`, oszn_sys_value.`value`) oszn,

@@ -101,8 +101,8 @@ public final class BenefitList extends TemplatePage {
         content.add(filterForm);
         example = new Model<BenefitExample>(newExample());
 
-        StatusDetailPanel<BenefitExample> statusDetailPanel = new StatusDetailPanel<BenefitExample>("statusDetailsPanel",
-                BenefitExample.class, example, new BenefitExampleConfigurator(), content) {
+        StatusDetailPanel<Benefit, BenefitExample> statusDetailPanel = new StatusDetailPanel<Benefit, BenefitExample>("statusDetailsPanel",
+                Benefit.class, BenefitExample.class, example, new BenefitExampleConfigurator(), content) {
 
             @Override
             public List<StatusDetailInfo> loadStatusDetails() {

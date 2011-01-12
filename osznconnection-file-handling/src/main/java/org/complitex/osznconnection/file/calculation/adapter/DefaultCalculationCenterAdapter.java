@@ -43,25 +43,18 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
     protected static final Logger log = LoggerFactory.getLogger(DefaultCalculationCenterAdapter.class);
     protected static final String RESOURCE_BUNDLE = DefaultCalculationCenterAdapter.class.getName();
     protected static final String MAPPING_NAMESPACE = DefaultCalculationCenterAdapter.class.getName();
-
     @EJB(beanName = "OwnershipCorrectionBean")
     private OwnershipCorrectionBean ownershipCorrectionBean;
-
     @EJB(beanName = "TarifBean")
     private TarifBean tarifBean;
-
     @EJB(beanName = "PrivilegeCorrectionBean")
     private PrivilegeCorrectionBean privilegeCorrectionBean;
-
     @EJB
     private LogBean logBean;
-
     @EJB
     private LocaleBean localeBean;
-
     @EJB
     private RequestWarningBean warningBean;
-    
     @EJB
     private WebWarningRenderer webWarningRenderer;
 
@@ -106,7 +99,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
         String flat = (String) payment.getField(PaymentDBF.FLAT);
         if (flat != null) {
             flat = flat.trim();
-        }
+    }
         if (Strings.isEmpty(flat)) {
             flat = "";
         }
@@ -171,18 +164,18 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
      * -7 - нет района,
      * остальное - номер л/с
      *
-     * @param actualPayment запрос начислений
      */
     @Override
-    public void acquirePersonAccount(Payment payment) throws DBException {
+    public void acquirePersonAccount(String district, String streetType, String street, String buildingNumber, String buildingCorp,
+            String apartment, AbstractRequest request, Date date) throws DBException {
         Map<String, Object> params = Maps.newHashMap();
-        params.put("pDistrName", payment.getOutgoingDistrict());
-        params.put("pStSortName", payment.getOutgoingStreetType());
-        params.put("pStreetName", payment.getOutgoingStreet());
-        params.put("pHouseNum", payment.getOutgoingBuildingNumber());
-        params.put("pHousePart", payment.getOutgoingBuildingCorp());
-        params.put("pFlatNum", payment.getOutgoingApartment());
-        params.put("dat1", payment.getField(PaymentDBF.DAT1));
+        params.put("pDistrName", district);
+        params.put("pStSortName", streetType);
+        params.put("pStreetName", street);
+        params.put("pHouseNum", buildingNumber);
+        params.put("pHousePart", buildingCorp);
+        params.put("pFlatNum", apartment);
+        params.put("date", date);
 
         String result = null;
         try {
@@ -194,31 +187,32 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
         }
 
         if (result.equals("0")) {
-            payment.setStatus(RequestStatus.ACCOUNT_NUMBER_NOT_FOUND);
+            request.setStatus(RequestStatus.ACCOUNT_NUMBER_NOT_FOUND);
         } else if (result.equals("-1")) {
-            payment.setStatus(RequestStatus.MORE_ONE_ACCOUNTS);
+            request.setStatus(RequestStatus.MORE_ONE_ACCOUNTS);
         } else if (result.equals("-2")) {
-            payment.setStatus(RequestStatus.APARTMENT_NOT_FOUND);
+            request.setStatus(RequestStatus.APARTMENT_NOT_FOUND);
         } else if (result.equals("-3")) {
-            payment.setStatus(RequestStatus.BUILDING_CORP_NOT_FOUND);
+            request.setStatus(RequestStatus.BUILDING_CORP_NOT_FOUND);
         } else if (result.equals("-4")) {
-            payment.setStatus(RequestStatus.BUILDING_NOT_FOUND);
+            request.setStatus(RequestStatus.BUILDING_NOT_FOUND);
         } else if (result.equals("-5")) {
-            payment.setStatus(RequestStatus.STREET_NOT_FOUND);
+            request.setStatus(RequestStatus.STREET_NOT_FOUND);
         } else if (result.equals("-6")) {
-            payment.setStatus(RequestStatus.STREET_TYPE_NOT_FOUND);
+            request.setStatus(RequestStatus.STREET_TYPE_NOT_FOUND);
         } else if (result.equals("-7")) {
-            payment.setStatus(RequestStatus.DISTRICT_NOT_FOUND);
+            request.setStatus(RequestStatus.DISTRICT_NOT_FOUND);
         } else {
             if (Strings.isEmpty(result)) {
-                log.error("acquirePersonAccount. Unexpected result code: {}. Payment id: {}", payment.getId());
-                logBean.error(Module.NAME, getClass(), Payment.class, payment.getId(), EVENT.GETTING_DATA,
+                log.error("acquirePersonAccount. Unexpected result code: {}. Request id: {}, request class: {}",
+                        new Object[]{result, request.getId(), request.getClass()});
+                logBean.error(Module.NAME, getClass(), request.getClass(), request.getId(), EVENT.GETTING_DATA,
                         ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_unexpected", localeBean.getSystemLocale(), "GETMNCODEBYADDRESS",
                         result));
-                payment.setStatus(RequestStatus.BINDING_INVALID_FORMAT);
+                request.setStatus(RequestStatus.BINDING_INVALID_FORMAT);
             } else {
-                payment.setAccountNumber(result);
-                payment.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
+                request.setAccountNumber(result);
+                request.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
             }
         }
     }
@@ -239,17 +233,18 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
      * @return
      */
     @Override
-    public List<AccountDetail> acquireAccountDetailsByAddress(Payment payment) throws DBException {
+    public List<AccountDetail> acquireAccountDetailsByAddress(String district, String streetType, String street, String buildingNumber,
+            String buildingCorp, String apartment, AbstractRequest request, Date date) throws DBException {
         List<AccountDetail> accountCorrectionDetails = null;
 
         Map<String, Object> params = Maps.newHashMap();
-        params.put("pDistrName", payment.getOutgoingDistrict());
-        params.put("pStSortName", payment.getOutgoingStreetType());
-        params.put("pStreetName", payment.getOutgoingStreet());
-        params.put("pHouseNum", payment.getOutgoingBuildingNumber());
-        params.put("pHousePart", payment.getOutgoingBuildingCorp());
-        params.put("pFlatNum", payment.getOutgoingApartment());
-        params.put("dat1", payment.getField(PaymentDBF.DAT1));
+        params.put("pDistrName", district);
+        params.put("pStSortName", streetType);
+        params.put("pStreetName", street);
+        params.put("pHouseNum", buildingNumber);
+        params.put("pHousePart", buildingCorp);
+        params.put("pFlatNum", apartment);
+        params.put("date", date);
 
         try {
             sqlSession().selectOne(MAPPING_NAMESPACE + ".acquireAccountDetailsByAddress", params);
@@ -261,49 +256,50 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
 
         Integer resultCode = (Integer) params.get("resultCode");
         if (resultCode == null) {
-            log.error("acquireAccountDetailsByAddress. Result code is null. Payment id: {}", payment.getId());
-            logBean.error(Module.NAME, getClass(), Payment.class, payment.getId(), EVENT.GETTING_DATA,
+            log.error("acquireAccountDetailsByAddress. Result code is null. Request id: {}, request class: {}", request.getId(), request.getClass());
+            logBean.error(Module.NAME, getClass(), request.getClass(), request.getId(), EVENT.GETTING_DATA,
                     ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_unexpected", localeBean.getSystemLocale(), "GETACCATTRS", "null"));
-            payment.setStatus(RequestStatus.BINDING_INVALID_FORMAT);
+            request.setStatus(RequestStatus.BINDING_INVALID_FORMAT);
         } else {
             switch (resultCode) {
                 case 1:
                     accountCorrectionDetails = (List<AccountDetail>) params.get("details");
                     if (accountCorrectionDetails == null || accountCorrectionDetails.isEmpty()) {
-                        log.error("acquireAccountDetailsByAddress. Result code is 1 but account details data is null or empty. Payment id: {}",
-                                payment.getId());
-                        logBean.error(Module.NAME, getClass(), Payment.class, payment.getId(), EVENT.GETTING_DATA,
+                        log.error("acquireAccountDetailsByAddress. Result code is 1 but account details data is null or empty. Request id: {}, "
+                                + "request class: {}", request.getId(), request.getClass());
+                        logBean.error(Module.NAME, getClass(), request.getClass(), request.getId(), EVENT.GETTING_DATA,
                                 ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_inconsistent", localeBean.getSystemLocale(), "GETACCATTRS"));
-                        payment.setStatus(RequestStatus.BINDING_INVALID_FORMAT);
+                        request.setStatus(RequestStatus.BINDING_INVALID_FORMAT);
                     }
                     break;
                 case 0:
-                    payment.setStatus(RequestStatus.ACCOUNT_NUMBER_NOT_FOUND);
+                    request.setStatus(RequestStatus.ACCOUNT_NUMBER_NOT_FOUND);
                     break;
                 case -2:
-                    payment.setStatus(RequestStatus.APARTMENT_NOT_FOUND);
+                    request.setStatus(RequestStatus.APARTMENT_NOT_FOUND);
                     break;
                 case -3:
-                    payment.setStatus(RequestStatus.BUILDING_CORP_NOT_FOUND);
+                    request.setStatus(RequestStatus.BUILDING_CORP_NOT_FOUND);
                     break;
                 case -4:
-                    payment.setStatus(RequestStatus.BUILDING_NOT_FOUND);
+                    request.setStatus(RequestStatus.BUILDING_NOT_FOUND);
                     break;
                 case -5:
-                    payment.setStatus(RequestStatus.STREET_NOT_FOUND);
+                    request.setStatus(RequestStatus.STREET_NOT_FOUND);
                     break;
                 case -6:
-                    payment.setStatus(RequestStatus.STREET_TYPE_NOT_FOUND);
+                    request.setStatus(RequestStatus.STREET_TYPE_NOT_FOUND);
                     break;
                 case -7:
-                    payment.setStatus(RequestStatus.DISTRICT_NOT_FOUND);
+                    request.setStatus(RequestStatus.DISTRICT_NOT_FOUND);
                     break;
                 default:
-                    log.error("acquireAccountDetailsByAddress. Unexpected result code: {}. Payment id: {}", resultCode, payment.getId());
-                    logBean.error(Module.NAME, getClass(), Payment.class, payment.getId(), EVENT.GETTING_DATA,
+                    log.error("acquireAccountDetailsByAddress. Unexpected result code: {}. Request id: {}, request class: {}",
+                            new Object[]{resultCode, request.getId(), request.getClass()});
+                    logBean.error(Module.NAME, getClass(), request.getClass(), request.getId(), EVENT.GETTING_DATA,
                             ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_unexpected", localeBean.getSystemLocale(), "GETACCATTRS",
                             resultCode));
-                    payment.setStatus(RequestStatus.BINDING_INVALID_FORMAT);
+                    request.setStatus(RequestStatus.BINDING_INVALID_FORMAT);
             }
         }
         return accountCorrectionDetails;
@@ -1046,22 +1042,23 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
     private static final int MEGABANK_ACCOUNT_TYPE = 1;
 
     @Override
-    public List<AccountDetail> acquireAccountDetailsByMegabankAccount(Payment payment, String megabankAccount) throws DBException {
-        return acquireAccountDetailsByAccCode(payment, "acquireAccountDetailsByMegabankAccount", megabankAccount, MEGABANK_ACCOUNT_TYPE);
+    public List<AccountDetail> acquireAccountDetailsByMegabankAccount(String district, AbstractRequest request, String megabankAccount)
+            throws DBException {
+        return acquireAccountDetailsByAccCode(district, request, "acquireAccountDetailsByMegabankAccount", megabankAccount, MEGABANK_ACCOUNT_TYPE);
     }
 
     @Override
     public List<AccountDetail> acquireAccountDetailsByOsznAccount(Payment payment) throws DBException {
-        return acquireAccountDetailsByAccCode(payment, "acquireAccountDetailsByOsznAccount", (String) payment.getField(PaymentDBF.OWN_NUM_SR),
-                OSZN_ACCOUNT_TYPE);
+        return acquireAccountDetailsByAccCode(payment.getOutgoingDistrict(), payment, "acquireAccountDetailsByOsznAccount",
+                (String) payment.getField(PaymentDBF.OWN_NUM_SR), OSZN_ACCOUNT_TYPE);
     }
 
-    public List<AccountDetail> acquireAccountDetailsByAccCode(Payment payment, String method, String account, int accountType)
+    public List<AccountDetail> acquireAccountDetailsByAccCode(String district, AbstractRequest request, String method, String account, int accountType)
             throws DBException {
         List<AccountDetail> accountCorrectionDetails = null;
 
         Map<String, Object> params = Maps.newHashMap();
-        params.put("pDistrName", payment.getOutgoingDistrict());
+        params.put("pDistrName", district);
         params.put("pAccCode", account);
         params.put("pAccCodeType", accountType);
 
@@ -1075,41 +1072,44 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
 
         Integer resultCode = (Integer) params.get("resultCode");
         if (resultCode == null) {
-            log.error("{}. Result code is null. Payment id: {}", method, payment.getId());
-            logBean.error(Module.NAME, getClass(), Payment.class, payment.getId(), EVENT.GETTING_DATA,
+            log.error("{}. Result code is null. Request id: {}, request class: {}", new Object[]{ method, request.getId(), request.getClass()});
+            logBean.error(Module.NAME, getClass(), request.getClass(), request.getId(), EVENT.GETTING_DATA,
                     ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_unexpected", localeBean.getSystemLocale(), "GETATTRSBYACCCODE", "null"));
-            payment.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
+            request.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
         } else {
             switch (resultCode) {
                 case 1:
                     accountCorrectionDetails = (List<AccountDetail>) params.get("details");
                     if (accountCorrectionDetails == null || accountCorrectionDetails.isEmpty()) {
-                        log.error("{}. Result code is 1 but account details data is null or empty. Payment id: {}", method, payment.getId());
-                        logBean.error(Module.NAME, getClass(), Payment.class, payment.getId(), EVENT.GETTING_DATA,
+                        log.error("{}. Result code is 1 but account details data is null or empty. Request id: {}, request class: {}",
+                                new Object[]{ method, request.getId(), request.getClass()});
+                        logBean.error(Module.NAME, getClass(), request.getClass(), request.getId(), EVENT.GETTING_DATA,
                                 ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_inconsistent", localeBean.getSystemLocale(),
                                 "GETATTRSBYACCCODE"));
-                        payment.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
+                        request.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
                     }
                     break;
                 case 0:
-                    payment.setStatus(RequestStatus.ACCOUNT_NUMBER_NOT_FOUND);
+                    request.setStatus(RequestStatus.ACCOUNT_NUMBER_NOT_FOUND);
                     break;
                 case -1:
-                    log.error("{}. Result code is -1 but account type code is {}. Payment id: {}", new Object[]{method, accountType, payment.getId()});
-                    logBean.error(Module.NAME, getClass(), Payment.class, payment.getId(), EVENT.GETTING_DATA,
+                    log.error("{}. Result code is -1 but account type code is {}. Request id: {}, request class: {}",
+                            new Object[]{method, accountType, request.getId(), request.getClass()});
+                    logBean.error(Module.NAME, getClass(), request.getClass(), request.getId(), EVENT.GETTING_DATA,
                             ResourceUtil.getFormatString(RESOURCE_BUNDLE, "wrong_account_type_code", localeBean.getSystemLocale(), "GETATTRSBYACCCODE",
                             accountType));
-                    payment.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
+                    request.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
                     break;
                 case -2:
-                    payment.setStatus(RequestStatus.DISTRICT_NOT_FOUND);
+                    request.setStatus(RequestStatus.DISTRICT_NOT_FOUND);
                     break;
                 default:
-                    log.error("{}. Unexpected result code: {}. Payment id: {}", new Object[]{method, resultCode, payment.getId()});
-                    logBean.error(Module.NAME, getClass(), Payment.class, payment.getId(), EVENT.GETTING_DATA,
+                    log.error("{}. Unexpected result code: {}. Request id: {}, request class: {}",
+                            new Object[]{method, resultCode, request.getId(), request.getClass()});
+                    logBean.error(Module.NAME, getClass(), request.getClass(), request.getId(), EVENT.GETTING_DATA,
                             ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_unexpected", localeBean.getSystemLocale(), "GETATTRSBYACCCODE",
                             resultCode));
-                    payment.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
+                    request.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
             }
         }
         return accountCorrectionDetails;

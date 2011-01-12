@@ -10,7 +10,7 @@
         <wicket:extend>
             <h2 wicket:id="label" style="margin-bottom: 20px;"></h2>
 
-            <!--<div wicket:id="statusDetailsPanel"></div>-->
+            <div wicket:id="statusDetailsPanel"></div>
 
             <div wicket:id="content">
                 <form action="#" wicket:id="filterForm">
@@ -74,9 +74,9 @@
                                     </table>
                                 </td>
                                 <td>
-                                    <!--<a wicket:id="addressCorrectionLink"><wicket:message key="correctAddress"/></a>
+                                    <a wicket:id="addressCorrectionLink"><wicket:message key="correctAddress"/></a>
                                     <a wicket:id="accountCorrectionLink"><wicket:message key="correctAccount"/></a>
-                                    <a wicket:id="lookup"><wicket:message key="lookup"/></a>-->
+                                    <a wicket:id="lookup"><wicket:message key="lookup"/></a>
                                 </td>
                             </tr>
                         </tbody>
@@ -84,15 +84,17 @@
 
                     <div style="margin-top:10px">
                         <input type="button" class="btnMiddle" wicket:id="back" wicket:message="value:back"/>
+                        <!-- TODO: for testing only. -->
+                        <input type="button" class="btnMiddle" wicket:id="bind" value="Bind"/>
                     </div>
                 </form>
 
                 <div wicket:id="navigator"></div>
             </div>
 
-            <!--<span wicket:id="addressCorrectionPanel"></span>
+            <span wicket:id="addressCorrectionPanel"></span>
             <span wicket:id="lookupPanel"></span>
-            <span wicket:id="paymentAccountNumberCorrectionPanel"></span>-->
+            <span wicket:id="paymentAccountNumberCorrectionPanel"></span>
         </wicket:extend>
     </body>
 </html>

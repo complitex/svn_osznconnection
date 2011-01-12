@@ -101,12 +101,14 @@ public final class PersonAccountEdit extends FormTemplatePage {
         form.add(new TextField<String>("firstName").setRequired(true).setEnabled(false));
         form.add(new TextField<String>("middleName").setRequired(true).setEnabled(false));
         form.add(new TextField<String>("city").setRequired(true).setEnabled(false));
+        form.add(new TextField<String>("streetType").setEnabled(false));
         form.add(new TextField<String>("street").setRequired(true).setEnabled(false));
+        form.add(new TextField<String>("streetCode").setEnabled(false));
         form.add(new TextField<String>("buildingNumber").setRequired(true).setEnabled(false));
         form.add(new TextField<String>("buildingCorp").setEnabled(false));
         form.add(new TextField<String>("apartment").setRequired(true).setEnabled(false));
         form.add(new TextField<String>("accountNumber").setRequired(true));
-        form.add(new TextField<String>("ownNumSr").setRequired(true).setEnabled(false));
+        form.add(new TextField<String>("ownNumSr").setEnabled(false));
 
         final IModel<List<DomainObject>> allOsznsModel = new LoadableDetachableModel<List<DomainObject>>() {
 

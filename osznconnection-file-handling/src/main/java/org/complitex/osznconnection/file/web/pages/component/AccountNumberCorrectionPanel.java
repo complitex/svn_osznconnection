@@ -2,8 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.complitex.osznconnection.file.web.pages.payment;
+package org.complitex.osznconnection.file.web.pages.component;
 
+import java.util.Date;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -13,9 +14,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.osznconnection.file.entity.AccountDetail;
-import org.complitex.osznconnection.file.entity.Payment;
 import org.complitex.osznconnection.file.service.PersonAccountService;
-import org.complitex.osznconnection.file.web.pages.payment.component.account.AccountNumberCorrectionPanel;
 import org.odlabs.wiquery.core.javascript.JsStatement;
 import org.odlabs.wiquery.ui.core.JsScopeUiEvent;
 import org.odlabs.wiquery.ui.dialog.Dialog;
@@ -24,26 +23,27 @@ import javax.ejb.EJB;
 import java.util.List;
 import org.apache.wicket.Component;
 import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
+import org.complitex.osznconnection.file.entity.AbstractRequest;
 import org.complitex.osznconnection.file.service.StatusRenderService;
 
 /**
  * Панель для корректировки номера л/c вручную, когда больше одного человека в ЦН, имеющие разные номера л/c, привязаны к одному адресу.
  * @author Artem
  */
-public class PaymentAccountNumberCorrectionPanel extends Panel {
+public abstract class AccountNumberCorrectionPanel<T extends AbstractRequest> extends Panel {
 
     @EJB(name = "PersonAccountService")
     private PersonAccountService personAccountService;
     @EJB(name = "StatusRenderService")
     private StatusRenderService statusRenderService;
-    private Payment payment;
+    private T request;
     private Dialog dialog;
     private IModel<String> accountNumberModel;
-    private AccountNumberCorrectionPanel accountNumberCorrectionPanel;
+    private AccountNumberPickerPanel accountNumberCorrectionPanel;
     private List<AccountDetail> accountCorrectionDetails;
     private WebMarkupContainer infoContainer;
 
-    public PaymentAccountNumberCorrectionPanel(String id, final Component... toUpdate) {
+    public AccountNumberCorrectionPanel(String id, final Component... toUpdate) {
         super(id);
         accountNumberModel = new Model<String>();
 
@@ -65,7 +65,7 @@ public class PaymentAccountNumberCorrectionPanel extends Panel {
         messages.setOutputMarkupId(true);
         infoContainer.add(messages);
 
-        accountNumberCorrectionPanel = new AccountNumberCorrectionPanel("accountNumberCorrectionPanel",
+        accountNumberCorrectionPanel = new AccountNumberPickerPanel("accountNumberCorrectionPanel",
                 Model.ofList(accountCorrectionDetails)) {
 
             @Override
@@ -86,8 +86,8 @@ public class PaymentAccountNumberCorrectionPanel extends Panel {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 if (validate()) {
-                    personAccountService.correctAccountNumber(payment, accountNumberModel.getObject());
-                    
+                    correctAccountNumber(request, accountNumberModel.getObject());
+
                     if (toUpdate != null) {
                         for (Component component : toUpdate) {
                             target.addComponent(component);
@@ -128,13 +128,17 @@ public class PaymentAccountNumberCorrectionPanel extends Panel {
         return validated;
     }
 
-    public void open(AjaxRequestTarget target, Payment payment) {
-        this.payment = payment;
+    protected abstract void correctAccountNumber(T request, String accountNumber);
 
+    public void open(AjaxRequestTarget target, T request, String district, String streetType, String street, String buildingNumber,
+            String buildingCorp, String apartment, Date date) {
+
+        this.request = request;
         try {
-            accountCorrectionDetails = personAccountService.acquireAccountCorrectionDetails(payment);
+            accountCorrectionDetails = personAccountService.acquireAccountCorrectionDetails(district, streetType, street, buildingNumber,
+                    buildingCorp, apartment, request, date);
             if (accountCorrectionDetails == null || accountCorrectionDetails.isEmpty()) {
-                error(statusRenderService.displayStatus(payment.getStatus(), getLocale()));
+                error(statusRenderService.displayStatus(request.getStatus(), getLocale()));
             }
         } catch (DBException e) {
             error(getString("db_error"));

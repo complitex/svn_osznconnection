@@ -23,7 +23,6 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
-import org.complitex.osznconnection.file.entity.AbstractRequest;
 import org.complitex.osznconnection.file.service.exception.DublicateCorrectionException;
 import org.complitex.osznconnection.file.service.exception.MoreOneCorrectionException;
 import org.complitex.osznconnection.file.service.exception.NotFoundCorrectionException;
@@ -37,19 +36,30 @@ import org.complitex.osznconnection.file.web.component.StatusRenderer;
 import javax.ejb.EJB;
 import java.io.File;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
 import org.apache.wicket.markup.html.link.Link;
+import org.complitex.dictionary.service.executor.ExecuteException;
 import org.complitex.osznconnection.file.entity.ActualPayment;
 import org.complitex.osznconnection.file.entity.ActualPaymentDBF;
+import org.complitex.osznconnection.file.entity.StatusDetailInfo;
 import org.complitex.osznconnection.file.entity.example.ActualPaymentExample;
 import org.complitex.osznconnection.file.service.ActualPaymentBean;
 import org.complitex.osznconnection.file.service.AddressService;
+import org.complitex.osznconnection.file.service.PersonAccountService;
 import org.complitex.osznconnection.file.service.StatusRenderService;
+import org.complitex.osznconnection.file.service.process.ActualPaymentBindTaskBean;
+import org.complitex.osznconnection.file.service.status.details.ActualPaymentExampleConfigurator;
 import org.complitex.osznconnection.file.service.status.details.StatusDetailBean;
 import org.complitex.osznconnection.file.service.warning.WebWarningRenderer;
-import org.complitex.osznconnection.file.web.pages.payment.AddressCorrectionPanel;
+import org.complitex.osznconnection.file.web.component.StatusDetailPanel;
+import org.complitex.osznconnection.file.web.pages.component.AddressCorrectionPanel;
+import org.complitex.osznconnection.file.web.pages.component.AccountNumberCorrectionPanel;
 import org.complitex.osznconnection.file.web.pages.util.AddressRenderer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -58,6 +68,7 @@ import org.complitex.osznconnection.file.web.pages.util.AddressRenderer;
 @AuthorizeInstantiation(SecurityRole.AUTHORIZED)
 public final class ActualPaymentList extends TemplatePage {
 
+    private static final Logger log = LoggerFactory.getLogger(ActualPaymentList.class);
     public static final String FILE_ID = "request_file_id";
     @EJB(name = "ActualPaymentBean")
     private ActualPaymentBean actualPaymentBean;
@@ -71,6 +82,10 @@ public final class ActualPaymentList extends TemplatePage {
     private StatusDetailBean statusDetailBean;
     @EJB(name = "AddressService")
     private AddressService addressService;
+    @EJB(name = "ActualPaymentBindTaskBean")
+    private ActualPaymentBindTaskBean actualPaymentBindTaskBean;
+    @EJB(name = "PersonAccountService")
+    private PersonAccountService personAccountService;
     private IModel<ActualPaymentExample> example;
     private long fileId;
 
@@ -90,7 +105,7 @@ public final class ActualPaymentList extends TemplatePage {
     }
 
     private void init() {
-        RequestFile requestFile = requestFileBean.findById(fileId);
+        final RequestFile requestFile = requestFileBean.findById(fileId);
 
         String label = getStringFormat("label", requestFile.getDirectory(), File.separator, requestFile.getName());
 
@@ -105,15 +120,16 @@ public final class ActualPaymentList extends TemplatePage {
         content.add(filterForm);
         example = new Model<ActualPaymentExample>(newExample());
 
-//        StatusDetailPanel<ActualPaymentExample> statusDetailPanel = new StatusDetailPanel<ActualPaymentExample>("statusDetailsPanel",
-//                ActualPaymentExample.class, example, new PaymentExampleConfigurator(), content) {
-//
-//            @Override
-//            public List<StatusDetailInfo> loadStatusDetails() {
-//                return statusDetailBean.getPaymentStatusDetails(fileId);
-//            }
-//        };
-//        add(statusDetailPanel);
+        StatusDetailPanel<ActualPayment, ActualPaymentExample> statusDetailPanel =
+                new StatusDetailPanel<ActualPayment, ActualPaymentExample>("statusDetailsPanel", ActualPayment.class,
+                ActualPaymentExample.class, example, new ActualPaymentExampleConfigurator(), content) {
+
+                    @Override
+                    public List<StatusDetailInfo> loadStatusDetails() {
+                        return statusDetailBean.getActualPaymentStatusDetails(fileId);
+                    }
+                };
+        add(statusDetailPanel);
 
         final SortableDataProvider<ActualPayment> dataProvider = new SortableDataProvider<ActualPayment>() {
 
@@ -172,25 +188,31 @@ public final class ActualPaymentList extends TemplatePage {
         filterForm.add(submit);
 
         //Панель коррекции адреса
-        final AddressCorrectionPanel addressCorrectionPanel = new AddressCorrectionPanel("addressCorrectionPanel", content) {
+        final AddressCorrectionPanel<ActualPayment> addressCorrectionPanel = new AddressCorrectionPanel<ActualPayment>("addressCorrectionPanel",
+                content, statusDetailPanel) {
 
             @Override
-            protected void correctAddress(AbstractRequest request, Long cityId, Long streetId, Long streetTypeId, Long buildingId)
+            protected void correctAddress(ActualPayment actualPayment, Long cityId, Long streetId, Long streetTypeId, Long buildingId)
                     throws DublicateCorrectionException, MoreOneCorrectionException, NotFoundCorrectionException {
-                ActualPayment actualPayment = ActualPayment.class.cast(request);
                 addressService.correctLocalAddress(actualPayment, cityId, streetId, streetTypeId, buildingId);
             }
         };
         add(addressCorrectionPanel);
-//
-//        //Панель поиска
-//        final PaymentLookupPanel lookupPanel = new PaymentLookupPanel("lookupPanel", content, statusDetailPanel);
-//        add(lookupPanel);
-//
-//        //Коррекция личного счета
-//        final PaymentAccountNumberCorrectionPanel paymentAccountNumberCorrectionPanel =
-//                new PaymentAccountNumberCorrectionPanel("paymentAccountNumberCorrectionPanel", content, statusDetailPanel);
-//        add(paymentAccountNumberCorrectionPanel);
+
+        //Панель поиска
+        final ActualPaymentLookupPanel lookupPanel = new ActualPaymentLookupPanel("lookupPanel", content, statusDetailPanel);
+        add(lookupPanel);
+
+        //Коррекция личного счета
+        final AccountNumberCorrectionPanel<ActualPayment> paymentAccountNumberCorrectionPanel =
+                new AccountNumberCorrectionPanel<ActualPayment>("paymentAccountNumberCorrectionPanel", content, statusDetailPanel) {
+
+                    @Override
+                    protected void correctAccountNumber(ActualPayment actualPayment, String accountNumber) {
+                        personAccountService.correctAccountNumber(actualPayment, accountNumber);
+                    }
+                };
+        add(paymentAccountNumberCorrectionPanel);
 
         DataView<ActualPayment> data = new DataView<ActualPayment>("data", dataProvider, 1) {
 
@@ -219,31 +241,35 @@ public final class ActualPaymentList extends TemplatePage {
                                 (String) actualPayment.getField(ActualPaymentDBF.N_NAME), (String) actualPayment.getField(ActualPaymentDBF.VUL_CAT),
                                 (String) actualPayment.getField(ActualPaymentDBF.VUL_NAME), (String) actualPayment.getField(ActualPaymentDBF.BLD_NUM),
                                 (String) actualPayment.getField(ActualPaymentDBF.CORP_NUM), (String) actualPayment.getField(ActualPaymentDBF.FLAT),
-                                actualPayment.getInternalCityId(), actualPayment.getInternalStreetTypeId(), actualPayment.getInternalStreetId(),
+                                actualPayment.getInternalCityId(), actualPayment.getInternalStreetId(),
                                 actualPayment.getInternalBuildingId());
                     }
                 };
                 addressCorrectionLink.setVisible(actualPayment.getStatus().isAddressCorrectable());
                 item.add(addressCorrectionLink);
-//
-//                AjaxLink accountCorrectionLink = new IndicatingAjaxLink("accountCorrectionLink") {
-//
-//                    @Override
-//                    public void onClick(AjaxRequestTarget target) {
-//                        paymentAccountNumberCorrectionPanel.open(target, actualPayment);
-//                    }
-//                };
-//                accountCorrectionLink.setVisible(actualPayment.getStatus() == RequestStatus.MORE_ONE_ACCOUNTS);
-//                item.add(accountCorrectionLink);
-//
-//                AjaxLink lookup = new IndicatingAjaxLink("lookup") {
-//
-//                    @Override
-//                    public void onClick(AjaxRequestTarget target) {
-//                        lookupPanel.open(target, actualPayment);
-//                    }
-//                };
-//                item.add(lookup);
+
+                AjaxLink accountCorrectionLink = new IndicatingAjaxLink("accountCorrectionLink") {
+
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        paymentAccountNumberCorrectionPanel.open(target, actualPayment, actualPayment.getOutgoingDistrict(),
+                                actualPayment.getOutgoingStreetType(), actualPayment.getOutgoingStreet(),
+                                actualPayment.getOutgoingBuildingNumber(), actualPayment.getOutgoingBuildingCorp(),
+                                actualPayment.getOutgoingApartment(), (Date) actualPayment.getField(ActualPaymentDBF.DAT_BEG));
+                    }
+                };
+                accountCorrectionLink.setVisible(actualPayment.getStatus() == RequestStatus.MORE_ONE_ACCOUNTS);
+                item.add(accountCorrectionLink);
+
+                AjaxLink lookup = new IndicatingAjaxLink("lookup") {
+
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        lookupPanel.open(target, actualPayment, actualPayment.getInternalCityId(), actualPayment.getInternalStreetId(),
+                                actualPayment.getInternalBuildingId(), (String) actualPayment.getField(ActualPaymentDBF.FLAT));
+                    }
+                };
+                item.add(lookup);
             }
         };
         filterForm.add(data);
@@ -268,6 +294,23 @@ public final class ActualPaymentList extends TemplatePage {
             }
         };
         filterForm.add(back);
+
+        AjaxLink<Void> bind = new AjaxLink<Void>("bind") {
+
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                try {
+                    actualPaymentBindTaskBean.execute(requestFile);
+                    log.info("Bind of actual payment was successful.");
+                } catch (ExecuteException e) {
+                    log.error("", e);
+                } catch (RuntimeException e) {
+                    log.error("", e);
+                }
+                target.addComponent(content);
+            }
+        };
+        filterForm.add(bind);
 
         content.add(new PagingNavigator("navigator", data, getClass().getName() + fileId, content));
     }

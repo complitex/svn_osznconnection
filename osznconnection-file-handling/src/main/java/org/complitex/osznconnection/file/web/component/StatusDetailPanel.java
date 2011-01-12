@@ -14,6 +14,7 @@ import org.complitex.osznconnection.file.entity.StatusDetail;
 
 import javax.ejb.EJB;
 import java.util.List;
+import org.complitex.osznconnection.file.entity.AbstractRequest;
 import org.complitex.osznconnection.file.entity.StatusDetailInfo;
 import org.complitex.osznconnection.file.entity.example.AbstractRequestExample;
 import org.complitex.osznconnection.file.service.StatusRenderService;
@@ -24,15 +25,15 @@ import org.complitex.osznconnection.file.service.status.details.StatusDetailRend
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 24.11.10 15:49
  */
-public abstract class StatusDetailPanel<T extends AbstractRequestExample> extends Panel {
+public abstract class StatusDetailPanel<E extends AbstractRequest, T extends AbstractRequestExample> extends Panel {
 
     @EJB(name = "StatusRenderService")
     private StatusRenderService statusRenderService;
     @EJB(name = "StatusDetailRenderer")
     private StatusDetailRenderer statusDetailRenderer;
 
-    public StatusDetailPanel(String id, final Class<T> exampleClass, final IModel<T> exampleModel, final ExampleConfigurator<T> exampleConfigurator,
-            final Component... update) {
+    public StatusDetailPanel(String id, final Class<E> requestClass, final Class<T> exampleClass, final IModel<T> exampleModel,
+            final ExampleConfigurator<T> exampleConfigurator, final Component... update) {
         super(id);
         setOutputMarkupId(true);
 
@@ -100,7 +101,7 @@ public abstract class StatusDetailPanel<T extends AbstractRequestExample> extend
                         };
                         item.add(filter);
 
-                        filter.add(new Label("name", statusDetailRenderer.displayStatusDetail(statusDetail, statusDetailInfo.getStatus())));
+                        filter.add(new Label("name", statusDetailRenderer.displayStatusDetail(requestClass, statusDetail, statusDetailInfo.getStatus())));
                     }
                 };
                 statusDetailsContainer.setVisible(false);

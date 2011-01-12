@@ -276,7 +276,7 @@
                     AND `VUL_CODE` = #{streetCode}
                 </if>
                 <if test="streetType != null">
-                    AND `VUL_CAT` = #{streetType}
+                    AND TO_CYRILLIC(`VUL_CAT`) = TO_CYRILLIC(#{streetType})
                 </if>
                 <if test="buildingNumber != null">
                     AND TO_CYRILLIC(`BLD_NUM`) = TO_CYRILLIC(#{buildingNumber})

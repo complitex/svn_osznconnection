@@ -4,6 +4,8 @@
  */
 package org.complitex.osznconnection.file.web.pages.payment;
 
+import org.complitex.osznconnection.file.web.pages.component.AccountNumberCorrectionPanel;
+import org.complitex.osznconnection.file.web.pages.component.AddressCorrectionPanel;
 import java.util.List;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -46,9 +48,10 @@ import org.complitex.osznconnection.file.web.component.StatusRenderer;
 import javax.ejb.EJB;
 import java.io.File;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Iterator;
-import org.complitex.osznconnection.file.entity.AbstractRequest;
 import org.complitex.osznconnection.file.service.AddressService;
+import org.complitex.osznconnection.file.service.PersonAccountService;
 import org.complitex.osznconnection.file.service.StatusRenderService;
 import org.complitex.osznconnection.file.service.status.details.PaymentExampleConfigurator;
 import org.complitex.osznconnection.file.service.status.details.StatusDetailBean;
@@ -74,6 +77,8 @@ public final class PaymentList extends TemplatePage {
     private StatusDetailBean statusDetailBean;
     @EJB(name = "AddressService")
     private AddressService addressService;
+    @EJB(name = "PersonAccountService")
+    private PersonAccountService personAccountService;
     private IModel<PaymentExample> example;
     private long fileId;
 
@@ -108,8 +113,8 @@ public final class PaymentList extends TemplatePage {
         content.add(filterForm);
         example = new Model<PaymentExample>(newExample());
 
-        StatusDetailPanel<PaymentExample> statusDetailPanel = new StatusDetailPanel<PaymentExample>("statusDetailsPanel",
-                PaymentExample.class, example, new PaymentExampleConfigurator(), content) {
+        StatusDetailPanel<Payment, PaymentExample> statusDetailPanel = new StatusDetailPanel<Payment, PaymentExample>("statusDetailsPanel",
+                Payment.class, PaymentExample.class, example, new PaymentExampleConfigurator(), content) {
 
             @Override
             public List<StatusDetailInfo> loadStatusDetails() {
@@ -176,12 +181,12 @@ public final class PaymentList extends TemplatePage {
         filterForm.add(submit);
 
         //Панель коррекции адреса
-        final AddressCorrectionPanel addressCorrectionPanel = new AddressCorrectionPanel("addressCorrectionPanel", content, statusDetailPanel){
+        final AddressCorrectionPanel<Payment> addressCorrectionPanel = new AddressCorrectionPanel<Payment>("addressCorrectionPanel",
+                content, statusDetailPanel) {
 
             @Override
-            protected void correctAddress(AbstractRequest request, Long cityId, Long streetId, Long streetTypeId, Long buildingId)
+            protected void correctAddress(Payment payment, Long cityId, Long streetId, Long streetTypeId, Long buildingId)
                     throws DublicateCorrectionException, MoreOneCorrectionException, NotFoundCorrectionException {
-                Payment payment = Payment.class.cast(request);
                 addressService.correctLocalAddress(payment, cityId, streetId, streetTypeId, buildingId);
             }
         };
@@ -192,8 +197,14 @@ public final class PaymentList extends TemplatePage {
         add(lookupPanel);
 
         //Коррекция личного счета
-        final PaymentAccountNumberCorrectionPanel paymentAccountNumberCorrectionPanel =
-                new PaymentAccountNumberCorrectionPanel("paymentAccountNumberCorrectionPanel", content, statusDetailPanel);
+        final AccountNumberCorrectionPanel<Payment> paymentAccountNumberCorrectionPanel =
+                new AccountNumberCorrectionPanel<Payment>("paymentAccountNumberCorrectionPanel", content, statusDetailPanel) {
+
+                    @Override
+                    protected void correctAccountNumber(Payment payment, String accountNumber) {
+                        personAccountService.correctAccountNumber(payment, accountNumber);
+                    }
+                };
         add(paymentAccountNumberCorrectionPanel);
 
         DataView<Payment> data = new DataView<Payment>("data", dataProvider, 1) {
@@ -219,10 +230,10 @@ public final class PaymentList extends TemplatePage {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         addressCorrectionPanel.open(target, payment, (String) payment.getField(PaymentDBF.F_NAM),
-                                (String)payment.getField(PaymentDBF.M_NAM), (String) payment.getField(PaymentDBF.SUR_NAM),
-                                (String)payment.getField(PaymentDBF.N_NAME), null, (String)payment.getField(PaymentDBF.VUL_NAME),
-                                (String)payment.getField(PaymentDBF.BLD_NUM), (String)payment.getField(PaymentDBF.CORP_NUM),
-                                (String)payment.getField(PaymentDBF.FLAT), payment.getInternalCityId(), payment.getInternalStreetTypeId(),
+                                (String) payment.getField(PaymentDBF.M_NAM), (String) payment.getField(PaymentDBF.SUR_NAM),
+                                (String) payment.getField(PaymentDBF.N_NAME), null, (String) payment.getField(PaymentDBF.VUL_NAME),
+                                (String) payment.getField(PaymentDBF.BLD_NUM), (String) payment.getField(PaymentDBF.CORP_NUM),
+                                (String) payment.getField(PaymentDBF.FLAT), payment.getInternalCityId(),
                                 payment.getInternalStreetId(), payment.getInternalBuildingId());
                     }
                 };
@@ -233,7 +244,9 @@ public final class PaymentList extends TemplatePage {
 
                     @Override
                     public void onClick(AjaxRequestTarget target) {
-                        paymentAccountNumberCorrectionPanel.open(target, payment);
+                        paymentAccountNumberCorrectionPanel.open(target, payment, payment.getOutgoingDistrict(), payment.getOutgoingStreetType(),
+                                payment.getOutgoingStreet(), payment.getOutgoingBuildingNumber(), payment.getOutgoingBuildingCorp(),
+                                payment.getOutgoingApartment(), (Date) payment.getField(PaymentDBF.DAT1));
                     }
                 };
                 accountCorrectionLink.setVisible(payment.getStatus() == RequestStatus.MORE_ONE_ACCOUNTS);
@@ -243,7 +256,8 @@ public final class PaymentList extends TemplatePage {
 
                     @Override
                     public void onClick(AjaxRequestTarget target) {
-                        lookupPanel.open(target, payment);
+                        lookupPanel.open(target, payment, payment.getInternalCityId(), payment.getInternalStreetId(), payment.getInternalBuildingId(),
+                                (String) payment.getField(PaymentDBF.FLAT), (String) payment.getField(PaymentDBF.OWN_NUM_SR));
                     }
                 };
                 item.add(lookup);

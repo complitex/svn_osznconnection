@@ -22,4 +22,8 @@ public class StatusDetailBean extends AbstractBean {
     public List<StatusDetailInfo> getBenefitStatusDetails(long requestFileId) {
         return sqlSession().selectList(MAPPING_NAMESPACE + ".getBenefitStatusDetailInfo", requestFileId);
     }
+
+    public List<StatusDetailInfo> getActualPaymentStatusDetails(long requestFileId) {
+        return sqlSession().selectList(MAPPING_NAMESPACE + ".getActualPaymentStatusDetailInfo", requestFileId);
+    }
 }
