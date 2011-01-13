@@ -39,7 +39,7 @@ public abstract class AccountNumberCorrectionPanel<T extends AbstractRequest> ex
     private T request;
     private Dialog dialog;
     private IModel<String> accountNumberModel;
-    private AccountNumberPickerPanel accountNumberCorrectionPanel;
+    private AccountNumberPickerPanel accountNumberPickerPanel;
     private List<AccountDetail> accountCorrectionDetails;
     private WebMarkupContainer infoContainer;
 
@@ -65,7 +65,7 @@ public abstract class AccountNumberCorrectionPanel<T extends AbstractRequest> ex
         messages.setOutputMarkupId(true);
         infoContainer.add(messages);
 
-        accountNumberCorrectionPanel = new AccountNumberPickerPanel("accountNumberCorrectionPanel",
+        accountNumberPickerPanel = new AccountNumberPickerPanel("accountNumberCorrectionPanel",
                 Model.ofList(accountCorrectionDetails)) {
 
             @Override
@@ -79,7 +79,7 @@ public abstract class AccountNumberCorrectionPanel<T extends AbstractRequest> ex
             }
         };
 
-        infoContainer.add(accountNumberCorrectionPanel);
+        infoContainer.add(accountNumberPickerPanel);
 
         AjaxLink save = new AjaxLink("save") {
 
@@ -144,8 +144,8 @@ public abstract class AccountNumberCorrectionPanel<T extends AbstractRequest> ex
             error(getString("db_error"));
         }
 
-        accountNumberCorrectionPanel.getAccountDetailsModel().setObject(accountCorrectionDetails);
-        accountNumberCorrectionPanel.clear();
+        accountNumberPickerPanel.getAccountDetailsModel().setObject(accountCorrectionDetails);
+        accountNumberPickerPanel.clear();
         accountNumberModel.setObject(null);
         target.addComponent(infoContainer);
         dialog.open(target);

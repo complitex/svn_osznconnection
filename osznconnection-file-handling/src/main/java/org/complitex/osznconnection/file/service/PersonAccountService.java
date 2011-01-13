@@ -75,7 +75,6 @@ public class PersonAccountService extends AbstractBean {
         if (!Strings.isEmpty(accountNumber)) {
             actualPayment.setAccountNumber(accountNumber);
             actualPayment.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
-            benefitBean.updateAccountNumber(actualPayment.getId(), accountNumber);
         }
     }
 
@@ -110,7 +109,6 @@ public class PersonAccountService extends AbstractBean {
                 actualPayment.getOutgoingStreet(), actualPayment.getOutgoingBuildingNumber(), actualPayment.getOutgoingBuildingCorp(),
                 actualPayment.getOutgoingApartment(), (Date) actualPayment.getField(ActualPaymentDBF.DAT_BEG));
         if (actualPayment.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED) {
-            benefitBean.updateAccountNumber(actualPayment.getId(), actualPayment.getAccountNumber());
             personAccountLocalBean.saveOrUpdate(actualPayment.getAccountNumber(), (String) actualPayment.getField(ActualPaymentDBF.F_NAM),
                     (String) actualPayment.getField(ActualPaymentDBF.M_NAM), (String) actualPayment.getField(ActualPaymentDBF.SUR_NAM),
                     (String) actualPayment.getField(ActualPaymentDBF.N_NAME), (String) actualPayment.getField(ActualPaymentDBF.VUL_CAT),
@@ -127,11 +125,11 @@ public class PersonAccountService extends AbstractBean {
      * @param accountNumber
      */
     @Transactional
-    public void correctAccountNumber(Payment payment, String accountNumber) {
+    public void updateAccountNumber(Payment payment, String accountNumber) {
         payment.setAccountNumber(accountNumber);
         payment.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
         benefitBean.updateAccountNumber(payment.getId(), accountNumber);
-        paymentBean.update(payment);
+        paymentBean.updateAccountNumber(payment);
 
         long paymentFileId = payment.getRequestFileId();
         long benefitFileId = requestFileGroupBean.getBenefitFileId(paymentFileId);
@@ -149,10 +147,10 @@ public class PersonAccountService extends AbstractBean {
     }
 
     @Transactional
-    public void correctAccountNumber(ActualPayment actualPayment, String accountNumber) {
+    public void updateAccountNumber(ActualPayment actualPayment, String accountNumber) {
         actualPayment.setAccountNumber(accountNumber);
         actualPayment.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
-        actualPaymentBean.update(actualPayment);
+        actualPaymentBean.updateAccountNumber(actualPayment);
 
         //TODO: fix logic
 //        long paymentFileId = actualPayment.getRequestFileId();

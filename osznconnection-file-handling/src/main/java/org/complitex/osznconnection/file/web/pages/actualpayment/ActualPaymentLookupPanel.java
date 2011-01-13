@@ -8,14 +8,12 @@ import java.util.Date;
 import java.util.List;
 import javax.ejb.EJB;
 import org.apache.wicket.Component;
-import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
 import org.complitex.osznconnection.file.entity.AccountDetail;
 import org.complitex.osznconnection.file.entity.ActualPayment;
 import org.complitex.osznconnection.file.entity.ActualPaymentDBF;
-import org.complitex.osznconnection.file.entity.RequestStatus;
-import org.complitex.osznconnection.file.service.ActualPaymentBean;
 import org.complitex.osznconnection.file.service.LookupBean;
+import org.complitex.osznconnection.file.service.PersonAccountService;
 import org.complitex.osznconnection.file.web.component.lookup.AbstractLookupPanel;
 
 /**
@@ -26,8 +24,8 @@ public class ActualPaymentLookupPanel extends AbstractLookupPanel<ActualPayment>
 
     @EJB(name = "PaymentLookupBean")
     private LookupBean paymentLookupBean;
-    @EJB(name = "ActualPaymentBean")
-    private ActualPaymentBean actualPaymentBean;
+    @EJB(name = "PersonAccountService")
+    private PersonAccountService personAccountService;
 
     public ActualPaymentLookupPanel(String id, Component... toUpdate) {
         super(id, toUpdate);
@@ -66,10 +64,8 @@ public class ActualPaymentLookupPanel extends AbstractLookupPanel<ActualPayment>
     }
 
     @Override
-    protected void updateAccountNumber(AjaxRequestTarget target, ActualPayment actualPayment, String accountNumber) {
-        actualPayment.setAccountNumber(accountNumber);
-        actualPayment.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
-        actualPaymentBean.updateAccountNumber(actualPayment);
+    protected void updateAccountNumber(ActualPayment actualPayment, String accountNumber) {
+        personAccountService.updateAccountNumber(actualPayment, accountNumber);
     }
 
     @Override
