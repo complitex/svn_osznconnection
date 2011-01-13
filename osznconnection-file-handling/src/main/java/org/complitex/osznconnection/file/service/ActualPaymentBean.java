@@ -8,12 +8,10 @@ import com.google.common.collect.Maps;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import org.complitex.dictionary.mybatis.Transactional;
-import org.complitex.osznconnection.file.calculation.service.CalculationCenterBean;
 import org.complitex.osznconnection.file.entity.AbstractRequest;
 import org.complitex.osznconnection.file.entity.ActualPayment;
 import org.complitex.osznconnection.file.entity.ActualPaymentDBF;
@@ -54,12 +52,6 @@ public class ActualPaymentBean extends AbstractRequestBean {
             return orderBy;
         }
     }
-    @EJB(beanName = "CalculationCenterBean")
-    private CalculationCenterBean calculationCenterBean;
-    @EJB(beanName = "PersonAccountLocalBean")
-    private PersonAccountLocalBean personAccountLocalBean;
-    @EJB
-    private RequestFileGroupBean requestFileGroupBean;
 
     @Transactional
     public int count(ActualPaymentExample example) {
@@ -166,7 +158,7 @@ public class ActualPaymentBean extends AbstractRequestBean {
     }
 
     @Transactional
-    public void updateAccountNumber(ActualPayment actualPayment){
+    public void updateAccountNumber(ActualPayment actualPayment) {
         sqlSession().update(MAPPING_NAMESPACE + ".updateAccountNumber", actualPayment);
     }
 
