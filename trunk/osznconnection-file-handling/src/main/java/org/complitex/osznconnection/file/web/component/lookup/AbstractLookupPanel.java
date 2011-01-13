@@ -61,7 +61,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
     private IModel<String> apartmentModel;
     private IModel<List<? extends AccountDetail>> accountsModel;
     private IModel<AccountDetail> accountModel;
-    private AccountNumberPickerPanel accountNumberCorrectionPanel;
+    private AccountNumberPickerPanel accountNumberPickerPanel;
     private FeedbackPanel messages;
     private Dialog dialog;
     private Accordion accordion;
@@ -125,9 +125,9 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
                         getObjectId(addressSearchComponentState.get("street")), getStreetType(addressSearchComponentState.get("street")),
                         getObjectId(addressSearchComponentState.get("building")), apartmentModel.getObject());
 
-                boolean visible = accountNumberCorrectionPanel.isVisible();
+                boolean visible = accountNumberPickerPanel.isVisible();
                 AccountDetail detail = null;
-                accountNumberCorrectionPanel.setVisible(false);
+                accountNumberPickerPanel.setVisible(false);
                 if (validateInternalAddress(request)) {
                     resolveOutgoingAddress(request);
 
@@ -141,8 +141,8 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
                                     detail = accountList.get(0);
                                 } else {
                                     accountsModel.setObject(accountList);
-                                    accountNumberCorrectionPanel.clear();
-                                    accountNumberCorrectionPanel.setVisible(true);
+                                    accountNumberPickerPanel.clear();
+                                    accountNumberPickerPanel.setVisible(true);
                                 }
                             }
                         } catch (DBException e) {
@@ -157,7 +157,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
                 accountInfoModel.setObject(AccountNumberPickerPanel.displayAccountDetail(detail));
                 target.addComponent(accountInfo);
                 target.addComponent(messages);
-                if (accountNumberCorrectionPanel.isVisible() || visible) {
+                if (accountNumberPickerPanel.isVisible() || visible) {
                     accordion.setActive(new AccordionActive(0));
                     target.addComponent(accordion);
                 }
@@ -172,7 +172,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
 
         accountModel = new Model<AccountDetail>();
         accountsModel = new WildcardListModel<AccountDetail>();
-        accountNumberCorrectionPanel = new AccountNumberPickerPanel("accountNumberCorrectionPanel", accountsModel) {
+        accountNumberPickerPanel = new AccountNumberPickerPanel("accountNumberCorrectionPanel", accountsModel) {
 
             @Override
             protected void updateAccountNumber(AccountDetail accountDetail, AjaxRequestTarget target) {
@@ -181,8 +181,8 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
                 target.addComponent(accountInfo);
             }
         };
-        accountNumberCorrectionPanel.setVisible(false);
-        accordion.add(accountNumberCorrectionPanel);
+        accountNumberPickerPanel.setVisible(false);
+        accordion.add(accountNumberPickerPanel);
 
         class SimpleResourceModel extends AbstractReadOnlyModel<String> {
 
@@ -263,7 +263,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
             @Override
             public void onClick(AjaxRequestTarget target) {
                 if (validate()) {
-                    updateAccountNumber(target, initialRequest, accountModel.getObject().getAccountNumber());
+                    updateAccountNumber(initialRequest, accountModel.getObject().getAccountNumber());
 
                     for (Component component : toUpdate) {
                         target.addComponent(component);
@@ -291,7 +291,8 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
     }
 
     protected boolean validate() {
-        boolean validated = accountModel.getObject() != null;
+        AccountDetail accountDetail = accountModel.getObject();
+        boolean validated = (accountDetail != null) && !Strings.isEmpty(accountDetail.getAccountNumber());
         if (!validated) {
             error(getString("account_number_not_chosen"));
         }
@@ -356,10 +357,10 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
         addressSearchComponent.reinitialize(target);
         addressSearchComponent.setVisible(true);
 
-        if (accountNumberCorrectionPanel.isVisible()) {
-            accountNumberCorrectionPanel.setVisible(false);
+        if (accountNumberPickerPanel.isVisible()) {
+            accountNumberPickerPanel.setVisible(false);
         }
-        accountNumberCorrectionPanel.clear();
+        accountNumberPickerPanel.clear();
 
         //lookup by OWN_NUM_SR
         if (lookupByOwnNumSr()) {
@@ -386,7 +387,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
         return false;
     }
 
-    protected abstract void updateAccountNumber(AjaxRequestTarget target, T request, String accountNumber);
+    protected abstract void updateAccountNumber(T request, String accountNumber);
 
     protected abstract List<AccountDetail> acquireAccountDetailsByOsznAccount(T request, String account) throws DBException;
 

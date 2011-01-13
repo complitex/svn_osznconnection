@@ -18,7 +18,6 @@ import org.complitex.osznconnection.file.entity.AbstractRequest;
 import org.complitex.osznconnection.file.entity.ActualPayment;
 import org.complitex.osznconnection.file.entity.ActualPaymentDBF;
 import org.complitex.osznconnection.file.entity.RequestFile;
-import org.complitex.osznconnection.file.entity.RequestFileGroup;
 import org.complitex.osznconnection.file.entity.RequestStatus;
 import org.complitex.osznconnection.file.entity.example.ActualPaymentExample;
 import org.slf4j.Logger;
@@ -167,23 +166,8 @@ public class ActualPaymentBean extends AbstractRequestBean {
     }
 
     @Transactional
-    public void updateAccountNumber(ActualPayment actualPayment) {
+    public void updateAccountNumber(ActualPayment actualPayment){
         sqlSession().update(MAPPING_NAMESPACE + ".updateAccountNumber", actualPayment);
-
-        long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterInfo().getCalculationCenterId();
-        personAccountLocalBean.saveOrUpdate(actualPayment.getAccountNumber(), (String) actualPayment.getField(ActualPaymentDBF.F_NAM),
-                (String) actualPayment.getField(ActualPaymentDBF.M_NAM), (String) actualPayment.getField(ActualPaymentDBF.SUR_NAM),
-                (String) actualPayment.getField(ActualPaymentDBF.N_NAME), (String) actualPayment.getField(ActualPaymentDBF.VUL_CAT),
-                (String) actualPayment.getField(ActualPaymentDBF.VUL_NAME), (String) actualPayment.getField(ActualPaymentDBF.VUL_CODE),
-                (String) actualPayment.getField(ActualPaymentDBF.BLD_NUM), (String) actualPayment.getField(ActualPaymentDBF.CORP_NUM),
-                (String) actualPayment.getField(ActualPaymentDBF.FLAT), null,
-                actualPayment.getOrganizationId(), calculationCenterId);
-
-
-        long actualPaymentFileId = actualPayment.getRequestFileId();
-        if (isActualPaymentFileBound(actualPaymentFileId)) {
-            requestFileGroupBean.updateStatus(actualPaymentFileId, RequestFileGroup.STATUS.BOUND);
-        }
     }
 
     @Transactional

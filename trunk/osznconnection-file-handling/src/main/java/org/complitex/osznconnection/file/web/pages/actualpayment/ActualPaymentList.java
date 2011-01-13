@@ -209,7 +209,7 @@ public final class ActualPaymentList extends TemplatePage {
 
                     @Override
                     protected void correctAccountNumber(ActualPayment actualPayment, String accountNumber) {
-                        personAccountService.correctAccountNumber(actualPayment, accountNumber);
+                        personAccountService.updateAccountNumber(actualPayment, accountNumber);
                     }
                 };
         add(accountNumberCorrectionPanel);

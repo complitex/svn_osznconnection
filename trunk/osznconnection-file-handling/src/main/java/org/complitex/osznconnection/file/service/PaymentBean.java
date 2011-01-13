@@ -209,28 +209,9 @@ public class PaymentBean extends AbstractRequestBean {
         sqlSession().update(MAPPING_NAMESPACE + ".markCorrected", params);
     }
 
-    /**
-     * Обновляет номер л/c для payment записи, всех связанных benefit записей, и записывает в локальную таблицу номеров л/c.
-     * @param payment
-     */
     @Transactional
-    public void updateAccountNumber(Payment payment) {
-        sqlSession().update(MAPPING_NAMESPACE + ".updateAccountNumber", payment);
-        benefitBean.updateAccountNumber(payment.getId(), payment.getAccountNumber());
-
-        long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterInfo().getCalculationCenterId();
-        personAccountLocalBean.saveOrUpdate(payment.getAccountNumber(), (String) payment.getField(PaymentDBF.F_NAM),
-                (String) payment.getField(PaymentDBF.M_NAM), (String) payment.getField(PaymentDBF.SUR_NAM),
-                (String) payment.getField(PaymentDBF.N_NAME), null, (String) payment.getField(PaymentDBF.VUL_NAME), null,
-                (String) payment.getField(PaymentDBF.BLD_NUM), (String) payment.getField(PaymentDBF.CORP_NUM),
-                (String) payment.getField(PaymentDBF.FLAT), (String) payment.getField(PaymentDBF.OWN_NUM_SR),
-                payment.getOrganizationId(), calculationCenterId);
-
-        long paymentFileId = payment.getRequestFileId();
-        long benefitFileId = requestFileGroupBean.getBenefitFileId(paymentFileId);
-        if (isPaymentFileBound(paymentFileId) && benefitBean.isBenefitFileBound(benefitFileId)) {
-            requestFileGroupBean.updateStatus(paymentFileId, RequestFileGroup.STATUS.BOUND);
-        }
+    public void updateAccountNumber(Payment payment){
+         sqlSession().update(MAPPING_NAMESPACE + ".updateAccountNumber", payment);
     }
 
     /**

@@ -202,7 +202,7 @@ public final class PaymentList extends TemplatePage {
 
                     @Override
                     protected void correctAccountNumber(Payment payment, String accountNumber) {
-                        personAccountService.correctAccountNumber(payment, accountNumber);
+                        personAccountService.updateAccountNumber(payment, accountNumber);
                     }
                 };
         add(accountNumberCorrectionPanel);

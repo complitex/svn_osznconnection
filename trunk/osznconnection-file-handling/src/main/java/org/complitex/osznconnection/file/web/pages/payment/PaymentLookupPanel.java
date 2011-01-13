@@ -5,11 +5,9 @@
 package org.complitex.osznconnection.file.web.pages.payment;
 
 import java.util.Date;
-import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.complitex.osznconnection.file.entity.AccountDetail;
 import org.complitex.osznconnection.file.entity.Payment;
 import org.complitex.osznconnection.file.entity.PaymentDBF;
-import org.complitex.osznconnection.file.entity.RequestStatus;
 import org.complitex.osznconnection.file.service.LookupBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +16,7 @@ import javax.ejb.EJB;
 import java.util.List;
 import org.apache.wicket.Component;
 import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
-import org.complitex.osznconnection.file.service.PaymentBean;
+import org.complitex.osznconnection.file.service.PersonAccountService;
 import org.complitex.osznconnection.file.web.component.lookup.AbstractLookupPanel;
 
 /**
@@ -30,8 +28,8 @@ public class PaymentLookupPanel extends AbstractLookupPanel<Payment> {
     private static final Logger log = LoggerFactory.getLogger(PaymentLookupPanel.class);
     @EJB(name = "PaymentLookupBean")
     private LookupBean paymentLookupBean;
-    @EJB(name = "PaymentBean")
-    private PaymentBean paymentBean;
+    @EJB(name = "PersonAccountService")
+    private PersonAccountService personAccountService;
 
     public PaymentLookupPanel(String id, Component... toUpdate) {
         super(id, toUpdate);
@@ -58,10 +56,8 @@ public class PaymentLookupPanel extends AbstractLookupPanel<Payment> {
     }
 
     @Override
-    protected void updateAccountNumber(AjaxRequestTarget target, Payment payment, String accountNumber) {
-        payment.setAccountNumber(accountNumber);
-        payment.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
-        paymentBean.updateAccountNumber(payment);
+    protected void updateAccountNumber(Payment payment, String accountNumber) {
+        personAccountService.updateAccountNumber(payment, accountNumber);
     }
 
     @Override
