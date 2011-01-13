@@ -53,6 +53,7 @@ import java.util.Iterator;
 import org.complitex.osznconnection.file.service.AddressService;
 import org.complitex.osznconnection.file.service.PersonAccountService;
 import org.complitex.osznconnection.file.service.StatusRenderService;
+import org.complitex.osznconnection.file.service.status.details.PaymentBenefitStatusDetailRenderer;
 import org.complitex.osznconnection.file.service.status.details.PaymentExampleConfigurator;
 import org.complitex.osznconnection.file.service.status.details.StatusDetailBean;
 import org.complitex.osznconnection.file.service.warning.WebWarningRenderer;
@@ -113,8 +114,8 @@ public final class PaymentList extends TemplatePage {
         content.add(filterForm);
         example = new Model<PaymentExample>(newExample());
 
-        StatusDetailPanel<Payment, PaymentExample> statusDetailPanel = new StatusDetailPanel<Payment, PaymentExample>("statusDetailsPanel",
-                Payment.class, PaymentExample.class, example, new PaymentExampleConfigurator(), content) {
+        StatusDetailPanel<PaymentExample> statusDetailPanel = new StatusDetailPanel<PaymentExample>("statusDetailsPanel", example,
+                new PaymentExampleConfigurator(), new PaymentBenefitStatusDetailRenderer(), content) {
 
             @Override
             public List<StatusDetailInfo> loadStatusDetails() {

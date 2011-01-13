@@ -52,6 +52,7 @@ import org.complitex.osznconnection.file.service.PersonAccountService;
 import org.complitex.osznconnection.file.service.StatusRenderService;
 import org.complitex.osznconnection.file.service.process.ActualPaymentBindTaskBean;
 import org.complitex.osznconnection.file.service.status.details.ActualPaymentExampleConfigurator;
+import org.complitex.osznconnection.file.service.status.details.ActualPaymentStatusDetailRenderer;
 import org.complitex.osznconnection.file.service.status.details.StatusDetailBean;
 import org.complitex.osznconnection.file.service.warning.WebWarningRenderer;
 import org.complitex.osznconnection.file.web.component.StatusDetailPanel;
@@ -120,9 +121,8 @@ public final class ActualPaymentList extends TemplatePage {
         content.add(filterForm);
         example = new Model<ActualPaymentExample>(newExample());
 
-        StatusDetailPanel<ActualPayment, ActualPaymentExample> statusDetailPanel =
-                new StatusDetailPanel<ActualPayment, ActualPaymentExample>("statusDetailsPanel", ActualPayment.class,
-                ActualPaymentExample.class, example, new ActualPaymentExampleConfigurator(), content) {
+        StatusDetailPanel<ActualPaymentExample> statusDetailPanel = new StatusDetailPanel<ActualPaymentExample>("statusDetailsPanel", example,
+                new ActualPaymentExampleConfigurator(), new ActualPaymentStatusDetailRenderer(), content) {
 
                     @Override
                     public List<StatusDetailInfo> loadStatusDetails() {

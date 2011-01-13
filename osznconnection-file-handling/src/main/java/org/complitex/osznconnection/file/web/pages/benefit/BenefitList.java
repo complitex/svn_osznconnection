@@ -46,6 +46,7 @@ import org.complitex.dictionary.util.StringUtil;
 import org.complitex.osznconnection.file.entity.StatusDetailInfo;
 import org.complitex.osznconnection.file.service.StatusRenderService;
 import org.complitex.osznconnection.file.service.status.details.BenefitExampleConfigurator;
+import org.complitex.osznconnection.file.service.status.details.PaymentBenefitStatusDetailRenderer;
 import org.complitex.osznconnection.file.service.status.details.StatusDetailBean;
 import org.complitex.osznconnection.file.service.warning.WebWarningRenderer;
 import org.complitex.osznconnection.file.web.component.StatusDetailPanel;
@@ -101,8 +102,8 @@ public final class BenefitList extends TemplatePage {
         content.add(filterForm);
         example = new Model<BenefitExample>(newExample());
 
-        StatusDetailPanel<Benefit, BenefitExample> statusDetailPanel = new StatusDetailPanel<Benefit, BenefitExample>("statusDetailsPanel",
-                Benefit.class, BenefitExample.class, example, new BenefitExampleConfigurator(), content) {
+        StatusDetailPanel<BenefitExample> statusDetailPanel = new StatusDetailPanel<BenefitExample>("statusDetailsPanel", example,
+                new BenefitExampleConfigurator(), new PaymentBenefitStatusDetailRenderer(), content) {
 
             @Override
             public List<StatusDetailInfo> loadStatusDetails() {

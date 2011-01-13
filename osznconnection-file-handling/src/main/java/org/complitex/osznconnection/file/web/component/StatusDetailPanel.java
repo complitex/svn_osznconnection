@@ -1,5 +1,6 @@
 package org.complitex.osznconnection.file.web.component;
 
+import java.lang.reflect.ParameterizedType;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -14,28 +15,30 @@ import org.complitex.osznconnection.file.entity.StatusDetail;
 
 import javax.ejb.EJB;
 import java.util.List;
-import org.complitex.osznconnection.file.entity.AbstractRequest;
 import org.complitex.osznconnection.file.entity.StatusDetailInfo;
 import org.complitex.osznconnection.file.entity.example.AbstractRequestExample;
 import org.complitex.osznconnection.file.service.StatusRenderService;
 import org.complitex.osznconnection.file.service.status.details.ExampleConfigurator;
-import org.complitex.osznconnection.file.service.status.details.StatusDetailRenderer;
+import org.complitex.osznconnection.file.service.status.details.IStatusDetailRenderer;
+import org.complitex.osznconnection.file.service.status.details.StatusDetailRenderService;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 24.11.10 15:49
  */
-public abstract class StatusDetailPanel<E extends AbstractRequest, T extends AbstractRequestExample> extends Panel {
+public abstract class StatusDetailPanel<T extends AbstractRequestExample> extends Panel {
 
     @EJB(name = "StatusRenderService")
     private StatusRenderService statusRenderService;
-    @EJB(name = "StatusDetailRenderer")
-    private StatusDetailRenderer statusDetailRenderer;
+    @EJB(name = "StatusDetailRenderService")
+    private StatusDetailRenderService statusDetailRenderService;
 
-    public StatusDetailPanel(String id, final Class<E> requestClass, final Class<T> exampleClass, final IModel<T> exampleModel,
-            final ExampleConfigurator<T> exampleConfigurator, final Component... update) {
+    public StatusDetailPanel(String id, final IModel<T> exampleModel, final ExampleConfigurator<T> exampleConfigurator,
+            final IStatusDetailRenderer statusDetailRenderer, final Component... update) {
         super(id);
         setOutputMarkupId(true);
+
+        final Class<T> exampleClass = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 
         WebMarkupContainer container = new WebMarkupContainer("container");
         add(container);
@@ -78,7 +81,7 @@ public abstract class StatusDetailPanel<E extends AbstractRequest, T extends Abs
                 item.add(expand);
 
                 String info = statusRenderService.displayStatus(statusDetailInfo.getStatus(), getLocale())
-                        + statusDetailRenderer.displayCount(statusDetailInfo.getCount());
+                        + statusDetailRenderService.displayCount(statusDetailInfo.getCount());
                 expand.add(new Label("info", info));
 
                 ListView<StatusDetail> statusDetails = new ListView<StatusDetail>("statusDetails",
@@ -101,7 +104,8 @@ public abstract class StatusDetailPanel<E extends AbstractRequest, T extends Abs
                         };
                         item.add(filter);
 
-                        filter.add(new Label("name", statusDetailRenderer.displayStatusDetail(requestClass, statusDetail, statusDetailInfo.getStatus())));
+                        filter.add(new Label("name", statusDetailRenderService.displayStatusDetail(statusDetailInfo.getStatus(), statusDetail,
+                                statusDetailRenderer)));
                     }
                 };
                 statusDetailsContainer.setVisible(false);
