@@ -141,6 +141,11 @@ public class ActualPaymentBean extends AbstractRequestBean {
     }
 
     @Transactional
+    public void markCorrected(long fileId, String city, String streetType) {
+        markCorrected(fileId, city, streetType, null, null, null);
+    }
+
+    @Transactional
     public void markCorrected(long fileId, String city, String streetType, String streetCode) {
         markCorrected(fileId, city, streetType, streetCode, null, null);
     }
