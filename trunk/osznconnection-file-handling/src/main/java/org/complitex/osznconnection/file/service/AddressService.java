@@ -639,6 +639,7 @@ public class AddressService extends AbstractBean {
                     }
                     addressCorrectionBean.insert(streetTypeCorrection);
                     streetTypeCorrectionId = streetTypeCorrection.getId();
+                    actualPaymentBean.markCorrected(requestFileId, city, streetType);
                 } else {
                     List<Correction> streetTypeCorrections = addressCorrectionBean.findStreetTypeLocalCorrection(streetType, organizationId);
                     if (streetTypeCorrections.size() == 1) {
