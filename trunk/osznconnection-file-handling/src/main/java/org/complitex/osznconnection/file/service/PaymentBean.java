@@ -2,13 +2,11 @@ package org.complitex.osznconnection.file.service;
 
 import com.google.common.collect.Maps;
 import org.complitex.dictionary.mybatis.Transactional;
-import org.complitex.osznconnection.file.calculation.service.CalculationCenterBean;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.entity.example.PaymentExample;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -50,14 +48,6 @@ public class PaymentBean extends AbstractRequestBean {
             return orderBy;
         }
     }
-    @EJB(beanName = "BenefitBean")
-    private BenefitBean benefitBean;
-    @EJB(beanName = "CalculationCenterBean")
-    private CalculationCenterBean calculationCenterBean;
-    @EJB(beanName = "PersonAccountLocalBean")
-    private PersonAccountLocalBean personAccountLocalBean;
-    @EJB
-    private RequestFileGroupBean requestFileGroupBean;
 
     @Transactional
     public int count(PaymentExample example) {
@@ -210,8 +200,8 @@ public class PaymentBean extends AbstractRequestBean {
     }
 
     @Transactional
-    public void updateAccountNumber(Payment payment){
-         sqlSession().update(MAPPING_NAMESPACE + ".updateAccountNumber", payment);
+    public void updateAccountNumber(Payment payment) {
+        sqlSession().update(MAPPING_NAMESPACE + ".updateAccountNumber", payment);
     }
 
     /**
