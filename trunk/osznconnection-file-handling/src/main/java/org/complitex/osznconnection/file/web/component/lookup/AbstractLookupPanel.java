@@ -172,7 +172,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
 
         accountModel = new Model<AccountDetail>();
         accountsModel = new WildcardListModel<AccountDetail>();
-        accountNumberPickerPanel = new AccountNumberPickerPanel("accountNumberCorrectionPanel", accountsModel) {
+        accountNumberPickerPanel = new AccountNumberPickerPanel("accountNumberPickerPanel", accountsModel) {
 
             @Override
             protected void updateAccountNumber(AccountDetail accountDetail, AjaxRequestTarget target) {
@@ -222,8 +222,8 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
             }
 
             @Override
-            protected void setupOutgoingDistrict(T request) {
-                AbstractLookupPanel.this.setupOutgoingDistrict(request);
+            protected void resolveOutgoingDistrict(T request) {
+                AbstractLookupPanel.this.resolveOutgoingDistrict(request);
             }
         };
         ownNumSrAccountLookupContainer.add(ownNumSrAccountLookupPanel);
@@ -251,8 +251,8 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
             }
 
             @Override
-            protected void setupOutgoingDistrict(T request) {
-                AbstractLookupPanel.this.setupOutgoingDistrict(request);
+            protected void resolveOutgoingDistrict(T request) {
+                AbstractLookupPanel.this.resolveOutgoingDistrict(request);
             }
         };
         accordion.add(megabankAccountLookupPanel);
@@ -339,7 +339,15 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
         return null;
     }
 
-    protected abstract boolean validateInternalAddress(T request);
+    protected boolean validateInternalAddress(T request) {
+        boolean validated = isInternalAddressCorrect(request);
+        if (!validated) {
+            error(getString("address_required"));
+        }
+        return validated;
+    }
+
+    protected abstract boolean isInternalAddressCorrect(T request);
 
     public void open(AjaxRequestTarget target, T request, Long cityId, Long streetId, Long buildingId, String apartment,
             String ownNumSr) {
@@ -393,5 +401,5 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
 
     protected abstract List<AccountDetail> acquireAccountDetailsByMegabankAccount(T request, String account) throws DBException;
 
-    protected abstract void setupOutgoingDistrict(T request);
+    protected abstract void resolveOutgoingDistrict(T request);
 }

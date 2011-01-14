@@ -348,15 +348,9 @@ public class AddressService extends AbstractBean {
         }
 
         //поиск района
-        List<Correction> districtCorrections = addressCorrectionBean.findDistrictRemoteCorrections(calculationCenterId, payment.getOrganizationId());
-        if (districtCorrections.size() == 1) {
-            Correction districtCorrection = districtCorrections.get(0);
-            adapter.prepareDistrict(payment, districtCorrection.getCorrection(), districtCorrection.getCode());
-        } else if (districtCorrections.size() > 1) {
-            payment.setStatus(RequestStatus.MORE_ONE_REMOTE_DISTRICT_CORRECTION);
-            return;
-        } else {
-            payment.setStatus(RequestStatus.DISTRICT_UNRESOLVED);
+        resolveOutgoingDistrict(payment, calculationCenterId, adapter);
+        if (payment.getStatus().equals(RequestStatus.MORE_ONE_REMOTE_DISTRICT_CORRECTION)
+                || payment.getStatus().equals(RequestStatus.DISTRICT_UNRESOLVED)) {
             return;
         }
 
@@ -407,6 +401,19 @@ public class AddressService extends AbstractBean {
     }
 
     @Transactional
+    public void resolveOutgoingDistrict(Payment payment, long calculationCenterId, ICalculationCenterAdapter adapter) {
+        List<Correction> districtCorrections = addressCorrectionBean.findDistrictRemoteCorrections(calculationCenterId, payment.getOrganizationId());
+        if (districtCorrections.size() == 1) {
+            Correction districtCorrection = districtCorrections.get(0);
+            adapter.prepareDistrict(payment, districtCorrection.getCorrection(), districtCorrection.getCode());
+        } else if (districtCorrections.size() > 1) {
+            payment.setStatus(RequestStatus.MORE_ONE_REMOTE_DISTRICT_CORRECTION);
+        } else {
+            payment.setStatus(RequestStatus.DISTRICT_UNRESOLVED);
+        }
+    }
+
+    @Transactional
     public void resolveOutgoingAddress(ActualPayment actualPayment, long calculationCenterId, ICalculationCenterAdapter adapter) {
         List<Correction> cityCorrections = addressCorrectionBean.findCityRemoteCorrections(calculationCenterId, actualPayment.getInternalCityId());
         if (cityCorrections.size() == 1) {
@@ -421,16 +428,9 @@ public class AddressService extends AbstractBean {
         }
 
         //поиск района
-        List<Correction> districtCorrections = addressCorrectionBean.findDistrictRemoteCorrections(calculationCenterId,
-                actualPayment.getOrganizationId());
-        if (districtCorrections.size() == 1) {
-            Correction districtCorrection = districtCorrections.get(0);
-            adapter.prepareDistrict(actualPayment, districtCorrection.getCorrection(), districtCorrection.getCode());
-        } else if (districtCorrections.size() > 1) {
-            actualPayment.setStatus(RequestStatus.MORE_ONE_REMOTE_DISTRICT_CORRECTION);
-            return;
-        } else {
-            actualPayment.setStatus(RequestStatus.DISTRICT_UNRESOLVED);
+        resolveOutgoingDistrict(actualPayment, calculationCenterId, adapter);
+        if (actualPayment.getStatus().equals(RequestStatus.MORE_ONE_REMOTE_DISTRICT_CORRECTION)
+                || actualPayment.getStatus().equals(RequestStatus.DISTRICT_UNRESOLVED)) {
             return;
         }
 
@@ -480,6 +480,20 @@ public class AddressService extends AbstractBean {
         //квартиры не ищем, а проставляем напрямую, обрезая пробелы.
         adapter.prepareApartment(actualPayment, null, null);
         actualPayment.setStatus(RequestStatus.ACCOUNT_NUMBER_NOT_FOUND);
+    }
+
+    @Transactional
+    public void resolveOutgoingDistrict(ActualPayment actualPayment, long calculationCenterId, ICalculationCenterAdapter adapter) {
+        List<Correction> districtCorrections = addressCorrectionBean.findDistrictRemoteCorrections(calculationCenterId,
+                actualPayment.getOrganizationId());
+        if (districtCorrections.size() == 1) {
+            Correction districtCorrection = districtCorrections.get(0);
+            adapter.prepareDistrict(actualPayment, districtCorrection.getCorrection(), districtCorrection.getCode());
+        } else if (districtCorrections.size() > 1) {
+            actualPayment.setStatus(RequestStatus.MORE_ONE_REMOTE_DISTRICT_CORRECTION);
+        } else {
+            actualPayment.setStatus(RequestStatus.DISTRICT_UNRESOLVED);
+        }
     }
 
     /**

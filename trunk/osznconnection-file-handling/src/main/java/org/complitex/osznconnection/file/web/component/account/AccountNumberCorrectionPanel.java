@@ -65,7 +65,7 @@ public abstract class AccountNumberCorrectionPanel<T extends AbstractRequest> ex
         messages.setOutputMarkupId(true);
         infoContainer.add(messages);
 
-        accountNumberPickerPanel = new AccountNumberPickerPanel("accountNumberCorrectionPanel",
+        accountNumberPickerPanel = new AccountNumberPickerPanel("accountNumberPickerPanel",
                 Model.ofList(accountCorrectionDetails)) {
 
             @Override

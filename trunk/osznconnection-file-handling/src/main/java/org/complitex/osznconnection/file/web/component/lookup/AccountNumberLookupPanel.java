@@ -115,7 +115,7 @@ public abstract class AccountNumberLookupPanel<T extends AbstractRequest> extend
                 boolean visible = detailsContainer.isVisible();
                 detailsContainer.setVisible(false);
                 if (validateAccount()) {
-                    setupOutgoingDistrict(request);
+                    resolveOutgoingDistrict(request);
                     if (!(request.getStatus() == RequestStatus.MORE_ONE_REMOTE_DISTRICT_CORRECTION
                             || request.getStatus() == RequestStatus.DISTRICT_UNRESOLVED)) {
                         try {
@@ -182,7 +182,7 @@ public abstract class AccountNumberLookupPanel<T extends AbstractRequest> extend
         return display;
     }
 
-    protected abstract void setupOutgoingDistrict(T request);
+    protected abstract void resolveOutgoingDistrict(T request);
 
     protected abstract List<AccountDetail> acquireAccountDetailsByAccCode(T request, String account) throws DBException;
 
