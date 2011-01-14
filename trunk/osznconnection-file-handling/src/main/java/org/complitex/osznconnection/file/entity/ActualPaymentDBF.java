@@ -13,19 +13,19 @@ import java.util.Date;
  */
 public enum ActualPaymentDBF {
 
-    SUR_NAM(String.class, 30),
-    F_NAM(String.class, 15),
-    M_NAM(String.class, 20),
-    INDX(String.class, 6),
-    N_NAME(String.class, 30),
+    SUR_NAM(String.class, 30),              //Фамилия
+    F_NAM(String.class, 15),                //Имя
+    M_NAM(String.class, 20),                //Отчество
+    INDX(String.class, 6),                  //Индекс почтового отделения
+    N_NAME(String.class, 30),               //Название населенного пункта
     N_CODE(String.class, 5),
-    VUL_CAT(String.class, 7),
-    VUL_NAME(String.class, 30),
-    VUL_CODE(String.class, 5),
-    BLD_NUM(String.class, 7),
-    CORP_NUM(String.class, 2),
-    FLAT(String.class, 9),
-    OWN_NUM(String.class, 15),
+    VUL_CAT(String.class, 7),               //Тип улицы
+    VUL_NAME(String.class, 30),             //Название улицы
+    VUL_CODE(String.class, 5),              //Код улицы
+    BLD_NUM(String.class, 7),               //Номер дома
+    CORP_NUM(String.class, 2),              //Номер корпуса
+    FLAT(String.class, 9),                  //Номер квартиры
+    OWN_NUM(String.class, 15),              //Номер дела
     APP_NUM(String.class, 8),
     DAT_BEG(Date.class, 8),
     DAT_END(Date.class, 8),
@@ -35,8 +35,8 @@ public enum ActualPaymentDBF {
     FROG(BigDecimal.class, 5, 1),
     DEBT(BigDecimal.class, 10, 2),
     NUMB(Integer.class, 2),
-    P1(BigDecimal.class, 10, 4),
-    N1(BigDecimal.class, 10, 4),
+    P1(BigDecimal.class, 10, 4),            //фактическое начисление
+    N1(BigDecimal.class, 10, 4),            //фактический тариф
     P2(BigDecimal.class, 10, 4),
     N2(BigDecimal.class, 10, 4),
     P3(BigDecimal.class, 10, 4),
