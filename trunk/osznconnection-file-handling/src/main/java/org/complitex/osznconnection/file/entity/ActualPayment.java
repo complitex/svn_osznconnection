@@ -26,7 +26,7 @@ public class ActualPayment extends AbstractRequest {
     @Override
     protected Class getFieldType(String name) throws FieldNotFoundException {
         try {
-            return PaymentDBF.valueOf(name).getType();
+            return ActualPaymentDBF.valueOf(name).getType();
         } catch (IllegalArgumentException e) {
             throw new FieldNotFoundException(name);
         }
@@ -38,15 +38,15 @@ public class ActualPayment extends AbstractRequest {
             return;
         }
 
-        PaymentDBF paymentDBF = PaymentDBF.valueOf(name);
+        ActualPaymentDBF actualPaymentDBF = ActualPaymentDBF.valueOf(name);
 
         if (value instanceof BigDecimal) {
-            if (((BigDecimal) value).scale() > paymentDBF.getScale()) {
+            if (((BigDecimal) value).scale() > actualPaymentDBF.getScale()) {
                 throw new FieldWrongSizeException(value.toString());
             }
         }
 
-        if (value.toString().length() > paymentDBF.getLength()) {
+        if (value.toString().length() > actualPaymentDBF.getLength()) {
             throw new FieldWrongSizeException(value.toString());
         }
     }
