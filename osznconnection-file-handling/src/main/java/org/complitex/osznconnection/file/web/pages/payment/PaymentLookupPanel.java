@@ -9,8 +9,6 @@ import org.complitex.osznconnection.file.entity.AccountDetail;
 import org.complitex.osznconnection.file.entity.Payment;
 import org.complitex.osznconnection.file.entity.PaymentDBF;
 import org.complitex.osznconnection.file.service.LookupBean;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import java.util.List;
@@ -25,9 +23,8 @@ import org.complitex.osznconnection.file.web.component.lookup.AbstractLookupPane
  */
 public class PaymentLookupPanel extends AbstractLookupPanel<Payment> {
 
-    private static final Logger log = LoggerFactory.getLogger(PaymentLookupPanel.class);
-    @EJB(name = "PaymentLookupBean")
-    private LookupBean paymentLookupBean;
+    @EJB(name = "LookupBean")
+    private LookupBean lookupBean;
     @EJB(name = "PersonAccountService")
     private PersonAccountService personAccountService;
 
@@ -45,14 +42,10 @@ public class PaymentLookupPanel extends AbstractLookupPanel<Payment> {
     }
 
     @Override
-    protected boolean validateInternalAddress(Payment payment) {
-        boolean validated = payment.getInternalCityId() != null && payment.getInternalCityId() > 0
+    protected boolean isInternalAddressCorrect(Payment payment) {
+        return payment.getInternalCityId() != null && payment.getInternalCityId() > 0
                 && payment.getInternalStreetId() != null && payment.getInternalStreetId() > 0
                 && payment.getInternalBuildingId() != null && payment.getInternalBuildingId() > 0;
-        if (!validated) {
-            error(getString("address_required"));
-        }
-        return validated;
     }
 
     @Override
@@ -62,12 +55,12 @@ public class PaymentLookupPanel extends AbstractLookupPanel<Payment> {
 
     @Override
     protected void resolveOutgoingAddress(Payment payment) {
-        paymentLookupBean.resolveOutgoingAddress(payment);
+        lookupBean.resolveOutgoingAddress(payment);
     }
 
     @Override
     protected List<AccountDetail> acquireAccountDetailsByAddress(Payment payment) throws DBException {
-        return paymentLookupBean.acquireAccountDetailsByAddress(payment, payment.getOutgoingDistrict(), payment.getOutgoingStreetType(),
+        return lookupBean.acquireAccountDetailsByAddress(payment, payment.getOutgoingDistrict(), payment.getOutgoingStreetType(),
                 payment.getOutgoingStreet(), payment.getOutgoingBuildingNumber(), payment.getOutgoingBuildingCorp(),
                 payment.getOutgoingApartment(), (Date) payment.getField(PaymentDBF.DAT1));
     }
@@ -75,17 +68,17 @@ public class PaymentLookupPanel extends AbstractLookupPanel<Payment> {
     @Override
     protected List<AccountDetail> acquireAccountDetailsByOsznAccount(Payment payment, String account) throws DBException {
         payment.setField(PaymentDBF.OWN_NUM_SR, account);
-        return paymentLookupBean.acquireAccountDetailsByOsznAccount(payment);
+        return lookupBean.acquireAccountDetailsByOsznAccount(payment);
     }
 
     @Override
     protected List<AccountDetail> acquireAccountDetailsByMegabankAccount(Payment payment, String account) throws DBException {
-        return paymentLookupBean.acquireAccountDetailsByMegabankAccount(payment, payment.getOutgoingDistrict(), account);
+        return lookupBean.acquireAccountDetailsByMegabankAccount(payment, payment.getOutgoingDistrict(), account);
     }
 
     @Override
-    protected void setupOutgoingDistrict(Payment payment) {
-        paymentLookupBean.setupOutgoingDistrict(payment);
+    protected void resolveOutgoingDistrict(Payment payment) {
+        lookupBean.resolveOutgoingDistrict(payment);
     }
 
     @Override

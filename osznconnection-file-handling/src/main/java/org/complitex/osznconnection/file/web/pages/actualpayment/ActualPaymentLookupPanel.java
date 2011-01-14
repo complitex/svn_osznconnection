@@ -22,8 +22,8 @@ import org.complitex.osznconnection.file.web.component.lookup.AbstractLookupPane
  */
 public class ActualPaymentLookupPanel extends AbstractLookupPanel<ActualPayment> {
 
-    @EJB(name = "PaymentLookupBean")
-    private LookupBean paymentLookupBean;
+    @EJB(name = "LookupBean")
+    private LookupBean lookupBean;
     @EJB(name = "PersonAccountService")
     private PersonAccountService personAccountService;
 
@@ -41,24 +41,20 @@ public class ActualPaymentLookupPanel extends AbstractLookupPanel<ActualPayment>
     }
 
     @Override
-    protected boolean validateInternalAddress(ActualPayment actualPayment) {
-        boolean validated = actualPayment.getInternalCityId() != null && actualPayment.getInternalCityId() > 0
+    protected boolean isInternalAddressCorrect(ActualPayment actualPayment) {
+        return actualPayment.getInternalCityId() != null && actualPayment.getInternalCityId() > 0
                 && actualPayment.getInternalStreetId() != null && actualPayment.getInternalStreetId() > 0
                 && actualPayment.getInternalBuildingId() != null && actualPayment.getInternalBuildingId() > 0;
-        if (!validated) {
-            error(getString("address_required"));
-        }
-        return validated;
     }
 
     @Override
     protected void resolveOutgoingAddress(ActualPayment actualPayment) {
-        paymentLookupBean.resolveOutgoingAddress(actualPayment);
+        lookupBean.resolveOutgoingAddress(actualPayment);
     }
 
     @Override
     protected List<AccountDetail> acquireAccountDetailsByAddress(ActualPayment actualPayment) throws DBException {
-        return paymentLookupBean.acquireAccountDetailsByAddress(actualPayment, actualPayment.getOutgoingDistrict(), actualPayment.getOutgoingStreetType(),
+        return lookupBean.acquireAccountDetailsByAddress(actualPayment, actualPayment.getOutgoingDistrict(), actualPayment.getOutgoingStreetType(),
                 actualPayment.getOutgoingStreet(), actualPayment.getOutgoingBuildingNumber(), actualPayment.getOutgoingBuildingCorp(),
                 actualPayment.getOutgoingApartment(), (Date) actualPayment.getField(ActualPaymentDBF.DAT_BEG));
     }
@@ -70,16 +66,16 @@ public class ActualPaymentLookupPanel extends AbstractLookupPanel<ActualPayment>
 
     @Override
     protected List<AccountDetail> acquireAccountDetailsByOsznAccount(ActualPayment actualPayment, String account) throws DBException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException("Lookup by oszn account is not supported for actual payments.");
     }
 
     @Override
     protected List<AccountDetail> acquireAccountDetailsByMegabankAccount(ActualPayment actualPayment, String account) throws DBException {
-        return paymentLookupBean.acquireAccountDetailsByMegabankAccount(actualPayment, actualPayment.getOutgoingDistrict(), account);
+        return lookupBean.acquireAccountDetailsByMegabankAccount(actualPayment, actualPayment.getOutgoingDistrict(), account);
     }
 
     @Override
-    protected void setupOutgoingDistrict(ActualPayment actualPayment) {
-        paymentLookupBean.setupOutgoingDistrict(actualPayment);
+    protected void resolveOutgoingDistrict(ActualPayment actualPayment) {
+        lookupBean.resolveOutgoingDistrict(actualPayment);
     }
 }
