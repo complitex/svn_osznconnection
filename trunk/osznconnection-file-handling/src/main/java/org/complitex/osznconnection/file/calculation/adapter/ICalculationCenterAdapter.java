@@ -51,16 +51,18 @@ public interface ICalculationCenterAdapter {
     void acquirePersonAccount(AbstractRequest request, String district, String streetType, String street, String buildingNumber, String buildingCorp,
             String apartment, Date date) throws DBException;
 
-    public List<AccountDetail> acquireAccountDetailsByAddress(AbstractRequest request, String district, String streetType, String street,
+    List<AccountDetail> acquireAccountDetailsByAddress(AbstractRequest request, String district, String streetType, String street,
             String buildingNumber, String buildingCorp, String apartment, Date date) throws DBException;
 
-    public List<AccountDetail> acquireAccountDetailsByOsznAccount(Payment payment) throws DBException;
+    List<AccountDetail> acquireAccountDetailsByOsznAccount(Payment payment) throws DBException;
 
-    public List<AccountDetail> acquireAccountDetailsByMegabankAccount(AbstractRequest request, String district, String megabankAccount) throws DBException;
+    List<AccountDetail> acquireAccountDetailsByMegabankAccount(AbstractRequest request, String district, String megabankAccount) throws DBException;
 
-    public void processPaymentAndBenefit(Payment payment, List<Benefit> benefits, long calculationCenterId) throws DBException;
+    void processPaymentAndBenefit(Payment payment, List<Benefit> benefits, long calculationCenterId) throws DBException;
 
-    public void processBenefit(Date dat1, List<Benefit> benefits, long calculationCenterId) throws DBException;
+    void processBenefit(Date dat1, List<Benefit> benefits, long calculationCenterId) throws DBException;
 
-    public Collection<BenefitData> getBenefitData(Benefit benefit, Date dat1) throws DBException;
+    Collection<BenefitData> getBenefitData(Benefit benefit, Date dat1) throws DBException;
+
+    void processActualPayment(ActualPayment actualPayment, Date date) throws DBException;
 }

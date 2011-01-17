@@ -230,6 +230,8 @@
         `outgoing_street` = #{outgoingStreet}, `outgoing_street_type` = #{outgoingStreetType},
         `outgoing_building_number` = #{outgoingBuildingNumber}, `outgoing_building_corp` = #{outgoingBuildingCorp},
         `outgoing_apartment` = #{outgoingApartment},
+        `P1` = #{dbfFields.P1},
+        `N1` = #{dbfFields.N1},
         `status` = #{status}
         WHERE `id` = #{id}
     </update>
@@ -297,12 +299,16 @@
         `internal_city_id` = NULL, `internal_street_id` = NULL, `internal_street_type_id` = NULL, `internal_building_id` = NULL,
         `outgoing_city` = NULL, `outgoing_district` = NULL, `outgoing_street` = NULL, `outgoing_street_type` = NULL,
         `outgoing_building_number` = NULL, `outgoing_building_corp` = NULL, `outgoing_apartment` = NULL,
+        `P1` = NULL,
+        `N1` = NULL,
         `status` = #{status}
         WHERE `request_file_id` = #{fileId}
     </update>
 
     <update id="clearBeforeProcessing" parameterType="map">
         UPDATE `actual_payment` SET
+        `P1` = NULL,
+        `N1` = NULL,
         `status` = CASE `status`
                         <foreach collection="statuses" item="status">
                             WHEN #{status} THEN #{status}

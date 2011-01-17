@@ -5,6 +5,7 @@
 package org.complitex.osznconnection.file.service.process;
 
 import com.google.common.collect.Lists;
+import java.util.Date;
 import java.util.List;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
@@ -16,6 +17,7 @@ import javax.transaction.UserTransaction;
 import org.complitex.dictionary.entity.Log;
 import org.complitex.dictionary.entity.Log.EVENT;
 import org.complitex.dictionary.service.executor.ExecuteException;
+import org.complitex.dictionary.util.DateUtil;
 import org.complitex.osznconnection.file.Module;
 import org.complitex.osznconnection.file.calculation.adapter.ICalculationCenterAdapter;
 import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
@@ -64,16 +66,16 @@ public class ActualPaymentBindTaskBean {
         return actualPayment.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED;
     }
 
-    private boolean resolveRemoteAccountNumber(ActualPayment actualPayment, long calculationCenterId, ICalculationCenterAdapter adapter)
+    private boolean resolveRemoteAccountNumber(ActualPayment actualPayment, Date date, long calculationCenterId, ICalculationCenterAdapter adapter)
             throws DBException {
-        personAccountService.resolveRemoteAccount(actualPayment, calculationCenterId, adapter);
+        personAccountService.resolveRemoteAccount(actualPayment, date, calculationCenterId, adapter);
         return actualPayment.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED;
     }
 
-    private void bind(ActualPayment actualPayment, long calculationCenterId, ICalculationCenterAdapter adapter) throws DBException {
+    private void bind(ActualPayment actualPayment, Date date, long calculationCenterId, ICalculationCenterAdapter adapter) throws DBException {
         if (!resolveLocalAccount(actualPayment, calculationCenterId)) {
             if (resolveAddress(actualPayment, calculationCenterId, adapter)) {
-                resolveRemoteAccountNumber(actualPayment, calculationCenterId, adapter);
+                resolveRemoteAccountNumber(actualPayment, date, calculationCenterId, adapter);
             }
         }
 
@@ -105,7 +107,7 @@ public class ActualPaymentBindTaskBean {
                 //связать actualPayment запись
                 try {
                     userTransaction.begin();
-                    bind(actualPayment, calculationCenterId, adapter);
+                    bind(actualPayment, DateUtil.getFirstDayOf(actualPaymentFile.getLoaded()), calculationCenterId, adapter);
                     userTransaction.commit();
                 } catch (Exception e) {
                     log.error("The actual payment item ( id = " + actualPayment.getId() + ") was bound with error: ", e);

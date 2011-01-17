@@ -4,7 +4,6 @@
  */
 package org.complitex.osznconnection.file.web.pages.actualpayment;
 
-import java.util.Date;
 import java.util.List;
 import javax.ejb.EJB;
 import org.apache.wicket.Component;
@@ -54,9 +53,7 @@ public class ActualPaymentLookupPanel extends AbstractLookupPanel<ActualPayment>
 
     @Override
     protected List<AccountDetail> acquireAccountDetailsByAddress(ActualPayment actualPayment) throws DBException {
-        return lookupBean.acquireAccountDetailsByAddress(actualPayment, actualPayment.getOutgoingDistrict(), actualPayment.getOutgoingStreetType(),
-                actualPayment.getOutgoingStreet(), actualPayment.getOutgoingBuildingNumber(), actualPayment.getOutgoingBuildingCorp(),
-                actualPayment.getOutgoingApartment(), (Date) actualPayment.getField(ActualPaymentDBF.DAT_BEG));
+        return lookupBean.acquireAccountDetailsByAddress(actualPayment);
     }
 
     @Override

@@ -5,6 +5,7 @@
 package org.complitex.osznconnection.file.entity;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  *
@@ -14,20 +15,20 @@ public class PaymentAndBenefitData implements Serializable {
 
     private Integer lodgerCount;
     private Integer userCount;
-    private Double percent;
-    private Double charge;
-    private Double normCharge;
-    private Double saldo;
-    private Double reducedArea;
+    private BigDecimal percent;
+    private BigDecimal charge;
+    private BigDecimal normCharge;
+    private BigDecimal saldo;
+    private BigDecimal reducedArea;
     private Integer roomCount;
     private String ownership;
     private Double tarif;
 
-    public Double getCharge() {
+    public BigDecimal getCharge() {
         return charge;
     }
 
-    public void setCharge(Double charge) {
+    public void setCharge(BigDecimal charge) {
         this.charge = charge;
     }
 
@@ -39,11 +40,11 @@ public class PaymentAndBenefitData implements Serializable {
         this.lodgerCount = lodgerCount;
     }
 
-    public Double getNormCharge() {
+    public BigDecimal getNormCharge() {
         return normCharge;
     }
 
-    public void setNormCharge(Double normCharge) {
+    public void setNormCharge(BigDecimal normCharge) {
         this.normCharge = normCharge;
     }
 
@@ -55,19 +56,19 @@ public class PaymentAndBenefitData implements Serializable {
         this.ownership = ownership;
     }
 
-    public Double getPercent() {
+    public BigDecimal getPercent() {
         return percent;
     }
 
-    public void setPercent(Double percent) {
+    public void setPercent(BigDecimal percent) {
         this.percent = percent;
     }
 
-    public Double getReducedArea() {
+    public BigDecimal getReducedArea() {
         return reducedArea;
     }
 
-    public void setReducedArea(Double reducedArea) {
+    public void setReducedArea(BigDecimal reducedArea) {
         this.reducedArea = reducedArea;
     }
 
@@ -79,11 +80,11 @@ public class PaymentAndBenefitData implements Serializable {
         this.roomCount = roomCount;
     }
 
-    public Double getSaldo() {
+    public BigDecimal getSaldo() {
         return saldo;
     }
 
-    public void setSaldo(Double saldo) {
+    public void setSaldo(BigDecimal saldo) {
         this.saldo = saldo;
     }
 
@@ -106,7 +107,7 @@ public class PaymentAndBenefitData implements Serializable {
     @Override
     public String toString() {
         return "Lodger count: " + lodgerCount + ", user count: " + userCount + ", tarif: " + tarif + ", saldo: " + saldo + ", room count: " + roomCount
-                + ", reduced area: " + reducedArea + ", percent: " + percent + ", ownership: " + ownership + ", norm charge: " + normCharge +
-                ", charge: " + charge;
+                + ", reduced area: " + reducedArea + ", percent: " + percent + ", ownership: " + ownership + ", norm charge: " + normCharge
+                + ", charge: " + charge;
     }
 }

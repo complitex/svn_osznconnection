@@ -28,7 +28,7 @@ public class AcquireAccountCorrectionDetailsTest {
     private static void init() {
         Reader reader = null;
         try {
-            reader = Resources.getResourceAsReader("Configuration-test.xml");
+            reader = Resources.getResourceAsReader("mybatis-test.xml");
             sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader, "remote");
         } catch (Exception e) {
             throw new RuntimeException(e);

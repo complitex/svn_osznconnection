@@ -4,7 +4,6 @@
  */
 package org.complitex.osznconnection.file.web.component.account;
 
-import java.util.Date;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -130,13 +129,11 @@ public abstract class AccountNumberCorrectionPanel<T extends AbstractRequest> ex
 
     protected abstract void correctAccountNumber(T request, String accountNumber);
 
-    public void open(AjaxRequestTarget target, T request, String district, String streetType, String street, String buildingNumber,
-            String buildingCorp, String apartment, Date date) {
+    public void open(AjaxRequestTarget target, T request) {
 
         this.request = request;
         try {
-            accountCorrectionDetails = lookupBean.acquireAccountDetailsByAddress(request, district, streetType, street, buildingNumber, buildingCorp,
-                    apartment, date);
+            accountCorrectionDetails = acquireAccountDetailsByAddress(request);
             if (accountCorrectionDetails == null || accountCorrectionDetails.isEmpty()) {
                 error(statusRenderService.displayStatus(request.getStatus(), getLocale()));
             }
@@ -150,5 +147,7 @@ public abstract class AccountNumberCorrectionPanel<T extends AbstractRequest> ex
         target.addComponent(infoContainer);
         dialog.open(target);
     }
+
+    protected abstract List<AccountDetail> acquireAccountDetailsByAddress(T request) throws DBException;
 }
 
