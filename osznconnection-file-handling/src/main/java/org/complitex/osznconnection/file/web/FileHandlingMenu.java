@@ -51,6 +51,27 @@ public class FileHandlingMenu extends ResourceTemplateMenu {
         links.add(new ITemplateLink(){
             @Override
             public String getLabel(Locale locale) {
+                return getString(FileHandlingMenu.class, locale, "actual_payment");
+            }
+            @Override
+            public Class<? extends Page> getPage() {
+                return ActualPaymentFileList.class;
+            }
+
+            @Override
+            public PageParameters getParameters() {
+                return PageParameters.NULL;
+            }
+
+            @Override
+            public String getTagId() {
+                return "ActualPaymentFileList";
+            }
+        });
+
+        links.add(new ITemplateLink(){
+            @Override
+            public String getLabel(Locale locale) {
                 return getString(FileHandlingMenu.class, locale, "tarif_list");
             }
             @Override

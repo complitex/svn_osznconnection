@@ -63,6 +63,10 @@ public class RequestFileBean extends AbstractBean {
                 case TARIF:
                     sqlSession().delete(TarifBean.MAPPING_NAMESPACE + ".deleteTarifs", requestFile.getId());
                     break;
+                case ACTUAL_PAYMENT:
+                    sqlSession().delete(ActualPaymentBean.MAPPING_NAMESPACE + ".deleteActualPayments", requestFile.getId());
+                    break;
+
             }
         }
 

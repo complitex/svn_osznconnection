@@ -6,11 +6,10 @@ import org.complitex.dictionary.service.executor.ExecutorBean;
 import org.complitex.dictionary.service.executor.IExecutorListener;
 import org.complitex.dictionary.service.executor.ITaskBean;
 import org.complitex.osznconnection.file.Module;
-import org.complitex.osznconnection.file.entity.Config;
-import org.complitex.osznconnection.file.entity.RequestFile;
-import org.complitex.osznconnection.file.entity.RequestFileGroup;
+import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.service.ConfigBean;
 import org.complitex.osznconnection.file.service.exception.StorageNotFoundException;
+import org.complitex.osznconnection.file.service.warning.IWarningRenderer;
 import org.complitex.osznconnection.file.service.warning.WebWarningRenderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +41,9 @@ public class ProcessManagerBean {
 
     @EJB(beanName = "LoadTarifTaskBean")
     private ITaskBean<RequestFile> loadTarifTaskBean;
+
+    @EJB(beanName = "LoadActualPaymentTaskBean")
+    private ITaskBean<RequestFile> loadActualPaymentTaskBean;
 
     @EJB(beanName = "BindTaskBean")
     private ITaskBean<RequestFileGroup> bindTaskBean;
@@ -220,7 +222,27 @@ public class ProcessManagerBean {
             preprocessError = true;
 
             log.error("Ошибка процесса загрузки файлов.", e);
-            logBean.error(Module.NAME, ProcessManagerBean.class, RequestFileGroup.class, null,
+            logBean.error(Module.NAME, ProcessManagerBean.class, Tarif.class, null,
+                    Log.EVENT.CREATE, "Ошибка процесса загрузки файлов. Причина: {0}", e.getMessage());
+        }
+    }
+
+    @Asynchronous
+    public void loadActualPayment(Long organizationId, String districtCode, int monthFrom, int monthTo, int year){
+        try {
+            process = PROCESS.LOAD;
+            init();
+
+            executorBean.execute(LoadUtil.getActualPayments(organizationId, districtCode, monthFrom, monthTo, year),
+                    loadActualPaymentTaskBean,
+                    configBean.getInteger(Config.LOAD_THREAD_SIZE, true),
+                    configBean.getInteger(Config.LOAD_MAX_ERROR_COUNT, true));
+        } catch (StorageNotFoundException e) {
+            preprocess = false;
+            preprocessError = true;
+
+            log.error("Ошибка процесса загрузки файлов.", e);
+            logBean.error(Module.NAME, ProcessManagerBean.class, ActualPayment.class, null,
                     Log.EVENT.CREATE, "Ошибка процесса загрузки файлов. Причина: {0}", e.getMessage());
         }
     }
