@@ -5,17 +5,13 @@
 package org.complitex.osznconnection.file.calculation.adapter;
 
 import com.google.common.collect.Lists;
-import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
-import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.complitex.osznconnection.file.entity.Benefit;
 import org.complitex.osznconnection.file.entity.BenefitDBF;
 import org.complitex.osznconnection.file.entity.Payment;
 import org.complitex.osznconnection.file.entity.PaymentDBF;
 
-import java.io.IOException;
-import java.io.Reader;
 import java.util.Date;
 import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
 
@@ -23,32 +19,11 @@ import org.complitex.osznconnection.file.calculation.adapter.exception.DBExcepti
  *
  * @author Artem
  */
-public class ProcessPaymentTest {
+public class ProcessPaymentTest extends AbstractTest {
 
-    private static SqlSessionFactory sqlSessionFactory;
-
-    private static void init() {
-        Reader reader = null;
-        try {
-            reader = Resources.getResourceAsReader("mybatis-test.xml");
-            sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader, "remote");
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
-    public static void main(String[] args) {
-        init();
-
-        ICalculationCenterAdapter adapter = new DefaultCalculationCenterAdapter() {
+    @Override
+    protected ICalculationCenterAdapter newAdapter(final SqlSessionFactory sqlSessionFactory) {
+        return new DefaultCalculationCenterAdapter() {
 
             @Override
             protected SqlSession sqlSession() {
@@ -72,6 +47,14 @@ public class ProcessPaymentTest {
                 return 0;
             }
         };
+    }
+
+    public static void main(String[] args) throws Exception {
+        new ProcessPaymentTest().executeTest();
+    }
+
+    @Override
+    protected void test(ICalculationCenterAdapter adapter) throws Exception {
         Payment p = new Payment();
         Benefit b = new Benefit();
         b.setId(1L);
