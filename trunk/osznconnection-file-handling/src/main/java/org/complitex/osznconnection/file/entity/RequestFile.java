@@ -21,6 +21,7 @@ public class RequestFile implements ILoggable {
     public final static String PAYMENT_FILE_PREFIX = "A_";
     public final static String BENEFIT_FILE_PREFIX = "AF";
     public final static String TARIF_FILE_PREFIX = "TARIF";
+    public final static String ACTUAL_PAYMENT_FILE_PREFIX = "B";
 
     private Long id;
     private Long groupId;
@@ -58,6 +59,8 @@ public class RequestFile implements ILoggable {
                 type = TYPE.PAYMENT;
             }else if (name.indexOf(TARIF_FILE_PREFIX) == 0){
                 type = TYPE.TARIF;
+            }else if (name.indexOf(ACTUAL_PAYMENT_FILE_PREFIX) == 0){
+                type = TYPE.ACTUAL_PAYMENT;
             }
         }
     }

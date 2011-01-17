@@ -5,11 +5,11 @@ import org.complitex.dictionary.service.executor.ExecuteException;
 import org.complitex.dictionary.service.executor.ITaskBean;
 import org.complitex.osznconnection.file.Module;
 import org.complitex.osznconnection.file.entity.AbstractRequest;
+import org.complitex.osznconnection.file.entity.ActualPayment;
+import org.complitex.osznconnection.file.entity.ActualPaymentDBF;
 import org.complitex.osznconnection.file.entity.RequestFile;
-import org.complitex.osznconnection.file.entity.Tarif;
-import org.complitex.osznconnection.file.entity.TarifDBF;
+import org.complitex.osznconnection.file.service.ActualPaymentBean;
 import org.complitex.osznconnection.file.service.RequestFileBean;
-import org.complitex.osznconnection.file.service.TarifBean;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -18,41 +18,38 @@ import javax.ejb.TransactionManagementType;
 import java.util.List;
 
 /**
- * @author Anatoly A. Ivanov java@inheaven.ru
- *         Date: 03.11.10 13:03
+ * User: Anatoly A. Ivanov java@inhell.ru
+ * Date: 12.01.11 19:25
  */
-@Stateless(name = "LoadTarifTaskBean")
+@Stateless(name = "LoadActualPaymentTaskBean")
 @TransactionManagement(TransactionManagementType.BEAN)
-public class LoadTarifTaskBean implements ITaskBean<RequestFile>{
+public class LoadActualPaymentTaskBean  implements ITaskBean<RequestFile> {
     @EJB(beanName = "RequestFileBean")
     private RequestFileBean requestFileBean;
 
     @EJB(beanName = "LoadRequestFileBean")
     private LoadRequestFileBean loadRequestFileBean;
 
-    @EJB(beanName = "TarifBean")
-    private TarifBean tarifBean;
+    @EJB(beanName = "ActualPaymentBean")
+    private ActualPaymentBean actualPaymentBean;
 
     @Override
     public boolean execute(RequestFile requestFile) throws ExecuteException {
-        //delete previous tarif
-        requestFileBean.deleteTarif(requestFile.getOrganizationId());
-
         loadRequestFileBean.load(requestFile, new LoadRequestFileBean.ILoadRequestFile(){
 
             @Override
             public Enum[] getFieldNames() {
-                return TarifDBF.values();
+                return ActualPaymentDBF.values();
             }
 
             @Override
             public AbstractRequest newObject() {
-                return new Tarif();
+                return new ActualPayment();
             }
 
             @Override
             public void save(List<AbstractRequest> batch) {
-                tarifBean.insert(batch);
+                actualPaymentBean.insert(batch);
             }
         });
 
@@ -71,7 +68,7 @@ public class LoadTarifTaskBean implements ITaskBean<RequestFile>{
 
     @Override
     public Class getControllerClass() {
-        return LoadTarifTaskBean.class;
+        return LoadActualPaymentTaskBean.class;
     }
 
     @Override

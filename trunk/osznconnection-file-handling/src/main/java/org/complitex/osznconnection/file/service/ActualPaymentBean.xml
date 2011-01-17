@@ -318,4 +318,8 @@
         WHERE `request_file_id` = #{fileId}
     </update>
 
+    <delete id="deleteActualPayments" parameterType="long">
+        delete from `actual_payment` where `request_file_id` = #{id};
+    </delete>
+
 </mapper>

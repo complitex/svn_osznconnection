@@ -67,6 +67,36 @@ public class LoadUtil {
         });
     }
 
+    private static List<File> getActualPaymentFiles(final String districtDir, final int monthFrom, final int monthTo,
+                                                    final int year)
+            throws StorageNotFoundException {
+
+        return RequestFileStorage.getInstance().getInputFiles(districtDir, new FileFilter() {
+
+            @Override
+            public boolean accept(File file) {
+                if(file.isDirectory()){
+                    return true;
+                }
+
+                String name = file.getName();
+
+                //ACTUAL PAYMENT
+                for (int m = monthFrom; m <= monthTo; ++m) {
+                    String month = (m <= 9 ? "0" + m : "" + m);
+                    String pattern = "(B)\\d{3}" + month + String.valueOf(year).substring(2,4) + "\\.DBF";
+
+                    if (Pattern.compile(pattern, Pattern.CASE_INSENSITIVE).matcher(name).matches()) {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+        });
+    }
+
+
     private static String getPrefix(String name){
         return name.length() > 11 ? name.substring(0,2) : "";
     }
@@ -181,5 +211,31 @@ public class LoadUtil {
             }
         }
         return tarifs;
+    }
+
+     public static List<RequestFile> getActualPayments(Long organizationId, String districtCode, int monthFrom, int monthTo, int year)
+            throws StorageNotFoundException {
+        List<File> files = getActualPaymentFiles(districtCode, monthFrom, monthTo, year);
+
+        List<RequestFile> actualPayments = new ArrayList<RequestFile>();
+
+        for (File file : files) {
+            if(file.getName().indexOf(RequestFile.ACTUAL_PAYMENT_FILE_PREFIX) == 0){
+
+                //fill fields
+                RequestFile requestFile = new RequestFile();
+
+                requestFile.setName(file.getName());
+                requestFile.setLength(file.length());
+                requestFile.setAbsolutePath(file.getAbsolutePath());
+                requestFile.setDirectory(RequestFileStorage.getInstance().getRelativeParent(file));
+                requestFile.setOrganizationId(organizationId);
+                requestFile.setYear(year);
+                requestFile.setType(RequestFile.TYPE.ACTUAL_PAYMENT);
+
+                actualPayments.add(requestFile);
+            }
+        }
+        return actualPayments;
     }
 }

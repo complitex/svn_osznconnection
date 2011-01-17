@@ -28,6 +28,7 @@ import org.complitex.osznconnection.file.entity.AccountDetail;
 import org.complitex.osznconnection.file.service.exception.DublicateCorrectionException;
 import org.complitex.osznconnection.file.service.exception.MoreOneCorrectionException;
 import org.complitex.osznconnection.file.service.exception.NotFoundCorrectionException;
+import org.complitex.osznconnection.file.web.ActualPaymentFileList;
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.TemplatePage;
 import org.complitex.osznconnection.file.entity.RequestFile;
@@ -297,6 +298,7 @@ public final class ActualPaymentList extends TemplatePage {
 //                PageParameters params = new PageParameters();
 //                params.put(GroupList.SCROLL_PARAMETER, fileId);
 //                setResponsePage(GroupList.class, params);
+                setResponsePage(ActualPaymentFileList.class);
             }
         };
         filterForm.add(back);

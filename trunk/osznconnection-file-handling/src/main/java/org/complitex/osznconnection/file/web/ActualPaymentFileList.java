@@ -7,16 +7,14 @@ import org.apache.wicket.PageParameters;
 import org.apache.wicket.ResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.datetime.markup.html.basic.DateLabel;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.markup.html.JavascriptPackageResource;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Button;
-import org.apache.wicket.markup.html.form.CheckBox;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.form.*;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.EmptyPanel;
@@ -30,35 +28,42 @@ import org.apache.wicket.util.time.Duration;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.entity.Log;
 import org.complitex.dictionary.service.LogBean;
+import org.complitex.dictionary.service.executor.ExecuteException;
 import org.complitex.dictionary.util.DateUtil;
 import org.complitex.dictionary.util.StringUtil;
 import org.complitex.dictionary.web.component.*;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
-import org.complitex.template.web.component.toolbar.ToolbarButton;
-import org.complitex.template.web.security.SecurityRole;
-import org.complitex.template.web.template.TemplatePage;
+import org.complitex.dictionary.web.component.scroll.ScrollListBehavior;
 import org.complitex.osznconnection.file.Module;
 import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.entity.RequestFileFilter;
 import org.complitex.osznconnection.file.entity.RequestFileGroup;
 import org.complitex.osznconnection.file.service.RequestFileBean;
+import org.complitex.osznconnection.file.service.process.ActualPaymentBindTaskBean;
 import org.complitex.osznconnection.file.service.process.ProcessManagerBean;
 import org.complitex.osznconnection.file.web.component.LoadButton;
+import org.complitex.osznconnection.file.web.pages.actualpayment.ActualPaymentList;
 import org.complitex.osznconnection.file.web.pages.benefit.BenefitList;
 import org.complitex.osznconnection.file.web.pages.payment.PaymentList;
 import org.complitex.osznconnection.organization.strategy.OrganizationStrategy;
 import org.complitex.resources.WebCommonResourceInitializer;
+import org.complitex.template.web.component.toolbar.ToolbarButton;
+import org.complitex.template.web.security.SecurityRole;
+import org.complitex.template.web.template.TemplatePage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import java.util.*;
 
 /**
- * @author Anatoly A. Ivanov java@inheaven.ru
- *         Date: 25.08.2010 13:35:35
+ * User: Anatoly A. Ivanov java@inhell.ru
+ * Date: 13.01.11 19:35
  */
 @AuthorizeInstantiation(SecurityRole.AUTHORIZED)
-public class TarifFileList extends TemplatePage {
+public class ActualPaymentFileList extends TemplatePage {
+    private static final Logger log = LoggerFactory.getLogger(ActualPaymentFileList.class);
 
     private final static String IMAGE_AJAX_LOADER = "images/ajax-loader2.gif";
 
@@ -82,12 +87,12 @@ public class TarifFileList extends TemplatePage {
 
     private RequestFileLoadPanel requestFileLoadPanel;
 
-    public TarifFileList(PageParameters parameters) {
+    public ActualPaymentFileList(PageParameters parameters) {
         super();
         init(parameters.getAsLong("request_file_id"));
     }
 
-    public TarifFileList() {
+    public ActualPaymentFileList() {
         super();
         init(null);
     }
@@ -105,7 +110,7 @@ public class TarifFileList extends TemplatePage {
         RequestFileFilter filterObject = (RequestFileFilter) getFilterObject(null);
         if (filterObject == null) {
             filterObject = new RequestFileFilter();
-            filterObject.setType(RequestFile.TYPE.TARIF);
+            filterObject.setType(RequestFile.TYPE.ACTUAL_PAYMENT);
 
             setFilterObject(filterObject);
         }
@@ -125,7 +130,7 @@ public class TarifFileList extends TemplatePage {
                 filterForm.clearInput();
 
                 RequestFileFilter groupFilterObject = new RequestFileFilter();
-                groupFilterObject.setType(RequestFile.TYPE.TARIF);
+                groupFilterObject.setType(RequestFile.TYPE.ACTUAL_PAYMENT);
 
                 setFilterObject(groupFilterObject);
                 filterModel.setObject(groupFilterObject);
@@ -241,7 +246,9 @@ public class TarifFileList extends TemplatePage {
                 item.add(new Label("id", StringUtil.valueOf(rf.getId())));
 
                 item.add(DateLabel.forDatePattern("loaded", new Model<Date>(rf.getLoaded()), "dd.MM.yy HH:mm:ss"));
-                item.add(new Label("name", rf.getFullName()));
+                item.add(new BookmarkablePageLinkPanel<RequestFile>("name", rf.getFullName(),
+                            ScrollListBehavior.SCROLL_PREFIX+String.valueOf(rf.getId()), ActualPaymentList.class,
+                            new PageParameters("request_file_id=" + rf.getId())));
 
                 DomainObject domainObject = organizationStrategy.findById(rf.getOrganizationId());
                 String organization = organizationStrategy.displayDomainObject(domainObject, getLocale());
@@ -312,13 +319,13 @@ public class TarifFileList extends TemplatePage {
 
                             info(getStringFormat("info.deleted", requestFile.getFullName()));
 
-                            logBean.info(Module.NAME, TarifFileList.class, RequestFileGroup.class, null, requestFile.getId(),
+                            logBean.info(Module.NAME, ActualPaymentFileList.class, RequestFileGroup.class, null, requestFile.getId(),
                                     Log.EVENT.REMOVE, requestFile.getLogChangeList(), "Файл удален успешно. Имя объекта: {0}",
                                     requestFile.getLogObjectName());
                         } catch (Exception e) {
                             error(getStringFormat("error.delete", requestFile.getFullName()));
 
-                            logBean.error(Module.NAME, TarifFileList.class, RequestFileGroup.class, null, requestFile.getId(),
+                            logBean.error(Module.NAME, ActualPaymentFileList.class, RequestFileGroup.class, null, requestFile.getId(),
                                     Log.EVENT.REMOVE, requestFile.getLogChangeList(), "Ошибка удаления. Имя объекта: {0}",
                                     requestFile.getLogObjectName());
                             break;
@@ -342,7 +349,7 @@ public class TarifFileList extends TemplatePage {
                     @Override
                     public void load(Long organizationId, String districtCode, int monthFrom, int monthTo, int year) {
                         completedDisplayed = false;
-                        processManagerBean.loadTarif(organizationId, districtCode, monthFrom, monthTo, year);
+                        processManagerBean.loadActualPayment(organizationId, districtCode, monthFrom, monthTo, year);
                         addTimer(dataViewContainer, filterForm, messages);
                     }
                 });
@@ -378,10 +385,10 @@ public class TarifFileList extends TemplatePage {
         for (RequestFile rf : processManagerBean.getProcessedTarifFiles(TarifFileList.class)){
 
             if (rf.getLoadedRecordCount().equals(rf.getDbfRecordCount()) && rf.getDbfRecordCount() != 0){
-                info(getStringFormat("tarif.loaded", rf.getFullName()));
+                info(getStringFormat("actual_payment.loaded", rf.getFullName()));
                 highlightProcessed(target, rf);
             }else {
-                error(getStringFormat("tarif.load_error", rf.getFullName()));
+                error(getStringFormat("actual_payment.load_error", rf.getFullName()));
                 highlightError(target, rf);
             }
         }
