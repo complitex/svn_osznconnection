@@ -30,4 +30,9 @@ public class ActualPaymentData {
     public void setTarif(BigDecimal tarif) {
         this.tarif = tarif;
     }
+
+    @Override
+    public String toString() {
+        return "Charge: " + charge + ", tarif: " + tarif;
+    }
 }
