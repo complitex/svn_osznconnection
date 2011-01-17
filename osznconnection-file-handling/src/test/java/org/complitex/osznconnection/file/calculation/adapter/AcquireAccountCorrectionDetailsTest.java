@@ -4,14 +4,8 @@
  */
 package org.complitex.osznconnection.file.calculation.adapter;
 
-import org.apache.ibatis.io.Resources;
-import org.apache.ibatis.session.SqlSession;
-import org.apache.ibatis.session.SqlSessionFactory;
-import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.complitex.osznconnection.file.entity.Payment;
 
-import java.io.IOException;
-import java.io.Reader;
 import java.util.Date;
 import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
 import org.complitex.osznconnection.file.entity.PaymentDBF;
@@ -20,59 +14,30 @@ import org.complitex.osznconnection.file.entity.PaymentDBF;
  *
  * @author Artem
  */
-public class AcquireAccountCorrectionDetailsTest {
-
-    private static SqlSessionFactory sqlSessionFactory;
-    private static ICalculationCenterAdapter adapter;
-
-    private static void init() {
-        Reader reader = null;
-        try {
-            reader = Resources.getResourceAsReader("mybatis-test.xml");
-            sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader, "remote");
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        adapter = new DefaultCalculationCenterAdapter() {
-
-            @Override
-            protected SqlSession sqlSession() {
-                return sqlSessionFactory.openSession(false);
-            }
-        };
-    }
+public class AcquireAccountCorrectionDetailsTest extends AbstractTest {
 
     public static void main(String[] args) {
-        init();
-
         try {
-            testByOsznAccount();
+            new AcquireAccountCorrectionDetailsTest().executeTest();
         } catch (DBException e) {
             System.out.println("DB error.");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
-    private static void testByAddress() throws DBException {
+    private void testByAddress(ICalculationCenterAdapter adapter) throws DBException {
         Payment payment = newPayment();
         System.out.println(adapter.acquireAccountDetailsByAddress(payment, payment.getOutgoingDistrict(), payment.getOutgoingStreetType(),
                 payment.getOutgoingStreet(), payment.getOutgoingBuildingNumber(), payment.getOutgoingBuildingCorp(),
                 payment.getOutgoingApartment(), (Date) payment.getField(PaymentDBF.DAT1)));
     }
 
-    private static void testByOsznAccount() throws DBException {
+    private void testByOsznAccount(ICalculationCenterAdapter adapter) throws DBException {
         System.out.println(adapter.acquireAccountDetailsByOsznAccount(newPayment()));
     }
 
-    private static void testByMegabankAccount() throws DBException {
+    private void testByMegabankAccount(ICalculationCenterAdapter adapter) throws DBException {
         Payment payment = newPayment();
         System.out.println(adapter.acquireAccountDetailsByMegabankAccount(payment, payment.getOutgoingDistrict(), "9876543"));
     }
@@ -89,5 +54,10 @@ public class AcquireAccountCorrectionDetailsTest {
         p.setField(PaymentDBF.DAT1, new Date());
         p.setField(PaymentDBF.OWN_NUM_SR, "1234567");
         return p;
+    }
+
+    @Override
+    protected void test(ICalculationCenterAdapter adapter) throws Exception {
+        testByOsznAccount(adapter);
     }
 }
