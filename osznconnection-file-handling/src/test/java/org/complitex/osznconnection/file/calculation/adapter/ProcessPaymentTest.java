@@ -30,7 +30,7 @@ public class ProcessPaymentTest {
     private static void init() {
         Reader reader = null;
         try {
-            reader = Resources.getResourceAsReader("Configuration-test.xml");
+            reader = Resources.getResourceAsReader("mybatis-test.xml");
             sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader, "remote");
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -67,7 +67,7 @@ public class ProcessPaymentTest {
             }
 
             @Override
-            protected Integer getCODE2_1(Double T11_CS_UNI, long organizationId) {
+            protected Integer getTarifCode(Double T11_CS_UNI, long organizationId) {
                 System.out.println("T11_CS_UNI : " + T11_CS_UNI);
                 return 0;
             }

@@ -23,6 +23,8 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
+import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
+import org.complitex.osznconnection.file.entity.AccountDetail;
 import org.complitex.osznconnection.file.service.exception.DublicateCorrectionException;
 import org.complitex.osznconnection.file.service.exception.MoreOneCorrectionException;
 import org.complitex.osznconnection.file.service.exception.NotFoundCorrectionException;
@@ -36,7 +38,6 @@ import org.complitex.osznconnection.file.web.component.StatusRenderer;
 import javax.ejb.EJB;
 import java.io.File;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
@@ -51,6 +52,7 @@ import org.complitex.osznconnection.file.service.AddressService;
 import org.complitex.osznconnection.file.service.PersonAccountService;
 import org.complitex.osznconnection.file.service.StatusRenderService;
 import org.complitex.osznconnection.file.service.process.ActualPaymentBindTaskBean;
+import org.complitex.osznconnection.file.service.process.ActualPaymentFillTaskBean;
 import org.complitex.osznconnection.file.service.status.details.ActualPaymentExampleConfigurator;
 import org.complitex.osznconnection.file.service.status.details.ActualPaymentStatusDetailRenderer;
 import org.complitex.osznconnection.file.service.status.details.StatusDetailBean;
@@ -83,10 +85,12 @@ public final class ActualPaymentList extends TemplatePage {
     private StatusDetailBean statusDetailBean;
     @EJB(name = "AddressService")
     private AddressService addressService;
-    @EJB(name = "ActualPaymentBindTaskBean")
-    private ActualPaymentBindTaskBean actualPaymentBindTaskBean;
     @EJB(name = "PersonAccountService")
     private PersonAccountService personAccountService;
+    @EJB(name = "ActualPaymentBindTaskBean")
+    private ActualPaymentBindTaskBean actualPaymentBindTaskBean;
+    @EJB(name = "ActualPaymentFillTaskBean")
+    private ActualPaymentFillTaskBean actualPaymentFillTaskBean;
     private IModel<ActualPaymentExample> example;
     private long fileId;
 
@@ -124,11 +128,11 @@ public final class ActualPaymentList extends TemplatePage {
         StatusDetailPanel<ActualPaymentExample> statusDetailPanel = new StatusDetailPanel<ActualPaymentExample>("statusDetailsPanel", example,
                 new ActualPaymentExampleConfigurator(), new ActualPaymentStatusDetailRenderer(), content) {
 
-                    @Override
-                    public List<StatusDetailInfo> loadStatusDetails() {
-                        return statusDetailBean.getActualPaymentStatusDetails(fileId);
-                    }
-                };
+            @Override
+            public List<StatusDetailInfo> loadStatusDetails() {
+                return statusDetailBean.getActualPaymentStatusDetails(fileId);
+            }
+        };
         add(statusDetailPanel);
 
         final SortableDataProvider<ActualPayment> dataProvider = new SortableDataProvider<ActualPayment>() {
@@ -211,6 +215,11 @@ public final class ActualPaymentList extends TemplatePage {
                     protected void correctAccountNumber(ActualPayment actualPayment, String accountNumber) {
                         personAccountService.updateAccountNumber(actualPayment, accountNumber);
                     }
+
+                    @Override
+                    protected List<AccountDetail> acquireAccountDetailsByAddress(ActualPayment request) throws DBException {
+                        return lookupPanel.acquireAccountDetailsByAddress(request);
+                    }
                 };
         add(accountNumberCorrectionPanel);
 
@@ -252,10 +261,7 @@ public final class ActualPaymentList extends TemplatePage {
 
                     @Override
                     public void onClick(AjaxRequestTarget target) {
-                        accountNumberCorrectionPanel.open(target, actualPayment, actualPayment.getOutgoingDistrict(),
-                                actualPayment.getOutgoingStreetType(), actualPayment.getOutgoingStreet(),
-                                actualPayment.getOutgoingBuildingNumber(), actualPayment.getOutgoingBuildingCorp(),
-                                actualPayment.getOutgoingApartment(), (Date) actualPayment.getField(ActualPaymentDBF.DAT_BEG));
+                        accountNumberCorrectionPanel.open(target, actualPayment);
                     }
                 };
                 accountCorrectionLink.setVisible(actualPayment.getStatus() == RequestStatus.MORE_ONE_ACCOUNTS);
@@ -303,7 +309,7 @@ public final class ActualPaymentList extends TemplatePage {
                     actualPaymentBindTaskBean.execute(requestFile);
                     log.info("Bind of actual payment was successful.");
                 } catch (ExecuteException e) {
-                    log.error("", e);
+                    log.error("Execution error.");
                 } catch (RuntimeException e) {
                     log.error("", e);
                 }
@@ -311,6 +317,23 @@ public final class ActualPaymentList extends TemplatePage {
             }
         };
         filterForm.add(bind);
+
+        AjaxLink<Void> fill = new AjaxLink<Void>("fill") {
+
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                try {
+                    actualPaymentFillTaskBean.execute(requestFile);
+                    log.info("Filling of actual payment was successful.");
+                } catch (ExecuteException e) {
+                    log.error("Execution error.");
+                } catch (RuntimeException e) {
+                    log.error("", e);
+                }
+                target.addComponent(content);
+            }
+        };
+        filterForm.add(fill);
 
         content.add(new PagingNavigator("navigator", data, getClass().getName() + fileId, content));
     }

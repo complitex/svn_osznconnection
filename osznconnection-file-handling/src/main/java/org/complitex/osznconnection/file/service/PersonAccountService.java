@@ -104,10 +104,11 @@ public class PersonAccountService extends AbstractBean {
     }
 
     @Transactional
-    public void resolveRemoteAccount(ActualPayment actualPayment, long calculationCenterId, ICalculationCenterAdapter adapter) throws DBException {
+    public void resolveRemoteAccount(ActualPayment actualPayment, Date date, long calculationCenterId, ICalculationCenterAdapter adapter)
+            throws DBException {
         adapter.acquirePersonAccount(actualPayment, actualPayment.getOutgoingDistrict(), actualPayment.getOutgoingStreetType(),
                 actualPayment.getOutgoingStreet(), actualPayment.getOutgoingBuildingNumber(), actualPayment.getOutgoingBuildingCorp(),
-                actualPayment.getOutgoingApartment(), (Date) actualPayment.getField(ActualPaymentDBF.DAT_BEG));
+                actualPayment.getOutgoingApartment(), date);
         if (actualPayment.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED) {
             personAccountLocalBean.saveOrUpdate(actualPayment.getAccountNumber(), (String) actualPayment.getField(ActualPaymentDBF.F_NAM),
                     (String) actualPayment.getField(ActualPaymentDBF.M_NAM), (String) actualPayment.getField(ActualPaymentDBF.SUR_NAM),

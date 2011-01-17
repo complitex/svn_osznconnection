@@ -7,7 +7,7 @@
         <environment id="remote">
             <transactionManager type="JDBC"/>
             <dataSource type="POOLED">
-                
+
                 <!--<property name="driver" value="oracle.jdbc.OracleDriver"/>-->
                 <property name="driver" value="com.p6spy.engine.spy.P6SpyDriver"/>
 
@@ -21,7 +21,7 @@
         </environment>
     </environments>
     <mappers>
-         <mapper resource="org/complitex/osznconnection/file/service/AbstractRequestBean.xml"/>
+        <mapper resource="org/complitex/osznconnection/file/service/AbstractRequestBean.xml"/>
         <mapper resource="org/complitex/osznconnection/file/service/PaymentBean.xml"/>
         <mapper resource="org/complitex/osznconnection/file/service/CorrectionBean.xml"/>
         <mapper resource="org/complitex/osznconnection/file/service/AddressCorrectionBean.xml"/>

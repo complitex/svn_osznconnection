@@ -4,24 +4,23 @@
  */
 package org.complitex.osznconnection.file.calculation.adapter;
 
-import com.google.common.collect.Lists;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-import org.complitex.osznconnection.file.entity.Benefit;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Date;
 import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
-import org.complitex.osznconnection.file.entity.BenefitDBF;
+import org.complitex.osznconnection.file.entity.ActualPayment;
+import org.complitex.osznconnection.file.entity.ActualPaymentDBF;
 
 /**
  *
  * @author Artem
  */
-public class ProcessBenefitTest {
+public class ProcessActualPaymentTest {
 
     private static SqlSessionFactory sqlSessionFactory;
 
@@ -52,27 +51,14 @@ public class ProcessBenefitTest {
             protected SqlSession sqlSession() {
                 return sqlSessionFactory.openSession(false);
             }
-
-            @Override
-            protected Long findInternalPrivilege(String calculationCenterPrivilege, long calculationCenterId) {
-                System.out.println("calculationCenterPrivilege code : " + calculationCenterPrivilege);
-                return 1L;
-            }
-
-            @Override
-            protected String findOSZNPrivilegeCode(Long internalPrivilege, long osznId) {
-                return "11";
-            }
         };
-        Benefit b = new Benefit();
-        b.setAccountNumber("1000000000");
-        b.setField(BenefitDBF.IND_COD, "2142426432");
-        b.setOrganizationId(1L);
+        ActualPayment p = new ActualPayment();
+        p.setAccountNumber("1000000000");
         try {
-            adapter.processBenefit(new Date(), Lists.newArrayList(b), 2);
-        } catch (DBException e){
+            adapter.processActualPayment(p, new Date());
+        } catch (DBException e) {
             System.out.println("DB error.");
         }
-        System.out.println("Status : " + b.getStatus());
+        System.out.println("Status : " + p.getStatus() + ", P1 : " + p.getField(ActualPaymentDBF.P1) + ", N1 : " + p.getField(ActualPaymentDBF.N1));
     }
 }

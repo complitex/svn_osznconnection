@@ -18,8 +18,11 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import java.util.List;
+import org.complitex.dictionary.util.DateUtil;
 import org.complitex.osznconnection.file.entity.AbstractRequest;
 import org.complitex.osznconnection.file.entity.ActualPayment;
+import org.complitex.osznconnection.file.entity.PaymentDBF;
+import org.complitex.osznconnection.file.entity.RequestFile;
 
 /**
  * @author Artem
@@ -32,7 +35,7 @@ public class LookupBean extends AbstractBean {
     @EJB
     private CalculationCenterBean calculationCenterBean;
     @EJB
-    private AddressCorrectionBean addressCorrectionBean;
+    private RequestFileBean requestFileBean;
 
     /**
      * Разрешить исходящий в ЦН адрес по схеме "локальная адресная база -> адрес центра начислений"
@@ -62,10 +65,27 @@ public class LookupBean extends AbstractBean {
      */
     @Transactional
     @TransactionAttribute(TransactionAttributeType.NEVER)
-    public List<AccountDetail> acquireAccountDetailsByAddress(AbstractRequest request, String district, String streetType, String street,
+    private List<AccountDetail> acquireAccountDetailsByAddress(AbstractRequest request, String district, String streetType, String street,
             String buildingNumber, String buildingCorp, String apartment, Date date) throws DBException {
         ICalculationCenterAdapter adapter = calculationCenterBean.getDefaultCalculationCenterAdapter();
         return adapter.acquireAccountDetailsByAddress(request, district, streetType, street, buildingNumber, buildingCorp, apartment, date);
+    }
+
+    @Transactional
+    @TransactionAttribute(TransactionAttributeType.NEVER)
+    public List<AccountDetail> acquireAccountDetailsByAddress(Payment payment) throws DBException {
+        return acquireAccountDetailsByAddress(payment, payment.getOutgoingDistrict(), payment.getOutgoingStreetType(),
+                payment.getOutgoingStreet(), payment.getOutgoingBuildingNumber(), payment.getOutgoingBuildingCorp(),
+                payment.getOutgoingApartment(), (Date) payment.getField(PaymentDBF.DAT1));
+    }
+
+    @Transactional
+    @TransactionAttribute(TransactionAttributeType.NEVER)
+    public List<AccountDetail> acquireAccountDetailsByAddress(ActualPayment actualPayment) throws DBException {
+        RequestFile actualPaymentFile = requestFileBean.findById(actualPayment.getRequestFileId());
+        return acquireAccountDetailsByAddress(actualPayment, actualPayment.getOutgoingDistrict(), actualPayment.getOutgoingStreetType(),
+                actualPayment.getOutgoingStreet(), actualPayment.getOutgoingBuildingNumber(), actualPayment.getOutgoingBuildingCorp(),
+                actualPayment.getOutgoingApartment(), DateUtil.getFirstDayOf(actualPaymentFile.getLoaded()));
     }
 
     @Transactional

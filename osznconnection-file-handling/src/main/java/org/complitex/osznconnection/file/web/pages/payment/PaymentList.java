@@ -4,6 +4,8 @@
  */
 package org.complitex.osznconnection.file.web.pages.payment;
 
+import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
+import org.complitex.osznconnection.file.entity.AccountDetail;
 import org.complitex.osznconnection.file.web.component.account.AccountNumberCorrectionPanel;
 import org.complitex.osznconnection.file.web.component.address.AddressCorrectionPanel;
 import java.util.List;
@@ -48,7 +50,6 @@ import org.complitex.osznconnection.file.web.component.StatusRenderer;
 import javax.ejb.EJB;
 import java.io.File;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.Iterator;
 import org.complitex.osznconnection.file.service.AddressService;
 import org.complitex.osznconnection.file.service.PersonAccountService;
@@ -205,6 +206,11 @@ public final class PaymentList extends TemplatePage {
                     protected void correctAccountNumber(Payment payment, String accountNumber) {
                         personAccountService.updateAccountNumber(payment, accountNumber);
                     }
+
+                    @Override
+                    protected List<AccountDetail> acquireAccountDetailsByAddress(Payment request) throws DBException {
+                        return lookupPanel.acquireAccountDetailsByAddress(request);
+                    }
                 };
         add(accountNumberCorrectionPanel);
 
@@ -245,9 +251,7 @@ public final class PaymentList extends TemplatePage {
 
                     @Override
                     public void onClick(AjaxRequestTarget target) {
-                        accountNumberCorrectionPanel.open(target, payment, payment.getOutgoingDistrict(), payment.getOutgoingStreetType(),
-                                payment.getOutgoingStreet(), payment.getOutgoingBuildingNumber(), payment.getOutgoingBuildingCorp(),
-                                payment.getOutgoingApartment(), (Date) payment.getField(PaymentDBF.DAT1));
+                        accountNumberCorrectionPanel.open(target, payment);
                     }
                 };
                 accountCorrectionLink.setVisible(payment.getStatus() == RequestStatus.MORE_ONE_ACCOUNTS);

@@ -9,6 +9,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import java.io.Serializable;
+import java.sql.Timestamp;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.service.OwnershipCorrectionBean;
@@ -350,7 +351,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
                         if (paymentAndBenefitDatas.size() > 1) {
                             log.warn("processPaymentAndBenefit. Size of list of paymentAndBenefitData is more than 1. Only first entry will be used.");
                             logBean.warn(Module.NAME, getClass(), Payment.class, payment.getId(), EVENT.GETTING_DATA,
-                                    ResourceUtil.getFormatString(RESOURCE_BUNDLE, "payment_and_benefit_data_size", localeBean.getSystemLocale(),
+                                    ResourceUtil.getFormatString(RESOURCE_BUNDLE, "data_size_more_one", localeBean.getSystemLocale(),
                                     "GETCHARGEANDPARAMS"));
                         }
                         processPaymentAndBenefitData(calculationCenterId, payment, benefits, data);
@@ -405,8 +406,8 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
         payment.setField(PaymentDBF.MARK, data.getUserCount());
 
         Double tarif = data.getTarif();
-        Integer CODE2_1 = getCODE2_1(tarif, payment.getOrganizationId());
-        if (CODE2_1 == null) {
+        Integer tarifCode = getTarifCode(tarif, payment.getOrganizationId());
+        if (tarifCode == null) {
             payment.setStatus(RequestStatus.TARIF_CODE2_1_NOT_FOUND);
 
             log.error("Couldn't find tarif code by calculation center's tarif: '{}' and calculation center id: {}", tarif, calculationCenterId);
@@ -419,7 +420,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
             logBean.error(Module.NAME, getClass(), Payment.class, payment.getId(), EVENT.EDIT,
                     webWarningRenderer.display(warning, localeBean.getSystemLocale()));
         } else {
-            payment.setField(PaymentDBF.CODE2_1, CODE2_1);
+            payment.setField(PaymentDBF.CODE2_1, tarifCode);
             payment.setStatus(RequestStatus.PROCESSED);
         }
 
@@ -509,7 +510,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
      * @param organizationId
      * @return
      */
-    protected Integer getCODE2_1(Double T11_CS_UNI, long organizationId) {
+    protected Integer getTarifCode(Double T11_CS_UNI, long organizationId) {
         return tarifBean.getCODE2_1(T11_CS_UNI, organizationId);
     }
 
@@ -1113,5 +1114,67 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
             }
         }
         return accountCorrectionDetails;
+    }
+
+    @Override
+    public void processActualPayment(ActualPayment actualPayment, Date date) throws DBException {
+        Map<String, Object> params = Maps.newHashMap();
+        params.put("accountNumber", actualPayment.getAccountNumber());
+        params.put("date", new Timestamp(date.getTime()));
+
+        try {
+            sqlSession().selectOne(MAPPING_NAMESPACE + ".processActualPayment", params);
+        } catch (Exception e) {
+            throw new DBException(e);
+        } finally {
+            log.info("processActualPayment. Parameters : {}", params);
+        }
+
+        Integer resultCode = (Integer) params.get("resultCode");
+        if (resultCode == null) {
+            log.error("processActualPayment. Result code is null. ActualPayment id: {}", actualPayment.getId());
+            logBean.error(Module.NAME, getClass(), ActualPayment.class, actualPayment.getId(), EVENT.GETTING_DATA,
+                    ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_unexpected", localeBean.getSystemLocale(), "GETFACTCHARGEANDTARIF",
+                    "null"));
+            actualPayment.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
+        } else {
+            switch (resultCode) {
+                case 1:
+                    List<ActualPaymentData> actualPaymentDatas = (List<ActualPaymentData>) params.get("data");
+                    if (actualPaymentDatas != null && !actualPaymentDatas.isEmpty()) {
+                        ActualPaymentData data = actualPaymentDatas.get(0);
+                        if (actualPaymentDatas.size() > 1) {
+                            log.warn("processActualPayment. Size of list of actualPaymentData is more than 1. Only first entry will be used.");
+                            logBean.warn(Module.NAME, getClass(), ActualPayment.class, actualPayment.getId(), EVENT.GETTING_DATA,
+                                    ResourceUtil.getFormatString(RESOURCE_BUNDLE, "data_size_more_one", localeBean.getSystemLocale(),
+                                    "GETFACTCHARGEANDTARIF"));
+                        }
+                        processActualPaymentData(actualPayment, data);
+                    } else {
+                        log.error("processActualPayment. Result code is 1 but actualPaymentData is null or empty. ActualPayment id: {}",
+                                actualPayment.getId());
+                        logBean.error(Module.NAME, getClass(), ActualPayment.class, actualPayment.getId(), EVENT.GETTING_DATA,
+                                ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_inconsistent", localeBean.getSystemLocale(),
+                                "GETFACTCHARGEANDTARIF"));
+                        actualPayment.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
+                    }
+                    break;
+                case -1:
+                    actualPayment.setStatus(RequestStatus.ACCOUNT_NUMBER_NOT_FOUND);
+                    break;
+                default:
+                    log.error("processActualPayment. Unexpected result code: {}. ActualPayment id: {}", resultCode, actualPayment.getId());
+                    logBean.error(Module.NAME, getClass(), ActualPayment.class, actualPayment.getId(), EVENT.GETTING_DATA,
+                            ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_unexpected", localeBean.getSystemLocale(),
+                            "GETFACTCHARGEANDTARIF", resultCode));
+                    actualPayment.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
+            }
+        }
+    }
+
+    protected void processActualPaymentData(ActualPayment actualPayment, ActualPaymentData data) {
+        actualPayment.setField(ActualPaymentDBF.P1, data.getCharge());
+        actualPayment.setField(ActualPaymentDBF.N1, data.getTarif());
+        actualPayment.setStatus(RequestStatus.PROCESSED);
     }
 }

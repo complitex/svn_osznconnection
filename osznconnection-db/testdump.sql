@@ -132,7 +132,7 @@ insert into `request_file`(id, group_id, organization_id, `name`, `directory`, `
 (1,1,1,'A_123405.dbf', 'AB', 1, 10, 2010, CURRENT_TIMESTAMP, 'PAYMENT'),
 (2,1,1,'AF123405.dbf', 'AB', 1, 10, 2010, CURRENT_TIMESTAMP, 'BENEFIT'),
 (3,null,1,'TARIF12.dbf', 'AB', 1, 10, 2010, CURRENT_TIMESTAMP, 'TARIF'),
-(4,null,1,'B1170710.dbf', 'AB', 1, 10, 2010, CURRENT_TIMESTAMP, 'ACTUAL_PAYMENT');
+(4,null,1,'B1170710.dbf', 'AB', 1, 10, 2010, '2011-01-12', 'ACTUAL_PAYMENT');
 
 -- (4,2,1,'A_123406.dbf', 'AB', 1, 10, 2010, CURRENT_TIMESTAMP, 'PAYMENT'),
 -- (5,2,1,'AF123406.dbf', 'CE', 1, 10, 2010, CURRENT_TIMESTAMP, 'BENEFIT');
@@ -160,10 +160,10 @@ values
 -- (14, 4,'Матвей', 'Матвеевич', 'Матвеев', 'Новосибирск', 'Терешковой', '25','  ', '19', '2010-09-09',1);
 
 -- Actual payments
-insert into actual_payment(OWN_NUM, F_NAM, M_NAM, SUR_NAM, N_NAME, VUL_CAT, VUL_NAME, VUL_CODE, BLD_NUM, CORP_NUM, FLAT, DAT_BEG, request_file_id)
+insert into actual_payment(OWN_NUM, F_NAM, M_NAM, SUR_NAM, N_NAME, VUL_CAT, VUL_NAME, VUL_CODE, BLD_NUM, CORP_NUM, FLAT, request_file_id)
 values
-    (123,'Матвей1', 'Матвеевич1', 'Матвеев1', 'Харьков', 'УЛ', 'ФРАНТИШЕКА КРАЛА', 123, '  2 5A',' ', '40', '2011-01-12', 4),
-    (123,'Матвей2', 'Матвеевич2', 'Матвеев2', 'Харьков', 'УЛ', 'ФРАНТИШЕКА КРАЛА', 123, '  2 5A',' ', '19', '2011-01-12', 4);
+    (123,'Матвей1', 'Матвеевич1', 'Матвеев1', 'Харьков', 'УЛ', 'ФРАНТИШЕКА КРАЛА', 123, '  2 5A',' ', '40', 4),
+    (123,'Матвей2', 'Матвеевич2', 'Матвеев2', 'Харьков', 'УЛ', 'ФРАНТИШЕКА КРАЛА', 123, '  2 5A',' ', '19', 4);
 
 
 --insert into `person_account` (`first_name`, `middle_name`, `last_name`, `city`, `street`, `building_num`, `building_corp`, `apartment`, `account_number`, `own_num_sr`, `oszn_id`, `calc_center_id`) values('Матвей','Матвеевич','Матвеев','Харьков','ФРАНТИШЕКА КРАЛА','  2 5А','  ','19','1000001108','4','1','2');
