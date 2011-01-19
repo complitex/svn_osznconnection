@@ -291,10 +291,9 @@ public final class ActualPaymentList extends TemplatePage {
 
             @Override
             public void onClick() {
-//                PageParameters params = new PageParameters();
-//                params.put(GroupList.SCROLL_PARAMETER, fileId);
-//                setResponsePage(GroupList.class, params);
-                setResponsePage(ActualPaymentFileList.class);
+                PageParameters params = new PageParameters();
+                params.put(ActualPaymentFileList.SCROLL_PARAMETER, fileId);
+                setResponsePage(ActualPaymentFileList.class, params);
             }
         };
         filterForm.add(back);
