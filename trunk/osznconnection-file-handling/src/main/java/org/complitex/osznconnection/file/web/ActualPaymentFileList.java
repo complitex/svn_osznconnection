@@ -247,8 +247,8 @@ public class ActualPaymentFileList extends TemplatePage {
 
                 item.add(DateLabel.forDatePattern("loaded", new Model<Date>(rf.getLoaded()), "dd.MM.yy HH:mm:ss"));
                 item.add(new BookmarkablePageLinkPanel<RequestFile>("name", rf.getFullName(),
-                            ScrollListBehavior.SCROLL_PREFIX+String.valueOf(rf.getId()), ActualPaymentList.class,
-                            new PageParameters("request_file_id=" + rf.getId())));
+                        ScrollListBehavior.SCROLL_PREFIX+String.valueOf(rf.getId()), ActualPaymentList.class,
+                        new PageParameters("request_file_id=" + rf.getId())));
 
                 DomainObject domainObject = organizationStrategy.findById(rf.getOrganizationId());
                 String organization = organizationStrategy.displayDomainObject(domainObject, getLocale());
@@ -307,6 +307,90 @@ public class ActualPaymentFileList extends TemplatePage {
         //Постраничная навигация
         filterForm.add(new PagingNavigator("paging", dataView, getClass().getName(), filterForm));
 
+        //Связать
+        Button bind = new Button("bind") {
+
+            @Override
+            public void onSubmit() {
+                List<RequestFile> requestFiles = new ArrayList<RequestFile>();
+
+                for (RequestFile rf : selectModels.keySet()) {
+                    if (selectModels.get(rf).getObject()) {
+                        requestFiles.add(rf);
+                    }
+                }
+
+                completedDisplayed = false;
+
+                processManagerBean.bindActualPayment(requestFiles);
+
+                selectModels.clear();
+                addTimer(dataViewContainer, filterForm, messages);
+            }
+
+            @Override
+            public boolean isVisible() {
+                return !isProcessing();
+            }
+        };
+        filterForm.add(bind);
+
+        //Обработать
+        Button process = new Button("process") {
+
+            @Override
+            public void onSubmit() {
+                List<RequestFile> requestFiles = new ArrayList<RequestFile>();
+
+                for (RequestFile rf : selectModels.keySet()) {
+                    if (selectModels.get(rf).getObject()) {
+                        requestFiles.add(rf);
+                    }
+                }
+
+                completedDisplayed = false;
+
+                processManagerBean.fillActualPayment(requestFiles);
+
+                selectModels.clear();
+                addTimer(dataViewContainer, filterForm, messages);
+            }
+
+            @Override
+            public boolean isVisible() {
+                return !isProcessing();
+            }
+        };
+        filterForm.add(process);
+
+        //Выгрузить
+        Button save = new Button("save") {
+
+            @Override
+            public void onSubmit() {
+                List<RequestFile> requestFiles = new ArrayList<RequestFile>();
+
+                for (RequestFile rf : selectModels.keySet()) {
+                    if (selectModels.get(rf).getObject()) {
+                        requestFiles.add(rf);
+                    }
+                }
+
+                completedDisplayed = false;
+
+                processManagerBean.saveActualPayment(requestFiles);
+
+                selectModels.clear();
+                addTimer(dataViewContainer, filterForm, messages);
+            }
+
+            @Override
+            public boolean isVisible() {
+                return !isProcessing();
+            }
+        };
+        filterForm.add(save);
+
         //Удалить
         Button delete = new Button("delete") {
 
@@ -341,7 +425,7 @@ public class ActualPaymentFileList extends TemplatePage {
         };
         filterForm.add(delete);
 
-         //Диалог загрузки
+        //Диалог загрузки
         requestFileLoadPanel = new RequestFileLoadPanel("load_panel",
                 getString("load_panel_title"),
                 new RequestFileLoadPanel.ILoader(){
@@ -382,7 +466,7 @@ public class ActualPaymentFileList extends TemplatePage {
     }
 
     private void showMessages(AjaxRequestTarget target) {
-        for (RequestFile rf : processManagerBean.getProcessedTarifFiles(TarifFileList.class)){
+        for (RequestFile rf : processManagerBean.getProcessed(ActualPaymentFileList.class, RequestFile.TYPE.ACTUAL_PAYMENT)){
 
             if (rf.getLoadedRecordCount().equals(rf.getDbfRecordCount()) && rf.getDbfRecordCount() != 0){
                 info(getStringFormat("actual_payment.loaded", rf.getFullName()));

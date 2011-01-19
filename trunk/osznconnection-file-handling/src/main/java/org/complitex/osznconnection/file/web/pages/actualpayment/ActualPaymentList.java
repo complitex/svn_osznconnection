@@ -88,10 +88,6 @@ public final class ActualPaymentList extends TemplatePage {
     private AddressService addressService;
     @EJB(name = "PersonAccountService")
     private PersonAccountService personAccountService;
-    @EJB(name = "ActualPaymentBindTaskBean")
-    private ActualPaymentBindTaskBean actualPaymentBindTaskBean;
-    @EJB(name = "ActualPaymentFillTaskBean")
-    private ActualPaymentFillTaskBean actualPaymentFillTaskBean;
     private IModel<ActualPaymentExample> example;
     private long fileId;
 
@@ -302,40 +298,6 @@ public final class ActualPaymentList extends TemplatePage {
             }
         };
         filterForm.add(back);
-
-        AjaxLink<Void> bind = new AjaxLink<Void>("bind") {
-
-            @Override
-            public void onClick(AjaxRequestTarget target) {
-                try {
-                    actualPaymentBindTaskBean.execute(requestFile);
-                    log.info("Bind of actual payment was successful.");
-                } catch (ExecuteException e) {
-                    log.error("Execution error.");
-                } catch (RuntimeException e) {
-                    log.error("", e);
-                }
-                target.addComponent(content);
-            }
-        };
-        filterForm.add(bind);
-
-        AjaxLink<Void> fill = new AjaxLink<Void>("fill") {
-
-            @Override
-            public void onClick(AjaxRequestTarget target) {
-                try {
-                    actualPaymentFillTaskBean.execute(requestFile);
-                    log.info("Filling of actual payment was successful.");
-                } catch (ExecuteException e) {
-                    log.error("Execution error.");
-                } catch (RuntimeException e) {
-                    log.error("", e);
-                }
-                target.addComponent(content);
-            }
-        };
-        filterForm.add(fill);
 
         content.add(new PagingNavigator("navigator", data, getClass().getName() + fileId, content));
     }

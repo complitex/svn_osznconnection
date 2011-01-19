@@ -3,6 +3,7 @@ package org.complitex.osznconnection.file.service.process;
 import com.google.common.collect.Lists;
 import org.complitex.dictionary.entity.Log;
 import org.complitex.dictionary.service.executor.ExecuteException;
+import org.complitex.dictionary.service.executor.ITaskBean;
 import org.complitex.osznconnection.file.Module;
 import org.complitex.osznconnection.file.calculation.adapter.ICalculationCenterAdapter;
 import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
@@ -30,7 +31,7 @@ import org.complitex.dictionary.util.DateUtil;
  */
 @Stateless
 @TransactionManagement(TransactionManagementType.BEAN)
-public class ActualPaymentFillTaskBean {//implements ITaskBean<RequestFileGroup> {
+public class ActualPaymentFillTaskBean implements ITaskBean<RequestFile> {
 
     private static final Logger log = LoggerFactory.getLogger(ActualPaymentFillTaskBean.class);
     @Resource
@@ -61,21 +62,21 @@ public class ActualPaymentFillTaskBean {//implements ITaskBean<RequestFileGroup>
         return true;
     }
 
-    //@Override
-    public void onError(RequestFileGroup group) {
+    @Override
+    public void onError(RequestFile requestFile) {
     }
 
-    //@Override
+    @Override
     public String getModuleName() {
         return Module.NAME;
     }
 
-    //@Override
+    @Override
     public Class getControllerClass() {
         return ActualPaymentFillTaskBean.class;
     }
 
-    //@Override
+    @Override
     public Log.EVENT getEvent() {
         return Log.EVENT.EDIT;
     }

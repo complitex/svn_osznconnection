@@ -33,7 +33,7 @@ public class ProcessManagerBean {
     private static final Logger log = LoggerFactory.getLogger(ProcessManagerBean.class);
 
     public static enum PROCESS {
-        LOAD, BIND, FILL, SAVE
+        LOAD, BIND, FILL, SAVE, BIND_ACTUAL_PAYMENT, FILL_ACTUAL_PAYMENT
     }
 
     @EJB(beanName = "LoadGroupTaskBean")
@@ -53,6 +53,12 @@ public class ProcessManagerBean {
 
     @EJB(beanName = "SaveTaskBean")
     private ITaskBean<RequestFileGroup> saveTaskBean;
+
+    @EJB(beanName = "ActualPaymentBindTaskBean")
+    private ITaskBean<RequestFile> actualPaymentBindTaskBean;
+
+    @EJB(beanName = "ActualPaymentFillTaskBean")
+    private ITaskBean<RequestFile> actualPaymentFillTaskBean;
 
     @EJB(beanName = "ExecutorBean")
     private ExecutorBean executorBean;
@@ -111,7 +117,7 @@ public class ProcessManagerBean {
         return Collections.unmodifiableList(list);
     }
 
-    public List<RequestFile> getProcessedTarifFiles(Object queryKey){
+    public List<RequestFile> getProcessed(Object queryKey, RequestFile.TYPE type){
         List<RequestFile> list = new ArrayList<RequestFile>();
 
         Integer index = processedIndex.get(queryKey);
@@ -123,7 +129,7 @@ public class ProcessManagerBean {
         for (Object obj : processed){
             if (obj instanceof RequestFile){
                 RequestFile requestFile = (RequestFile) obj;
-                if (RequestFile.TYPE.TARIF.equals(requestFile.getType())) {
+                if (type.equals(requestFile.getType())) {
                     list.add(requestFile);
                 }
             }
@@ -291,6 +297,40 @@ public class ProcessManagerBean {
                 configBean.getInteger(Config.SAVE_THREAD_SIZE, true),
                 configBean.getInteger(Config.SAVE_MAX_ERROR_COUNT, true));
     }
+
+    @Asynchronous
+    public void bindActualPayment(List<RequestFile> actualPayments){
+        process = PROCESS.BIND_ACTUAL_PAYMENT;
+        init();
+
+        executorBean.execute(actualPayments,
+                actualPaymentBindTaskBean,
+                configBean.getInteger(Config.BIND_THREAD_SIZE, true),
+                configBean.getInteger(Config.BIND_MAX_ERROR_COUNT, true));
+    }
+
+    @Asynchronous
+    public void fillActualPayment(List<RequestFile> actualPayments){
+        process = PROCESS.FILL_ACTUAL_PAYMENT;
+        init();
+
+        executorBean.execute(actualPayments,
+                actualPaymentFillTaskBean,
+                configBean.getInteger(Config.FILL_THREAD_SIZE, true),
+                configBean.getInteger(Config.FILL_MAX_ERROR_COUNT, true));
+    }
+
+    @Asynchronous
+    public void saveActualPayment(List<RequestFile> actualPayments){
+        process = PROCESS.SAVE;
+        init();
+
+//        executorBean.execute(actualPayments,
+//                saveTaskBean,
+//                configBean.getInteger(Config.SAVE_THREAD_SIZE, true),
+//                configBean.getInteger(Config.SAVE_MAX_ERROR_COUNT, true));
+    }
+
 
     private void init(){
         preprocessError = false;
