@@ -7,7 +7,6 @@ import org.apache.wicket.PageParameters;
 import org.apache.wicket.ResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.datetime.markup.html.basic.DateLabel;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
@@ -28,7 +27,6 @@ import org.apache.wicket.util.time.Duration;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.entity.Log;
 import org.complitex.dictionary.service.LogBean;
-import org.complitex.dictionary.service.executor.ExecuteException;
 import org.complitex.dictionary.util.DateUtil;
 import org.complitex.dictionary.util.StringUtil;
 import org.complitex.dictionary.web.component.*;
@@ -40,7 +38,6 @@ import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.entity.RequestFileFilter;
 import org.complitex.osznconnection.file.entity.RequestFileGroup;
 import org.complitex.osznconnection.file.service.RequestFileBean;
-import org.complitex.osznconnection.file.service.process.ActualPaymentBindTaskBean;
 import org.complitex.osznconnection.file.service.process.ProcessManagerBean;
 import org.complitex.osznconnection.file.web.component.LoadButton;
 import org.complitex.osznconnection.file.web.pages.actualpayment.ActualPaymentList;
@@ -50,19 +47,19 @@ import org.complitex.osznconnection.organization.strategy.OrganizationStrategy;
 import org.complitex.resources.WebCommonResourceInitializer;
 import org.complitex.template.web.component.toolbar.ToolbarButton;
 import org.complitex.template.web.security.SecurityRole;
-import org.complitex.template.web.template.TemplatePage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import java.util.*;
+import org.complitex.template.web.pages.ScrollListPage;
 
 /**
  * User: Anatoly A. Ivanov java@inhell.ru
  * Date: 13.01.11 19:35
  */
 @AuthorizeInstantiation(SecurityRole.AUTHORIZED)
-public class ActualPaymentFileList extends TemplatePage {
+public class ActualPaymentFileList extends ScrollListPage {
     private static final Logger log = LoggerFactory.getLogger(ActualPaymentFileList.class);
 
     private final static String IMAGE_AJAX_LOADER = "images/ajax-loader2.gif";
@@ -88,7 +85,7 @@ public class ActualPaymentFileList extends TemplatePage {
     private RequestFileLoadPanel requestFileLoadPanel;
 
     public ActualPaymentFileList(PageParameters parameters) {
-        super();
+        super(parameters);
         init(parameters.getAsLong("request_file_id"));
     }
 
