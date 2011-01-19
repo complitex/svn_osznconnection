@@ -400,7 +400,7 @@ public class GroupList extends ScrollListPage {
         };
         filterForm.add(bind);
 
-        //Process
+        //Обработать
         Button process = new Button("process") {
 
             @Override

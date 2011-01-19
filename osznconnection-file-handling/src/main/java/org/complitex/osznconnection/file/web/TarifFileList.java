@@ -375,7 +375,7 @@ public class TarifFileList extends TemplatePage {
     }
 
     private void showMessages(AjaxRequestTarget target) {
-        for (RequestFile rf : processManagerBean.getProcessedTarifFiles(TarifFileList.class)){
+        for (RequestFile rf : processManagerBean.getProcessed(TarifFileList.class, RequestFile.TYPE.TARIF)){
 
             if (rf.getLoadedRecordCount().equals(rf.getDbfRecordCount()) && rf.getDbfRecordCount() != 0){
                 info(getStringFormat("tarif.loaded", rf.getFullName()));

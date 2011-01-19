@@ -17,6 +17,7 @@ import javax.transaction.UserTransaction;
 import org.complitex.dictionary.entity.Log;
 import org.complitex.dictionary.entity.Log.EVENT;
 import org.complitex.dictionary.service.executor.ExecuteException;
+import org.complitex.dictionary.service.executor.ITaskBean;
 import org.complitex.dictionary.util.DateUtil;
 import org.complitex.osznconnection.file.Module;
 import org.complitex.osznconnection.file.calculation.adapter.ICalculationCenterAdapter;
@@ -40,7 +41,7 @@ import org.slf4j.LoggerFactory;
  */
 @Stateless
 @TransactionManagement(TransactionManagementType.BEAN)
-public class ActualPaymentBindTaskBean {
+public class ActualPaymentBindTaskBean implements ITaskBean<RequestFile> {
 
     private static final Logger log = LoggerFactory.getLogger(ActualPaymentBindTaskBean.class);
     @Resource
