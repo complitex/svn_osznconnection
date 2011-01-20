@@ -466,21 +466,6 @@ public class ActualPaymentFileList extends ScrollListPage {
         return processManagerBean.isProcessing();
     }
 
-    private boolean isLoading(RequestFile requestFile){
-        return processManagerBean.isProcessing()
-                && ProcessManagerBean.PROCESS.LOAD.equals(processManagerBean.getProcess())
-                && requestFile.getLoadedRecordCount() < requestFile.getDbfRecordCount();
-    }
-
-    private boolean isLoaded(RequestFile requestFile){
-        return requestFile.getLoadedRecordCount().equals(requestFile.getDbfRecordCount())
-                && requestFile.getDbfRecordCount() != 0;
-    }
-
-    private boolean isLoadError(RequestFile requestFile){
-        return !processManagerBean.isProcessing() && !isLoaded(requestFile);
-    }
-
     private void showMessages() {
 
         showMessages(null);

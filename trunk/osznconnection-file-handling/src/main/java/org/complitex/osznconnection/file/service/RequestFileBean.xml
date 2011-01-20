@@ -63,16 +63,14 @@
             <if test="month != null">and `month` = #{month}</if>
             <if test="dbfRecordCount != null">and `dbf_record_count` like CONCAT('%',#{dbfRecordCount},'%')</if>
             <if test="type != null">and `type` = #{type}</if>
-            <if test="loadedRecordCount != null">
-                and `loaded_record_count` = #{loadedRecordCount}
-            </if>
-            <if test="bindedRecordCount != null">
-                and `binded_record_count` = #{bindedRecordCount}
-            </if>
-            <if test="filledRecordCount != null">
-                and `filledRecordCount` = #{filledRecordCount}
-            </if>
+            <if test="status != null">and `status` = #{status}</if>
         </where>
+
+        <!--<trim prefix="HAVING" prefixOverrides="and">-->
+            <!--<if test="loadedRecordCount != null">and loaded_record_count like CONCAT('%',#{loadedRecordCount},'%')</if>-->
+            <!--<if test="bindedRecordCount != null">and binded_record_count like CONCAT('%',#{bindedRecordCount},'%')</if>-->
+            <!--<if test="filledRecordCount != null">and filled_record_count like CONCAT('%',#{filledRecordCount},'%')</if>-->
+        <!--</trim>-->
     </sql>
 
     <select id="selectRequestFiles" parameterType="org.complitex.osznconnection.file.entity.RequestFileFilter"
