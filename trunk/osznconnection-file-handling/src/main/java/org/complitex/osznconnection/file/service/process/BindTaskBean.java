@@ -55,7 +55,7 @@ public class BindTaskBean implements ITaskBean<RequestFileGroup> {
         paymentBean.clearBeforeBinding(group.getPaymentFile().getId());
         benefitBean.clearBeforeBinding(group.getBenefitFile().getId());
 
-        group.setStatus(RequestFileGroup.STATUS.BINDING);
+        group.setStatus(RequestFileStatus.BINDING);
         requestFileGroupBean.save(group);
 
         //связывание файла payment
@@ -80,7 +80,7 @@ public class BindTaskBean implements ITaskBean<RequestFileGroup> {
             throw new BindException(true, benefitFile);
         }
 
-        group.setStatus(RequestFileGroup.STATUS.BOUND);
+        group.setStatus(RequestFileStatus.BOUND);
         requestFileGroupBean.save(group);
 
         return true;
@@ -88,7 +88,7 @@ public class BindTaskBean implements ITaskBean<RequestFileGroup> {
 
     @Override
     public void onError(RequestFileGroup group) {
-        group.setStatus(RequestFileGroup.STATUS.BIND_ERROR);
+        group.setStatus(RequestFileStatus.BIND_ERROR);
         requestFileGroupBean.save(group);
     }
 

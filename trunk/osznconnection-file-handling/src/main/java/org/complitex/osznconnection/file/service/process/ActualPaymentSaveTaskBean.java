@@ -7,9 +7,7 @@ import org.complitex.dictionary.service.executor.ExecuteException;
 import org.complitex.dictionary.service.executor.ITaskBean;
 import org.complitex.osznconnection.file.Module;
 import org.complitex.osznconnection.file.entity.*;
-import org.complitex.osznconnection.file.service.BenefitBean;
-import org.complitex.osznconnection.file.service.PaymentBean;
-import org.complitex.osznconnection.file.service.RequestFileGroupBean;
+import org.complitex.osznconnection.file.service.*;
 import org.complitex.osznconnection.file.service.exception.SaveException;
 import org.complitex.osznconnection.file.service.exception.SqlSessionException;
 import org.slf4j.Logger;
@@ -23,41 +21,37 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * @author Anatoly A. Ivanov java@inheaven.ru
- *         Date: 01.11.10 12:58
+ * User: Anatoly A. Ivanov java@inhell.ru
+ * Date: 20.01.11 23:40
  */
-@Stateless(name = "SaveTaskBean")
-public class SaveTaskBean implements ITaskBean<RequestFileGroup>{
-    private static final Logger log = LoggerFactory.getLogger(SaveTaskBean.class);
+@Stateless(name = "ActualPaymentSaveTaskBean")
+public class ActualPaymentSaveTaskBean implements ITaskBean<RequestFile> {
+    private static final Logger log = LoggerFactory.getLogger(ActualPaymentSaveTaskBean.class);
 
-    @EJB(beanName = "PaymentBean")
-    private PaymentBean paymentBean;
+    @EJB(beanName = "RequestFileBean")
+    private RequestFileBean requestFileBean;
 
-    @EJB(beanName = "BenefitBean")
-    private BenefitBean benefitBean;
-
-    @EJB(beanName = "RequestFileGroupBean")
-    private RequestFileGroupBean requestFileGroupBean;
+    @EJB(beanName = "ActualPaymentBean")
+    private ActualPaymentBean actualPaymentBean;
 
     @Override
-    public boolean execute(RequestFileGroup group) throws ExecuteException {
-        group.setStatus(RequestFileStatus.SAVING);
-        requestFileGroupBean.save(group);
+    public boolean execute(RequestFile requestFile) throws ExecuteException {
+        requestFile.setStatus(RequestFileStatus.SAVING);
+        requestFileBean.save(requestFile);
 
-        //сохранение начислений
-        save(group.getPaymentFile());
-        save(group.getBenefitFile());
+        //сохранение фактических начислений
+        save(requestFile);
 
-        group.setStatus(RequestFileStatus.SAVED);
-        requestFileGroupBean.save(group);
+        requestFile.setStatus(RequestFileStatus.SAVED);
+        requestFileBean.save(requestFile);
 
         return true;
     }
 
     @Override
-    public void onError(RequestFileGroup group) {
-        group.setStatus(RequestFileStatus.SAVE_ERROR);
-        requestFileGroupBean.save(group);
+    public void onError(RequestFile requestFile) {
+        requestFile.setStatus(RequestFileStatus.SAVE_ERROR);
+        requestFileBean.save(requestFile);
     }
 
     @Override
@@ -67,7 +61,7 @@ public class SaveTaskBean implements ITaskBean<RequestFileGroup>{
 
     @Override
     public Class getControllerClass() {
-        return SaveTaskBean.class;
+        return ActualPaymentSaveTaskBean.class;
     }
 
     @Override
@@ -91,54 +85,37 @@ public class SaveTaskBean implements ITaskBean<RequestFileGroup>{
         DBFField[] dbfFields;
 
         switch (type){
-            case BENEFIT:
-                BenefitDBF[] benefitDBFs = BenefitDBF.values();
-                dbfFields = new DBFField[benefitDBFs.length];
+            case ACTUAL_PAYMENT:
+                ActualPaymentDBF[] actualPaymentDBFs = ActualPaymentDBF.values();
+                dbfFields = new DBFField[actualPaymentDBFs.length];
 
-                for (int i = 0; i < benefitDBFs.length; ++i){
-                    BenefitDBF benefitDBF = benefitDBFs[i];
+                for (int i = 0; i < actualPaymentDBFs.length; ++i){
+                    ActualPaymentDBF dbf = actualPaymentDBFs[i];
 
                     dbfFields[i] = new DBFField();
-                    dbfFields[i].setName(benefitDBF.name());
-                    dbfFields[i].setDataType(getDataType(benefitDBF.getType()));
-                    if (!benefitDBF.getType().equals(Date.class)){
-                        dbfFields[i].setFieldLength(benefitDBF.getLength());
-                        dbfFields[i].setDecimalCount(benefitDBF.getScale());
+                    dbfFields[i].setName(dbf.name());
+                    dbfFields[i].setDataType(getDataType(dbf.getType()));
+                    if (!dbf.getType().equals(Date.class)){
+                        dbfFields[i].setFieldLength(dbf.getLength());
+                        dbfFields[i].setDecimalCount(dbf.getScale());
                     }
                 }
 
                 return dbfFields;
-            case PAYMENT:
-                PaymentDBF[] paymentDBFs = PaymentDBF.values();
-                dbfFields = new DBFField[paymentDBFs.length];
 
-                for (int i = 0; i < paymentDBFs.length; ++i){
-                    PaymentDBF paymentDBF = paymentDBFs[i];
-
-                    dbfFields[i] = new DBFField();
-                    dbfFields[i].setName(paymentDBF.name());
-                    dbfFields[i].setDataType(getDataType(paymentDBF.getType()));
-                    if (!paymentDBF.getType().equals(Date.class)) {
-                        dbfFields[i].setFieldLength(paymentDBF.getLength());
-                        dbfFields[i].setDecimalCount(paymentDBF.getScale());
-                    }
-                }
-
-                return dbfFields;
             default: throw new IllegalArgumentException(type.name());
         }
     }
 
     public List<AbstractRequest> getAbstractRequests(RequestFile requestFile){
         switch (requestFile.getType()){
-            case BENEFIT:
-                return benefitBean.getBenefits(requestFile);
-            case PAYMENT:
-                return paymentBean.getPayments(requestFile);
+            case ACTUAL_PAYMENT:
+                return actualPaymentBean.getActualPayments(requestFile);
             default: throw new IllegalArgumentException(requestFile.getType().name());
         }
     }
 
+    //todo extract super class
     @SuppressWarnings({"EjbProhibitedPackageUsageInspection"})
     private void save(RequestFile requestFile) throws SaveException {
         DBFWriter writer = null;
@@ -188,3 +165,4 @@ public class SaveTaskBean implements ITaskBean<RequestFileGroup>{
         }
     }
 }
+

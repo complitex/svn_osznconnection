@@ -37,6 +37,7 @@
         update `request_file`
         <set>
             <if test="registry != null">`registry` = #{registry},</if>
+            <if test="status != null">`status` = #{status},</if>
         </set>
         where `id` = #{id}
     </update>
@@ -63,10 +64,13 @@
             <if test="dbfRecordCount != null">and `dbf_record_count` like CONCAT('%',#{dbfRecordCount},'%')</if>
             <if test="type != null">and `type` = #{type}</if>
             <if test="loadedRecordCount != null">
-                loaded_record_count = #{loadedRecordCount}
+                and `loaded_record_count` = #{loadedRecordCount}
             </if>
             <if test="bindedRecordCount != null">
-                binded_record_count = #{bindedRecordCount}
+                and `binded_record_count` = #{bindedRecordCount}
+            </if>
+            <if test="filledRecordCount != null">
+                and `filledRecordCount` = #{filledRecordCount}
             </if>
         </where>
     </sql>

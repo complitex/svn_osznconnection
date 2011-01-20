@@ -15,25 +15,6 @@ import java.util.List;
  */
 public class RequestFileGroup implements ILoggable{
 
-    public static enum STATUS implements IEnumCode {
-        SKIPPED(10),
-        LOADING(112),   LOAD_ERROR(111),   LOADED(110),
-        BINDING(122),   BIND_ERROR(121),   BOUND(120),
-        FILLING(132),   FILL_ERROR(131),   FILLED(130),
-        SAVING(142),    SAVE_ERROR(141),   SAVED(140);
-
-        private int code;
-
-        private STATUS(int code) {
-            this.code = code;
-        }
-
-        @Override
-        public int getCode() {
-            return code;
-        }
-    }
-
     private Long id;
 
     private RequestFile benefitFile;
@@ -43,7 +24,7 @@ public class RequestFileGroup implements ILoggable{
     private int bindedRecordCount;
     private int filledRecordCount;
 
-    private STATUS status;
+    private RequestFileStatus status;
 
     @Override
     public String getLogObjectName() {
@@ -70,10 +51,10 @@ public class RequestFileGroup implements ILoggable{
     }
 
     public boolean isProcessing() {
-       return STATUS.LOADING.equals(status)
-               || STATUS.BINDING.equals(status)
-               || STATUS.FILLING.equals(status)
-               || STATUS.SAVING.equals(status);
+       return RequestFileStatus.LOADING.equals(status)
+               || RequestFileStatus.BINDING.equals(status)
+               || RequestFileStatus.FILLING.equals(status)
+               || RequestFileStatus.SAVING.equals(status);
     }
 
     public Date getLoaded(){
@@ -167,11 +148,11 @@ public class RequestFileGroup implements ILoggable{
         this.filledRecordCount = filledRecordCount;
     }
 
-    public STATUS getStatus() {
+    public RequestFileStatus getStatus() {
         return status;
     }
 
-    public void setStatus(STATUS status) {
+    public void setStatus(RequestFileStatus status) {
         this.status = status;
     }
 

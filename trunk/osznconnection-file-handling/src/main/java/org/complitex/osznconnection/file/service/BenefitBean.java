@@ -351,7 +351,7 @@ public class BenefitBean extends AbstractRequestBean {
         long benefitFileId = benefit.getRequestFileId();
         long paymentFileId = requestFileGroupBean.getPaymentFileId(benefit.getRequestFileId());
         if (isBenefitFileProcessed(benefitFileId) && paymentBean.isPaymentFileProcessed(paymentFileId)) {
-            requestFileGroupBean.updateStatus(benefitFileId, RequestFileGroup.STATUS.FILLED);
+            requestFileGroupBean.updateStatus(benefitFileId, RequestFileStatus.FILLED);
         }
     }
 }

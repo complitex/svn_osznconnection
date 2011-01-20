@@ -36,9 +36,11 @@ public class RequestFile implements ILoggable {
     private Long length;
     private String checkSum;
     private TYPE type;
+    private RequestFileStatus status;
 
     private Integer loadedRecordCount = 0;
     private Integer bindedRecordCount = 0;
+    private Integer filledRecordCount = 0;
     private String absolutePath;
 
     private List<AbstractRequest> requests;
@@ -100,6 +102,13 @@ public class RequestFile implements ILoggable {
         }
 
         return (directory != null ? directory + File.separator : "") + name;
+    }
+
+     public boolean isProcessing() {
+       return RequestFileStatus.LOADING.equals(status)
+               || RequestFileStatus.BINDING.equals(status)
+               || RequestFileStatus.FILLING.equals(status)
+               || RequestFileStatus.SAVING.equals(status);
     }
 
     public Long getId() {
@@ -206,6 +215,14 @@ public class RequestFile implements ILoggable {
         this.type = type;
     }
 
+    public RequestFileStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(RequestFileStatus status) {
+        this.status = status;
+    }
+
     public Integer getLoadedRecordCount() {
         return loadedRecordCount;
     }
@@ -220,6 +237,14 @@ public class RequestFile implements ILoggable {
 
     public void setBindedRecordCount(Integer bindedRecordCount) {
         this.bindedRecordCount = bindedRecordCount;
+    }
+
+    public Integer getFilledRecordCount() {
+        return filledRecordCount;
+    }
+
+    public void setFilledRecordCount(Integer filledRecordCount) {
+        this.filledRecordCount = filledRecordCount;
     }
 
     public String getAbsolutePath() {

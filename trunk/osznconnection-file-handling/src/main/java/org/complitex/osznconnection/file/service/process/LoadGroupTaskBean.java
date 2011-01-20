@@ -44,7 +44,7 @@ public class LoadGroupTaskBean implements ITaskBean<RequestFileGroup>{
 
     @Override
     public boolean execute(RequestFileGroup group) throws ExecuteException {
-        group.setStatus(RequestFileGroup.STATUS.LOADING);
+        group.setStatus(RequestFileStatus.LOADING);
         requestFileGroupBean.save(group);
 
         group.getBenefitFile().setGroupId(group.getId());
@@ -98,7 +98,7 @@ public class LoadGroupTaskBean implements ITaskBean<RequestFileGroup>{
             return false; //skip - file already loaded
         }
 
-        group.setStatus(RequestFileGroup.STATUS.LOADED);
+        group.setStatus(RequestFileStatus.LOADED);
         requestFileGroupBean.save(group);
 
         return true;

@@ -32,19 +32,28 @@ import org.complitex.dictionary.util.DateUtil;
 @Stateless
 @TransactionManagement(TransactionManagementType.BEAN)
 public class ActualPaymentFillTaskBean implements ITaskBean<RequestFile> {
-
     private static final Logger log = LoggerFactory.getLogger(ActualPaymentFillTaskBean.class);
+
     @Resource
     private UserTransaction userTransaction;
+
     @EJB(beanName = "ConfigBean")
     protected ConfigBean configBean;
+
     @EJB(beanName = "CalculationCenterBean")
     private CalculationCenterBean calculationCenterBean;
+
     @EJB
     private ActualPaymentBean actualPaymentBean;
 
-    //@Override
+    @EJB(beanName = "RequestFileBean")
+    private RequestFileBean requestFileBean;
+
+    @Override
     public boolean execute(RequestFile actualPaymentFile) throws ExecuteException {
+        actualPaymentFile.setStatus(RequestFileStatus.FILLING);
+        requestFileBean.save(actualPaymentFile);
+
         actualPaymentBean.clearBeforeProcessing(actualPaymentFile.getId());
 
         //обработка файла actualPayment
@@ -59,11 +68,16 @@ public class ActualPaymentFillTaskBean implements ITaskBean<RequestFile> {
             throw new FillException(true, actualPaymentFile);
         }
 
+        actualPaymentFile.setStatus(RequestFileStatus.FILLED);
+        requestFileBean.save(actualPaymentFile);
+
         return true;
     }
 
     @Override
     public void onError(RequestFile requestFile) {
+        requestFile.setStatus(RequestFileStatus.FILL_ERROR);
+        requestFileBean.save(requestFile);
     }
 
     @Override

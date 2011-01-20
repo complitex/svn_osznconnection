@@ -48,7 +48,7 @@ public class FillTaskBean implements ITaskBean<RequestFileGroup> {
 
     @Override
     public boolean execute(RequestFileGroup group) throws ExecuteException {
-        group.setStatus(RequestFileGroup.STATUS.FILLING);
+        group.setStatus(RequestFileStatus.FILLING);
         requestFileGroupBean.save(group);
 
         //очищаем колонки которые заполняются во время обработки для записей в таблицах payment и benefit
@@ -69,7 +69,7 @@ public class FillTaskBean implements ITaskBean<RequestFileGroup> {
             throw new RuntimeException(e);
         }
 
-        group.setStatus(RequestFileGroup.STATUS.FILLED);
+        group.setStatus(RequestFileStatus.FILLED);
         requestFileGroupBean.save(group);
 
         return true;
@@ -77,7 +77,7 @@ public class FillTaskBean implements ITaskBean<RequestFileGroup> {
 
     @Override
     public void onError(RequestFileGroup group) {
-        group.setStatus(RequestFileGroup.STATUS.FILL_ERROR);
+        group.setStatus(RequestFileStatus.FILL_ERROR);
         requestFileGroupBean.save(group);
     }
 

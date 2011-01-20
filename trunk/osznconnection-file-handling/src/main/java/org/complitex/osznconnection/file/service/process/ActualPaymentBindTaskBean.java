@@ -23,14 +23,8 @@ import org.complitex.osznconnection.file.Module;
 import org.complitex.osznconnection.file.calculation.adapter.ICalculationCenterAdapter;
 import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
 import org.complitex.osznconnection.file.calculation.service.CalculationCenterBean;
-import org.complitex.osznconnection.file.entity.ActualPayment;
-import org.complitex.osznconnection.file.entity.Config;
-import org.complitex.osznconnection.file.entity.RequestFile;
-import org.complitex.osznconnection.file.entity.RequestStatus;
-import org.complitex.osznconnection.file.service.ActualPaymentBean;
-import org.complitex.osznconnection.file.service.AddressService;
-import org.complitex.osznconnection.file.service.ConfigBean;
-import org.complitex.osznconnection.file.service.PersonAccountService;
+import org.complitex.osznconnection.file.entity.*;
+import org.complitex.osznconnection.file.service.*;
 import org.complitex.osznconnection.file.service.exception.BindException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,20 +36,29 @@ import org.slf4j.LoggerFactory;
 @Stateless
 @TransactionManagement(TransactionManagementType.BEAN)
 public class ActualPaymentBindTaskBean implements ITaskBean<RequestFile> {
-
     private static final Logger log = LoggerFactory.getLogger(ActualPaymentBindTaskBean.class);
+
     @Resource
     private UserTransaction userTransaction;
+
     @EJB(beanName = "ConfigBean")
     protected ConfigBean configBean;
+
     @EJB(beanName = "AddressService")
     private AddressService addressService;
+
     @EJB(beanName = "PersonAccountService")
     private PersonAccountService personAccountService;
+
     @EJB(beanName = "CalculationCenterBean")
     private CalculationCenterBean calculationCenterBean;
+
     @EJB
     private ActualPaymentBean actualPaymentBean;
+
+@EJB(beanName = "RequestFileBean")
+    private RequestFileBean requestFileBean;
+
 
     private boolean resolveAddress(ActualPayment actualPayment, long calculationCenterId, ICalculationCenterAdapter adapter) {
         addressService.resolveAddress(actualPayment, calculationCenterId, adapter);
@@ -124,6 +127,9 @@ public class ActualPaymentBindTaskBean implements ITaskBean<RequestFile> {
     }
 
     public boolean execute(RequestFile requestFile) throws ExecuteException {
+        requestFile.setStatus(RequestFileStatus.BINDING);
+        requestFileBean.save(requestFile);
+
         actualPaymentBean.clearBeforeBinding(requestFile.getId());
 
         //связывание файла actualPayment
@@ -138,10 +144,15 @@ public class ActualPaymentBindTaskBean implements ITaskBean<RequestFile> {
             throw new BindException(true, requestFile);
         }
 
+        requestFile.setStatus(RequestFileStatus.BOUND);
+        requestFileBean.save(requestFile);
+
         return true;
     }
 
-    public void onError(RequestFile object) {
+    public void onError(RequestFile requestFile) {
+        requestFile.setStatus(RequestFileStatus.BIND_ERROR);
+        requestFileBean.save(requestFile);
     }
 
     public String getModuleName() {
