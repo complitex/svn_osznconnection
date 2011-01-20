@@ -24,10 +24,12 @@ public class RequestFileFilter extends AbstractFilter{
     private Integer dbfRecordCount;
     private Integer loadedRecordCount;
     private Integer bindedRecordCount;
+    private Integer filledRecordCount;
     private Long length;
     private String checkSum;
     private DomainObject organization;
     private RequestFile.TYPE type;
+    private RequestFileStatus status;
 
     public Long getId() {
         return id;
@@ -133,6 +135,14 @@ public class RequestFileFilter extends AbstractFilter{
         this.bindedRecordCount = bindedRecordCount;
     }
 
+    public Integer getFilledRecordCount() {
+        return filledRecordCount;
+    }
+
+    public void setFilledRecordCount(Integer filledRecordCount) {
+        this.filledRecordCount = filledRecordCount;
+    }
+
     public Long getLength() {
         return length;
     }
@@ -163,5 +173,13 @@ public class RequestFileFilter extends AbstractFilter{
 
     public void setType(RequestFile.TYPE type) {
         this.type = type;
+    }
+
+    public RequestFileStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(RequestFileStatus status) {
+        this.status = status;
     }
 }

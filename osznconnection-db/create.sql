@@ -1220,7 +1220,7 @@ DROP TABLE IF EXISTS `request_file_group`;
 CREATE TABLE `request_file_group` (
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
     `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `status` INTEGER COMMENT 'См. таблицу status_description и RequestFileGroup$STATUS',
+    `status` INTEGER COMMENT 'См. таблицу status_description и класс RequestFileStatus',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -1244,6 +1244,7 @@ CREATE TABLE `request_file` (
     `length` BIGINT(20),
     `check_sum` VARCHAR(32),
     `type` VARCHAR(50),
+    `status` INTEGER COMMENT 'См. таблицу status_description и класс RequestFileStatus',
     PRIMARY KEY (`id`),
     UNIQUE KEY `unique_id` (`name`, `organization_id`, `registry`, `month`, `year`), 
     KEY `key_group_id` (`group_id`),

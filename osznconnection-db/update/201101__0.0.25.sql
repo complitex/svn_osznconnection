@@ -90,5 +90,7 @@ CREATE TABLE `actual_payment` (
 ALTER TABLE `person_account` DROP KEY `person_account_unique_key`, ADD COLUMN `street_type` VARCHAR(20) NULL AFTER `city`,
 ADD COLUMN `street_code` VARCHAR(10) NULL AFTER `street`, MODIFY COLUMN `own_num_sr` VARCHAR(15) NULL;
 
+ALTER TABLE `request_file` ADD COLUMN `status` INTEGER;
+
 INSERT INTO `update` (`version`) VALUE ('201101_');
 

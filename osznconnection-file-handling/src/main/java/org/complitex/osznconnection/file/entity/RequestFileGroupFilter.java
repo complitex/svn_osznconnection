@@ -27,7 +27,7 @@ public class RequestFileGroupFilter  extends AbstractFilter {
     private Integer filledRecordCount;
     private DomainObject organization;
     private RequestFile.TYPE type;
-    private RequestFileGroup.STATUS status;
+    private RequestFileStatus status;
 
     public Long getId() {
         return id;
@@ -165,11 +165,11 @@ public class RequestFileGroupFilter  extends AbstractFilter {
         this.type = type;
     }
 
-    public RequestFileGroup.STATUS getStatus() {
+    public RequestFileStatus getStatus() {
         return status;
     }
 
-    public void setStatus(RequestFileGroup.STATUS status) {
+    public void setStatus(RequestFileStatus status) {
         this.status = status;
     }
 }

@@ -37,6 +37,7 @@ import org.complitex.osznconnection.file.Module;
 import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.entity.RequestFileFilter;
 import org.complitex.osznconnection.file.entity.RequestFileGroup;
+import org.complitex.osznconnection.file.entity.RequestFileStatus;
 import org.complitex.osznconnection.file.service.RequestFileBean;
 import org.complitex.osznconnection.file.service.process.ProcessManagerBean;
 import org.complitex.osznconnection.file.web.component.LoadButton;
@@ -77,7 +78,7 @@ public class ActualPaymentFileList extends ScrollListPage {
     private LogBean logBean;
 
     private int waitForStopTimer;
-
+    private int timerIndex = 0;
     private boolean completedDisplayed = false;
 
     private final static String ITEM_ID_PREFIX = "item";
@@ -167,11 +168,30 @@ public class ActualPaymentFileList extends ScrollListPage {
         //Год
         filterForm.add(new YearDropDownChoice("year"));
 
-        //Всего записей
-        filterForm.add(new TextField<Integer>("dbfRecordCount", new Model<Integer>(), Integer.class));
+         //Загружено записей
+        filterForm.add(new TextField<Integer>("loadedRecordCount", Integer.class));
 
-        //Загружено записей
-        filterForm.add(new TextField<Integer>("loadedRecordCount", new Model<Integer>(), Integer.class));
+        //Связано записей
+        filterForm.add(new TextField<Integer>("bindedRecordCount", Integer.class));
+
+        //Обработано записей
+        filterForm.add(new TextField<Integer>("filledRecordCount", Integer.class));
+
+        //Статус
+        filterForm.add(new DropDownChoice<RequestFileStatus>("status",
+                Arrays.asList(RequestFileStatus.values()),
+                new IChoiceRenderer<RequestFileStatus>() {
+
+                    @Override
+                    public Object getDisplayValue(RequestFileStatus object) {
+                        return getStringOrKey(object.name());
+                    }
+
+                    @Override
+                    public String getIdValue(RequestFileStatus object, int index) {
+                        return object.name();
+                    }
+                }));
 
         //Модель выбранных элементов списка
         final Map<RequestFile, IModel<Boolean>> selectModels = new HashMap<RequestFile, IModel<Boolean>>();
@@ -232,12 +252,12 @@ public class ActualPaymentFileList extends ScrollListPage {
                 item.setMarkupId(ITEM_ID_PREFIX + rf.getId());
 
                 CheckBox checkBox = new CheckBox("selected", selectModels.get(rf));
-                checkBox.setVisible(!isLoading(rf) || !isProcessing());
+                checkBox.setVisible(!rf.isProcessing() || !isProcessing());
                 checkBox.setEnabled(!isProcessing());
                 item.add(checkBox);
 
                 Image processing = new Image("processing", new ResourceReference(IMAGE_AJAX_LOADER));
-                processing.setVisible(isLoading(rf));
+                processing.setVisible(rf.isProcessing());
                 item.add(processing);
 
                 item.add(new Label("id", StringUtil.valueOf(rf.getId())));
@@ -253,34 +273,20 @@ public class ActualPaymentFileList extends ScrollListPage {
 
                 item.add(new Label("month", DateUtil.displayMonth(rf.getMonth(), getLocale())));
                 item.add(new Label("year", StringUtil.valueOf(rf.getYear())));
-                item.add(new Label("dbf_record_count", StringUtil.valueOf(rf.getDbfRecordCount())));
-                item.add(new Label("loaded_record_count", StringUtil.valueOf(rf.getLoadedRecordCount(), rf.getDbfRecordCount())));
 
-                String status = "";
+                 //loaded, binding filled count
+                item.add(new Label("loaded_record_count", StringUtil.valueOf(rf.getLoadedRecordCount())));
+                item.add(new Label("binded_record_count", StringUtil.valueOf(rf.getBindedRecordCount())));
+                item.add(new Label("filled_record_count", StringUtil.valueOf(rf.getFilledRecordCount())));
 
-                if (isLoaded(rf)){
-                    status = getStringOrKey("status.loaded");
-                }else if (isLoading(rf)){
-                    status = getStringOrKey("status.loading");
-                }else if (isLoadError(rf)){
-                    status = getStringOrKey("status.load_error");
+                String dots = "";
+                if (rf.isProcessing()){
+                    if (processManagerBean.isProcessing()){
+                        dots += StringUtil.getDots(timerIndex%5);
+                    }
                 }
 
-                item.add(new Label("status", status));
-
-                Class<? extends Page> page = null;
-                if (rf.isPayment()) {
-                    page = PaymentList.class;
-                } else if (rf.isBenefit()) {
-                    page = BenefitList.class;
-                }
-
-                if (page != null) {
-                    item.add(new BookmarkablePageLinkPanel<RequestFile>("action_list", getString("action_list"),
-                            page, new PageParameters("request_file_id=" + rf.getId())));
-                } else {
-                    item.add(new EmptyPanel("action_list"));
-                }
+                item.add(new Label("status", getStringOrKey(rf.getStatus()) + dots));
             }
         };
         dataViewContainer.add(dataView);
@@ -298,8 +304,9 @@ public class ActualPaymentFileList extends ScrollListPage {
         filterForm.add(new ArrowOrderByBorder("header.organization", "organization_id", dataProvider, dataView, filterForm));
         filterForm.add(new ArrowOrderByBorder("header.month", "month", dataProvider, dataView, filterForm));
         filterForm.add(new ArrowOrderByBorder("header.year", "year", dataProvider, dataView, filterForm));
-        filterForm.add(new ArrowOrderByBorder("header.dbf_record_count", "dbf_record_count", dataProvider, dataView, filterForm));
         filterForm.add(new ArrowOrderByBorder("header.loaded_record_count", "loaded_record_count", dataProvider, dataView, filterForm));
+        filterForm.add(new ArrowOrderByBorder("header.binded_record_count", "binded_record_count", dataProvider, dataView, filterForm));
+        filterForm.add(new ArrowOrderByBorder("header.filled_record_count", "filled_record_count", dataProvider, dataView, filterForm));
 
         //Постраничная навигация
         filterForm.add(new PagingNavigator("paging", dataView, getClass().getName(), filterForm));
@@ -422,6 +429,23 @@ public class ActualPaymentFileList extends ScrollListPage {
         };
         filterForm.add(delete);
 
+         //Отменить
+        Button cancel = new Button("cancel") {
+
+            @Override
+            public void onSubmit() {
+                processManagerBean.cancel();
+
+                info(getStringOrKey("process.cancel"));
+            }
+
+            @Override
+            public boolean isVisible() {
+                return isProcessing() && !processManagerBean.isStop();
+            }
+        };
+        filterForm.add(cancel);
+
         //Диалог загрузки
         requestFileLoadPanel = new RequestFileLoadPanel("load_panel",
                 getString("load_panel_title"),
@@ -465,19 +489,39 @@ public class ActualPaymentFileList extends ScrollListPage {
     private void showMessages(AjaxRequestTarget target) {
         for (RequestFile rf : processManagerBean.getProcessed(ActualPaymentFileList.class, RequestFile.TYPE.ACTUAL_PAYMENT)){
 
-            if (rf.getLoadedRecordCount().equals(rf.getDbfRecordCount()) && rf.getDbfRecordCount() != 0){
-                info(getStringFormat("actual_payment.loaded", rf.getFullName()));
-                highlightProcessed(target, rf);
-            }else {
-                error(getStringFormat("actual_payment.load_error", rf.getFullName()));
-                highlightError(target, rf);
+            switch (rf.getStatus()){
+                case SKIPPED:
+                case LOADED:
+                case BOUND:
+                case FILLED:
+                case SAVED:
+                    highlightProcessed(target, rf);
+                    info(getStringFormat("actual_payment.processed", rf.getFullName(), processManagerBean.getProcess().ordinal()));
+                    break;
+                case LOAD_ERROR:
+                case BIND_ERROR:
+                case FILL_ERROR:
+                case SAVE_ERROR:
+                    highlightError(target, rf);
+                    info(getStringFormat("actual_payment.process_error", rf.getFullName(), processManagerBean.getProcess().ordinal()));
+                    break;
             }
         }
 
-        //Process completed
+       //Process completed
         if (processManagerBean.isCompleted() && !completedDisplayed) {
             info(getStringFormat("process.done", processManagerBean.getSuccessCount(),
-                    processManagerBean.getSkippedCount(), processManagerBean.getErrorCount()));
+                    processManagerBean.getSkippedCount(), processManagerBean.getErrorCount(),
+                    processManagerBean.getProcess().ordinal()));
+
+            completedDisplayed = true;
+        }
+
+        //Process canceled
+        if (processManagerBean.isCanceled() && !completedDisplayed) {
+            info(getStringFormat("process.canceled", processManagerBean.getSuccessCount(),
+                    processManagerBean.getSkippedCount(), processManagerBean.getErrorCount(),
+                    processManagerBean.getProcess().ordinal()));
 
             completedDisplayed = true;
         }
@@ -485,7 +529,8 @@ public class ActualPaymentFileList extends ScrollListPage {
         //Process error
         if (processManagerBean.isCriticalError() && !completedDisplayed) {
             error(getStringFormat("process.critical_error", processManagerBean.getSuccessCount(),
-                    processManagerBean.getSkippedCount(), processManagerBean.getErrorCount()));
+                    processManagerBean.getSkippedCount(), processManagerBean.getErrorCount(),
+                    processManagerBean.getProcess().ordinal()));
 
             completedDisplayed = true;
         }
@@ -522,6 +567,8 @@ public class ActualPaymentFileList extends ScrollListPage {
                     //update feedback messages panel
                     target.addComponent(messages);
                 }
+
+                timerIndex++;
             }
         };
     }

@@ -37,8 +37,9 @@
                     <th class="center" wicket:id="header.organization"><wicket:message key="organization"/></th>
                     <th class="center" wicket:id="header.month"><wicket:message key="month"/></th>
                     <th class="center" wicket:id="header.year"><wicket:message key="year"/></th>
-                    <th class="center" wicket:id="header.dbf_record_count"><wicket:message key="dbf_record_count"/></th>
                     <th class="center" wicket:id="header.loaded_record_count"><wicket:message key="loaded_record_count"/></th>
+                    <th class="center" wicket:id="header.binded_record_count"><wicket:message key="binded_record_count"/></th>
+                    <th class="center" wicket:id="header.filled_record_count"><wicket:message key="filled_record_count"/></th>
                     <th class="center"><wicket:message key="status"/></th>
                     <th class="center">
                         <input class="btnSmall"  wicket:id="filter_reset" type="button" wicket:message="value:reset"/>
@@ -56,9 +57,10 @@
                     <th class="center"><select wicket:id="organization"></select></th>
                     <th class="center"><select wicket:id="month"></select></th>
                     <th class="center"><select wicket:id="year"></select></th>
-                    <th class="center"><input type="text" wicket:id="dbfRecordCount"/></th>
                     <th class="center"><input type="text" wicket:id="loadedRecordCount"/></th>
-                    <th class="center"><input type="text"/></th>
+                    <th class="center"><input type="text" wicket:id="bindedRecordCount"/></th>
+                    <th class="center"><input type="text" wicket:id="filledRecordCount"/></th>
+                    <th class="center"><select wicket:id="status"></select></th>
                     <th class="center">
                         <input class="btnSmall default" type="submit" wicket:message="value:filter" tabindex="0" />
                     </th>
@@ -76,12 +78,13 @@
                     <td><span wicket:id="organization"></span></td>
                     <td><span wicket:id="month"></span></td>
                     <td><span wicket:id="year"></span></td>
-                    <td><span wicket:id="dbf_record_count"></span></td>
                     <td><span wicket:id="loaded_record_count"></span></td>
-                    <td><span wicket:id="status" style="white-space:nowrap"></span></td>
-                    <td>
+                    <td><span wicket:id="binded_record_count"></span></td>
+                    <td><span wicket:id="filled_record_count"></span></td>
+                    <td colspan="2"><span wicket:id="status" style="white-space:nowrap"></span></td>
+                    <!--<td>
                         <span wicket:id="action_list"></span>
-                    </td>
+                    </td>-->
                 </tr>
                 </tbody>
             </table>
@@ -94,6 +97,7 @@
                 <input type="submit" class="btnBig" wicket:id="save" wicket:message="value:save"/>
                 <input type="submit" class="btnMiddle" wicket:id="delete" wicket:message="value:delete"
                        onclick="return confirm('Удалить выбранные файлы?');"/>
+                <input type="submit" class="btnBig" wicket:id="cancel" wicket:message="value:cancel"/>
             </div>
         </form>
     </div>

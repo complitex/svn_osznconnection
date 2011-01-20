@@ -33,7 +33,7 @@ public class ProcessManagerBean {
     private static final Logger log = LoggerFactory.getLogger(ProcessManagerBean.class);
 
     public static enum PROCESS {
-        LOAD, BIND, FILL, SAVE, BIND_ACTUAL_PAYMENT, FILL_ACTUAL_PAYMENT
+        LOAD, BIND, FILL, SAVE
     }
 
     @EJB(beanName = "LoadGroupTaskBean")
@@ -41,9 +41,6 @@ public class ProcessManagerBean {
 
     @EJB(beanName = "LoadTarifTaskBean")
     private ITaskBean<RequestFile> loadTarifTaskBean;
-
-    @EJB(beanName = "LoadActualPaymentTaskBean")
-    private ITaskBean<RequestFile> loadActualPaymentTaskBean;
 
     @EJB(beanName = "BindTaskBean")
     private ITaskBean<RequestFileGroup> bindTaskBean;
@@ -59,6 +56,12 @@ public class ProcessManagerBean {
 
     @EJB(beanName = "ActualPaymentFillTaskBean")
     private ITaskBean<RequestFile> actualPaymentFillTaskBean;
+
+    @EJB(beanName = "ActualPaymentLoadTaskBean")
+    private ITaskBean<RequestFile> actualPaymentLoadTaskBean;
+
+    @EJB(beanName = "ActualPaymentSaveTaskBean")
+    private ITaskBean<RequestFile> actualPaymentSaveTaskBean;
 
     @EJB(beanName = "ExecutorBean")
     private ExecutorBean executorBean;
@@ -234,26 +237,6 @@ public class ProcessManagerBean {
     }
 
     @Asynchronous
-    public void loadActualPayment(Long organizationId, String districtCode, int monthFrom, int monthTo, int year){
-        try {
-            process = PROCESS.LOAD;
-            init();
-
-            executorBean.execute(LoadUtil.getActualPayments(organizationId, districtCode, monthFrom, monthTo, year),
-                    loadActualPaymentTaskBean,
-                    configBean.getInteger(Config.LOAD_THREAD_SIZE, true),
-                    configBean.getInteger(Config.LOAD_MAX_ERROR_COUNT, true));
-        } catch (StorageNotFoundException e) {
-            preprocess = false;
-            preprocessError = true;
-
-            log.error("Ошибка процесса загрузки файлов.", e);
-            logBean.error(Module.NAME, ProcessManagerBean.class, ActualPayment.class, null,
-                    Log.EVENT.CREATE, "Ошибка процесса загрузки файлов. Причина: {0}", e.getMessage());
-        }
-    }
-
-    @Asynchronous
     public void bind(List<RequestFileGroup> groups){
         process = PROCESS.BIND;
         init();
@@ -299,8 +282,28 @@ public class ProcessManagerBean {
     }
 
     @Asynchronous
+    public void loadActualPayment(Long organizationId, String districtCode, int monthFrom, int monthTo, int year){
+        try {
+            process = PROCESS.LOAD;
+            init();
+
+            executorBean.execute(LoadUtil.getActualPayments(organizationId, districtCode, monthFrom, monthTo, year),
+                    actualPaymentLoadTaskBean,
+                    configBean.getInteger(Config.LOAD_THREAD_SIZE, true),
+                    configBean.getInteger(Config.LOAD_MAX_ERROR_COUNT, true));
+        } catch (StorageNotFoundException e) {
+            preprocess = false;
+            preprocessError = true;
+
+            log.error("Ошибка процесса загрузки файлов.", e);
+            logBean.error(Module.NAME, ProcessManagerBean.class, ActualPayment.class, null,
+                    Log.EVENT.CREATE, "Ошибка процесса загрузки файлов. Причина: {0}", e.getMessage());
+        }
+    }
+
+    @Asynchronous
     public void bindActualPayment(List<RequestFile> actualPayments){
-        process = PROCESS.BIND_ACTUAL_PAYMENT;
+        process = PROCESS.BIND;
         init();
 
         executorBean.execute(actualPayments,
@@ -311,7 +314,7 @@ public class ProcessManagerBean {
 
     @Asynchronous
     public void fillActualPayment(List<RequestFile> actualPayments){
-        process = PROCESS.FILL_ACTUAL_PAYMENT;
+        process = PROCESS.FILL;
         init();
 
         executorBean.execute(actualPayments,
@@ -325,10 +328,10 @@ public class ProcessManagerBean {
         process = PROCESS.SAVE;
         init();
 
-//        executorBean.execute(actualPayments,
-//                saveTaskBean,
-//                configBean.getInteger(Config.SAVE_THREAD_SIZE, true),
-//                configBean.getInteger(Config.SAVE_MAX_ERROR_COUNT, true));
+        executorBean.execute(actualPayments,
+                actualPaymentSaveTaskBean,
+                configBean.getInteger(Config.SAVE_THREAD_SIZE, true),
+                configBean.getInteger(Config.SAVE_MAX_ERROR_COUNT, true));
     }
 
 

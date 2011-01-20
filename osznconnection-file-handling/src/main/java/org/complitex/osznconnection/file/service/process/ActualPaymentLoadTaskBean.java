@@ -4,10 +4,7 @@ import org.complitex.dictionary.entity.Log;
 import org.complitex.dictionary.service.executor.ExecuteException;
 import org.complitex.dictionary.service.executor.ITaskBean;
 import org.complitex.osznconnection.file.Module;
-import org.complitex.osznconnection.file.entity.AbstractRequest;
-import org.complitex.osznconnection.file.entity.ActualPayment;
-import org.complitex.osznconnection.file.entity.ActualPaymentDBF;
-import org.complitex.osznconnection.file.entity.RequestFile;
+import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.service.ActualPaymentBean;
 import org.complitex.osznconnection.file.service.RequestFileBean;
 
@@ -21,9 +18,9 @@ import java.util.List;
  * User: Anatoly A. Ivanov java@inhell.ru
  * Date: 12.01.11 19:25
  */
-@Stateless(name = "LoadActualPaymentTaskBean")
+@Stateless(name = "ActualPaymentLoadTaskBean")
 @TransactionManagement(TransactionManagementType.BEAN)
-public class LoadActualPaymentTaskBean  implements ITaskBean<RequestFile> {
+public class ActualPaymentLoadTaskBean implements ITaskBean<RequestFile> {
     @EJB(beanName = "RequestFileBean")
     private RequestFileBean requestFileBean;
 
@@ -35,7 +32,10 @@ public class LoadActualPaymentTaskBean  implements ITaskBean<RequestFile> {
 
     @Override
     public boolean execute(RequestFile requestFile) throws ExecuteException {
-        loadRequestFileBean.load(requestFile, new LoadRequestFileBean.ILoadRequestFile(){
+        requestFile.setStatus(RequestFileStatus.LOADING);
+        requestFileBean.save(requestFile);
+
+        loadRequestFileBean.load(requestFile, new LoadRequestFileBean.ILoadRequestFile() {
 
             @Override
             public Enum[] getFieldNames() {
@@ -53,6 +53,9 @@ public class LoadActualPaymentTaskBean  implements ITaskBean<RequestFile> {
             }
         });
 
+        requestFile.setStatus(RequestFileStatus.LOADED);
+        requestFileBean.save(requestFile);
+
         return true;
     }
 
@@ -68,7 +71,7 @@ public class LoadActualPaymentTaskBean  implements ITaskBean<RequestFile> {
 
     @Override
     public Class getControllerClass() {
-        return LoadActualPaymentTaskBean.class;
+        return ActualPaymentLoadTaskBean.class;
     }
 
     @Override

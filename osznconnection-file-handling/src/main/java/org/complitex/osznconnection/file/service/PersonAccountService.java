@@ -11,15 +11,10 @@ import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.osznconnection.file.calculation.adapter.ICalculationCenterAdapter;
 import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
 import org.complitex.osznconnection.file.calculation.service.CalculationCenterBean;
-import org.complitex.osznconnection.file.entity.Payment;
-import org.complitex.osznconnection.file.entity.RequestStatus;
+import org.complitex.osznconnection.file.entity.*;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import org.complitex.osznconnection.file.entity.ActualPayment;
-import org.complitex.osznconnection.file.entity.ActualPaymentDBF;
-import org.complitex.osznconnection.file.entity.PaymentDBF;
-import org.complitex.osznconnection.file.entity.RequestFileGroup;
 
 /**
  * Разрешает номер л/c
@@ -135,7 +130,7 @@ public class PersonAccountService extends AbstractBean {
         long paymentFileId = payment.getRequestFileId();
         long benefitFileId = requestFileGroupBean.getBenefitFileId(paymentFileId);
         if (benefitBean.isBenefitFileBound(benefitFileId) && paymentBean.isPaymentFileBound(paymentFileId)) {
-            requestFileGroupBean.updateStatus(benefitFileId, RequestFileGroup.STATUS.BOUND);
+            requestFileGroupBean.updateStatus(benefitFileId, RequestFileStatus.BOUND);
         }
 
         long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterInfo().getCalculationCenterId();

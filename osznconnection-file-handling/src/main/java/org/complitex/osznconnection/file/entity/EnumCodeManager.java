@@ -25,6 +25,6 @@ public final class EnumCodeManager {
     private static Class<? extends IEnumCode>[] getSupportedEnums() {
         return new Class[]{
                     RequestStatus.class,
-                    RequestFileGroup.STATUS.class, RequestWarningStatus.class};
+                    RequestFileStatus.class, RequestWarningStatus.class};
     }
 }

@@ -22,6 +22,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.time.Duration;
+import org.complitex.osznconnection.file.entity.RequestFileStatus;
 import org.complitex.resources.WebCommonResourceInitializer;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.entity.Log;
@@ -177,17 +178,17 @@ public class GroupList extends ScrollListPage {
         filterForm.add(new TextField<Integer>("filledRecordCount", Integer.class));
 
         //Статус
-        filterForm.add(new DropDownChoice<RequestFileGroup.STATUS>("status",
-                Arrays.asList(RequestFileGroup.STATUS.values()),
-                new IChoiceRenderer<RequestFileGroup.STATUS>() {
+        filterForm.add(new DropDownChoice<RequestFileStatus>("status",
+                Arrays.asList(RequestFileStatus.values()),
+                new IChoiceRenderer<RequestFileStatus>() {
 
                     @Override
-                    public Object getDisplayValue(RequestFileGroup.STATUS object) {
+                    public Object getDisplayValue(RequestFileStatus object) {
                         return getStringOrKey(object.name());
                     }
 
                     @Override
-                    public String getIdValue(RequestFileGroup.STATUS object, int index) {
+                    public String getIdValue(RequestFileStatus object, int index) {
                         return object.name();
                     }
                 }));
