@@ -136,9 +136,6 @@ public class ActualPaymentBindTaskBean implements ITaskBean<RequestFile> {
         //связывание файла actualPayment
         try {
             bindActualPaymentFile(requestFile);
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            log.error("", e);
         } catch (DBException e) {
             throw new RuntimeException(e);
         }
