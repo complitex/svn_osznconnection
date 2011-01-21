@@ -35,6 +35,8 @@ public class PersonAccountService extends AbstractBean {
     private RequestFileGroupBean requestFileGroupBean;
     @EJB
     private ActualPaymentBean actualPaymentBean;
+    @EJB
+    private RequestFileBean requestFileBean;
 
     /**
      * Попытаться разрешить номер личного счета локально, т.е. из локальной таблицы person_account
@@ -148,12 +150,12 @@ public class PersonAccountService extends AbstractBean {
         actualPayment.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
         actualPaymentBean.updateAccountNumber(actualPayment);
 
-        //TODO: fix logic
-//        long paymentFileId = actualPayment.getRequestFileId();
-//        long benefitFileId = requestFileGroupBean.getBenefitFileId(paymentFileId);
-//        if (benefitBean.isBenefitFileBound(benefitFileId) && paymentBean.isPaymentFileBound(paymentFileId)) {
-//            requestFileGroupBean.updateStatus(benefitFileId, RequestFileGroup.STATUS.BOUND);
-//        }
+        long actualPaymentFileId = actualPayment.getRequestFileId();
+        RequestFile actualPaymentFile = requestFileBean.findById(actualPaymentFileId);
+        if (actualPaymentBean.isActualPaymentFileBound(actualPaymentFileId)) {
+            actualPaymentFile.setStatus(RequestFileStatus.BOUND);
+            requestFileBean.save(actualPaymentFile);
+        }
 
         long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterInfo().getCalculationCenterId();
         personAccountLocalBean.saveOrUpdate(actualPayment.getAccountNumber(), (String) actualPayment.getField(ActualPaymentDBF.F_NAM),

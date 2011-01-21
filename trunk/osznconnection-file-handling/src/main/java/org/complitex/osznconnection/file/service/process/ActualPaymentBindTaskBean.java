@@ -56,7 +56,7 @@ public class ActualPaymentBindTaskBean implements ITaskBean<RequestFile> {
     @EJB
     private ActualPaymentBean actualPaymentBean;
 
-@EJB(beanName = "RequestFileBean")
+    @EJB(beanName = "RequestFileBean")
     private RequestFileBean requestFileBean;
 
 
@@ -126,6 +126,7 @@ public class ActualPaymentBindTaskBean implements ITaskBean<RequestFile> {
         }
     }
 
+    @Override
     public boolean execute(RequestFile requestFile) throws ExecuteException {
         requestFile.setStatus(RequestFileStatus.BINDING);
         requestFileBean.save(requestFile);
@@ -135,6 +136,9 @@ public class ActualPaymentBindTaskBean implements ITaskBean<RequestFile> {
         //связывание файла actualPayment
         try {
             bindActualPaymentFile(requestFile);
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            log.error("", e);
         } catch (DBException e) {
             throw new RuntimeException(e);
         }
@@ -150,19 +154,23 @@ public class ActualPaymentBindTaskBean implements ITaskBean<RequestFile> {
         return true;
     }
 
+    @Override
     public void onError(RequestFile requestFile) {
         requestFile.setStatus(RequestFileStatus.BIND_ERROR);
         requestFileBean.save(requestFile);
     }
 
+    @Override
     public String getModuleName() {
         return Module.NAME;
     }
 
+    @Override
     public Class getControllerClass() {
         return ActualPaymentBindTaskBean.class;
     }
 
+    @Override
     public EVENT getEvent() {
         return Log.EVENT.EDIT;
     }
