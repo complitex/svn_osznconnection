@@ -33,9 +33,8 @@ public class ActualPaymentLoadTaskBean implements ITaskBean<RequestFile> {
     @Override
     public boolean execute(RequestFile requestFile) throws ExecuteException {
         requestFile.setStatus(RequestFileStatus.LOADING);
-        requestFileBean.save(requestFile);
 
-        loadRequestFileBean.load(requestFile, new LoadRequestFileBean.ILoadRequestFile() {
+        boolean noSkip = loadRequestFileBean.load(requestFile, new LoadRequestFileBean.ILoadRequestFile() {
 
             @Override
             public Enum[] getFieldNames() {
@@ -52,6 +51,10 @@ public class ActualPaymentLoadTaskBean implements ITaskBean<RequestFile> {
                 actualPaymentBean.insert(batch);
             }
         });
+
+        if (!noSkip){
+            return false; //skip - file already loaded
+        }
 
         requestFile.setStatus(RequestFileStatus.LOADED);
         requestFileBean.save(requestFile);

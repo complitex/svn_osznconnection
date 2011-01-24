@@ -74,18 +74,25 @@ public final class ActualPaymentList extends TemplatePage {
 
     private static final Logger log = LoggerFactory.getLogger(ActualPaymentList.class);
     public static final String FILE_ID = "request_file_id";
+
     @EJB(name = "ActualPaymentBean")
     private ActualPaymentBean actualPaymentBean;
+
     @EJB(name = "RequestFileBean")
     private RequestFileBean requestFileBean;
+
     @EJB(name = "StatusRenderService")
     private StatusRenderService statusRenderService;
+
     @EJB(name = "WebWarningRenderer")
     private WebWarningRenderer webWarningRenderer;
+
     @EJB(name = "StatusDetailBean")
     private StatusDetailBean statusDetailBean;
+
     @EJB(name = "AddressService")
     private AddressService addressService;
+
     @EJB(name = "PersonAccountService")
     private PersonAccountService personAccountService;
     private IModel<ActualPaymentExample> example;
