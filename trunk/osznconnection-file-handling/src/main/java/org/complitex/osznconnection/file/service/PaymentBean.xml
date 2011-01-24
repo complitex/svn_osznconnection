@@ -167,6 +167,10 @@
         `id` = #{id}
     </update>
 
+    <delete id="deletePayments" parameterType="long">
+        delete from `payment` where `request_file_id` = #{id};
+    </delete>
+
     <sql id="filter">
         <if test="account != null">
             AND p.`OWN_NUM_SR` LIKE CONCAT('%',#{account},'%')
