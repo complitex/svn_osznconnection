@@ -92,5 +92,5 @@ ADD COLUMN `street_code` VARCHAR(10) NULL AFTER `street`, MODIFY COLUMN `own_num
 
 ALTER TABLE `request_file` ADD COLUMN `status` INTEGER;
 
-INSERT INTO `update` (`version`) VALUE ('201101_');
+INSERT INTO `update` (`version`) VALUE ('20110124_515_0.1.0');
 
