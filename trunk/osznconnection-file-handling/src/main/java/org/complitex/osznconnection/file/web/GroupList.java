@@ -50,6 +50,8 @@ import java.util.*;
 import org.complitex.dictionary.web.component.scroll.ScrollListBehavior;
 import org.complitex.template.web.pages.ScrollListPage;
 
+import static org.complitex.osznconnection.file.service.process.ProcessManagerBean.TYPE.GROUP;
+
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 25.08.2010 13:35:35
@@ -309,7 +311,7 @@ public class GroupList extends ScrollListPage {
 
                 String dots = "";
                 if (group.isProcessing()){
-                    if (processManagerBean.isProcessing()){
+                    if (processManagerBean.isProcessing(GROUP)){
                         dots += StringUtil.getDots(timerIndex%5);
                     }
                 }
@@ -388,7 +390,7 @@ public class GroupList extends ScrollListPage {
 
                 completedDisplayed = false;
 
-                processManagerBean.bind(groups);
+                processManagerBean.bindGroup(groups);
 
                 selectModels.clear();
                 addTimer(dataViewContainer, filterForm, messages);
@@ -418,7 +420,7 @@ public class GroupList extends ScrollListPage {
 
                 completedDisplayed = false;
 
-                processManagerBean.fill(groups);
+                processManagerBean.fillGroup(groups);
 
                 selectModels.clear();
                 addTimer(dataViewContainer, filterForm, messages);
@@ -446,7 +448,7 @@ public class GroupList extends ScrollListPage {
 
                 completedDisplayed = false;
 
-                processManagerBean.save(groups);
+                processManagerBean.saveGroup(groups);
 
                 selectModels.clear();
                 addTimer(dataViewContainer, filterForm, messages);
@@ -464,14 +466,14 @@ public class GroupList extends ScrollListPage {
 
             @Override
             public void onSubmit() {
-                processManagerBean.cancel();
+                processManagerBean.cancel(GROUP);
 
                 info(getStringOrKey("process.cancel"));
             }
 
             @Override
             public boolean isVisible() {
-                return isProcessing() && !processManagerBean.isStop();
+                return isProcessing() && !processManagerBean.isStop(GROUP);
             }
         };
         filterForm.add(cancel);
@@ -496,13 +498,13 @@ public class GroupList extends ScrollListPage {
                         processManagerBean.loadGroup(organizationId, districtCode, monthFrom, monthTo, year);
                         addTimer(dataViewContainer, filterForm, messages);
                     }
-                });
+                }, GROUP);
 
         add(requestFileLoadPanel);
     }
 
     private boolean isProcessing() {
-        return processManagerBean.isProcessing();
+        return processManagerBean.isProcessing(GROUP);
     }
 
     private void showMessages() {
@@ -510,53 +512,61 @@ public class GroupList extends ScrollListPage {
     }
 
     private void showMessages(AjaxRequestTarget target) {
-        for (RequestFileGroup group : processManagerBean.getProcessedGroups(GroupList.class)){
+        List<RequestFileGroup> list = processManagerBean.getProcessed(GROUP, GroupList.class);
+
+        for (RequestFileGroup group : list){
             switch (group.getStatus()){
                 case SKIPPED:
+                    highlightProcessed(target, group);
+                    info(getStringFormat("group.skipped", group.getFullName(),
+                            processManagerBean.getProcess(GROUP).ordinal()));
+                    break;
                 case LOADED:
                 case BOUND:
                 case FILLED:
                 case SAVED:
                     highlightProcessed(target, group);
-                    info(getStringFormat("group.processed", group.getFullName(), processManagerBean.getProcess().ordinal()));
+                    info(getStringFormat("group.processed", group.getFullName(),
+                            processManagerBean.getProcess(GROUP).ordinal()));
                     break;
                 case LOAD_ERROR:
                 case BIND_ERROR:
                 case FILL_ERROR:
                 case SAVE_ERROR:
                     highlightError(target, group);
-                    info(getStringFormat("group.process_error", group.getFullName(), processManagerBean.getProcess().ordinal()));
+                    info(getStringFormat("group.process_error", group.getFullName(),
+                            processManagerBean.getProcess(GROUP).ordinal()));
                     break;
             }
         }
 
-        for (RequestFile rf : processManagerBean.getLinkError(true)){
+        for (RequestFile rf : processManagerBean.getLinkError(GROUP, true)){
             error(getStringFormat("request_file.link_error", rf.getFullName()));
         }
 
         //Process completed
-        if (processManagerBean.isCompleted() && !completedDisplayed) {
-            info(getStringFormat("process.done", processManagerBean.getSuccessCount(),
-                    processManagerBean.getSkippedCount(), processManagerBean.getErrorCount(),
-                    processManagerBean.getProcess().ordinal()));
+        if (processManagerBean.isCompleted(GROUP) && !completedDisplayed) {
+            info(getStringFormat("process.done", processManagerBean.getSuccessCount(GROUP),
+                    processManagerBean.getSkippedCount(GROUP), processManagerBean.getErrorCount(GROUP),
+                    processManagerBean.getProcess(GROUP).ordinal()));
 
             completedDisplayed = true;
         }
 
         //Process canceled
-        if (processManagerBean.isCanceled() && !completedDisplayed) {
-            info(getStringFormat("process.canceled", processManagerBean.getSuccessCount(),
-                    processManagerBean.getSkippedCount(), processManagerBean.getErrorCount(),
-                    processManagerBean.getProcess().ordinal()));
+        if (processManagerBean.isCanceled(GROUP) && !completedDisplayed) {
+            info(getStringFormat("process.canceled", processManagerBean.getSuccessCount(GROUP),
+                    processManagerBean.getSkippedCount(GROUP), processManagerBean.getErrorCount(GROUP),
+                    processManagerBean.getProcess(GROUP).ordinal()));
 
             completedDisplayed = true;
         }
 
         //Process error
-        if (processManagerBean.isCriticalError() && !completedDisplayed) {
-            error(getStringFormat("process.critical_error", processManagerBean.getSuccessCount(),
-                    processManagerBean.getSkippedCount(), processManagerBean.getErrorCount(),
-                    processManagerBean.getProcess().ordinal()));
+        if (processManagerBean.isCriticalError(GROUP) && !completedDisplayed) {
+            error(getStringFormat("process.critical_error", processManagerBean.getSuccessCount(GROUP),
+                    processManagerBean.getSkippedCount(GROUP), processManagerBean.getErrorCount(GROUP),
+                    processManagerBean.getProcess(GROUP).ordinal()));
 
             completedDisplayed = true;
         }

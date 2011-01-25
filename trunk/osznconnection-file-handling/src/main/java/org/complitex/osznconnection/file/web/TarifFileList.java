@@ -53,6 +53,8 @@ import org.complitex.resources.WebCommonResourceInitializer;
 import javax.ejb.EJB;
 import java.util.*;
 
+import static org.complitex.osznconnection.file.service.process.ProcessManagerBean.TYPE.TARIF;
+
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 25.08.2010 13:35:35
@@ -345,18 +347,17 @@ public class TarifFileList extends TemplatePage {
                         processManagerBean.loadTarif(organizationId, districtCode, monthFrom, monthTo, year);
                         addTimer(dataViewContainer, filterForm, messages);
                     }
-                });
+                }, TARIF);
 
         add(requestFileLoadPanel);
     }
 
     private boolean isProcessing() {
-        return processManagerBean.isProcessing();
+        return processManagerBean.isProcessing(TARIF);
     }
 
     private boolean isLoading(RequestFile requestFile){
-        return processManagerBean.isProcessing()
-                && ProcessManagerBean.PROCESS.LOAD.equals(processManagerBean.getProcess())
+        return processManagerBean.isProcessing(TARIF)
                 && requestFile.getLoadedRecordCount() < requestFile.getDbfRecordCount();
     }
 
@@ -366,7 +367,7 @@ public class TarifFileList extends TemplatePage {
     }
 
     private boolean isLoadError(RequestFile requestFile){
-        return !processManagerBean.isProcessing() && !isLoaded(requestFile);
+        return !processManagerBean.isProcessing(TARIF) && !isLoaded(requestFile);
     }
 
     private void showMessages() {
@@ -375,7 +376,9 @@ public class TarifFileList extends TemplatePage {
     }
 
     private void showMessages(AjaxRequestTarget target) {
-        for (RequestFile rf : processManagerBean.getProcessed(TarifFileList.class, RequestFile.TYPE.TARIF)){
+        List<RequestFile> list = processManagerBean.getProcessed(TARIF, TarifFileList.class);
+
+        for (RequestFile rf : list){
 
             if (rf.getLoadedRecordCount().equals(rf.getDbfRecordCount()) && rf.getDbfRecordCount() != 0){
                 info(getStringFormat("tarif.loaded", rf.getFullName()));
@@ -387,17 +390,17 @@ public class TarifFileList extends TemplatePage {
         }
 
         //Process completed
-        if (processManagerBean.isCompleted() && !completedDisplayed) {
-            info(getStringFormat("process.done", processManagerBean.getSuccessCount(),
-                    processManagerBean.getSkippedCount(), processManagerBean.getErrorCount()));
+        if (processManagerBean.isCompleted(TARIF) && !completedDisplayed) {
+            info(getStringFormat("process.done", processManagerBean.getSuccessCount(TARIF),
+                    processManagerBean.getSkippedCount(TARIF), processManagerBean.getErrorCount(TARIF)));
 
             completedDisplayed = true;
         }
 
         //Process error
-        if (processManagerBean.isCriticalError() && !completedDisplayed) {
-            error(getStringFormat("process.critical_error", processManagerBean.getSuccessCount(),
-                    processManagerBean.getSkippedCount(), processManagerBean.getErrorCount()));
+        if (processManagerBean.isCriticalError(TARIF) && !completedDisplayed) {
+            error(getStringFormat("process.critical_error", processManagerBean.getSuccessCount(TARIF),
+                    processManagerBean.getSkippedCount(TARIF), processManagerBean.getErrorCount(TARIF)));
 
             completedDisplayed = true;
         }

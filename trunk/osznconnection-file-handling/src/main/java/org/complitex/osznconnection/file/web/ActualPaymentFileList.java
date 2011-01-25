@@ -2,7 +2,6 @@ package org.complitex.osznconnection.file.web;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.ResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -16,7 +15,6 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.*;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.link.Link;
-import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.CompoundPropertyModel;
@@ -42,8 +40,6 @@ import org.complitex.osznconnection.file.service.RequestFileBean;
 import org.complitex.osznconnection.file.service.process.ProcessManagerBean;
 import org.complitex.osznconnection.file.web.component.LoadButton;
 import org.complitex.osznconnection.file.web.pages.actualpayment.ActualPaymentList;
-import org.complitex.osznconnection.file.web.pages.benefit.BenefitList;
-import org.complitex.osznconnection.file.web.pages.payment.PaymentList;
 import org.complitex.osznconnection.organization.strategy.OrganizationStrategy;
 import org.complitex.resources.WebCommonResourceInitializer;
 import org.complitex.template.web.component.toolbar.ToolbarButton;
@@ -54,6 +50,8 @@ import org.slf4j.LoggerFactory;
 import javax.ejb.EJB;
 import java.util.*;
 import org.complitex.template.web.pages.ScrollListPage;
+
+import static org.complitex.osznconnection.file.service.process.ProcessManagerBean.TYPE.ACTUAL_PAYMENT;
 
 /**
  * User: Anatoly A. Ivanov java@inhell.ru
@@ -281,7 +279,7 @@ public class ActualPaymentFileList extends ScrollListPage {
 
                 String dots = "";
                 if (rf.isProcessing()){
-                    if (processManagerBean.isProcessing()){
+                    if (processManagerBean.isProcessing(ACTUAL_PAYMENT)){
                         dots += StringUtil.getDots(timerIndex%5);
                     }
                 }
@@ -434,14 +432,14 @@ public class ActualPaymentFileList extends ScrollListPage {
 
             @Override
             public void onSubmit() {
-                processManagerBean.cancel();
+                processManagerBean.cancel(ACTUAL_PAYMENT);
 
                 info(getStringOrKey("process.cancel"));
             }
 
             @Override
             public boolean isVisible() {
-                return isProcessing() && !processManagerBean.isStop();
+                return isProcessing() && !processManagerBean.isStop(ACTUAL_PAYMENT);
             }
         };
         filterForm.add(cancel);
@@ -457,13 +455,13 @@ public class ActualPaymentFileList extends ScrollListPage {
                         processManagerBean.loadActualPayment(organizationId, districtCode, monthFrom, monthTo, year);
                         addTimer(dataViewContainer, filterForm, messages);
                     }
-                });
+                }, ACTUAL_PAYMENT);
 
         add(requestFileLoadPanel);
     }
 
     private boolean isProcessing() {
-        return processManagerBean.isProcessing();
+        return processManagerBean.isProcessing(ACTUAL_PAYMENT);
     }
 
     private void showMessages() {
@@ -472,50 +470,58 @@ public class ActualPaymentFileList extends ScrollListPage {
     }
 
     private void showMessages(AjaxRequestTarget target) {
-        for (RequestFile rf : processManagerBean.getProcessed(ActualPaymentFileList.class, RequestFile.TYPE.ACTUAL_PAYMENT)){
+        List<RequestFile> list = processManagerBean.getProcessed(ACTUAL_PAYMENT, ActualPaymentFileList.class);
+
+        for (RequestFile rf : list){
 
             switch (rf.getStatus()){
                 case SKIPPED:
+                    highlightProcessed(target, rf);
+                    info(getStringFormat("actual_payment.skipped", rf.getFullName(),
+                            processManagerBean.getProcess(ACTUAL_PAYMENT).ordinal()));
+                    break;
                 case LOADED:
                 case BOUND:
                 case FILLED:
                 case SAVED:
                     highlightProcessed(target, rf);
-                    info(getStringFormat("actual_payment.processed", rf.getFullName(), processManagerBean.getProcess().ordinal()));
+                    info(getStringFormat("actual_payment.processed", rf.getFullName(),
+                            processManagerBean.getProcess(ACTUAL_PAYMENT).ordinal()));
                     break;
                 case LOAD_ERROR:
                 case BIND_ERROR:
                 case FILL_ERROR:
                 case SAVE_ERROR:
                     highlightError(target, rf);
-                    info(getStringFormat("actual_payment.process_error", rf.getFullName(), processManagerBean.getProcess().ordinal()));
+                    info(getStringFormat("actual_payment.process_error", rf.getFullName(),
+                            processManagerBean.getProcess(ACTUAL_PAYMENT).ordinal()));
                     break;
             }
         }
 
        //Process completed
-        if (processManagerBean.isCompleted() && !completedDisplayed) {
-            info(getStringFormat("process.done", processManagerBean.getSuccessCount(),
-                    processManagerBean.getSkippedCount(), processManagerBean.getErrorCount(),
-                    processManagerBean.getProcess().ordinal()));
+        if (processManagerBean.isCompleted(ACTUAL_PAYMENT) && !completedDisplayed) {
+            info(getStringFormat("process.done", processManagerBean.getSuccessCount(ACTUAL_PAYMENT),
+                    processManagerBean.getSkippedCount(ACTUAL_PAYMENT), processManagerBean.getErrorCount(ACTUAL_PAYMENT),
+                    processManagerBean.getProcess(ACTUAL_PAYMENT).ordinal()));
 
             completedDisplayed = true;
         }
 
         //Process canceled
-        if (processManagerBean.isCanceled() && !completedDisplayed) {
-            info(getStringFormat("process.canceled", processManagerBean.getSuccessCount(),
-                    processManagerBean.getSkippedCount(), processManagerBean.getErrorCount(),
-                    processManagerBean.getProcess().ordinal()));
+        if (processManagerBean.isCanceled(ACTUAL_PAYMENT) && !completedDisplayed) {
+            info(getStringFormat("process.canceled", processManagerBean.getSuccessCount(ACTUAL_PAYMENT),
+                    processManagerBean.getSkippedCount(ACTUAL_PAYMENT), processManagerBean.getErrorCount(ACTUAL_PAYMENT),
+                    processManagerBean.getProcess(ACTUAL_PAYMENT).ordinal()));
 
             completedDisplayed = true;
         }
 
         //Process error
-        if (processManagerBean.isCriticalError() && !completedDisplayed) {
-            error(getStringFormat("process.critical_error", processManagerBean.getSuccessCount(),
-                    processManagerBean.getSkippedCount(), processManagerBean.getErrorCount(),
-                    processManagerBean.getProcess().ordinal()));
+        if (processManagerBean.isCriticalError(ACTUAL_PAYMENT) && !completedDisplayed) {
+            error(getStringFormat("process.critical_error", processManagerBean.getSuccessCount(ACTUAL_PAYMENT),
+                    processManagerBean.getSkippedCount(ACTUAL_PAYMENT), processManagerBean.getErrorCount(ACTUAL_PAYMENT),
+                    processManagerBean.getProcess(ACTUAL_PAYMENT).ordinal()));
 
             completedDisplayed = true;
         }

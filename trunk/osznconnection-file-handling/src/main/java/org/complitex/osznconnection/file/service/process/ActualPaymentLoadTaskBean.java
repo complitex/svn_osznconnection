@@ -53,6 +53,8 @@ public class ActualPaymentLoadTaskBean implements ITaskBean<RequestFile> {
         });
 
         if (!noSkip){
+            requestFile.setStatus(RequestFileStatus.SKIPPED);
+
             return false; //skip - file already loaded
         }
 

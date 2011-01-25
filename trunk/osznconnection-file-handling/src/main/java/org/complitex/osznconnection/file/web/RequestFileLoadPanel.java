@@ -40,7 +40,7 @@ public class RequestFileLoadPanel extends Panel {
         void load(Long organizationId, String districtCode, int monthFrom, int monthTo, int year);
     }
 
-    public RequestFileLoadPanel(String id, String title, final ILoader loader) {
+    public RequestFileLoadPanel(String id, String title, final ILoader loader, final ProcessManagerBean.TYPE type) {
         super(id);
 
         dialog = new Dialog("dialog");
@@ -109,7 +109,7 @@ public class RequestFileLoadPanel extends Panel {
                     return;
                 }
 
-                if (!processManagerBean.isProcessing()) {
+                if (!processManagerBean.isProcessing(type)) {
                     DomainObject oszn = organizationModel.getObject();
                     loader.load(oszn.getId(), organizationStrategy.getDistrictCode(oszn), f, t, year.getModelObject());
                     getSession().info(getString("info.start_loading"));
