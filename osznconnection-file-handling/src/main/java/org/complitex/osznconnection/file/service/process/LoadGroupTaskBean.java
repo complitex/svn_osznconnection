@@ -94,6 +94,7 @@ public class LoadGroupTaskBean implements ITaskBean<RequestFileGroup>{
             }
         } else {
             requestFileGroupBean.clear(group); //no cascading remove group
+            group.setStatus(RequestFileStatus.SKIPPED);
 
             return false; //skip - file already loaded
         }

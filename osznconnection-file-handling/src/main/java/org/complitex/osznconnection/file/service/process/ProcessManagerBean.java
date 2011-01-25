@@ -9,19 +9,20 @@ import org.complitex.osznconnection.file.Module;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.service.ConfigBean;
 import org.complitex.osznconnection.file.service.exception.StorageNotFoundException;
-import org.complitex.osznconnection.file.service.warning.IWarningRenderer;
-import org.complitex.osznconnection.file.service.warning.WebWarningRenderer;
+import org.complitex.osznconnection.file.service.warning.ReportWarningRenderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Resource;
 import javax.ejb.*;
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-import org.complitex.osznconnection.file.service.warning.ReportWarningRenderer;
+
+import static org.complitex.osznconnection.file.service.process.ProcessManagerBean.TYPE.*;
+import static org.complitex.osznconnection.file.service.process.ProcessStatus.PROCESS.*;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -32,9 +33,12 @@ import org.complitex.osznconnection.file.service.warning.ReportWarningRenderer;
 public class ProcessManagerBean {
     private static final Logger log = LoggerFactory.getLogger(ProcessManagerBean.class);
 
-    public static enum PROCESS {
-        LOAD, BIND, FILL, SAVE
+    public static enum TYPE {
+        GROUP, ACTUAL_PAYMENT, TARIF
     }
+
+    @Resource
+    private SessionContext sessionContext;
 
     @EJB(beanName = "LoadGroupTaskBean")
     private ITaskBean<RequestFileGroup> loadGroupTaskBean;
@@ -75,124 +79,109 @@ public class ProcessManagerBean {
     @EJB
     private ReportWarningRenderer reportWarningRenderer;
 
-    private List<RequestFile> linkError = new CopyOnWriteArrayList<RequestFile>();
+    private Map<String, Map<TYPE, ProcessStatus>> processStatusMap = new ConcurrentHashMap<String, Map<TYPE, ProcessStatus>>();
 
-    Map<Object, Integer> processedIndex = new ConcurrentHashMap<Object, Integer>();
+    private ProcessStatus getProcessStatus(TYPE type){
+        //Principal Name
+        String principalName = sessionContext.getCallerPrincipal().getName();
 
-    private PROCESS process;
+        Map<TYPE, ProcessStatus> map = processStatusMap.get(principalName);
 
-    private boolean preprocess = false;
-    private int preprocessErrorCount = 0;
-    private boolean preprocessError = false;
+        ProcessStatus processStatus = null;
 
-    public PROCESS getProcess() {
-        return process;
-    }
-
-    public List<RequestFile> getLinkError(boolean flush) {
-        List<RequestFile> list = new ArrayList<RequestFile>();
-        list.addAll(linkError);
-
-        if (flush){
-            linkError.clear();
+        if (map != null){
+            processStatus = map.get(type);
+        }else{
+            map = new HashMap<TYPE, ProcessStatus>();
+            processStatusMap.put(principalName, map);
         }
 
-        return Collections.unmodifiableList(list);
-    }
-
-    public List<RequestFileGroup> getProcessedGroups(Object queryKey){
-        List<RequestFileGroup> list = new ArrayList<RequestFileGroup>();
-
-        Integer index = processedIndex.get(queryKey);
-
-        int size = executorBean.getProcessed().size();
-
-        List processed = executorBean.getProcessed().subList(index != null ? index : 0, size);
-
-        for (Object obj : processed){
-            if (obj instanceof RequestFileGroup){
-                list.add((RequestFileGroup) obj);
-            }
+        if (processStatus == null){
+            processStatus = new ProcessStatus();
+            map.put(type, processStatus);
         }
 
-        processedIndex.put(queryKey, size);
-
-        return Collections.unmodifiableList(list);
+        return processStatus;
     }
 
-    public List<RequestFile> getProcessed(Object queryKey, RequestFile.TYPE type){
-        List<RequestFile> list = new ArrayList<RequestFile>();
+    private ProcessStatus initProcessStatus(TYPE type, ProcessStatus.PROCESS process){
+        ProcessStatus processStatus = getProcessStatus(type);
 
-        Integer index = processedIndex.get(queryKey);
+        processStatus.setProcess(process);
+        processStatus.init();
 
-        int size = executorBean.getProcessed().size();
+        return processStatus;
+    }
 
-        List processed = executorBean.getProcessed().subList(index != null ? index : 0, size);
+    public List<RequestFile> getLinkError(TYPE type, boolean flush) {
+        ProcessStatus processStatus = getProcessStatus(type);
 
-        for (Object obj : processed){
-            if (obj instanceof RequestFile){
-                RequestFile requestFile = (RequestFile) obj;
-                if (type.equals(requestFile.getType())) {
-                    list.add(requestFile);
-                }
-            }
+        if (processStatus != null){
+            return processStatus.getLinkError(flush);
         }
 
-        processedIndex.put(queryKey, size);
-
-        return Collections.unmodifiableList(list);
+        return Collections.emptyList();
     }
 
-    public int getSuccessCount() {
-        return executorBean.getSuccessCount();
+    public <T> List<T> getProcessed(TYPE type, Object queryKey){
+        return getProcessStatus(type).getProcessed(queryKey);
     }
 
-    public int getSkippedCount(){
-        return executorBean.getSkippedCount();
+    public int getSuccessCount(TYPE type) {
+        return getProcessStatus(type).getSuccessCount();
     }
 
-    public int getErrorCount() {
-        return executorBean.getErrorCount() + preprocessErrorCount;
+    public int getSkippedCount(TYPE type){
+        return getProcessStatus(type).getSkippedCount();
     }
 
-    public boolean isProcessing(){
-        return executorBean.getStatus().equals(ExecutorBean.STATUS.RUNNING) || preprocess;
+    public int getErrorCount(TYPE type) {
+        return getProcessStatus(type).getErrorCount();
     }
 
-    public boolean isCriticalError(){
-        return executorBean.getStatus().equals(ExecutorBean.STATUS.CRITICAL_ERROR) || preprocessError;
+    public boolean isProcessing(TYPE type){
+        return getProcessStatus(type).isProcessing();
     }
 
-    public boolean isCompleted(){
-        return executorBean.getStatus().equals(ExecutorBean.STATUS.COMPLETED);
+    public boolean isCriticalError(TYPE type){
+        return getProcessStatus(type).isCriticalError();
     }
 
-    public boolean isCanceled(){
-        return executorBean.getStatus().equals(ExecutorBean.STATUS.CANCELED);
+    public boolean isCompleted(TYPE type){
+        return getProcessStatus(type).isCompleted();
     }
 
-    public boolean isStop(){
-        return executorBean.isStop();
+    public boolean isCanceled(TYPE type){
+        return getProcessStatus(type).isCanceled();
     }
 
-    public void cancel(){
-        executorBean.cancel();
+    public boolean isStop(TYPE type){
+        return getProcessStatus(type).isStop();
+    }
+
+    public void cancel(TYPE type){
+        getProcessStatus(type).cancel();
+    }
+
+    public ProcessStatus.PROCESS getProcess(TYPE type){
+        return getProcessStatus(type).getProcess();
     }
 
     @Asynchronous
     public void loadGroup(Long organizationId, String districtCode, int monthFrom, int monthTo, int year){
+        ProcessStatus processStatus = getProcessStatus(GROUP);
+
         try {
-            process = PROCESS.LOAD;
+            processStatus.setProcess(LOAD_GROUP);
 
-            preprocess = true; // предобработка
-
-            init();
+            processStatus.startPreprocess(); // предобработка
+            processStatus.init();
 
             LoadUtil.LoadGroupParameter loadParameter = LoadUtil.getLoadParameter(organizationId, districtCode, monthFrom, monthTo, year);
 
-            linkError.addAll(loadParameter.getLinkError());
+            List<RequestFile> linkError = loadParameter.getLinkError();
 
-            preprocessErrorCount = linkError.size();
+            processStatus.addLinkError(linkError);
 
             for (RequestFile rf : linkError){
                 logBean.error(Module.NAME, ProcessManagerBean.class, RequestFileGroup.class, null, rf.getId(),
@@ -200,15 +189,15 @@ public class ProcessManagerBean {
                         rf.getLogObjectName());
             }
 
-            preprocess = false;
+            processStatus.donePreprocess();
 
             executorBean.execute(loadParameter.getRequestFileGroups(),
                     loadGroupTaskBean,
+                    processStatus.getExecutorStatus(),
                     configBean.getInteger(Config.LOAD_THREAD_SIZE, true),
                     configBean.getInteger(Config.LOAD_MAX_ERROR_COUNT, true));
         } catch (StorageNotFoundException e) {
-            preprocess = false;
-            preprocessError = true;
+            processStatus.preprocessError();
 
             log.error("Ошибка процесса загрузки файлов.", e);
             logBean.error(Module.NAME, ProcessManagerBean.class, RequestFileGroup.class, null,
@@ -217,54 +206,28 @@ public class ProcessManagerBean {
     }
 
     @Asynchronous
-    public void loadTarif(Long organizationId, String districtCode, int monthFrom, int monthTo, int year){
-        try {
-            process = PROCESS.LOAD;
-            init();
-
-            executorBean.execute(LoadUtil.getTarifs(organizationId, districtCode, monthFrom, monthTo, year),
-                    loadTarifTaskBean,
-                    configBean.getInteger(Config.LOAD_THREAD_SIZE, true),
-                    configBean.getInteger(Config.LOAD_MAX_ERROR_COUNT, true));
-        } catch (StorageNotFoundException e) {
-            preprocess = false;
-            preprocessError = true;
-
-            log.error("Ошибка процесса загрузки файлов.", e);
-            logBean.error(Module.NAME, ProcessManagerBean.class, Tarif.class, null,
-                    Log.EVENT.CREATE, "Ошибка процесса загрузки файлов. Причина: {0}", e.getMessage());
-        }
-    }
-
-    @Asynchronous
-    public void bind(List<RequestFileGroup> groups){
-        process = PROCESS.BIND;
-        init();
-
+    public void bindGroup(List<RequestFileGroup> groups){
         executorBean.execute(groups,
                 bindTaskBean,
+                initProcessStatus(GROUP, BIND_GROUP).getExecutorStatus(),
                 configBean.getInteger(Config.BIND_THREAD_SIZE, true),
                 configBean.getInteger(Config.BIND_MAX_ERROR_COUNT, true));
     }
 
     @Asynchronous
-    public void fill(List<RequestFileGroup> groups){
-        process = PROCESS.FILL;
-        init();
-
+    public void fillGroup(List<RequestFileGroup> groups){
         executorBean.execute(groups,
                 fillTaskBean,
+                initProcessStatus(GROUP, FILL_GROUP).getExecutorStatus(),
                 configBean.getInteger(Config.FILL_THREAD_SIZE, true),
                 configBean.getInteger(Config.FILL_MAX_ERROR_COUNT, true));
     }
 
     @Asynchronous
-    public void save(List<RequestFileGroup> groups){
-        process = PROCESS.SAVE;
-        init();
-
+    public void saveGroup(List<RequestFileGroup> groups){
         executorBean.execute(groups,
                 saveTaskBean,
+                initProcessStatus(GROUP, SAVE_GROUP).getExecutorStatus(),
                 new IExecutorListener<RequestFileGroup>() {
                     @Override
                     public void onComplete(List<RequestFileGroup> processed) {
@@ -284,17 +247,12 @@ public class ProcessManagerBean {
     @Asynchronous
     public void loadActualPayment(Long organizationId, String districtCode, int monthFrom, int monthTo, int year){
         try {
-            process = PROCESS.LOAD;
-            init();
-
             executorBean.execute(LoadUtil.getActualPayments(organizationId, districtCode, monthFrom, monthTo, year),
                     actualPaymentLoadTaskBean,
+                    initProcessStatus(ACTUAL_PAYMENT, LOAD_ACTUAL_PAYMENT).getExecutorStatus(),
                     configBean.getInteger(Config.LOAD_THREAD_SIZE, true),
                     configBean.getInteger(Config.LOAD_MAX_ERROR_COUNT, true));
         } catch (StorageNotFoundException e) {
-            preprocess = false;
-            preprocessError = true;
-
             log.error("Ошибка процесса загрузки файлов.", e);
             logBean.error(Module.NAME, ProcessManagerBean.class, ActualPayment.class, null,
                     Log.EVENT.CREATE, "Ошибка процесса загрузки файлов. Причина: {0}", e.getMessage());
@@ -303,42 +261,43 @@ public class ProcessManagerBean {
 
     @Asynchronous
     public void bindActualPayment(List<RequestFile> actualPayments){
-        process = PROCESS.BIND;
-        init();
-
         executorBean.execute(actualPayments,
                 actualPaymentBindTaskBean,
+                initProcessStatus(ACTUAL_PAYMENT, BIND_ACTUAL_PAYMENT).getExecutorStatus(),
                 configBean.getInteger(Config.BIND_THREAD_SIZE, true),
                 configBean.getInteger(Config.BIND_MAX_ERROR_COUNT, true));
     }
 
     @Asynchronous
     public void fillActualPayment(List<RequestFile> actualPayments){
-        process = PROCESS.FILL;
-        init();
-
         executorBean.execute(actualPayments,
                 actualPaymentFillTaskBean,
+                initProcessStatus(ACTUAL_PAYMENT, FILL_ACTUAL_PAYMENT).getExecutorStatus(),
                 configBean.getInteger(Config.FILL_THREAD_SIZE, true),
                 configBean.getInteger(Config.FILL_MAX_ERROR_COUNT, true));
     }
 
     @Asynchronous
     public void saveActualPayment(List<RequestFile> actualPayments){
-        process = PROCESS.SAVE;
-        init();
-
         executorBean.execute(actualPayments,
                 actualPaymentSaveTaskBean,
+                initProcessStatus(ACTUAL_PAYMENT, SAVE_ACTUAL_PAYMENT).getExecutorStatus(),
                 configBean.getInteger(Config.SAVE_THREAD_SIZE, true),
                 configBean.getInteger(Config.SAVE_MAX_ERROR_COUNT, true));
     }
 
-
-    private void init(){
-        preprocessError = false;
-        processedIndex.clear();
-        linkError.clear();
-        preprocessErrorCount = 0;
+    @Asynchronous
+    public void loadTarif(Long organizationId, String districtCode, int monthFrom, int monthTo, int year){
+        try {
+            executorBean.execute(LoadUtil.getTarifs(organizationId, districtCode, monthFrom, monthTo, year),
+                    loadTarifTaskBean,
+                    initProcessStatus(TARIF, LOAD_TARIF).getExecutorStatus(),
+                    configBean.getInteger(Config.LOAD_THREAD_SIZE, true),
+                    configBean.getInteger(Config.LOAD_MAX_ERROR_COUNT, true));
+        } catch (StorageNotFoundException e) {
+            log.error("Ошибка процесса загрузки файлов.", e);
+            logBean.error(Module.NAME, ProcessManagerBean.class, Tarif.class, null,
+                    Log.EVENT.CREATE, "Ошибка процесса загрузки файлов. Причина: {0}", e.getMessage());
+        }
     }
 }
