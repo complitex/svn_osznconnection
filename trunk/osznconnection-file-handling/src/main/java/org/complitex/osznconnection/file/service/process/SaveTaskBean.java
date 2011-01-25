@@ -10,6 +10,7 @@ import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.service.BenefitBean;
 import org.complitex.osznconnection.file.service.PaymentBean;
 import org.complitex.osznconnection.file.service.RequestFileGroupBean;
+import org.complitex.osznconnection.file.service.exception.AlreadyProcessingException;
 import org.complitex.osznconnection.file.service.exception.SaveException;
 import org.complitex.osznconnection.file.service.exception.SqlSessionException;
 import org.slf4j.Logger;
@@ -21,6 +22,7 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -41,6 +43,12 @@ public class SaveTaskBean implements ITaskBean<RequestFileGroup>{
 
     @Override
     public boolean execute(RequestFileGroup group) throws ExecuteException {
+        group.setStatus(requestFileGroupBean.getRequestFileStatus(group)); //обновляем статус из базы данных
+
+        if (group.isProcessing()){ //проверяем что не обрабатывается в данный момент
+            throw new SaveException(new AlreadyProcessingException(group), true, group);
+        }
+
         group.setStatus(RequestFileStatus.SAVING);
         requestFileGroupBean.save(group);
 

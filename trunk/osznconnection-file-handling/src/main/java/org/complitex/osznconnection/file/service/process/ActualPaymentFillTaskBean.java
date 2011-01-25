@@ -10,6 +10,7 @@ import org.complitex.osznconnection.file.calculation.adapter.exception.DBExcepti
 import org.complitex.osznconnection.file.calculation.service.CalculationCenterBean;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.service.*;
+import org.complitex.osznconnection.file.service.exception.AlreadyProcessingException;
 import org.complitex.osznconnection.file.service.exception.FillException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,26 +51,32 @@ public class ActualPaymentFillTaskBean implements ITaskBean<RequestFile> {
     private RequestFileBean requestFileBean;
 
     @Override
-    public boolean execute(RequestFile actualPaymentFile) throws ExecuteException {
-        actualPaymentFile.setStatus(RequestFileStatus.FILLING);
-        requestFileBean.save(actualPaymentFile);
+    public boolean execute(RequestFile requestFile) throws ExecuteException {
+        requestFile.setStatus(requestFileBean.getRequestFileStatus(requestFile)); //обновляем статус из базы данных
 
-        actualPaymentBean.clearBeforeProcessing(actualPaymentFile.getId());
+        if (requestFile.isProcessing()){ //проверяем что не обрабатывается в данный момент
+            throw new FillException(new AlreadyProcessingException(requestFile), true, requestFile);
+        }
+
+        requestFile.setStatus(RequestFileStatus.FILLING);
+        requestFileBean.save(requestFile);
+
+        actualPaymentBean.clearBeforeProcessing(requestFile.getId());
 
         //обработка файла actualPayment
         try {
-            processActualPayment(actualPaymentFile);
+            processActualPayment(requestFile);
         } catch (DBException e) {
             throw new RuntimeException(e);
         }
 
         //проверить все ли записи в actualPayment файле обработались
-        if (!actualPaymentBean.isActualPaymentFileProcessed(actualPaymentFile.getId())) {
-            throw new FillException(true, actualPaymentFile);
+        if (!actualPaymentBean.isActualPaymentFileProcessed(requestFile.getId())) {
+            throw new FillException(true, requestFile);
         }
 
-        actualPaymentFile.setStatus(RequestFileStatus.FILLED);
-        requestFileBean.save(actualPaymentFile);
+        requestFile.setStatus(RequestFileStatus.FILLED);
+        requestFileBean.save(requestFile);
 
         return true;
     }

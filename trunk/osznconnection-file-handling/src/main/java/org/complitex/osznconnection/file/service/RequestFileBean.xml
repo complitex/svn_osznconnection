@@ -130,4 +130,9 @@
     <select id="selectTarifFiles" parameterType="long" resultMap="requestFileResultMap">
         select * from `request_file` where organization_id = #{organizationId} and `type` = 'TARIF'
     </select>
+
+    <select id="selectRequestFileStatus" resultType="org.complitex.osznconnection.file.entity.RequestFileStatus"
+            parameterType="long">
+        select `status` from `request_file` where `id` = #{id}
+    </select>
 </mapper>

@@ -10,6 +10,7 @@ import org.complitex.osznconnection.file.calculation.adapter.exception.DBExcepti
 import org.complitex.osznconnection.file.calculation.service.CalculationCenterBean;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.service.*;
+import org.complitex.osznconnection.file.service.exception.AlreadyProcessingException;
 import org.complitex.osznconnection.file.service.exception.BindException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,12 +52,18 @@ public class BindTaskBean implements ITaskBean<RequestFileGroup> {
 
     @Override
     public boolean execute(RequestFileGroup group) throws ExecuteException {
-        //очищаем колонки которые заполняются во время связывания и обработки для записей в таблицах payment и benefit
-        paymentBean.clearBeforeBinding(group.getPaymentFile().getId());
-        benefitBean.clearBeforeBinding(group.getBenefitFile().getId());
+        group.setStatus(requestFileGroupBean.getRequestFileStatus(group)); //обновляем статус из базы данных
+
+        if (group.isProcessing()){ //проверяем что не обрабатывается в данный момент
+            throw new BindException(new AlreadyProcessingException(group), true, group);
+        }
 
         group.setStatus(RequestFileStatus.BINDING);
         requestFileGroupBean.save(group);
+
+        //очищаем колонки которые заполняются во время связывания и обработки для записей в таблицах payment и benefit
+        paymentBean.clearBeforeBinding(group.getPaymentFile().getId());
+        benefitBean.clearBeforeBinding(group.getBenefitFile().getId());
 
         //связывание файла payment
         RequestFile paymentFile = group.getPaymentFile();

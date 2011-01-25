@@ -25,6 +25,7 @@ import org.complitex.osznconnection.file.calculation.adapter.exception.DBExcepti
 import org.complitex.osznconnection.file.calculation.service.CalculationCenterBean;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.service.*;
+import org.complitex.osznconnection.file.service.exception.AlreadyProcessingException;
 import org.complitex.osznconnection.file.service.exception.BindException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -128,6 +129,12 @@ public class ActualPaymentBindTaskBean implements ITaskBean<RequestFile> {
 
     @Override
     public boolean execute(RequestFile requestFile) throws ExecuteException {
+        requestFile.setStatus(requestFileBean.getRequestFileStatus(requestFile)); //обновляем статус из базы данных
+
+        if (requestFile.isProcessing()){ //проверяем что не обрабатывается в данный момент
+            throw new BindException(new AlreadyProcessingException(requestFile), true, requestFile);
+        }
+
         requestFile.setStatus(RequestFileStatus.BINDING);
         requestFileBean.save(requestFile);
 
