@@ -8,6 +8,7 @@ import org.complitex.dictionary.service.executor.ITaskBean;
 import org.complitex.osznconnection.file.Module;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.service.*;
+import org.complitex.osznconnection.file.service.exception.AlreadyProcessingException;
 import org.complitex.osznconnection.file.service.exception.SaveException;
 import org.complitex.osznconnection.file.service.exception.SqlSessionException;
 import org.slf4j.Logger;
@@ -36,6 +37,12 @@ public class ActualPaymentSaveTaskBean implements ITaskBean<RequestFile> {
 
     @Override
     public boolean execute(RequestFile requestFile) throws ExecuteException {
+         requestFile.setStatus(requestFileBean.getRequestFileStatus(requestFile)); //обновляем статус из базы данных
+
+        if (requestFile.isProcessing()){ //проверяем что не обрабатывается в данный момент
+            throw new SaveException(new AlreadyProcessingException(requestFile), true, requestFile);
+        }
+
         requestFile.setStatus(RequestFileStatus.SAVING);
         requestFileBean.save(requestFile);
 

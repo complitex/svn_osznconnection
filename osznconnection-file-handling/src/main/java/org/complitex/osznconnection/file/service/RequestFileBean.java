@@ -4,6 +4,7 @@ import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.entity.RequestFileFilter;
+import org.complitex.osznconnection.file.entity.RequestFileStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,5 +92,9 @@ public class RequestFileBean extends AbstractBean {
         for (RequestFile tarif : tarifs){
             delete(tarif);
         }
+    }
+
+    public RequestFileStatus getRequestFileStatus(RequestFile requestFile) {
+        return (RequestFileStatus) sqlSession().selectOne(MAPPING_NAMESPACE + ".selectRequestFileStatus", requestFile);
     }
 }

@@ -79,4 +79,8 @@ public class RequestFileGroupBean extends AbstractBean{
     public long getBenefitFileId(long paymentFileId) {
         return (Long) sqlSession().selectOne(MAPPING_NAMESPACE + ".getBenefitFileId", paymentFileId);
     }
+
+    public RequestFileStatus getRequestFileStatus(RequestFileGroup group){
+        return (RequestFileStatus) sqlSession().selectOne(MAPPING_NAMESPACE + ".selectGroupStatus", group.getId());
+    }
 }

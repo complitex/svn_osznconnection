@@ -10,6 +10,7 @@ import org.complitex.osznconnection.file.calculation.adapter.exception.DBExcepti
 import org.complitex.osznconnection.file.calculation.service.CalculationCenterBean;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.service.*;
+import org.complitex.osznconnection.file.service.exception.AlreadyProcessingException;
 import org.complitex.osznconnection.file.service.exception.FillException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +49,12 @@ public class FillTaskBean implements ITaskBean<RequestFileGroup> {
 
     @Override
     public boolean execute(RequestFileGroup group) throws ExecuteException {
+        group.setStatus(requestFileGroupBean.getRequestFileStatus(group)); //обновляем статус из базы данных
+
+        if (group.isProcessing()){ //проверяем что не обрабатывается в данный момент
+            throw new FillException(new AlreadyProcessingException(group), true, group);
+        }
+
         group.setStatus(RequestFileStatus.FILLING);
         requestFileGroupBean.save(group);
 

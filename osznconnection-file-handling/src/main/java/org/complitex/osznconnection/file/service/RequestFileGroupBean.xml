@@ -156,4 +156,9 @@
                JOIN `request_file` b ON (b.`group_id` = rfg.`id` AND b.`type` = 'BENEFIT')
         WHERE p.`type` = 'PAYMENT' AND b.`id` = #{benefitFileId}
     </select>
+
+    <select id="selectGroupStatus" resultType="org.complitex.osznconnection.file.entity.RequestFileStatus"
+            parameterType="long">
+        select `status` from `request_file_group` where `id` = #{id}
+    </select>
 </mapper>
