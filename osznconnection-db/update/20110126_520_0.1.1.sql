@@ -15,4 +15,6 @@ CREATE TABLE `permission` (
     KEY `key_object_id` (`object_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+insert into `permission` (`permission_id`, `table`, `entity`, `object_id`) value (0, 'ALL', 'ALL', 0);
+
 INSERT INTO `update` (`version`) VALUE ('20110126_520_0.1.1');
