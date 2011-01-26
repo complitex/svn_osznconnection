@@ -41,8 +41,8 @@ pk_id4 object_id4 parent_id4 permission_id3
 
 select * from `street` s 
   left join `building` b on (b.`parent_id` = s.`object_id`) 
-where s.`permission_id` in getPermisstions(user_id, 'street')
-  and b.`permission_id` in getPermisstions(user_id, 'building')
+where s.`permission_id` in getPermissions(user_id, 'street')
+  and b.`permission_id` in getPermissions(user_id, 'building')
 }}}
 
-Таблица `Permission` и колонки `permission_id` редактируется администратором через пользовательский интерфейс. Колонка `table` нужна на случай быстрого поиска. Функции `getPermisstions` реализуются на java или mysql.
+Таблица `Permission` и колонки `permission_id` редактируется администратором через пользовательский интерфейс. Колонка `table` нужна на случай быстрого поиска. Функции `getPermissions` реализуются на java или mysql.
