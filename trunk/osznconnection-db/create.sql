@@ -1835,6 +1835,24 @@ CREATE TABLE `request_warning_parameter` (
     CONSTRAINT `fk_request_warning_parameter__request_warning` FOREIGN KEY (`request_warning_id`) REFERENCES `request_warning` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
+-- ------------------------------
+-- Permission
+-- ------------------------------
+
+CREATE TABLE `permission` (
+    `pk_id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+    `permission_id` BIGINT(20) NOT NULL,
+    `table` VARCHAR(64) NOT NULL,
+    `entity` VARCHAR(64) NOT NULL,
+    `object_id` BIGINT(20) NOT NULL,
+    PRIMARY KEY (`pk_id`),
+    KEY `key_permission_id` (`permission_id`),
+    KEY `key_table` (`table`),
+    KEY `key_entity` (`entity`),
+    KEY `key_object_id` (`object_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
