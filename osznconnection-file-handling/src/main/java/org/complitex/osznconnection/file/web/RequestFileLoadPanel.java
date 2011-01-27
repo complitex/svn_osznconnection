@@ -14,7 +14,6 @@ import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
 import org.complitex.dictionary.web.component.MonthDropDownChoice;
 import org.complitex.dictionary.web.component.YearDropDownChoice;
 import org.complitex.osznconnection.file.service.process.ProcessManagerBean;
-import org.complitex.osznconnection.organization.strategy.OrganizationStrategy;
 import org.odlabs.wiquery.core.javascript.JsStatement;
 import org.odlabs.wiquery.ui.core.JsScopeUiEvent;
 import org.odlabs.wiquery.ui.dialog.Dialog;
@@ -22,6 +21,7 @@ import org.odlabs.wiquery.ui.dialog.Dialog;
 import javax.ejb.EJB;
 import java.io.Serializable;
 import java.util.List;
+import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -32,7 +32,7 @@ public class RequestFileLoadPanel extends Panel {
     private ProcessManagerBean processManagerBean;
 
     @EJB(name = "OrganizationStrategy")
-    private OrganizationStrategy organizationStrategy;
+    private IOsznOrganizationStrategy organizationStrategy;
 
     private final Dialog dialog;
 

@@ -40,7 +40,6 @@ import org.complitex.osznconnection.file.service.RequestFileBean;
 import org.complitex.osznconnection.file.service.process.ProcessManagerBean;
 import org.complitex.osznconnection.file.web.component.LoadButton;
 import org.complitex.osznconnection.file.web.pages.actualpayment.ActualPaymentList;
-import org.complitex.osznconnection.organization.strategy.OrganizationStrategy;
 import org.complitex.resources.WebCommonResourceInitializer;
 import org.complitex.template.web.component.toolbar.ToolbarButton;
 import org.complitex.template.web.security.SecurityRole;
@@ -49,6 +48,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import java.util.*;
+import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
 import org.complitex.template.web.pages.ScrollListPage;
 
 import static org.complitex.osznconnection.file.service.process.ProcessManagerBean.TYPE.ACTUAL_PAYMENT;
@@ -67,7 +67,7 @@ public class ActualPaymentFileList extends ScrollListPage {
     private RequestFileBean requestFileBean;
 
     @EJB(name = "OrganizationStrategy")
-    private OrganizationStrategy organizationStrategy;
+    private IOsznOrganizationStrategy organizationStrategy;
 
     @EJB(name = "ProcessManagerBean")
     private ProcessManagerBean processManagerBean;

@@ -10,7 +10,8 @@ import org.apache.wicket.Component;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.strategy.web.DomainObjectEditPanel;
 import org.complitex.dictionary.strategy.web.validate.IValidator;
-import org.complitex.osznconnection.organization.strategy.OrganizationStrategy;
+import org.complitex.dictionary.util.EjbBeanLocator;
+import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
 
 /**
  *
@@ -18,12 +19,9 @@ import org.complitex.osznconnection.organization.strategy.OrganizationStrategy;
  */
 public class OrganizationValidator implements IValidator {
 
-    private OrganizationStrategy organizationStrategy;
-
     private Locale systemLocale;
 
-    public OrganizationValidator(OrganizationStrategy organizationStrategy, Locale systemLocale) {
-        this.organizationStrategy = organizationStrategy;
+    public OrganizationValidator(Locale systemLocale) {
         this.systemLocale = systemLocale;
     }
 
@@ -54,7 +52,7 @@ public class OrganizationValidator implements IValidator {
 
     private boolean checkDistrict(DomainObject object, OrganizationEditComponent editComponent) {
         Long entityTypeId = object.getEntityTypeId();
-        if (entityTypeId != null && entityTypeId.equals(OrganizationStrategy.OSZN)) {
+        if (entityTypeId != null && entityTypeId.equals(IOsznOrganizationStrategy.OSZN)) {
             boolean validated = editComponent.isDistrictEntered();
             if (!validated) {
                 editComponent.error(editComponent.getString("must_have_district"));
@@ -66,6 +64,7 @@ public class OrganizationValidator implements IValidator {
     }
 
     private boolean checkUniqueness(DomainObject object, OrganizationEditComponent editComponent) {
+        IOsznOrganizationStrategy organizationStrategy = EjbBeanLocator.getBean("OrganizationStrategy");
         boolean valid = true;
         Long byName = organizationStrategy.validateName(object.getId(), organizationStrategy.getName(object, systemLocale), object.getParentId(),
                 object.getParentEntityId(), systemLocale);

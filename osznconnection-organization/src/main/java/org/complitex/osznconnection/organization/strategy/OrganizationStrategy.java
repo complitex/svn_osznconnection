@@ -33,36 +33,15 @@ import org.complitex.osznconnection.organization.strategy.web.edit.OrganizationE
  * @author Artem
  */
 @Stateless(name = "OrganizationStrategy")
-public class OrganizationStrategy extends AbstractStrategy {
+public class OrganizationStrategy extends AbstractStrategy implements IOsznOrganizationStrategy {
 
     private static final String ORGANIZATION_NAMESPACE = OrganizationStrategy.class.getPackage().getName() + ".Organization";
-
-    public static final String RESOURCE_BUNDLE = OrganizationStrategy.class.getName();
-
-    public static final long ITSELF_ORGANIZATION_OBJECT_ID = 0;
-
-    /**
-     * Attribute type ids
-     */
-    private static final long NAME = 900;
-
-    private static final long CODE = 901;
-
-    private static final long DISTRICT = 902;
-
-    /**
-     * Entity type ids
-     */
-    public static final long OSZN = 900;
-
-    public static final long CALCULATION_CENTER = 901;
+    private static final String RESOURCE_BUNDLE = OrganizationStrategy.class.getName();
 
     @EJB(beanName = "StringCultureBean")
     private StringCultureBean stringBean;
-
     @EJB(beanName = "DistrictStrategy")
     private DistrictStrategy districtStrategy;
-    
     @EJB
     private LocaleBean localeBean;
 
@@ -100,7 +79,7 @@ public class OrganizationStrategy extends AbstractStrategy {
 
     @Override
     public IValidator getValidator() {
-        return new OrganizationValidator(this, localeBean.getSystemLocale());
+        return new OrganizationValidator(localeBean.getSystemLocale());
     }
 
     @Override
@@ -108,9 +87,10 @@ public class OrganizationStrategy extends AbstractStrategy {
         return OrganizationEditComponent.class;
     }
 
+    @Override
     public List<DomainObject> getAllOuterOrganizations(Locale locale) {
         DomainObjectExample example = new DomainObjectExample();
-        example.setOrderByAttributeTypeId(OrganizationStrategy.NAME);
+        example.setOrderByAttributeTypeId(IOsznOrganizationStrategy.NAME);
         example.setLocaleId(localeBean.convert(locale).getId());
         example.setAsc(true);
         configureExample(example, ImmutableMap.<String, Long>of(), null);
@@ -124,30 +104,34 @@ public class OrganizationStrategy extends AbstractStrategy {
         return outerOrganizations;
     }
 
+    @Override
     public List<DomainObject> getAllOSZNs(Locale locale) {
         DomainObjectExample example = new DomainObjectExample();
         example.setEntityTypeId(OSZN);
-        example.setOrderByAttributeTypeId(OrganizationStrategy.NAME);
+        example.setOrderByAttributeTypeId(IOsznOrganizationStrategy.NAME);
         example.setLocaleId(localeBean.convert(locale).getId());
         example.setAsc(true);
         configureExample(example, ImmutableMap.<String, Long>of(), null);
         return (List<DomainObject>) find(example);
     }
 
+    @Override
     public List<DomainObject> getAllCalculationCentres(Locale locale) {
         DomainObjectExample example = new DomainObjectExample();
         example.setEntityTypeId(CALCULATION_CENTER);
         example.setLocaleId(localeBean.convert(locale).getId());
         example.setAsc(true);
-        example.setOrderByAttributeTypeId(OrganizationStrategy.NAME);
+        example.setOrderByAttributeTypeId(IOsznOrganizationStrategy.NAME);
         configureExample(example, ImmutableMap.<String, Long>of(), null);
         return (List<DomainObject>) find(example);
     }
 
+    @Override
     public Attribute getDistrictAttribute(DomainObject organization) {
         return organization.getAttribute(DISTRICT);
     }
 
+    @Override
     public String getDistrictCode(DomainObject organization) {
         String districtCode = null;
         Attribute districtAttribute = getDistrictAttribute(organization);
@@ -157,20 +141,24 @@ public class OrganizationStrategy extends AbstractStrategy {
         return districtCode;
     }
 
+    @Override
     public DomainObject getItselfOrganization() {
         DomainObjectExample example = new DomainObjectExample(ITSELF_ORGANIZATION_OBJECT_ID);
         configureExample(example, ImmutableMap.<String, Long>of(), null);
         return find(example).get(0);
     }
 
+    @Override
     public String getCode(DomainObject organization) {
         return stringBean.getSystemStringCulture(organization.getAttribute(CODE).getLocalizedValues()).getValue();
     }
 
+    @Override
     public String getName(DomainObject organization, Locale locale) {
         return stringBean.displayValue(organization.getAttribute(NAME).getLocalizedValues(), locale);
     }
 
+    @Override
     public Long validateCode(Long id, String code, Long parentId, Long parentEntityId) {
         Map<String, Object> params = Maps.newHashMap();
         params.put("code", code);
@@ -185,6 +173,7 @@ public class OrganizationStrategy extends AbstractStrategy {
         return null;
     }
 
+    @Override
     public Long validateName(Long id, String name, Long parentId, Long parentEntityId, Locale locale) {
         Map<String, Object> params = Maps.newHashMap();
         params.put("name", name);
@@ -198,5 +187,10 @@ public class OrganizationStrategy extends AbstractStrategy {
             }
         }
         return null;
+    }
+
+    @Override
+    public List<DomainObject> getUserOrganizations() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

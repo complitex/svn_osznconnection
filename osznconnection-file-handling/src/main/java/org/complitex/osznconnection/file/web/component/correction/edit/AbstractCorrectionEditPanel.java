@@ -22,7 +22,6 @@ import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
 import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
 import org.complitex.osznconnection.file.entity.Correction;
 import org.complitex.osznconnection.file.service.CorrectionBean;
-import org.complitex.osznconnection.organization.strategy.OrganizationStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +38,7 @@ import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.osznconnection.file.web.model.OrganizationModel;
 import org.complitex.osznconnection.file.web.pages.correction.AbstractCorrectionList;
+import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
 
 /**
  * Абстрактная панель для редактирования коррекций.
@@ -50,7 +50,7 @@ public abstract class AbstractCorrectionEditPanel extends Panel {
     @EJB(name = "CorrectionBean")
     private CorrectionBean correctionBean;
     @EJB(name = "OrganizationStrategy")
-    private OrganizationStrategy organizationStrategy;
+    private IOsznOrganizationStrategy organizationStrategy;
     private Long correctionId;
     private Correction correction;
     private WebMarkupContainer form;
@@ -267,7 +267,7 @@ public abstract class AbstractCorrectionEditPanel extends Panel {
         form.add(organization);
 
         if (isNew()) {
-            correction.setInternalOrganizationId(OrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID);
+            correction.setInternalOrganizationId(IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID);
         }
 
         final List<DomainObject> internalOrganizations = Lists.newArrayList(organizationStrategy.getItselfOrganization());

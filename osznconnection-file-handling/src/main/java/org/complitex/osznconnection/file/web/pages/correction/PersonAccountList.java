@@ -29,7 +29,6 @@ import org.complitex.template.web.security.SecurityRole;
 import org.complitex.osznconnection.file.entity.PersonAccount;
 import org.complitex.osznconnection.file.entity.example.PersonAccountExample;
 import org.complitex.osznconnection.file.service.PersonAccountLocalBean;
-import org.complitex.osznconnection.organization.strategy.OrganizationStrategy;
 
 import javax.ejb.EJB;
 import java.util.Iterator;
@@ -41,6 +40,7 @@ import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
 import org.complitex.dictionary.web.component.scroll.ScrollBookmarkablePageLink;
 import org.complitex.osznconnection.file.web.model.OrganizationModel;
 import org.complitex.osznconnection.file.web.pages.util.AddressRenderer;
+import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
 import org.complitex.template.web.pages.ScrollListPage;
 
 /**
@@ -54,7 +54,7 @@ public class PersonAccountList extends ScrollListPage {
     private PersonAccountLocalBean personAccountLocalBean;
 
     @EJB(name = "OrganizationStrategy")
-    private OrganizationStrategy organizationStrategy;
+    private IOsznOrganizationStrategy organizationStrategy;
 
     @EJB(name = "LocaleBean")
     private LocaleBean localeBean;

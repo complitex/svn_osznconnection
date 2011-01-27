@@ -29,7 +29,7 @@ import org.complitex.template.web.template.FormTemplatePage;
 import org.complitex.osznconnection.file.entity.PersonAccount;
 import org.complitex.osznconnection.file.service.PersonAccountLocalBean;
 import org.complitex.osznconnection.file.web.model.OrganizationModel;
-import org.complitex.osznconnection.organization.strategy.OrganizationStrategy;
+import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +45,7 @@ public final class PersonAccountEdit extends FormTemplatePage {
     @EJB(name = "PersonAccountLocalBean")
     private PersonAccountLocalBean personAccountLocalBean;
     @EJB(name = "OrganizationStrategy")
-    private OrganizationStrategy organizationStrategy;
+    private IOsznOrganizationStrategy organizationStrategy;
     private Long correctionId;
     private PersonAccount personAccount;
 

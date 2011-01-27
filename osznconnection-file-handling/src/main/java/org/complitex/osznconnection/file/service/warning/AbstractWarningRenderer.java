@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Locale;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.entity.DomainObject;
-import org.complitex.dictionary.strategy.Strategy;
+import org.complitex.dictionary.strategy.IStrategy;
 import org.complitex.dictionary.strategy.StrategyFactory;
 import org.complitex.dictionary.util.EjbBeanLocator;
 import org.complitex.dictionary.util.ResourceUtil;
@@ -102,7 +102,7 @@ public abstract class AbstractWarningRenderer implements IWarningRenderer {
     }
 
     protected String displayObject(String entity, long objectId, Locale locale) {
-        Strategy strategy = EjbBeanLocator.getBean(StrategyFactory.class).getStrategy(entity);
+        IStrategy strategy = EjbBeanLocator.getBean(StrategyFactory.class).getStrategy(entity);
         DomainObject object = strategy.findById(objectId);
         if (object != null) {
             return strategy.displayDomainObject(object, locale);
