@@ -481,4 +481,5 @@ INSERT INTO `organization_attribute`(`attribute_id`, `object_id`, `attribute_typ
 (1,0,900,1,900), (1,0,901,2,901);
 
 --Permission
-insert into `permission` (`permission_id`, `table`, `entity`, `object_id`) value (0, 'ALL', 'ALL', 0);
+INSERT INTO `permission` (`permission_id`, `table`, `entity`, `object_id`) VALUE (0, 'ALL', 'ALL', 0);
+INSERT INTO `sequence` (`sequence_name`, `sequence_value`) VALUES ('permission', 1);

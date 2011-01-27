@@ -46,6 +46,7 @@
         <mapper resource="org/complitex/dictionary/service/LogBean.xml"/>
         <mapper resource="org/complitex/dictionary/service/SessionBean.xml"/>
         <mapper resource="org/complitex/dictionary/service/PreferenceBean.xml"/>
+        <mapper resource="org/complitex/dictionary/service/PermissionBean.xml"/>
 
         <mapper resource="org/complitex/address/strategy/building/Building.xml"/>
         <mapper resource="org/complitex/address/strategy/street/Street.xml"/>
