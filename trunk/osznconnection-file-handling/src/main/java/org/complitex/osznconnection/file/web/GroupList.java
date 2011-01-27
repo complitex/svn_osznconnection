@@ -43,11 +43,11 @@ import org.complitex.osznconnection.file.service.process.ProcessManagerBean;
 import org.complitex.osznconnection.file.web.component.LoadButton;
 import org.complitex.osznconnection.file.web.pages.benefit.BenefitList;
 import org.complitex.osznconnection.file.web.pages.payment.PaymentList;
-import org.complitex.osznconnection.organization.strategy.OrganizationStrategy;
 
 import javax.ejb.EJB;
 import java.util.*;
 import org.complitex.dictionary.web.component.scroll.ScrollListBehavior;
+import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
 import org.complitex.template.web.pages.ScrollListPage;
 
 import static org.complitex.osznconnection.file.service.process.ProcessManagerBean.TYPE.GROUP;
@@ -65,7 +65,7 @@ public class GroupList extends ScrollListPage {
     private RequestFileGroupBean requestFileGroupBean;
 
     @EJB(name = "OrganizationStrategy")
-    private OrganizationStrategy organizationStrategy;
+    private IOsznOrganizationStrategy organizationStrategy;
 
     @EJB(name = "ProcessManagerBean")
     private ProcessManagerBean processManagerBean;

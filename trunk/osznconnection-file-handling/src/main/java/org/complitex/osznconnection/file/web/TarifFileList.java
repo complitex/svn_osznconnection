@@ -47,11 +47,11 @@ import org.complitex.osznconnection.file.service.process.ProcessManagerBean;
 import org.complitex.osznconnection.file.web.component.LoadButton;
 import org.complitex.osznconnection.file.web.pages.benefit.BenefitList;
 import org.complitex.osznconnection.file.web.pages.payment.PaymentList;
-import org.complitex.osznconnection.organization.strategy.OrganizationStrategy;
 import org.complitex.resources.WebCommonResourceInitializer;
 
 import javax.ejb.EJB;
 import java.util.*;
+import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
 
 import static org.complitex.osznconnection.file.service.process.ProcessManagerBean.TYPE.TARIF;
 
@@ -68,7 +68,7 @@ public class TarifFileList extends TemplatePage {
     private RequestFileBean requestFileBean;
 
     @EJB(name = "OrganizationStrategy")
-    private OrganizationStrategy organizationStrategy;
+    private IOsznOrganizationStrategy organizationStrategy;
 
     @EJB(name = "ProcessManagerBean")
     private ProcessManagerBean processManagerBean;

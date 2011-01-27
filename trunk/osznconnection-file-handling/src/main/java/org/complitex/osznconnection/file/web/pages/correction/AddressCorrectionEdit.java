@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import org.apache.wicket.util.string.Strings;
+import org.complitex.dictionary.strategy.IStrategy;
 import org.complitex.osznconnection.file.entity.StreetCorrection;
 import org.complitex.osznconnection.file.web.component.correction.edit.AddressCorrectionInputPanel;
 import org.complitex.osznconnection.file.web.pages.util.AddressRenderer;
@@ -105,7 +106,7 @@ public class AddressCorrectionEdit extends FormTemplatePage {
             return getString("address_required");
         }
 
-        protected Strategy getStrategy(String entity) {
+        protected IStrategy getStrategy(String entity) {
             return strategyFactory.getStrategy(entity);
         }
 

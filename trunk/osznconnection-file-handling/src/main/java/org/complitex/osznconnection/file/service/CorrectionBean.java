@@ -9,7 +9,6 @@ import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.dictionary.service.LocaleBean;
-import org.complitex.dictionary.strategy.Strategy;
 import org.complitex.dictionary.strategy.StrategyFactory;
 import org.complitex.osznconnection.file.entity.Correction;
 import org.complitex.osznconnection.file.entity.example.CorrectionExample;
@@ -20,6 +19,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import java.util.List;
 import java.util.Map;
+import org.complitex.dictionary.strategy.IStrategy;
 
 /**
  * Обобщенный класс для работы с коррекциями.
@@ -62,7 +62,7 @@ public class CorrectionBean extends AbstractBean {
 
     protected void setUpDisplayObject(List<? extends Correction> corrections, String entity, Long localeId) {
         if (corrections != null && !corrections.isEmpty()) {
-            Strategy strategy = strategyFactory.getStrategy(entity);
+            IStrategy strategy = strategyFactory.getStrategy(entity);
             for (Correction correction : corrections) {
                 DomainObject object = strategy.findById(correction.getObjectId());
                 correction.setDisplayObject(strategy.displayDomainObject(object, localeBean.convert(localeBean.getLocale(localeId))));

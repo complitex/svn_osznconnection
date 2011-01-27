@@ -9,7 +9,6 @@ import java.io.Serializable;
 import java.util.Map;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.strategy.web.AbstractComplexAttributesPanel;
-import org.complitex.osznconnection.organization.strategy.OrganizationStrategy;
 
 import javax.ejb.EJB;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -25,6 +24,7 @@ import org.complitex.dictionary.web.component.search.ISearchCallback;
 import org.complitex.dictionary.web.component.search.SearchComponent;
 import org.complitex.dictionary.web.component.search.SearchComponentState;
 import org.complitex.address.strategy.district.DistrictStrategy;
+import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +40,7 @@ public class OrganizationEditComponent extends AbstractComplexAttributesPanel {
     private DistrictStrategy districtStrategy;
 
     @EJB(name = "OrganizationStrategy")
-    private OrganizationStrategy organizationStrategy;
+    private IOsznOrganizationStrategy organizationStrategy;
 
     private Attribute districtAttribute;
 
@@ -123,7 +123,7 @@ public class OrganizationEditComponent extends AbstractComplexAttributesPanel {
         }
 
         Long entityTypeId = currentOrganization.getEntityTypeId();
-        if (entityTypeId != null && entityTypeId.equals(OrganizationStrategy.OSZN)) {
+        if (entityTypeId != null && entityTypeId.equals(IOsznOrganizationStrategy.OSZN)) {
             districtContainer.setVisible(true);
         } else {
             districtContainer.setVisible(false);

@@ -45,7 +45,7 @@ import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
 import org.complitex.dictionary.web.component.scroll.ScrollBookmarkablePageLink;
 import org.complitex.template.web.component.toolbar.AddItemButton;
 import org.complitex.osznconnection.file.web.model.OrganizationModel;
-import org.complitex.osznconnection.organization.strategy.OrganizationStrategy;
+import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
 import org.complitex.template.web.pages.ScrollListPage;
 
 /**
@@ -64,7 +64,7 @@ public abstract class AbstractCorrectionList extends ScrollListPage {
     private LocaleBean localeBean;
 
     @EJB(name = "OrganizationStrategy")
-    private OrganizationStrategy organizationStrategy;
+    private IOsznOrganizationStrategy organizationStrategy;
 
     private String entity;
 

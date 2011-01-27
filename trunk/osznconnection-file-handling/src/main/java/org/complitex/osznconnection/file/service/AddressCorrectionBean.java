@@ -10,7 +10,6 @@ import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.LocaleBean;
-import org.complitex.dictionary.strategy.Strategy;
 import org.complitex.dictionary.web.component.search.SearchComponentState;
 import org.complitex.osznconnection.file.entity.BuildingCorrection;
 import org.complitex.osznconnection.file.entity.Correction;
@@ -23,6 +22,7 @@ import javax.ejb.Stateless;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import org.complitex.dictionary.strategy.IStrategy;
 import org.complitex.osznconnection.file.entity.StreetCorrection;
 
 /**
@@ -416,9 +416,9 @@ public class AddressCorrectionBean extends CorrectionBean {
     public List<BuildingCorrection> findBuildings(CorrectionExample example) {
         List<BuildingCorrection> list = sqlSession().selectList(ADDRESS_BEAN_MAPPING_NAMESPACE + ".findBuildings", example);
 
-        Strategy cityStrategy = strategyFactory.getStrategy("city");
-        Strategy streetStrategy = strategyFactory.getStrategy("street");
-        Strategy buildingStrategy = strategyFactory.getStrategy("building");
+        IStrategy cityStrategy = strategyFactory.getStrategy("city");
+        IStrategy streetStrategy = strategyFactory.getStrategy("street");
+        IStrategy buildingStrategy = strategyFactory.getStrategy("building");
 
         for (Correction c : list) {
             try {
@@ -451,8 +451,8 @@ public class AddressCorrectionBean extends CorrectionBean {
         example.setParentEntity("city");
         List<StreetCorrection> streets = sqlSession().selectList(ADDRESS_BEAN_MAPPING_NAMESPACE + ".findStreets", example);
 
-        Strategy streetStrategy = strategyFactory.getStrategy("street");
-        Strategy cityStrategy = strategyFactory.getStrategy("city");
+        IStrategy streetStrategy = strategyFactory.getStrategy("street");
+        IStrategy cityStrategy = strategyFactory.getStrategy("city");
         for (Correction c : streets) {
             try {
                 DomainObject street = streetStrategy.findById(c.getObjectId());
@@ -473,8 +473,8 @@ public class AddressCorrectionBean extends CorrectionBean {
     public List<Correction> findDistricts(CorrectionExample example) {
         example.setParentEntity("city");
         List<Correction> districts = sqlSession().selectList(ADDRESS_BEAN_MAPPING_NAMESPACE + ".findDistricts", example);
-        Strategy districtStrategy = strategyFactory.getStrategy("district");
-        Strategy cityStrategy = strategyFactory.getStrategy("city");
+        IStrategy districtStrategy = strategyFactory.getStrategy("district");
+        IStrategy cityStrategy = strategyFactory.getStrategy("city");
 
         for (Correction c : districts) {
             try {

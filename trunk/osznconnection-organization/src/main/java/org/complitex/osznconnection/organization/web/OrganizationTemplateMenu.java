@@ -7,12 +7,12 @@ package org.complitex.osznconnection.organization.web;
 import com.google.common.collect.ImmutableList;
 import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
-import org.complitex.dictionary.strategy.Strategy;
 import org.complitex.template.web.template.ITemplateLink;
 import org.complitex.template.web.template.ResourceTemplateMenu;
 
 import java.util.List;
 import java.util.Locale;
+import org.complitex.dictionary.strategy.IStrategy;
 import org.complitex.dictionary.strategy.StrategyFactory;
 import org.complitex.dictionary.util.EjbBeanLocator;
 
@@ -22,7 +22,7 @@ import org.complitex.dictionary.util.EjbBeanLocator;
  */
 public class OrganizationTemplateMenu extends ResourceTemplateMenu {
 
-    private static Strategy getStrategy() {
+    private static IStrategy getStrategy() {
         return EjbBeanLocator.getBean(StrategyFactory.class).getStrategy("organization");
     }
 
