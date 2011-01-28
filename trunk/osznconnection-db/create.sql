@@ -1840,6 +1840,8 @@ CREATE TABLE `request_warning_parameter` (
 -- Permission
 -- ------------------------------
 
+DROP TABLE IF EXISTS `permission`;
+
 CREATE TABLE `permission` (
     `pk_id` BIGINT(20) NOT NULL AUTO_INCREMENT,
     `permission_id` BIGINT(20) NOT NULL,

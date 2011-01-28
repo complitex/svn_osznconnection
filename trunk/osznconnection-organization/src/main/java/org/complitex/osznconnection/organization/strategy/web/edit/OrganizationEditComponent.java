@@ -15,6 +15,8 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.complitex.dictionary.entity.Attribute;
 import org.complitex.dictionary.entity.description.EntityType;
 import org.complitex.dictionary.entity.example.DomainObjectExample;
@@ -24,7 +26,9 @@ import org.complitex.dictionary.web.component.search.ISearchCallback;
 import org.complitex.dictionary.web.component.search.SearchComponent;
 import org.complitex.dictionary.web.component.search.SearchComponentState;
 import org.complitex.address.strategy.district.DistrictStrategy;
+import org.complitex.dictionary.web.component.UserOrganizationPicker;
 import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
+import org.complitex.osznconnection.organization.strategy.OrganizationStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +39,7 @@ import org.slf4j.LoggerFactory;
 public class OrganizationEditComponent extends AbstractComplexAttributesPanel {
 
     private static final Logger log = LoggerFactory.getLogger(OrganizationEditComponent.class);
-
+    
     @EJB(name = "DistrictStrategy")
     private DistrictStrategy districtStrategy;
 
@@ -43,6 +47,7 @@ public class OrganizationEditComponent extends AbstractComplexAttributesPanel {
     private IOsznOrganizationStrategy organizationStrategy;
 
     private Attribute districtAttribute;
+    private Attribute parentAttribute;
 
     private class DistrictSearchCallback implements ISearchCallback, Serializable {
 
@@ -56,7 +61,6 @@ public class OrganizationEditComponent extends AbstractComplexAttributesPanel {
             }
         }
     }
-
     private SearchComponentState componentState;
 
     public OrganizationEditComponent(String id, boolean disabled) {
@@ -65,9 +69,19 @@ public class OrganizationEditComponent extends AbstractComplexAttributesPanel {
 
     @Override
     protected void init() {
-        setOutputMarkupId(true);
+        //district container
         final WebMarkupContainer districtContainer = new WebMarkupContainer("districtContainer");
+        districtContainer.setOutputMarkupPlaceholderTag(true);
         add(districtContainer);
+
+        //district required container
+        final WebMarkupContainer districtRequired = new WebMarkupContainer("districtRequired");
+        districtContainer.add(districtRequired);
+
+        //parent container
+        final WebMarkupContainer parentContainer = new WebMarkupContainer("parentContainer");
+        parentContainer.setOutputMarkupPlaceholderTag(true);
+        add(parentContainer);
 
         final DomainObject currentOrganization = getInputPanel().getObject();
         final DropDownChoice<EntityType> selectType = getInputPanel().getSelectType();
@@ -80,9 +94,11 @@ public class OrganizationEditComponent extends AbstractComplexAttributesPanel {
                     protected void onUpdate(AjaxRequestTarget target) {
                         //update domain object
 
-                        setVisibility(districtContainer, getInputPanel().getObject());
+                        setDistrictVisibility(districtContainer, districtRequired, getInputPanel().getObject().getEntityTypeId());
+                        setParentVisibility(parentContainer, getInputPanel().getObject().getEntityTypeId());
                         selectType.setEnabled(false);
-                        target.addComponent(OrganizationEditComponent.this);
+                        target.addComponent(districtContainer);
+                        target.addComponent(parentContainer);
                         target.addComponent(selectType);
                     }
                 });
@@ -113,22 +129,59 @@ public class OrganizationEditComponent extends AbstractComplexAttributesPanel {
 
         districtContainer.add(new SearchComponent("district", componentState, ImmutableList.of("city", "district"), new DistrictSearchCallback(),
                 !isDisabled() && CanEditUtil.canEdit(currentOrganization)));
-        setVisibility(districtContainer, currentOrganization);
+        setDistrictVisibility(districtContainer, districtRequired, currentOrganization.getEntityTypeId());
+        //parent
+        parentAttribute = organizationStrategy.getParentAttribute(currentOrganization);
+        IModel<Long> parentModel = new Model<Long>();
+        if (parentAttribute != null) {
+            parentModel = new Model<Long>() {
+
+                @Override
+                public Long getObject() {
+                    return parentAttribute.getValueId();
+                }
+
+                @Override
+                public void setObject(Long object) {
+                    parentAttribute.setValueId(object);
+                }
+            };
+        }
+
+        parentContainer.add(new UserOrganizationPicker("parent", parentModel));
+        setParentVisibility(parentContainer, currentOrganization.getEntityTypeId());
     }
 
-    private void setVisibility(WebMarkupContainer districtContainer, DomainObject currentOrganization) {
+    private void setDistrictVisibility(WebMarkupContainer districtContainer, WebMarkupContainer districtRequiredContainer, Long entityTypeId) {
         if (districtAttribute == null) {
             districtContainer.setVisible(false);
             return;
         }
 
-        Long entityTypeId = currentOrganization.getEntityTypeId();
-        if (entityTypeId != null && entityTypeId.equals(IOsznOrganizationStrategy.OSZN)) {
+        if (entityTypeId != null && (entityTypeId.equals(IOsznOrganizationStrategy.OSZN)
+                || (entityTypeId.equals(OrganizationStrategy.USER_ORGANIZATION)))) {
             districtContainer.setVisible(true);
+            if(entityTypeId.equals(OrganizationStrategy.USER_ORGANIZATION)){
+                districtRequiredContainer.setVisible(false);
+            }
         } else {
             districtContainer.setVisible(false);
             districtAttribute.setValueId(null);
             componentState.clear();
+        }
+    }
+
+    private void setParentVisibility(WebMarkupContainer parentContainer, Long entityTypeId) {
+        if (parentAttribute == null) {
+            parentContainer.setVisible(false);
+            return;
+        }
+
+        if (entityTypeId != null && entityTypeId.equals(IOsznOrganizationStrategy.USER_ORGANIZATION)) {
+            parentContainer.setVisible(true);
+        } else {
+            parentContainer.setVisible(false);
+            parentAttribute.setValueId(null);
         }
     }
 
