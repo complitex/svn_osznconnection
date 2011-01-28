@@ -39,13 +39,10 @@ import org.slf4j.LoggerFactory;
 public class OrganizationEditComponent extends AbstractComplexAttributesPanel {
 
     private static final Logger log = LoggerFactory.getLogger(OrganizationEditComponent.class);
-    
     @EJB(name = "DistrictStrategy")
     private DistrictStrategy districtStrategy;
-
     @EJB(name = "OrganizationStrategy")
     private IOsznOrganizationStrategy organizationStrategy;
-
     private Attribute districtAttribute;
     private Attribute parentAttribute;
 
@@ -148,7 +145,13 @@ public class OrganizationEditComponent extends AbstractComplexAttributesPanel {
             };
         }
 
-        parentContainer.add(new UserOrganizationPicker("parent", parentModel));
+        if (currentOrganization.getId() == null) {
+            //new organization
+            parentContainer.add(new UserOrganizationPicker("parent", parentModel));
+        } else {
+            parentContainer.add(new UserOrganizationPicker("parent", parentModel, currentOrganization.getId()));
+        }
+
         setParentVisibility(parentContainer, currentOrganization.getEntityTypeId());
     }
 
@@ -161,7 +164,7 @@ public class OrganizationEditComponent extends AbstractComplexAttributesPanel {
         if (entityTypeId != null && (entityTypeId.equals(IOsznOrganizationStrategy.OSZN)
                 || (entityTypeId.equals(OrganizationStrategy.USER_ORGANIZATION)))) {
             districtContainer.setVisible(true);
-            if(entityTypeId.equals(OrganizationStrategy.USER_ORGANIZATION)){
+            if (entityTypeId.equals(OrganizationStrategy.USER_ORGANIZATION)) {
                 districtRequiredContainer.setVisible(false);
             }
         } else {

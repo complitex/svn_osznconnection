@@ -7,6 +7,7 @@ package org.complitex.osznconnection.organization.strategy;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.entity.Attribute;
 import org.complitex.dictionary.entity.DomainObject;
@@ -23,6 +24,7 @@ import javax.ejb.Stateless;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import org.complitex.dictionary.service.LocaleBean;
 import org.complitex.template.strategy.AbstractStrategy;
 import org.complitex.address.strategy.district.DistrictStrategy;
@@ -194,13 +196,25 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
     }
 
     @Override
-    public List<? extends DomainObject> getUserOrganizations(Locale locale) {
+    public List<? extends DomainObject> getUserOrganizations(Locale locale, Long... excludeOrganizationsId) {
         DomainObjectExample example = new DomainObjectExample();
         example.setEntityTypeId(USER_ORGANIZATION);
         example.setLocaleId(localeBean.convert(locale).getId());
         example.setAsc(true);
         example.setOrderByAttributeTypeId(NAME);
         configureExample(example, ImmutableMap.<String, Long>of(), null);
-        return find(example);
+        List<? extends DomainObject> userOrganizations = find(example);
+        if (excludeOrganizationsId == null) {
+            return userOrganizations;
+        }
+
+        List<DomainObject> finalUserOrganizations = Lists.newArrayList();
+        Set<Long> excludeSet = Sets.newHashSet(excludeOrganizationsId);
+        for (DomainObject userOrganization : userOrganizations) {
+            if (!excludeSet.contains(userOrganization.getId())) {
+                finalUserOrganizations.add(userOrganization);
+            }
+        }
+        return finalUserOrganizations;
     }
 }
