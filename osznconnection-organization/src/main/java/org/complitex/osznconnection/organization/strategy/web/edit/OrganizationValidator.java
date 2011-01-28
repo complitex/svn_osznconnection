@@ -24,7 +24,6 @@ public class OrganizationValidator implements IValidator {
     public OrganizationValidator(Locale systemLocale) {
         this.systemLocale = systemLocale;
     }
-
     private OrganizationEditComponent organizationEditComponent;
 
     @Override

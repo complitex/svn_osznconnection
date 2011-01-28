@@ -32,12 +32,11 @@ import org.complitex.osznconnection.organization.strategy.web.edit.OrganizationE
  *
  * @author Artem
  */
-@Stateless(name = "OrganizationStrategy")
+@Stateless
 public class OrganizationStrategy extends AbstractStrategy implements IOsznOrganizationStrategy {
 
     private static final String ORGANIZATION_NAMESPACE = OrganizationStrategy.class.getPackage().getName() + ".Organization";
     private static final String RESOURCE_BUNDLE = OrganizationStrategy.class.getName();
-
     @EJB(beanName = "StringCultureBean")
     private StringCultureBean stringBean;
     @EJB(beanName = "DistrictStrategy")
@@ -90,7 +89,7 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
     @Override
     public List<DomainObject> getAllOuterOrganizations(Locale locale) {
         DomainObjectExample example = new DomainObjectExample();
-        example.setOrderByAttributeTypeId(IOsznOrganizationStrategy.NAME);
+        example.setOrderByAttributeTypeId(NAME);
         example.setLocaleId(localeBean.convert(locale).getId());
         example.setAsc(true);
         configureExample(example, ImmutableMap.<String, Long>of(), null);
@@ -108,7 +107,7 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
     public List<DomainObject> getAllOSZNs(Locale locale) {
         DomainObjectExample example = new DomainObjectExample();
         example.setEntityTypeId(OSZN);
-        example.setOrderByAttributeTypeId(IOsznOrganizationStrategy.NAME);
+        example.setOrderByAttributeTypeId(NAME);
         example.setLocaleId(localeBean.convert(locale).getId());
         example.setAsc(true);
         configureExample(example, ImmutableMap.<String, Long>of(), null);
@@ -121,7 +120,7 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
         example.setEntityTypeId(CALCULATION_CENTER);
         example.setLocaleId(localeBean.convert(locale).getId());
         example.setAsc(true);
-        example.setOrderByAttributeTypeId(IOsznOrganizationStrategy.NAME);
+        example.setOrderByAttributeTypeId(NAME);
         configureExample(example, ImmutableMap.<String, Long>of(), null);
         return (List<DomainObject>) find(example);
     }
@@ -129,6 +128,11 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
     @Override
     public Attribute getDistrictAttribute(DomainObject organization) {
         return organization.getAttribute(DISTRICT);
+    }
+
+    @Override
+    public Attribute getParentAttribute(DomainObject organization) {
+        return organization.getAttribute(USER_ORGANIZATION_PARENT);
     }
 
     @Override
@@ -190,7 +194,13 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
     }
 
     @Override
-    public List<DomainObject> getUserOrganizations() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public List<? extends DomainObject> getUserOrganizations(Locale locale) {
+        DomainObjectExample example = new DomainObjectExample();
+        example.setEntityTypeId(USER_ORGANIZATION);
+        example.setLocaleId(localeBean.convert(locale).getId());
+        example.setAsc(true);
+        example.setOrderByAttributeTypeId(NAME);
+        configureExample(example, ImmutableMap.<String, Long>of(), null);
+        return find(example);
     }
 }
