@@ -18,4 +18,9 @@ CREATE TABLE `permission` (
 
 insert into `permission` (`permission_id`, `table`, `entity`, `object_id`) value (0, 'ALL', 'ALL', 0);
 
+ALTER TABLE `user`
+  ADD COLUMN `organization_object_id` BIGINT(20),
+  ADD KEY `key_organization_object_id` (`organization_object_id`),
+  ADD CONSTRAINT `fk_user__organization` FOREIGN KEY (`organization_object_id`) REFERENCES `organization` (`object_id`);
+
 INSERT INTO `update` (`version`) VALUE ('20110126_520_0.1.1');

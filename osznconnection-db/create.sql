@@ -1144,10 +1144,13 @@ CREATE TABLE  `user` (
   `login` VARCHAR(45) NOT NULL,
   `password` VARCHAR(45) NOT NULL,
   `user_info_object_id` BIGINT(20),
+  `organization_object_id` BIGINT(20),
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_key_login` (`login`),
   KEY `key_user_info_object_id` (`user_info_object_id`),
-  CONSTRAINT `fk_user__user_info` FOREIGN KEY (`user_info_object_id`) REFERENCES `user_info` (`object_id`)
+  KEY `key_organization_object_id` (`organization_object_id`),
+  CONSTRAINT `fk_user__user_info` FOREIGN KEY (`user_info_object_id`) REFERENCES `user_info` (`object_id`),
+  CONSTRAINT `fk_user__organization` FOREIGN KEY (`organization_object_id`) REFERENCES `organization` (`object_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ------------------------------
