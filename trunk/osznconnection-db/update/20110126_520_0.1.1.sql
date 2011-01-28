@@ -9,7 +9,7 @@ CREATE TABLE `permission` (
     `entity` VARCHAR(64) NOT NULL,
     `object_id` BIGINT(20) NOT NULL,
     PRIMARY KEY (`id`),
-    UNIQUE KEY `key_unique` (`permission_id`, `table`, `entity`, `object_id`),
+    UNIQUE KEY `key_unique` (`permission_id`, `entity`, `object_id`),
     KEY `key_permission_id` (`permission_id`),
     KEY `key_table` (`table`),
     KEY `key_entity` (`entity`),
