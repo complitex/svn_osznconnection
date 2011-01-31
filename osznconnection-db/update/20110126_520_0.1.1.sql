@@ -18,10 +18,17 @@ CREATE TABLE `permission` (
 
 INSERT INTO `permission` (`permission_id`, `table`, `entity`, `object_id`) VALUE (0, 'ALL', 'ALL', 0);
 
-ALTER TABLE `user`
-  ADD COLUMN `organization_object_id` BIGINT(20),
-  ADD KEY `key_organization_object_id` (`organization_object_id`),
-  ADD CONSTRAINT `fk_user__organization` FOREIGN KEY (`organization_object_id`) REFERENCES `organization` (`object_id`);
+CREATE TABLE `user_organization` (
+    `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+    `user_id` BIGINT(20) NOT NULL,
+    `organization_object_id` BIGINT(20) NOT NULL,
+    `main` TINYINT(1) NOT NULL DEFAULT 0,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `key_unique` (`user_id`, `organization_object_id`),
+    CONSTRAINT `fk_user_organization__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`),
+    CONSTRAINT `fk_user_organization__organization` FOREIGN KEY (`organization_object_id`)
+      REFERENCES `organization` (`object_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
   
 ALTER TABLE `apartment` ADD COLUMN `permission_id` BIGINT(20) NOT NULL DEFAULT 0,
 ADD KEY `key_permission_id` (`permission_id`), 
