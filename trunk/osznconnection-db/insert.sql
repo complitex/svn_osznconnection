@@ -34,6 +34,10 @@ INSERT INTO `sequence` (`sequence_name`, `sequence_value`) VALUES
 ('ownership',1), ('ownership_string_culture',1),
 ('privilege',1), ('privilege_string_culture',1);
 
+--Permission
+INSERT INTO `permission` (`permission_id`, `table`, `entity`, `object_id`) VALUE (0, 'ALL', 'ALL', 0);
+INSERT INTO `sequence` (`sequence_name`, `sequence_value`) VALUES ('permission', 1);
+
 -- --------------------------------
 -- Apartment
 -- --------------------------------
@@ -483,7 +487,3 @@ INSERT INTO `organization_string_culture`(`id`, `locale_id`, `value`) VALUES
 (1, 1, UPPER('Модуль №1')), (1,2,UPPER('Модуль №1')), (2, 1, UPPER('0'));
 INSERT INTO `organization_attribute`(`attribute_id`, `object_id`, `attribute_type_id`, `value_id`, `value_type_id`) VALUES
 (1,0,900,1,900), (1,0,901,2,901);
-
---Permission
-INSERT INTO `permission` (`permission_id`, `table`, `entity`, `object_id`) VALUE (0, 'ALL', 'ALL', 0);
-INSERT INTO `sequence` (`sequence_name`, `sequence_value`) VALUES ('permission', 1);
