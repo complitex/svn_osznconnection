@@ -112,6 +112,7 @@ CREATE TABLE `apartment` (
   `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `end_date` TIMESTAMP NULL DEFAULT NULL,
   `status` VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
+  `permission_id` BIGINT(20) NOT NULL DEFAULT 0,
   PRIMARY KEY (`pk_id`),
   UNIQUE KEY `unique_object_id__start_date` (`object_id`,`start_date`),
   KEY `key_object_id` (object_id),
@@ -121,8 +122,10 @@ CREATE TABLE `apartment` (
   KEY `key_start_date` (`start_date`),
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
+  KEY `key_permission_id` (`permission_id`),
   CONSTRAINT `fk_apartment__entity_type` FOREIGN KEY (`entity_type_id`) REFERENCES `entity_type` (`id`),
-  CONSTRAINT `fk_apartment__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`)
+  CONSTRAINT `fk_apartment__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_apartment__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `apartment_attribute`;
@@ -181,6 +184,7 @@ CREATE TABLE `room` (
   `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `end_date` TIMESTAMP NULL DEFAULT NULL,
   `status` VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
+  `permission_id` BIGINT(20) NOT NULL DEFAULT 0,
   PRIMARY KEY  (`pk_id`),
   UNIQUE KEY `unique_object_id__start_date` (`object_id`,`start_date`),
   KEY `key_object_id` (`object_id`),
@@ -189,8 +193,10 @@ CREATE TABLE `room` (
   KEY `key_start_date` (`start_date`),
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
+  KEY `key_permission_id` (`permission_id`),
   CONSTRAINT `fk_room__entity_type` FOREIGN KEY (`entity_type_id`) REFERENCES `entity_type` (`id`),
-  CONSTRAINT `fk_room__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`)
+  CONSTRAINT `fk_room__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_room__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `room_attribute`;
@@ -249,6 +255,7 @@ CREATE TABLE `street` (
   `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `end_date` TIMESTAMP NULL DEFAULT NULL,
   `status` VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
+  `permission_id` BIGINT(20) NOT NULL DEFAULT 0,
   PRIMARY KEY  (`pk_id`),
   UNIQUE KEY `unique_object_id__start_date` (`object_id`,`start_date`),
   KEY `key_object_id` (`object_id`),
@@ -258,8 +265,10 @@ CREATE TABLE `street` (
   KEY `key_start_date` (`start_date`),
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
+  KEY `key_permission_id` (`permission_id`),
   CONSTRAINT `fk_street__entity_type` FOREIGN KEY (`entity_type_id`) REFERENCES `entity_type` (`id`),
-  CONSTRAINT `fk_street__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`)
+  CONSTRAINT `fk_street__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_street__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `street_attribute`;
@@ -319,6 +328,7 @@ CREATE TABLE `street_type` (
   `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `end_date` TIMESTAMP NULL DEFAULT NULL,
   `status` VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
+  `permission_id` BIGINT(20) NOT NULL DEFAULT 0,
   PRIMARY KEY (`pk_id`),
   UNIQUE KEY `unique_object_id__start_date` (`object_id`,`start_date`),
   KEY `key_object_id` (object_id),
@@ -328,8 +338,10 @@ CREATE TABLE `street_type` (
   KEY `key_start_date` (`start_date`),
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
+  KEY `key_permission_id` (`permission_id`),
   CONSTRAINT `fk_street_type__entity_type` FOREIGN KEY (`entity_type_id`) REFERENCES `entity_type` (`id`),
-  CONSTRAINT `fk_street_type__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`)
+  CONSTRAINT `fk_street_type__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_street_type__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `street_type_attribute`;
@@ -388,6 +400,7 @@ CREATE TABLE `city` (
   `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `end_date` TIMESTAMP NULL DEFAULT NULL,
   `status` VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
+  `permission_id` BIGINT(20) NOT NULL DEFAULT 0,
   PRIMARY KEY (`pk_id`),
   UNIQUE KEY `unique_object_id__start_date` (`object_id`,`start_date`),
   KEY `key_object_id` (`object_id`),  
@@ -397,8 +410,10 @@ CREATE TABLE `city` (
   KEY `key_start_date` (`start_date`),
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
+  KEY `key_permission_id` (`permission_id`),
   CONSTRAINT `fk_city__entity_type` FOREIGN KEY (`entity_type_id`) REFERENCES `entity_type` (`id`),
-  CONSTRAINT `ft_city__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`)
+  CONSTRAINT `ft_city__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_city__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `city_attribute`;
@@ -458,6 +473,7 @@ CREATE TABLE `city_type` (
   `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `end_date` TIMESTAMP NULL DEFAULT NULL,
   `status` VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
+  `permission_id` BIGINT(20) NOT NULL DEFAULT 0,
   PRIMARY KEY (`pk_id`),
   UNIQUE KEY `unique_object_id__start_date` (`object_id`,`start_date`),
   KEY `key_object_id` (object_id),
@@ -467,8 +483,10 @@ CREATE TABLE `city_type` (
   KEY `key_start_date` (`start_date`),
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
+  KEY `key_permission_id` (`permission_id`),
   CONSTRAINT `fk_city_type__entity_type` FOREIGN KEY (`entity_type_id`) REFERENCES `entity_type` (`id`),
-  CONSTRAINT `fk_city_type__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`)
+  CONSTRAINT `fk_city_type__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_city_type__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `city_type_attribute`;
@@ -527,6 +545,7 @@ CREATE TABLE `building_address` (
   `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `end_date` TIMESTAMP NULL DEFAULT NULL,
   `status` VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
+  `permission_id` BIGINT(20) NOT NULL DEFAULT 0,
   PRIMARY KEY  (`pk_id`),
   UNIQUE KEY `unique_object_id__start_date` (`object_id`,`start_date`),
   KEY `key_object_id` (`object_id`),
@@ -536,8 +555,10 @@ CREATE TABLE `building_address` (
   KEY `key_start_date` (`start_date`),
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
+  KEY `key_permission_id` (`permission_id`),
   CONSTRAINT `fk_building_address__entity_type` FOREIGN KEY (`entity_type_id`) REFERENCES `entity_type` (`id`),
-  CONSTRAINT `fk_building_address__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`)
+  CONSTRAINT `fk_building_address__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_building_address__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `building_address_attribute`;
@@ -596,6 +617,7 @@ CREATE TABLE `building` (
   `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `end_date` TIMESTAMP NULL DEFAULT NULL,
   `status` VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
+  `permission_id` BIGINT(20) NOT NULL DEFAULT 0,
   PRIMARY KEY  (`pk_id`),
   UNIQUE KEY `unique_object_id__start_date` (`object_id`,`start_date`),
   KEY `key_object_id` (`object_id`),
@@ -605,8 +627,10 @@ CREATE TABLE `building` (
   KEY `key_start_date` (`start_date`),
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
+  KEY `key_permission_id` (`permission_id`),
   CONSTRAINT `fk_building__entity_type` FOREIGN KEY (`entity_type_id`) REFERENCES `entity_type` (`id`),
-  CONSTRAINT `fk_building__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`)
+  CONSTRAINT `fk_building__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_building__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `building_attribute`;
@@ -665,6 +689,7 @@ CREATE TABLE `district` (
   `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `end_date` TIMESTAMP NULL DEFAULT NULL,
   `status` VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
+  `permission_id` BIGINT(20) NOT NULL DEFAULT 0,
   PRIMARY KEY  (`pk_id`),
   UNIQUE KEY `unique_object_id__start_date` (`object_id`,`start_date`),
   KEY `key_object_id` (`object_id`),
@@ -674,8 +699,10 @@ CREATE TABLE `district` (
   KEY `key_start_date` (`start_date`),
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
+  KEY `key_permission_id` (`permission_id`),
   CONSTRAINT `fk_district__entity_type` FOREIGN KEY (`entity_type_id`) REFERENCES `entity_type` (`id`),
-  CONSTRAINT `fk_district__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`)
+  CONSTRAINT `fk_district__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_district__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `district_attribute`;
@@ -734,6 +761,7 @@ CREATE TABLE `region` (
   `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `end_date` TIMESTAMP NULL DEFAULT NULL,
   `status` VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
+  `permission_id` BIGINT(20) NOT NULL DEFAULT 0,
   PRIMARY KEY  (`pk_id`),
   UNIQUE KEY `unique_object_id__start_date` (`object_id`,`start_date`),
   KEY `key_object_id` (`object_id`),  
@@ -743,8 +771,10 @@ CREATE TABLE `region` (
   KEY `key_start_date` (`start_date`),
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
+  KEY `key_permission_id` (`permission_id`),
   CONSTRAINT `fk_region__entity_type` FOREIGN KEY (`entity_type_id`) REFERENCES `entity_type` (`id`),
-  CONSTRAINT `fk_region__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`)
+  CONSTRAINT `fk_region__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_region__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `region_attribute`;
@@ -803,6 +833,7 @@ CREATE TABLE `country` (
   `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `end_date` TIMESTAMP NULL DEFAULT NULL,
   `status` VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
+  `permission_id` BIGINT(20) NOT NULL DEFAULT 0,
   PRIMARY KEY  (`pk_id`),
   UNIQUE KEY `unique_object_id__start_date` (`object_id`,`start_date`),
   KEY `key_object_id` (`object_id`),  
@@ -812,8 +843,10 @@ CREATE TABLE `country` (
   KEY `key_start_date` (`start_date`),
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
+  KEY `key_permission_id` (`permission_id`),
   CONSTRAINT `fk_country__entity_type` FOREIGN KEY (`entity_type_id`) REFERENCES `entity_type` (`id`),
-  CONSTRAINT `fk_country__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`)
+  CONSTRAINT `fk_country__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_country__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `country_attribute`;
@@ -872,6 +905,7 @@ CREATE TABLE `organization` (
   `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `end_date` TIMESTAMP NULL DEFAULT NULL,
   `status` VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
+  `permission_id` BIGINT(20) NOT NULL DEFAULT 0,
   PRIMARY KEY  (`pk_id`),
   UNIQUE KEY `unique_object_id__start_date` (`object_id`,`start_date`),
   KEY `key_object_id` (`object_id`),  
@@ -881,8 +915,10 @@ CREATE TABLE `organization` (
   KEY `key_start_date` (`start_date`),
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
+  KEY `key_permission_id` (`permission_id`),
   CONSTRAINT `fk_organization__entity_type` FOREIGN KEY (`entity_type_id`) REFERENCES `entity_type` (`id`),
-  CONSTRAINT `fk_organization__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`)
+  CONSTRAINT `fk_organization__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_organization__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `organization_attribute`;
@@ -941,6 +977,7 @@ CREATE TABLE `ownership` (
   `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `end_date` TIMESTAMP NULL DEFAULT NULL,
   `status` varchar(20) NOT NULL default 'ACTIVE',
+  `permission_id` BIGINT(20) NOT NULL DEFAULT 0,
   PRIMARY KEY  (`pk_id`),
   UNIQUE KEY `unique_object_id__start_date` (`object_id`,`start_date`),
   KEY `key_object_id` (`object_id`),  
@@ -950,8 +987,10 @@ CREATE TABLE `ownership` (
   KEY `key_start_date` (`start_date`),
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
+  KEY `key_permission_id` (`permission_id`),
   CONSTRAINT `fk_ownership__entity_type` FOREIGN KEY (`entity_type_id`) REFERENCES `entity_type` (`id`),
-  CONSTRAINT `fk_ownership__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`)
+  CONSTRAINT `fk_ownership__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_ownership__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `ownership_attribute`;
@@ -1010,6 +1049,7 @@ CREATE TABLE `privilege` (
   `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `end_date` TIMESTAMP NULL DEFAULT NULL,
   `status` varchar(20) NOT NULL default 'ACTIVE',
+  `permission_id` BIGINT(20) NOT NULL DEFAULT 0,
   PRIMARY KEY  (`pk_id`),
   UNIQUE KEY `unique_object_id__start_date` (`object_id`,`start_date`),
   KEY `key_object_id` (`object_id`),
@@ -1019,8 +1059,10 @@ CREATE TABLE `privilege` (
   KEY `key_start_date` (`start_date`),
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
+  KEY `key_permission_id` (`permission_id`),
   CONSTRAINT `fk_privilege__entity_type` FOREIGN KEY (`entity_type_id`) REFERENCES `entity_type` (`id`),
-  CONSTRAINT `fk_privilege__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`)
+  CONSTRAINT `fk_privilege__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_privilege__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `privilege_attribute`;
@@ -1555,7 +1597,6 @@ CREATE TABLE `person_account` (
     `oszn_id` bigint(20) NOT NULL,
     `calc_center_id` bigint(20) NOT NULL,
     PRIMARY KEY (`id`)
-    -- UNIQUE KEY `person_account_unique_key` (`first_name`,`middle_name`,`last_name`,`city`,`street`,`building_num`,`building_corp`,`apartment`,`own_num_sr`,`oszn_id`,`calc_center_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ------------------------------
