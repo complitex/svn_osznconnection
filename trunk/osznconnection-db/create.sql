@@ -1186,13 +1186,10 @@ CREATE TABLE  `user` (
   `login` VARCHAR(45) NOT NULL,
   `password` VARCHAR(45) NOT NULL,
   `user_info_object_id` BIGINT(20),
-  `organization_object_id` BIGINT(20),
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_key_login` (`login`),
   KEY `key_user_info_object_id` (`user_info_object_id`),
-  KEY `key_organization_object_id` (`organization_object_id`),
-  CONSTRAINT `fk_user__user_info` FOREIGN KEY (`user_info_object_id`) REFERENCES `user_info` (`object_id`),
-  CONSTRAINT `fk_user__organization` FOREIGN KEY (`organization_object_id`) REFERENCES `organization` (`object_id`)
+  CONSTRAINT `fk_user__user_info` FOREIGN KEY (`user_info_object_id`) REFERENCES `user_info` (`object_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ------------------------------
@@ -1207,6 +1204,23 @@ CREATE TABLE  `usergroup` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_login__group_name` (`login`, `group_name`),
   CONSTRAINT `fk_usergroup__user` FOREIGN KEY (`login`) REFERENCES `user` (`login`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ------------------------------
+-- User Organization
+-- ------------------------------
+DROP TABLE IF EXISTS `user_organization`;
+
+CREATE TABLE `user_organization` (
+    `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+    `user_id` BIGINT(20) NOT NULL,
+    `organization_object_id` BIGINT(20) NOT NULL,
+    `main` TINYINT(1) NOT NULL DEFAULT 0,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `key_unique` (`user_id`, `organization_object_id`),
+    CONSTRAINT `fk_user_organization__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`),
+    CONSTRAINT `fk_user_organization__organization` FOREIGN KEY (`organization_object_id`)
+      REFERENCES `organization` (`object_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ------------------------------
