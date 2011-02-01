@@ -1121,6 +1121,7 @@ CREATE TABLE `user_info` (
   `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `end_date` TIMESTAMP NULL DEFAULT NULL,
   `status` VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
+  `permission_id` BIGINT(20) NOT NULL DEFAULT 0,
   PRIMARY KEY  (`pk_id`),
   UNIQUE KEY `unique_object_id__start_date` (`object_id`,`start_date`),
   KEY `key_object_id` (`object_id`),  
@@ -1130,8 +1131,10 @@ CREATE TABLE `user_info` (
   KEY `key_start_date` (`start_date`),
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
+  KEY `key_permission_id` (`permission_id`),
   CONSTRAINT `fk_user_info__entity_type` FOREIGN KEY (`entity_type_id`) REFERENCES `entity_type` (`id`),
-  CONSTRAINT `fk_user_info__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`)
+  CONSTRAINT `fk_user_info__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
+  CONSTRAINT `fk_user_info__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `user_info_attribute`;
@@ -1280,7 +1283,10 @@ CREATE TABLE `request_file_group` (
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
     `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `status` INTEGER COMMENT 'См. таблицу status_description и класс RequestFileStatus',
-    PRIMARY KEY (`id`)
+    `permission_id` BIGINT(20) NOT NULL DEFAULT 0,
+    PRIMARY KEY (`id`),
+    KEY `key_permission_id` (`permission_id`),
+    CONSTRAINT `fk_request_file_group__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -1304,6 +1310,7 @@ CREATE TABLE `request_file` (
     `check_sum` VARCHAR(32),
     `type` VARCHAR(50),
     `status` INTEGER COMMENT 'См. таблицу status_description и класс RequestFileStatus',
+    `permission_id` BIGINT(20) NOT NULL DEFAULT 0,
     PRIMARY KEY (`id`),
     UNIQUE KEY `unique_id` (`name`, `organization_id`, `registry`, `month`, `year`), 
     KEY `key_group_id` (`group_id`),
@@ -1314,8 +1321,10 @@ CREATE TABLE `request_file` (
     KEY `key_month` (`month`),
     KEY `key_year` (`year`) ,
     KEY `key_type` (`type`) ,
+    KEY `key_permission_id` (`permission_id`),
     CONSTRAINT `fk_request_file__request_file_group` FOREIGN KEY (`group_id`) REFERENCES `request_file_group` (`id`),
-    CONSTRAINT `fk_request_file__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`object_id`)
+    CONSTRAINT `fk_request_file__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`object_id`),
+    CONSTRAINT `fk_request_file__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ------------------------------

@@ -86,4 +86,16 @@ ALTER TABLE `privilege` ADD COLUMN `permission_id` BIGINT(20) NOT NULL DEFAULT 0
 ADD KEY `key_permission_id` (`permission_id`), 
 ADD CONSTRAINT `fk_privilege__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`);
 
+ALTER TABLE `user_info` ADD COLUMN `permission_id` BIGINT(20) NOT NULL DEFAULT 0,
+ADD KEY `key_permission_id` (`permission_id`),
+ADD CONSTRAINT `fk_user_info__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`);
+
+ALTER TABLE `request_file` ADD COLUMN `permission_id` BIGINT(20) NOT NULL DEFAULT 0,
+ADD KEY `key_permission_id` (`permission_id`),
+ADD CONSTRAINT `fk_request_file__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`);
+
+ALTER TABLE `request_file_group` ADD COLUMN `permission_id` BIGINT(20) NOT NULL DEFAULT 0,
+ADD KEY `key_permission_id` (`permission_id`),
+ADD CONSTRAINT `fk_request_file_group__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`);
+
 INSERT INTO `update` (`version`) VALUE ('20110126_520_0.1.1');

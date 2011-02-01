@@ -1,6 +1,7 @@
 package org.complitex.osznconnection.file.service.process;
 
 import org.complitex.dictionary.entity.Log;
+import org.complitex.dictionary.service.SessionBean;
 import org.complitex.dictionary.service.executor.ExecuteException;
 import org.complitex.dictionary.service.executor.ITaskBean;
 import org.complitex.osznconnection.file.Module;
@@ -42,9 +43,20 @@ public class LoadGroupTaskBean implements ITaskBean<RequestFileGroup>{
     @EJB(beanName = "LoadRequestFileBean")
     private LoadRequestFileBean loadRequestFileBean;
 
+    @EJB
+    private SessionBean sessionBean;
+
     @Override
     public boolean execute(RequestFileGroup group) throws ExecuteException {
         group.setStatus(RequestFileStatus.LOADING);
+
+        //Установка ключей безопасности
+        Long pId = sessionBean.createPermissionId(RequestFile.TABLE);
+        group.getPaymentFile().setPermissionId(pId);
+        group.getBenefitFile().setPermissionId(pId);
+
+        group.setPermissionId(sessionBean.createPermissionId(RequestFileGroup.TABLE));
+
         requestFileGroupBean.save(group);
 
         group.getBenefitFile().setGroupId(group.getId());

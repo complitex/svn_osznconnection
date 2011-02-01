@@ -2,12 +2,15 @@ package org.complitex.osznconnection.file.service;
 
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.AbstractBean;
+import org.complitex.dictionary.service.SessionBean;
 import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.entity.RequestFileFilter;
+import org.complitex.osznconnection.file.entity.RequestFileGroup;
 import org.complitex.osznconnection.file.entity.RequestFileStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import java.util.List;
 
@@ -26,6 +29,9 @@ public class RequestFileBean extends AbstractBean {
     private static final Logger log = LoggerFactory.getLogger(RequestFileBean.class);
     public static final String MAPPING_NAMESPACE = RequestFileBean.class.getName();
 
+    @EJB
+    private SessionBean sessionBean;
+
     @Transactional
     public RequestFile findById(long fileId) {
         return (RequestFile) sqlSession().selectOne(MAPPING_NAMESPACE + ".findById", fileId);
@@ -33,13 +39,19 @@ public class RequestFileBean extends AbstractBean {
 
     @Transactional
     @SuppressWarnings({"unchecked"})
-    public List<RequestFile> getRequestFiles(RequestFileFilter groupFilter){
-        return sqlSession().selectList(MAPPING_NAMESPACE + ".selectRequestFiles", groupFilter);
+    public List<RequestFile> getRequestFiles(RequestFileFilter filter){
+        filter.setAdmin(sessionBean.isAdmin());
+        filter.setPermissions(sessionBean.getPermissionString(RequestFile.TABLE));
+
+        return sqlSession().selectList(MAPPING_NAMESPACE + ".selectRequestFiles", filter);
     }
 
     @Transactional
-    public int size(RequestFileFilter groupFilter){
-        return (Integer) sqlSession().selectOne(MAPPING_NAMESPACE + ".selectRequestFilesCount", groupFilter);
+    public int size(RequestFileFilter filter){
+        filter.setAdmin(sessionBean.isAdmin());
+        filter.setPermissions(sessionBean.getPermissionString(RequestFile.TABLE));
+
+        return (Integer) sqlSession().selectOne(MAPPING_NAMESPACE + ".selectRequestFilesCount", filter);
     }
 
     @Transactional

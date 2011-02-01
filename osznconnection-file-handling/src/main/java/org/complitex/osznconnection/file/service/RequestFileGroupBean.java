@@ -1,6 +1,7 @@
 package org.complitex.osznconnection.file.service;
 
 import org.complitex.dictionary.service.AbstractBean;
+import org.complitex.dictionary.service.SessionBean;
 import org.complitex.osznconnection.file.entity.RequestFileGroup;
 import org.complitex.osznconnection.file.entity.RequestFileGroupFilter;
 
@@ -22,12 +23,21 @@ public class RequestFileGroupBean extends AbstractBean{
     @EJB(beanName = "RequestFileBean")
     private RequestFileBean requestFileBean;
 
+    @EJB
+    private SessionBean sessionBean;
+
     @SuppressWarnings({"unchecked"})
     public List<RequestFileGroup> getRequestFileGroups(RequestFileGroupFilter filter){
+        filter.setAdmin(sessionBean.isAdmin());
+        filter.setPermissions(sessionBean.getPermissionString(RequestFileGroup.TABLE));
+
         return sqlSession().selectList(MAPPING_NAMESPACE + ".selectRequestFilesGroups", filter);
     }
 
     public int getRequestFileGroupsCount(RequestFileGroupFilter filter){
+        filter.setAdmin(sessionBean.isAdmin());
+        filter.setPermissions(sessionBean.getPermissionString(RequestFileGroup.TABLE));
+
         return (Integer)sqlSession().selectOne(MAPPING_NAMESPACE + ".selectRequestFilesGroupsCount", filter);
     }
 

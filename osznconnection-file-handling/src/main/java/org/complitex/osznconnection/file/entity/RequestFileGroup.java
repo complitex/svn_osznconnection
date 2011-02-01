@@ -14,6 +14,7 @@ import java.util.List;
  *         Date: 29.09.2010 14:31:02
  */
 public class RequestFileGroup implements ILoggable{
+    public final static String TABLE = "request_file_group";
 
     private Long id;
 
@@ -25,6 +26,8 @@ public class RequestFileGroup implements ILoggable{
     private int filledRecordCount;
 
     private RequestFileStatus status;
+
+    private Long permissionId;
 
     @Override
     public String getLogObjectName() {
@@ -100,6 +103,22 @@ public class RequestFileGroup implements ILoggable{
         return list;
     }
 
+    public String getName(){
+        if (paymentFile != null && paymentFile.getName() != null){
+            return paymentFile.getName().substring(2,8);
+        }
+
+        return null;
+    }
+
+    public String getDirectory(){
+        if (paymentFile != null){
+            return paymentFile.getDirectory();
+        }
+
+        return null;
+    }
+
     public Long getId() {
         return id;
     }
@@ -156,20 +175,12 @@ public class RequestFileGroup implements ILoggable{
         this.status = status;
     }
 
-    public String getName(){
-        if (paymentFile != null && paymentFile.getName() != null){
-            return paymentFile.getName().substring(2,8);
-        }
-
-        return null;
+    public Long getPermissionId() {
+        return permissionId;
     }
 
-    public String getDirectory(){
-        if (paymentFile != null){
-            return paymentFile.getDirectory();
-        }
-
-        return null;
+    public void setPermissionId(Long permissionId) {
+        this.permissionId = permissionId;
     }
 
     @Override
