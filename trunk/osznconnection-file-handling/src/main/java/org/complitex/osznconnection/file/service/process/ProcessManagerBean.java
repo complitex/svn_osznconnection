@@ -1,7 +1,8 @@
 package org.complitex.osznconnection.file.service.process;
 
 import org.complitex.dictionary.entity.Log;
-import org.complitex.dictionary.service.LogBean;
+import org.complitex.dictionary.service.*;
+import org.complitex.dictionary.service.SessionBean;
 import org.complitex.dictionary.service.executor.ExecutorBean;
 import org.complitex.dictionary.service.executor.IExecutorListener;
 import org.complitex.dictionary.service.executor.ITaskBean;
@@ -78,6 +79,9 @@ public class ProcessManagerBean {
 
     @EJB
     private ReportWarningRenderer reportWarningRenderer;
+
+    @EJB
+    private SessionBean sessionBean;
 
     private Map<String, Map<TYPE, ProcessStatus>> processStatusMap = new ConcurrentHashMap<String, Map<TYPE, ProcessStatus>>();
 
@@ -177,6 +181,8 @@ public class ProcessManagerBean {
             processStatus.startPreprocess(); // предобработка
             processStatus.init();
 
+            sessionBean.createPermissionId(RequestFileGroup.TABLE); //создание ключа для текущего пользователя
+
             LoadUtil.LoadGroupParameter loadParameter = LoadUtil.getLoadParameter(organizationId, districtCode, monthFrom, monthTo, year);
 
             List<RequestFile> linkError = loadParameter.getLinkError();
@@ -247,6 +253,8 @@ public class ProcessManagerBean {
     @Asynchronous
     public void loadActualPayment(Long organizationId, String districtCode, int monthFrom, int monthTo, int year){
         try {
+            sessionBean.createPermissionId(RequestFile.TABLE); //создание ключа для текущего пользователя
+
             executorBean.execute(LoadUtil.getActualPayments(organizationId, districtCode, monthFrom, monthTo, year),
                     actualPaymentLoadTaskBean,
                     initProcessStatus(ACTUAL_PAYMENT, LOAD_ACTUAL_PAYMENT).getExecutorStatus(),
@@ -289,6 +297,8 @@ public class ProcessManagerBean {
     @Asynchronous
     public void loadTarif(Long organizationId, String districtCode, int monthFrom, int monthTo, int year){
         try {
+            sessionBean.createPermissionId(RequestFile.TABLE); //создание ключа для текущего пользователя
+
             executorBean.execute(LoadUtil.getTarifs(organizationId, districtCode, monthFrom, monthTo, year),
                     loadTarifTaskBean,
                     initProcessStatus(TARIF, LOAD_TARIF).getExecutorStatus(),

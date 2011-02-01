@@ -27,10 +27,10 @@
             keyProperty="id" useGeneratedKeys="true">
         insert into `request_file`
             (`group_id`, `organization_id`, `name`, `directory`, `registry`, `month`, `year`, `dbf_record_count`, `length`, `check_sum`,
-            `type`, `loaded`)
+            `type`, `loaded`, `permission_id`)
         values
             (#{groupId}, #{organizationId}, #{name}, #{directory}, #{registry}, #{month}, #{year}, #{dbfRecordCount}, #{length}, #{checkSum},
-                #{type}, #{loaded});
+                #{type}, #{loaded}, #{permissionId});
     </insert>
 
     <update id="updateRequestFile" parameterType="org.complitex.osznconnection.file.entity.RequestFile">
@@ -38,6 +38,7 @@
         <set>
             <if test="registry != null">`registry` = #{registry},</if>
             <if test="status != null">`status` = #{status},</if>
+            <if test="permissionId != null">`permission_id` = #{permissionId}</if>
         </set>
         where `id` = #{id}
     </update>
@@ -64,6 +65,7 @@
             <if test="dbfRecordCount != null">and `dbf_record_count` like CONCAT('%',#{dbfRecordCount},'%')</if>
             <if test="type != null">and `type` = #{type}</if>
             <if test="status != null">and `status` = #{status}</if>
+            <if test="not admin">and `permission_id` in ${permissions}</if>
         </where>
 
         <!--<trim prefix="HAVING" prefixOverrides="and">-->

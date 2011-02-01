@@ -14,6 +14,8 @@ import java.util.List;
  * Информация о файле запроса: имя, дата загрузки, организация, дата, количество записей, размер файла, статус.
  */
 public class RequestFile implements ILoggable {
+    public final static String TABLE = "request_file";
+
     public static enum TYPE {
         BENEFIT, PAYMENT, TARIF, ACTUAL_PAYMENT
     }
@@ -37,6 +39,8 @@ public class RequestFile implements ILoggable {
     private String checkSum;
     private TYPE type;
     private RequestFileStatus status;
+
+    private Long permissionId;
 
     private Integer loadedRecordCount = 0;
     private Integer bindedRecordCount = 0;
@@ -261,6 +265,14 @@ public class RequestFile implements ILoggable {
 
     public void setRequests(List<AbstractRequest> requests) {
         this.requests = requests;
+    }
+
+    public Long getPermissionId() {
+        return permissionId;
+    }
+
+    public void setPermissionId(Long permissionId) {
+        this.permissionId = permissionId;
     }
 
     @Override
