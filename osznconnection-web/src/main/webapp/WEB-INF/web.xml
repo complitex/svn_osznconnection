@@ -27,7 +27,19 @@
         <role-name>AUTHORIZED</role-name>
     </security-role>
     <security-role>
-        <role-name>ADMIN_MODULE_VIEW</role-name>
+        <role-name>ADMIN_MODULE_EDIT</role-name>
+    </security-role>
+    <security-role>
+        <role-name>ADDRESS_MODULE_EDIT</role-name>
+    </security-role>
+    <security-role>
+        <role-name>ORGANIZATION_MODULE_EDIT</role-name>
+    </security-role>
+    <security-role>
+        <role-name>OWNERSHIP_MODULE_EDIT</role-name>
+    </security-role>
+    <security-role>
+        <role-name>PRIVILEGE_MODULE_EDIT</role-name>
     </security-role>
 
      <login-config>

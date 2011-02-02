@@ -7,6 +7,7 @@ package org.complitex.osznconnection.privilege.web;
 import com.google.common.collect.ImmutableList;
 import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
+import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.complitex.template.web.template.ITemplateLink;
 import org.complitex.template.web.template.ResourceTemplateMenu;
 
@@ -20,6 +21,7 @@ import org.complitex.dictionary.util.EjbBeanLocator;
  *
  * @author Artem
  */
+@AuthorizeInstantiation("PRIVILEGE_MODULE_EDIT")
 public class PrivilegeTemplateMenu extends ResourceTemplateMenu {
 
     private static IStrategy getStrategy() {
