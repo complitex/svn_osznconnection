@@ -27,12 +27,10 @@ import org.complitex.template.strategy.AbstractStrategy;
 public class OwnershipStrategy extends AbstractStrategy {
 
     private static final String RESOURCE_BUNDLE = OwnershipStrategy.class.getName();
-
     /**
      * Attribute type ids
      */
     private static final long NAME = 1100;
-
     @EJB
     private StringCultureBean stringBean;
 
