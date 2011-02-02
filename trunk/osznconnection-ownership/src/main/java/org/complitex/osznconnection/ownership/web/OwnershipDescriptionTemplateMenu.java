@@ -8,6 +8,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
+import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.complitex.dictionary.service.StringCultureBean;
 import org.complitex.template.web.pages.EntityDescription;
 import org.complitex.template.web.template.ITemplateLink;
@@ -22,6 +23,7 @@ import org.complitex.dictionary.util.EjbBeanLocator;
  *
  * @author Artem
  */
+@AuthorizeInstantiation("OWNERSHIP_MODULE_EDIT")
 public class OwnershipDescriptionTemplateMenu extends ResourceTemplateMenu {
 
     @Override

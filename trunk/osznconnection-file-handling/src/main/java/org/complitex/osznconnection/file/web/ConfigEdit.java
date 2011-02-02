@@ -26,7 +26,7 @@ import java.util.Map;
  */
 @AuthorizeInstantiation(SecurityRole.AUTHORIZED)
 public class ConfigEdit extends FormTemplatePage{
-    @EJB(name = "ConfigEdit")
+    @EJB(name = "ConfigBean")
     private ConfigBean configBean;
 
     public ConfigEdit() {

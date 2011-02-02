@@ -12,7 +12,27 @@
     </security-role-mapping>
 
     <security-role-mapping>
-        <role-name>ADMIN_MODULE_VIEW</role-name>
+        <role-name>ADMIN_MODULE_EDIT</role-name>
+        <group-name>ADMINISTRATORS</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>ADDRESS_MODULE_EDIT</role-name>
+        <group-name>ADMINISTRATORS</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>ORGANIZATION_MODULE_EDIT</role-name>
+        <group-name>ADMINISTRATORS</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>OWNERSHIP_MODULE_EDIT</role-name>
+        <group-name>ADMINISTRATORS</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>PRIVILEGE_MODULE_EDIT</role-name>
         <group-name>ADMINISTRATORS</group-name>
     </security-role-mapping>
 </sun-web-app>
