@@ -89,6 +89,25 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
     }
 
     @Override
+    public List<? extends DomainObject> find(DomainObjectExample example) {
+        example.setTable(getEntityTable());
+        prepareExampleForPermissionCheck(example);
+
+        List<DomainObject> objects = sqlSession().selectList(ORGANIZATION_NAMESPACE + "." + FIND_OPERATION, example);
+        for (DomainObject object : objects) {
+            loadAttributes(object);
+        }
+        return objects;
+    }
+
+    @Override
+    public int count(DomainObjectExample example) {
+        example.setTable(getEntityTable());
+        prepareExampleForPermissionCheck(example);
+        return (Integer) sqlSession().selectOne(DOMAIN_OBJECT_NAMESPACE + "." + COUNT_OPERATION, example);
+    }
+
+    @Override
     public List<DomainObject> getAllOuterOrganizations(Locale locale) {
         DomainObjectExample example = new DomainObjectExample();
         example.setOrderByAttributeTypeId(NAME);
@@ -216,5 +235,19 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
             }
         }
         return finalUserOrganizations;
+    }
+
+    @Override
+    public List<? extends DomainObject> getChildrenOrganizations(Locale locale, long parentOrganizationId) {
+        DomainObjectExample example = new DomainObjectExample();
+        example.setEntityTypeId(USER_ORGANIZATION);
+        example.setLocaleId(localeBean.convert(locale).getId());
+        example.setAsc(true);
+        example.setOrderByAttributeTypeId(NAME);
+        AttributeExample parentAttribute = new AttributeExample(USER_ORGANIZATION_PARENT);
+        parentAttribute.setValue(String.valueOf(parentOrganizationId));
+        configureExample(example, ImmutableMap.<String, Long>of(), null);
+        List<? extends DomainObject> childrenOrganizations = find(example);
+        return childrenOrganizations;
     }
 }
