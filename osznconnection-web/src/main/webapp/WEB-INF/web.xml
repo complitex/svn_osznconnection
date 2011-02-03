@@ -41,6 +41,9 @@
     <security-role>
         <role-name>PRIVILEGE_MODULE_EDIT</role-name>
     </security-role>
+    <security-role>
+        <role-name>CHILD_ORGANIZATION_VIEW</role-name>
+    </security-role>
 
      <login-config>
         <auth-method>FORM</auth-method>
