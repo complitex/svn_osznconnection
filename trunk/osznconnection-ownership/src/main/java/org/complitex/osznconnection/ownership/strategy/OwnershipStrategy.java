@@ -18,6 +18,7 @@ import org.complitex.dictionary.entity.example.DomainObjectExample;
 import org.complitex.dictionary.service.StringCultureBean;
 import org.complitex.dictionary.util.ResourceUtil;
 import org.complitex.template.strategy.AbstractStrategy;
+import org.complitex.template.web.security.SecurityRole;
 
 /**
  *
@@ -71,5 +72,10 @@ public class OwnershipStrategy extends AbstractStrategy {
         example.setOrderByAttributeTypeId(NAME);
         configureExample(example, ImmutableMap.<String, Long>of(), null);
         return (List<DomainObject>) find(example);
+    }
+
+    @Override
+    public String[] getEditRoles() {
+        return new String[]{SecurityRole.OWNERSHIP_MODULE_EDIT};
     }
 }

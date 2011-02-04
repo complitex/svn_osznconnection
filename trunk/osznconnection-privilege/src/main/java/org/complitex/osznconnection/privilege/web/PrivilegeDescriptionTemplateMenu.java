@@ -18,12 +18,13 @@ import java.util.List;
 import java.util.Locale;
 import org.complitex.dictionary.strategy.StrategyFactory;
 import org.complitex.dictionary.util.EjbBeanLocator;
+import org.complitex.template.web.security.SecurityRole;
 
 /**
  *
  * @author Artem
  */
-@AuthorizeInstantiation("PRIVILEGE_MODULE_EDIT")
+@AuthorizeInstantiation(SecurityRole.PRIVILEGE_MODULE_EDIT)
 public class PrivilegeDescriptionTemplateMenu extends ResourceTemplateMenu {
 
     @Override

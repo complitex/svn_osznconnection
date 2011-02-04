@@ -16,12 +16,13 @@ import java.util.Locale;
 import org.complitex.dictionary.strategy.IStrategy;
 import org.complitex.dictionary.strategy.StrategyFactory;
 import org.complitex.dictionary.util.EjbBeanLocator;
+import org.complitex.template.web.security.SecurityRole;
 
 /**
  *
  * @author Artem
  */
-@AuthorizeInstantiation("ORGANIZATION_MODULE_EDIT")
+@AuthorizeInstantiation(SecurityRole.ORGANIZATION_MODULE_EDIT)
 public class OrganizationTemplateMenu extends ResourceTemplateMenu {
 
     private static IStrategy getStrategy() {

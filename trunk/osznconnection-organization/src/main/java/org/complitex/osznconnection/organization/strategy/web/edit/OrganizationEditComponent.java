@@ -21,7 +21,7 @@ import org.complitex.dictionary.entity.Attribute;
 import org.complitex.dictionary.entity.description.EntityType;
 import org.complitex.dictionary.entity.example.DomainObjectExample;
 import org.complitex.dictionary.strategy.Strategy;
-import org.complitex.dictionary.strategy.web.CanEditUtil;
+import org.complitex.dictionary.strategy.web.DomainObjectAccessUtil;
 import org.complitex.dictionary.web.component.search.ISearchCallback;
 import org.complitex.dictionary.web.component.search.SearchComponent;
 import org.complitex.dictionary.web.component.search.SearchComponentState;
@@ -125,7 +125,7 @@ public class OrganizationEditComponent extends AbstractComplexAttributesPanel {
         }
 
         districtContainer.add(new SearchComponent("district", componentState, ImmutableList.of("city", "district"), new DistrictSearchCallback(),
-                !isDisabled() && CanEditUtil.canEdit(currentOrganization)));
+                !isDisabled() && DomainObjectAccessUtil.canEdit("organization", currentOrganization)));
         setDistrictVisibility(districtContainer, districtRequired, currentOrganization.getEntityTypeId());
         //parent
         parentAttribute = organizationStrategy.getParentAttribute(currentOrganization);

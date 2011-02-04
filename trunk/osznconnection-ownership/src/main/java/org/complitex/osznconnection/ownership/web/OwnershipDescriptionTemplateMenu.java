@@ -18,12 +18,13 @@ import java.util.List;
 import java.util.Locale;
 import org.complitex.dictionary.strategy.StrategyFactory;
 import org.complitex.dictionary.util.EjbBeanLocator;
+import org.complitex.template.web.security.SecurityRole;
 
 /**
  *
  * @author Artem
  */
-@AuthorizeInstantiation("OWNERSHIP_MODULE_EDIT")
+@AuthorizeInstantiation(SecurityRole.OWNERSHIP_MODULE_EDIT)
 public class OwnershipDescriptionTemplateMenu extends ResourceTemplateMenu {
 
     @Override

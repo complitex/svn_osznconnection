@@ -29,6 +29,7 @@ import org.complitex.dictionary.service.LocaleBean;
 import org.complitex.template.strategy.AbstractStrategy;
 import org.complitex.address.strategy.district.DistrictStrategy;
 import org.complitex.osznconnection.organization.strategy.web.edit.OrganizationEditComponent;
+import org.complitex.template.web.security.SecurityRole;
 
 /**
  *
@@ -249,5 +250,10 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
         configureExample(example, ImmutableMap.<String, Long>of(), null);
         List<? extends DomainObject> childrenOrganizations = find(example);
         return childrenOrganizations;
+    }
+
+    @Override
+    public String[] getEditRoles() {
+        return new String[]{SecurityRole.ORGANIZATION_MODULE_EDIT};
     }
 }

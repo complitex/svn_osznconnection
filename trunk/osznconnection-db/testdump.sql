@@ -64,7 +64,7 @@ insert into district_string_culture(id, locale_id, value) values (1, 1, UPPER('�
                                                               (2, 1, UPPER('Советский')), (2, 2, UPPER('Sovetsky')),
                                                               (3, 1, UPPER('Центральный')), (3, 2, UPPER('Центральный')),
                                                               (4, 1, UPPER('LE')), (5, 1, UPPER('SO')), (6, 1, UPPER('CE'));
-insert into district(object_id, parent_id, parent_entity_id) values (1,1,400), (2,1,400), (3,3,400);
+insert into district(object_id, parent_id, parent_entity_id) values (1,2,400), (2,1,400), (3,3,400);
 insert into district_attribute(attribute_id, object_id, attribute_type_id, value_id, value_type_id) values
 (1,1,600,1,600),
 (1,1,601,4,601),
