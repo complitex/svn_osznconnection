@@ -105,6 +105,7 @@
         select
             g.id as gid,
             g.status as status,
+            g.permission_id as permission_id,
             b.id as b_id, b.loaded as b_loaded, b.name as b_name, b.directory as b_directory, b.organization_id as b_organization_id,
             b.registry as b_registry, b.month as b_month, b.year as b_year, b.dbf_record_count as b_dbf_record_count,
             b.length as b_length, b.check_sum as b_check_sum, b.type as b_type,
