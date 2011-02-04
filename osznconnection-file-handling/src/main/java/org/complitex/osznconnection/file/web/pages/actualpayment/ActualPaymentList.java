@@ -8,6 +8,7 @@ import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.authorization.UnauthorizedInstantiationException;
 import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -21,6 +22,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.string.Strings;
+import org.complitex.dictionary.service.SessionBean;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
 import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
@@ -92,6 +94,10 @@ public final class ActualPaymentList extends TemplatePage {
 
     @EJB(name = "PersonAccountService")
     private PersonAccountService personAccountService;
+
+    @EJB
+    private SessionBean sessionBean;
+
     private IModel<ActualPaymentExample> example;
     private long fileId;
 
@@ -112,6 +118,11 @@ public final class ActualPaymentList extends TemplatePage {
 
     private void init() {
         final RequestFile requestFile = requestFileBean.findById(fileId);
+
+        //Проверка доступа к данным
+        if (!sessionBean.hasPermission(requestFile.getPermissionId())) {
+            throw new UnauthorizedInstantiationException(this.getClass());
+        }
 
         String label = getStringFormat("label", requestFile.getDirectory(), File.separator, requestFile.getName());
 

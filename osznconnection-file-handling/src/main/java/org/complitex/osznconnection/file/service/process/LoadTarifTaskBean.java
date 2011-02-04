@@ -1,6 +1,7 @@
 package org.complitex.osznconnection.file.service.process;
 
 import org.complitex.dictionary.entity.Log;
+import org.complitex.dictionary.service.SessionBean;
 import org.complitex.dictionary.service.executor.ExecuteException;
 import org.complitex.dictionary.service.executor.ITaskBean;
 import org.complitex.osznconnection.file.Module;
@@ -33,10 +34,16 @@ public class LoadTarifTaskBean implements ITaskBean<RequestFile>{
     @EJB(beanName = "TarifBean")
     private TarifBean tarifBean;
 
+    @EJB
+    private SessionBean sessionBean;
+
     @Override
     public boolean execute(RequestFile requestFile) throws ExecuteException {
         //delete previous tarif
         requestFileBean.deleteTarif(requestFile.getOrganizationId());
+
+        //Установка ключа безопасности
+        requestFile.setPermissionId(sessionBean.createPermissionId(RequestFile.TABLE));
 
         loadRequestFileBean.load(requestFile, new LoadRequestFileBean.ILoadRequestFile(){
 

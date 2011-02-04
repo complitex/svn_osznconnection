@@ -8,6 +8,7 @@ import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.authorization.UnauthorizedInstantiationException;
 import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
@@ -24,6 +25,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.util.string.Strings;
+import org.complitex.dictionary.service.SessionBean;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
 import org.complitex.template.web.security.SecurityRole;
@@ -69,6 +71,8 @@ public final class BenefitList extends TemplatePage {
     private WebWarningRenderer webWarningRenderer;
     @EJB(name = "StatusDetailBean")
     private StatusDetailBean statusDetailBean;
+    @EJB
+    private SessionBean sessionBean;
     private IModel<BenefitExample> example;
     private long fileId;
 
@@ -89,6 +93,12 @@ public final class BenefitList extends TemplatePage {
 
     private void init() {
         RequestFile requestFile = requestFileBean.findById(fileId);
+
+        //Проверка доступа к данным
+        if (!sessionBean.hasPermission(requestFile.getPermissionId())) {
+            throw new UnauthorizedInstantiationException(this.getClass());
+        }
+
         String fileName = requestFile.getName();
         String directory = requestFile.getDirectory();
         IModel<String> labelModel = new StringResourceModel("label", this, null, new Object[]{fileName, directory});
