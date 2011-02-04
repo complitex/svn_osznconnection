@@ -15,6 +15,7 @@
         <result column="length" property="length"/>
         <result column="checkSum" property="checkSum"/>
         <result column="type" property="type"/>
+        <result column="permission_id" property="permissionId"/>
         <result column="loaded_record_count" property="loadedRecordCount"/>
         <result column="binded_record_count" property="bindedRecordCount"/>
     </resultMap>

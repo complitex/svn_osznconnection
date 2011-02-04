@@ -4,6 +4,8 @@
  */
 package org.complitex.osznconnection.file.web.pages.payment;
 
+import org.apache.wicket.authorization.UnauthorizedInstantiationException;
+import org.complitex.dictionary.service.SessionBean;
 import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
 import org.complitex.osznconnection.file.entity.AccountDetail;
 import org.complitex.osznconnection.file.web.component.account.AccountNumberCorrectionPanel;
@@ -81,6 +83,8 @@ public final class PaymentList extends TemplatePage {
     private AddressService addressService;
     @EJB(name = "PersonAccountService")
     private PersonAccountService personAccountService;
+    @EJB
+    private SessionBean sessionBean;
     private IModel<PaymentExample> example;
     private long fileId;
 
@@ -101,6 +105,11 @@ public final class PaymentList extends TemplatePage {
 
     private void init() {
         RequestFile requestFile = requestFileBean.findById(fileId);
+
+        //Проверка доступа к данным
+        if (!sessionBean.hasPermission(requestFile.getPermissionId())) {
+            throw new UnauthorizedInstantiationException(this.getClass());
+        }
 
         String label = getStringFormat("label", requestFile.getDirectory(), File.separator, requestFile.getName());
 
