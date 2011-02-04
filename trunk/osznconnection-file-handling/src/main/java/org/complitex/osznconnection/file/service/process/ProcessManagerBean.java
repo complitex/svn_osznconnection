@@ -4,6 +4,7 @@ import org.complitex.dictionary.entity.Log;
 import org.complitex.dictionary.service.*;
 import org.complitex.dictionary.service.SessionBean;
 import org.complitex.dictionary.service.executor.ExecutorBean;
+import org.complitex.dictionary.service.executor.ExecutorStatus;
 import org.complitex.dictionary.service.executor.IExecutorListener;
 import org.complitex.dictionary.service.executor.ITaskBean;
 import org.complitex.osznconnection.file.Module;
@@ -181,7 +182,17 @@ public class ProcessManagerBean {
             processStatus.startPreprocess(); // предобработка
             processStatus.init();
 
-            sessionBean.createPermissionId(RequestFileGroup.TABLE); //создание ключа для текущего пользователя
+            //создание ключа для текущего пользователя
+            if (sessionBean.createPermissionId(RequestFileGroup.TABLE) == null){
+                processStatus.preprocessError();
+
+                log.error("Ошибка процесса загрузки файлов. Причина: ошибка получения ключа безопасности");
+                logBean.error(Module.NAME, ProcessManagerBean.class, RequestFileGroup.class, null, Log.EVENT.CREATE,
+                        "Ошибка процесса загрузки файлов. Ошибка получения ключа безопасности. " +
+                                "Возможно пользователю не добавлено ни одной организации.");
+
+                return;
+            }
 
             LoadUtil.LoadGroupParameter loadParameter = LoadUtil.getLoadParameter(organizationId, districtCode, monthFrom, monthTo, year);
 
@@ -253,11 +264,23 @@ public class ProcessManagerBean {
     @Asynchronous
     public void loadActualPayment(Long organizationId, String districtCode, int monthFrom, int monthTo, int year){
         try {
-            sessionBean.createPermissionId(RequestFile.TABLE); //создание ключа для текущего пользователя
+            ProcessStatus processStatus = initProcessStatus(ACTUAL_PAYMENT, LOAD_ACTUAL_PAYMENT);
+
+            //создание ключа для текущего пользователя
+            if (sessionBean.createPermissionId(RequestFile.TABLE) == null){
+                processStatus.preprocessError();
+
+                log.error("Ошибка процесса загрузки файлов. Причина: ошибка получения ключа безопасности");
+                logBean.error(Module.NAME, ProcessManagerBean.class, ActualPayment.class, null, Log.EVENT.CREATE,
+                       "Ошибка процесса загрузки файлов. Ошибка получения ключа безопасности. " +
+                                "Возможно пользователю не добавлено ни одной организации.");
+
+                return;
+            }
 
             executorBean.execute(LoadUtil.getActualPayments(organizationId, districtCode, monthFrom, monthTo, year),
                     actualPaymentLoadTaskBean,
-                    initProcessStatus(ACTUAL_PAYMENT, LOAD_ACTUAL_PAYMENT).getExecutorStatus(),
+                    processStatus.getExecutorStatus(),
                     configBean.getInteger(Config.LOAD_THREAD_SIZE, true),
                     configBean.getInteger(Config.LOAD_MAX_ERROR_COUNT, true));
         } catch (StorageNotFoundException e) {
@@ -297,11 +320,23 @@ public class ProcessManagerBean {
     @Asynchronous
     public void loadTarif(Long organizationId, String districtCode, int monthFrom, int monthTo, int year){
         try {
-            sessionBean.createPermissionId(RequestFile.TABLE); //создание ключа для текущего пользователя
+            ProcessStatus processStatus = initProcessStatus(TARIF, LOAD_TARIF);
+
+            //создание ключа для текущего пользователя
+            if (sessionBean.createPermissionId(RequestFile.TABLE) == null){
+                processStatus.preprocessError();
+
+                log.error("Ошибка процесса загрузки файлов. Причина: ошибка получения ключа безопасности");
+                logBean.error(Module.NAME, ProcessManagerBean.class, Tarif.class, null, Log.EVENT.CREATE,
+                       "Ошибка процесса загрузки файлов. Ошибка получения ключа безопасности. " +
+                                "Возможно пользователю не добавлено ни одной организации.");
+
+                return;
+            }
 
             executorBean.execute(LoadUtil.getTarifs(organizationId, districtCode, monthFrom, monthTo, year),
                     loadTarifTaskBean,
-                    initProcessStatus(TARIF, LOAD_TARIF).getExecutorStatus(),
+                    processStatus.getExecutorStatus(),
                     configBean.getInteger(Config.LOAD_THREAD_SIZE, true),
                     configBean.getInteger(Config.LOAD_MAX_ERROR_COUNT, true));
         } catch (StorageNotFoundException e) {
