@@ -17,6 +17,7 @@ import org.complitex.dictionary.entity.example.DomainObjectExample;
 import org.complitex.dictionary.service.StringCultureBean;
 import org.complitex.dictionary.util.ResourceUtil;
 import org.complitex.template.strategy.AbstractStrategy;
+import org.complitex.template.web.security.SecurityRole;
 
 /**
  *
@@ -26,14 +27,11 @@ import org.complitex.template.strategy.AbstractStrategy;
 public class PrivilegeStrategy extends AbstractStrategy {
 
     private static final String RESOURCE_BUNDLE = PrivilegeStrategy.class.getName();
-
     /**
      * Attribute type ids
      */
     private static final long NAME = 1200;
-
     private static final long CODE = 1201;
-
     @EJB
     private StringCultureBean stringBean;
 
@@ -72,5 +70,10 @@ public class PrivilegeStrategy extends AbstractStrategy {
     @Override
     public String getPluralEntityLabel(Locale locale) {
         return ResourceUtil.getString(RESOURCE_BUNDLE, getEntityTable(), locale);
+    }
+
+    @Override
+    public String[] getEditRoles() {
+        return new String[]{SecurityRole.PRIVILEGE_MODULE_EDIT};
     }
 }
