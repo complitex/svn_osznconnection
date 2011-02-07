@@ -118,7 +118,7 @@ public class LoadRequestFileBean {
 
                 request.setRequestFileId(requestFile.getId());
                 request.setOrganizationId(requestFile.getOrganizationId());
-                request.setStatus(RequestStatus.CITY_UNRESOLVED_LOCALLY);
+                request.setStatus(RequestStatus.LOADED);
 
                 batch.add(request);
 

@@ -16,6 +16,8 @@ import java.util.Set;
 public enum RequestStatus implements IEnumCode {
 
     /* группа "локально неразрешимых" статусов, т.е. любой статус из группы указывает на то, что какя-то часть внутреннего адреса у записи не разрешена */
+    LOADED(237),
+
     CITY_UNRESOLVED_LOCALLY(200), STREET_TYPE_UNRESOLVED_LOCALLY(237), STREET_UNRESOLVED_LOCALLY(201), BUILDING_UNRESOLVED_LOCALLY(202),
 
     MORE_ONE_LOCAL_CITY(234), MORE_ONE_LOCAL_STREET_TYPE(238), MORE_ONE_LOCAL_STREET(235), MORE_ONE_LOCAL_BUILDING(236),
@@ -104,7 +106,7 @@ public enum RequestStatus implements IEnumCode {
         return ADDRESS_CORRECTABLE_STATUSES.contains(this);
     }
     private static final Set<RequestStatus> UNBOUND_STATUSES = Sets.immutableEnumSet(ImmutableList.of(ACCOUNT_NUMBER_NOT_FOUND,
-            ADDRESS_CORRECTED,
+            LOADED, ADDRESS_CORRECTED,
             BUILDING_CORP_NOT_FOUND, BUILDING_NOT_FOUND, BUILDING_UNRESOLVED, BUILDING_UNRESOLVED_LOCALLY, MORE_ONE_LOCAL_BUILDING_CORRECTION,
             MORE_ONE_REMOTE_BUILDING_CORRECTION, MORE_ONE_LOCAL_BUILDING,
             CITY_UNRESOLVED, CITY_UNRESOLVED_LOCALLY, CITY_NOT_FOUND, MORE_ONE_LOCAL_CITY_CORRECTION, MORE_ONE_REMOTE_CITY_CORRECTION,
