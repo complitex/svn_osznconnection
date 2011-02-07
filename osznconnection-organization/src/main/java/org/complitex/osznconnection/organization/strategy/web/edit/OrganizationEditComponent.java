@@ -5,8 +5,10 @@
 package org.complitex.osznconnection.organization.strategy.web.edit;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Sets;
 import java.io.Serializable;
 import java.util.Map;
+import java.util.Set;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.strategy.web.AbstractComplexAttributesPanel;
 
@@ -149,7 +151,10 @@ public class OrganizationEditComponent extends AbstractComplexAttributesPanel {
             //new organization
             parentContainer.add(new UserOrganizationPicker("parent", parentModel));
         } else {
-            parentContainer.add(new UserOrganizationPicker("parent", parentModel, currentOrganization.getId()));
+            Set<Long> excludeOrganizationIds = Sets.newHashSet(currentOrganization.getId());
+            excludeOrganizationIds.addAll(organizationStrategy.getTreeChildrenOrganizationIds(currentOrganization.getId()));
+            Long[] excludeAsArray = new Long[excludeOrganizationIds.size()];
+            parentContainer.add(new UserOrganizationPicker("parent", parentModel, excludeOrganizationIds.toArray(excludeAsArray)));
         }
 
         setParentVisibility(parentContainer, currentOrganization.getEntityTypeId());
