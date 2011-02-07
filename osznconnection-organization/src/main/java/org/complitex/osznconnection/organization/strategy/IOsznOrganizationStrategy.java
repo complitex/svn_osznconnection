@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Locale;
 import org.complitex.dictionary.entity.Attribute;
 import org.complitex.dictionary.entity.DomainObject;
+import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
 
 /**
@@ -31,10 +32,13 @@ public interface IOsznOrganizationStrategy extends IOrganizationStrategy {
     long DISTRICT = 902;
     long USER_ORGANIZATION_PARENT = 903;
 
+    @Transactional
     List<DomainObject> getAllOuterOrganizations(Locale locale);
 
+    @Transactional
     List<DomainObject> getAllOSZNs(Locale locale);
 
+    @Transactional
     List<DomainObject> getAllCalculationCentres(Locale locale);
 
     Attribute getDistrictAttribute(DomainObject organization);
@@ -43,13 +47,16 @@ public interface IOsznOrganizationStrategy extends IOrganizationStrategy {
 
     String getDistrictCode(DomainObject organization);
 
+    @Transactional
     DomainObject getItselfOrganization();
 
     String getCode(DomainObject organization);
 
     String getName(DomainObject organization, Locale locale);
 
+    @Transactional
     Long validateCode(Long id, String code, Long parentId, Long parentEntityId);
 
+    @Transactional
     Long validateName(Long id, String name, Long parentId, Long parentEntityId, Locale locale);
 }

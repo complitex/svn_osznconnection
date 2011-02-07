@@ -8,6 +8,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import java.util.Date;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.entity.Attribute;
 import org.complitex.dictionary.entity.DomainObject;
@@ -29,8 +30,11 @@ import org.complitex.dictionary.service.LocaleBean;
 import org.complitex.template.strategy.AbstractStrategy;
 import org.complitex.address.strategy.district.DistrictStrategy;
 import org.complitex.dictionary.mybatis.Transactional;
+import org.complitex.dictionary.util.Numbers;
 import org.complitex.osznconnection.organization.strategy.web.edit.OrganizationEditComponent;
 import org.complitex.template.web.security.SecurityRole;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -39,11 +43,12 @@ import org.complitex.template.web.security.SecurityRole;
 @Stateless
 public class OrganizationStrategy extends AbstractStrategy implements IOsznOrganizationStrategy {
 
+    private static final Logger log = LoggerFactory.getLogger(OrganizationStrategy.class);
     private static final String ORGANIZATION_NAMESPACE = OrganizationStrategy.class.getPackage().getName() + ".Organization";
     private static final String RESOURCE_BUNDLE = OrganizationStrategy.class.getName();
-    @EJB(beanName = "StringCultureBean")
+    @EJB
     private StringCultureBean stringBean;
-    @EJB(beanName = "DistrictStrategy")
+    @EJB
     private DistrictStrategy districtStrategy;
     @EJB
     private LocaleBean localeBean;
@@ -80,6 +85,57 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
         return ResourceUtil.getString(RESOURCE_BUNDLE, getEntityTable(), locale);
     }
 
+    @Transactional
+    @Override
+    public void insert(DomainObject object) {
+        super.insert(object);
+
+        Attribute districtAttribute = getDistrictAttribute(object);
+        Long districtId = districtAttribute.getValueId();
+        if (districtId != null) {
+            DomainObject districtObject = districtStrategy.findById(districtId);
+            if (districtObject != null) {
+                Set<Long> addSubjectIds = Sets.newHashSet(object.getId());
+                districtStrategy.changeSubjectsAcrossTreeInDistinctThread(districtId, districtObject.getPermissionId(), addSubjectIds, null);
+            }
+        }
+    }
+
+    @Transactional
+    @Override
+    public void update(DomainObject oldObject, DomainObject newObject, Date updateDate) {
+        super.update(oldObject, newObject, updateDate);
+        changeSubjectsAcrossDistrictTree(oldObject, newObject);
+    }
+
+    private void changeSubjectsAcrossDistrictTree(DomainObject oldObject, DomainObject newObject) {
+        long organizationId = newObject.getId();
+        Set<Long> subjectIds = Sets.newHashSet(organizationId);
+        Attribute oldDistrictAttribute = getDistrictAttribute(oldObject);
+        Attribute newDistrictAttribute = getDistrictAttribute(newObject);
+        Long oldDistrictId = oldDistrictAttribute.getValueId();
+        Long newDistrictId = newDistrictAttribute.getValueId();
+        if (!Numbers.isEqual(oldDistrictId, newDistrictId)) {
+            //district reference has changed
+            if (oldDistrictId != null) {
+                long oldDistrictPermissionId = districtStrategy.findById(oldDistrictId).getPermissionId();
+                districtStrategy.changeSubjectsAcrossTreeInDistinctThread(oldDistrictId, oldDistrictPermissionId, null, subjectIds);
+            }
+
+            if (newDistrictId != null) {
+                long newDistrictPermissionId = districtStrategy.findById(newDistrictId).getPermissionId();
+                districtStrategy.changeSubjectsAcrossTreeInDistinctThread(newDistrictId, newDistrictPermissionId, subjectIds, null);
+            }
+        }
+    }
+
+    @Transactional
+    @Override
+    public void updateAndPropagate(DomainObject oldObject, DomainObject newObject, Date updateDate) {
+        super.updateAndPropagate(oldObject, newObject, updateDate);
+        changeSubjectsAcrossDistrictTree(oldObject, newObject);
+    }
+
     @Override
     public IValidator getValidator() {
         return new OrganizationValidator(localeBean.getSystemLocale());
@@ -90,6 +146,7 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
         return OrganizationEditComponent.class;
     }
 
+    @Transactional
     @Override
     public List<? extends DomainObject> find(DomainObjectExample example) {
         example.setTable(getEntityTable());
@@ -102,6 +159,7 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
         return objects;
     }
 
+    @Transactional
     @Override
     public int count(DomainObjectExample example) {
         example.setTable(getEntityTable());
@@ -109,6 +167,7 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
         return (Integer) sqlSession().selectOne(DOMAIN_OBJECT_NAMESPACE + "." + COUNT_OPERATION, example);
     }
 
+    @Transactional
     @Override
     public List<DomainObject> getAllOuterOrganizations(Locale locale) {
         DomainObjectExample example = new DomainObjectExample();
@@ -126,6 +185,7 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
         return outerOrganizations;
     }
 
+    @Transactional
     @Override
     public List<DomainObject> getAllOSZNs(Locale locale) {
         DomainObjectExample example = new DomainObjectExample();
@@ -137,6 +197,7 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
         return (List<DomainObject>) find(example);
     }
 
+    @Transactional
     @Override
     public List<DomainObject> getAllCalculationCentres(Locale locale) {
         DomainObjectExample example = new DomainObjectExample();
@@ -168,6 +229,7 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
         return districtCode;
     }
 
+    @Transactional
     @Override
     public DomainObject getItselfOrganization() {
         DomainObjectExample example = new DomainObjectExample(ITSELF_ORGANIZATION_OBJECT_ID);
@@ -185,6 +247,7 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
         return stringBean.displayValue(organization.getAttribute(NAME).getLocalizedValues(), locale);
     }
 
+    @Transactional
     @Override
     public Long validateCode(Long id, String code, Long parentId, Long parentEntityId) {
         Map<String, Object> params = Maps.newHashMap();
@@ -200,6 +263,7 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
         return null;
     }
 
+    @Transactional
     @Override
     public Long validateName(Long id, String name, Long parentId, Long parentEntityId, Locale locale) {
         Map<String, Object> params = Maps.newHashMap();
