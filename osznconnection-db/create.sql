@@ -1351,7 +1351,7 @@ CREATE TABLE `payment` (
     `outgoing_building_corp` VARCHAR(100),
     `outgoing_apartment` VARCHAR(100),
 
-    `status` INTEGER NOT NULL DEFAULT 200 COMMENT 'См. таблицу status_description и org.complitex.osznconnection.file.entity.RequestStatus',
+    `status` INTEGER NOT NULL DEFAULT 237 COMMENT 'См. таблицу status_description и org.complitex.osznconnection.file.entity.RequestStatus',
 
     `OWN_NUM` VARCHAR (15) COMMENT 'Номер дела',
     `REE_NUM` INT(2) COMMENT 'Номер реестра',
@@ -1444,7 +1444,7 @@ CREATE TABLE `benefit` (
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
     `request_file_id` BIGINT(20) NULL,
     `account_number` VARCHAR(100) NULL,
-    `status` INTEGER NOT NULL DEFAULT 200 COMMENT 'См. таблицу status_description и org.complitex.osznconnection.file.entity.RequestStatus',
+    `status` INTEGER NOT NULL DEFAULT 237 COMMENT 'См. таблицу status_description и org.complitex.osznconnection.file.entity.RequestStatus',
 
 	`OWN_NUM` VARCHAR(15) COMMENT 'Номер дела',
 	`REE_NUM` INT(2) COMMENT 'Номер реестра',
@@ -1535,7 +1535,7 @@ CREATE TABLE `actual_payment` (
     `outgoing_building_corp` VARCHAR(100),
     `outgoing_apartment` VARCHAR(100),
 
-    `status` INTEGER NOT NULL DEFAULT 200 COMMENT 'См. таблицу status_description и org.complitex.osznconnection.file.entity.RequestStatus',
+    `status` INTEGER NOT NULL DEFAULT 237 COMMENT 'См. таблицу status_description и org.complitex.osznconnection.file.entity.RequestStatus',
 
     `SUR_NAM` VARCHAR(30) COMMENT 'Фамилия',
     `F_NAM` VARCHAR(15) COMMENT 'Имя',

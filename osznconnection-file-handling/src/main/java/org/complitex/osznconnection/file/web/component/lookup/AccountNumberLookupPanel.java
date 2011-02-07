@@ -110,7 +110,7 @@ public abstract class AccountNumberLookupPanel<T extends AbstractRequest> extend
 
             @Override
             public void onClick(AjaxRequestTarget target) {
-                request.setStatus(RequestStatus.CITY_UNRESOLVED_LOCALLY);
+                request.setStatus(RequestStatus.LOADED);
                 AccountDetail detail = null;
                 boolean visible = detailsContainer.isVisible();
                 detailsContainer.setVisible(false);

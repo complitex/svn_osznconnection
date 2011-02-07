@@ -267,7 +267,7 @@ public class BenefitBean extends AbstractRequestBean {
     @Transactional
     public void clearBeforeBinding(long fileId) {
         Map<String, Object> params = Maps.newHashMap();
-        params.put("status", RequestStatus.CITY_UNRESOLVED_LOCALLY);
+        params.put("status", RequestStatus.LOADED);
         params.put("fileId", fileId);
         sqlSession().update(MAPPING_NAMESPACE + ".clearBeforeBinding", params);
         clearWarnings(fileId, RequestFile.TYPE.BENEFIT);
