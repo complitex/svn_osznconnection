@@ -28,6 +28,7 @@ import java.util.Set;
 import org.complitex.dictionary.service.LocaleBean;
 import org.complitex.template.strategy.AbstractStrategy;
 import org.complitex.address.strategy.district.DistrictStrategy;
+import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.osznconnection.organization.strategy.web.edit.OrganizationEditComponent;
 import org.complitex.template.web.security.SecurityRole;
 
@@ -215,6 +216,7 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
         return null;
     }
 
+    @Transactional
     @Override
     public List<? extends DomainObject> getUserOrganizations(Locale locale, Long... excludeOrganizationsId) {
         DomainObjectExample example = new DomainObjectExample();
@@ -238,18 +240,15 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
         return finalUserOrganizations;
     }
 
+    @Transactional
     @Override
-    public List<? extends DomainObject> getChildrenOrganizations(Locale locale, long parentOrganizationId) {
-        DomainObjectExample example = new DomainObjectExample();
-        example.setEntityTypeId(USER_ORGANIZATION);
-        example.setLocaleId(localeBean.convert(locale).getId());
-        example.setAsc(true);
-        example.setOrderByAttributeTypeId(NAME);
-        AttributeExample parentAttribute = new AttributeExample(USER_ORGANIZATION_PARENT);
-        parentAttribute.setValue(String.valueOf(parentOrganizationId));
-        configureExample(example, ImmutableMap.<String, Long>of(), null);
-        List<? extends DomainObject> childrenOrganizations = find(example);
-        return childrenOrganizations;
+    public Set<Long> getTreeChildrenOrganizationIds(long parentOrganizationId) {
+        Set<Long> childrenIds = Sets.newHashSet(sqlSession().selectList(ORGANIZATION_NAMESPACE + ".selectOrganizationChildrenObjectIds", parentOrganizationId));
+        Set<Long> treeChildren = Sets.newHashSet(childrenIds);
+        for (Long childId : childrenIds) {
+            treeChildren.addAll(getTreeChildrenOrganizationIds(childId));
+        }
+        return treeChildren;
     }
 
     @Override

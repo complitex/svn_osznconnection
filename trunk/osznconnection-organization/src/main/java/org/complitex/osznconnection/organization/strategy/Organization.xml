@@ -93,4 +93,10 @@
             </choose>
     </select>
 
+    <select id="selectOrganizationChildrenObjectIds" parameterType="long" resultType="long">
+        SELECT o.`object_id` FROM `organization` o
+            LEFT JOIN `organization_attribute` oa ON (oa.`status` = 'ACTIVE' AND oa.`object_id` = o.`object_id` AND oa.`attribute_type_id` = 903)
+            WHERE oa.`value_id` = #{parentObjectId} AND o.`status` IN ('ACTIVE', 'INACTIVE')
+    </select>
+
 </mapper>
