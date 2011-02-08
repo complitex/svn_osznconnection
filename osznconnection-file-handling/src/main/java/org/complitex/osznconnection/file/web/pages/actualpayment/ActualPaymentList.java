@@ -119,11 +119,6 @@ public final class ActualPaymentList extends TemplatePage {
     private void init() {
         final RequestFile requestFile = requestFileBean.findById(fileId);
 
-        //Проверка доступа к данным
-        if (!sessionBean.hasPermission(requestFile.getPermissionId())) {
-            throw new UnauthorizedInstantiationException(this.getClass());
-        }
-
         String label = getStringFormat("label", requestFile.getDirectory(), File.separator, requestFile.getName());
 
         add(new Label("title", label));

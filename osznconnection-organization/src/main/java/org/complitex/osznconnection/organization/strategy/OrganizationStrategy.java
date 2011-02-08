@@ -193,6 +193,19 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
         return (List<DomainObject>) find(example);
     }
 
+    @Override
+    public String getAllOSZNString() {
+        String s = "";
+        String d = "";
+
+        for (DomainObject o : getAllOSZNs(null)){
+            s += d + o.getId();
+            d = ",";
+        }
+
+        return "(" + s + ")";
+    }
+
     @Transactional
     @Override
     public List<DomainObject> getAllCalculationCentres(Locale locale) {

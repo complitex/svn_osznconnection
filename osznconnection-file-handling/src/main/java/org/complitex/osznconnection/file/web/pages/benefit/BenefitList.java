@@ -94,11 +94,6 @@ public final class BenefitList extends TemplatePage {
     private void init() {
         RequestFile requestFile = requestFileBean.findById(fileId);
 
-        //Проверка доступа к данным
-        if (!sessionBean.hasPermission(requestFile.getPermissionId())) {
-            throw new UnauthorizedInstantiationException(this.getClass());
-        }
-
         String fileName = requestFile.getName();
         String directory = requestFile.getDirectory();
         IModel<String> labelModel = new StringResourceModel("label", this, null, new Object[]{fileName, directory});

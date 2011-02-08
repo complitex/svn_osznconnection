@@ -29,6 +29,8 @@ public class RequestFileGroupFilter  extends AbstractFilter {
     private RequestFile.TYPE type;
     private RequestFileStatus status;
 
+    private String organizations;
+
     public Long getId() {
         return id;
     }
@@ -171,5 +173,13 @@ public class RequestFileGroupFilter  extends AbstractFilter {
 
     public void setStatus(RequestFileStatus status) {
         this.status = status;
+    }
+
+    public String getOrganizations() {
+        return organizations;
+    }
+
+    public void setOrganizations(String organizations) {
+        this.organizations = organizations;
     }
 }

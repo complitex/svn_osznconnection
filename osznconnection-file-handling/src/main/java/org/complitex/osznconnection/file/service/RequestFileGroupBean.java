@@ -1,7 +1,9 @@
 package org.complitex.osznconnection.file.service;
 
+import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.dictionary.service.SessionBean;
+import org.complitex.dictionary.strategy.StrategyFactory;
 import org.complitex.osznconnection.file.entity.RequestFileGroup;
 import org.complitex.osznconnection.file.entity.RequestFileGroupFilter;
 
@@ -9,8 +11,12 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.osznconnection.file.entity.RequestFileStatus;
+import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
+import org.complitex.osznconnection.organization.strategy.OrganizationStrategy;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -26,19 +32,26 @@ public class RequestFileGroupBean extends AbstractBean{
     @EJB
     private SessionBean sessionBean;
 
+    @EJB
+    protected StrategyFactory strategyFactory;
+
     @SuppressWarnings({"unchecked"})
     public List<RequestFileGroup> getRequestFileGroups(RequestFileGroupFilter filter){
         filter.setAdmin(sessionBean.isAdmin());
-        filter.setPermissions(sessionBean.getPermissionString(RequestFileGroup.TABLE));
+        filter.setOrganizations(getAllOSZNString());
 
         return sqlSession().selectList(MAPPING_NAMESPACE + ".selectRequestFilesGroups", filter);
     }
 
     public int getRequestFileGroupsCount(RequestFileGroupFilter filter){
         filter.setAdmin(sessionBean.isAdmin());
-        filter.setPermissions(sessionBean.getPermissionString(RequestFileGroup.TABLE));
+        filter.setOrganizations(getAllOSZNString());
 
         return (Integer)sqlSession().selectOne(MAPPING_NAMESPACE + ".selectRequestFilesGroupsCount", filter);
+    }
+
+    private String getAllOSZNString(){
+        return ((IOsznOrganizationStrategy)strategyFactory.getStrategy("organization")).getAllOSZNString();
     }
 
     public void delete(RequestFileGroup requestFileGroup) {

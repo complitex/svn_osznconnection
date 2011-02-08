@@ -1283,10 +1283,7 @@ CREATE TABLE `request_file_group` (
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
     `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `status` INTEGER COMMENT 'См. таблицу status_description и класс RequestFileStatus',
-    `permission_id` BIGINT(20) NOT NULL DEFAULT 0,
-    PRIMARY KEY (`id`),
-    KEY `key_permission_id` (`permission_id`),
-    CONSTRAINT `fk_request_file_group__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -1310,7 +1307,6 @@ CREATE TABLE `request_file` (
     `check_sum` VARCHAR(32),
     `type` VARCHAR(50),
     `status` INTEGER COMMENT 'См. таблицу status_description и класс RequestFileStatus',
-    `permission_id` BIGINT(20) NOT NULL DEFAULT 0,
     PRIMARY KEY (`id`),
     UNIQUE KEY `unique_id` (`name`, `organization_id`, `registry`, `month`, `year`), 
     KEY `key_group_id` (`group_id`),
@@ -1321,10 +1317,8 @@ CREATE TABLE `request_file` (
     KEY `key_month` (`month`),
     KEY `key_year` (`year`) ,
     KEY `key_type` (`type`) ,
-    KEY `key_permission_id` (`permission_id`),
     CONSTRAINT `fk_request_file__request_file_group` FOREIGN KEY (`group_id`) REFERENCES `request_file_group` (`id`),
-    CONSTRAINT `fk_request_file__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`object_id`),
-    CONSTRAINT `fk_request_file__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
+    CONSTRAINT `fk_request_file__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`object_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ------------------------------

@@ -42,9 +42,6 @@ public class LoadTarifTaskBean implements ITaskBean<RequestFile>{
         //delete previous tarif
         requestFileBean.deleteTarif(requestFile.getOrganizationId());
 
-        //Установка ключа безопасности
-        requestFile.setPermissionId(sessionBean.createPermissionId(RequestFile.TABLE));
-
         loadRequestFileBean.load(requestFile, new LoadRequestFileBean.ILoadRequestFile(){
 
             @Override

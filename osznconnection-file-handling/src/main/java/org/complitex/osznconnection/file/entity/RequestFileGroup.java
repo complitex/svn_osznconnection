@@ -27,8 +27,6 @@ public class RequestFileGroup implements ILoggable{
 
     private RequestFileStatus status;
 
-    private Long permissionId;
-
     @Override
     public String getLogObjectName() {
         return getFullName();
@@ -173,14 +171,6 @@ public class RequestFileGroup implements ILoggable{
 
     public void setStatus(RequestFileStatus status) {
         this.status = status;
-    }
-
-    public Long getPermissionId() {
-        return permissionId;
-    }
-
-    public void setPermissionId(Long permissionId) {
-        this.permissionId = permissionId;
     }
 
     @Override
