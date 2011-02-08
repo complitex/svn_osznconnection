@@ -45,9 +45,19 @@
         <if test="parentId != null and parentEntity != null">
             AND e.`parent_entity_id` = (SELECT ent.`id` FROM `entity` ent WHERE ent.`entity_table` = #{parentEntity}) AND e.`parent_id` = #{parentId}
         </if>
-        <if test="entityTypeId != null">
-            AND e.`entity_type_id` = #{entityTypeId}
-        </if>
+        <choose>
+            <when test="entityTypeId != null">
+                AND e.`entity_type_id` = #{entityTypeId}
+            </when>
+            <otherwise>
+                <if test="additionalParams != null and additionalParams['entityTypeIds'] != null">
+                    AND e.`entity_type_id` IN
+                    <foreach open="(" close=")" separator="," item="id" collection="additionalParams['entityTypeIds']">
+                        #{id}
+                    </foreach>
+                </if>
+            </otherwise>
+        </choose>
     </sql>
 
     <select id="count" resultType="integer" parameterType="DomainObjectExample">

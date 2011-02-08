@@ -4,6 +4,7 @@
  */
 package org.complitex.osznconnection.organization.strategy;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -174,14 +175,9 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
         example.setOrderByAttributeTypeId(NAME);
         example.setLocaleId(localeBean.convert(locale).getId());
         example.setAsc(true);
+        example.addAdditionalParam("entityTypeIds", ImmutableList.of(OSZN, CALCULATION_CENTER));
         configureExample(example, ImmutableMap.<String, Long>of(), null);
-        List<DomainObject> outerOrganizations = Lists.newArrayList();
-        DomainObject itself = getItselfOrganization();
-        for (DomainObject organization : find(example)) {
-            if (!organization.getId().equals(itself.getId())) {
-                outerOrganizations.add(organization);
-            }
-        }
+        List<DomainObject> outerOrganizations = (List<DomainObject>)find(example);
         return outerOrganizations;
     }
 
