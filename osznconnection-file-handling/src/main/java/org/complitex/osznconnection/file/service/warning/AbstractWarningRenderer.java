@@ -103,7 +103,7 @@ public abstract class AbstractWarningRenderer implements IWarningRenderer {
 
     protected String displayObject(String entity, long objectId, Locale locale) {
         IStrategy strategy = EjbBeanLocator.getBean(StrategyFactory.class).getStrategy(entity);
-        DomainObject object = strategy.findById(objectId);
+        DomainObject object = strategy.findById(objectId, false);
         if (object != null) {
             return strategy.displayDomainObject(object, locale);
         }

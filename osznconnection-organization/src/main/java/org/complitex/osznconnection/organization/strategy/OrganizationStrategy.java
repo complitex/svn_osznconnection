@@ -93,7 +93,7 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
         Attribute districtAttribute = getDistrictAttribute(object);
         Long districtId = districtAttribute.getValueId();
         if (districtId != null) {
-            DomainObject districtObject = districtStrategy.findById(districtId);
+            DomainObject districtObject = districtStrategy.findById(districtId, false);
             if (districtObject != null) {
                 Set<Long> addSubjectIds = Sets.newHashSet(object.getId());
                 districtStrategy.changeChildrenPermissionsInDistinctThread(districtId, districtObject.getPermissionId(), addSubjectIds, null);
@@ -118,12 +118,12 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
         if (!Numbers.isEqual(oldDistrictId, newDistrictId)) {
             //district reference has changed
             if (oldDistrictId != null) {
-                long oldDistrictPermissionId = districtStrategy.findById(oldDistrictId).getPermissionId();
+                long oldDistrictPermissionId = districtStrategy.findById(oldDistrictId, false).getPermissionId();
                 districtStrategy.changeChildrenPermissionsInDistinctThread(oldDistrictId, oldDistrictPermissionId, null, subjectIds);
             }
 
             if (newDistrictId != null) {
-                long newDistrictPermissionId = districtStrategy.findById(newDistrictId).getPermissionId();
+                long newDistrictPermissionId = districtStrategy.findById(newDistrictId, false).getPermissionId();
                 districtStrategy.changeChildrenPermissionsInDistinctThread(newDistrictId, newDistrictPermissionId, subjectIds, null);
             }
         }

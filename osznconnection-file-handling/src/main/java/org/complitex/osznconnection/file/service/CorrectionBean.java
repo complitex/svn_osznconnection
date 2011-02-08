@@ -64,7 +64,7 @@ public class CorrectionBean extends AbstractBean {
         if (corrections != null && !corrections.isEmpty()) {
             IStrategy strategy = strategyFactory.getStrategy(entity);
             for (Correction correction : corrections) {
-                DomainObject object = strategy.findById(correction.getObjectId());
+                DomainObject object = strategy.findById(correction.getObjectId(), false);
                 correction.setDisplayObject(strategy.displayDomainObject(object, localeBean.convert(localeBean.getLocale(localeId))));
             }
         }
