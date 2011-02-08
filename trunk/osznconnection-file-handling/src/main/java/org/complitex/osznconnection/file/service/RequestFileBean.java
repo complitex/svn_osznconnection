@@ -1,18 +1,23 @@
 package org.complitex.osznconnection.file.service;
 
+import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.dictionary.service.SessionBean;
+import org.complitex.dictionary.strategy.StrategyFactory;
 import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.entity.RequestFileFilter;
 import org.complitex.osznconnection.file.entity.RequestFileGroup;
 import org.complitex.osznconnection.file.entity.RequestFileStatus;
+import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
+import org.complitex.osznconnection.organization.strategy.OrganizationStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -32,6 +37,9 @@ public class RequestFileBean extends AbstractBean {
     @EJB
     private SessionBean sessionBean;
 
+    @EJB
+    protected StrategyFactory strategyFactory;
+
     @Transactional
     public RequestFile findById(long fileId) {
         return (RequestFile) sqlSession().selectOne(MAPPING_NAMESPACE + ".findById", fileId);
@@ -41,7 +49,7 @@ public class RequestFileBean extends AbstractBean {
     @SuppressWarnings({"unchecked"})
     public List<RequestFile> getRequestFiles(RequestFileFilter filter){
         filter.setAdmin(sessionBean.isAdmin());
-        filter.setPermissions(sessionBean.getPermissionString(RequestFile.TABLE));
+        filter.setOrganizations(getAllOSZNString());
 
         return sqlSession().selectList(MAPPING_NAMESPACE + ".selectRequestFiles", filter);
     }
@@ -49,9 +57,13 @@ public class RequestFileBean extends AbstractBean {
     @Transactional
     public int size(RequestFileFilter filter){
         filter.setAdmin(sessionBean.isAdmin());
-        filter.setPermissions(sessionBean.getPermissionString(RequestFile.TABLE));
+        filter.setOrganizations(getAllOSZNString());
 
         return (Integer) sqlSession().selectOne(MAPPING_NAMESPACE + ".selectRequestFilesCount", filter);
+    }
+
+    private String getAllOSZNString(){
+        return ((IOsznOrganizationStrategy)strategyFactory.getStrategy("organization")).getAllOSZNString();
     }
 
     @Transactional

@@ -38,6 +38,8 @@ public interface IOsznOrganizationStrategy extends IOrganizationStrategy {
     @Transactional
     List<DomainObject> getAllOSZNs(Locale locale);
 
+    String getAllOSZNString();
+
     @Transactional
     List<DomainObject> getAllCalculationCentres(Locale locale);
 

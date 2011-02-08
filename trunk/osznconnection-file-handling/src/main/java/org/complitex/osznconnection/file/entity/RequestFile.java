@@ -40,8 +40,6 @@ public class RequestFile implements ILoggable {
     private TYPE type;
     private RequestFileStatus status;
 
-    private Long permissionId;
-
     private Integer loadedRecordCount = 0;
     private Integer bindedRecordCount = 0;
     private Integer filledRecordCount = 0;
@@ -265,14 +263,6 @@ public class RequestFile implements ILoggable {
 
     public void setRequests(List<AbstractRequest> requests) {
         this.requests = requests;
-    }
-
-    public Long getPermissionId() {
-        return permissionId;
-    }
-
-    public void setPermissionId(Long permissionId) {
-        this.permissionId = permissionId;
     }
 
     @Override

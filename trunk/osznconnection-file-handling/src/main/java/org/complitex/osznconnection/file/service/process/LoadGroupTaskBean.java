@@ -50,13 +50,6 @@ public class LoadGroupTaskBean implements ITaskBean<RequestFileGroup>{
     public boolean execute(RequestFileGroup group) throws ExecuteException {
         group.setStatus(RequestFileStatus.LOADING);
 
-        //Установка ключей безопасности
-        Long pId = sessionBean.createPermissionId(RequestFile.TABLE);
-        group.getPaymentFile().setPermissionId(pId);
-        group.getBenefitFile().setPermissionId(pId);
-
-        group.setPermissionId(sessionBean.createPermissionId(RequestFileGroup.TABLE));
-
         requestFileGroupBean.save(group);
 
         group.getBenefitFile().setGroupId(group.getId());
