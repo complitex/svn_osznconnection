@@ -8,4 +8,4 @@ ALTER TABLE `payment` MODIFY COLUMN `status` INTEGER NOT NULL DEFAULT 237 COMMEN
 ALTER TABLE `benefit` MODIFY COLUMN `status` INTEGER NOT NULL DEFAULT 237 COMMENT 'См. таблицу status_description и org.complitex.osznconnection.file.entity.RequestStatus';
 ALTER TABLE `actual_payment` MODIFY COLUMN `status` INTEGER NOT NULL DEFAULT 237 COMMENT 'См. таблицу status_description и org.complitex.osznconnection.file.entity.RequestStatus';
 
-INSERT INTO `update` (`version`) VALUE ('20110207_553_0.1.2-dev');
+INSERT INTO `update` (`version`) VALUE ('20110207_553_0.1.2');
