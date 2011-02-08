@@ -422,7 +422,7 @@ public class AddressCorrectionBean extends CorrectionBean {
 
         for (Correction c : list) {
             try {
-                DomainObject building = buildingStrategy.findById(c.getObjectId());
+                DomainObject building = buildingStrategy.findById(c.getObjectId(), false);
                 SearchComponentState state = buildingStrategy.getSearchComponentStateForParent(building.getParentId(), "building_address", null);
                 DomainObject street = state.get("street");
                 DomainObject city = state.get("city");
@@ -455,8 +455,8 @@ public class AddressCorrectionBean extends CorrectionBean {
         IStrategy cityStrategy = strategyFactory.getStrategy("city");
         for (Correction c : streets) {
             try {
-                DomainObject street = streetStrategy.findById(c.getObjectId());
-                DomainObject city = cityStrategy.findById(street.getParentId());
+                DomainObject street = streetStrategy.findById(c.getObjectId(), false);
+                DomainObject city = cityStrategy.findById(street.getParentId(), false);
                 Locale locale = localeBean.convert(localeBean.getLocale(example.getLocaleId()));
                 String displayCity = cityStrategy.displayDomainObject(city, locale);
                 String displayStreet = streetStrategy.displayDomainObject(street, locale);
@@ -478,8 +478,8 @@ public class AddressCorrectionBean extends CorrectionBean {
 
         for (Correction c : districts) {
             try {
-                DomainObject district = districtStrategy.findById(c.getObjectId());
-                DomainObject city = cityStrategy.findById(district.getParentId());
+                DomainObject district = districtStrategy.findById(c.getObjectId(), false);
+                DomainObject city = cityStrategy.findById(district.getParentId(), false);
                 Locale locale = localeBean.convert(localeBean.getLocale(example.getLocaleId()));
                 String displayCity = cityStrategy.displayDomainObject(city, locale);
                 String displayDistrict = districtStrategy.displayDomainObject(district, locale);

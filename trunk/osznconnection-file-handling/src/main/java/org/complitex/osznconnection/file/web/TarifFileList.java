@@ -245,7 +245,7 @@ public class TarifFileList extends TemplatePage {
                 item.add(DateLabel.forDatePattern("loaded", new Model<Date>(rf.getLoaded()), "dd.MM.yy HH:mm:ss"));
                 item.add(new Label("name", rf.getFullName()));
 
-                DomainObject domainObject = organizationStrategy.findById(rf.getOrganizationId());
+                DomainObject domainObject = organizationStrategy.findById(rf.getOrganizationId(), true);
                 String organization = organizationStrategy.displayDomainObject(domainObject, getLocale());
                 item.add(new Label("organization", organization));
 

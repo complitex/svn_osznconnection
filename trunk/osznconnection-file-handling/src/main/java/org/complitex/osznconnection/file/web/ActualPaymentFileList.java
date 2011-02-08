@@ -265,7 +265,7 @@ public class ActualPaymentFileList extends ScrollListPage {
                         ScrollListBehavior.SCROLL_PREFIX+String.valueOf(rf.getId()), ActualPaymentList.class,
                         new PageParameters("request_file_id=" + rf.getId())));
 
-                DomainObject domainObject = organizationStrategy.findById(rf.getOrganizationId());
+                DomainObject domainObject = organizationStrategy.findById(rf.getOrganizationId(), true);
                 String organization = organizationStrategy.displayDomainObject(domainObject, getLocale());
                 item.add(new Label("organization", organization));
 

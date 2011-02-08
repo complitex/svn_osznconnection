@@ -272,10 +272,8 @@ public class GroupList extends ScrollListPage {
                         DateUtil.isCurrentDay(group.getLoaded()) ? "HH:mm:ss" : "dd.MM.yy HH:mm:ss"));
 
                 //organization
-                DomainObject domainObject = organizationStrategy.findById(group.getOrganizationId());
-                String organization = domainObject != null
-                        ? organizationStrategy.displayDomainObject(domainObject, getLocale())
-                        : "—";
+                DomainObject domainObject = organizationStrategy.findById(group.getOrganizationId(), true);
+                String organization = organizationStrategy.displayDomainObject(domainObject, getLocale());
                 item.add(new Label("organization", organization));
 
                 //registry, month, year
