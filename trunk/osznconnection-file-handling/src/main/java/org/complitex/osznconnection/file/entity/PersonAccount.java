@@ -30,6 +30,9 @@ public class PersonAccount implements Serializable {
     private String oszn;
     private String calculationCenter;
 
+    private boolean admin;
+    private String organizations;
+
     public PersonAccount() {
     }
 
@@ -167,5 +170,21 @@ public class PersonAccount implements Serializable {
 
     public void setStreetType(String streetType) {
         this.streetType = streetType;
+    }
+
+    public boolean isAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
+    }
+
+    public String getOrganizations() {
+        return organizations;
+    }
+
+    public void setOrganizations(String organizations) {
+        this.organizations = organizations;
     }
 }

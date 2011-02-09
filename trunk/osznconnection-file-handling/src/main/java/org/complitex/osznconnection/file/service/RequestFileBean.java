@@ -35,10 +35,7 @@ public class RequestFileBean extends AbstractBean {
     public static final String MAPPING_NAMESPACE = RequestFileBean.class.getName();
 
     @EJB
-    private SessionBean sessionBean;
-
-    @EJB
-    protected StrategyFactory strategyFactory;
+    private OsznSessionBean osznSessionBean;
 
     @Transactional
     public RequestFile findById(long fileId) {
@@ -48,22 +45,18 @@ public class RequestFileBean extends AbstractBean {
     @Transactional
     @SuppressWarnings({"unchecked"})
     public List<RequestFile> getRequestFiles(RequestFileFilter filter){
-        filter.setAdmin(sessionBean.isAdmin());
-        filter.setOrganizations(getAllOSZNString());
+        filter.setAdmin(osznSessionBean.isAdmin());
+        filter.setOrganizations(osznSessionBean.getAllOuterOrganizationString());
 
         return sqlSession().selectList(MAPPING_NAMESPACE + ".selectRequestFiles", filter);
     }
 
     @Transactional
     public int size(RequestFileFilter filter){
-        filter.setAdmin(sessionBean.isAdmin());
-        filter.setOrganizations(getAllOSZNString());
+        filter.setAdmin(osznSessionBean.isAdmin());
+        filter.setOrganizations(osznSessionBean.getAllOuterOrganizationString());
 
         return (Integer) sqlSession().selectOne(MAPPING_NAMESPACE + ".selectRequestFilesCount", filter);
-    }
-
-    private String getAllOSZNString(){
-        return ((IOsznOrganizationStrategy)strategyFactory.getStrategy("organization")).getAllOSZNString();
     }
 
     @Transactional

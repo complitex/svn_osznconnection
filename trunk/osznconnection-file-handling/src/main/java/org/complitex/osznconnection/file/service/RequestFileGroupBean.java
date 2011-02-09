@@ -30,28 +30,21 @@ public class RequestFileGroupBean extends AbstractBean{
     private RequestFileBean requestFileBean;
 
     @EJB
-    private SessionBean sessionBean;
-
-    @EJB
-    protected StrategyFactory strategyFactory;
+    private OsznSessionBean osznSessionBean;
 
     @SuppressWarnings({"unchecked"})
     public List<RequestFileGroup> getRequestFileGroups(RequestFileGroupFilter filter){
-        filter.setAdmin(sessionBean.isAdmin());
-        filter.setOrganizations(getAllOSZNString());
+        filter.setAdmin(osznSessionBean.isAdmin());
+        filter.setOrganizations(osznSessionBean.getAllOuterOrganizationString());
 
         return sqlSession().selectList(MAPPING_NAMESPACE + ".selectRequestFilesGroups", filter);
     }
 
     public int getRequestFileGroupsCount(RequestFileGroupFilter filter){
-        filter.setAdmin(sessionBean.isAdmin());
-        filter.setOrganizations(getAllOSZNString());
+        filter.setAdmin(osznSessionBean.isAdmin());
+        filter.setOrganizations(osznSessionBean.getAllOuterOrganizationString());
 
         return (Integer)sqlSession().selectOne(MAPPING_NAMESPACE + ".selectRequestFilesGroupsCount", filter);
-    }
-
-    private String getAllOSZNString(){
-        return ((IOsznOrganizationStrategy)strategyFactory.getStrategy("organization")).getAllOSZNString();
     }
 
     public void delete(RequestFileGroup requestFileGroup) {

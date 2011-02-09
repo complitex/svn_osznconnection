@@ -27,6 +27,9 @@ public class CorrectionExample implements Serializable {
     private Long localeId;
     private Long parentId;
 
+    private boolean admin;
+    private String organizations;
+
     public boolean isAsc() {
         return asc;
     }
@@ -137,5 +140,21 @@ public class CorrectionExample implements Serializable {
 
     public void setParentId(Long parentId) {
         this.parentId = parentId;
+    }
+
+    public boolean isAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
+    }
+
+    public String getOrganizations() {
+        return organizations;
+    }
+
+    public void setOrganizations(String organizations) {
+        this.organizations = organizations;
     }
 }

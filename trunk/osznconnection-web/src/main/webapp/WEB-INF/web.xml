@@ -50,6 +50,7 @@
         <realm-name>osznconnectionRealm</realm-name>
         <form-login-config>
             <form-login-page>/?wicket:bookmarkablePage=:org.complitex.template.web.pages.login.Login</form-login-page>
+            <!--todo 404 on form error page, glassfish 3.0.1, work if jsp resource-->
             <form-error-page><![CDATA[/?wicket:bookmarkablePage=:org.complitex.template.web.pages.login.Login&amp;error]]></form-error-page>
         </form-login-config>
     </login-config>

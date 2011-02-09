@@ -88,6 +88,9 @@
             <if test="calculationCenterId != null">
                 pa.`calc_center_id` = #{calculationCenterId}
             </if>
+             <if test="not admin">
+                pa.`oszn_id` in ${organizations}
+            </if>
         </where>
     </sql>
 

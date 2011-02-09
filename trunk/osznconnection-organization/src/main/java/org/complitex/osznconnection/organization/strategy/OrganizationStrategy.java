@@ -43,14 +43,17 @@ import org.slf4j.LoggerFactory;
  */
 @Stateless
 public class OrganizationStrategy extends AbstractStrategy implements IOsznOrganizationStrategy {
-
     private static final Logger log = LoggerFactory.getLogger(OrganizationStrategy.class);
+
     private static final String ORGANIZATION_NAMESPACE = OrganizationStrategy.class.getPackage().getName() + ".Organization";
     private static final String RESOURCE_BUNDLE = OrganizationStrategy.class.getName();
+
     @EJB
     private StringCultureBean stringBean;
+
     @EJB
     private DistrictStrategy districtStrategy;
+
     @EJB
     private LocaleBean localeBean;
 
@@ -147,6 +150,7 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
         return OrganizationEditComponent.class;
     }
 
+    @SuppressWarnings({"unchecked"})
     @Transactional
     @Override
     public List<? extends DomainObject> find(DomainObjectExample example) {
@@ -154,6 +158,7 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
         prepareExampleForPermissionCheck(example);
 
         List<DomainObject> objects = sqlSession().selectList(ORGANIZATION_NAMESPACE + "." + FIND_OPERATION, example);
+
         for (DomainObject object : objects) {
             loadAttributes(object);
         }
@@ -168,6 +173,7 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
         return (Integer) sqlSession().selectOne(DOMAIN_OBJECT_NAMESPACE + "." + COUNT_OPERATION, example);
     }
 
+    @SuppressWarnings({"unchecked"})
     @Transactional
     @Override
     public List<DomainObject> getAllOuterOrganizations(Locale locale) {
@@ -177,10 +183,11 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
         example.setAsc(true);
         example.addAdditionalParam("entityTypeIds", ImmutableList.of(OSZN, CALCULATION_CENTER));
         configureExample(example, ImmutableMap.<String, Long>of(), null);
-        List<DomainObject> outerOrganizations = (List<DomainObject>)find(example);
-        return outerOrganizations;
+
+        return (List<DomainObject>)find(example);
     }
 
+    @SuppressWarnings({"unchecked"})
     @Transactional
     @Override
     public List<DomainObject> getAllOSZNs(Locale locale) {
@@ -190,22 +197,11 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
         example.setLocaleId(localeBean.convert(locale).getId());
         example.setAsc(true);
         configureExample(example, ImmutableMap.<String, Long>of(), null);
+
         return (List<DomainObject>) find(example);
     }
 
-    @Override
-    public String getAllOSZNString() {
-        String s = "";
-        String d = "";
-
-        for (DomainObject o : getAllOSZNs(null)){
-            s += d + o.getId();
-            d = ",";
-        }
-
-        return "(" + s + ")";
-    }
-
+    @SuppressWarnings({"unchecked"})
     @Transactional
     @Override
     public List<DomainObject> getAllCalculationCentres(Locale locale) {
@@ -215,6 +211,7 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
         example.setAsc(true);
         example.setOrderByAttributeTypeId(NAME);
         configureExample(example, ImmutableMap.<String, Long>of(), null);
+
         return (List<DomainObject>) find(example);
     }
 
@@ -256,6 +253,7 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
         return stringBean.displayValue(organization.getAttribute(NAME).getLocalizedValues(), locale);
     }
 
+    @SuppressWarnings({"unchecked"})
     @Transactional
     @Override
     public Long validateCode(Long id, String code, Long parentId, Long parentEntityId) {
@@ -263,29 +261,37 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
         params.put("code", code);
         params.put("parentId", parentId);
         params.put("parentEntityId", parentEntityId);
+
         List<Long> results = sqlSession().selectList(ORGANIZATION_NAMESPACE + ".validateCode", params);
+
         for (Long result : results) {
             if (!result.equals(id)) {
                 return result;
             }
         }
+
         return null;
     }
 
+    @SuppressWarnings({"unchecked"})
     @Transactional
     @Override
     public Long validateName(Long id, String name, Long parentId, Long parentEntityId, Locale locale) {
         Map<String, Object> params = Maps.newHashMap();
+
         params.put("name", name);
         params.put("parentId", parentId);
         params.put("parentEntityId", parentEntityId);
         params.put("localeId", localeBean.convert(locale).getId());
+
         List<Long> results = sqlSession().selectList(ORGANIZATION_NAMESPACE + ".validateName", params);
+
         for (Long result : results) {
             if (!result.equals(id)) {
                 return result;
             }
         }
+
         return null;
     }
 
@@ -314,14 +320,17 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
         return finalUserOrganizations;
     }
 
+    @SuppressWarnings({"unchecked"})
     @Transactional
     @Override
     public Set<Long> getTreeChildrenOrganizationIds(long parentOrganizationId) {
         Set<Long> childrenIds = Sets.newHashSet(sqlSession().selectList(ORGANIZATION_NAMESPACE + ".selectOrganizationChildrenObjectIds", parentOrganizationId));
         Set<Long> treeChildren = Sets.newHashSet(childrenIds);
+
         for (Long childId : childrenIds) {
             treeChildren.addAll(getTreeChildrenOrganizationIds(childId));
         }
+
         return treeChildren;
     }
 
