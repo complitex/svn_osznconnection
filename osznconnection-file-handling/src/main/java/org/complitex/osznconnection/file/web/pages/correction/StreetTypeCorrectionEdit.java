@@ -41,7 +41,7 @@ public class StreetTypeCorrectionEdit extends FormTemplatePage {
 
     private class StreetTypeChoicePanel extends Panel {
 
-        @EJB(name = "StreetTypeStrategy")
+        @EJB(name = "Street_typeStrategy")
         private StreetTypeStrategy streetTypeStrategy;
 
         public StreetTypeChoicePanel(String id, final Correction streetTypeCorrection) {

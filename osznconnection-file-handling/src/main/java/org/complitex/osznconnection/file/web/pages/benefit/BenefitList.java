@@ -25,33 +25,29 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.util.string.Strings;
-import org.complitex.dictionary.service.SessionBean;
+import org.complitex.dictionary.util.StringUtil;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
-import org.complitex.template.web.security.SecurityRole;
-import org.complitex.template.web.template.TemplatePage;
-import org.complitex.osznconnection.file.entity.Benefit;
-import org.complitex.osznconnection.file.entity.BenefitDBF;
-import org.complitex.osznconnection.file.entity.RequestFile;
-import org.complitex.osznconnection.file.entity.RequestStatus;
+import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.entity.example.BenefitExample;
 import org.complitex.osznconnection.file.service.BenefitBean;
+import org.complitex.osznconnection.file.service.OsznSessionBean;
 import org.complitex.osznconnection.file.service.RequestFileBean;
-import org.complitex.osznconnection.file.web.GroupList;
-import org.complitex.osznconnection.file.web.component.StatusRenderer;
-
-import javax.ejb.EJB;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import org.complitex.dictionary.util.StringUtil;
-import org.complitex.osznconnection.file.entity.StatusDetailInfo;
 import org.complitex.osznconnection.file.service.StatusRenderService;
 import org.complitex.osznconnection.file.service.status.details.BenefitExampleConfigurator;
 import org.complitex.osznconnection.file.service.status.details.PaymentBenefitStatusDetailRenderer;
 import org.complitex.osznconnection.file.service.status.details.StatusDetailBean;
 import org.complitex.osznconnection.file.service.warning.WebWarningRenderer;
+import org.complitex.osznconnection.file.web.GroupList;
 import org.complitex.osznconnection.file.web.component.StatusDetailPanel;
+import org.complitex.osznconnection.file.web.component.StatusRenderer;
+import org.complitex.template.web.security.SecurityRole;
+import org.complitex.template.web.template.TemplatePage;
+
+import javax.ejb.EJB;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  *
@@ -72,7 +68,7 @@ public final class BenefitList extends TemplatePage {
     @EJB(name = "StatusDetailBean")
     private StatusDetailBean statusDetailBean;
     @EJB
-    private SessionBean sessionBean;
+    private OsznSessionBean osznSessionBean;
     private IModel<BenefitExample> example;
     private long fileId;
 
@@ -93,6 +89,11 @@ public final class BenefitList extends TemplatePage {
 
     private void init() {
         RequestFile requestFile = requestFileBean.findById(fileId);
+
+        //Проверка доступа к данным
+        if (!osznSessionBean.hasOuterOrganization(requestFile.getOrganizationId())) {
+            throw new UnauthorizedInstantiationException(this.getClass());
+        }
 
         String fileName = requestFile.getName();
         String directory = requestFile.getDirectory();

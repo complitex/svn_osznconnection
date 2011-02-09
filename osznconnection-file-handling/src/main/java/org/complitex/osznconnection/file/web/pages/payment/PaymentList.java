@@ -4,17 +4,11 @@
  */
 package org.complitex.osznconnection.file.web.pages.payment;
 
-import org.apache.wicket.authorization.UnauthorizedInstantiationException;
-import org.complitex.dictionary.service.SessionBean;
-import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
-import org.complitex.osznconnection.file.entity.AccountDetail;
-import org.complitex.osznconnection.file.web.component.account.AccountNumberCorrectionPanel;
-import org.complitex.osznconnection.file.web.component.address.AddressCorrectionPanel;
-import java.util.List;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.authorization.UnauthorizedInstantiationException;
 import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
@@ -32,34 +26,30 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
-import org.complitex.osznconnection.file.entity.StatusDetailInfo;
+import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
+import org.complitex.osznconnection.file.entity.*;
+import org.complitex.osznconnection.file.entity.example.PaymentExample;
+import org.complitex.osznconnection.file.service.*;
 import org.complitex.osznconnection.file.service.exception.DublicateCorrectionException;
 import org.complitex.osznconnection.file.service.exception.MoreOneCorrectionException;
 import org.complitex.osznconnection.file.service.exception.NotFoundCorrectionException;
-import org.complitex.template.web.security.SecurityRole;
-import org.complitex.template.web.template.TemplatePage;
-import org.complitex.osznconnection.file.entity.Payment;
-import org.complitex.osznconnection.file.entity.PaymentDBF;
-import org.complitex.osznconnection.file.entity.RequestFile;
-import org.complitex.osznconnection.file.entity.RequestStatus;
-import org.complitex.osznconnection.file.entity.example.PaymentExample;
-import org.complitex.osznconnection.file.service.PaymentBean;
-import org.complitex.osznconnection.file.service.RequestFileBean;
+import org.complitex.osznconnection.file.service.status.details.PaymentBenefitStatusDetailRenderer;
+import org.complitex.osznconnection.file.service.status.details.PaymentExampleConfigurator;
+import org.complitex.osznconnection.file.service.status.details.StatusDetailBean;
+import org.complitex.osznconnection.file.service.warning.WebWarningRenderer;
 import org.complitex.osznconnection.file.web.GroupList;
 import org.complitex.osznconnection.file.web.component.StatusDetailPanel;
 import org.complitex.osznconnection.file.web.component.StatusRenderer;
+import org.complitex.osznconnection.file.web.component.account.AccountNumberCorrectionPanel;
+import org.complitex.osznconnection.file.web.component.address.AddressCorrectionPanel;
+import org.complitex.template.web.security.SecurityRole;
+import org.complitex.template.web.template.TemplatePage;
 
 import javax.ejb.EJB;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Iterator;
-import org.complitex.osznconnection.file.service.AddressService;
-import org.complitex.osznconnection.file.service.PersonAccountService;
-import org.complitex.osznconnection.file.service.StatusRenderService;
-import org.complitex.osznconnection.file.service.status.details.PaymentBenefitStatusDetailRenderer;
-import org.complitex.osznconnection.file.service.status.details.PaymentExampleConfigurator;
-import org.complitex.osznconnection.file.service.status.details.StatusDetailBean;
-import org.complitex.osznconnection.file.service.warning.WebWarningRenderer;
+import java.util.List;
 
 /**
  *
@@ -84,7 +74,7 @@ public final class PaymentList extends TemplatePage {
     @EJB(name = "PersonAccountService")
     private PersonAccountService personAccountService;
     @EJB
-    private SessionBean sessionBean;
+    private OsznSessionBean osznSessionBean;
     private IModel<PaymentExample> example;
     private long fileId;
 
@@ -105,6 +95,11 @@ public final class PaymentList extends TemplatePage {
 
     private void init() {
         RequestFile requestFile = requestFileBean.findById(fileId);
+
+        //Проверка доступа к данным
+        if (!osznSessionBean.hasOuterOrganization(requestFile.getOrganizationId())) {
+            throw new UnauthorizedInstantiationException(this.getClass());
+        }
 
         String label = getStringFormat("label", requestFile.getDirectory(), File.separator, requestFile.getName());
 

@@ -8,6 +8,7 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import javax.ejb.EJB;
 import org.apache.wicket.PageParameters;
+import org.apache.wicket.authorization.UnauthorizedInstantiationException;
 import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
@@ -22,6 +23,7 @@ import org.apache.wicket.model.ResourceModel;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
 import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
+import org.complitex.osznconnection.file.service.OsznSessionBean;
 import org.complitex.template.web.component.toolbar.DeleteItemButton;
 import org.complitex.template.web.component.toolbar.ToolbarButton;
 import org.complitex.template.web.security.SecurityRole;
@@ -46,12 +48,20 @@ public final class PersonAccountEdit extends FormTemplatePage {
     private PersonAccountLocalBean personAccountLocalBean;
     @EJB(name = "OrganizationStrategy")
     private IOsznOrganizationStrategy organizationStrategy;
+    @EJB
+    private OsznSessionBean osznSessionBean;
     private Long correctionId;
     private PersonAccount personAccount;
 
     public PersonAccountEdit(PageParameters params) {
         this.correctionId = params.getAsLong(CORRECTION_ID);
         personAccount = personAccountLocalBean.findById(this.correctionId);
+
+        //Проверка доступа к данным
+        if (!osznSessionBean.hasOuterOrganization(personAccount.getOsznId())) {
+            throw new UnauthorizedInstantiationException(this.getClass());
+        }
+
         init();
     }
 

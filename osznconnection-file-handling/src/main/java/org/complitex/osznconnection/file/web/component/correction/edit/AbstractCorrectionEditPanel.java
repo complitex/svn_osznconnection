@@ -6,6 +6,7 @@ package org.complitex.osznconnection.file.web.component.correction.edit;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
+import org.apache.wicket.authorization.UnauthorizedInstantiationException;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
@@ -22,6 +23,7 @@ import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
 import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
 import org.complitex.osznconnection.file.entity.Correction;
 import org.complitex.osznconnection.file.service.CorrectionBean;
+import org.complitex.osznconnection.file.service.OsznSessionBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,6 +53,8 @@ public abstract class AbstractCorrectionEditPanel extends Panel {
     private CorrectionBean correctionBean;
     @EJB(name = "OrganizationStrategy")
     private IOsznOrganizationStrategy organizationStrategy;
+    @EJB
+    private OsznSessionBean osznSessionBean;
     private Long correctionId;
     private Correction correction;
     private WebMarkupContainer form;
@@ -65,6 +69,12 @@ public abstract class AbstractCorrectionEditPanel extends Panel {
             correction = initObjectCorrection(entity, this.correctionId);
             correction.setEntity(entity);
         }
+
+        //Проверка доступа к данным
+        if (!osznSessionBean.hasOuterOrganization(correction.getOrganizationId())) {
+            throw new UnauthorizedInstantiationException(this.getClass());
+        }
+
         init();
     }
 

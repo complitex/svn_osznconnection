@@ -26,6 +26,8 @@ public class Correction implements Serializable {
     private Correction parent;
     private String displayObject;
 
+    private boolean editable = true;
+
     public Correction() {
     }
 
@@ -135,5 +137,13 @@ public class Correction implements Serializable {
 
     public void setDisplayObject(String displayObject) {
         this.displayObject = displayObject;
+    }
+
+    public boolean isEditable() {
+        return editable;
+    }
+
+    public void setEditable(boolean editable) {
+        this.editable = editable;
     }
 }

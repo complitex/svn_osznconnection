@@ -243,6 +243,7 @@ public abstract class AbstractCorrectionList extends ScrollListPage {
             @Override
             protected void populateItem(Item<Correction> item) {
                 Correction correction = item.getModelObject();
+
                 item.add(new Label("organization", correction.getOrganization()));
                 item.add(new Label("correction", displayCorrection(correction)));
 
@@ -254,8 +255,12 @@ public abstract class AbstractCorrectionList extends ScrollListPage {
 
                 item.add(new Label("internalObject", displayInternalObject(correction)));
                 item.add(new Label("internalOrganization", correction.getInternalOrganization()));
-                item.add(new ScrollBookmarkablePageLink("edit", getEditPage(), getEditPageParams(correction.getId()),
-                        String.valueOf(correction.getId())));
+
+                ScrollBookmarkablePageLink link = new ScrollBookmarkablePageLink<WebPage>("edit", getEditPage(),
+                        getEditPageParams(correction.getId()), String.valueOf(correction.getId()));
+                link.setVisible(correction.isEditable());
+
+                item.add(link);
             }
         };
         filterForm.add(data);
