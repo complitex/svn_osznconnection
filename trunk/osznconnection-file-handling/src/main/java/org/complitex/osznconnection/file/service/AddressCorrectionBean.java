@@ -436,6 +436,13 @@ public class AddressCorrectionBean extends CorrectionBean {
         for (Correction c : list) {
             try {
                 DomainObject building = buildingStrategy.findById(c.getObjectId(), false);
+
+                if (building == null){
+                    c.setDisplayObject("[Дом не найден или нет прав]");
+                    c.setEditable(false);
+                    continue;
+                }
+
                 SearchComponentState state = buildingStrategy.getSearchComponentStateForParent(building.getParentId(), "building_address", null);
                 DomainObject street = state.get("street");
                 DomainObject city = state.get("city");
@@ -448,6 +455,7 @@ public class AddressCorrectionBean extends CorrectionBean {
             } catch (Exception e) {
                 log.warn("[Полный адрес не найден]", e);
                 c.setDisplayObject("[Полный адрес не найден]");
+                c.setEditable(false);
             }
         }
 
@@ -473,19 +481,30 @@ public class AddressCorrectionBean extends CorrectionBean {
 
         IStrategy streetStrategy = strategyFactory.getStrategy("street");
         IStrategy cityStrategy = strategyFactory.getStrategy("city");
+
         for (Correction c : streets) {
-            try {
-                DomainObject street = streetStrategy.findById(c.getObjectId(), false);
-                DomainObject city = cityStrategy.findById(street.getParentId(), false);
-                Locale locale = localeBean.convert(localeBean.getLocale(example.getLocaleId()));
-                String displayCity = cityStrategy.displayDomainObject(city, locale);
-                String displayStreet = streetStrategy.displayDomainObject(street, locale);
-                c.setDisplayObject(displayCity + ", " + displayStreet);
-            } catch (Exception e) {
-                log.warn("[Полный адрес не найден]", e);
-                c.setDisplayObject("[Полный адрес не найден]");
+            DomainObject street = streetStrategy.findById(c.getObjectId(), false);
+
+            if (street == null){
+                c.setEditable(false);
+                c.setDisplayObject("[Улица не найдена или нет прав]");
+                continue;
             }
+
+            DomainObject city = cityStrategy.findById(street.getParentId(), false);
+
+            if (city == null){
+                c.setEditable(false);
+                c.setDisplayObject("[Город не найден или нет прав]");
+                continue;
+            }
+
+            Locale locale = localeBean.convert(localeBean.getLocale(example.getLocaleId()));
+            String displayCity = cityStrategy.displayDomainObject(city, locale);
+            String displayStreet = streetStrategy.displayDomainObject(street, locale);
+            c.setDisplayObject(displayCity + ", " + displayStreet);
         }
+
         return streets;
     }
 
@@ -502,17 +521,27 @@ public class AddressCorrectionBean extends CorrectionBean {
         IStrategy cityStrategy = strategyFactory.getStrategy("city");
 
         for (Correction c : districts) {
-            try {
-                DomainObject district = districtStrategy.findById(c.getObjectId(), false);
-                DomainObject city = cityStrategy.findById(district.getParentId(), false);
-                Locale locale = localeBean.convert(localeBean.getLocale(example.getLocaleId()));
-                String displayCity = cityStrategy.displayDomainObject(city, locale);
-                String displayDistrict = districtStrategy.displayDomainObject(district, locale);
-                c.setDisplayObject(displayCity + ", " + displayDistrict);
-            } catch (Exception e) {
-                log.warn("[Полный адрес не найден]", e);
-                c.setDisplayObject("[Полный адрес не найден]");
+
+            DomainObject district = districtStrategy.findById(c.getObjectId(), false);
+
+            if (district == null){
+                c.setEditable(false);
+                c.setDisplayObject("[Район не найден или нет прав]");
+                continue;
             }
+
+            DomainObject city = cityStrategy.findById(district.getParentId(), false);
+
+            if (city == null){
+                c.setEditable(false);
+                c.setDisplayObject("[Город не найден или нет прав]");
+                continue;
+            }
+
+            Locale locale = localeBean.convert(localeBean.getLocale(example.getLocaleId()));
+            String displayCity = cityStrategy.displayDomainObject(city, locale);
+            String displayDistrict = districtStrategy.displayDomainObject(district, locale);
+            c.setDisplayObject(displayCity + ", " + displayDistrict);
         }
         return districts;
     }
