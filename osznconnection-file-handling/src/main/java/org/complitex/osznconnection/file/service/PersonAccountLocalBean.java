@@ -8,6 +8,7 @@ import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.osznconnection.file.entity.PersonAccount;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import java.util.List;
 
@@ -37,11 +38,13 @@ public class PersonAccountLocalBean extends AbstractBean {
         }
     }
 
+    @EJB
+    private OsznSessionBean osznSessionBean;
+
     /**
      * Найти номер л/c в локальной таблице. Поиск идет по ФИО и адресу ОСЗН, текущему ЦН и ОСЗН,
      * причем для элементов адреса при поиске применяется SQL функция TRIM().
      * Если найдено более одной записи удовлетворяющей условиям поиска, то выбрасывается исключение.
-     * @param payment
      * @param calculationCenterId
      * @return
      */
@@ -79,7 +82,6 @@ public class PersonAccountLocalBean extends AbstractBean {
      * Сохранить номер л/c локально. Данные о ФИО и адресе сохраняются как есть, т.е. без применения функций TRIM или TO_CYRILLIC.
      * Перед вставкой проверяется - есть ли уже такая запись методом findLocalAccountNumber, и если есть, то обновляется, если нет - вставляется.
      * Если при проверке найдено более одной записи удовлетворяющей условиям поиска, то выбрасывается исключение.
-     * @param payment
      * @param calculationCenterId
      */
     @Transactional
@@ -116,11 +118,18 @@ public class PersonAccountLocalBean extends AbstractBean {
 
     @Transactional
     public int count(PersonAccount example) {
+        example.setAdmin(osznSessionBean.isAdmin());
+        example.setOrganizations(osznSessionBean.getAllOuterOrganizationString());
+
         return (Integer) sqlSession().selectOne(MAPPING_NAMESPACE + ".count", example);
     }
 
+    @SuppressWarnings({"unchecked"})
     @Transactional
     public List<PersonAccount> find(PersonAccount example) {
+        example.setAdmin(osznSessionBean.isAdmin());
+        example.setOrganizations(osznSessionBean.getAllOuterOrganizationString());
+
         return sqlSession().selectList(MAPPING_NAMESPACE + ".find", example);
     }
 

@@ -27,13 +27,18 @@ import org.complitex.dictionary.strategy.IStrategy;
  */
 @Stateless
 public class CorrectionBean extends AbstractBean {
-
     private static final Logger log = LoggerFactory.getLogger(CorrectionBean.class);
+
     protected static final String CORRECTION_BEAN_MAPPING_NAMESPACE = CorrectionBean.class.getName();
+
     @EJB
     protected StrategyFactory strategyFactory;
+
     @EJB
     private LocaleBean localeBean;
+
+    @EJB
+    private OsznSessionBean osznSessionBean;
 
     public static enum OrderBy {
 
@@ -53,8 +58,12 @@ public class CorrectionBean extends AbstractBean {
         }
     }
 
+    @SuppressWarnings({"unchecked"})
     @Transactional
     public List<Correction> find(CorrectionExample example) {
+        example.setAdmin(osznSessionBean.isAdmin());
+        example.setOrganizations(osznSessionBean.getAllOuterOrganizationString());
+
         List<Correction> corrections = sqlSession().selectList(CORRECTION_BEAN_MAPPING_NAMESPACE + ".find", example);
         setUpDisplayObject(corrections, example.getEntity(), example.getLocaleId());
         return corrections;
@@ -73,6 +82,9 @@ public class CorrectionBean extends AbstractBean {
 
     @Transactional
     public int count(CorrectionExample example) {
+        example.setAdmin(osznSessionBean.isAdmin());
+        example.setOrganizations(osznSessionBean.getAllOuterOrganizationString());
+
         return (Integer) sqlSession().selectOne(CORRECTION_BEAN_MAPPING_NAMESPACE + ".count", example);
     }
 

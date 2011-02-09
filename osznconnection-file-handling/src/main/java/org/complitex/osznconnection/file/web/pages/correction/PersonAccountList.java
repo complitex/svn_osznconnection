@@ -107,6 +107,7 @@ public class PersonAccountList extends ScrollListPage {
                 example.getObject().setStart(first);
                 example.getObject().setSize(count);
                 example.getObject().setLocaleId(localeBean.convert(getLocale()).getId());
+
                 return personAccountLocalBean.find(example.getObject()).iterator();
             }
 

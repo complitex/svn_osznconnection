@@ -41,6 +41,9 @@
             <if test="internalOrganizationId != null">
                 and c.`internal_organization_id` = #{internalOrganizationId}
             </if>
+            <if test="not admin">
+                and c.`organization_id` in ${organizations}
+            </if>
         </where>
     </sql>
 
