@@ -297,6 +297,7 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
         example.setLocaleId(localeBean.convert(locale).getId());
         example.setAsc(true);
         example.setOrderByAttributeTypeId(NAME);
+        example.setAdmin(true);
         configureExample(example, ImmutableMap.<String, Long>of(), null);
         List<? extends DomainObject> userOrganizations = find(example);
         if (excludeOrganizationsId == null) {

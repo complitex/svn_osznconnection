@@ -21,13 +21,13 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.complitex.dictionary.entity.Attribute;
 import org.complitex.dictionary.entity.description.EntityType;
-import org.complitex.dictionary.entity.example.DomainObjectExample;
 import org.complitex.dictionary.strategy.Strategy;
 import org.complitex.dictionary.strategy.web.DomainObjectAccessUtil;
 import org.complitex.dictionary.web.component.search.ISearchCallback;
 import org.complitex.dictionary.web.component.search.SearchComponent;
 import org.complitex.dictionary.web.component.search.SearchComponentState;
-import org.complitex.address.strategy.district.DistrictStrategy;
+import org.complitex.dictionary.strategy.IStrategy;
+import org.complitex.dictionary.strategy.StrategyFactory;
 import org.complitex.dictionary.web.component.UserOrganizationPicker;
 import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
 import org.complitex.osznconnection.organization.strategy.OrganizationStrategy;
@@ -41,8 +41,8 @@ import org.slf4j.LoggerFactory;
 public class OrganizationEditComponent extends AbstractComplexAttributesPanel {
 
     private static final Logger log = LoggerFactory.getLogger(OrganizationEditComponent.class);
-    @EJB(name = "DistrictStrategy")
-    private DistrictStrategy districtStrategy;
+    @EJB
+    private StrategyFactory strategyFactory;
     @EJB(name = "OrganizationStrategy")
     private IOsznOrganizationStrategy organizationStrategy;
     private Attribute districtAttribute;
@@ -113,11 +113,8 @@ public class OrganizationEditComponent extends AbstractComplexAttributesPanel {
             Long districtId = districtAttribute.getValueId();
 
             if (districtId != null) {
-                DomainObject district = null;
-                DomainObjectExample example = new DomainObjectExample();
-                example.setId(districtId);
-                district = districtStrategy.find(example).get(0);
-
+                IStrategy districtStrategy = strategyFactory.getStrategy("district");
+                DomainObject district = districtStrategy.findById(districtId, true);
                 Strategy.RestrictedObjectInfo info = districtStrategy.findParentInSearchComponent(districtId, null);
                 if (info != null) {
                     componentState = districtStrategy.getSearchComponentStateForParent(info.getId(), info.getEntityTable(), null);
@@ -129,6 +126,7 @@ public class OrganizationEditComponent extends AbstractComplexAttributesPanel {
         districtContainer.add(new SearchComponent("district", componentState, ImmutableList.of("city", "district"), new DistrictSearchCallback(),
                 !isDisabled() && DomainObjectAccessUtil.canEdit("organization", currentOrganization)));
         setDistrictVisibility(districtContainer, districtRequired, currentOrganization.getEntityTypeId());
+
         //parent
         parentAttribute = organizationStrategy.getParentAttribute(currentOrganization);
         IModel<Long> parentModel = new Model<Long>();
