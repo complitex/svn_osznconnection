@@ -30,6 +30,7 @@ import java.util.Set;
 import org.complitex.dictionary.service.LocaleBean;
 import org.complitex.template.strategy.AbstractStrategy;
 import org.complitex.address.strategy.district.DistrictStrategy;
+import org.complitex.dictionary.entity.StatusType;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.util.Numbers;
 import org.complitex.osznconnection.organization.strategy.web.edit.OrganizationEditComponent;
@@ -337,5 +338,31 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
     @Override
     public String[] getEditRoles() {
         return new String[]{SecurityRole.ORGANIZATION_MODULE_EDIT};
+    }
+
+    @Transactional
+    @Override
+    public void changeChildrenActivity(long parentId, boolean enable) {
+        changeChildrenActivity(parentId, "organization", enable);
+    }
+
+    @Transactional
+    @Override
+    protected Set<Long> findChildrenActivityInfo(long parentId, String childEntity, int start, int size) {
+        Map<String, Object> params = Maps.newHashMap();
+        params.put("parentId", parentId);
+        params.put("start", start);
+        params.put("size", size);
+        return Sets.newHashSet(sqlSession().selectList(ORGANIZATION_NAMESPACE + "." + FIND_CHILDREN_ACTIVITY_INFO_OPERATION, params));
+    }
+
+    @Transactional
+    @Override
+    protected void updateChildrenActivity(long parentId, String childEntity, boolean enabled) {
+        Map<String, Object> params = Maps.newHashMap();
+        params.put("parentId", parentId);
+        params.put("enabled", enabled);
+        params.put("status", enabled ? StatusType.INACTIVE : StatusType.ACTIVE);
+        sqlSession().update(ORGANIZATION_NAMESPACE + "." + UPDATE_CHILDREN_ACTIVITY_OPERATION, params);
     }
 }

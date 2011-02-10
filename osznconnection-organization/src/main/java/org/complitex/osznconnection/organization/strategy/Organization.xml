@@ -109,4 +109,28 @@
             WHERE oa.`value_id` = #{parentObjectId} AND o.`status` IN ('ACTIVE', 'INACTIVE')
     </select>
 
+    <!-- disable/enable functionality -->
+    <select id="findChildrenActivityInfo" parameterType="map" resultType="long">
+        SELECT e.`object_id` FROM `organization` e
+                             JOIN `organization_attribute` oa ON (oa.`status` = 'ACTIVE' AND oa.`attribute_type_id` = 903
+                                    AND oa.`object_id` = e.`object_id` AND oa.`value_id` = #{parentId})
+            ORDER BY e.`object_id`
+        <include refid="org.complitex.dictionary.entity.DomainObject.limit"/>
+    </select>
+
+    <update id="updateChildrenActivity" parameterType="map">
+        UPDATE `organization` e SET e.`status` = #{status} WHERE
+                EXISTS(SELECT 1 FROM `organization_attribute` oa WHERE oa.`status` = 'ACTIVE' 
+                        AND oa.`attribute_type_id` = 903 AND oa.`object_id` = e.`object_id` AND oa.`value_id` = #{parentId})
+                AND
+                <choose>
+                    <when test="enabled">
+                        e.`status` = 'ACTIVE'
+                    </when>
+                    <otherwise>
+                        e.`status` = 'INACTIVE'
+                    </otherwise>
+                </choose>
+    </update>
+
 </mapper>

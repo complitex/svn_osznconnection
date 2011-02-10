@@ -152,7 +152,9 @@ public class OrganizationEditComponent extends AbstractComplexAttributesPanel {
             Set<Long> excludeOrganizationIds = Sets.newHashSet(currentOrganization.getId());
             excludeOrganizationIds.addAll(organizationStrategy.getTreeChildrenOrganizationIds(currentOrganization.getId()));
             Long[] excludeAsArray = new Long[excludeOrganizationIds.size()];
-            parentContainer.add(new UserOrganizationPicker("parent", parentModel, excludeOrganizationIds.toArray(excludeAsArray)));
+            UserOrganizationPicker parent = new UserOrganizationPicker("parent", parentModel, excludeOrganizationIds.toArray(excludeAsArray));
+            parent.setEnabled(!isDisabled() && DomainObjectAccessUtil.canEdit("organization", currentOrganization));
+            parentContainer.add(parent);
         }
 
         setParentVisibility(parentContainer, currentOrganization.getEntityTypeId());
