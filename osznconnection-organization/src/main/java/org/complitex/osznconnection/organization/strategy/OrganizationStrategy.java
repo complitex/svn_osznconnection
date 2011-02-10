@@ -44,17 +44,14 @@ import org.slf4j.LoggerFactory;
  */
 @Stateless
 public class OrganizationStrategy extends AbstractStrategy implements IOsznOrganizationStrategy {
-    private static final Logger log = LoggerFactory.getLogger(OrganizationStrategy.class);
 
+    private static final Logger log = LoggerFactory.getLogger(OrganizationStrategy.class);
     private static final String ORGANIZATION_NAMESPACE = OrganizationStrategy.class.getPackage().getName() + ".Organization";
     private static final String RESOURCE_BUNDLE = OrganizationStrategy.class.getName();
-
     @EJB
     private StringCultureBean stringBean;
-
     @EJB
     private DistrictStrategy districtStrategy;
-
     @EJB
     private LocaleBean localeBean;
 
@@ -185,7 +182,7 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
         example.addAdditionalParam("entityTypeIds", ImmutableList.of(OSZN, CALCULATION_CENTER));
         configureExample(example, ImmutableMap.<String, Long>of(), null);
 
-        return (List<DomainObject>)find(example);
+        return (List<DomainObject>) find(example);
     }
 
     @SuppressWarnings({"unchecked"})
@@ -343,24 +340,16 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
     @Transactional
     @Override
     public void changeChildrenActivity(long parentId, boolean enable) {
-        changeChildrenActivity(parentId, "organization", enable);
+        Set<Long> childrenIds = getTreeChildrenOrganizationIds(parentId);
+        if (!childrenIds.isEmpty()) {
+            updateChildrenActivity(childrenIds, !enable);
+        }
     }
 
     @Transactional
-    @Override
-    protected Set<Long> findChildrenActivityInfo(long parentId, String childEntity, int start, int size) {
+    protected void updateChildrenActivity(Set<Long> childrenIds, boolean enabled) {
         Map<String, Object> params = Maps.newHashMap();
-        params.put("parentId", parentId);
-        params.put("start", start);
-        params.put("size", size);
-        return Sets.newHashSet(sqlSession().selectList(ORGANIZATION_NAMESPACE + "." + FIND_CHILDREN_ACTIVITY_INFO_OPERATION, params));
-    }
-
-    @Transactional
-    @Override
-    protected void updateChildrenActivity(long parentId, String childEntity, boolean enabled) {
-        Map<String, Object> params = Maps.newHashMap();
-        params.put("parentId", parentId);
+        params.put("childrenIds", childrenIds);
         params.put("enabled", enabled);
         params.put("status", enabled ? StatusType.INACTIVE : StatusType.ACTIVE);
         sqlSession().update(ORGANIZATION_NAMESPACE + "." + UPDATE_CHILDREN_ACTIVITY_OPERATION, params);
