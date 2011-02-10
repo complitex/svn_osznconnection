@@ -92,8 +92,8 @@ public class RequestFile implements ILoggable {
                 .add(collection, "dbfRecordCount", dbfRecordCount)
                 .add(collection, "length", length)
                 .add(collection, "checkSum", checkSum)
-                .add(collection, "loadedRecordCount", loadedRecordCount)
-                .add(collection, "bindedRecordCount", bindedRecordCount);
+                .add(collection, "bindedRecordCount", bindedRecordCount)
+                .add(collection, "filledRecordCount", filledRecordCount);
 
         return logChangeList;
     }
@@ -281,9 +281,12 @@ public class RequestFile implements ILoggable {
                 ", length=" + length +
                 ", checkSum='" + checkSum + '\'' +
                 ", type=" + type +
+                ", status=" + status +
                 ", loadedRecordCount=" + loadedRecordCount +
                 ", bindedRecordCount=" + bindedRecordCount +
+                ", filledRecordCount=" + filledRecordCount +
                 ", absolutePath='" + absolutePath + '\'' +
+                ", requests=" + requests +
                 '}';
     }
 }

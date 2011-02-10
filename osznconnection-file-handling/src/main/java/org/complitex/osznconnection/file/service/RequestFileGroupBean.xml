@@ -23,8 +23,6 @@
             <result column="b_length" property="length"/>
             <result column="b_check_sum" property="checkSum"/>
             <result column="b_type" property="type"/>
-            <result column="b_loaded_record_count" property="loadedRecordCount"/>
-            <result column="b_binded_record_count" property="bindedRecordCount"/>
         </association>
         <association property="paymentFile" javaType="org.complitex.osznconnection.file.entity.RequestFile">
             <id column="p_id" property="id"/>
@@ -40,6 +38,8 @@
             <result column="p_length" property="length"/>
             <result column="p_check_sum" property="checkSum"/>
             <result column="p_type" property="type"/>
+            <result column="binded_record_count" property="bindedRecordCount"/>
+            <result column="filled_record_count" property="filledRecordCount"/>
         </association>
     </resultMap>
 

@@ -271,7 +271,7 @@ public class ProcessManagerBean {
                 processStatus.preprocessError();
 
                 log.error("Ошибка процесса загрузки файлов. Причина: ошибка получения ключа безопасности");
-                logBean.error(Module.NAME, ProcessManagerBean.class, ActualPayment.class, null, Log.EVENT.CREATE,
+                logBean.error(Module.NAME, ProcessManagerBean.class, RequestFile.class, null, Log.EVENT.CREATE,
                        "Ошибка процесса загрузки файлов. Ошибка получения ключа безопасности. " +
                                 "Возможно пользователю не добавлено ни одной организации.");
 
@@ -285,7 +285,7 @@ public class ProcessManagerBean {
                     configBean.getInteger(Config.LOAD_MAX_ERROR_COUNT, true));
         } catch (StorageNotFoundException e) {
             log.error("Ошибка процесса загрузки файлов.", e);
-            logBean.error(Module.NAME, ProcessManagerBean.class, ActualPayment.class, null,
+            logBean.error(Module.NAME, ProcessManagerBean.class, RequestFile.class, null,
                     Log.EVENT.CREATE, "Ошибка процесса загрузки файлов. Причина: {0}", e.getMessage());
         }
     }
@@ -327,7 +327,7 @@ public class ProcessManagerBean {
                 processStatus.preprocessError();
 
                 log.error("Ошибка процесса загрузки файлов. Причина: ошибка получения ключа безопасности");
-                logBean.error(Module.NAME, ProcessManagerBean.class, Tarif.class, null, Log.EVENT.CREATE,
+                logBean.error(Module.NAME, ProcessManagerBean.class, RequestFile.class, null, Log.EVENT.CREATE,
                        "Ошибка процесса загрузки файлов. Ошибка получения ключа безопасности. " +
                                 "Возможно пользователю не добавлено ни одной организации.");
 
@@ -341,7 +341,7 @@ public class ProcessManagerBean {
                     configBean.getInteger(Config.LOAD_MAX_ERROR_COUNT, true));
         } catch (StorageNotFoundException e) {
             log.error("Ошибка процесса загрузки файлов.", e);
-            logBean.error(Module.NAME, ProcessManagerBean.class, Tarif.class, null,
+            logBean.error(Module.NAME, ProcessManagerBean.class, RequestFile.class, null,
                     Log.EVENT.CREATE, "Ошибка процесса загрузки файлов. Причина: {0}", e.getMessage());
         }
     }
