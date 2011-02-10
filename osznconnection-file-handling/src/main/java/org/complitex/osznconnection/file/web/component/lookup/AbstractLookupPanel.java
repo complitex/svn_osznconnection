@@ -5,7 +5,6 @@
 package org.complitex.osznconnection.file.web.component.lookup;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Maps;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -17,7 +16,6 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.util.WildcardListModel;
 import org.complitex.dictionary.entity.DomainObject;
-import org.complitex.dictionary.entity.example.DomainObjectExample;
 import org.complitex.dictionary.strategy.StrategyFactory;
 import org.complitex.dictionary.web.component.search.SearchComponent;
 import org.complitex.dictionary.web.component.search.SearchComponentState;
@@ -33,7 +31,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import java.util.List;
-import java.util.Map;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.AbstractReadOnlyModel;
@@ -42,6 +39,7 @@ import org.complitex.dictionary.util.CloneUtil;
 import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
 import org.complitex.osznconnection.file.service.StatusRenderService;
 import org.complitex.address.strategy.street.StreetStrategy;
+import org.complitex.dictionary.strategy.IStrategy;
 import org.complitex.osznconnection.file.entity.AbstractRequest;
 import org.complitex.osznconnection.file.web.component.account.AccountNumberPickerPanel;
 import org.odlabs.wiquery.ui.accordion.AccordionActive;
@@ -53,9 +51,9 @@ import org.odlabs.wiquery.ui.accordion.AccordionActive;
 public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Panel {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractLookupPanel.class);
-    @EJB(name = "StrategyFactory")
+    @EJB
     private StrategyFactory strategyFactory;
-    @EJB(name = "StatusRenderService")
+    @EJB
     private StatusRenderService statusRenderService;
     private IModel<String> accountInfoModel;
     private IModel<String> apartmentModel;
@@ -311,32 +309,23 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
 
     protected void initSearchComponentState(SearchComponentState componentState, Long cityId, Long streetId, Long buildingId) {
         componentState.clear();
-        Map<String, Long> ids = Maps.newHashMap();
 
         if (cityId != null) {
-            ids.put("city", cityId);
-            componentState.put("city", findObject(cityId, "city", ids));
+            componentState.put("city", findObject(cityId, "city"));
         }
 
         if (streetId != null) {
-            ids.put("street", streetId);
-            componentState.put("street", findObject(streetId, "street", ids));
+            componentState.put("street", findObject(streetId, "street"));
         }
 
         if (buildingId != null) {
-            ids.put("building", buildingId);
-            componentState.put("building", findObject(buildingId, "building", ids));
+            componentState.put("building", findObject(buildingId, "building"));
         }
     }
 
-    protected DomainObject findObject(Long objectId, String entity, Map<String, Long> ids) {
-        DomainObjectExample example = new DomainObjectExample(objectId);
-        strategyFactory.getStrategy(entity).configureExample(example, ids, null);
-        List<? extends DomainObject> objects = strategyFactory.getStrategy(entity).find(example);
-        if (objects.size() == 1) {
-            return objects.get(0);
-        }
-        return null;
+    protected DomainObject findObject(Long objectId, String entity) {
+        IStrategy strategy = strategyFactory.getStrategy(entity);
+        return strategy.findById(objectId, true);
     }
 
     protected boolean validateInternalAddress(T request) {

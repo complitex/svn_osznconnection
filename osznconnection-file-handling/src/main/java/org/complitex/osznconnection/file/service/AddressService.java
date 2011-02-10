@@ -139,7 +139,7 @@ public class AddressService extends AbstractBean {
         }
 
         if (streetId != null) {
-            DomainObject streetObject = strategyFactory.getStrategy("street").findById(streetId, false);
+            DomainObject streetObject = strategyFactory.getStrategy("street").findById(streetId, true);
             actualPayment.setInternalStreetId(streetId);
             actualPayment.setInternalStreetTypeId(StreetStrategy.getStreetType(streetObject));
             actualPayment.setInternalCityId(streetObject.getParentId());
@@ -177,12 +177,12 @@ public class AddressService extends AbstractBean {
         if (buildingId != null) {
             actualPayment.setInternalBuildingId(buildingId);
             IStrategy buildingStrategy = strategyFactory.getStrategy("building");
-            Building building = (Building) buildingStrategy.findById(buildingId, false);
+            Building building = (Building) buildingStrategy.findById(buildingId, true);
             Long internalStreetId = building.getPrimaryStreetId();
             if (streetId != null && !streetId.equals(internalStreetId)) {
                 actualPayment.setInternalStreetId(internalStreetId);
                 IStrategy streetStrategy = strategyFactory.getStrategy("street");
-                DomainObject streetObject = streetStrategy.findById(internalStreetId, false);
+                DomainObject streetObject = streetStrategy.findById(internalStreetId, true);
                 actualPayment.setInternalStreetTypeId(StreetStrategy.getStreetType(streetObject));
                 Long internalCityId = streetObject.getParentId();
                 actualPayment.setInternalCityId(internalCityId);
@@ -269,7 +269,7 @@ public class AddressService extends AbstractBean {
 
         //Если нашли улицу, то достаем из базы весь объект, берем тип улицы и проставляем в internalStreetTypeId
         if (streetId != null) {
-            DomainObject streetObject = strategyFactory.getStrategy("street").findById(streetId, false);
+            DomainObject streetObject = strategyFactory.getStrategy("street").findById(streetId, true);
             payment.setInternalStreetId(streetId);
             payment.setInternalStreetTypeId(StreetStrategy.getStreetType(streetObject));
             payment.setInternalCityId(streetObject.getParentId());
@@ -307,12 +307,12 @@ public class AddressService extends AbstractBean {
         if (buildingId != null) {
             payment.setInternalBuildingId(buildingId);
             IStrategy buildingStrategy = strategyFactory.getStrategy("building");
-            Building building = (Building) buildingStrategy.findById(buildingId, false);
+            Building building = (Building) buildingStrategy.findById(buildingId, true);
             Long internalStreetId = building.getPrimaryStreetId();
             if (streetId != null && !streetId.equals(internalStreetId)) {
                 payment.setInternalStreetId(internalStreetId);
                 IStrategy streetStrategy = strategyFactory.getStrategy("street");
-                DomainObject streetObject = streetStrategy.findById(internalStreetId, false);
+                DomainObject streetObject = streetStrategy.findById(internalStreetId, true);
                 payment.setInternalStreetTypeId(StreetStrategy.getStreetType(streetObject));
                 Long internalCityId = streetObject.getParentId();
                 payment.setInternalCityId(internalCityId);
