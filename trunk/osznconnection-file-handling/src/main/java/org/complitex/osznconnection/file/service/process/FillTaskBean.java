@@ -160,6 +160,14 @@ public class FillTaskBean implements ITaskBean<RequestFileGroup> {
                     userTransaction.begin();
                     process(payment, adapter, calculationCenterId);
                     userTransaction.commit();
+                } catch (DBException e){
+                    try {
+                        userTransaction.rollback();
+                    } catch (SystemException e1) {
+                        log.error("Couldn't rollback transaction for processing payment item.", e1);
+                    }
+
+                    throw e;
                 } catch (Exception e) {
                     log.error("The payment item (id = " + payment.getId() + ") was processed with error: ", e);
 
@@ -212,11 +220,13 @@ public class FillTaskBean implements ITaskBean<RequestFileGroup> {
                         benefit.setStatus(RequestStatus.PROCESSED);
                     }
                 }
+
                 for (Benefit benefit : benefits) {
                     try {
                         benefitBean.update(benefit);
                     } catch (Exception e) {
                         log.error("The benefit item (id = " + benefit.getId() + ") was processed with error: ", e);
+                        throw new FillException(e, false, benefitFile);
                     }
                 }
             }

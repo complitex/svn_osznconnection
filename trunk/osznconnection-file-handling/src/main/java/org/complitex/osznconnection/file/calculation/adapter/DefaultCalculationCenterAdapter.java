@@ -91,7 +91,6 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
 
     /**
      * Для квартиры номер проставляется напрямую из ОСЗН адреса, с обрезанием начальных и конечных пробелов.
-     * @param actualPayment
      * @param apartment
      * @param apartmentCode
      */
@@ -229,8 +228,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
      * Так сделано потому, что проанализировать возвращаемое из процедуры значение не удается если номер л/c не найден
      * в ЦН по причине того что курсор в этом случае закрыт,
      * и драйвер с соотвествии со стандартом JDBC рассматривает закрытый курсор как ошибку и выбрасывает исключение.
-     * 
-     * @param actualPayment
+     *
      * @return
      */
     @Override
@@ -315,7 +313,6 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
      * в ЦН по причине того что курсор в этом случае закрыт, и драйвер с соотвествии со стандартом JDBC рассматривает
      * закрытый курсор как ошибку и выбрасывает исключение.
      *
-     * @param actualPayment
      * @param benefits
      * @param calculationCenterId
      */
@@ -330,10 +327,9 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
 
         try {
             sqlSession().selectOne(MAPPING_NAMESPACE + ".processPaymentAndBenefit", params);
+            log.info("processPaymentAndBenefit. Parameters : {}", params);
         } catch (Exception e) {
             throw new DBException(e);
-        } finally {
-            log.info("processPaymentAndBenefit. Parameters : {}", params);
         }
 
         Integer resultCode = (Integer) params.get("resultCode");
@@ -391,9 +387,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
      * поэтому ситуации с не найденной коррекцией нет.
      *
      * @param calculationCenterId id ЦН
-     * @param actualPayment
      * @param benefits
-     * @param benefitData данные пришедшие из ЦН.
      */
     protected void processPaymentAndBenefitData(long calculationCenterId, Payment payment, List<Benefit> benefits, PaymentAndBenefitData data) {
         //payment
