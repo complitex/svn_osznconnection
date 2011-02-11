@@ -31,6 +31,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import org.complitex.dictionary.web.component.ShowMode;
 
 /**
  * Страница для редактирования коррекций привилегий.
@@ -80,7 +81,7 @@ public final class PrivilegeCorrectionEdit extends FormTemplatePage {
                 }
 
                 return new SearchComponent(id, componentState, ImmutableList.of(privilegeStrategy.getEntityTable()),
-                        new PrivilegeCallback(correction), true);
+                        new PrivilegeCallback(correction), ShowMode.ACTIVE, true);
             }
 
             @Override

@@ -40,6 +40,7 @@ import org.complitex.osznconnection.file.calculation.adapter.exception.DBExcepti
 import org.complitex.osznconnection.file.service.StatusRenderService;
 import org.complitex.address.strategy.street.StreetStrategy;
 import org.complitex.dictionary.strategy.IStrategy;
+import org.complitex.dictionary.web.component.ShowMode;
 import org.complitex.osznconnection.file.entity.AbstractRequest;
 import org.complitex.osznconnection.file.web.component.account.AccountNumberPickerPanel;
 import org.odlabs.wiquery.ui.accordion.AccordionActive;
@@ -163,7 +164,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
         };
         accordion.add(lookupByAddress);
         addressSearchComponent = new SearchComponent("addressSearchComponent", addressSearchComponentState,
-                ImmutableList.of("city", "street", "building"), null, true);
+                ImmutableList.of("city", "street", "building"), null, ShowMode.ACTIVE, true);
         addressSearchComponent.setOutputMarkupPlaceholderTag(true);
         addressSearchComponent.setVisible(false);
         accordion.add(addressSearchComponent);
