@@ -71,7 +71,7 @@ public abstract class AbstractCorrectionEditPanel extends Panel {
         }
 
         //Проверка доступа к данным
-        if (!osznSessionBean.hasOuterOrganization(correction.getOrganizationId())) {
+        if (!osznSessionBean.isAuthorized(correction.getOrganizationId())) {
             throw new UnauthorizedInstantiationException(this.getClass());
         }
 

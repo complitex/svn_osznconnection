@@ -55,4 +55,8 @@ public class OsznSessionBean {
     public boolean hasOuterOrganization(Long objectId){
         return getAllOuterOrganizationObjectIds().contains(objectId);
     }
+
+    public boolean isAuthorized(Long organizationObjectId){
+        return isAdmin() || hasOuterOrganization(organizationObjectId);
+    }
 }

@@ -58,7 +58,7 @@ public final class PersonAccountEdit extends FormTemplatePage {
         personAccount = personAccountLocalBean.findById(this.correctionId);
 
         //Проверка доступа к данным
-        if (!osznSessionBean.hasOuterOrganization(personAccount.getOsznId())) {
+        if (!osznSessionBean.isAuthorized(personAccount.getOsznId())) {
             throw new UnauthorizedInstantiationException(this.getClass());
         }
 
