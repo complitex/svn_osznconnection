@@ -110,7 +110,7 @@ public final class ActualPaymentList extends TemplatePage {
         final RequestFile requestFile = requestFileBean.findById(fileId);
 
         //Проверка доступа к данным
-        if (!osznSessionBean.hasOuterOrganization(requestFile.getOrganizationId())) {
+        if (!osznSessionBean.isAuthorized(requestFile.getOrganizationId())) {
             throw new UnauthorizedInstantiationException(this.getClass());
         }
 
