@@ -68,11 +68,11 @@ public abstract class AbstractCorrectionEditPanel extends Panel {
         } else {
             correction = initObjectCorrection(entity, this.correctionId);
             correction.setEntity(entity);
-        }
 
-        //Проверка доступа к данным
-        if (!osznSessionBean.isAuthorized(correction.getOrganizationId())) {
-            throw new UnauthorizedInstantiationException(this.getClass());
+            //Проверка доступа к данным
+            if (!osznSessionBean.isAuthorized(correction.getOrganizationId())) {
+                throw new UnauthorizedInstantiationException(this.getClass());
+            }
         }
 
         init();
