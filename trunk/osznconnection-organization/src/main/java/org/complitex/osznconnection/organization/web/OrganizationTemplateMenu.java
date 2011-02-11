@@ -22,7 +22,7 @@ import org.complitex.template.web.security.SecurityRole;
  *
  * @author Artem
  */
-@AuthorizeInstantiation(SecurityRole.ORGANIZATION_MODULE_EDIT)
+@AuthorizeInstantiation(SecurityRole.AUTHORIZED)
 public class OrganizationTemplateMenu extends ResourceTemplateMenu {
 
     private static IStrategy getStrategy() {

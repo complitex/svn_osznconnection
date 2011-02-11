@@ -87,6 +87,15 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
         return ResourceUtil.getString(RESOURCE_BUNDLE, getEntityTable(), locale);
     }
 
+    @Override
+    public boolean canPropagatePermissions(DomainObject object) {
+        Long entityTypeId = object.getEntityTypeId();
+        if (entityTypeId != null && entityTypeId.equals(USER_ORGANIZATION)) {
+            return true;
+        }
+        return false;
+    }
+
     @Transactional
     @Override
     public void insert(DomainObject object) {
@@ -98,7 +107,7 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
             DomainObject districtObject = districtStrategy.findById(districtId, false);
             if (districtObject != null) {
                 Set<Long> addSubjectIds = Sets.newHashSet(object.getId());
-                districtStrategy.changeChildrenPermissionsInDistinctThread(districtId, districtObject.getPermissionId(), addSubjectIds, null);
+                districtStrategy.changeObjectPermissionsInDistinctThread(districtId, districtObject.getPermissionId(), addSubjectIds, null);
             }
         }
     }
@@ -107,10 +116,11 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
     @Override
     public void update(DomainObject oldObject, DomainObject newObject, Date updateDate) {
         super.update(oldObject, newObject, updateDate);
-        changeSubjectsAcrossDistrictTree(oldObject, newObject);
+        changeDistrictPermissions(oldObject, newObject);
     }
 
-    private void changeSubjectsAcrossDistrictTree(DomainObject oldObject, DomainObject newObject) {
+    @Transactional
+    protected void changeDistrictPermissions(DomainObject oldObject, DomainObject newObject) {
         long organizationId = newObject.getId();
         Set<Long> subjectIds = Sets.newHashSet(organizationId);
         Attribute oldDistrictAttribute = getDistrictAttribute(oldObject);
@@ -120,13 +130,13 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
         if (!Numbers.isEqual(oldDistrictId, newDistrictId)) {
             //district reference has changed
             if (oldDistrictId != null) {
-                long oldDistrictPermissionId = districtStrategy.findById(oldDistrictId, false).getPermissionId();
-                districtStrategy.changeChildrenPermissionsInDistinctThread(oldDistrictId, oldDistrictPermissionId, null, subjectIds);
+                long oldDistrictPermissionId = districtStrategy.findById(oldDistrictId, true).getPermissionId();
+                districtStrategy.changeObjectPermissionsInDistinctThread(oldDistrictId, oldDistrictPermissionId, null, subjectIds);
             }
 
             if (newDistrictId != null) {
-                long newDistrictPermissionId = districtStrategy.findById(newDistrictId, false).getPermissionId();
-                districtStrategy.changeChildrenPermissionsInDistinctThread(newDistrictId, newDistrictPermissionId, subjectIds, null);
+                long newDistrictPermissionId = districtStrategy.findById(newDistrictId, true).getPermissionId();
+                districtStrategy.changeObjectPermissionsInDistinctThread(newDistrictId, newDistrictPermissionId, subjectIds, null);
             }
         }
     }
@@ -135,7 +145,37 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
     @Override
     public void updateAndPropagate(DomainObject oldObject, DomainObject newObject, Date updateDate) {
         super.updateAndPropagate(oldObject, newObject, updateDate);
-        changeSubjectsAcrossDistrictTree(oldObject, newObject);
+        changeDistrictPermissions(oldObject, newObject);
+    }
+
+    @Transactional
+    @Override
+    public void replaceChildrenPermissions(long parentId, Set<Long> subjectIds) {
+        List<DomainObjectPermissionInfo> treeChildrenPErmissionInfo = getTreeChildrenPermissionInfo(parentId);
+        for (DomainObjectPermissionInfo childPermissionInfo : treeChildrenPErmissionInfo) {
+            replaceObjectPermissions(childPermissionInfo, subjectIds);
+        }
+    }
+
+    @Transactional
+    protected List<DomainObjectPermissionInfo> getTreeChildrenPermissionInfo(long parentId) {
+        List<DomainObjectPermissionInfo> childrenPermissionInfo = sqlSession().selectList(ORGANIZATION_NAMESPACE
+                + ".findOrganizationChildrenPermissionInfo", parentId);
+        List<DomainObjectPermissionInfo> treeChildrenPermissionInfo = Lists.newArrayList(childrenPermissionInfo);
+        for (DomainObjectPermissionInfo childPermissionInfo : childrenPermissionInfo) {
+            treeChildrenPermissionInfo.addAll(getTreeChildrenPermissionInfo(childPermissionInfo.getId()));
+        }
+        return treeChildrenPermissionInfo;
+    }
+
+    @Override
+    public void changeObjectPermissionsInDistinctThread(long objectId, long permissionId, Set<Long> addSubjectIds, Set<Long> removeSubjectIds) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void changeObjectPermissions(long objectId, long permissionId, Set<Long> addSubjectIds, Set<Long> removeSubjectIds) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -255,19 +295,12 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
     @Transactional
     @Override
     public Long validateCode(Long id, String code, Long parentId, Long parentEntityId) {
-        Map<String, Object> params = Maps.newHashMap();
-        params.put("code", code);
-        params.put("parentId", parentId);
-        params.put("parentEntityId", parentEntityId);
-
-        List<Long> results = sqlSession().selectList(ORGANIZATION_NAMESPACE + ".validateCode", params);
-
+        List<Long> results = sqlSession().selectList(ORGANIZATION_NAMESPACE + ".validateCode", code);
         for (Long result : results) {
             if (!result.equals(id)) {
                 return result;
             }
         }
-
         return null;
     }
 
@@ -276,20 +309,14 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
     @Override
     public Long validateName(Long id, String name, Long parentId, Long parentEntityId, Locale locale) {
         Map<String, Object> params = Maps.newHashMap();
-
         params.put("name", name);
-        params.put("parentId", parentId);
-        params.put("parentEntityId", parentEntityId);
         params.put("localeId", localeBean.convert(locale).getId());
-
         List<Long> results = sqlSession().selectList(ORGANIZATION_NAMESPACE + ".validateName", params);
-
         for (Long result : results) {
             if (!result.equals(id)) {
                 return result;
             }
         }
-
         return null;
     }
 
@@ -322,7 +349,8 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
     @Transactional
     @Override
     public Set<Long> getTreeChildrenOrganizationIds(long parentOrganizationId) {
-        Set<Long> childrenIds = Sets.newHashSet(sqlSession().selectList(ORGANIZATION_NAMESPACE + ".selectOrganizationChildrenObjectIds", parentOrganizationId));
+        Set<Long> childrenIds = Sets.newHashSet(sqlSession().selectList(ORGANIZATION_NAMESPACE + ".findOrganizationChildrenObjectIds",
+                parentOrganizationId));
         Set<Long> treeChildren = Sets.newHashSet(childrenIds);
 
         for (Long childId : childrenIds) {

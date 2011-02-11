@@ -104,7 +104,7 @@ insert into country_attribute(attribute_id, object_id, attribute_type_id, value_
 -- Organizations
 insert into organization(object_id, entity_type_id) values (1,900), (2,901);
 insert into organization_string_culture(id, locale_id, value) values (3, 1, UPPER('ОСЗН 1')), (3,2,UPPER('ОСЗН 1')), (4, 1, UPPER('1234')),
-(5, 1, UPPER('Модуль начислений №1')), (5, 2, UPPER('Модуль начислений №1')), (6, 1, UPPER('1234'));
+(5, 1, UPPER('Модуль начислений №1')), (5, 2, UPPER('Модуль начислений №1')), (6, 1, UPPER('123'));
 insert into organization_attribute(attribute_id, object_id, attribute_type_id, value_id, value_type_id) values
 (1,1,900,3,900), (1,1,901,4,901), (1,1,902,3,902),
 (1,2,900,5,900), (1,2,901,6,901);
