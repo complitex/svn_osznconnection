@@ -438,9 +438,8 @@ public class AddressCorrectionBean extends CorrectionBean {
                 DomainObject building = buildingStrategy.findById(c.getObjectId(), false);
 
                 if (building == null){
-                    c.setDisplayObject("[Дом не найден или нет прав]");
+                    building = buildingStrategy.findById(c.getObjectId(), true);
                     c.setEditable(false);
-                    continue;
                 }
 
                 SearchComponentState state = buildingStrategy.getSearchComponentStateForParent(building.getParentId(), "building_address", null);
@@ -486,17 +485,19 @@ public class AddressCorrectionBean extends CorrectionBean {
             DomainObject street = streetStrategy.findById(c.getObjectId(), false);
 
             if (street == null){
+                street = streetStrategy.findById(c.getObjectId(), true);
                 c.setEditable(false);
-                c.setDisplayObject("[Улица не найдена или нет прав]");
-                continue;
             }
 
-            DomainObject city = cityStrategy.findById(street.getParentId(), false);
+            DomainObject city = null;
+
+            if (c.isEditable()) {
+                city = cityStrategy.findById(street.getParentId(), false);
+            }
 
             if (city == null){
+                city = cityStrategy.findById(street.getParentId(), true);
                 c.setEditable(false);
-                c.setDisplayObject("[Город не найден или нет прав]");
-                continue;
             }
 
             Locale locale = localeBean.convert(localeBean.getLocale(example.getLocaleId()));
@@ -521,21 +522,22 @@ public class AddressCorrectionBean extends CorrectionBean {
         IStrategy cityStrategy = strategyFactory.getStrategy("city");
 
         for (Correction c : districts) {
-
             DomainObject district = districtStrategy.findById(c.getObjectId(), false);
 
             if (district == null){
+                district = districtStrategy.findById(c.getObjectId(), true);
                 c.setEditable(false);
-                c.setDisplayObject("[Район не найден или нет прав]");
-                continue;
             }
 
-            DomainObject city = cityStrategy.findById(district.getParentId(), false);
+            DomainObject city = null;
+
+            if (c.isEditable()) {
+                city = cityStrategy.findById(district.getParentId(), false);
+            }
 
             if (city == null){
+                city = cityStrategy.findById(district.getParentId(), true);
                 c.setEditable(false);
-                c.setDisplayObject("[Город не найден или нет прав]");
-                continue;
             }
 
             Locale locale = localeBean.convert(localeBean.getLocale(example.getLocaleId()));
