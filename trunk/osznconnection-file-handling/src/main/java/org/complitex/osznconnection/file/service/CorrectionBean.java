@@ -73,7 +73,13 @@ public class CorrectionBean extends AbstractBean {
         if (corrections != null && !corrections.isEmpty()) {
             IStrategy strategy = strategyFactory.getStrategy(entity);
             for (Correction correction : corrections) {
-                DomainObject object = strategy.findById(correction.getObjectId(), true);
+                DomainObject object = strategy.findById(correction.getObjectId(), false);
+
+                if (object == null){ //объект доступен только для просмотра
+                    object = strategy.findById(correction.getObjectId(), true);
+                    correction.setEditable(false);
+                }
+
                 correction.setDisplayObject(strategy.displayDomainObject(object, localeBean.convert(localeBean.getLocale(localeId))));
             }
         }
