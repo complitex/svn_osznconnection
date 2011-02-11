@@ -327,9 +327,10 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
 
         try {
             sqlSession().selectOne(MAPPING_NAMESPACE + ".processPaymentAndBenefit", params);
-            log.info("processPaymentAndBenefit. Parameters : {}", params);
         } catch (Exception e) {
             throw new DBException(e);
+        } finally {
+            log.info("processPaymentAndBenefit. Parameters : {}", params);
         }
 
         Integer resultCode = (Integer) params.get("resultCode");
