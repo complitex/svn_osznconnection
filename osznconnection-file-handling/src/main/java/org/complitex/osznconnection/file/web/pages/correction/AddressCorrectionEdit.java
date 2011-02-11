@@ -36,6 +36,7 @@ import java.util.Locale;
 import java.util.Map;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.strategy.IStrategy;
+import org.complitex.dictionary.web.component.ShowMode;
 import org.complitex.osznconnection.file.entity.StreetCorrection;
 import org.complitex.osznconnection.file.web.component.correction.edit.AddressCorrectionInputPanel;
 import org.complitex.osznconnection.file.web.pages.util.AddressRenderer;
@@ -49,7 +50,7 @@ public class AddressCorrectionEdit extends FormTemplatePage {
 
     public static final String CORRECTED_ENTITY = "entity";
     public static final String CORRECTION_ID = "correction_id";
-    @EJB(name = "StrategyFactory")
+    @EJB
     private StrategyFactory strategyFactory;
 
     private class Callback implements ISearchCallback, Serializable {
@@ -98,7 +99,7 @@ public class AddressCorrectionEdit extends FormTemplatePage {
                     componentState.put(entity, findObject(objectId, entity));
                 }
             }
-            return new SearchComponent(id, componentState, getSearchFilters(), new Callback(correction, entity), true);
+            return new SearchComponent(id, componentState, getSearchFilters(), new Callback(correction, entity), ShowMode.ACTIVE, true);
         }
 
         @Override

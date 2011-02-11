@@ -28,6 +28,7 @@ import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.complitex.dictionary.strategy.IStrategy;
+import org.complitex.dictionary.web.component.ShowMode;
 import org.complitex.osznconnection.file.entity.AbstractRequest;
 import org.complitex.osznconnection.file.entity.RequestStatus;
 import org.complitex.osznconnection.file.service.StatusRenderService;
@@ -114,7 +115,7 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
 
         componentState = new SearchComponentState();
         // at start create fake search component
-        searchComponent = new SearchComponent("searchComponent", componentState, ImmutableList.of(""), null, true);
+        searchComponent = new SearchComponent("searchComponent", componentState, ImmutableList.of(""), null, ShowMode.ACTIVE, true);
         container.add(searchComponent);
 
         AjaxLink save = new AjaxLink("save") {
@@ -266,7 +267,7 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
 
         initCorrectedEntity();
         initSearchComponentState(componentState);
-        SearchComponent newSearchComponent = new SearchComponent("searchComponent", componentState, initFilters(), null, true);
+        SearchComponent newSearchComponent = new SearchComponent("searchComponent", componentState, initFilters(), null, ShowMode.ACTIVE, true);
         searchComponent.replaceWith(newSearchComponent);
         searchComponent = newSearchComponent;
         container.setVisible(true);
