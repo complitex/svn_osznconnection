@@ -21,9 +21,9 @@ import org.complitex.osznconnection.file.web.component.lookup.AbstractLookupPane
  */
 public class ActualPaymentLookupPanel extends AbstractLookupPanel<ActualPayment> {
 
-    @EJB(name = "LookupBean")
+    @EJB
     private LookupBean lookupBean;
-    @EJB(name = "PersonAccountService")
+    @EJB
     private PersonAccountService personAccountService;
 
     public ActualPaymentLookupPanel(String id, Component... toUpdate) {
@@ -62,17 +62,7 @@ public class ActualPaymentLookupPanel extends AbstractLookupPanel<ActualPayment>
     }
 
     @Override
-    protected List<AccountDetail> acquireAccountDetailsByOsznAccount(ActualPayment actualPayment, String account) throws DBException {
-        throw new UnsupportedOperationException("Lookup by oszn account is not supported for actual payments.");
-    }
-
-    @Override
-    protected List<AccountDetail> acquireAccountDetailsByMegabankAccount(ActualPayment actualPayment, String account) throws DBException {
-        return lookupBean.acquireAccountDetailsByMegabankAccount(actualPayment, actualPayment.getOutgoingDistrict(), account);
-    }
-
-    @Override
-    protected void resolveOutgoingDistrict(ActualPayment actualPayment) {
-        lookupBean.resolveOutgoingDistrict(actualPayment);
+    protected String resolveOutgoingDistrict(ActualPayment actualPayment) {
+        return lookupBean.resolveOutgoingDistrict(actualPayment);
     }
 }

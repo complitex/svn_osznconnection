@@ -27,9 +27,10 @@ import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.util.CloneUtil;
 import org.complitex.dictionary.util.StringUtil;
 import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
+import org.complitex.osznconnection.file.calculation.adapter.exception.UnknownAccountNumberTypeException;
 import org.complitex.osznconnection.file.entity.AbstractRequest;
 import org.complitex.osznconnection.file.entity.AccountDetail;
-import org.complitex.osznconnection.file.entity.RequestStatus;
+import org.complitex.osznconnection.file.service.LookupBean;
 import org.complitex.osznconnection.file.service.StatusRenderService;
 import org.complitex.osznconnection.file.web.pages.util.AddressRenderer;
 
@@ -39,8 +40,10 @@ import org.complitex.osznconnection.file.web.pages.util.AddressRenderer;
  */
 public abstract class AccountNumberLookupPanel<T extends AbstractRequest> extends Panel {
 
-    @EJB(name = "StatusRenderService")
+    @EJB
     private StatusRenderService statusRenderService;
+    @EJB
+    private LookupBean lookupBean;
     private IModel<String> accountModel;
     private IModel<List<? extends AccountDetail>> accountDetailsModel;
     private T request;
@@ -49,8 +52,7 @@ public abstract class AccountNumberLookupPanel<T extends AbstractRequest> extend
     private WebMarkupContainer detailsContainer;
     private IModel<AccountDetail> accountDetailModel;
 
-    public AccountNumberLookupPanel(String id, IModel<String> accountLabelModel, IModel<String> accountRequiredModel,
-            FeedbackPanel messages) {
+    public AccountNumberLookupPanel(String id, IModel<String> accountLabelModel, IModel<String> accountRequiredModel, FeedbackPanel messages) {
         super(id);
         this.messages = messages;
         this.accountRequiredModel = accountRequiredModel;
@@ -110,16 +112,14 @@ public abstract class AccountNumberLookupPanel<T extends AbstractRequest> extend
 
             @Override
             public void onClick(AjaxRequestTarget target) {
-                request.setStatus(RequestStatus.LOADED);
                 AccountDetail detail = null;
                 boolean visible = detailsContainer.isVisible();
                 detailsContainer.setVisible(false);
                 if (validateAccount()) {
-                    resolveOutgoingDistrict(request);
-                    if (!(request.getStatus() == RequestStatus.MORE_ONE_REMOTE_DISTRICT_CORRECTION
-                            || request.getStatus() == RequestStatus.DISTRICT_UNRESOLVED)) {
+                    String outgoingDistrict = resolveOutgoingDistrict(request);
+                    if (!Strings.isEmpty(outgoingDistrict)) {
                         try {
-                            List<AccountDetail> accountDetails = acquireAccountDetailsByAccCode(request, accountModel.getObject());
+                            List<AccountDetail> accountDetails = acquireAccountDetailsByAccount(request, outgoingDistrict, accountModel.getObject());
                             if (accountDetails == null || accountDetails.isEmpty()) {
                                 error(statusRenderService.displayStatus(request.getStatus(), getLocale()));
                                 accountDetailsModel.setObject(null);
@@ -135,6 +135,8 @@ public abstract class AccountNumberLookupPanel<T extends AbstractRequest> extend
                             }
                         } catch (DBException e) {
                             error(getString("db_error"));
+                        } catch (UnknownAccountNumberTypeException e){
+                            error(getString("unknown_account_number_type"));
                         }
                     } else {
                         error(statusRenderService.displayStatus(request.getStatus(), getLocale()));
@@ -182,9 +184,12 @@ public abstract class AccountNumberLookupPanel<T extends AbstractRequest> extend
         return display;
     }
 
-    protected abstract void resolveOutgoingDistrict(T request);
+    protected abstract String resolveOutgoingDistrict(T request);
 
-    protected abstract List<AccountDetail> acquireAccountDetailsByAccCode(T request, String account) throws DBException;
+    protected List<AccountDetail> acquireAccountDetailsByAccount(T request, String district, String account) throws DBException,
+            UnknownAccountNumberTypeException{
+         return lookupBean.acquireAccountDetailsByAccount(request, district, account);
+    }
 
     protected abstract void updateAccountNumber(AccountDetail accountDetail, AjaxRequestTarget target, boolean refresh);
 }
