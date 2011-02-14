@@ -100,14 +100,21 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
     @Override
     public void insert(DomainObject object) {
         super.insert(object);
+        changeDistrictPermissions(object);
+    }
 
-        Attribute districtAttribute = getDistrictAttribute(object);
-        Long districtId = districtAttribute.getValueId();
-        if (districtId != null) {
-            DomainObject districtObject = districtStrategy.findById(districtId, false);
-            if (districtObject != null) {
-                Set<Long> addSubjectIds = Sets.newHashSet(object.getId());
-                districtStrategy.changeObjectPermissionsInDistinctThread(districtId, districtObject.getPermissionId(), addSubjectIds, null);
+    @Transactional
+    protected void changeDistrictPermissions(DomainObject newObject) {
+        Long entityTypeId = newObject.getEntityTypeId();
+        if (entityTypeId != null && entityTypeId.equals(USER_ORGANIZATION)) {
+            Attribute districtAttribute = getDistrictAttribute(newObject);
+            Long districtId = districtAttribute.getValueId();
+            if (districtId != null) {
+                DomainObject districtObject = districtStrategy.findById(districtId, false);
+                if (districtObject != null) {
+                    Set<Long> addSubjectIds = Sets.newHashSet(newObject.getId());
+                    districtStrategy.changeObjectPermissionsInDistinctThread(districtId, districtObject.getPermissionId(), addSubjectIds, null);
+                }
             }
         }
     }
@@ -121,22 +128,25 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
 
     @Transactional
     protected void changeDistrictPermissions(DomainObject oldObject, DomainObject newObject) {
-        long organizationId = newObject.getId();
-        Set<Long> subjectIds = Sets.newHashSet(organizationId);
-        Attribute oldDistrictAttribute = getDistrictAttribute(oldObject);
-        Attribute newDistrictAttribute = getDistrictAttribute(newObject);
-        Long oldDistrictId = oldDistrictAttribute.getValueId();
-        Long newDistrictId = newDistrictAttribute.getValueId();
-        if (!Numbers.isEqual(oldDistrictId, newDistrictId)) {
-            //district reference has changed
-            if (oldDistrictId != null) {
-                long oldDistrictPermissionId = districtStrategy.findById(oldDistrictId, true).getPermissionId();
-                districtStrategy.changeObjectPermissionsInDistinctThread(oldDistrictId, oldDistrictPermissionId, null, subjectIds);
-            }
+        Long entityTypeId = newObject.getEntityTypeId();
+        if (entityTypeId != null && entityTypeId.equals(USER_ORGANIZATION)) {
+            long organizationId = newObject.getId();
+            Set<Long> subjectIds = Sets.newHashSet(organizationId);
+            Attribute oldDistrictAttribute = getDistrictAttribute(oldObject);
+            Attribute newDistrictAttribute = getDistrictAttribute(newObject);
+            Long oldDistrictId = oldDistrictAttribute.getValueId();
+            Long newDistrictId = newDistrictAttribute.getValueId();
+            if (!Numbers.isEqual(oldDistrictId, newDistrictId)) {
+                //district reference has changed
+                if (oldDistrictId != null) {
+                    long oldDistrictPermissionId = districtStrategy.findById(oldDistrictId, true).getPermissionId();
+                    districtStrategy.changeObjectPermissionsInDistinctThread(oldDistrictId, oldDistrictPermissionId, null, subjectIds);
+                }
 
-            if (newDistrictId != null) {
-                long newDistrictPermissionId = districtStrategy.findById(newDistrictId, true).getPermissionId();
-                districtStrategy.changeObjectPermissionsInDistinctThread(newDistrictId, newDistrictPermissionId, subjectIds, null);
+                if (newDistrictId != null) {
+                    long newDistrictPermissionId = districtStrategy.findById(newDistrictId, true).getPermissionId();
+                    districtStrategy.changeObjectPermissionsInDistinctThread(newDistrictId, newDistrictPermissionId, subjectIds, null);
+                }
             }
         }
     }
