@@ -14,6 +14,7 @@ import javax.ejb.Local;
 import java.util.Date;
 import java.util.List;
 import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
+import org.complitex.osznconnection.file.calculation.adapter.exception.UnknownAccountNumberTypeException;
 import org.complitex.osznconnection.file.entity.AbstractRequest;
 import org.complitex.osznconnection.file.entity.ActualPayment;
 
@@ -54,9 +55,8 @@ public interface ICalculationCenterAdapter {
     List<AccountDetail> acquireAccountDetailsByAddress(AbstractRequest request, String district, String streetType, String street,
             String buildingNumber, String buildingCorp, String apartment, Date date) throws DBException;
 
-    List<AccountDetail> acquireAccountDetailsByOsznAccount(Payment payment) throws DBException;
-
-    List<AccountDetail> acquireAccountDetailsByMegabankAccount(AbstractRequest request, String district, String megabankAccount) throws DBException;
+    List<AccountDetail> acquireAccountDetailsByAccount(AbstractRequest request, String district, String account) throws DBException,
+            UnknownAccountNumberTypeException;
 
     void processPaymentAndBenefit(Payment payment, List<Benefit> benefits, long calculationCenterId) throws DBException;
 

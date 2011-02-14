@@ -19,10 +19,12 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import java.util.List;
 import org.complitex.dictionary.util.DateUtil;
+import org.complitex.osznconnection.file.calculation.adapter.exception.UnknownAccountNumberTypeException;
 import org.complitex.osznconnection.file.entity.AbstractRequest;
 import org.complitex.osznconnection.file.entity.ActualPayment;
 import org.complitex.osznconnection.file.entity.PaymentDBF;
 import org.complitex.osznconnection.file.entity.RequestFile;
+import org.complitex.osznconnection.file.entity.RequestStatus;
 
 /**
  * @author Artem
@@ -89,31 +91,37 @@ public class LookupBean extends AbstractBean {
     }
 
     @Transactional
-    public void resolveOutgoingDistrict(Payment payment) {
+    public String resolveOutgoingDistrict(Payment payment) {
+        payment.setStatus(RequestStatus.LOADED);
         Long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterInfo().getCalculationCenterId();
         ICalculationCenterAdapter adapter = calculationCenterBean.getDefaultCalculationCenterAdapter();
         addressService.resolveOutgoingDistrict(payment, calculationCenterId, adapter);
+        if (!(payment.getStatus() == RequestStatus.DISTRICT_UNRESOLVED || payment.getStatus() == RequestStatus.MORE_ONE_REMOTE_DISTRICT_CORRECTION)) {
+            return payment.getOutgoingDistrict();
+        } else {
+            return null;
+        }
     }
 
     @Transactional
-    public void resolveOutgoingDistrict(ActualPayment actualPayment) {
+    public String resolveOutgoingDistrict(ActualPayment actualPayment) {
+        actualPayment.setStatus(RequestStatus.LOADED);
         Long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterInfo().getCalculationCenterId();
         ICalculationCenterAdapter adapter = calculationCenterBean.getDefaultCalculationCenterAdapter();
         addressService.resolveOutgoingDistrict(actualPayment, calculationCenterId, adapter);
+        if (!(actualPayment.getStatus() == RequestStatus.DISTRICT_UNRESOLVED
+                || actualPayment.getStatus() == RequestStatus.MORE_ONE_REMOTE_DISTRICT_CORRECTION)) {
+            return actualPayment.getOutgoingDistrict();
+        } else {
+            return null;
+        }
     }
 
     @Transactional
     @TransactionAttribute(TransactionAttributeType.NEVER)
-    public List<AccountDetail> acquireAccountDetailsByOsznAccount(Payment payment) throws DBException {
+    public List<AccountDetail> acquireAccountDetailsByAccount(AbstractRequest request, String district, String account)
+            throws DBException, UnknownAccountNumberTypeException {
         ICalculationCenterAdapter adapter = calculationCenterBean.getDefaultCalculationCenterAdapter();
-        return adapter.acquireAccountDetailsByOsznAccount(payment);
-    }
-
-    @Transactional
-    @TransactionAttribute(TransactionAttributeType.NEVER)
-    public List<AccountDetail> acquireAccountDetailsByMegabankAccount(AbstractRequest request, String district, String megabankAccount)
-            throws DBException {
-        ICalculationCenterAdapter adapter = calculationCenterBean.getDefaultCalculationCenterAdapter();
-        return adapter.acquireAccountDetailsByMegabankAccount(request, district, megabankAccount);
+        return adapter.acquireAccountDetailsByAccount(request, district, account);
     }
 }

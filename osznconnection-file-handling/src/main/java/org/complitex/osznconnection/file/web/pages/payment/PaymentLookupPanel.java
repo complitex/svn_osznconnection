@@ -22,9 +22,9 @@ import org.complitex.osznconnection.file.web.component.lookup.AbstractLookupPane
  */
 public class PaymentLookupPanel extends AbstractLookupPanel<Payment> {
 
-    @EJB(name = "LookupBean")
+    @EJB
     private LookupBean lookupBean;
-    @EJB(name = "PersonAccountService")
+    @EJB
     private PersonAccountService personAccountService;
 
     public PaymentLookupPanel(String id, Component... toUpdate) {
@@ -63,23 +63,7 @@ public class PaymentLookupPanel extends AbstractLookupPanel<Payment> {
     }
 
     @Override
-    protected List<AccountDetail> acquireAccountDetailsByOsznAccount(Payment payment, String account) throws DBException {
-        payment.setField(PaymentDBF.OWN_NUM_SR, account);
-        return lookupBean.acquireAccountDetailsByOsznAccount(payment);
-    }
-
-    @Override
-    protected List<AccountDetail> acquireAccountDetailsByMegabankAccount(Payment payment, String account) throws DBException {
-        return lookupBean.acquireAccountDetailsByMegabankAccount(payment, payment.getOutgoingDistrict(), account);
-    }
-
-    @Override
-    protected void resolveOutgoingDistrict(Payment payment) {
-        lookupBean.resolveOutgoingDistrict(payment);
-    }
-
-    @Override
-    protected boolean lookupByOwnNumSr() {
-        return true;
+    protected String resolveOutgoingDistrict(Payment payment) {
+        return lookupBean.resolveOutgoingDistrict(payment);
     }
 }

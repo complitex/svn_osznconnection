@@ -4,8 +4,8 @@
  */
 package org.complitex.osznconnection.file.calculation.adapter;
 
+import org.complitex.osznconnection.file.calculation.adapter.exception.UnknownAccountNumberTypeException;
 import org.complitex.osznconnection.file.entity.Payment;
-
 import java.util.Date;
 import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
 import org.complitex.osznconnection.file.entity.PaymentDBF;
@@ -21,6 +21,8 @@ public class AcquireAccountCorrectionDetailsTest extends AbstractTest {
             new AcquireAccountCorrectionDetailsTest().executeTest();
         } catch (DBException e) {
             System.out.println("DB error.");
+        } catch (UnknownAccountNumberTypeException e) {
+            System.out.println("Unknown account number type exception.");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -33,13 +35,14 @@ public class AcquireAccountCorrectionDetailsTest extends AbstractTest {
                 payment.getOutgoingApartment(), (Date) payment.getField(PaymentDBF.DAT1)));
     }
 
-    private void testByOsznAccount(ICalculationCenterAdapter adapter) throws DBException {
-        System.out.println(adapter.acquireAccountDetailsByOsznAccount(newPayment()));
+    private void testByOsznAccount(ICalculationCenterAdapter adapter) throws DBException, UnknownAccountNumberTypeException {
+        Payment payment = newPayment();
+        System.out.println(adapter.acquireAccountDetailsByAccount(payment, payment.getOutgoingDistrict(), "1234567"));
     }
 
-    private void testByMegabankAccount(ICalculationCenterAdapter adapter) throws DBException {
+    private void testByMegabankAccount(ICalculationCenterAdapter adapter) throws DBException, UnknownAccountNumberTypeException {
         Payment payment = newPayment();
-        System.out.println(adapter.acquireAccountDetailsByMegabankAccount(payment, payment.getOutgoingDistrict(), "9876543"));
+        System.out.println(adapter.acquireAccountDetailsByAccount(payment, payment.getOutgoingDistrict(), "9876543"));
     }
 
     private static Payment newPayment() {

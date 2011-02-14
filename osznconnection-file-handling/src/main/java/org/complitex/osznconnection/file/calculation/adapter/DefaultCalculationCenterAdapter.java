@@ -29,6 +29,7 @@ import org.complitex.dictionary.service.LogBean;
 import org.complitex.dictionary.util.ResourceUtil;
 import org.complitex.osznconnection.file.Module;
 import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
+import org.complitex.osznconnection.file.calculation.adapter.exception.UnknownAccountNumberTypeException;
 import org.complitex.osznconnection.file.entity.PaymentAndBenefitData;
 import org.complitex.osznconnection.file.service.warning.RequestWarningBean;
 import org.complitex.osznconnection.file.service.warning.WebWarningRenderer;
@@ -1036,21 +1037,13 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
     }
     private static final int OSZN_ACCOUNT_TYPE = 0;
     private static final int MEGABANK_ACCOUNT_TYPE = 1;
+    private static final int CALCULATION_CENTER_ACCOUNT_TYPE = 2;
 
     @Override
-    public List<AccountDetail> acquireAccountDetailsByMegabankAccount(AbstractRequest request, String district, String megabankAccount)
-            throws DBException {
-        return acquireAccountDetailsByAccCode(district, request, "acquireAccountDetailsByMegabankAccount", megabankAccount, MEGABANK_ACCOUNT_TYPE);
-    }
+    public List<AccountDetail> acquireAccountDetailsByAccount(AbstractRequest request, String district, String account) throws DBException,
+            UnknownAccountNumberTypeException {
 
-    @Override
-    public List<AccountDetail> acquireAccountDetailsByOsznAccount(Payment payment) throws DBException {
-        return acquireAccountDetailsByAccCode(payment.getOutgoingDistrict(), payment, "acquireAccountDetailsByOsznAccount",
-                (String) payment.getField(PaymentDBF.OWN_NUM_SR), OSZN_ACCOUNT_TYPE);
-    }
-
-    public List<AccountDetail> acquireAccountDetailsByAccCode(String district, AbstractRequest request, String method, String account, int accountType)
-            throws DBException {
+        int accountType = determineAccountType(account);
         List<AccountDetail> accountCorrectionDetails = null;
 
         Map<String, Object> params = Maps.newHashMap();
@@ -1063,12 +1056,12 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
         } catch (Exception e) {
             throw new DBException(e);
         } finally {
-            log.info("{}. Parameters : {}", method, params);
+            log.info("acquireAccountDetailsByAccount. Parameters : {}", params);
         }
 
         Integer resultCode = (Integer) params.get("resultCode");
         if (resultCode == null) {
-            log.error("{}. Result code is null. Request id: {}, request class: {}", new Object[]{method, request.getId(), request.getClass()});
+            log.error("acquireAccountDetailsByAccount. Result code is null. Request id: {}, request class: {}", request.getId(), request.getClass());
             logBean.error(Module.NAME, getClass(), request.getClass(), request.getId(), EVENT.GETTING_DATA,
                     ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_unexpected", localeBean.getSystemLocale(), "GETATTRSBYACCCODE", "null"));
             request.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
@@ -1077,8 +1070,8 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
                 case 1:
                     accountCorrectionDetails = (List<AccountDetail>) params.get("details");
                     if (accountCorrectionDetails == null || accountCorrectionDetails.isEmpty()) {
-                        log.error("{}. Result code is 1 but account details data is null or empty. Request id: {}, request class: {}",
-                                new Object[]{method, request.getId(), request.getClass()});
+                        log.error("acquireAccountDetailsByAccount. Result code is 1 but account details data is null or empty. "
+                                + "Request id: {}, request class: {}", request.getId(), request.getClass());
                         logBean.error(Module.NAME, getClass(), request.getClass(), request.getId(), EVENT.GETTING_DATA,
                                 ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_inconsistent", localeBean.getSystemLocale(),
                                 "GETATTRSBYACCCODE"));
@@ -1089,8 +1082,8 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
                     request.setStatus(RequestStatus.ACCOUNT_NUMBER_NOT_FOUND);
                     break;
                 case -1:
-                    log.error("{}. Result code is -1 but account type code is {}. Request id: {}, request class: {}",
-                            new Object[]{method, accountType, request.getId(), request.getClass()});
+                    log.error("acquireAccountDetailsByAccount. Result code is -1 but account type code is {}. Request id: {}, request class: {}",
+                            new Object[]{accountType, request.getId(), request.getClass()});
                     logBean.error(Module.NAME, getClass(), request.getClass(), request.getId(), EVENT.GETTING_DATA,
                             ResourceUtil.getFormatString(RESOURCE_BUNDLE, "wrong_account_type_code", localeBean.getSystemLocale(), "GETATTRSBYACCCODE",
                             accountType));
@@ -1100,8 +1093,8 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
                     request.setStatus(RequestStatus.DISTRICT_NOT_FOUND);
                     break;
                 default:
-                    log.error("{}. Unexpected result code: {}. Request id: {}, request class: {}",
-                            new Object[]{method, resultCode, request.getId(), request.getClass()});
+                    log.error("acquireAccountDetailsByAccount. Unexpected result code: {}. Request id: {}, request class: {}",
+                            new Object[]{resultCode, request.getId(), request.getClass()});
                     logBean.error(Module.NAME, getClass(), request.getClass(), request.getId(), EVENT.GETTING_DATA,
                             ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_unexpected", localeBean.getSystemLocale(), "GETATTRSBYACCCODE",
                             resultCode));
@@ -1109,6 +1102,24 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
             }
         }
         return accountCorrectionDetails;
+    }
+
+    protected int determineAccountType(String accountNumber) throws UnknownAccountNumberTypeException {
+        if (Strings.isEmpty(accountNumber)) {
+            throw new UnknownAccountNumberTypeException();
+        }
+
+        if (accountNumber.length() == 10 && accountNumber.startsWith("100")) {
+            return CALCULATION_CENTER_ACCOUNT_TYPE;
+        }
+        if (accountNumber.length() == 9 && accountNumber.startsWith("1")) {
+            return MEGABANK_ACCOUNT_TYPE;
+        }
+        if (accountNumber.length() < 9) {
+            return OSZN_ACCOUNT_TYPE;
+        }
+
+        throw new UnknownAccountNumberTypeException();
     }
 
     @Override

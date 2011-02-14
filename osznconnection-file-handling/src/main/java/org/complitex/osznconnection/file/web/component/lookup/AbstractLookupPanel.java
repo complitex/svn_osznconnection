@@ -32,7 +32,6 @@ import org.slf4j.LoggerFactory;
 import javax.ejb.EJB;
 import java.util.List;
 import org.apache.wicket.Component;
-import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.util.CloneUtil;
@@ -56,6 +55,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
     private StrategyFactory strategyFactory;
     @EJB
     private StatusRenderService statusRenderService;
+    
     private IModel<String> accountInfoModel;
     private IModel<String> apartmentModel;
     private IModel<List<? extends AccountDetail>> accountsModel;
@@ -69,8 +69,21 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
     private SearchComponent addressSearchComponent;
     private T request;
     private T initialRequest;
-    private AccountNumberLookupPanel ownNumSrAccountLookupPanel;
-    private AccountNumberLookupPanel megabankAccountLookupPanel;
+    private AccountNumberLookupPanel<T> accountLookupPanel;
+
+    private class SimpleResourceModel extends AbstractReadOnlyModel<String> {
+
+            private String resourceKey;
+
+            public SimpleResourceModel(String resourceKey) {
+                this.resourceKey = resourceKey;
+            }
+
+            @Override
+            public String getObject() {
+                return AbstractLookupPanel.this.getString(resourceKey);
+            }
+        }
 
     public AbstractLookupPanel(String id, Component... toUpdate) {
         super(id);
@@ -129,7 +142,6 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
                 accountNumberPickerPanel.setVisible(false);
                 if (validateInternalAddress(request)) {
                     resolveOutgoingAddress(request);
-
                     if (request.getStatus() == RequestStatus.ACCOUNT_NUMBER_NOT_FOUND) {
                         try {
                             List<AccountDetail> accountList = acquireAccountDetailsByAddress(request);
@@ -183,31 +195,9 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
         accountNumberPickerPanel.setVisible(false);
         accordion.add(accountNumberPickerPanel);
 
-        class SimpleResourceModel extends AbstractReadOnlyModel<String> {
-
-            private String resourceKey;
-
-            public SimpleResourceModel(String resourceKey) {
-                this.resourceKey = resourceKey;
-            }
-
-            @Override
-            public String getObject() {
-                return AbstractLookupPanel.this.getString(resourceKey);
-            }
-        }
-
-        //lookup by OWN_NUM_SR
-        WebMarkupContainer ownNumSrAccountLookupContainer = new WebMarkupContainer("ownNumSrAccountLookupContainer");
-        ownNumSrAccountLookupContainer.setRenderBodyOnly(true);
-        final boolean lookupByOwnNumSrAllowed = lookupByOwnNumSr();
-        ownNumSrAccountLookupPanel = new AccountNumberLookupPanel<T>("ownNumSrAccountLookupPanel",
-                new SimpleResourceModel("own_num_sr_label"), new SimpleResourceModel("own_num_sr_required"), messages) {
-
-            @Override
-            protected List<AccountDetail> acquireAccountDetailsByAccCode(T request, String account) throws DBException {
-                return AbstractLookupPanel.this.acquireAccountDetailsByOsznAccount(request, account);
-            }
+        //lookup by account number
+        accountLookupPanel = new AccountNumberLookupPanel<T>("lookupByAccount",
+                new SimpleResourceModel("lookup_by_account_label"), new SimpleResourceModel("lookup_by_account_required"), messages) {
 
             @Override
             protected void updateAccountNumber(AccountDetail accountDetail, AjaxRequestTarget target, boolean refresh) {
@@ -221,40 +211,11 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
             }
 
             @Override
-            protected void resolveOutgoingDistrict(T request) {
-                AbstractLookupPanel.this.resolveOutgoingDistrict(request);
+            protected String resolveOutgoingDistrict(T request) {
+                return AbstractLookupPanel.this.resolveOutgoingDistrict(request);
             }
         };
-        ownNumSrAccountLookupContainer.add(ownNumSrAccountLookupPanel);
-        ownNumSrAccountLookupContainer.setVisible(lookupByOwnNumSrAllowed);
-        accordion.add(ownNumSrAccountLookupContainer);
-
-        //lookup by megabank
-        megabankAccountLookupPanel = new AccountNumberLookupPanel<T>("megabankAccountLookupPanel",
-                new SimpleResourceModel("megabank_label"), new SimpleResourceModel("megabank_required"), messages) {
-
-            @Override
-            protected List<AccountDetail> acquireAccountDetailsByAccCode(T request, String account) throws DBException {
-                return AbstractLookupPanel.this.acquireAccountDetailsByMegabankAccount(request, account);
-            }
-
-            @Override
-            protected void updateAccountNumber(AccountDetail accountDetail, AjaxRequestTarget target, boolean refresh) {
-                accountModel.setObject(accountDetail);
-                accountInfoModel.setObject(AccountNumberLookupPanel.displayAccountDetail(accountDetail));
-                target.addComponent(accountInfo);
-                if (refresh) {
-                    accordion.setActive(new AccordionActive(lookupByOwnNumSrAllowed ? 2 : 1));
-                    target.addComponent(accordion);
-                }
-            }
-
-            @Override
-            protected void resolveOutgoingDistrict(T request) {
-                AbstractLookupPanel.this.resolveOutgoingDistrict(request);
-            }
-        };
-        accordion.add(megabankAccountLookupPanel);
+        accordion.add(accountLookupPanel);
 
         // save/cancel
         dialog.add(new AjaxLink("save") {
@@ -360,13 +321,8 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
         }
         accountNumberPickerPanel.clear();
 
-        //lookup by OWN_NUM_SR
-        if (lookupByOwnNumSr()) {
-            ownNumSrAccountLookupPanel.initialize(request, ownNumSr);
-        }
-
-        //lookup by megabank
-        megabankAccountLookupPanel.initialize(request, null);
+        //lookup by account number
+        accountLookupPanel.initialize(request, null);
 
         target.addComponent(accordion);
         target.addComponent(messages);
@@ -381,15 +337,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
 
     protected abstract List<AccountDetail> acquireAccountDetailsByAddress(T request) throws DBException;
 
-    protected boolean lookupByOwnNumSr() {
-        return false;
-    }
-
     protected abstract void updateAccountNumber(T request, String accountNumber);
 
-    protected abstract List<AccountDetail> acquireAccountDetailsByOsznAccount(T request, String account) throws DBException;
-
-    protected abstract List<AccountDetail> acquireAccountDetailsByMegabankAccount(T request, String account) throws DBException;
-
-    protected abstract void resolveOutgoingDistrict(T request);
+    protected abstract String resolveOutgoingDistrict(T request);
 }
