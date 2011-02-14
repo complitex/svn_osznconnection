@@ -1846,7 +1846,7 @@ DROP TABLE IF EXISTS `update`;
 CREATE TABLE `update` (
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
     `version` VARCHAR(64) NOT NULL,
-    `date` TIMESTAMP NOT NULL DEFAULT NOW(),
+    `date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -1915,6 +1915,45 @@ CREATE TABLE `permission` (
     KEY `key_table` (`table`),
     KEY `key_entity` (`entity`),
     KEY `key_object_id` (`object_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ------------------------------
+-- First Name
+-- ------------------------------
+
+DROP TABLE IF EXISTS `first_name`;
+
+CREATE TABLE `first_name` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(100) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `key_name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ------------------------------
+-- Middle Name
+-- ------------------------------
+
+DROP TABLE IF EXISTS `middle_name`;
+
+CREATE TABLE `middle_name` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(100) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `key_name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ------------------------------
+-- Last Name
+-- ------------------------------
+
+DROP TABLE IF EXISTS `last_name`;
+
+CREATE TABLE `last_name` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(100) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `key_name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
