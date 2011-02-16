@@ -1927,7 +1927,7 @@ CREATE TABLE `first_name` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(100) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `key_name` (`name`)
+  UNIQUE KEY `key_name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ------------------------------
@@ -1940,7 +1940,7 @@ CREATE TABLE `middle_name` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(100) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `key_name` (`name`)
+  UNIQUE KEY `key_name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ------------------------------
@@ -1953,7 +1953,7 @@ CREATE TABLE `last_name` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(100) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `key_name` (`name`)
+  UNIQUE KEY `key_name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

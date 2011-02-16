@@ -17,7 +17,7 @@ CREATE TABLE `first_name` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(100) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `key_name` (`name`)
+  UNIQUE KEY `key_name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ------------------------------
@@ -27,7 +27,7 @@ CREATE TABLE `middle_name` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(100) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `key_name` (`name`)
+  UNIQUE KEY `key_name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ------------------------------
@@ -37,8 +37,23 @@ CREATE TABLE `last_name` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(100) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `key_name` (`name`)
+  UNIQUE KEY `key_name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ------------------------------
+-- Update Entity description
+-- ------------------------------
+
+UPDATE `entity_attribute_value_type` set `attribute_value_type` = 'last_name' where `id` = 1000;
+UPDATE `entity_attribute_value_type` set `attribute_value_type` = 'first_name' where `id` = 1001;
+UPDATE `entity_attribute_value_type` set `attribute_value_type` = 'middle_name' where `id` = 1002;
+
+-- ------------------------------
+-- Clear User Info
+-- ------------------------------
+
+DELETE FROM `user_info_string_culture`;
+DELETE FROM `user_info_attribute`;
 
 -- uncomment and update on release
 -- INSERT INTO `update` (`version`) VALUES ('20110207_575_0.1.3');
