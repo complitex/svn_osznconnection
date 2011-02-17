@@ -324,6 +324,7 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
             searchComponent = newSearchComponent;
             streetTypeSelect.setVisible(false);
         } else {
+            streetTypeModel.setObject(null);
             searchComponent.setVisible(false);
             streetTypeSelect.setVisible(true);
         }
