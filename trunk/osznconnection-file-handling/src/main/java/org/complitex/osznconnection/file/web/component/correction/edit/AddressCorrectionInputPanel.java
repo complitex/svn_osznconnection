@@ -37,11 +37,11 @@ import org.complitex.osznconnection.file.web.pages.util.AddressRenderer;
  */
 public class AddressCorrectionInputPanel extends Panel {
 
-    @EJB(name = "AddressCorrectionBean")
+    @EJB
     private AddressCorrectionBean addressCorrectionBean;
-    @EJB(name = "StringCultureBean")
+    @EJB
     private StringCultureBean stringBean;
-    @EJB(name = "EntityBean")
+    @EJB
     private EntityBean entityBean;
 
     private static class CorrectionRenderer<T extends Correction> extends AbstractAutoCompleteTextRenderer<T> {
@@ -56,7 +56,7 @@ public class AddressCorrectionInputPanel extends Panel {
 
         private CorrectionRenderer<T> renderer;
 
-        public AutoCompleteCorrectionTextField(String id, CorrectionModel model, CorrectionRenderer<T> renderer, AutoCompleteSettings settings) {
+        public AutoCompleteCorrectionTextField(String id, CorrectionModel<T> model, CorrectionRenderer<T> renderer, AutoCompleteSettings settings) {
             super(id, null, String.class, renderer, settings);
             model.setAutoComplete(this);
             this.setModel(model);
@@ -167,6 +167,10 @@ public class AddressCorrectionInputPanel extends Panel {
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
+                if (isStreet || isDistrict) {
+                    Long cityId = cityModel.getObject() != null ? cityModel.getObject().getId() : null;
+                    correction.setParentId(cityId);
+                }
             }
         });
         add(city);
@@ -174,14 +178,7 @@ public class AddressCorrectionInputPanel extends Panel {
         WebMarkupContainer districtContainer = new WebMarkupContainer("districtContainer");
         districtContainer.setVisible(isDistrict);
         add(districtContainer);
-        districtContainer.add(new TextField("district", new PropertyModel<String>(correction, "correction") {
-
-            @Override
-            public void setObject(String object) {
-                super.setObject(object);
-                correction.setParentId(cityModel.getObject().getId());
-            }
-        }));
+        districtContainer.add(new TextField("district", new PropertyModel<String>(correction, "correction")));
 
         WebMarkupContainer streetContainer = new WebMarkupContainer("streetContainer");
         streetContainer.setVisible(isStreet || isBuilding);
@@ -240,17 +237,14 @@ public class AddressCorrectionInputPanel extends Panel {
 
                 @Override
                 protected void onUpdate(AjaxRequestTarget target) {
+                    if (isBuilding) {
+                        Long streetId = streetModel.getObject() != null ? streetModel.getObject().getId() : null;
+                        correction.setParentId(streetId);
+                    }
                 }
             });
         } else {
-            street = new TextField<String>("street", new PropertyModel<String>(correction, "correction") {
-
-                @Override
-                public void setObject(String object) {
-                    super.setObject(object);
-                    correction.setParentId(cityModel.getObject().getId());
-                }
-            });
+            street = new TextField<String>("street", new PropertyModel<String>(correction, "correction"));
         }
         streetContainer.add(streetType);
         streetContainer.add(street);
@@ -258,14 +252,7 @@ public class AddressCorrectionInputPanel extends Panel {
         WebMarkupContainer buildingContainer = new WebMarkupContainer("buildingContainer");
         buildingContainer.setVisible(isBuilding);
         add(buildingContainer);
-        TextField<String> building = new TextField<String>("building", new PropertyModel<String>(correction, "correction") {
-
-            @Override
-            public void setObject(String object) {
-                super.setObject(object);
-                correction.setParentId(streetModel.getObject().getId());
-            }
-        });
+        TextField<String> building = new TextField<String>("building", new PropertyModel<String>(correction, "correction"));
         buildingContainer.add(building);
         buildingContainer.add(new TextField<String>("buildingCorp", new PropertyModel<String>(correction, "correctionCorp")));
     }

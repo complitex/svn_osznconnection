@@ -49,7 +49,7 @@ import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrat
 public abstract class AbstractCorrectionEditPanel extends Panel {
 
     private static final Logger log = LoggerFactory.getLogger(AbstractCorrectionEditPanel.class);
-    @EJB(name = "CorrectionBean")
+    @EJB
     private CorrectionBean correctionBean;
     @EJB(name = "OrganizationStrategy")
     private IOsznOrganizationStrategy organizationStrategy;
@@ -104,7 +104,7 @@ public abstract class AbstractCorrectionEditPanel extends Panel {
 
     protected abstract String getNullObjectErrorMessage();
 
-    protected String getNullCorrectionErroMessage() {
+    protected String getNullCorrectionErrorMessage() {
         return new StringResourceModel("Required", Model.ofMap(ImmutableMap.of("label", getString("correction")))).getObject();
     }
 
@@ -112,10 +112,14 @@ public abstract class AbstractCorrectionEditPanel extends Panel {
         return false;
     }
 
-    protected boolean validate() {
-        boolean valid = true;
-        if (Strings.isEmpty(getModel().getCorrection())) {
-            error(getNullCorrectionErroMessage());
+    protected boolean checkCorrectionEmptiness(){
+        return true;
+    }
+
+    protected final boolean validate() {
+        boolean valid = validateHook();
+        if (checkCorrectionEmptiness() && Strings.isEmpty(getModel().getCorrection())) {
+            error(getNullCorrectionErrorMessage());
             valid = false;
         }
 
@@ -129,6 +133,10 @@ public abstract class AbstractCorrectionEditPanel extends Panel {
             valid = false;
         }
         return valid;
+    }
+
+    protected boolean validateHook(){
+        return true;
     }
 
     protected boolean validateExistence() {

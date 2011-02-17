@@ -27,13 +27,11 @@ import org.complitex.osznconnection.file.entity.StreetCorrection;
  */
 @Stateless(name = "AddressCorrectionBean")
 public class AddressCorrectionBean extends CorrectionBean {
+
     private static final Logger log = LoggerFactory.getLogger(AddressCorrectionBean.class);
-
     private static final String ADDRESS_BEAN_MAPPING_NAMESPACE = AddressCorrectionBean.class.getName();
-
     @EJB
     private LocaleBean localeBean;
-
     @EJB
     private OsznSessionBean osznSessionBean;
 
@@ -70,6 +68,14 @@ public class AddressCorrectionBean extends CorrectionBean {
 
     public List<Correction> findStreetTypeLocalCorrection(String streetType, long organizationId) {
         return findAddressLocalCorrections("street_type", null, streetType, organizationId);
+    }
+
+    @Transactional
+    public List<Correction> findStreetTypeLocalCorrections(long internalStreetTypeId, long organizationId) {
+        Map<String, Object> params = Maps.newHashMap();
+        params.put("streetTypeId", internalStreetTypeId);
+        params.put("organizationId", organizationId);
+        return sqlSession().selectList(ADDRESS_BEAN_MAPPING_NAMESPACE + ".findStreetTypeLocalCorrections", params);
     }
 
     /**
@@ -119,7 +125,6 @@ public class AddressCorrectionBean extends CorrectionBean {
      * @param internalObjectId
      * @return
      */
-    @SuppressWarnings({"unchecked"})
     @Transactional
     private List<Correction> findAddressRemoteCorrections(String entityTable, long organizationId, long internalObjectId) {
         CorrectionExample example = new CorrectionExample();
@@ -173,7 +178,7 @@ public class AddressCorrectionBean extends CorrectionBean {
 
     /**
      * Найти данные о коррекции для района.
-     * @param calculationCenterId
+     * @param organizationId
      * @param osznId
      * @return
      */
@@ -187,7 +192,7 @@ public class AddressCorrectionBean extends CorrectionBean {
 
     /**
      * Найти данные о коррекции для типа улицы.
-     * @param calculationCenterId
+     * @param organizationId
      * @param internalStreetTypeId
      * @return
      */
@@ -336,6 +341,20 @@ public class AddressCorrectionBean extends CorrectionBean {
         return sqlSession().selectList(ADDRESS_BEAN_MAPPING_NAMESPACE + ".findInternalBuildingIds", params);
     }
 
+    @Transactional
+    public List<Long> findInternalStreetIdsByNameAndBuilding(long cityId, String street, String buildingNumber, String buildingCorp) {
+        Map<String, Object> params = Maps.newHashMap();
+        params.put("street", street);
+        params.put("cityId", cityId);
+        params.put("number", buildingNumber == null ? "" : prepareBuildingData(buildingNumber));
+        if (!Strings.isEmpty(buildingCorp)) {
+            buildingCorp = prepareBuildingData(buildingCorp);
+        }
+        params.put("corp", Strings.isEmpty(buildingCorp) ? null : buildingCorp);
+
+        return sqlSession().selectList(ADDRESS_BEAN_MAPPING_NAMESPACE + ".findInternalStreetIdsByNameAndBuilding", params);
+    }
+
     /**
      * Удалить ВСЕ(не только начальные и конечные) пробелы в номере и корпусе дома
      * @param data номер либо корпус дома
@@ -437,7 +456,7 @@ public class AddressCorrectionBean extends CorrectionBean {
             try {
                 DomainObject building = buildingStrategy.findById(c.getObjectId(), false);
 
-                if (building == null){
+                if (building == null) {
                     building = buildingStrategy.findById(c.getObjectId(), true);
                     c.setEditable(false);
                 }
@@ -484,7 +503,7 @@ public class AddressCorrectionBean extends CorrectionBean {
         for (Correction c : streets) {
             DomainObject street = streetStrategy.findById(c.getObjectId(), false);
 
-            if (street == null){
+            if (street == null) {
                 street = streetStrategy.findById(c.getObjectId(), true);
                 c.setEditable(false);
             }
@@ -495,7 +514,7 @@ public class AddressCorrectionBean extends CorrectionBean {
                 city = cityStrategy.findById(street.getParentId(), false);
             }
 
-            if (city == null){
+            if (city == null) {
                 city = cityStrategy.findById(street.getParentId(), true);
                 c.setEditable(false);
             }
@@ -524,7 +543,7 @@ public class AddressCorrectionBean extends CorrectionBean {
         for (Correction c : districts) {
             DomainObject district = districtStrategy.findById(c.getObjectId(), false);
 
-            if (district == null){
+            if (district == null) {
                 district = districtStrategy.findById(c.getObjectId(), true);
                 c.setEditable(false);
             }
@@ -535,7 +554,7 @@ public class AddressCorrectionBean extends CorrectionBean {
                 city = cityStrategy.findById(district.getParentId(), false);
             }
 
-            if (city == null){
+            if (city == null) {
                 city = cityStrategy.findById(district.getParentId(), true);
                 c.setEditable(false);
             }
@@ -556,6 +575,11 @@ public class AddressCorrectionBean extends CorrectionBean {
     @Transactional
     public boolean checkStreetExistence(StreetCorrection streetCorrection) {
         return (Integer) sqlSession().selectOne(ADDRESS_BEAN_MAPPING_NAMESPACE + ".checkStreetExistence", streetCorrection) > 0;
+    }
+
+    @Transactional
+    public boolean checkAddressExistence(Correction correction){
+        return (Integer) sqlSession().selectOne(ADDRESS_BEAN_MAPPING_NAMESPACE + ".checkAddressExistence", correction) > 0;
     }
 
     @Transactional

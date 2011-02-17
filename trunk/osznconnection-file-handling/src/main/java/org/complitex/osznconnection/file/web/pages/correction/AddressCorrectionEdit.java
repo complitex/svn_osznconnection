@@ -77,6 +77,9 @@ public class AddressCorrectionEdit extends FormTemplatePage {
      */
     private abstract class AddressCorrectionEditPanel extends AbstractCorrectionEditPanel {
 
+        @EJB
+        private AddressCorrectionBean addressCorrectionBean;
+
         public AddressCorrectionEditPanel(String id, String entity, Long correctionId) {
             super(id, entity, correctionId);
         }
@@ -130,6 +133,11 @@ public class AddressCorrectionEdit extends FormTemplatePage {
             parameters.put(AddressCorrectionList.CORRECTED_ENTITY, getModel().getEntity());
             return parameters;
         }
+
+        @Override
+        protected boolean validateExistence() {
+            return addressCorrectionBean.checkAddressExistence(getModel());
+        }
     }
 
     /**
@@ -137,7 +145,7 @@ public class AddressCorrectionEdit extends FormTemplatePage {
      */
     private class CityCorrectionEditPanel extends AddressCorrectionEditPanel {
 
-        @EJB(name = "AddressCorrectionBean")
+        @EJB
         private AddressCorrectionBean addressCorrectionBean;
 
         public CityCorrectionEditPanel(String id, Long correctionId) {
@@ -160,7 +168,7 @@ public class AddressCorrectionEdit extends FormTemplatePage {
      */
     private class DistrictCorrectionEditPanel extends AddressCorrectionEditPanel {
 
-        @EJB(name = "AddressCorrectionBean")
+        @EJB
         private AddressCorrectionBean addressCorrectionBean;
 
         public DistrictCorrectionEditPanel(String id, Long correctionId) {
@@ -188,13 +196,17 @@ public class AddressCorrectionEdit extends FormTemplatePage {
         }
 
         @Override
-        protected boolean validate() {
-            boolean valid = true;
-            if (getModel().getParentId() == null) {
+        protected boolean checkCorrectionEmptiness() {
+            return false;
+        }
+
+        @Override
+        protected boolean validateHook() {
+            if (Strings.isEmpty(getModel().getCorrection()) || getModel().getParentId() == null) {
                 error(getString("correction_required"));
-                valid = false;
+                return false;
             }
-            return valid && super.validate();
+            return true;
         }
 
         @Override
@@ -218,7 +230,7 @@ public class AddressCorrectionEdit extends FormTemplatePage {
      */
     private class StreetCorrectionEditPanel extends AddressCorrectionEditPanel {
 
-        @EJB(name = "AddressCorrectionBean")
+        @EJB
         private AddressCorrectionBean addressCorrectionBean;
 
         public StreetCorrectionEditPanel(String id, Long correctionId) {
@@ -299,13 +311,17 @@ public class AddressCorrectionEdit extends FormTemplatePage {
         }
 
         @Override
-        protected boolean validate() {
-            boolean valid = true;
-            if (getModel().getParentId() == null) {
+        protected boolean checkCorrectionEmptiness() {
+            return false;
+        }
+
+        @Override
+        protected boolean validateHook() {
+            if (Strings.isEmpty(getModel().getCorrection()) || getModel().getParentId() == null) {
                 error(getString("correction_required"));
-                valid = false;
+                return false;
             }
-            return valid && super.validate();
+            return true;
         }
     }
 
@@ -314,7 +330,7 @@ public class AddressCorrectionEdit extends FormTemplatePage {
      */
     private class BuildingCorrectionEditPanel extends AddressCorrectionEditPanel {
 
-        @EJB(name = "AddressCorrectionBean")
+        @EJB
         private AddressCorrectionBean addressCorrectionBean;
 
         public BuildingCorrectionEditPanel(String id, Long correctionId) {
@@ -391,13 +407,17 @@ public class AddressCorrectionEdit extends FormTemplatePage {
         }
 
         @Override
-        protected boolean validate() {
-            boolean valid = true;
-            if (getModel().getParentId() == null) {
+        protected boolean checkCorrectionEmptiness() {
+            return false;
+        }
+
+        @Override
+        protected boolean validateHook() {
+            if (Strings.isEmpty(getModel().getCorrection()) || getModel().getParentId() == null) {
                 error(getString("correction_required"));
-                valid = false;
+                return false;
             }
-            return valid && super.validate();
+            return false;
         }
     }
     private AbstractCorrectionEditPanel addressEditPanel;

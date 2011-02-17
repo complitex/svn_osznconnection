@@ -42,6 +42,7 @@ import org.complitex.osznconnection.file.web.component.StatusDetailPanel;
 import org.complitex.osznconnection.file.web.component.StatusRenderer;
 import org.complitex.osznconnection.file.web.component.account.AccountNumberCorrectionPanel;
 import org.complitex.osznconnection.file.web.component.address.AddressCorrectionPanel;
+import org.complitex.osznconnection.file.web.component.address.AddressCorrectionPanel.CORRECTED_ENTITY;
 import org.complitex.osznconnection.file.web.pages.util.AddressRenderer;
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.TemplatePage;
@@ -63,31 +64,22 @@ public final class ActualPaymentList extends TemplatePage {
 
     private static final Logger log = LoggerFactory.getLogger(ActualPaymentList.class);
     public static final String FILE_ID = "request_file_id";
-
-    @EJB(name = "ActualPaymentBean")
+    @EJB
     private ActualPaymentBean actualPaymentBean;
-
-    @EJB(name = "RequestFileBean")
+    @EJB
     private RequestFileBean requestFileBean;
-
-    @EJB(name = "StatusRenderService")
+    @EJB
     private StatusRenderService statusRenderService;
-
-    @EJB(name = "WebWarningRenderer")
+    @EJB
     private WebWarningRenderer webWarningRenderer;
-
-    @EJB(name = "StatusDetailBean")
+    @EJB
     private StatusDetailBean statusDetailBean;
-
-    @EJB(name = "AddressService")
+    @EJB
     private AddressService addressService;
-
-    @EJB(name = "PersonAccountService")
+    @EJB
     private PersonAccountService personAccountService;
-
     @EJB
     private OsznSessionBean osznSessionBean;
-
     private IModel<ActualPaymentExample> example;
     private long fileId;
 
@@ -198,9 +190,9 @@ public final class ActualPaymentList extends TemplatePage {
                 content, statusDetailPanel) {
 
             @Override
-            protected void correctAddress(ActualPayment actualPayment, Long cityId, Long streetId, Long streetTypeId, Long buildingId)
-                    throws DublicateCorrectionException, MoreOneCorrectionException, NotFoundCorrectionException {
-                addressService.correctLocalAddress(actualPayment, cityId, streetId, streetTypeId, buildingId);
+            protected void correctAddress(ActualPayment actualPayment, CORRECTED_ENTITY entity, Long cityId, Long streetTypeId, Long streetId,
+                    Long buildingId) throws DublicateCorrectionException, MoreOneCorrectionException, NotFoundCorrectionException {
+                addressService.correctLocalAddress(actualPayment, entity, cityId, streetTypeId, streetId, buildingId);
             }
         };
         add(addressCorrectionPanel);
@@ -252,7 +244,7 @@ public final class ActualPaymentList extends TemplatePage {
                                 (String) actualPayment.getField(ActualPaymentDBF.N_NAME), (String) actualPayment.getField(ActualPaymentDBF.VUL_CAT),
                                 (String) actualPayment.getField(ActualPaymentDBF.VUL_NAME), (String) actualPayment.getField(ActualPaymentDBF.BLD_NUM),
                                 (String) actualPayment.getField(ActualPaymentDBF.CORP_NUM), (String) actualPayment.getField(ActualPaymentDBF.FLAT),
-                                actualPayment.getInternalCityId(), actualPayment.getInternalStreetId(),
+                                actualPayment.getInternalCityId(), actualPayment.getInternalStreetTypeId(), actualPayment.getInternalStreetId(),
                                 actualPayment.getInternalBuildingId());
                     }
                 };

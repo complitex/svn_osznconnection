@@ -42,6 +42,7 @@ import org.complitex.osznconnection.file.web.component.StatusDetailPanel;
 import org.complitex.osznconnection.file.web.component.StatusRenderer;
 import org.complitex.osznconnection.file.web.component.account.AccountNumberCorrectionPanel;
 import org.complitex.osznconnection.file.web.component.address.AddressCorrectionPanel;
+import org.complitex.osznconnection.file.web.component.address.AddressCorrectionPanel.CORRECTED_ENTITY;
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.TemplatePage;
 
@@ -59,19 +60,19 @@ import java.util.List;
 public final class PaymentList extends TemplatePage {
 
     public static final String FILE_ID = "request_file_id";
-    @EJB(name = "PaymentBean")
+    @EJB
     private PaymentBean paymentBean;
-    @EJB(name = "RequestFileBean")
+    @EJB
     private RequestFileBean requestFileBean;
-    @EJB(name = "StatusRenderService")
+    @EJB
     private StatusRenderService statusRenderService;
-    @EJB(name = "WebWarningRenderer")
+    @EJB
     private WebWarningRenderer webWarningRenderer;
-    @EJB(name = "StatusDetailBean")
+    @EJB
     private StatusDetailBean statusDetailBean;
-    @EJB(name = "AddressService")
+    @EJB
     private AddressService addressService;
-    @EJB(name = "PersonAccountService")
+    @EJB
     private PersonAccountService personAccountService;
     @EJB
     private OsznSessionBean osznSessionBean;
@@ -186,9 +187,9 @@ public final class PaymentList extends TemplatePage {
                 content, statusDetailPanel) {
 
             @Override
-            protected void correctAddress(Payment payment, Long cityId, Long streetId, Long streetTypeId, Long buildingId)
-                    throws DublicateCorrectionException, MoreOneCorrectionException, NotFoundCorrectionException {
-                addressService.correctLocalAddress(payment, cityId, streetId, streetTypeId, buildingId);
+            protected void correctAddress(Payment payment, CORRECTED_ENTITY entity, Long cityId, Long streetTypeId, Long streetId,
+                    Long buildingId) throws DublicateCorrectionException, MoreOneCorrectionException, NotFoundCorrectionException {
+                addressService.correctLocalAddress(payment, entity, cityId, streetTypeId, streetId, buildingId);
             }
         };
         add(addressCorrectionPanel);
@@ -239,11 +240,11 @@ public final class PaymentList extends TemplatePage {
                                 (String) payment.getField(PaymentDBF.M_NAM), (String) payment.getField(PaymentDBF.SUR_NAM),
                                 (String) payment.getField(PaymentDBF.N_NAME), null, (String) payment.getField(PaymentDBF.VUL_NAME),
                                 (String) payment.getField(PaymentDBF.BLD_NUM), (String) payment.getField(PaymentDBF.CORP_NUM),
-                                (String) payment.getField(PaymentDBF.FLAT), payment.getInternalCityId(),
+                                (String) payment.getField(PaymentDBF.FLAT), payment.getInternalCityId(), payment.getInternalStreetTypeId(),
                                 payment.getInternalStreetId(), payment.getInternalBuildingId());
                     }
                 };
-                addressCorrectionLink.setVisible(payment.getStatus().isAddressCorrectable());
+                addressCorrectionLink.setVisible(payment.getStatus().isAddressCorrectableForPayment());
                 item.add(addressCorrectionLink);
 
                 AjaxLink accountCorrectionLink = new IndicatingAjaxLink("accountCorrectionLink") {
