@@ -120,7 +120,6 @@ public class PersonAccountLocalBean extends AbstractBean {
     public int count(PersonAccount example) {
         example.setAdmin(osznSessionBean.isAdmin());
         example.setOrganizations(osznSessionBean.getAllOuterOrganizationString());
-
         return (Integer) sqlSession().selectOne(MAPPING_NAMESPACE + ".count", example);
     }
 
@@ -129,7 +128,6 @@ public class PersonAccountLocalBean extends AbstractBean {
     public List<PersonAccount> find(PersonAccount example) {
         example.setAdmin(osznSessionBean.isAdmin());
         example.setOrganizations(osznSessionBean.getAllOuterOrganizationString());
-
         return sqlSession().selectList(MAPPING_NAMESPACE + ".find", example);
     }
 
