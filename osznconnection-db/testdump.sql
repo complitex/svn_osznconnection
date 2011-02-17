@@ -21,12 +21,12 @@ INSERT INTO `street_type_attribute`(`attribute_id`, `object_id`, `attribute_type
 -- Building Addresses
 insert into building_address(object_id, parent_id, parent_entity_id) values (1,1,300), (2,3,300), (3,1,300), (4,1,300), (5,2,300), (6,2,300),
 (7,4,300), (8,5,300);
---, (9,6,300);
+--(9,6,300);
 insert into building_address_string_culture(id, locale_id, value) values
 (1, 1, UPPER('8')), (2, 1, UPPER('28')), (3,1,UPPER('18')), (4,1,UPPER('12')), (5,1,UPPER('21')), (6,1,UPPER('100')),
 (1, 2, UPPER('8')), (2, 2, UPPER('28')), (3,2,UPPER('18')), (4,2,UPPER('12')), (5,2,UPPER('21')), (6,2,UPPER('100')),
 (7,1,UPPER('154А')), (7,2,UPPER('154А')),(8,1,UPPER('25А')), (8,2,UPPER('25А'));
---, (9,1,UPPER('25А')), (9,2,UPPER('25А'));
+--(9,1,UPPER('25А')), (9,2,UPPER('25А')), (10,1,UPPER('к1')), (10,2,UPPER('к1'));
 insert into building_address_attribute(attribute_id, object_id, attribute_type_id, value_id, value_type_id) values
 (1,1,1500,1,1500),
 (1,2,1500,6,1500),
@@ -36,7 +36,7 @@ insert into building_address_attribute(attribute_id, object_id, attribute_type_i
 (1,6,1500,5,1500),
 (1,7,1500,7,1500),
 (1,8,1500,8,1500);
---(1,9,1500,9,1500);
+--(1,9,1500,9,1500), (1,9,1501,10,1501);
 
 -- Buildings
 insert into building(object_id, parent_id, parent_entity_id) values (1,1,1500), (2,3,1500), (3,4,1500), (4,5,1500), (5,6,1500), (6,7,1500), (7,8,1500);
@@ -58,7 +58,7 @@ insert into street_string_culture(id, locale_id, value) values (1, 1, UPPER('Т�
                                                             (5, 1, UPPER('ФРАНТИШЕКА КРАЛА')), (5,2, UPPER('ФРАНТИШЕКА КРАЛА'));
 --                                                            (6, 1, UPPER('ФРАНТИШЕКА КРАЛА')), (6,2, UPPER('ФРАНТИШЕКА КРАЛА'));
 insert into street(object_id, parent_id, parent_entity_id) values (1,1,400), (2,2,400), (3,1,400), (4,3,400), (5,3,400);
---, (6,3,400);
+--(6,3,400);
 insert into street_attribute(attribute_id, object_id, attribute_type_id, value_id, value_type_id) values
 (1,1,300,1,300),(1,1,301,10012,301),
 (1,2,300,2,300),(1,2,301,10012,301),

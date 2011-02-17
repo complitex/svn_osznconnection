@@ -51,5 +51,9 @@ CALL `updateStreetCorrections`();
 
 DROP PROCEDURE `updateStreetCorrections`;
 
+ALTER TABLE `street_correction` DROP KEY `uk_street_correction`, 
+	ADD UNIQUE KEY `uk_street_correction` (`parent_id`, `correction`, `organization_id`, `internal_organization_id`,
+            `street_type_correction_id`, `object_id`, `organization_code`);
+
 INSERT INTO `update` (`version`) VALUE ('20110215_0.1.4-dev');
 
