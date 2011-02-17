@@ -1,4 +1,6 @@
--- Fix 'LOADED' status code. Set up street type references for calculation module's street corrections.
+-- Fixes 'LOADED' status code. Adds missing street type related status descriptions. 
+-- Sets up street type references for calculation module's street corrections.
+-- Sets district's correction parent.
 
 ALTER TABLE `payment` MODIFY COLUMN `status` INTEGER NOT NULL DEFAULT 240 COMMENT 'См. таблицу status_description и org.complitex.osznconnection.file.entity.RequestStatus';
 ALTER TABLE `benefit` MODIFY COLUMN `status` INTEGER NOT NULL DEFAULT 240 COMMENT 'См. таблицу status_description и org.complitex.osznconnection.file.entity.RequestStatus';
@@ -59,6 +61,9 @@ ALTER TABLE `street_correction` DROP KEY `uk_street_correction`,
             
 ALTER TABLE `person_account` DROP KEY `uq_person_account`, ADD UNIQUE KEY `uk_person_account` (`first_name`, `middle_name`, `last_name`, `city`, `street_type`, `street`, `street_code`, `building_num`,
         `building_corp`, `apartment`, `own_num_sr`, `oszn_id`, `calc_center_id`);
+        
+UPDATE `district_correction` SET `parent_id` = (SELECT c.`id` FROM `city_correction` c WHERE c.`organization_id` = 1) 
+		WHERE `organization_id` = 1;
 
 INSERT INTO `update` (`version`) VALUE ('20110215_0.1.4-dev');
 
