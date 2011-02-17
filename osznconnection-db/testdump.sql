@@ -21,10 +21,12 @@ INSERT INTO `street_type_attribute`(`attribute_id`, `object_id`, `attribute_type
 -- Building Addresses
 insert into building_address(object_id, parent_id, parent_entity_id) values (1,1,300), (2,3,300), (3,1,300), (4,1,300), (5,2,300), (6,2,300),
 (7,4,300), (8,5,300);
+--, (9,6,300);
 insert into building_address_string_culture(id, locale_id, value) values
 (1, 1, UPPER('8')), (2, 1, UPPER('28')), (3,1,UPPER('18')), (4,1,UPPER('12')), (5,1,UPPER('21')), (6,1,UPPER('100')),
 (1, 2, UPPER('8')), (2, 2, UPPER('28')), (3,2,UPPER('18')), (4,2,UPPER('12')), (5,2,UPPER('21')), (6,2,UPPER('100')),
 (7,1,UPPER('154А')), (7,2,UPPER('154А')),(8,1,UPPER('25А')), (8,2,UPPER('25А'));
+--, (9,1,UPPER('25А')), (9,2,UPPER('25А'));
 insert into building_address_attribute(attribute_id, object_id, attribute_type_id, value_id, value_type_id) values
 (1,1,1500,1,1500),
 (1,2,1500,6,1500),
@@ -34,9 +36,11 @@ insert into building_address_attribute(attribute_id, object_id, attribute_type_i
 (1,6,1500,5,1500),
 (1,7,1500,7,1500),
 (1,8,1500,8,1500);
+--(1,9,1500,9,1500);
 
 -- Buildings
 insert into building(object_id, parent_id, parent_entity_id) values (1,1,1500), (2,3,1500), (3,4,1500), (4,5,1500), (5,6,1500), (6,7,1500), (7,8,1500);
+--    (8,9,1500);
 insert into building_attribute(attribute_id, object_id, attribute_type_id, value_id, value_type_id) values
 (1,1,500,2,500),(1,1,501,2,501),
 (1,3,500,2,500),
@@ -44,6 +48,7 @@ insert into building_attribute(attribute_id, object_id, attribute_type_id, value
 (1,5,500,1,500),
 (1,6,500,3,500),
 (1,7,500,3,500);
+--(1,8,500,3,500);
 
 -- Streets
 insert into street_string_culture(id, locale_id, value) values (1, 1, UPPER('Терешковой')), (1,2,UPPER('Tereshkovoy')),
@@ -51,13 +56,16 @@ insert into street_string_culture(id, locale_id, value) values (1, 1, UPPER('Т�
                                                             (3, 1, UPPER('Морской')), (3,2, UPPER('Morskoy')),
                                                             (4, 1, UPPER('КОСИОРА')), (4,2, UPPER('КОСИОРА')),
                                                             (5, 1, UPPER('ФРАНТИШЕКА КРАЛА')), (5,2, UPPER('ФРАНТИШЕКА КРАЛА'));
+--                                                            (6, 1, UPPER('ФРАНТИШЕКА КРАЛА')), (6,2, UPPER('ФРАНТИШЕКА КРАЛА'));
 insert into street(object_id, parent_id, parent_entity_id) values (1,1,400), (2,2,400), (3,1,400), (4,3,400), (5,3,400);
+--, (6,3,400);
 insert into street_attribute(attribute_id, object_id, attribute_type_id, value_id, value_type_id) values
 (1,1,300,1,300),(1,1,301,10012,301),
 (1,2,300,2,300),(1,2,301,10012,301),
 (1,3,300,3,300),(1,3,301,10008,301),
 (1,4,300,4,300),(1,4,301,10012,301),
 (1,5,300,5,300),(1,5,301,10012,301);
+--(1,6,300,6,300),(1,6,301,10008,301);
 
 -- Districts
 insert into district_string_culture(id, locale_id, value) values (1, 1, UPPER('Ленинский')), (1, 2,UPPER('Leninsky')),
@@ -155,7 +163,7 @@ values
 -- Actual payments
 insert into actual_payment(OWN_NUM, F_NAM, M_NAM, SUR_NAM, N_NAME, VUL_CAT, VUL_NAME, VUL_CODE, BLD_NUM, CORP_NUM, FLAT, request_file_id)
 values
-    (123,'Матвей1', 'Матвеевич1', 'Матвеев1', 'Харьков', 'УЛ', 'ФРАНТИШЕКА КРАЛА', 123, '  2 5A',' ', '40', 4),
+--    (123,'Матвей1', 'Матвеевич1', 'Матвеев1', 'Харьков', 'УЛ', 'ФРАНТИШЕКА КРАЛА', 123, '  2 5A',' ', '40', 4),
     (123,'Матвей2', 'Матвеевич2', 'Матвеев2', 'Харьков', 'УЛ', 'ФРАНТИШЕКА КРАЛА', 123, '  2 5A',' ', '19', 4);
 
 
@@ -172,13 +180,14 @@ insert into street_correction(id, organization_id, correction, object_id, intern
 insert into building_correction(organization_id, correction, correction_corp, object_id, internal_organization_id, parent_id) values (2,'10','1',3,0,1);
 
 insert into city_correction(id, organization_id, correction, object_id, internal_organization_id) values (2,2,UPPER('Харьков'),3,0);
-insert into street_correction(id, organization_id, correction, object_id, internal_organization_id, parent_id) values (2,2,UPPER('Косиора'),4,0,2);
+insert into street_correction(id, organization_id, correction, object_id, internal_organization_id, parent_id, street_type_correction_id) values (2,2,UPPER('Косиора'),4,0,2,13);
 insert into building_correction(organization_id, correction, correction_corp, object_id, internal_organization_id, parent_id) values (2,'154А','',6,0,2);
 
-insert into street_correction(id, organization_id, correction, object_id, internal_organization_id, parent_id) values (3,2,UPPER('ФРАНТИШЕКА КРАЛА'),5,0,2);
+insert into street_correction(id, organization_id, correction, object_id, internal_organization_id, parent_id, street_type_correction_id) values (3,2,UPPER('ФРАНТИШЕКА КРАЛА'),5,0,2,13);
 insert into building_correction(organization_id, correction, correction_corp, object_id, internal_organization_id, parent_id) values (2,'25А','',7,0,3);
 
 insert into district_correction(organization_id, correction, object_id, internal_organization_id, parent_id) values (2,UPPER('Центральный'),3,0,2);
+
 --insert into district_correction(organization_id, correction, object_id, internal_organization_id, parent_id) values (2,UPPER('Центральный123'),3,0,2);
 
 -- insert into city_correction(id, organization_id, correction, object_id, internal_organization_id) values (3,1,UPPER('Харьков'),3,0);

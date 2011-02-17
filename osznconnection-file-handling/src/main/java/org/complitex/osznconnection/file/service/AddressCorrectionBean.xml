@@ -82,6 +82,10 @@
                 AND TRIM(`correction_corp`) = TRIM(#{correctionCorp}) AND `parent_id` = #{parentId}
     </select>
 
+    <select id="findStreetTypeLocalCorrections" parameterType="map" resultMap="org.complitex.osznconnection.file.service.CorrectionBean.correction">
+        SELECT * FROM `street_type_correction` WHERE `organization_id` = #{organizationId} AND `object_id` = #{streetTypeId}
+    </select>
+
     <select id="findStreetLocalCorrections" parameterType="map" resultMap="streetCorrection">
         SELECT * FROM `street_correction`
         WHERE `organization_id` = #{organizationId}
@@ -94,15 +98,7 @@
                 AND TRIM(`correction`) = TRIM(#{correction})
             </otherwise>
         </choose>
-        AND
-        <choose>
-            <when test="streetTypeCorrectionId != null">
-                `street_type_correction_id` = #{streetTypeCorrectionId}
-            </when>
-            <otherwise>
-                `street_type_correction_id` IS NULL
-            </otherwise>
-        </choose>
+        AND `street_type_correction_id` = #{streetTypeCorrectionId}
     </select>
 
     <insert id="insertStreet" parameterType="org.complitex.osznconnection.file.entity.StreetCorrection" keyProperty="id" useGeneratedKeys="true">
@@ -172,17 +168,36 @@
             </if>
         WHERE s.`status` = 'ACTIVE'
             AND s.`parent_id` = #{parentId}
-            AND name.`value` =  TRIM(TO_CYRILLIC(#{correction}))
+            AND name.`value` = TRIM(TO_CYRILLIC(#{correction}))
             <if test="streetTypeId != null">
                 AND a_type.`value_id` = #{streetTypeId}
             </if>
     </select>
 
+    <select id="findInternalStreetIdsByNameAndBuilding" parameterType="map" resultType="long">
+        SELECT DISTINCT s.`object_id`
+            FROM `street` s
+            JOIN `street_attribute` street_attr_name ON (street_attr_name.`status` = 'ACTIVE' AND s.`object_id` = street_attr_name.`object_id`
+                AND street_attr_name.`attribute_type_id` = 300)
+            JOIN `street_string_culture` street_name ON (street_name.`id` = street_attr_name.`value_id` AND
+                    street_name.`value` = TRIM(TO_CYRILLIC(#{street})))
+            JOIN `building_address` addr ON (addr.`status` = 'ACTIVE' AND addr.`parent_id` = s.`object_id` AND addr.`parent_entity_id` = 300)
+            JOIN `building_address_attribute` num_attr ON (num_attr.`status` = 'ACTIVE' AND num_attr.`object_id` = addr.`object_id`)
+            JOIN `building_address_string_culture` num ON (num.`id` = num_attr.`value_id` AND
+                num.`value` = TO_CYRILLIC(#{number}))
+            <if test="corp != null">
+                JOIN `building_address_attribute` corp_attr ON (corp_attr.`status` = 'ACTIVE' AND corp_attr.`object_id` = addr.`object_id`)
+                JOIN `building_address_string_culture` corp ON (corp.`id` = corp_attr.`value_id` AND
+                    corp.`value` = TO_CYRILLIC(#{corp}))
+            </if>
+        WHERE s.`status` = 'ACTIVE' AND s.`parent_id` = #{cityId} AND s.`parent_entity_id` = 400
+    </select>
+
     <select id="findInternalBuildingIds" parameterType="map" resultType="long">
         SELECT DISTINCT b.`object_id` FROM `building` b
             JOIN `building_address` addr ON (((b.`parent_id` = addr.`object_id`) OR
-            EXISTS(SELECT 1 FROM `building_attribute` ba WHERE ba.`object_id` = b.`object_id` AND ba.`status` = 'ACTIVE' AND ba.`attribute_type_id` = 501
-            AND ba.`value_id` = addr.`object_id`)) AND addr.`status` = 'ACTIVE')
+                EXISTS(SELECT 1 FROM `building_attribute` ba WHERE ba.`object_id` = b.`object_id` AND ba.`status` = 'ACTIVE' AND ba.`attribute_type_id` = 501
+                AND ba.`value_id` = addr.`object_id`)) AND addr.`status` = 'ACTIVE')
             JOIN `building_address_attribute` num ON (num.`object_id` = addr.`object_id` AND num.`status` = 'ACTIVE' AND num.`attribute_type_id` = 1500)
             JOIN `building_address_string_culture` num_sc ON (num_sc.`id` = num.`value_id`)
             LEFT JOIN `building_address_attribute` corp ON (corp.`object_id` = addr.`object_id` AND corp.`status` = 'ACTIVE' AND corp.`attribute_type_id` = 1501)
@@ -349,18 +364,13 @@
     </select>
 
     <select id="checkBuildingExistence" resultType="int" parameterType="org.complitex.osznconnection.file.entity.BuildingCorrection">
-        SELECT COUNT(*) FROM `building_correction` WHERE `object_id` = #{objectId} AND
+        SELECT COUNT(*) FROM `building_correction` WHERE 
+        <if test="id != null">
+            `id` != #{id} AND
+        </if>
+        `object_id` = #{objectId} AND
         `parent_id` = #{parentId} AND `internal_organization_id` = #{internalOrganizationId}
         AND TRIM(`correction`) = TRIM(#{correction}) AND `organization_id` = #{organizationId}
-        AND
-        <choose>
-            <when test="code != null">
-                TRIM(`organization_code`) = TRIM(#{code})
-            </when>
-            <otherwise>
-                `organization_code` IS NULL
-            </otherwise>
-        </choose>
         AND
         <choose>
             <when test="correctionCorp != null">
@@ -373,27 +383,33 @@
     </select>
 
     <select id="checkStreetExistence" resultType="int" parameterType="org.complitex.osznconnection.file.entity.StreetCorrection">
-        SELECT COUNT(*) FROM `street_correction` WHERE `object_id` = #{objectId} AND
+        SELECT COUNT(*) FROM `street_correction` WHERE 
+        <if test="id != null">
+            `id` != #{id} AND
+        </if>
+        `object_id` = #{objectId} AND
         `parent_id` = #{parentId} AND `internal_organization_id` = #{internalOrganizationId}
         AND TRIM(`correction`) = TRIM(#{correction}) AND `organization_id` = #{organizationId}
+        AND `street_type_correction_id` = #{streetTypeCorrectionId}
+    </select>
+
+    <select id="checkAddressExistence" resultType="int" parameterType="org.complitex.osznconnection.file.entity.Correction">
+        SELECT COUNT(*) FROM `${entity}_correction` WHERE
+        <if test="id != null">
+            `id` != #{id} AND
+        </if>
+        `object_id` = #{objectId}
+        AND `internal_organization_id` = #{internalOrganizationId}
         AND
         <choose>
-            <when test="code != null">
-                TRIM(`organization_code`) = TRIM(#{code})
+            <when test="parentId != null">
+                `parent_id` = #{parentId}
             </when>
             <otherwise>
-                `organization_code` IS NULL
+                `parent_id` IS NULL
             </otherwise>
         </choose>
-        AND
-        <choose>
-            <when test="streetTypeCorrectionId != null">
-                `street_type_correction_id` = #{streetTypeCorrectionId}
-            </when>
-            <otherwise>
-                `street_type_correction_id` IS NULL
-            </otherwise>
-        </choose>
+        AND TRIM(`correction`) = TRIM(#{correction}) AND `organization_id` = #{organizationId}
     </select>
 
 </mapper>

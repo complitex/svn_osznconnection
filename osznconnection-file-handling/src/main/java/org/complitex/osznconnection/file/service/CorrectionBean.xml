@@ -140,7 +140,12 @@
     </delete>
 
     <select id="checkExistence" resultType="int" parameterType="org.complitex.osznconnection.file.entity.Correction">
-        SELECT COUNT(*) FROM `${entity}_correction` WHERE `object_id` = #{objectId} AND `internal_organization_id` = #{internalOrganizationId}
+        SELECT COUNT(*) FROM `${entity}_correction` WHERE
+        <if test="id != null">
+            `id` != #{id} AND
+        </if>
+        `object_id` = #{objectId}
+        AND `internal_organization_id` = #{internalOrganizationId}
         AND
         <choose>
             <when test="parentId != null">

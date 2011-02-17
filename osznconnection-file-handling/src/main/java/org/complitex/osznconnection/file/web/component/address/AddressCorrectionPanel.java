@@ -26,8 +26,14 @@ import org.odlabs.wiquery.ui.dialog.Dialog;
 import javax.ejb.EJB;
 import java.util.List;
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.model.AbstractReadOnlyModel;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
+import org.complitex.dictionary.entity.example.DomainObjectExample;
 import org.complitex.dictionary.strategy.IStrategy;
+import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
+import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
 import org.complitex.dictionary.web.component.ShowMode;
 import org.complitex.osznconnection.file.entity.AbstractRequest;
 import org.complitex.osznconnection.file.entity.RequestStatus;
@@ -44,18 +50,21 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
 
     private static final Logger log = LoggerFactory.getLogger(AddressCorrectionPanel.class);
 
-    private enum CORRECTED_ENTITY {
+    public enum CORRECTED_ENTITY {
 
-        CITY, STREET, BUILDING;
+        CITY, STREET, STREET_TYPE, BUILDING;
     }
     @EJB
     private StrategyFactory strategyFactory;
     @EJB
     private StatusRenderService statusRenderService;
+    @EJB(name = "Street_typeStrategy")
+    private IStrategy streetTypeStrategy;
     private CORRECTED_ENTITY correctedEntity;
     private Dialog dialog;
     private SearchComponent searchComponent;
     private SearchComponentState componentState;
+    private DisableAwareDropDownChoice<DomainObject> streetTypeSelect;
     private FeedbackPanel messages;
     private WebMarkupContainer container;
     private String firstName;
@@ -68,9 +77,11 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
     private String buildingCorp;
     private String apartment;
     private Long cityId;
+    private Long streetTypeId;
     private Long streetId;
     private Long buildingId;
     private T request;
+    private IModel<DomainObject> streetTypeModel;
 
     public AddressCorrectionPanel(String id, final Component... toUpdate) {
         super(id);
@@ -118,14 +129,40 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
         searchComponent = new SearchComponent("searchComponent", componentState, ImmutableList.of(""), null, ShowMode.ACTIVE, true);
         container.add(searchComponent);
 
+        DomainObjectExample example = new DomainObjectExample();
+        List<? extends DomainObject> streetTypes = streetTypeStrategy.find(example);
+        streetTypeModel = new Model<DomainObject>();
+        DomainObjectDisableAwareRenderer renderer = new DomainObjectDisableAwareRenderer() {
+
+            @Override
+            public Object getDisplayValue(DomainObject object) {
+                return streetTypeStrategy.displayDomainObject(object, getLocale());
+            }
+        };
+        streetTypeSelect = new DisableAwareDropDownChoice<DomainObject>("streetTypeSelect", streetTypeModel,
+                streetTypes, renderer);
+        streetTypeSelect.add(new AjaxFormComponentUpdatingBehavior("onblur") {
+
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                //update street type model.
+            }
+        });
+        container.add(streetTypeSelect);
+
         AjaxLink save = new AjaxLink("save") {
 
             @Override
             public void onClick(AjaxRequestTarget target) {
                 if (validate(componentState)) {
                     try {
-                        correctAddress(request, getObjectId(componentState.get("city")), getObjectId(componentState.get("street")),
-                                getStreetTypeId(componentState.get("street")), getObjectId(componentState.get("building")));
+                        if (correctedEntity != CORRECTED_ENTITY.STREET_TYPE) {
+                            correctAddress(request, correctedEntity, getObjectId(componentState.get("city")),
+                                    getStreetTypeId(componentState.get("street")), getObjectId(componentState.get("street")),
+                                    getObjectId(componentState.get("building")));
+                        } else {
+                            correctAddress(request, correctedEntity, null, getObjectId(streetTypeModel.getObject()), null, null);
+                        }
 
                         if (toUpdate != null) {
                             for (Component component : toUpdate) {
@@ -174,11 +211,12 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
         return streetObject == null ? null : StreetStrategy.getStreetType(streetObject);
     }
 
-    protected abstract void correctAddress(T request, Long cityId, Long streetId, Long streetTypeId, Long buildingId)
+    protected abstract void correctAddress(T request, CORRECTED_ENTITY entity, Long cityId, Long streetTypeId, Long streetId, Long buildingId)
             throws DublicateCorrectionException, MoreOneCorrectionException, NotFoundCorrectionException;
 
     protected boolean validate(SearchComponentState componentState) {
         boolean validated = true;
+        String errorMessageKey = null;
         switch (correctedEntity) {
             case BUILDING:
                 DomainObject buildingObject = componentState.get("building");
@@ -187,12 +225,18 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
                 DomainObject streetObject = componentState.get("street");
                 validated &= streetObject != null && streetObject.getId() != null && streetObject.getId() > 0;
             case CITY:
+                errorMessageKey = "address_mistake";
                 DomainObject cityObject = componentState.get("city");
                 validated &= cityObject != null && cityObject.getId() != null && cityObject.getId() > 0;
                 break;
+            case STREET_TYPE:
+                errorMessageKey = "street_type_required";
+                DomainObject streetTypeObject = streetTypeModel.getObject();
+                validated = streetTypeObject != null && streetTypeObject.getId() != null && streetTypeObject.getId() > 0;
+                break;
         }
         if (!validated) {
-            error(getString("address_mistake"));
+            error(getString(errorMessageKey));
         }
         return validated;
     }
@@ -224,14 +268,19 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
                 return ImmutableList.of("city");
             case STREET:
                 return ImmutableList.of("city", "street");
-            default:
+            case BUILDING:
                 return ImmutableList.of("city", "street", "building");
         }
+        return ImmutableList.of("city", "street", "building");
     }
 
     protected void initCorrectedEntity() {
         if (cityId == null) {
             correctedEntity = CORRECTED_ENTITY.CITY;
+            return;
+        }
+        if (streetTypeId == null) {
+            correctedEntity = CORRECTED_ENTITY.STREET_TYPE;
             return;
         }
         if (streetId == null) {
@@ -248,7 +297,8 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
     }
 
     public void open(AjaxRequestTarget target, T request, String firstName, String middleName, String lastName, String city,
-            String streetType, String street, String buildingNumber, String buildingCorp, String apartment, Long cityId, Long streetId, Long buildingId) {
+            String streetType, String street, String buildingNumber, String buildingCorp, String apartment, Long cityId, Long streetTypeId,
+            Long streetId, Long buildingId) {
 
         this.request = request;
 
@@ -262,14 +312,22 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
         this.buildingCorp = buildingCorp;
         this.apartment = apartment;
         this.cityId = cityId;
+        this.streetTypeId = streetTypeId;
         this.streetId = streetId;
         this.buildingId = buildingId;
 
         initCorrectedEntity();
-        initSearchComponentState(componentState);
-        SearchComponent newSearchComponent = new SearchComponent("searchComponent", componentState, initFilters(), null, ShowMode.ACTIVE, true);
-        searchComponent.replaceWith(newSearchComponent);
-        searchComponent = newSearchComponent;
+        if (correctedEntity != CORRECTED_ENTITY.STREET_TYPE) {
+            initSearchComponentState(componentState);
+            SearchComponent newSearchComponent = new SearchComponent("searchComponent", componentState, initFilters(), null, ShowMode.ACTIVE, true);
+            searchComponent.replaceWith(newSearchComponent);
+            searchComponent = newSearchComponent;
+            streetTypeSelect.setVisible(false);
+        } else {
+            searchComponent.setVisible(false);
+            streetTypeSelect.setVisible(true);
+        }
+
         container.setVisible(true);
         target.addComponent(container);
         dialog.open(target);

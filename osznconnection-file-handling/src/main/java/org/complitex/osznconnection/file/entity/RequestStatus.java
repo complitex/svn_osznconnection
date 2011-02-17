@@ -15,13 +15,16 @@ import java.util.Set;
  */
 public enum RequestStatus implements IEnumCode {
 
-    /* группа "локально неразрешимых" статусов, т.е. любой статус из группы указывает на то, что какя-то часть внутреннего адреса у записи не разрешена */
-    LOADED(237),
+    /* запись загружена */
+    LOADED(240),
 
+     /* группа "локально неразрешимых" статусов, т.е. любой статус из группы указывает на то, что какая-то часть внутреннего адреса у записи не разрешена */
     CITY_UNRESOLVED_LOCALLY(200), STREET_TYPE_UNRESOLVED_LOCALLY(237), STREET_UNRESOLVED_LOCALLY(201), BUILDING_UNRESOLVED_LOCALLY(202),
 
+    /* найдено больше одной записи адреса во внетреннем адресном справочнике */
     MORE_ONE_LOCAL_CITY(234), MORE_ONE_LOCAL_STREET_TYPE(238), MORE_ONE_LOCAL_STREET(235), MORE_ONE_LOCAL_BUILDING(236),
-    
+
+    /* Найдено более одной записи в коррекциях для ОСЗН */
     MORE_ONE_LOCAL_CITY_CORRECTION(210), MORE_ONE_LOCAL_STREET_TYPE_CORRECTION(239), MORE_ONE_LOCAL_STREET_CORRECTION(211),
     MORE_ONE_LOCAL_BUILDING_CORRECTION(228),
 
@@ -32,6 +35,7 @@ public enum RequestStatus implements IEnumCode {
     CITY_UNRESOLVED(205), DISTRICT_UNRESOLVED(206), STREET_TYPE_UNRESOLVED(207),
     STREET_UNRESOLVED(208), BUILDING_UNRESOLVED(209),
 
+    /* Найдено более одной записи в коррекциях для ЦН */
     MORE_ONE_REMOTE_CITY_CORRECTION(229), MORE_ONE_REMOTE_DISTRICT_CORRECTION(230), MORE_ONE_REMOTE_STREET_TYPE_CORRECTION(231),
     MORE_ONE_REMOTE_STREET_CORRECTION(232), MORE_ONE_REMOTE_BUILDING_CORRECTION(233),
 
@@ -100,10 +104,16 @@ public enum RequestStatus implements IEnumCode {
     }
     private static final Set<RequestStatus> ADDRESS_CORRECTABLE_STATUSES =
             Sets.immutableEnumSet(ImmutableList.of(CITY_UNRESOLVED_LOCALLY, STREET_UNRESOLVED_LOCALLY, STREET_TYPE_UNRESOLVED_LOCALLY,
-            BUILDING_UNRESOLVED_LOCALLY, MORE_ONE_LOCAL_CITY, MORE_ONE_LOCAL_STREET, MORE_ONE_LOCAL_STREET_TYPE, MORE_ONE_LOCAL_BUILDING));
+            BUILDING_UNRESOLVED_LOCALLY));
 
     public boolean isAddressCorrectable() {
         return ADDRESS_CORRECTABLE_STATUSES.contains(this);
+    }
+    private static final Set<RequestStatus> ADDRESS_CORRECTABLE_FOR_PAYMENT_STATUSES =
+            Sets.immutableEnumSet(ImmutableList.of(CITY_UNRESOLVED_LOCALLY, BUILDING_UNRESOLVED_LOCALLY));
+
+    public boolean isAddressCorrectableForPayment(){
+        return ADDRESS_CORRECTABLE_FOR_PAYMENT_STATUSES.contains(this);
     }
     private static final Set<RequestStatus> UNBOUND_STATUSES = Sets.immutableEnumSet(ImmutableList.of(ACCOUNT_NUMBER_NOT_FOUND,
             LOADED, ADDRESS_CORRECTED,
