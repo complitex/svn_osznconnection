@@ -1613,7 +1613,9 @@ CREATE TABLE `person_account` (
     `own_num_sr` VARCHAR(15) NULL,
     `oszn_id` bigint(20) NOT NULL,
     `calc_center_id` bigint(20) NOT NULL,
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_person_account` (`first_name`, `middle_name`, `last_name`, `city`, `street_type`, `street`, `street_code`, `building_num`,
+        `building_corp`, `apartment`, `own_num_sr`, `oszn_id`, `calc_center_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ------------------------------

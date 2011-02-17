@@ -5,12 +5,7 @@
     <select id="findAccountNumber" parameterType="org.complitex.osznconnection.file.entity.PersonAccount"
                 resultType="org.complitex.osznconnection.file.entity.PersonAccount">
         SELECT pa.`id`, pa.`account_number` accountNumber
-        FROM `person_account` pa
-        <include refid="org.complitex.osznconnection.file.service.PersonAccountLocalBean.filter"/>
-    </select>
-
-    <sql id="filter">
-        WHERE
+        FROM `person_account` pa WHERE
         TRIM(pa.`city`) = TRIM(#{city})
         <choose>
             <when test="streetType != null">
@@ -45,9 +40,9 @@
              </otherwise>
          </choose>
          AND pa.`oszn_id` = #{osznId} AND pa.`calc_center_id` = #{calculationCenterId}
-    </sql>
+    </select>
 
-    <sql id="webFilter">
+    <sql id="filter">
         <where>
             <if test="city != null">
                 AND pa.`city` LIKE CONCAT('%', #{city}, '%')
@@ -123,7 +118,7 @@
             LEFT JOIN `organization_string_culture` calc_value ON (calc_value.`id` = calc_a.`value_id` AND calc_value.`locale_id` = #{localeId})
             JOIN `organization_string_culture` calc_sys_value ON (calc_sys_value.`id` = calc_a.`value_id` AND calc_sys_value.`locale_id` = (SELECT l.`id` FROM `locales` l WHERE l.`system` = 1))
 
-        <include refid="org.complitex.osznconnection.file.service.PersonAccountLocalBean.webFilter"/>
+        <include refid="org.complitex.osznconnection.file.service.PersonAccountLocalBean.filter"/>
         <if test="orderByClause != null">
             ORDER BY
             <choose>
@@ -159,7 +154,7 @@
 
     <select id="count" resultType="int" parameterType="org.complitex.osznconnection.file.entity.example.PersonAccountExample">
         SELECT COUNT(*) FROM `person_account` pa
-        <include refid="org.complitex.osznconnection.file.service.PersonAccountLocalBean.webFilter"/>
+        <include refid="org.complitex.osznconnection.file.service.PersonAccountLocalBean.filter"/>
     </select>
 
     <delete id="delete" parameterType="org.complitex.osznconnection.file.entity.PersonAccount">

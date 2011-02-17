@@ -10,6 +10,10 @@ UPDATE `payment` SET `status` = 240 WHERE `status` = 237;
 UPDATE `benefit` SET `status` = 240 WHERE `status` = 237;
 UPDATE `actual_payment` SET `status` = 240 WHERE `status` = 237;
 
+INSERT INTO `status_description`(`code`, `name`) VALUES (237, 'Неизвестный тип улицы'), 
+(238, 'Найдено более одного типа улицы в адресной базе'),(239, 'Найдено более одного соответствия для типа улицы');
+
+
 DELIMITER /
 CREATE PROCEDURE `updateStreetCorrections`()
 BEGIN
@@ -54,6 +58,9 @@ DROP PROCEDURE `updateStreetCorrections`;
 ALTER TABLE `street_correction` DROP KEY `uk_street_correction`, 
 	ADD UNIQUE KEY `uk_street_correction` (`parent_id`, `correction`, `organization_id`, `internal_organization_id`,
             `street_type_correction_id`, `object_id`, `organization_code`);
+            
+ALTER TABLE `person_account` DROP KEY `uq_person_account`, ADD UNIQUE KEY `uk_person_account` (`first_name`, `middle_name`, `last_name`, `city`, `street_type`, `street`, `street_code`, `building_num`,
+        `building_corp`, `apartment`, `own_num_sr`, `oszn_id`, `calc_center_id`);
 
 INSERT INTO `update` (`version`) VALUE ('20110215_0.1.4-dev');
 
