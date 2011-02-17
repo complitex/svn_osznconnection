@@ -66,16 +66,8 @@ public class AddressCorrectionBean extends CorrectionBean {
         return findAddressLocalCorrections("city", null, city, organizationId);
     }
 
-    public List<Correction> findStreetTypeLocalCorrection(String streetType, long organizationId) {
+    public List<Correction> findStreetTypeLocalCorrections(String streetType, long organizationId) {
         return findAddressLocalCorrections("street_type", null, streetType, organizationId);
-    }
-
-    @Transactional
-    public List<Correction> findStreetTypeLocalCorrections(long internalStreetTypeId, long organizationId) {
-        Map<String, Object> params = Maps.newHashMap();
-        params.put("streetTypeId", internalStreetTypeId);
-        params.put("organizationId", organizationId);
-        return sqlSession().selectList(ADDRESS_BEAN_MAPPING_NAMESPACE + ".findStreetTypeLocalCorrections", params);
     }
 
     /**

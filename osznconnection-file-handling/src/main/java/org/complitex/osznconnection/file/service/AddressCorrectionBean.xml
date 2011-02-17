@@ -82,10 +82,6 @@
                 AND TRIM(`correction_corp`) = TRIM(#{correctionCorp}) AND `parent_id` = #{parentId}
     </select>
 
-    <select id="findStreetTypeLocalCorrections" parameterType="map" resultMap="org.complitex.osznconnection.file.service.CorrectionBean.correction">
-        SELECT * FROM `street_type_correction` WHERE `organization_id` = #{organizationId} AND `object_id` = #{streetTypeId}
-    </select>
-
     <select id="findStreetLocalCorrections" parameterType="map" resultMap="streetCorrection">
         SELECT * FROM `street_correction`
         WHERE `organization_id` = #{organizationId}

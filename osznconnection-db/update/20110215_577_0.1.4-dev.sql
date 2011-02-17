@@ -13,7 +13,6 @@ UPDATE `actual_payment` SET `status` = 240 WHERE `status` = 237;
 INSERT INTO `status_description`(`code`, `name`) VALUES (237, 'Неизвестный тип улицы'), 
 (238, 'Найдено более одного типа улицы в адресной базе'),(239, 'Найдено более одного соответствия для типа улицы');
 
-
 DELIMITER /
 CREATE PROCEDURE `updateStreetCorrections`()
 BEGIN
@@ -49,7 +48,6 @@ DELIMITER ;
 
 DELETE FROM `building_correction` WHERE `organization_id` != 1;
 DELETE FROM `street_correction` WHERE `organization_id` != 1;
-DELETE FROM `city_correction` WHERE `organization_id` != 1;
 
 CALL `updateStreetCorrections`();
 
