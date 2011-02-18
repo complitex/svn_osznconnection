@@ -1,7 +1,3 @@
--- --------------------------------------------------------------------------------------------------
--- 'dev' keyword denote sql update script is in development process. Do not execute on real database.
--- --------------------------------------------------------------------------------------------------
-
 ALTER TABLE `request_file_group` DROP COLUMN `permission_id`,
 DROP KEY `key_permission_id`,
 DROP FOREIGN KEY `fk_request_file_group__permission`;
@@ -55,5 +51,4 @@ UPDATE `entity_attribute_value_type` set `attribute_value_type` = 'middle_name' 
 DELETE FROM `user_info_string_culture`;
 DELETE FROM `user_info_attribute`;
 
--- uncomment and update on release
--- INSERT INTO `update` (`version`) VALUES ('20110207_575_0.1.3');
+INSERT INTO `update` (`version`) VALUES ('20110207_554_0.1.3');
