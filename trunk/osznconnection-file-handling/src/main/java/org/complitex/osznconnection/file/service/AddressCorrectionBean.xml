@@ -180,11 +180,10 @@
                     street_name.`value` = TRIM(TO_CYRILLIC(#{street})))
             JOIN `building_address` addr ON (addr.`status` = 'ACTIVE' AND addr.`parent_id` = s.`object_id` AND addr.`parent_entity_id` = 300)
             JOIN `building_address_attribute` num_attr ON (num_attr.`status` = 'ACTIVE' AND num_attr.`object_id` = addr.`object_id` AND num_attr.`attribute_type_id` = 1500)
-            JOIN `building_address_string_culture` num ON (num.`id` = num_attr.`value_id`)
+            JOIN `building_address_string_culture` num ON (num.`id` = num_attr.`value_id` AND num.`value` = TO_CYRILLIC(#{number}))
             LEFT JOIN `building_address_attribute` corp_attr ON (corp_attr.`status` = 'ACTIVE' AND corp_attr.`object_id` = addr.`object_id` AND corp_attr.`attribute_type_id` = 1501)
             LEFT JOIN `building_address_string_culture` corp ON (corp.`id` = corp_attr.`value_id`)
         WHERE s.`status` = 'ACTIVE' AND s.`parent_id` = #{cityId} AND s.`parent_entity_id` = 400
-        AND num.`value` = TO_CYRILLIC(#{number})
         AND
             <choose>
                 <when test="corp == null">
