@@ -45,11 +45,11 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
     protected static final Logger log = LoggerFactory.getLogger(DefaultCalculationCenterAdapter.class);
     protected static final String RESOURCE_BUNDLE = DefaultCalculationCenterAdapter.class.getName();
     protected static final String MAPPING_NAMESPACE = DefaultCalculationCenterAdapter.class.getName();
-    @EJB(beanName = "OwnershipCorrectionBean")
+    @EJB
     private OwnershipCorrectionBean ownershipCorrectionBean;
-    @EJB(beanName = "TarifBean")
+    @EJB
     private TarifBean tarifBean;
-    @EJB(beanName = "PrivilegeCorrectionBean")
+    @EJB
     private PrivilegeCorrectionBean privilegeCorrectionBean;
     @EJB
     private LogBean logBean;

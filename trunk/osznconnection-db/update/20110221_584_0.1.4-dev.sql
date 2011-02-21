@@ -1,11 +1,11 @@
 -- Fixes 'LOADED' status code. Adds missing street type related status descriptions. 
 -- Sets up street type references for calculation module's street corrections.
 -- Sets district's correction parent.
+-- Deletes out of date 'MORE_ONE_REMOTE_STREET_TYPE_CORRECTION' request status.
 
 ALTER TABLE `payment` MODIFY COLUMN `status` INTEGER NOT NULL DEFAULT 240 COMMENT 'См. таблицу status_description и org.complitex.osznconnection.file.entity.RequestStatus';
 ALTER TABLE `benefit` MODIFY COLUMN `status` INTEGER NOT NULL DEFAULT 240 COMMENT 'См. таблицу status_description и org.complitex.osznconnection.file.entity.RequestStatus';
 ALTER TABLE `actual_payment` MODIFY COLUMN `status` INTEGER NOT NULL DEFAULT 240 COMMENT 'См. таблицу status_description и org.complitex.osznconnection.file.entity.RequestStatus';
-UPDATE `status_description` SET `code` = 240 WHERE `code` = 237 AND `name` = 'Загружена';
 ALTER TABLE `status_description` ADD UNIQUE KEY `uk_status_description` (`code`);
 
 UPDATE `payment` SET `status` = 240 WHERE `status` = 237;
@@ -13,7 +13,8 @@ UPDATE `benefit` SET `status` = 240 WHERE `status` = 237;
 UPDATE `actual_payment` SET `status` = 240 WHERE `status` = 237;
 
 INSERT INTO `status_description`(`code`, `name`) VALUES (237, 'Неизвестный тип улицы'), 
-(238, 'Найдено более одного типа улицы в адресной базе'),(239, 'Найдено более одного соответствия для типа улицы');
+(238, 'Найдено более одного типа улицы в адресной базе'),(239, 'Найдено более одного соответствия для типа улицы'),
+(240, 'Загружена');
 
 DELIMITER /
 CREATE PROCEDURE `updateStreetCorrections`()
@@ -64,6 +65,8 @@ ALTER TABLE `person_account` DROP KEY `uq_person_account`, ADD UNIQUE KEY `uk_pe
         
 UPDATE `district_correction` SET `parent_id` = (SELECT c.`id` FROM `city_correction` c WHERE c.`organization_id` = 1) 
 		WHERE `organization_id` = 1;
+		
+DELETE FROM `status_description` WHERE `code` = 231;
 
-INSERT INTO `update` (`version`) VALUE ('20110215_0.1.4-dev');
+INSERT INTO `update` (`version`) VALUE ('20110221_0.1.4-dev');
 

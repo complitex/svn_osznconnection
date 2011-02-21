@@ -5,7 +5,6 @@
 package org.complitex.osznconnection.file.service;
 
 import java.util.List;
-import java.util.Locale;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.AbstractBean;
