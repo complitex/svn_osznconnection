@@ -68,5 +68,5 @@ UPDATE `district_correction` SET `parent_id` = (SELECT c.`id` FROM `city_correct
 		
 DELETE FROM `status_description` WHERE `code` = 231;
 
-INSERT INTO `update` (`version`) VALUE ('20110221_0.1.4-dev');
+INSERT INTO `update` (`version`) VALUE ('20110221_0.1.4');
 
