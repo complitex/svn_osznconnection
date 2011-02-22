@@ -226,12 +226,13 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
     @Override
     public List<DomainObject> getAllOuterOrganizations(Locale locale) {
         DomainObjectExample example = new DomainObjectExample();
-        example.setOrderByAttributeTypeId(NAME);
-        example.setLocaleId(localeBean.convert(locale).getId());
-        example.setAsc(true);
+        if (locale != null) {
+            example.setOrderByAttributeTypeId(NAME);
+            example.setLocaleId(localeBean.convert(locale).getId());
+            example.setAsc(true);
+        }
         example.addAdditionalParam("entityTypeIds", ImmutableList.of(OSZN, CALCULATION_CENTER));
         configureExample(example, ImmutableMap.<String, Long>of(), null);
-
         return (List<DomainObject>) find(example);
     }
 
@@ -241,11 +242,12 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
     public List<DomainObject> getAllOSZNs(Locale locale) {
         DomainObjectExample example = new DomainObjectExample();
         example.setEntityTypeId(OSZN);
-        example.setOrderByAttributeTypeId(NAME);
-        example.setLocaleId(localeBean.convert(locale).getId());
-        example.setAsc(true);
+        if (locale != null) {
+            example.setOrderByAttributeTypeId(NAME);
+            example.setLocaleId(localeBean.convert(locale).getId());
+            example.setAsc(true);
+        }
         configureExample(example, ImmutableMap.<String, Long>of(), null);
-
         return (List<DomainObject>) find(example);
     }
 
@@ -255,11 +257,12 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
     public List<DomainObject> getAllCalculationCentres(Locale locale) {
         DomainObjectExample example = new DomainObjectExample();
         example.setEntityTypeId(CALCULATION_CENTER);
-        example.setLocaleId(localeBean.convert(locale).getId());
-        example.setAsc(true);
-        example.setOrderByAttributeTypeId(NAME);
+        if (locale != null) {
+            example.setOrderByAttributeTypeId(NAME);
+            example.setLocaleId(localeBean.convert(locale).getId());
+            example.setAsc(true);
+        }
         configureExample(example, ImmutableMap.<String, Long>of(), null);
-
         return (List<DomainObject>) find(example);
     }
 
@@ -335,9 +338,11 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
     public List<? extends DomainObject> getUserOrganizations(Locale locale, Long... excludeOrganizationsId) {
         DomainObjectExample example = new DomainObjectExample();
         example.setEntityTypeId(USER_ORGANIZATION);
-        example.setLocaleId(localeBean.convert(locale).getId());
-        example.setAsc(true);
-        example.setOrderByAttributeTypeId(NAME);
+        if(locale != null){
+            example.setOrderByAttributeTypeId(NAME);
+            example.setLocaleId(localeBean.convert(locale).getId());
+            example.setAsc(true);
+        }
         example.setAdmin(true);
         configureExample(example, ImmutableMap.<String, Long>of(), null);
         List<? extends DomainObject> userOrganizations = find(example);
