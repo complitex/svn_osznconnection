@@ -143,14 +143,10 @@
     </select>
 
     <select id="findInternalObjectIds" parameterType="map" resultType="long">
-        SELECT DISTINCT e.`object_id` FROM `${entity}` e WHERE e.`status` = 'ACTIVE'
-        <if test="parentId != null">
-            AND e.`parent_id` = #{parentId}
-        </if>
-        AND EXISTS(
-            SELECT 1 FROM `${entity}_attribute` attr WHERE attr.`status` = 'ACTIVE' AND e.`object_id` = attr.`object_id`
-            AND attr.`attribute_type_id` = #{attributeTypeId}
-            AND attr.`value_id` IN (SELECT sc.`id` FROM `${entity}_string_culture` sc WHERE sc.`value` = TRIM(TO_CYRILLIC(#{correction}))))
+        SELECT DISTINCT e.`object_id` FROM `${entity}` e
+            JOIN `${entity}_attribute` attr ON (attr.`status` = 'ACTIVE' AND e.`object_id` = attr.`object_id` AND attr.`attribute_type_id` = #{attributeTypeId})
+            JOIN `${entity}_string_culture` sc ON (sc.`id` = attr.`value_id` AND sc.`value` = TRIM(TO_CYRILLIC(#{correction})))
+        WHERE e.`status` = 'ACTIVE'
     </select>
 
     <select id="findInternalStreetIds" parameterType="map" resultType="long">
