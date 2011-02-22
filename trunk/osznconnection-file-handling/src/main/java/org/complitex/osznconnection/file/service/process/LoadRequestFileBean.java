@@ -2,10 +2,10 @@ package org.complitex.osznconnection.file.service.process;
 
 import com.linuxense.javadbf.DBFField;
 import com.linuxense.javadbf.DBFReader;
+import org.complitex.dictionary.service.ConfigBean;
 import org.complitex.dictionary.service.executor.ExecuteException;
 import org.complitex.dictionary.util.DateUtil;
 import org.complitex.osznconnection.file.entity.*;
-import org.complitex.osznconnection.file.service.ConfigBean;
 import org.complitex.osznconnection.file.service.RequestFileBean;
 import org.complitex.osznconnection.file.service.exception.FieldNotFoundException;
 import org.complitex.osznconnection.file.service.exception.LoadException;
@@ -44,7 +44,7 @@ public class LoadRequestFileBean {
     public boolean load(RequestFile requestFile, ILoadRequestFile loadRequestFile) throws ExecuteException {
         String currentFieldName = "-1";
         int index = -1;
-        int batchSize = configBean.getInteger(Config.LOAD_BATCH_SIZE, true);
+        int batchSize = configBean.getInteger(FileHandlingConfig.LOAD_BATCH_SIZE, true);
 
         requestFile.setLoadedRecordCount(0);
 

@@ -2,6 +2,7 @@ package org.complitex.osznconnection.file.service.process;
 
 import com.google.common.collect.Lists;
 import org.complitex.dictionary.entity.Log;
+import org.complitex.dictionary.service.ConfigBean;
 import org.complitex.dictionary.service.executor.ExecuteException;
 import org.complitex.dictionary.service.executor.ITaskBean;
 import org.complitex.osznconnection.file.Module;
@@ -181,7 +182,7 @@ public class BindTaskBean implements ITaskBean<RequestFileGroup> {
         List<Long> notResolvedPaymentIds = paymentBean.findIdsForBinding(paymentFile.getId());
         List<Long> batch = Lists.newArrayList();
 
-        int batchSize = configBean.getInteger(Config.BIND_BATCH_SIZE, true);
+        int batchSize = configBean.getInteger(FileHandlingConfig.BIND_BATCH_SIZE, true);
 
         while (notResolvedPaymentIds.size() > 0) {
             batch.clear();

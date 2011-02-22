@@ -2,6 +2,7 @@ package org.complitex.osznconnection.file.service.process;
 
 import com.google.common.collect.Lists;
 import org.complitex.dictionary.entity.Log;
+import org.complitex.dictionary.service.ConfigBean;
 import org.complitex.dictionary.service.executor.ExecuteException;
 import org.complitex.dictionary.service.executor.ITaskBean;
 import org.complitex.osznconnection.file.Module;
@@ -9,7 +10,9 @@ import org.complitex.osznconnection.file.calculation.adapter.ICalculationCenterA
 import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
 import org.complitex.osznconnection.file.calculation.service.CalculationCenterBean;
 import org.complitex.osznconnection.file.entity.*;
-import org.complitex.osznconnection.file.service.*;
+import org.complitex.osznconnection.file.service.BenefitBean;
+import org.complitex.osznconnection.file.service.PaymentBean;
+import org.complitex.osznconnection.file.service.RequestFileGroupBean;
 import org.complitex.osznconnection.file.service.exception.AlreadyProcessingException;
 import org.complitex.osznconnection.file.service.exception.FillException;
 import org.slf4j.Logger;
@@ -144,7 +147,7 @@ public class FillTaskBean implements ITaskBean<RequestFileGroup> {
         List<Long> notResolvedPaymentIds = paymentBean.findIdsForProcessing(paymentFile.getId());
         List<Long> batch = Lists.newArrayList();
 
-        int batchSize = configBean.getInteger(Config.FILL_BATCH_SIZE, true);
+        int batchSize = configBean.getInteger(FileHandlingConfig.FILL_BATCH_SIZE, true);
 
         while (notResolvedPaymentIds.size() > 0) {
             batch.clear();
