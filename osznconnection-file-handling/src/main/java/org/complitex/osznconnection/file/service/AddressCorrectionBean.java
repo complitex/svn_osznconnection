@@ -261,13 +261,12 @@ public class AddressCorrectionBean extends CorrectionBean {
      * @return
      */
     @SuppressWarnings({"unchecked"})
-    private List<Long> findInternalObjectIds(String entity, String correction, long attributeTypeId, Long parentId) {
+    @Transactional
+    private List<Long> findInternalObjectIds(String entity, String correction, long attributeTypeId) {
         Map<String, Object> params = Maps.newHashMap();
         params.put("entity", entity);
-        params.put("correction", correction != null ? correction.trim() : correction);
+        params.put("correction", correction != null ? correction.trim() : "");
         params.put("attributeTypeId", attributeTypeId);
-        params.put("parentId", parentId);
-
         return sqlSession().selectList(ADDRESS_BEAN_MAPPING_NAMESPACE + ".findInternalObjectIds", params);
     }
 
@@ -280,12 +279,12 @@ public class AddressCorrectionBean extends CorrectionBean {
      */
     @Transactional
     public List<Long> findInternalCityIds(String city) {
-        return findInternalObjectIds("city", city, 400, null);
+        return findInternalObjectIds("city", city, 400);
     }
 
     @Transactional
     public List<Long> findInternalStreetTypeIds(String streetType) {
-        return findInternalObjectIds("street_type", streetType, 1400, null);
+        return findInternalObjectIds("street_type", streetType, 1400);
     }
 
     /**
