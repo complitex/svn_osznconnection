@@ -63,16 +63,16 @@ public class ActualPaymentFileList extends ScrollListPage {
 
     private final static String IMAGE_AJAX_LOADER = "images/ajax-loader2.gif";
 
-    @EJB(name = "RequestFileBean")
+    @EJB
     private RequestFileBean requestFileBean;
 
     @EJB(name = "OrganizationStrategy")
     private IOsznOrganizationStrategy organizationStrategy;
 
-    @EJB(name = "ProcessManagerBean")
+    @EJB
     private ProcessManagerBean processManagerBean;
 
-    @EJB(name = "LogBean")
+    @EJB
     private LogBean logBean;
 
     private int waitForStopTimer;
@@ -305,6 +305,7 @@ public class ActualPaymentFileList extends ScrollListPage {
         filterForm.add(new ArrowOrderByBorder("header.loaded_record_count", "loaded_record_count", dataProvider, dataView, filterForm));
         filterForm.add(new ArrowOrderByBorder("header.binded_record_count", "binded_record_count", dataProvider, dataView, filterForm));
         filterForm.add(new ArrowOrderByBorder("header.filled_record_count", "filled_record_count", dataProvider, dataView, filterForm));
+        filterForm.add(new ArrowOrderByBorder("header.status", "status", dataProvider, dataView, filterForm));
 
         //Постраничная навигация
         filterForm.add(new PagingNavigator("paging", dataView, getClass().getName(), filterForm));
