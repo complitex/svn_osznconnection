@@ -1,12 +1,14 @@
 package org.complitex.osznconnection.file.entity;
 
+import org.complitex.dictionary.entity.IConfig;
+
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 04.10.2010 11:12:46
  */
-public enum Config {
-    LOAD_INPUT_FILE_STORAGE_DIR("C:\\storage\\in"),
-    SAVE_OUTPUT_FILE_STORAGE_DIR("C:\\storage\\out"),
+public enum FileHandlingConfig implements IConfig{
+    LOAD_INPUT_FILE_STORAGE_DIR("c:\\storage\\in"),
+    SAVE_OUTPUT_FILE_STORAGE_DIR("c:\\storage\\out"),
 
     LOAD_THREAD_SIZE("2"),
     BIND_THREAD_SIZE("4"),
@@ -24,10 +26,16 @@ public enum Config {
 
     private String defaultValue;
 
-    Config(String defaultValue) {
+    FileHandlingConfig(String defaultValue) {
         this.defaultValue = defaultValue;
     }
 
+    @Override
+    public String getName() {
+        return name();
+    }
+
+    @Override
     public String getDefaultValue() {
         return defaultValue;
     }

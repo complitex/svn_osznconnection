@@ -2,14 +2,17 @@ package org.complitex.osznconnection.file.service.process;
 
 import com.google.common.collect.Lists;
 import org.complitex.dictionary.entity.Log;
+import org.complitex.dictionary.service.ConfigBean;
 import org.complitex.dictionary.service.executor.ExecuteException;
 import org.complitex.dictionary.service.executor.ITaskBean;
+import org.complitex.dictionary.util.DateUtil;
 import org.complitex.osznconnection.file.Module;
 import org.complitex.osznconnection.file.calculation.adapter.ICalculationCenterAdapter;
 import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
 import org.complitex.osznconnection.file.calculation.service.CalculationCenterBean;
 import org.complitex.osznconnection.file.entity.*;
-import org.complitex.osznconnection.file.service.*;
+import org.complitex.osznconnection.file.service.ActualPaymentBean;
+import org.complitex.osznconnection.file.service.RequestFileBean;
 import org.complitex.osznconnection.file.service.exception.AlreadyProcessingException;
 import org.complitex.osznconnection.file.service.exception.FillException;
 import org.slf4j.Logger;
@@ -24,7 +27,6 @@ import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import java.util.Date;
 import java.util.List;
-import org.complitex.dictionary.util.DateUtil;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -119,7 +121,7 @@ public class ActualPaymentFillTaskBean implements ITaskBean<RequestFile> {
         List<Long> notResolvedPaymentIds = actualPaymentBean.findIdsForProcessing(actualPaymentFile.getId());
         List<Long> batch = Lists.newArrayList();
 
-        int batchSize = configBean.getInteger(Config.FILL_BATCH_SIZE, true);
+        int batchSize = configBean.getInteger(FileHandlingConfig.FILL_BATCH_SIZE, true);
 
         while (notResolvedPaymentIds.size() > 0) {
             batch.clear();

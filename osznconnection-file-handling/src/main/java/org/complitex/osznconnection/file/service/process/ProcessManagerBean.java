@@ -1,15 +1,16 @@
 package org.complitex.osznconnection.file.service.process;
 
 import org.complitex.dictionary.entity.Log;
-import org.complitex.dictionary.service.*;
+import org.complitex.dictionary.service.ConfigBean;
+import org.complitex.dictionary.service.LogBean;
 import org.complitex.dictionary.service.SessionBean;
 import org.complitex.dictionary.service.executor.ExecutorBean;
-import org.complitex.dictionary.service.executor.ExecutorStatus;
 import org.complitex.dictionary.service.executor.IExecutorListener;
 import org.complitex.dictionary.service.executor.ITaskBean;
 import org.complitex.osznconnection.file.Module;
-import org.complitex.osznconnection.file.entity.*;
-import org.complitex.osznconnection.file.service.ConfigBean;
+import org.complitex.osznconnection.file.entity.FileHandlingConfig;
+import org.complitex.osznconnection.file.entity.RequestFile;
+import org.complitex.osznconnection.file.entity.RequestFileGroup;
 import org.complitex.osznconnection.file.service.exception.StorageNotFoundException;
 import org.complitex.osznconnection.file.service.warning.ReportWarningRenderer;
 import org.slf4j.Logger;
@@ -211,8 +212,8 @@ public class ProcessManagerBean {
             executorBean.execute(loadParameter.getRequestFileGroups(),
                     loadGroupTaskBean,
                     processStatus.getExecutorStatus(),
-                    configBean.getInteger(Config.LOAD_THREAD_SIZE, true),
-                    configBean.getInteger(Config.LOAD_MAX_ERROR_COUNT, true));
+                    configBean.getInteger(FileHandlingConfig.LOAD_THREAD_SIZE, true),
+                    configBean.getInteger(FileHandlingConfig.LOAD_MAX_ERROR_COUNT, true));
         } catch (StorageNotFoundException e) {
             processStatus.preprocessError();
 
@@ -227,8 +228,8 @@ public class ProcessManagerBean {
         executorBean.execute(groups,
                 bindTaskBean,
                 initProcessStatus(GROUP, BIND_GROUP).getExecutorStatus(),
-                configBean.getInteger(Config.BIND_THREAD_SIZE, true),
-                configBean.getInteger(Config.BIND_MAX_ERROR_COUNT, true));
+                configBean.getInteger(FileHandlingConfig.BIND_THREAD_SIZE, true),
+                configBean.getInteger(FileHandlingConfig.BIND_MAX_ERROR_COUNT, true));
     }
 
     @Asynchronous
@@ -236,8 +237,8 @@ public class ProcessManagerBean {
         executorBean.execute(groups,
                 fillTaskBean,
                 initProcessStatus(GROUP, FILL_GROUP).getExecutorStatus(),
-                configBean.getInteger(Config.FILL_THREAD_SIZE, true),
-                configBean.getInteger(Config.FILL_MAX_ERROR_COUNT, true));
+                configBean.getInteger(FileHandlingConfig.FILL_THREAD_SIZE, true),
+                configBean.getInteger(FileHandlingConfig.FILL_MAX_ERROR_COUNT, true));
     }
 
     @Asynchronous
@@ -257,8 +258,8 @@ public class ProcessManagerBean {
                         }
                     }
                 },
-                configBean.getInteger(Config.SAVE_THREAD_SIZE, true),
-                configBean.getInteger(Config.SAVE_MAX_ERROR_COUNT, true));
+                configBean.getInteger(FileHandlingConfig.SAVE_THREAD_SIZE, true),
+                configBean.getInteger(FileHandlingConfig.SAVE_MAX_ERROR_COUNT, true));
     }
 
     @Asynchronous
@@ -281,8 +282,8 @@ public class ProcessManagerBean {
             executorBean.execute(LoadUtil.getActualPayments(organizationId, districtCode, monthFrom, monthTo, year),
                     actualPaymentLoadTaskBean,
                     processStatus.getExecutorStatus(),
-                    configBean.getInteger(Config.LOAD_THREAD_SIZE, true),
-                    configBean.getInteger(Config.LOAD_MAX_ERROR_COUNT, true));
+                    configBean.getInteger(FileHandlingConfig.LOAD_THREAD_SIZE, true),
+                    configBean.getInteger(FileHandlingConfig.LOAD_MAX_ERROR_COUNT, true));
         } catch (StorageNotFoundException e) {
             log.error("Ошибка процесса загрузки файлов.", e);
             logBean.error(Module.NAME, ProcessManagerBean.class, RequestFile.class, null,
@@ -295,8 +296,8 @@ public class ProcessManagerBean {
         executorBean.execute(actualPayments,
                 actualPaymentBindTaskBean,
                 initProcessStatus(ACTUAL_PAYMENT, BIND_ACTUAL_PAYMENT).getExecutorStatus(),
-                configBean.getInteger(Config.BIND_THREAD_SIZE, true),
-                configBean.getInteger(Config.BIND_MAX_ERROR_COUNT, true));
+                configBean.getInteger(FileHandlingConfig.BIND_THREAD_SIZE, true),
+                configBean.getInteger(FileHandlingConfig.BIND_MAX_ERROR_COUNT, true));
     }
 
     @Asynchronous
@@ -304,8 +305,8 @@ public class ProcessManagerBean {
         executorBean.execute(actualPayments,
                 actualPaymentFillTaskBean,
                 initProcessStatus(ACTUAL_PAYMENT, FILL_ACTUAL_PAYMENT).getExecutorStatus(),
-                configBean.getInteger(Config.FILL_THREAD_SIZE, true),
-                configBean.getInteger(Config.FILL_MAX_ERROR_COUNT, true));
+                configBean.getInteger(FileHandlingConfig.FILL_THREAD_SIZE, true),
+                configBean.getInteger(FileHandlingConfig.FILL_MAX_ERROR_COUNT, true));
     }
 
     @Asynchronous
@@ -313,8 +314,8 @@ public class ProcessManagerBean {
         executorBean.execute(actualPayments,
                 actualPaymentSaveTaskBean,
                 initProcessStatus(ACTUAL_PAYMENT, SAVE_ACTUAL_PAYMENT).getExecutorStatus(),
-                configBean.getInteger(Config.SAVE_THREAD_SIZE, true),
-                configBean.getInteger(Config.SAVE_MAX_ERROR_COUNT, true));
+                configBean.getInteger(FileHandlingConfig.SAVE_THREAD_SIZE, true),
+                configBean.getInteger(FileHandlingConfig.SAVE_MAX_ERROR_COUNT, true));
     }
 
     @Asynchronous
@@ -337,8 +338,8 @@ public class ProcessManagerBean {
             executorBean.execute(LoadUtil.getTarifs(organizationId, districtCode, monthFrom, monthTo, year),
                     loadTarifTaskBean,
                     processStatus.getExecutorStatus(),
-                    configBean.getInteger(Config.LOAD_THREAD_SIZE, true),
-                    configBean.getInteger(Config.LOAD_MAX_ERROR_COUNT, true));
+                    configBean.getInteger(FileHandlingConfig.LOAD_THREAD_SIZE, true),
+                    configBean.getInteger(FileHandlingConfig.LOAD_MAX_ERROR_COUNT, true));
         } catch (StorageNotFoundException e) {
             log.error("Ошибка процесса загрузки файлов.", e);
             logBean.error(Module.NAME, ProcessManagerBean.class, RequestFile.class, null,

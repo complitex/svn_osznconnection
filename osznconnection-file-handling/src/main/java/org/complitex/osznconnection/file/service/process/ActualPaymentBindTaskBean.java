@@ -5,17 +5,9 @@
 package org.complitex.osznconnection.file.service.process;
 
 import com.google.common.collect.Lists;
-import java.util.Date;
-import java.util.List;
-import javax.annotation.Resource;
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
-import javax.transaction.SystemException;
-import javax.transaction.UserTransaction;
 import org.complitex.dictionary.entity.Log;
 import org.complitex.dictionary.entity.Log.EVENT;
+import org.complitex.dictionary.service.ConfigBean;
 import org.complitex.dictionary.service.executor.ExecuteException;
 import org.complitex.dictionary.service.executor.ITaskBean;
 import org.complitex.dictionary.util.DateUtil;
@@ -24,11 +16,24 @@ import org.complitex.osznconnection.file.calculation.adapter.ICalculationCenterA
 import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
 import org.complitex.osznconnection.file.calculation.service.CalculationCenterBean;
 import org.complitex.osznconnection.file.entity.*;
-import org.complitex.osznconnection.file.service.*;
+import org.complitex.osznconnection.file.service.ActualPaymentBean;
+import org.complitex.osznconnection.file.service.AddressService;
+import org.complitex.osznconnection.file.service.PersonAccountService;
+import org.complitex.osznconnection.file.service.RequestFileBean;
 import org.complitex.osznconnection.file.service.exception.AlreadyProcessingException;
 import org.complitex.osznconnection.file.service.exception.BindException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.annotation.Resource;
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
+import javax.transaction.SystemException;
+import javax.transaction.UserTransaction;
+import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -97,7 +102,7 @@ public class ActualPaymentBindTaskBean implements ITaskBean<RequestFile> {
         List<Long> notResolvedPaymentIds = actualPaymentBean.findIdsForBinding(actualPaymentFile.getId());
         List<Long> batch = Lists.newArrayList();
 
-        int batchSize = configBean.getInteger(Config.BIND_BATCH_SIZE, true);
+        int batchSize = configBean.getInteger(FileHandlingConfig.BIND_BATCH_SIZE, true);
 
         while (notResolvedPaymentIds.size() > 0) {
             batch.clear();

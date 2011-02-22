@@ -48,6 +48,7 @@
         <mapper resource="org/complitex/dictionary/service/PreferenceBean.xml"/>
         <mapper resource="org/complitex/dictionary/service/PermissionBean.xml"/>
         <mapper resource="org/complitex/dictionary/service/NameBean.xml"/>
+        <mapper resource="org/complitex/dictionary/service/ConfigBean.xml"/>
 
         <mapper resource="org/complitex/address/strategy/building/Building.xml"/>
         <mapper resource="org/complitex/address/strategy/street/Street.xml"/>
@@ -71,7 +72,6 @@
         <mapper resource="org/complitex/osznconnection/file/service/BenefitBean.xml"/>
         <mapper resource="org/complitex/osznconnection/file/service/TarifBean.xml"/>
         <mapper resource="org/complitex/osznconnection/file/service/PersonAccountLocalBean.xml"/>
-        <mapper resource="org/complitex/osznconnection/file/service/ConfigBean.xml"/>
         <mapper resource="org/complitex/osznconnection/file/service/status/details/StatusDetailBean.xml"/>
         <mapper resource="org/complitex/osznconnection/file/service/warning/RequestWarningBean.xml"/>
 
