@@ -417,7 +417,7 @@ public class AddressCorrectionEdit extends FormTemplatePage {
                 error(getString("correction_required"));
                 return false;
             }
-            return false;
+            return true;
         }
     }
     private AbstractCorrectionEditPanel addressEditPanel;
