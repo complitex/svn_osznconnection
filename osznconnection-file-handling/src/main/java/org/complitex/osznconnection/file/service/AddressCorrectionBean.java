@@ -6,9 +6,11 @@ import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.LocaleBean;
+import org.complitex.dictionary.strategy.IStrategy;
 import org.complitex.dictionary.web.component.search.SearchComponentState;
 import org.complitex.osznconnection.file.entity.BuildingCorrection;
 import org.complitex.osznconnection.file.entity.Correction;
+import org.complitex.osznconnection.file.entity.StreetCorrection;
 import org.complitex.osznconnection.file.entity.example.CorrectionExample;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,8 +20,6 @@ import javax.ejb.Stateless;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import org.complitex.dictionary.strategy.IStrategy;
-import org.complitex.osznconnection.file.entity.StreetCorrection;
 
 /**
  * Класс для работы с коррекциями адресов.
@@ -170,7 +170,7 @@ public class AddressCorrectionBean extends CorrectionBean {
 
     /**
      * Найти данные о коррекции для района.
-     * @param organizationId
+     * @param calculationCenterId
      * @param osznId
      * @return
      */
@@ -184,7 +184,7 @@ public class AddressCorrectionBean extends CorrectionBean {
 
     /**
      * Найти данные о коррекции для типа улицы.
-     * @param organizationId
+     * @param calculationCenterId
      * @param internalStreetTypeId
      * @return
      */
@@ -216,7 +216,19 @@ public class AddressCorrectionBean extends CorrectionBean {
         return correction;
     }
 
-    public Correction createStreetTypeCorrection(String streetType, long streetTypeObjectId, long organizationId, long internalOrganizationId) {
+    public Correction createDistrictCorrection(String district, long cityCorrectionId, long districtObjectId,
+                                               long organizationId, long internalOrganizationId) {
+        Correction correction = new Correction("district");
+        correction.setParentId(cityCorrectionId);
+        correction.setCorrection(district);
+        correction.setOrganizationId(organizationId);
+        correction.setInternalOrganizationId(internalOrganizationId);
+        correction.setObjectId(districtObjectId);
+        return correction;
+    }
+
+    public Correction createStreetTypeCorrection(String streetType, long streetTypeObjectId, long organizationId,
+                                                 long internalOrganizationId) {
         Correction correction = new Correction("street_type");
         correction.setParentId(null);
         correction.setCorrection(streetType);
@@ -226,7 +238,8 @@ public class AddressCorrectionBean extends CorrectionBean {
         return correction;
     }
 
-    public StreetCorrection createStreetCorrection(String street, String streetCode, Long streetTypeCorrectionId, long cityCorrectionId,
+    public StreetCorrection createStreetCorrection(String street, String streetCode, Long streetTypeCorrectionId,
+                                                   long cityCorrectionId,
             long streetObjectId, long organizationId, long internalOrganizationId) {
         StreetCorrection correction = new StreetCorrection();
         correction.setParentId(cityCorrectionId);
@@ -239,7 +252,8 @@ public class AddressCorrectionBean extends CorrectionBean {
         return correction;
     }
 
-    public BuildingCorrection createBuildingCorrection(String number, String corp, long streetCorrectionId, long buildingObjectId, long organizationId,
+    public BuildingCorrection createBuildingCorrection(String number, String corp, long streetCorrectionId,
+                                                       long buildingObjectId, long organizationId,
             long internalOrganizationId) {
         BuildingCorrection correction = new BuildingCorrection();
         correction.setParentId(streetCorrectionId);
@@ -257,7 +271,7 @@ public class AddressCorrectionBean extends CorrectionBean {
      * При поиске к значению коррекции(correction) применяются SQL функции TRIM() и TO_CYRILLIC()
      * @param entity
      * @param correction
-     * @param parentId
+     * @param attributeTypeId
      * @return
      */
     @SuppressWarnings({"unchecked"})
@@ -581,5 +595,17 @@ public class AddressCorrectionBean extends CorrectionBean {
     @Transactional
     public void updateStreet(StreetCorrection streetCorrection) {
         sqlSession().update(ADDRESS_BEAN_MAPPING_NAMESPACE + ".updateStreet", streetCorrection);
+    }
+
+    public Long getCityCorrectionId(Long objectId, Long organizationId, Long internalOrganizationId){
+        return getCorrectionId("city", objectId, organizationId, internalOrganizationId);
+    }
+
+    public Long getStreetTypeCorrectionId(Long objectId, Long organizationId, Long internalOrganizationId){
+        return getCorrectionId("street_type", objectId, organizationId, internalOrganizationId);
+    }
+
+    public Long getStreetCorrectionId(Long objectId, Long organizationId, Long internalOrganizationId){
+        return getCorrectionId("street", objectId, organizationId, internalOrganizationId);
     }
 }

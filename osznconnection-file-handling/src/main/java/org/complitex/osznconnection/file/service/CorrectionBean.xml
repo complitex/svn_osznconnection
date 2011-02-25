@@ -124,8 +124,14 @@
         <include refid="org.complitex.osznconnection.file.service.CorrectionBean.filter"/>
     </select>
 
-    <select id="findById" parameterType="hashmap" resultMap="correction">
+    <select id="findById" parameterType="map" resultMap="correction">
         SELECT * FROM `${entity}_correction` c WHERE c.`id` = #{id}
+    </select>
+
+    <select id="findByObjectId" parameterType="map" resultType="long">
+        SELECT c.`id` FROM `${entity}_correction` c
+        WHERE c.`object_id` = #{objectId} and `organization_id` = #{organizationId}
+            and `internal_organization_id` = #{internalOrganizationId} limit 1
     </select>
 
     <update id="update" parameterType="org.complitex.osznconnection.file.entity.Correction">
