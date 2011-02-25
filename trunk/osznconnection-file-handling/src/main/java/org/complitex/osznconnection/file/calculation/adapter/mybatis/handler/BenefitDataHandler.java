@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.complitex.osznconnection.file.calculation.adapter.mybatis.handler;
 
 import com.google.common.collect.Lists;
@@ -14,16 +13,12 @@ import java.util.List;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
 import org.complitex.osznconnection.file.entity.BenefitData;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Artem
  */
 public class BenefitDataHandler implements TypeHandler {
-
-    private static final Logger log = LoggerFactory.getLogger(BenefitDataHandler.class);
 
     @Override
     public void setParameter(PreparedStatement ps, int i, Object parameter, JdbcType jdbcType) throws SQLException {
@@ -39,17 +34,22 @@ public class BenefitDataHandler implements TypeHandler {
     public List<BenefitData> getResult(CallableStatement cs, int columnIndex) throws SQLException {
         ResultSet rs = null;
         try {
-            rs = (ResultSet)cs.getObject(columnIndex);
+            rs = (ResultSet) cs.getObject(columnIndex);
         } catch (SQLException e) {
-            log.debug("", e);
+            String message = e.getMessage();
+            if (OracleErrors.CURSOR_IS_CLOSED_ERROR.equals(message)) {
+                // do nothing. It is expected behaviour.
+            } else {
+                throw e;
+            }
         }
 
-        if(rs == null){
+        if (rs == null) {
             return null;
         }
 
         List<BenefitData> benefitDatas = Lists.newArrayList();
-        while(rs.next()){
+        while (rs.next()) {
             BenefitData benefitData = new BenefitData();
             benefitData.setLastName(rs.getString("ln"));
             benefitData.setFirstName(rs.getString("fn"));
@@ -65,5 +65,4 @@ public class BenefitDataHandler implements TypeHandler {
 
         return benefitDatas;
     }
-
 }
