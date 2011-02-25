@@ -9,6 +9,7 @@ import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.dictionary.service.LocaleBean;
+import org.complitex.dictionary.strategy.IStrategy;
 import org.complitex.dictionary.strategy.StrategyFactory;
 import org.complitex.osznconnection.file.entity.Correction;
 import org.complitex.osznconnection.file.entity.example.CorrectionExample;
@@ -19,7 +20,6 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import java.util.List;
 import java.util.Map;
-import org.complitex.dictionary.strategy.IStrategy;
 
 /**
  * Обобщенный класс для работы с коррекциями.
@@ -106,6 +106,17 @@ public class CorrectionBean extends AbstractBean {
         }
 
         return correction;
+    }
+
+    @Transactional
+    public Long getCorrectionId(String entity, Long objectId, Long organizationId, Long internalOrganizationId) {
+        Map<String, Object> params = Maps.newHashMap();
+        params.put("entity", entity);
+        params.put("objectId", objectId);
+        params.put("organizationId", organizationId);
+        params.put("internalOrganizationId", internalOrganizationId);
+
+        return (Long) sqlSession().selectOne(CORRECTION_BEAN_MAPPING_NAMESPACE + ".findByObjectId", params);
     }
 
     @Transactional
