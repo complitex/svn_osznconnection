@@ -13,16 +13,12 @@ import java.util.List;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
 import org.complitex.osznconnection.file.entity.ActualPaymentData;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Artem
  */
 public class ActualPaymentDataHandler implements TypeHandler {
-
-    private static final Logger log = LoggerFactory.getLogger(ActualPaymentDataHandler.class);
 
     @Override
     public void setParameter(PreparedStatement ps, int i, Object parameter, JdbcType jdbcType) throws SQLException {
@@ -40,7 +36,12 @@ public class ActualPaymentDataHandler implements TypeHandler {
         try {
             rs = (ResultSet) cs.getObject(columnIndex);
         } catch (SQLException e) {
-            log.debug("", e);
+            String message = e.getMessage();
+            if (OracleErrors.CURSOR_IS_CLOSED_ERROR.equals(message)) {
+                // do nothing. It is expected behaviour.
+            } else {
+                throw e;
+            }
         }
 
         if (rs == null) {
