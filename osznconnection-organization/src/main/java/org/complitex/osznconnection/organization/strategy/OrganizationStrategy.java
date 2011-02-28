@@ -104,16 +104,16 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
     }
 
     @Transactional
-    protected void changeDistrictPermissions(DomainObject newObject) {
-        Long entityTypeId = newObject.getEntityTypeId();
+    protected void changeDistrictPermissions(DomainObject newOrganization) {
+        Long entityTypeId = newOrganization.getEntityTypeId();
         if (entityTypeId != null && entityTypeId.equals(USER_ORGANIZATION)) {
-            Attribute districtAttribute = getDistrictAttribute(newObject);
+            Attribute districtAttribute = getDistrictAttribute(newOrganization);
             Long districtId = districtAttribute.getValueId();
             if (districtId != null) {
                 DomainObject districtObject = districtStrategy.findById(districtId, false);
                 if (districtObject != null) {
-                    Set<Long> addSubjectIds = Sets.newHashSet(newObject.getId());
-                    districtStrategy.changeObjectPermissionsInDistinctThread(districtId, districtObject.getPermissionId(), addSubjectIds, null);
+                    Set<Long> addSubjectIds = Sets.newHashSet(newOrganization.getId());
+                    districtStrategy.changePermissionsInDistinctThread(districtId, districtObject.getPermissionId(), addSubjectIds, null);
                 }
             }
         }
@@ -127,25 +127,25 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
     }
 
     @Transactional
-    protected void changeDistrictPermissions(DomainObject oldObject, DomainObject newObject) {
-        Long entityTypeId = newObject.getEntityTypeId();
+    protected void changeDistrictPermissions(DomainObject oldOrganization, DomainObject newOrganization) {
+        Long entityTypeId = newOrganization.getEntityTypeId();
         if (entityTypeId != null && entityTypeId.equals(USER_ORGANIZATION)) {
-            long organizationId = newObject.getId();
+            long organizationId = newOrganization.getId();
             Set<Long> subjectIds = Sets.newHashSet(organizationId);
-            Attribute oldDistrictAttribute = getDistrictAttribute(oldObject);
-            Attribute newDistrictAttribute = getDistrictAttribute(newObject);
+            Attribute oldDistrictAttribute = getDistrictAttribute(oldOrganization);
+            Attribute newDistrictAttribute = getDistrictAttribute(newOrganization);
             Long oldDistrictId = oldDistrictAttribute.getValueId();
             Long newDistrictId = newDistrictAttribute.getValueId();
             if (!Numbers.isEqual(oldDistrictId, newDistrictId)) {
                 //district reference has changed
                 if (oldDistrictId != null) {
                     long oldDistrictPermissionId = districtStrategy.findById(oldDistrictId, true).getPermissionId();
-                    districtStrategy.changeObjectPermissionsInDistinctThread(oldDistrictId, oldDistrictPermissionId, null, subjectIds);
+                    districtStrategy.changePermissionsInDistinctThread(oldDistrictId, oldDistrictPermissionId, null, subjectIds);
                 }
 
                 if (newDistrictId != null) {
                     long newDistrictPermissionId = districtStrategy.findById(newDistrictId, true).getPermissionId();
-                    districtStrategy.changeObjectPermissionsInDistinctThread(newDistrictId, newDistrictPermissionId, subjectIds, null);
+                    districtStrategy.changePermissionsInDistinctThread(newDistrictId, newDistrictPermissionId, subjectIds, null);
                 }
             }
         }
@@ -179,12 +179,12 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
     }
 
     @Override
-    public void changeObjectPermissionsInDistinctThread(long objectId, long permissionId, Set<Long> addSubjectIds, Set<Long> removeSubjectIds) {
+    public void changePermissionsInDistinctThread(long objectId, long permissionId, Set<Long> addSubjectIds, Set<Long> removeSubjectIds) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void changeObjectPermissions(long objectId, long permissionId, Set<Long> addSubjectIds, Set<Long> removeSubjectIds) {
+    public void changePermissions(DomainObjectPermissionInfo objectPermissionInfo, Set<Long> addSubjectIds, Set<Long> removeSubjectIds) {
         throw new UnsupportedOperationException();
     }
 
@@ -390,7 +390,7 @@ public class OrganizationStrategy extends AbstractStrategy implements IOsznOrgan
     }
 
     @Transactional
-    protected void updateChildrenActivity(Set<Long> childrenIds, boolean enabled) {
+    private void updateChildrenActivity(Set<Long> childrenIds, boolean enabled) {
         Map<String, Object> params = Maps.newHashMap();
         params.put("childrenIds", childrenIds);
         params.put("enabled", enabled);
