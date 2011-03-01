@@ -9,10 +9,17 @@ import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.util.time.Duration;
+import org.complitex.dictionary.entity.DomainObject;
+import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
+import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
 import org.complitex.osznconnection.file.entity.AddressImportMessage;
-import org.complitex.osznconnection.file.service.AddressImportService;
+import org.complitex.osznconnection.file.service.ImportService;
+import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.TemplatePage;
 
@@ -24,24 +31,50 @@ import java.util.List;
  *         Date: 28.02.11 18:46
  */
 @AuthorizeInstantiation(SecurityRole.ADMIN_MODULE_EDIT)
-public class AddressImportPage extends TemplatePage {
+public class ImportPage extends TemplatePage {
     @EJB
-    private AddressImportService addressImportService;
+    private ImportService importService;
+
+    @EJB(name = "OrganizationStrategy")
+    private IOsznOrganizationStrategy organizationStrategy;
 
     private int stopTimer = 0;
 
-    public AddressImportPage() {
+    public ImportPage() {
         final WebMarkupContainer container = new WebMarkupContainer("container");
         add(container);
+
+        add(new FeedbackPanel("messages"));
 
         Form form = new Form("form");
         container.add(form);
 
+        //Организация
+        final IModel<DomainObject> organizationModel = new Model<DomainObject>();
+
+        DisableAwareDropDownChoice<DomainObject> organization = new DisableAwareDropDownChoice<DomainObject>("organization",
+                organizationModel,
+                new LoadableDetachableModel<List<DomainObject>>() {
+
+                    @Override
+                    protected List<DomainObject> load() {
+                        return organizationStrategy.getAllCalculationCentres(getLocale());
+                    }
+                }, new DomainObjectDisableAwareRenderer() {
+
+                    @Override
+                    public Object getDisplayValue(DomainObject object) {
+                        return organizationStrategy.displayDomainObject(object, getLocale());
+                    }
+                });
+        organization.setRequired(true);
+        form.add(organization);
+
         Button process = new Button("process"){
             @Override
             public void onSubmit() {
-                if (!addressImportService.isProcessing()) {
-                    addressImportService.process();
+                if (!importService.isProcessing()) {
+                    importService.process(organizationModel.getObject().getId());
 
                     container.add(newTimer());
                 }
@@ -49,16 +82,23 @@ public class AddressImportPage extends TemplatePage {
 
             @Override
             public boolean isVisible() {
-                return !addressImportService.isProcessing();
+                return !importService.isProcessing();
             }
         };
         form.add(process);
+
+        container.add(new Label("header_address_import", getStringOrKey("address_import")){
+            @Override
+            public boolean isVisible() {
+                return !importService.getMessages().isEmpty();
+            }
+        });
 
         container.add(new ListView<AddressImportMessage>("address_import",
                 new LoadableDetachableModel<List<? extends AddressImportMessage>>() {
                     @Override
                     protected List<? extends AddressImportMessage> load() {
-                        return addressImportService.getMessages();
+                        return importService.getMessages();
                     }
                 }){
             {
@@ -69,10 +109,17 @@ public class AddressImportPage extends TemplatePage {
             protected void populateItem(ListItem<AddressImportMessage> item) {
                 AddressImportMessage message = item.getModelObject();
 
-                String m = getStringOrKey("address_import") + ": " + getStringOrKey(message.getAddressImportFile()) +
+                String m = getStringOrKey(message.getAddressImportFile()) +
                         " (" + message.getIndex() + "/" + message.getCount() + ")";
 
                 item.add(new Label("message", m));
+            }
+        });
+
+        container.add(new Label("header_correction_import", getStringOrKey("correction_import")){
+            @Override
+            public boolean isVisible() {
+                return !importService.getCorrectionMessages().isEmpty();
             }
         });
 
@@ -80,7 +127,7 @@ public class AddressImportPage extends TemplatePage {
                 new LoadableDetachableModel<List<? extends AddressImportMessage>>() {
                     @Override
                     protected List<? extends AddressImportMessage> load() {
-                        return addressImportService.getCorrectionMessages();
+                        return importService.getCorrectionMessages();
                     }
                 }){
             {
@@ -91,7 +138,7 @@ public class AddressImportPage extends TemplatePage {
             protected void populateItem(ListItem<AddressImportMessage> item) {
                 AddressImportMessage message = item.getModelObject();
 
-                String m = getStringOrKey("correction_import") + " " + getStringOrKey(message.getAddressImportFile()) +
+                String m = getStringOrKey(message.getAddressImportFile()) +
                         " (" + message.getIndex() + "/" + message.getCount() + ")";
 
                 item.add(new Label("message", m));
@@ -101,7 +148,7 @@ public class AddressImportPage extends TemplatePage {
         container.add(new Label("error", new LoadableDetachableModel<Object>() {
             @Override
             protected Object load() {
-                return addressImportService.getErrorMessage();
+                return importService.getErrorMessage();
             }
         }));
     }
@@ -112,7 +159,7 @@ public class AddressImportPage extends TemplatePage {
         return new AjaxSelfUpdatingTimerBehavior(Duration.seconds(1)){
             @Override
             protected void onPostProcessTarget(AjaxRequestTarget target) {
-                if (!addressImportService.isProcessing()){
+                if (!importService.isProcessing()){
                     stopTimer++;
                 }
 

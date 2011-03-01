@@ -106,13 +106,13 @@ public class AdminTemplateMenu extends ResourceTemplateMenu {
         links.add(new ITemplateLink(){
             @Override
             public String getLabel(Locale locale) {
-                return getString(AddressImportPage.class, locale, "title");
+                return getString(ImportPage.class, locale, "title");
             }
 
             @SuppressWarnings({"unchecked"})
             @Override
             public Class<? extends Page> getPage() {
-                return AddressImportPage.class;
+                return ImportPage.class;
             }
 
             @Override
@@ -122,7 +122,7 @@ public class AdminTemplateMenu extends ResourceTemplateMenu {
 
             @Override
             public String getTagId() {
-                return "AddressImportPage";
+                return "ImportPage";
             }
         });
 
