@@ -22,10 +22,9 @@ import java.util.*;
 @Singleton
 @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 @TransactionManagement(TransactionManagementType.BEAN)
-public class AddressImportService {
-    private final static Logger log = LoggerFactory.getLogger(AddressImportService.class);
+public class ImportService {
+    private final static Logger log = LoggerFactory.getLogger(ImportService.class);
 
-    public static final long ORGANIZATION_ID = 1L;
     public static final long INTERNAL_ORGANIZATION_ID = 0L;
 
     @Resource
@@ -67,7 +66,7 @@ public class AddressImportService {
     }
 
     @Asynchronous
-    public void process(){
+    public void process(Long organizationId){
         if (processing){
             return;
         }
@@ -97,7 +96,7 @@ public class AddressImportService {
                 public void completeImport(AddressImportFile addressImportFile) {}
             });
 
-            addressCorrectionImport.process(ORGANIZATION_ID, INTERNAL_ORGANIZATION_ID, new IAddressImportListener() {
+            addressCorrectionImport.process(organizationId, INTERNAL_ORGANIZATION_ID, new IAddressImportListener() {
 
                 @Override
                 public void beginImport(AddressImportFile addressImportFile, int recordCount) {
