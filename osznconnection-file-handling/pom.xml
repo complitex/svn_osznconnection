@@ -21,6 +21,14 @@
         </dependency>
         <dependency>
             <groupId>org.complitex</groupId>
+            <artifactId>complitex-admin</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.complitex</groupId>
+            <artifactId>complitex-logging</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.complitex</groupId>
             <artifactId>complitex-address</artifactId>
         </dependency>
         <dependency>
