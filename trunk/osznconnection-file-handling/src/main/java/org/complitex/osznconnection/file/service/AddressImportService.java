@@ -76,6 +76,7 @@ public class AddressImportService {
         correctionMap.clear();
         processing = true;
         error = false;
+        errorMessage = null;
 
         try {
             userTransaction.begin();
