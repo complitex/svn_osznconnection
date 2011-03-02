@@ -265,6 +265,34 @@ public class AddressCorrectionBean extends CorrectionBean {
         return correction;
     }
 
+    public void insertCityCorrection(String city, long cityObjectId, long organizationId, long internalOrganizationId) {
+        insert(createCityCorrection(city, cityObjectId, organizationId, internalOrganizationId));
+    }
+
+    public void insertDistrictCorrection(String district, long cityCorrectionId, long districtObjectId,
+                                         long organizationId, long internalOrganizationId) {
+        insert(createDistrictCorrection(district, cityCorrectionId, districtObjectId, organizationId,
+                internalOrganizationId));
+    }
+
+    public void insertStreetTypeCorrection(String streetType, long streetTypeObjectId, long organizationId,
+                                           long internalOrganizationId) {
+        insert(createStreetTypeCorrection(streetType, streetTypeObjectId, organizationId, internalOrganizationId));
+    }
+
+    public void insertStreetCorrection(String street, String streetCode, Long streetTypeCorrectionId,
+                                       long cityCorrectionId, long streetObjectId, long organizationId,
+                                       long internalOrganizationId) {
+        insertStreet(createStreetCorrection(street, streetCode, streetTypeCorrectionId, cityCorrectionId, streetObjectId,
+                organizationId, internalOrganizationId));
+    }
+
+    public void insertBuildingCorrection(String number, String corp, long streetCorrectionId, long buildingObjectId,
+                                         long organizationId, long internalOrganizationId) {
+        insertBuilding(createBuildingCorrection(number, corp, streetCorrectionId, buildingObjectId, organizationId,
+                internalOrganizationId));
+    }
+
     /**
      * Найти id внутреннего объекта системы. Поиск идет по сущности(entity), коррекции(correction),
      * типу атрибута по которому сравнивать коррекцию(attributeTypeId), id родильского обьекта(parentId), типу сущности(entityTypeId).

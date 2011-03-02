@@ -5,23 +5,22 @@
 package org.complitex.osznconnection.file.service;
 
 import org.complitex.dictionary.mybatis.Transactional;
-import org.complitex.dictionary.service.AbstractBean;
+import org.complitex.osznconnection.file.entity.Correction;
+import org.complitex.osznconnection.file.entity.example.CorrectionExample;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.Stateless;
 import java.util.List;
-import org.complitex.osznconnection.file.entity.example.CorrectionExample;
 
 /**
  * Класс для работы с коррекциями привилегий.
  * @author Artem
  */
 @Stateless(name = "PrivilegeCorrectionBean")
-public class PrivilegeCorrectionBean extends AbstractBean {
-
+public class PrivilegeCorrectionBean extends CorrectionBean {
     private static final Logger log = LoggerFactory.getLogger(PrivilegeCorrectionBean.class);
-    
+
     private static final String MAPPING_NAMESPACE = PrivilegeCorrectionBean.class.getName();
 
     /**
@@ -30,6 +29,7 @@ public class PrivilegeCorrectionBean extends AbstractBean {
      * @param organizationId
      * @return
      */
+    @SuppressWarnings({"unchecked"})
     @Transactional
     public Long findInternalPrivilege(String organizationCode, long organizationId) {
         CorrectionExample example = new CorrectionExample();
@@ -48,6 +48,7 @@ public class PrivilegeCorrectionBean extends AbstractBean {
      * @param organizationId
      * @return
      */
+    @SuppressWarnings({"unchecked"})
     @Transactional
     public String findPrivilegeCode(long objectId, long organizationId) {
         CorrectionExample example = new CorrectionExample();
@@ -58,5 +59,22 @@ public class PrivilegeCorrectionBean extends AbstractBean {
             return codes.get(0);
         }
         return null;
+    }
+
+    public Correction createOwnershipCorrection(String code, String privilege, long ownershipObjectId, long organizationId,
+                                                long internalOrganizationId) {
+        Correction correction = new Correction("privilege");
+        correction.setParentId(null);
+        correction.setCode(code);
+        correction.setCorrection(privilege);
+        correction.setOrganizationId(organizationId);
+        correction.setInternalOrganizationId(internalOrganizationId);
+        correction.setObjectId(ownershipObjectId);
+        return correction;
+    }
+
+    public void insertOwnershipCorrection(String code, String privilege, long ownershipObjectId, long organizationId,
+                                          long internalOrganizationId) {
+        insert(createOwnershipCorrection(code, privilege, ownershipObjectId, organizationId, internalOrganizationId));
     }
 }
