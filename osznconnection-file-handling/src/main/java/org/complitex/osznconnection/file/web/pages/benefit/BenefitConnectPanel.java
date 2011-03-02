@@ -3,7 +3,6 @@ package org.complitex.osznconnection.file.web.pages.benefit;
 import com.google.common.collect.Lists;
 import java.util.Collection;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
@@ -23,6 +22,7 @@ import javax.ejb.EJB;
 import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.complitex.dictionary.util.StringUtil;
 import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
@@ -47,11 +47,11 @@ import org.slf4j.LoggerFactory;
 public class BenefitConnectPanel extends Panel {
 
     private static final Logger log = LoggerFactory.getLogger(BenefitConnectPanel.class);
-    @EJB(name = "BenefitBean")
+    @EJB
     private BenefitBean benefitBean;
-    @EJB(name = "StatusRenderService")
+    @EJB
     private StatusRenderService statusRenderService;
-    @EJB(name = "WebWarningRenderer")
+    @EJB
     private WebWarningRenderer webWarningRenderer;
 
     private class BenefitDataModel extends AbstractReadOnlyModel<List<BenefitData>> {
@@ -67,6 +67,7 @@ public class BenefitConnectPanel extends Panel {
                 }
             } catch (DBException e) {
                 error(getString("db_error"));
+                log.error("", e);
             }
 
             switch (benefit.getStatus()) {
@@ -198,7 +199,7 @@ public class BenefitConnectPanel extends Panel {
         };
         radioGroup.add(data);
 
-        AjaxButton connect = new AjaxButton("connect") {
+        IndicatingAjaxButton connect = new IndicatingAjaxButton("connect") {
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
@@ -225,6 +226,7 @@ public class BenefitConnectPanel extends Panel {
                         }
                     } catch (DBException e) {
                         error(getString("db_error"));
+                        log.error("", e);
                     }
                 }
                 target.addComponent(messages);

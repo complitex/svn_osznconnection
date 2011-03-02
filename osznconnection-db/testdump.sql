@@ -220,4 +220,5 @@ insert into tarif(`T11_CS_UNI`, `T11_CODE2`, `request_file_id`, `T11_CODE1`) val
 insert into calculation_center_preference(calculation_center_id, adapter_class) values (2, 'org.complitex.osznconnection.file.calculation.adapter.DefaultCalculationCenterAdapter');
 
 -- config test
-insert into config(name, value) values ('SAVE_OUTPUT_FILE_STORAGE_DIR', 'D:\\Artem\\Projects\\org.complitex\\storage\\out');
+--insert into config(`name`, `value`) values ('SAVE_OUTPUT_FILE_STORAGE_DIR', 'D:\\Artem\\Projects\\org.complitex\\storage\\out');
+--insert into config(`name`, `value`) values ('ADDRESS_IMPORT_FILE_STORAGE_DIR', 'D:\\Artem\\Projects\\org.complitex\\storage\\import');
