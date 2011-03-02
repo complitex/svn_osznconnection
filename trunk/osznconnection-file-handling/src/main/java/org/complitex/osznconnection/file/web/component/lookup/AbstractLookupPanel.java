@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import javax.ejb.EJB;
 import java.util.List;
 import org.apache.wicket.Component;
+import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.util.CloneUtil;
@@ -129,7 +130,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
         });
         accordion.add(apartment);
 
-        AjaxLink lookupByAddress = new AjaxLink("lookupByAddress") {
+        IndicatingAjaxLink<Void> lookupByAddress = new IndicatingAjaxLink<Void>("lookupByAddress") {
 
             @Override
             public void onClick(AjaxRequestTarget target) {
@@ -158,6 +159,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
                             }
                         } catch (DBException e) {
                             error(getString("db_error"));
+                            log.error("", e);
                         }
                     } else {
                         error(statusRenderService.displayStatus(request.getStatus(), getLocale()));

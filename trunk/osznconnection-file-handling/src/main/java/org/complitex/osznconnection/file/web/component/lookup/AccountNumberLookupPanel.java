@@ -10,7 +10,7 @@ import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormChoiceComponentUpdatingBehavior;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Radio;
@@ -33,12 +33,16 @@ import org.complitex.osznconnection.file.entity.AccountDetail;
 import org.complitex.osznconnection.file.service.LookupBean;
 import org.complitex.osznconnection.file.service.StatusRenderService;
 import org.complitex.osznconnection.file.web.pages.util.AddressRenderer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Artem
  */
 public abstract class AccountNumberLookupPanel<T extends AbstractRequest> extends Panel {
+
+    private static final Logger log = LoggerFactory.getLogger(AccountNumberLookupPanel.class);
 
     @EJB
     private StatusRenderService statusRenderService;
@@ -108,7 +112,7 @@ public abstract class AccountNumberLookupPanel<T extends AbstractRequest> extend
         };
         radioGroup.add(details);
 
-        AjaxLink lookup = new AjaxLink("lookup") {
+        IndicatingAjaxLink<Void> lookup = new IndicatingAjaxLink<Void>("lookup") {
 
             @Override
             public void onClick(AjaxRequestTarget target) {
@@ -135,6 +139,8 @@ public abstract class AccountNumberLookupPanel<T extends AbstractRequest> extend
                             }
                         } catch (DBException e) {
                             error(getString("db_error"));
+                            log.error("", e);
+
                         } catch (UnknownAccountNumberTypeException e){
                             error(getString("unknown_account_number_type"));
                         }
