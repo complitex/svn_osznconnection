@@ -13,3 +13,5 @@ ALTER TABLE `street_type` ADD COLUMN `external_id` BIGINT(20), ADD UNIQUE KEY `u
 ALTER TABLE `street` ADD COLUMN `external_id` BIGINT(20), ADD UNIQUE KEY `unique_external_id` (`external_id`);
 ALTER TABLE `room` ADD COLUMN `external_id` BIGINT(20), ADD UNIQUE KEY `unique_external_id` (`external_id`);
 ALTER TABLE `apartment` ADD COLUMN `external_id` BIGINT(20), ADD UNIQUE KEY `unique_external_id` (`external_id`);
+
+INSERT INTO `update` (`version`) VALUE ('20110222_592_0.1.5');
