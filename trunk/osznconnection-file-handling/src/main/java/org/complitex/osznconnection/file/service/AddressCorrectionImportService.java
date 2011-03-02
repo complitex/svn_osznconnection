@@ -1,15 +1,15 @@
 package org.complitex.osznconnection.file.service;
 
 import au.com.bytecode.opencsv.CSVReader;
-import org.complitex.address.service.AddressImportStorage;
-import org.complitex.address.service.IAddressImportListener;
+import org.complitex.address.entity.AddressImportFile;
 import org.complitex.address.strategy.building.BuildingStrategy;
 import org.complitex.address.strategy.building_address.BuildingAddressStrategy;
 import org.complitex.address.strategy.city.CityStrategy;
 import org.complitex.address.strategy.district.DistrictStrategy;
 import org.complitex.address.strategy.street.StreetStrategy;
 import org.complitex.address.strategy.street_type.StreetTypeStrategy;
-import org.complitex.dictionary.service.AbstractBean;
+import org.complitex.dictionary.entity.AbstractImportService;
+import org.complitex.dictionary.service.IImportListener;
 import org.complitex.dictionary.service.exception.ImportFileNotFoundException;
 import org.complitex.dictionary.service.exception.ImportFileReadException;
 import org.complitex.dictionary.service.exception.ImportObjectLinkException;
@@ -28,8 +28,8 @@ import static org.complitex.address.entity.AddressImportFile.*;
  */
 
 @Stateless
-public class AddressCorrectionImport extends AbstractBean{
-    private final static Logger log = LoggerFactory.getLogger(AddressCorrectionImport.class);
+public class AddressCorrectionImportService extends AbstractImportService{
+    private final static Logger log = LoggerFactory.getLogger(AddressCorrectionImportService.class);
 
     @EJB
     private AddressCorrectionBean addressCorrectionBean;
@@ -52,15 +52,13 @@ public class AddressCorrectionImport extends AbstractBean{
     @EJB
     private BuildingAddressStrategy buildingAddressStrategy;
 
-    private AddressImportStorage storage = AddressImportStorage.getInstance();
-
-    public void process(long organizationId, long internalOrganizationId, IAddressImportListener listener)
+    public void process(long organizationId, long internalOrganizationId, IImportListener<AddressImportFile> listener)
             throws ImportFileNotFoundException, ImportObjectLinkException, ImportFileReadException {
-        importCity(organizationId, internalOrganizationId, listener);
-        importDistrict(organizationId, internalOrganizationId, listener);
-        importStreetType(organizationId, internalOrganizationId, listener);
-        importStreet(organizationId, internalOrganizationId, listener);
-        importBuilding(organizationId, internalOrganizationId, listener);
+        importCityToCorrection(organizationId, internalOrganizationId, listener);
+        importDistrictToCorrection(organizationId, internalOrganizationId, listener);
+        importStreetTypeToCorrection(organizationId, internalOrganizationId, listener);
+        importStreetToCorrection(organizationId, internalOrganizationId, listener);
+        importBuildingToCorrection(organizationId, internalOrganizationId, listener);
     }
 
     /**
@@ -68,11 +66,11 @@ public class AddressCorrectionImport extends AbstractBean{
      * @throws ImportFileNotFoundException
      * @throws ImportFileReadException
      */
-    private void importCity(Long orgId, Long intOrgId, IAddressImportListener listener)
+    private void importCityToCorrection(Long orgId, Long intOrgId, IImportListener<AddressImportFile> listener)
             throws ImportFileNotFoundException, ImportFileReadException, ImportObjectLinkException {
-        listener.beginImport(CITY, storage.getRecordCount(CITY));
+        listener.beginImport(CITY, getRecordCount(CITY));
 
-        CSVReader reader = storage.getCsvReader(CITY);
+        CSVReader reader = getCsvReader(CITY);
 
         int recordIndex = 0;
 
@@ -83,13 +81,12 @@ public class AddressCorrectionImport extends AbstractBean{
                 recordIndex++;
 
                 //CITY_ID
-                Long objectId = cityStrategy.getObjectId(Long.parseLong(line[0]));
+                Long objectId = cityStrategy.getObjectId(Long.parseLong(line[0].trim()));
                 if (objectId == null){
                     throw new ImportObjectLinkException(CITY.getFileName(), recordIndex, line[0]);
                 }
 
-                addressCorrectionBean.insert(addressCorrectionBean.createCityCorrection(
-                        line[3], objectId, orgId, intOrgId));
+                addressCorrectionBean.insertCityCorrection(line[3].trim(), objectId, orgId, intOrgId);
 
                 listener.recordProcessed(CITY, recordIndex);
             }
@@ -113,11 +110,11 @@ public class AddressCorrectionImport extends AbstractBean{
      * @throws ImportFileNotFoundException
      * @throws ImportFileReadException
      */
-    private void importDistrict(Long orgId, Long intOrgId, IAddressImportListener listener)
+    private void importDistrictToCorrection(Long orgId, Long intOrgId, IImportListener<AddressImportFile> listener)
             throws ImportFileNotFoundException, ImportFileReadException, ImportObjectLinkException {
-        listener.beginImport(DISTRICT, storage.getRecordCount(DISTRICT));
+        listener.beginImport(DISTRICT, getRecordCount(DISTRICT));
 
-        CSVReader reader = storage.getCsvReader(DISTRICT);
+        CSVReader reader = getCsvReader(DISTRICT);
 
         int recordIndex = 0;
 
@@ -128,13 +125,13 @@ public class AddressCorrectionImport extends AbstractBean{
                 recordIndex++;
 
                 //DISTRICT_ID
-                Long districtId = districtStrategy.getObjectId(Long.parseLong(line[0]));
+                Long districtId = districtStrategy.getObjectId(Long.parseLong(line[0].trim()));
                 if (districtId == null) {
                     throw new ImportObjectLinkException(DISTRICT.getFileName(), recordIndex, line[0]);
                 }
 
                 //CITY_ID
-                Long cityId =  cityStrategy.getObjectId(Long.parseLong(line[1]));
+                Long cityId =  cityStrategy.getObjectId(Long.parseLong(line[1].trim()));
                 if (cityId == null) {
                     throw new ImportObjectLinkException(DISTRICT.getFileName(), recordIndex, line[1]);
                 }
@@ -145,8 +142,7 @@ public class AddressCorrectionImport extends AbstractBean{
                     throw new ImportObjectLinkException(DISTRICT.getFileName(), recordIndex, line[1]);
                 }
 
-                addressCorrectionBean.insert(addressCorrectionBean.createDistrictCorrection(
-                        line[3], cityCorrectionId, districtId, orgId, intOrgId));
+                addressCorrectionBean.insertDistrictCorrection(line[3].trim(), cityCorrectionId, districtId, orgId, intOrgId);
 
                 listener.recordProcessed(DISTRICT, recordIndex);
             }
@@ -170,11 +166,11 @@ public class AddressCorrectionImport extends AbstractBean{
      * @throws ImportFileNotFoundException
      * @throws ImportFileReadException
      */
-    private void importStreetType(Long orgId, Long intOrgId, IAddressImportListener listener)
+    private void importStreetTypeToCorrection(Long orgId, Long intOrgId, IImportListener<AddressImportFile> listener)
             throws ImportFileNotFoundException, ImportFileReadException, ImportObjectLinkException {
-        listener.beginImport(STREET_TYPE, storage.getRecordCount(STREET_TYPE));
+        listener.beginImport(STREET_TYPE, getRecordCount(STREET_TYPE));
 
-        CSVReader reader = storage.getCsvReader(STREET_TYPE);
+        CSVReader reader = getCsvReader(STREET_TYPE);
 
         int recordIndex = 0;
 
@@ -185,13 +181,12 @@ public class AddressCorrectionImport extends AbstractBean{
                 recordIndex++;
 
                 //STREET_TYPE_ID
-                Long streetTypeId = streetTypeStrategy.getObjectId(Long.parseLong(line[0]));
+                Long streetTypeId = streetTypeStrategy.getObjectId(Long.parseLong(line[0].trim()));
                 if (streetTypeId == null){
                     throw new ImportObjectLinkException(STREET_TYPE.getFileName(), recordIndex, line[0]);
                 }
 
-                addressCorrectionBean.insert(addressCorrectionBean.createStreetTypeCorrection(
-                        line[2], streetTypeId, orgId, intOrgId));
+                addressCorrectionBean.insertStreetTypeCorrection(line[2].trim(), streetTypeId, orgId, intOrgId);
 
                 listener.recordProcessed(STREET_TYPE, recordIndex);
             }
@@ -215,11 +210,11 @@ public class AddressCorrectionImport extends AbstractBean{
      * @throws ImportFileNotFoundException
      * @throws ImportFileReadException
      */
-    private void importStreet(Long orgId, Long intOrgId, IAddressImportListener listener)
+    private void importStreetToCorrection(Long orgId, Long intOrgId, IImportListener<AddressImportFile> listener)
             throws ImportFileNotFoundException, ImportFileReadException, ImportObjectLinkException {
-        listener.beginImport(STREET, storage.getRecordCount(STREET));
+        listener.beginImport(STREET, getRecordCount(STREET));
 
-        CSVReader reader = storage.getCsvReader(STREET);
+        CSVReader reader = getCsvReader(STREET);
 
         int recordIndex = 0;
 
@@ -230,10 +225,10 @@ public class AddressCorrectionImport extends AbstractBean{
                 recordIndex++;
 
                 //STREET_ID
-                Long streetId = streetStrategy.getObjectId(Long.parseLong(line[0]));
+                Long streetId = streetStrategy.getObjectId(Long.parseLong(line[0].trim()));
 
                 //CITY_ID
-                Long cityId = cityStrategy.getObjectId(Long.parseLong(line[1]));
+                Long cityId = cityStrategy.getObjectId(Long.parseLong(line[1].trim()));
                 if (cityId == null) {
                     throw new ImportObjectLinkException(STREET.getFileName(), recordIndex, line[1]);
                 }
@@ -245,7 +240,7 @@ public class AddressCorrectionImport extends AbstractBean{
                 }
 
                 //STREET_TYPE_ID
-                Long streetTypeId = streetTypeStrategy.getObjectId(Long.parseLong(line[2]));
+                Long streetTypeId = streetTypeStrategy.getObjectId(Long.parseLong(line[2].trim()));
                 if (streetTypeId == null) {
                     throw new ImportObjectLinkException(STREET.getFileName(), recordIndex, line[2]);
                 }
@@ -253,8 +248,8 @@ public class AddressCorrectionImport extends AbstractBean{
                 //Street Type Correction
                 Long streetTypeCorrectionId = addressCorrectionBean.getStreetTypeCorrectionId(streetTypeId, orgId, intOrgId);
 
-                addressCorrectionBean.insertStreet(addressCorrectionBean.createStreetCorrection(
-                        line[3], null, streetTypeCorrectionId, cityCorrectionId, streetId, orgId, intOrgId));
+                addressCorrectionBean.insertStreetCorrection(line[3].trim(), null, streetTypeCorrectionId,
+                        cityCorrectionId, streetId, orgId, intOrgId);
 
                 listener.recordProcessed(STREET, recordIndex);
             }
@@ -278,11 +273,11 @@ public class AddressCorrectionImport extends AbstractBean{
      * @throws ImportFileNotFoundException
      * @throws ImportFileReadException
      */
-    private void importBuilding(Long orgId, Long intOrgId, IAddressImportListener listener)
+    private void importBuildingToCorrection(Long orgId, Long intOrgId, IImportListener<AddressImportFile> listener)
             throws ImportFileNotFoundException, ImportFileReadException, ImportObjectLinkException {
-        listener.beginImport(BUILDING, storage.getRecordCount(BUILDING));
+        listener.beginImport(BUILDING, getRecordCount(BUILDING));
 
-        CSVReader reader = storage.getCsvReader(BUILDING);
+        CSVReader reader = getCsvReader(BUILDING);
 
         int recordIndex = 0;
 
@@ -295,7 +290,7 @@ public class AddressCorrectionImport extends AbstractBean{
                 Long buildingId = buildingStrategy.getObjectId(Long.parseLong(line[0]));
 
                 //STREET_ID
-                Long streetId = streetStrategy.getObjectId(Long.parseLong(line[2]));
+                Long streetId = streetStrategy.getObjectId(Long.parseLong(line[2].trim()));
                 if (streetId == null) {
                     throw new ImportObjectLinkException(BUILDING.getFileName(), recordIndex, line[2]);
                 }
@@ -306,8 +301,8 @@ public class AddressCorrectionImport extends AbstractBean{
                     throw new ImportObjectLinkException(BUILDING.getFileName(), recordIndex, line[2]);
                 }
 
-                addressCorrectionBean.insertBuilding(addressCorrectionBean.createBuildingCorrection(
-                        line[3], line[4], streetCorrectionId, buildingId, orgId, intOrgId));
+                addressCorrectionBean.insertBuildingCorrection(line[3].trim(), line[4].trim(), streetCorrectionId,
+                        buildingId, orgId, intOrgId);
 
                 listener.recordProcessed(BUILDING, recordIndex);
             }

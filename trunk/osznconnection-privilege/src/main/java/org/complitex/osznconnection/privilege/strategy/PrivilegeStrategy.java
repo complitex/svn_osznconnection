@@ -5,11 +5,6 @@
 package org.complitex.osznconnection.privilege.strategy;
 
 import com.google.common.collect.Lists;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.entity.example.AttributeExample;
@@ -18,6 +13,12 @@ import org.complitex.dictionary.service.StringCultureBean;
 import org.complitex.dictionary.util.ResourceUtil;
 import org.complitex.template.strategy.AbstractStrategy;
 import org.complitex.template.web.security.SecurityRole;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  *
@@ -30,8 +31,9 @@ public class PrivilegeStrategy extends AbstractStrategy {
     /**
      * Attribute type ids
      */
-    private static final long NAME = 1200;
-    private static final long CODE = 1201;
+    public static final long NAME = 1200;
+    public static final long CODE = 1201;
+
     @EJB
     private StringCultureBean stringBean;
 

@@ -7,9 +7,10 @@
 <wicket:extend>
     <div>
         <h1><wicket:message key="title"/></h1>
-        <div wicket:id="messages"></div>
 
         <div wicket:id="container">
+            <div wicket:id="messages"></div>
+
             <form action="#" wicket:id="form">
                 <select wicket:id="organization"></select>
                 <input type="submit" class="btnBig" wicket:id="process" wicket:message="value:process"/>
@@ -17,10 +18,10 @@
 
             <br/>
 
-            <h2 wicket:id="header_address_import"></h2>
+            <h2 wicket:id="header_dictionary_import"></h2>
 
             <table>
-                <tr wicket:id="address_import">
+                <tr wicket:id="dictionary_import">
                     <td wicket:id="message"></td>
                 </tr>
             </table>

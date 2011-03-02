@@ -15,9 +15,9 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.time.Duration;
 import org.complitex.dictionary.entity.DomainObject;
+import org.complitex.dictionary.entity.ImportMessage;
 import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
 import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
-import org.complitex.osznconnection.file.entity.AddressImportMessage;
 import org.complitex.osznconnection.file.service.ImportService;
 import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
 import org.complitex.template.web.security.SecurityRole;
@@ -44,7 +44,7 @@ public class ImportPage extends TemplatePage {
         final WebMarkupContainer container = new WebMarkupContainer("container");
         add(container);
 
-        add(new FeedbackPanel("messages"));
+        container.add(new FeedbackPanel("messages"));
 
         Form form = new Form("form");
         container.add(form);
@@ -87,17 +87,17 @@ public class ImportPage extends TemplatePage {
         };
         form.add(process);
 
-        container.add(new Label("header_address_import", getStringOrKey("address_import")){
+        container.add(new Label("header_dictionary_import", getStringOrKey("dictionary_import")){
             @Override
             public boolean isVisible() {
                 return !importService.getMessages().isEmpty();
             }
         });
 
-        container.add(new ListView<AddressImportMessage>("address_import",
-                new LoadableDetachableModel<List<? extends AddressImportMessage>>() {
+        container.add(new ListView<ImportMessage>("dictionary_import",
+                new LoadableDetachableModel<List<? extends ImportMessage>>() {
                     @Override
-                    protected List<? extends AddressImportMessage> load() {
+                    protected List<? extends ImportMessage> load() {
                         return importService.getMessages();
                     }
                 }){
@@ -106,10 +106,10 @@ public class ImportPage extends TemplatePage {
             }
 
             @Override
-            protected void populateItem(ListItem<AddressImportMessage> item) {
-                AddressImportMessage message = item.getModelObject();
+            protected void populateItem(ListItem<ImportMessage> item) {
+                ImportMessage message = item.getModelObject();
 
-                String m = getStringOrKey(message.getAddressImportFile()) +
+                String m = getStringOrKey(message.getImportFile()) +
                         " (" + message.getIndex() + "/" + message.getCount() + ")";
 
                 item.add(new Label("message", m));
@@ -123,10 +123,10 @@ public class ImportPage extends TemplatePage {
             }
         });
 
-        container.add(new ListView<AddressImportMessage>("correction_import",
-                new LoadableDetachableModel<List<? extends AddressImportMessage>>() {
+        container.add(new ListView<ImportMessage>("correction_import",
+                new LoadableDetachableModel<List<? extends ImportMessage>>() {
                     @Override
-                    protected List<? extends AddressImportMessage> load() {
+                    protected List<? extends ImportMessage> load() {
                         return importService.getCorrectionMessages();
                     }
                 }){
@@ -135,10 +135,10 @@ public class ImportPage extends TemplatePage {
             }
 
             @Override
-            protected void populateItem(ListItem<AddressImportMessage> item) {
-                AddressImportMessage message = item.getModelObject();
+            protected void populateItem(ListItem<ImportMessage> item) {
+                ImportMessage message = item.getModelObject();
 
-                String m = getStringOrKey(message.getAddressImportFile()) +
+                String m = getStringOrKey(message.getImportFile()) +
                         " (" + message.getIndex() + "/" + message.getCount() + ")";
 
                 item.add(new Label("message", m));
@@ -164,6 +164,9 @@ public class ImportPage extends TemplatePage {
                 }
 
                 if (stopTimer > 2){
+                    if (importService.isSuccess()){
+                        info(getString("success"));
+                    }
                     stop();
                 }
             }

@@ -6,11 +6,6 @@ package org.complitex.osznconnection.ownership.strategy;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.entity.example.AttributeExample;
@@ -19,6 +14,12 @@ import org.complitex.dictionary.service.StringCultureBean;
 import org.complitex.dictionary.util.ResourceUtil;
 import org.complitex.template.strategy.AbstractStrategy;
 import org.complitex.template.web.security.SecurityRole;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  *
@@ -31,7 +32,8 @@ public class OwnershipStrategy extends AbstractStrategy {
     /**
      * Attribute type ids
      */
-    private static final long NAME = 1100;
+    public static final long NAME = 1100;
+
     @EJB
     private StringCultureBean stringBean;
 
