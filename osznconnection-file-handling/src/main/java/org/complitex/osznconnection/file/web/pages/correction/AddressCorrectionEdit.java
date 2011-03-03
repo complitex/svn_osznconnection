@@ -69,6 +69,8 @@ public class AddressCorrectionEdit extends FormTemplatePage {
             Long id = ids.get(entity);
             if (id != null && id > 0) {
                 correction.setObjectId(id);
+            } else {
+                correction.setObjectId(null);
             }
         }
     }
