@@ -28,6 +28,7 @@ import org.complitex.osznconnection.ownership.strategy.OwnershipStrategy;
 import javax.ejb.EJB;
 import java.util.List;
 import java.util.Locale;
+import org.apache.wicket.model.StringResourceModel;
 
 /**
  * Страница для редактирования коррекций форм власти.
@@ -40,7 +41,7 @@ public final class OwnershipCorrectionEdit extends FormTemplatePage {
 
     private class OwnershipCorrectionEditPanel extends Panel {
 
-        @EJB(name = "OwnershipStrategy")
+        @EJB
         private OwnershipStrategy ownershipStrategy;
 
         public OwnershipCorrectionEditPanel(String id, final Correction ownershipCorrection) {
@@ -115,9 +116,12 @@ public final class OwnershipCorrectionEdit extends FormTemplatePage {
 
             @Override
             protected PageParameters getBackPageParameters() {
-                PageParameters parameters = new PageParameters();
-                parameters.put(OwnershipCorrectionList.CORRECTED_ENTITY, getModel().getEntity());
-                return parameters;
+                return PageParameters.NULL;
+            }
+
+            @Override
+            protected IModel<String> getTitleModel() {
+                return new StringResourceModel("title", this, null);
             }
         });
     }

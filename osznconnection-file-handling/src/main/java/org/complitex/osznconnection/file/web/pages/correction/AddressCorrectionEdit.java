@@ -34,6 +34,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.strategy.IStrategy;
 import org.complitex.dictionary.web.component.ShowMode;
@@ -123,15 +124,8 @@ public class AddressCorrectionEdit extends FormTemplatePage {
         protected abstract List<String> getSearchFilters();
 
         @Override
-        protected Class<? extends Page> getBackPageClass() {
-            return AddressCorrectionList.class;
-        }
-
-        @Override
         protected PageParameters getBackPageParameters() {
-            PageParameters parameters = new PageParameters();
-            parameters.put(AddressCorrectionList.CORRECTED_ENTITY, getModel().getEntity());
-            return parameters;
+            return PageParameters.NULL;
         }
 
         @Override
@@ -160,6 +154,16 @@ public class AddressCorrectionEdit extends FormTemplatePage {
         @Override
         protected List<String> getSearchFilters() {
             return ImmutableList.of("city");
+        }
+
+        @Override
+        protected IModel<String> getTitleModel() {
+            return new StringResourceModel("city_title", this, null);
+        }
+
+        @Override
+        protected Class<? extends Page> getBackPageClass() {
+            return CityCorrectionList.class;
         }
     }
 
@@ -222,6 +226,11 @@ public class AddressCorrectionEdit extends FormTemplatePage {
         @Override
         protected Panel getCorrectionInputPanel(String id) {
             return new AddressCorrectionInputPanel(id, getModel());
+        }
+
+        @Override
+        protected IModel<String> getTitleModel() {
+            return new StringResourceModel("district_title", this, null);
         }
     }
 
@@ -323,6 +332,11 @@ public class AddressCorrectionEdit extends FormTemplatePage {
             }
             return true;
         }
+
+        @Override
+        protected IModel<String> getTitleModel() {
+            return new StringResourceModel("street_title", this, null);
+        }
     }
 
     /**
@@ -418,6 +432,11 @@ public class AddressCorrectionEdit extends FormTemplatePage {
                 return false;
             }
             return true;
+        }
+
+        @Override
+        protected IModel<String> getTitleModel() {
+            return new StringResourceModel("building_title", this, null);
         }
     }
     private AbstractCorrectionEditPanel addressEditPanel;

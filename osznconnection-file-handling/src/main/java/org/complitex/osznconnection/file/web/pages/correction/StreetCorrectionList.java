@@ -6,7 +6,8 @@ package org.complitex.osznconnection.file.web.pages.correction;
 
 import java.util.List;
 import javax.ejb.EJB;
-import org.apache.wicket.PageParameters;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.osznconnection.file.entity.Correction;
 import org.complitex.osznconnection.file.entity.StreetCorrection;
@@ -20,15 +21,20 @@ import org.complitex.osznconnection.file.web.pages.util.AddressRenderer;
  */
 public class StreetCorrectionList extends AddressCorrectionList {
 
-    @EJB(name = "AddressCorrectionBean")
+    @EJB
     private AddressCorrectionBean addressCorrectionBean;
 
-    public StreetCorrectionList(PageParameters params) {
-        super(params);
+    public StreetCorrectionList() {
+        super("street");
     }
 
     @Override
-    protected List<? extends Correction> find(CorrectionExample example) {
+    protected IModel<String> getTitleModel() {
+        return new StringResourceModel("title", this, null);
+    }
+
+    @Override
+    protected List<StreetCorrection> find(CorrectionExample example) {
         return addressCorrectionBean.findStreets(example);
     }
 

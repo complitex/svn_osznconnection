@@ -24,7 +24,6 @@ import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.service.LocaleBean;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
@@ -55,24 +54,17 @@ import org.complitex.template.web.pages.ScrollListPage;
 @AuthorizeInstantiation(SecurityRole.AUTHORIZED)
 public abstract class AbstractCorrectionList extends ScrollListPage {
 
-    public static final String CORRECTED_ENTITY = "entity";
-
-    @EJB(name = "CorrectionBean")
+    @EJB
     private CorrectionBean correctionBean;
-
-    @EJB(name = "LocaleBean")
+    @EJB
     private LocaleBean localeBean;
-
     @EJB(name = "OrganizationStrategy")
     private IOsznOrganizationStrategy organizationStrategy;
-
     private String entity;
-
     private IModel<CorrectionExample> example;
 
-    public AbstractCorrectionList(PageParameters params) {
-        super(params);
-        entity = params.getString(CORRECTED_ENTITY);
+    public AbstractCorrectionList(String entity) {
+        this.entity = entity;
         setPreferencesPage(getClass().getName() + "#" + entity);
         init();
     }
@@ -111,10 +103,12 @@ public abstract class AbstractCorrectionList extends ScrollListPage {
 
     protected abstract PageParameters getEditPageParams(Long objectCorrectionId);
 
+    protected abstract IModel<String> getTitleModel();
+
     protected void init() {
-        IModel<String> labelModel = new ResourceModel("label");
-        add(new Label("title", labelModel));
-        add(new Label("label", labelModel));
+        IModel<String> titleModel = getTitleModel();
+        add(new Label("title", titleModel));
+        add(new Label("label", titleModel));
 
         final WebMarkupContainer content = new WebMarkupContainer("content");
         content.setOutputMarkupId(true);

@@ -31,6 +31,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import org.apache.wicket.model.StringResourceModel;
 import org.complitex.dictionary.web.component.ShowMode;
 
 /**
@@ -41,7 +42,7 @@ import org.complitex.dictionary.web.component.ShowMode;
 public final class PrivilegeCorrectionEdit extends FormTemplatePage {
 
     public static final String CORRECTION_ID = "correction_id";
-    @EJB(name = "PrivilegeStrategy")
+    @EJB
     private PrivilegeStrategy privilegeStrategy;
 
     private class PrivilegeCallback implements ISearchCallback, Serializable {
@@ -108,9 +109,12 @@ public final class PrivilegeCorrectionEdit extends FormTemplatePage {
 
             @Override
             protected PageParameters getBackPageParameters() {
-                PageParameters parameters = new PageParameters();
-                parameters.put(PrivilegeCorrectionList.CORRECTED_ENTITY, getModel().getEntity());
-                return parameters;
+                return PageParameters.NULL;
+            }
+
+            @Override
+            protected IModel<String> getTitleModel() {
+                return new StringResourceModel("title", this, null);
             }
         });
     }
