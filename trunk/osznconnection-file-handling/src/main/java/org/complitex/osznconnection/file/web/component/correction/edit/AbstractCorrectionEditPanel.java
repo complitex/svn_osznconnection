@@ -210,10 +210,12 @@ public abstract class AbstractCorrectionEditPanel extends Panel {
         return new DefaultCorrectionInputPanel(id, new PropertyModel<String>(getModel(), "correction"));
     }
 
+    protected abstract IModel<String> getTitleModel();
+
     protected void init() {
-        IModel<String> labelModel = new ResourceModel("label");
-        add(new Label("title", labelModel));
-        add(new Label("label", labelModel));
+        IModel<String> titleModel = getTitleModel();
+        add(new Label("title", titleModel));
+        add(new Label("label", titleModel));
 
         FeedbackPanel messages = new FeedbackPanel("messages");
         add(messages);

@@ -104,7 +104,7 @@ public class ActualPaymentFillTaskBean implements ITaskBean<RequestFile> {
         return Log.EVENT.EDIT;
     }
 
-    private void process(ActualPayment actualPayment, Date date, ICalculationCenterAdapter adapter, long calculationCenterId) throws DBException {
+    private void process(ActualPayment actualPayment, Date date, ICalculationCenterAdapter adapter) throws DBException {
         if (RequestStatus.unboundStatuses().contains(actualPayment.getStatus())) {
             return;
         }
@@ -114,7 +114,6 @@ public class ActualPaymentFillTaskBean implements ITaskBean<RequestFile> {
 
     private void processActualPayment(RequestFile actualPaymentFile) throws FillException, DBException {
         //получаем информацию о текущем центре начисления
-        Long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterInfo().getCalculationCenterId();
         ICalculationCenterAdapter adapter = calculationCenterBean.getDefaultCalculationCenterAdapter();
 
         //извлечь из базы все id подлежащие обработке для файла actualPayment и доставать записи порциями по BATCH_SIZE штук.
@@ -135,7 +134,7 @@ public class ActualPaymentFillTaskBean implements ITaskBean<RequestFile> {
                 //обработать actualPayment запись
                 try {
                     userTransaction.begin();
-                    process(actualPayment, DateUtil.getFirstDayOf(actualPaymentFile.getLoaded()), adapter, calculationCenterId);
+                    process(actualPayment, DateUtil.getFirstDayOf(actualPaymentFile.getLoaded()), adapter);
                     userTransaction.commit();
                 } catch (Exception e) {
                     log.error("The actual payment item (id = " + actualPayment.getId() + ") was processed with error: ", e);

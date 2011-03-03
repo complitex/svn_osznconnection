@@ -89,7 +89,6 @@ public class CorrectionBean extends AbstractBean {
     public int count(CorrectionExample example) {
         example.setAdmin(osznSessionBean.isAdmin());
         example.setOrganizations(osznSessionBean.getAllOuterOrganizationString());
-
         return (Integer) sqlSession().selectOne(CORRECTION_BEAN_MAPPING_NAMESPACE + ".count", example);
     }
 

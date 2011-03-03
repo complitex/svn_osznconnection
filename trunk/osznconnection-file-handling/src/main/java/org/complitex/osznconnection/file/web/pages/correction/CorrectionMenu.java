@@ -36,14 +36,12 @@ public class CorrectionMenu extends ResourceTemplateMenu {
 
             @Override
             public Class<? extends Page> getPage() {
-                return AddressCorrectionList.class;
+                return CityCorrectionList.class;
             }
 
             @Override
             public PageParameters getParameters() {
-                PageParameters pageParameters = new PageParameters();
-                pageParameters.put(AddressCorrectionList.CORRECTED_ENTITY, "city");
-                return pageParameters;
+                return PageParameters.NULL;
             }
 
             @Override
@@ -65,9 +63,7 @@ public class CorrectionMenu extends ResourceTemplateMenu {
 
             @Override
             public PageParameters getParameters() {
-                PageParameters pageParameters = new PageParameters();
-                pageParameters.put(DistrictCorrectionList.CORRECTED_ENTITY, "district");
-                return pageParameters;
+                return PageParameters.NULL;
             }
 
             @Override
@@ -89,9 +85,7 @@ public class CorrectionMenu extends ResourceTemplateMenu {
 
             @Override
             public PageParameters getParameters() {
-                PageParameters pageParameters = new PageParameters();
-                pageParameters.put(StreetCorrectionList.CORRECTED_ENTITY, "street");
-                return pageParameters;
+                return PageParameters.NULL;
             }
 
             @Override
@@ -113,9 +107,7 @@ public class CorrectionMenu extends ResourceTemplateMenu {
 
             @Override
             public PageParameters getParameters() {
-                PageParameters pageParameters = new PageParameters();
-                pageParameters.put(StreetTypeCorrectionList.CORRECTED_ENTITY, "street_type");
-                return pageParameters;
+                return PageParameters.NULL;
             }
 
             @Override
@@ -137,9 +129,7 @@ public class CorrectionMenu extends ResourceTemplateMenu {
 
             @Override
             public PageParameters getParameters() {
-                PageParameters pageParameters = new PageParameters();
-                pageParameters.put(BuildingCorrectionList.CORRECTED_ENTITY, "building");
-                return pageParameters;
+                return PageParameters.NULL;
             }
 
             @Override
@@ -161,9 +151,7 @@ public class CorrectionMenu extends ResourceTemplateMenu {
 
             @Override
             public PageParameters getParameters() {
-                PageParameters pageParameters = new PageParameters();
-                pageParameters.put(OwnershipCorrectionList.CORRECTED_ENTITY, "ownership");
-                return pageParameters;
+                return PageParameters.NULL;
             }
 
             @Override
@@ -207,9 +195,7 @@ public class CorrectionMenu extends ResourceTemplateMenu {
 
             @Override
             public PageParameters getParameters() {
-                PageParameters pageParameters = new PageParameters();
-                pageParameters.put(PrivilegeCorrectionList.CORRECTED_ENTITY, "privilege");
-                return pageParameters;
+                return PageParameters.NULL;
             }
 
             @Override

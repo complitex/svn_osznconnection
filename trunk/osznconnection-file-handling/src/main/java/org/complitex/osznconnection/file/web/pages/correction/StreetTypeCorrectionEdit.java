@@ -18,6 +18,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.model.StringResourceModel;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.entity.example.DomainObjectExample;
 import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
@@ -117,9 +118,12 @@ public class StreetTypeCorrectionEdit extends FormTemplatePage {
 
             @Override
             protected PageParameters getBackPageParameters() {
-                PageParameters parameters = new PageParameters();
-                parameters.put(StreetTypeCorrectionList.CORRECTED_ENTITY, getModel().getEntity());
-                return parameters;
+                return PageParameters.NULL;
+            }
+
+            @Override
+            protected IModel<String> getTitleModel() {
+                return new StringResourceModel("title", this, null);
             }
         });
     }

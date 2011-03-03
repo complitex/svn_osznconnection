@@ -4,7 +4,6 @@
  */
 package org.complitex.osznconnection.file.web.pages.correction;
 
-import org.apache.wicket.PageParameters;
 import org.complitex.osznconnection.file.entity.BuildingCorrection;
 import org.complitex.osznconnection.file.entity.Correction;
 import org.complitex.osznconnection.file.entity.example.BuildingCorrectionExample;
@@ -14,6 +13,8 @@ import org.complitex.osznconnection.file.web.pages.util.AddressRenderer;
 
 import javax.ejb.EJB;
 import java.util.List;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.StringResourceModel;
 
 /**
  * Список коррекций домов.
@@ -21,11 +22,16 @@ import java.util.List;
  */
 public class BuildingCorrectionList extends AddressCorrectionList {
 
-    @EJB(name = "AddressCorrectionBean")
+    @EJB
     private AddressCorrectionBean addressCorrectionBean;
 
-    public BuildingCorrectionList(PageParameters params) {
-        super(params);
+    public BuildingCorrectionList() {
+        super("building");
+    }
+
+    @Override
+    protected IModel<String> getTitleModel() {
+        return new StringResourceModel("title", this, null);
     }
 
     @Override
