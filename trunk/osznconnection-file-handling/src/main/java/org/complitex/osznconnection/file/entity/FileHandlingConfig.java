@@ -31,11 +31,6 @@ public enum FileHandlingConfig implements IConfig{
     }
 
     @Override
-    public String getName() {
-        return name();
-    }
-
-    @Override
     public String getDefaultValue() {
         return defaultValue;
     }

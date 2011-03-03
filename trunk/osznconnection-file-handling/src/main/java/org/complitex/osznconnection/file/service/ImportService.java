@@ -117,7 +117,7 @@ public class ImportService {
 
                 @Override
                 public void beginImport(AddressImportFile importFile, int recordCount) {
-                    dictionaryMap.put(importFile, new ImportMessage<AddressImportFile>(importFile, recordCount, 0));
+                    dictionaryMap.put(importFile, new ImportMessage(importFile, recordCount, 0));
                 }
 
                 @Override
@@ -133,7 +133,7 @@ public class ImportService {
             ownershipImportService.process(new IImportListener<OwnershipImportFile>() {
                 @Override
                 public void beginImport(OwnershipImportFile importFile, int recordCount) {
-                    dictionaryMap.put(importFile, new ImportMessage<OwnershipImportFile>(importFile, recordCount, 0));
+                    dictionaryMap.put(importFile, new ImportMessage(importFile, recordCount, 0));
                 }
 
                 @Override
@@ -149,7 +149,7 @@ public class ImportService {
             privilegeImportService.process(new IImportListener<PrivilegeImportFile>() {
                 @Override
                 public void beginImport(PrivilegeImportFile importFile, int recordCount) {
-                     dictionaryMap.put(importFile, new ImportMessage<PrivilegeImportFile>(importFile, recordCount, 0));
+                     dictionaryMap.put(importFile, new ImportMessage(importFile, recordCount, 0));
                 }
 
                 @Override
@@ -167,7 +167,7 @@ public class ImportService {
 
                 @Override
                 public void beginImport(AddressImportFile importFile, int recordCount) {
-                    correctionMap.put(importFile, new ImportMessage<AddressImportFile>(importFile, recordCount, 0));
+                    correctionMap.put(importFile, new ImportMessage(importFile, recordCount, 0));
                 }
 
                 @Override
@@ -184,7 +184,7 @@ public class ImportService {
                     new IImportListener<CorrectionImportFile>() {
                 @Override
                 public void beginImport(CorrectionImportFile importFile, int recordCount) {
-                    correctionMap.put(importFile, new ImportMessage<CorrectionImportFile>(importFile, recordCount, 0));
+                    correctionMap.put(importFile, new ImportMessage(importFile, recordCount, 0));
                 }
 
                 @Override
@@ -201,7 +201,7 @@ public class ImportService {
                     new IImportListener<CorrectionImportFile>() {
                 @Override
                 public void beginImport(CorrectionImportFile importFile, int recordCount) {
-                    correctionMap.put(importFile, new ImportMessage<CorrectionImportFile>(importFile, recordCount, 0));
+                    correctionMap.put(importFile, new ImportMessage(importFile, recordCount, 0));
                 }
 
                 @Override

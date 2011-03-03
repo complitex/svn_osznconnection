@@ -109,7 +109,7 @@ public class ImportPage extends TemplatePage {
             protected void populateItem(ListItem<ImportMessage> item) {
                 ImportMessage message = item.getModelObject();
 
-                String m = getStringOrKey(message.getImportFile()) +
+                String m = getStringOrKey(message.getImportFile().name()) +
                         " (" + message.getIndex() + "/" + message.getCount() + ")";
 
                 item.add(new Label("message", m));
@@ -138,7 +138,7 @@ public class ImportPage extends TemplatePage {
             protected void populateItem(ListItem<ImportMessage> item) {
                 ImportMessage message = item.getModelObject();
 
-                String m = getStringOrKey(message.getImportFile()) +
+                String m = getStringOrKey(message.getImportFile().name()) +
                         " (" + message.getIndex() + "/" + message.getCount() + ")";
 
                 item.add(new Label("message", m));
