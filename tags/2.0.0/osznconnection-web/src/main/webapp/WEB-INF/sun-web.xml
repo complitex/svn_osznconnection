@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sun-web-app PUBLIC "-//Sun Microsystems, Inc.//DTD
+GlassFish Application Server 3.0 Servlet 3.0//EN"
+"http://www.sun.com/software/appserver/dtds/sun-web-app_3_0-0.dtd">
+
+<sun-web-app error-url="">
+    <context-root>/osznconnection</context-root>
+
+    <security-role-mapping>
+        <role-name>AUTHORIZED</role-name>
+        <group-name>ADMINISTRATORS</group-name>
+        <group-name>EMPLOYEES</group-name>
+        <group-name>EMPLOYEES_CHILD_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>ADMIN_MODULE_EDIT</role-name>
+        <group-name>ADMINISTRATORS</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>ADDRESS_MODULE_EDIT</role-name>
+        <group-name>ADMINISTRATORS</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>ORGANIZATION_MODULE_EDIT</role-name>
+        <group-name>ADMINISTRATORS</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>OWNERSHIP_MODULE_EDIT</role-name>
+        <group-name>ADMINISTRATORS</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>PRIVILEGE_MODULE_EDIT</role-name>
+        <group-name>ADMINISTRATORS</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>CHILD_ORGANIZATION_VIEW</role-name>
+        <group-name>EMPLOYEES_CHILD_VIEW</group-name>
+    </security-role-mapping>
+</sun-web-app>

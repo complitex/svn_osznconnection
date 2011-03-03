@@ -1,0 +1,164 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.complitex.osznconnection</groupId>
+        <artifactId>osznconnection</artifactId>
+        <version>2.0.0</version>
+    </parent>
+
+    <groupId>org.complitex.osznconnection</groupId>
+    <artifactId>osznconnection-web</artifactId>
+    <packaging>war</packaging>
+
+    <name>Web</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.complitex</groupId>
+            <artifactId>complitex-dictionary</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.complitex</groupId>
+            <artifactId>complitex-resources</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.complitex</groupId>
+            <artifactId>complitex-images</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.complitex</groupId>
+            <artifactId>complitex-template</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.complitex</groupId>
+            <artifactId>complitex-address</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.complitex</groupId>
+            <artifactId>complitex-admin</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.complitex</groupId>
+            <artifactId>complitex-logging</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.complitex.osznconnection</groupId>
+            <artifactId>osznconnection-file-handling</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.complitex.osznconnection</groupId>
+            <artifactId>osznconnection-organization</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.complitex.osznconnection</groupId>
+            <artifactId>osznconnection-ownership</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.complitex.osznconnection</groupId>
+            <artifactId>osznconnection-privilege</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.wicket</groupId>
+            <artifactId>wicket</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.wicket</groupId>
+            <artifactId>wicket-auth-roles</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.wicket</groupId>
+            <artifactId>wicket-ioc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.wicket</groupId>
+            <artifactId>wicket-extensions</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.wicket</groupId>
+            <artifactId>wicket-datetime</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.odlabs.wiquery</groupId>
+            <artifactId>wiquery</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wicketstuff</groupId>
+            <artifactId>javaee-inject</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.collections</groupId>
+            <artifactId>google-collections</artifactId>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jdk14</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>buildnumber-maven-plugin</artifactId>
+                <version>1.0-beta-4</version>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>create</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <providerImplementations>
+                        <svn>javasvn</svn>
+                    </providerImplementations>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.1.1</version>
+                <configuration>
+                    <webResources>
+                        <resource>
+                            <directory>src/main/filter/</directory>
+                            <filtering>true</filtering>
+                            <targetPath>/</targetPath>
+                        </resource>
+                    </webResources>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                        </manifest>
+                        <manifestEntries>
+                            <!--suppress MavenModelInspection -->
+                            <Implementation-Build>r${buildNumber}</Implementation-Build>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <properties>
+        <netbeans.hint.deploy.server>gfv3ee6</netbeans.hint.deploy.server>
+    </properties>
+</project>
+
+

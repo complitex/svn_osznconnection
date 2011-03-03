@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.complitex.osznconnection.file.service.StatusDetailBean">
+
+    <resultMap id="statusDetailInfo" type="org.complitex.osznconnection.file.entity.StatusDetailInfo">
+        <id column="status" property="status"/>
+        <result column="count" property="count"/>
+    </resultMap>
+
+    <resultMap id="statusDetail" type="org.complitex.osznconnection.file.entity.StatusDetail">
+        <id column="id" property="id"/>
+        <result column="count" property="count"/>
+    </resultMap>
+
+    <!-- payment status detail objects -->
+    <resultMap id="paymentStatusDetailInfo" type="org.complitex.osznconnection.file.entity.StatusDetailInfo" extends="statusDetailInfo">
+        <collection property="statusDetails" column="status=status,id=request_file_id"
+                    ofType="org.complitex.osznconnection.file.entity.StatusDetail"
+                    select="getPaymentStatusDetails"/>
+    </resultMap>
+
+    <resultMap id="paymentStatusDetail" type="org.complitex.osznconnection.file.entity.StatusDetail" extends="statusDetail">
+        <association property="details" javaType="map">
+            <result column="account" property="account"/>
+            <result column="city" property="city"/>
+            <result column="street" property="street"/>
+            <result column="building" property="building"/>
+            <result column="buildingCorp" property="buildingCorp"/>
+            <result column="apartment" property="apartment"/>
+        </association>
+    </resultMap>
+
+    <select id="getPaymentStatusDetailInfo" parameterType="long" resultMap="paymentStatusDetailInfo">
+        SELECT COUNT(*) `count`, `status`, `request_file_id` FROM `payment` WHERE `request_file_id` = #{id}
+        GROUP BY `status`
+        ORDER BY `count` DESC
+    </select>
+
+    <select id="getPaymentStatusDetails" parameterType="map" resultMap="paymentStatusDetail">
+        <choose>
+            <!--account number -->
+            <when test="status == 212 or status == 213">
+                SELECT CONCAT(`OWN_NUM_SR`, '') `id`, COUNT(*) `count`, `OWN_NUM_SR` `account` FROM `payment`
+                WHERE `request_file_id` = #{id} AND `status` = #{status}
+                GROUP BY `OWN_NUM_SR`
+            </when>
+
+            <!--city-->
+            <when test="status == 200 or status == 205 or status == 221">
+                SELECT `N_NAME` `id`, COUNT(*) `count`, `N_NAME` `city` FROM `payment`
+                WHERE `request_file_id` = #{id} AND `status` = #{status}
+                GROUP BY `N_NAME`
+            </when>
+
+            <!--street-->
+            <when test="status == 201 or status == 208 or status == 207 or status == 223 or status == 224">
+                SELECT CONCAT(`N_NAME`, `VUL_NAME`) `id`, COUNT(*) `count`, `N_NAME` `city`, `VUL_NAME` `street` FROM `payment`
+                WHERE `request_file_id` = #{id} AND `status` = #{status}
+                GROUP BY `N_NAME`, `VUL_NAME`
+            </when>
+
+            <!--building-->
+            <when test="status == 202 or status == 209 or status == 225">
+                SELECT CONCAT(`N_NAME`, `VUL_NAME`, `BLD_NUM`) `id`, COUNT(*) `count`, `N_NAME` `city`, `VUL_NAME` `street`, `BLD_NUM` `building`
+                FROM `payment`
+                WHERE `request_file_id` = #{id} AND `status` = #{status}
+                GROUP BY `N_NAME`, `VUL_NAME`, `BLD_NUM`
+            </when>
+
+            <!--building corp-->
+            <when test="status == 226">
+                SELECT CONCAT(`N_NAME`, `VUL_NAME`, `BLD_NUM`, `CORP_NUM`) `id`, COUNT(*) `count`, `N_NAME` `city`, `VUL_NAME` `street`,
+                `BLD_NUM` `building`, `CORP_NUM` `buildingCorp` FROM `payment`
+                WHERE `request_file_id` = #{id} AND `status` = #{status}
+                GROUP BY `N_NAME`, `VUL_NAME`, `BLD_NUM`, `CORP_NUM`
+            </when>
+
+            <!-- apartment -->
+            <when test="status == 227">
+                SELECT CONCAT(`N_NAME`, `VUL_NAME`, `BLD_NUM`, `CORP_NUM`, `FLAT`) `id`, COUNT(*) `count`, `N_NAME` `city`, `VUL_NAME` `street`,
+                `BLD_NUM` `building`, `CORP_NUM` `buildingCorp`, `FLAT` `apartment` FROM `payment`
+                WHERE `request_file_id` = #{id} AND `status` = #{status}
+                GROUP BY `N_NAME`, `VUL_NAME`, `BLD_NUM`, `CORP_NUM`, `FLAT`
+            </when>
+            <otherwise>
+                SELECT 1 FROM DUAL where 1=0;
+            </otherwise>
+        </choose>
+    </select>
+
+    <!-- benefit status detail objects -->
+    <resultMap id="benefitStatusDetailInfo" type="org.complitex.osznconnection.file.entity.StatusDetailInfo" extends="statusDetailInfo">
+        <collection property="statusDetails" column="status=status,id=request_file_id"
+                    ofType="org.complitex.osznconnection.file.entity.StatusDetail"
+                    select="getBenefitStatusDetails"/>
+    </resultMap>
+
+    <resultMap id="benefitStatusDetail" type="org.complitex.osznconnection.file.entity.StatusDetail" extends="paymentStatusDetail">
+    </resultMap>
+
+    <select id="getBenefitStatusDetailInfo" parameterType="long" resultMap="benefitStatusDetailInfo">
+        SELECT COUNT(*) `count`, `status`, `request_file_id` FROM `benefit` WHERE `request_file_id` = #{id}
+        GROUP BY `status`
+        ORDER BY `count` DESC
+    </select>
+
+    <sql id="joinPaymentByAccount">
+        JOIN `request_file` bf ON b.`request_file_id` = bf.`id`
+        JOIN `request_file` pf ON (bf.`group_id` = pf.`group_id` AND pf.`type` = 'PAYMENT')
+        JOIN `payment` p ON (pf.`id` = p.`request_file_id` AND p.`OWN_NUM_SR` = b.`OWN_NUM_SR`)
+    </sql>
+
+    <select id="getBenefitStatusDetails" parameterType="map" resultMap="benefitStatusDetail">
+        <choose>
+            <!--account number -->
+            <when test="status == 212 or status == 213">
+                SELECT CONCAT(`OWN_NUM_SR`, '') `id`, COUNT(*) `count`, `OWN_NUM_SR` `account` FROM `benefit`
+                WHERE `request_file_id` = #{id} AND `status` = #{status}
+                GROUP BY `OWN_NUM_SR`
+            </when>
+
+            <!--city-->
+            <when test="status == 200 or status == 205 or status == 221">
+                SELECT p.`N_NAME` `id`, COUNT(DISTINCT b.id) `count`, p.`N_NAME` `city` FROM `benefit` b
+                    <include refid="org.complitex.osznconnection.file.service.StatusDetailBean.joinPaymentByAccount"/>
+                WHERE b.`request_file_id` = #{id} AND b.`status` = #{status}
+                GROUP BY p.`N_NAME`
+            </when>
+
+            <!--street-->
+            <when test="status == 201 or status == 208 or status == 207 or status == 223 or status == 224">
+                SELECT CONCAT(p.`N_NAME`, p.`VUL_NAME`) `id`, COUNT(DISTINCT b.id) `count`, p.`N_NAME` `city`, p.`VUL_NAME` `street` FROM `benefit` b
+                    <include refid="org.complitex.osznconnection.file.service.StatusDetailBean.joinPaymentByAccount"/>
+                WHERE b.`request_file_id` = #{id} AND b.`status` = #{status}
+                GROUP BY p.`N_NAME`, p.`VUL_NAME`
+            </when>
+
+            <!--building-->
+            <when test="status == 202 or status == 209 or status == 225">
+                SELECT CONCAT(p.`N_NAME`, p.`VUL_NAME`, p.`BLD_NUM`) `id`,  COUNT(DISTINCT b.id) `count`, p.`N_NAME` `city`, p.`VUL_NAME` `street`,
+                p.`BLD_NUM` `building` FROM `benefit` b
+                    <include refid="org.complitex.osznconnection.file.service.StatusDetailBean.joinPaymentByAccount"/>
+                WHERE b.`request_file_id` = #{id} AND b.`status` = #{status}
+                GROUP BY p.`N_NAME`, p.`VUL_NAME`, p.`BLD_NUM`
+            </when>
+
+            <!--building corp-->
+            <when test="status == 226">
+                SELECT CONCAT(p.`N_NAME`, p.`VUL_NAME`, p.`BLD_NUM`, p.`CORP_NUM`) `id`, COUNT(DISTINCT b.id) `count`, p.`N_NAME` `city`, p.`VUL_NAME` `street`,
+                p.`BLD_NUM` `building`, p.`CORP_NUM` `buildingCorp` FROM `benefit` b
+                    <include refid="org.complitex.osznconnection.file.service.StatusDetailBean.joinPaymentByAccount"/>
+                WHERE b.`request_file_id` = #{id} AND b.`status` = #{status}
+                GROUP BY p.`N_NAME`, p.`VUL_NAME`, p.`BLD_NUM`, p.`CORP_NUM`
+            </when>
+
+            <!-- apartment -->
+            <when test="status == 227">
+                SELECT CONCAT(p.`N_NAME`, p.`VUL_NAME`, p.`BLD_NUM`, p.`CORP_NUM`, p.`FLAT`) `id`, COUNT(DISTINCT b.id) `count`, p.`N_NAME` `city`,
+                p.`VUL_NAME` `street`, p.`BLD_NUM` `building`, p.`CORP_NUM` `buildingCorp`, p.`FLAT` `apartment` FROM `benefit` b
+                    <include refid="org.complitex.osznconnection.file.service.StatusDetailBean.joinPaymentByAccount"/>
+                WHERE b.`request_file_id` = #{id} AND b.`status` = #{status}
+                GROUP BY p.`N_NAME`, p.`VUL_NAME`, p.`BLD_NUM`, p.`CORP_NUM`, p.`FLAT`
+            </when>
+            <otherwise>
+                SELECT 1 FROM DUAL where 1=0;
+            </otherwise>
+        </choose>
+    </select>
+
+    <!-- actualPayment status detail objects -->
+    <resultMap id="actualPaymentStatusDetailInfo" type="org.complitex.osznconnection.file.entity.StatusDetailInfo" extends="statusDetailInfo">
+        <collection property="statusDetails" column="status=status,id=request_file_id"
+                    ofType="org.complitex.osznconnection.file.entity.StatusDetail"
+                    select="getActualPaymentStatusDetails"/>
+    </resultMap>
+
+    <resultMap id="actualPaymentStatusDetail" type="org.complitex.osznconnection.file.entity.StatusDetail" extends="statusDetail">
+        <association property="details" javaType="map">
+            <result column="SUR_NAM" property="lastName"/>
+            <result column="M_NAM" property="middleName"/>
+            <result column="F_NAM" property="firstName"/>
+            <result column="N_NAME" property="city"/>
+            <result column="VUL_NAME" property="street"/>
+            <result column="VUL_CAT" property="streetType"/>
+            <result column="BLD_NUM" property="building"/>
+            <result column="CORP_NUM" property="buildingCorp"/>
+            <result column="FLAT" property="apartment"/>
+        </association>
+    </resultMap>
+
+    <select id="getActualPaymentStatusDetailInfo" parameterType="long" resultMap="actualPaymentStatusDetailInfo">
+        SELECT COUNT(*) `count`, `status`, `request_file_id` FROM `actual_payment` WHERE `request_file_id` = #{id}
+        GROUP BY `status`
+        ORDER BY `count` DESC
+    </select>
+
+    <select id="getActualPaymentStatusDetails" parameterType="map" resultMap="actualPaymentStatusDetail">
+        <choose>
+            <!--account number -->
+            <when test="status == 212 or status == 213">
+                SELECT CONCAT(`SUR_NAM`, `F_NAM`, `M_NAM`) `id`, `SUR_NAM`, `F_NAM`, `M_NAM`, COUNT(*) `count` FROM `actual_payment`
+                WHERE `request_file_id` = #{id} AND `status` = #{status}
+                GROUP BY 1
+            </when>
+
+            <!--city-->
+            <when test="status == 200 or status == 205 or status == 221">
+                SELECT `N_NAME` `id`, COUNT(*) `count`, `N_NAME` FROM `actual_payment`
+                WHERE `request_file_id` = #{id} AND `status` = #{status}
+                GROUP BY 1
+            </when>
+
+            <!--street-->
+            <when test="status == 201 or status == 237 or status == 208 or status == 207 or status == 223 or status == 224">
+                SELECT CONCAT(`N_NAME`, `VUL_CAT`, `VUL_NAME`) `id`, COUNT(*) `count`, `N_NAME`, `VUL_CAT`, `VUL_NAME` FROM `actual_payment`
+                WHERE `request_file_id` = #{id} AND `status` = #{status}
+                GROUP BY 1
+            </when>
+
+            <!--building-->
+            <when test="status == 202 or status == 209 or status == 225">
+                SELECT CONCAT(`N_NAME`, `VUL_CAT`, `VUL_NAME`, `BLD_NUM`) `id`, COUNT(*) `count`, `N_NAME`, `VUL_CAT`, `VUL_NAME`, `BLD_NUM`
+                FROM `actual_payment`
+                WHERE `request_file_id` = #{id} AND `status` = #{status}
+                GROUP BY 1
+            </when>
+
+            <!--building corp-->
+            <when test="status == 226">
+                SELECT CONCAT(`N_NAME`, `VUL_CAT`, `VUL_NAME`, `BLD_NUM`, `CORP_NUM`) `id`, COUNT(*) `count`, `N_NAME`, `VUL_CAT`, `VUL_NAME`,
+                `BLD_NUM`, `CORP_NUM` FROM `actual_payment`
+                WHERE `request_file_id` = #{id} AND `status` = #{status}
+                GROUP BY 1
+            </when>
+
+            <!-- apartment -->
+            <when test="status == 227">
+                SELECT CONCAT(`N_NAME`, `VUL_CAT`, `VUL_NAME`, `BLD_NUM`, `CORP_NUM`, `FLAT`) `id`, COUNT(*) `count`, `N_NAME`, `VUL_CAT`, `VUL_NAME`,
+                `BLD_NUM`, `CORP_NUM`, `FLAT` FROM `actual_payment`
+                WHERE `request_file_id` = #{id} AND `status` = #{status}
+                GROUP BY 1
+            </when>
+            <otherwise>
+                SELECT 1 FROM DUAL where 1=0;
+            </otherwise>
+        </choose>
+    </select>
+</mapper>
