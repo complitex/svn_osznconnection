@@ -13,13 +13,14 @@
             <transaction src="osznconnection-create.sql"/>
         </sql>
 
-        <sql driver="com.mysql.jdbc.Driver" encoding="UTF-8" url="${url}" userid="${username}" password="${password}">
+        <!--todo failed to execute-->
+        <!--<sql driver="com.mysql.jdbc.Driver" encoding="UTF-8" url="${url}" userid="${username}" password="${password}">
             <classpath>
                 <pathelement location="mysql-connector-java-5.1.10.jar"/>
             </classpath>
 
             <transaction src="osznconnection-functions.sql"/>
-        </sql>
+        </sql>-->
 
         <sql driver="com.mysql.jdbc.Driver" encoding="UTF-8" url="${url}" userid="${username}" password="${password}">
             <classpath>
