@@ -53,7 +53,7 @@ public class PersonAccountList extends ScrollListPage {
     @EJB(name = "PersonAccountLocalBean")
     private PersonAccountLocalBean personAccountLocalBean;
 
-    @EJB(name = "OrganizationStrategy")
+    @EJB(name = "OsznOrganizationStrategy")
     private IOsznOrganizationStrategy organizationStrategy;
 
     @EJB(name = "LocaleBean")

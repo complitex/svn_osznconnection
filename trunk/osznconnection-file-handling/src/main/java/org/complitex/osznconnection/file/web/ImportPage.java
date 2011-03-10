@@ -35,7 +35,7 @@ public class ImportPage extends TemplatePage {
     @EJB
     private ImportService importService;
 
-    @EJB(name = "OrganizationStrategy")
+    @EJB(name = "OsznOrganizationStrategy")
     private IOsznOrganizationStrategy organizationStrategy;
 
     private int stopTimer = 0;

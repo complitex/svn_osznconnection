@@ -23,85 +23,11 @@ import java.util.Locale;
  *   Меню администрирование
  */
 @AuthorizeInstantiation(SecurityRole.ADMIN_MODULE_EDIT)
-public class AdminTemplateMenu extends ResourceTemplateMenu {
-    private static final Logger log = LoggerFactory.getLogger(AdminTemplateMenu.class);
-
-    @Override
-    public String getTitle(Locale locale) {
-        return getString(AdminTemplateMenu.class, locale, "template_menu.title");
-    }
+public class AdminTemplateMenu extends org.complitex.admin.web.AdminTemplateMenu {
 
     @Override
     public List<ITemplateLink> getTemplateLinks(Locale locale) {
-        List<ITemplateLink> links = new ArrayList<ITemplateLink>();
-
-        links.add(new ITemplateLink(){
-            @Override
-            public String getLabel(Locale locale) {
-                return getString(AdminTemplateMenu.class, locale, "template_menu.user_list");
-            }
-            @Override
-            public Class<? extends Page> getPage() {
-                return UserList.class;
-            }
-
-            @Override
-            public PageParameters getParameters() {
-                return PageParameters.NULL;
-            }
-
-            @Override
-            public String getTagId() {
-                return "UserList";
-            }
-        });
-
-        links.add(new ITemplateLink(){
-            @Override
-            public String getLabel(Locale locale) {
-                return getString(LogList.class, locale, "template_menu.log_list");
-            }
-
-            @SuppressWarnings({"unchecked"})
-            @Override
-            public Class<? extends Page> getPage() {
-                return LogList.class;
-            }
-
-            @Override
-            public PageParameters getParameters() {
-                return PageParameters.NULL;
-            }
-
-            @Override
-            public String getTagId() {
-                return "Log";
-            }
-
-        });
-
-        links.add(new ITemplateLink(){
-            @Override
-            public String getLabel(Locale locale) {
-                return getString(ConfigEdit.class, locale, "title");
-            }
-
-            @SuppressWarnings({"unchecked"})
-            @Override
-            public Class<? extends Page> getPage() {
-                return ConfigEdit.class;
-            }
-
-            @Override
-            public PageParameters getParameters() {
-                return PageParameters.NULL;
-            }
-
-            @Override
-            public String getTagId() {
-                return "ConfigEdit";
-            }
-        });
+        List<ITemplateLink> links = super.getTemplateLinks(locale);
 
         links.add(new ITemplateLink(){
             @Override
@@ -127,10 +53,5 @@ public class AdminTemplateMenu extends ResourceTemplateMenu {
         });
 
         return links;
-    }
-
-    @Override
-    public String getTagId() {
-        return "admin_menu";
     }
 }

@@ -31,7 +31,7 @@ public class RequestFileLoadPanel extends Panel {
     @EJB(name = "ProcessManagerBean")
     private ProcessManagerBean processManagerBean;
 
-    @EJB(name = "OrganizationStrategy")
+    @EJB(name = "OsznOrganizationStrategy")
     private IOsznOrganizationStrategy organizationStrategy;
 
     private final Dialog dialog;

@@ -12,7 +12,7 @@
     <groupId>org.complitex.osznconnection</groupId>
     <artifactId>osznconnection-file-handling</artifactId>
 
-    <name>File handling</name>
+    <name>File Handling</name>
 
     <dependencies>
         <dependency>

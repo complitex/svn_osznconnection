@@ -66,7 +66,7 @@ public class ActualPaymentFileList extends ScrollListPage {
     @EJB
     private RequestFileBean requestFileBean;
 
-    @EJB(name = "OrganizationStrategy")
+    @EJB(name = "OsznOrganizationStrategy")
     private IOsznOrganizationStrategy organizationStrategy;
 
     @EJB

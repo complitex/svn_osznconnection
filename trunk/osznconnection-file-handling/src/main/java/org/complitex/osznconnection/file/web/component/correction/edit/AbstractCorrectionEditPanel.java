@@ -51,7 +51,7 @@ public abstract class AbstractCorrectionEditPanel extends Panel {
     private static final Logger log = LoggerFactory.getLogger(AbstractCorrectionEditPanel.class);
     @EJB
     private CorrectionBean correctionBean;
-    @EJB(name = "OrganizationStrategy")
+    @EJB(name = "OsznOrganizationStrategy")
     private IOsznOrganizationStrategy organizationStrategy;
     @EJB
     private OsznSessionBean osznSessionBean;

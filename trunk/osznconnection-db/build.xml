@@ -1,44 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="Database" default="create" basedir=".">
+<project name="osznconnection database" default="create" basedir=".">
     <property file="database.properties"/>
 
     <target name="create">
-        <sql
-            driver="com.mysql.jdbc.Driver"
-            encoding="UTF-8"
-            url="${url}"
-            userid="${username}"
-            password="${password}">
+        <sql driver="com.mysql.jdbc.Driver" encoding="UTF-8" url="${url}" userid="${username}" password="${password}">
             <classpath>
                 <pathelement location="mysql-connector-java-5.1.10.jar"/>
             </classpath>
-            <transaction src="create.sql"/>
+
+            <transaction src="../../complitex/complitex-db/complitex-create.sql"/>
+
+            <transaction src="osznconnection-create.sql"/>
         </sql>
 
-        <sql
-            driver="com.mysql.jdbc.Driver"
-            encoding="UTF-8"
-            url="${url}"
-            delimiter="/"
-            userid="${username}"
-            password="${password}">
+        <sql driver="com.mysql.jdbc.Driver" encoding="UTF-8" url="${url}" userid="${username}" password="${password}">
             <classpath>
                 <pathelement location="mysql-connector-java-5.1.10.jar"/>
             </classpath>
-            <transaction src="functions.sql"/>
+
+            <transaction src="osznconnection-functions.sql"/>
         </sql>
 
-        <sql
-            driver="com.mysql.jdbc.Driver"
-            encoding="UTF-8"
-            url="${url}"
-            userid="${username}"
-            password="${password}">
+        <sql driver="com.mysql.jdbc.Driver" encoding="UTF-8" url="${url}" userid="${username}" password="${password}">
             <classpath>
                 <pathelement location="mysql-connector-java-5.1.10.jar"/>
             </classpath>
-            <transaction src="insert.sql"/>
-            <transaction src="sequence.sql"/>
+
+            <transaction src="../../complitex/complitex-db/complitex-insert.sql"/>
+            <transaction src="../../complitex/complitex-db/complitex-sequence.sql"/>
+
+            <transaction src="osznconnection-insert.sql"/>
+            <transaction src="osznconnection-sequence.sql"/>
         </sql>
     </target>
 
@@ -48,32 +40,26 @@
     </target>
 
     <target name="populate_test_data">
-        <sql
-            driver="com.mysql.jdbc.Driver"
-            encoding="UTF-8"
-            url="${url}"
-            userid="${username}"
-            password="${password}">
+        <sql driver="com.mysql.jdbc.Driver" encoding="UTF-8" url="${url}" userid="${username}" password="${password}">
             <classpath>
                 <pathelement location="mysql-connector-java-5.1.10.jar"/>
             </classpath>
-            <transaction src="testdump.sql"/>
-            <transaction src="sequence.sql"/>
+
+            <transaction src="../../complitex/complitex-db/complitex-testdump.sql"/>
+            <transaction src="../../complitex/complitex-db/complitex-sequence.sql"/>
+
+            <transaction src="osznconnection-testdump.sql"/>
+            <transaction src="osznconnection-sequence.sql"/>
         </sql>
     </target>
 
     <target name="populate_address_base">
-        <sql
-            driver="com.mysql.jdbc.Driver"
-            encoding="UTF-8"
-            url="${url}"
-            userid="${username}"
-            password="${password}">
+        <sql driver="com.mysql.jdbc.Driver" encoding="UTF-8" url="${url}" userid="${username}" password="${password}">
             <classpath>
                 <pathelement location="mysql-connector-java-5.1.10.jar"/>
-            </classpath>              
+            </classpath>
+
             <transaction src="import/address_base.sql"/>            
         </sql>
     </target>
-
 </project>

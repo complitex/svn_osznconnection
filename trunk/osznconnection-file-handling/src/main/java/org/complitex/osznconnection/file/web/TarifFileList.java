@@ -67,7 +67,7 @@ public class TarifFileList extends TemplatePage {
     @EJB(name = "RequestFileBean")
     private RequestFileBean requestFileBean;
 
-    @EJB(name = "OrganizationStrategy")
+    @EJB(name = "OsznOrganizationStrategy")
     private IOsznOrganizationStrategy organizationStrategy;
 
     @EJB(name = "ProcessManagerBean")
