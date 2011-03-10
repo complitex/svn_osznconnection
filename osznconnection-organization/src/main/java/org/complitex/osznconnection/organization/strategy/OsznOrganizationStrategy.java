@@ -15,8 +15,7 @@ import org.complitex.dictionary.strategy.web.AbstractComplexAttributesPanel;
 import org.complitex.dictionary.strategy.web.validate.IValidator;
 import org.complitex.organization.strategy.OrganizationStrategy;
 import org.complitex.osznconnection.organization.strategy.web.edit.OsznOrganizationEditComponent;
-import org.complitex.osznconnection.organization.strategy.web.edit.OrganizationValidator;
-import org.complitex.template.strategy.TemplateStrategy;
+import org.complitex.osznconnection.organization.strategy.web.edit.OsznOrganizationValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +48,7 @@ public class OsznOrganizationStrategy extends OrganizationStrategy implements IO
 
     @Override
     public IValidator getValidator() {
-        return new OrganizationValidator(localeBean.getSystemLocale());
+        return new OsznOrganizationValidator(localeBean.getSystemLocale());
     }
 
     @Override
