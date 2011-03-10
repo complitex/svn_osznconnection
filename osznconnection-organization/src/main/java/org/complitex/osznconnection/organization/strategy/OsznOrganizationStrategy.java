@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import org.apache.wicket.PageParameters;
 import org.complitex.address.strategy.district.DistrictStrategy;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.entity.example.DomainObjectExample;
@@ -15,6 +16,7 @@ import org.complitex.dictionary.strategy.web.validate.IValidator;
 import org.complitex.organization.strategy.OrganizationStrategy;
 import org.complitex.osznconnection.organization.strategy.web.edit.OsznOrganizationEditComponent;
 import org.complitex.osznconnection.organization.strategy.web.edit.OrganizationValidator;
+import org.complitex.template.strategy.TemplateStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +32,9 @@ import java.util.Set;
  */
 @Stateless
 public class OsznOrganizationStrategy extends OrganizationStrategy implements IOsznOrganizationStrategy {
-    private static final Logger log = LoggerFactory.getLogger(OsznOrganizationStrategy.class);
+    private static final  Logger log = LoggerFactory.getLogger(OsznOrganizationStrategy.class);
+
+    private static final String OSZN_ORGANIZATION_STRATEGY_NAME = OsznOrganizationStrategy.class.getSimpleName();
 
     private static final String ORGANIZATION_NAMESPACE = OsznOrganizationStrategy.class.getPackage().getName() + ".Organization";
 
@@ -51,6 +55,24 @@ public class OsznOrganizationStrategy extends OrganizationStrategy implements IO
     @Override
     public Class<? extends AbstractComplexAttributesPanel> getComplexAttributesPanelClass() {
         return OsznOrganizationEditComponent.class;
+    }
+
+    @Override
+    public PageParameters getEditPageParams(Long objectId, Long parentId, String parentEntity) {
+        PageParameters pageParameters = super.getEditPageParams(objectId, parentId, parentEntity);
+
+        pageParameters.put(STRATEGY, OSZN_ORGANIZATION_STRATEGY_NAME);
+
+        return pageParameters;
+    }
+
+    @Override
+    public PageParameters getListPageParams() {
+        PageParameters pageParameters =  super.getListPageParams();
+
+        pageParameters.put(STRATEGY, OSZN_ORGANIZATION_STRATEGY_NAME);
+
+        return pageParameters;
     }
 
     @SuppressWarnings({"unchecked"})
