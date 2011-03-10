@@ -64,7 +64,7 @@ public class GroupList extends ScrollListPage {
     @EJB(name = "RequestFileGroupBean")
     private RequestFileGroupBean requestFileGroupBean;
 
-    @EJB(name = "OrganizationStrategy")
+    @EJB(name = "OsznOrganizationStrategy")
     private IOsznOrganizationStrategy organizationStrategy;
 
     @EJB(name = "ProcessManagerBean")

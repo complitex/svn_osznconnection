@@ -1,23 +1,16 @@
 package org.complitex.osznconnection.file.service;
 
-import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.AbstractBean;
-import org.complitex.dictionary.service.SessionBean;
-import org.complitex.dictionary.strategy.StrategyFactory;
 import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.entity.RequestFileFilter;
-import org.complitex.osznconnection.file.entity.RequestFileGroup;
 import org.complitex.osznconnection.file.entity.RequestFileStatus;
-import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
-import org.complitex.osznconnection.organization.strategy.OrganizationStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru

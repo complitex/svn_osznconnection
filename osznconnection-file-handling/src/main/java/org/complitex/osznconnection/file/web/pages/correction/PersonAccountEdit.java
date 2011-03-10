@@ -46,7 +46,7 @@ public final class PersonAccountEdit extends FormTemplatePage {
     public static final String CORRECTION_ID = "correction_id";
     @EJB(name = "PersonAccountLocalBean")
     private PersonAccountLocalBean personAccountLocalBean;
-    @EJB(name = "OrganizationStrategy")
+    @EJB(name = "OsznOrganizationStrategy")
     private IOsznOrganizationStrategy organizationStrategy;
     @EJB
     private OsznSessionBean osznSessionBean;
