@@ -28,7 +28,7 @@ import java.util.Set;
  *
  * @author Artem
  */
-@Stateless(name = "OrganizationStrategy")
+@Stateless
 public class OsznOrganizationStrategy extends OrganizationStrategy implements IOsznOrganizationStrategy {
     private static final Logger log = LoggerFactory.getLogger(OsznOrganizationStrategy.class);
 
