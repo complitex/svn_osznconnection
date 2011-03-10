@@ -16,4 +16,9 @@ public class OsznOrganizationEditComponent extends OrganizationEditComponent {
     protected boolean isDistrictVisible(Long entityTypeId) {
         return super.isDistrictVisible(entityTypeId) || entityTypeId.equals(IOsznOrganizationStrategy.OSZN);
     }
+
+    @Override
+    protected boolean isDistrictNotRequired(Long entityTypeId) {
+        return super.isDistrictNotRequired(entityTypeId);
+    }
 }
