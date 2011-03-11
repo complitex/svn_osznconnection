@@ -32,6 +32,7 @@
         <module>osznconnection-privilege</module>
         <module>osznconnection-file-handling</module>
         <module>osznconnection-web</module>
+        <module>osznconnection-address</module>
 
         <module>../complitex/complitex-dictionary</module>
         <module>../complitex/complitex-template</module>
@@ -40,7 +41,7 @@
         <module>../complitex/complitex-logging</module>
         <module>../complitex/complitex-resources</module>
         <module>../complitex/complitex-images</module>
-    </modules>
+  </modules>
 
     <distributionManagement>
         <repository>
@@ -122,6 +123,11 @@
             <dependency>
                 <groupId>org.complitex.osznconnection</groupId>
                 <artifactId>osznconnection-web</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.complitex.osznconnection</groupId>
+                <artifactId>osznconnection-address</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
