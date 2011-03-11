@@ -5,12 +5,12 @@
     <sidebar>
         <menu class="org.complitex.osznconnection.file.web.AdminTemplateMenu"/>
         <menu class="org.complitex.osznconnection.file.web.FileHandlingMenu"/>
-        <menu class="org.complitex.address.web.InformationTemplateMenu"/>
+        <menu class="org.complitex.address.menu.AddressMenu"/>
         <menu class="org.complitex.osznconnection.file.web.pages.correction.CorrectionMenu"/>
         <menu class="org.complitex.osznconnection.organization.web.OsznOrganizationTemplateMenu"/>
         <menu class="org.complitex.osznconnection.ownership.web.OwnershipTemplateMenu"/>
         <menu class="org.complitex.osznconnection.privilege.web.PrivilegeTemplateMenu"/>
-        <menu class="org.complitex.address.web.InformationDescriptionTemplateMenu"/>
+        <menu class="org.complitex.address.menu.AddressDescriptionMenu"/>
         <menu class="org.complitex.organization.web.OrganizationDescriptionTemplateMenu"/>
         <menu class="org.complitex.osznconnection.ownership.web.OwnershipDescriptionTemplateMenu"/>
         <menu class="org.complitex.osznconnection.privilege.web.PrivilegeDescriptionTemplateMenu"/>
