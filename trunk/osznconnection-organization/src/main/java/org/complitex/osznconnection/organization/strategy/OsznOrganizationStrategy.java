@@ -35,8 +35,6 @@ public class OsznOrganizationStrategy extends OrganizationStrategy implements IO
 
     private static final String OSZN_ORGANIZATION_STRATEGY_NAME = OsznOrganizationStrategy.class.getSimpleName();
 
-    private static final String ORGANIZATION_NAMESPACE = OsznOrganizationStrategy.class.getPackage().getName() + ".Organization";
-
     @EJB
     private StringCultureBean stringBean;
 
@@ -144,20 +142,5 @@ public class OsznOrganizationStrategy extends OrganizationStrategy implements IO
             }
         }
         return finalUserOrganizations;
-    }
-
-    @SuppressWarnings({"unchecked"})
-    @Transactional
-    @Override
-    public Set<Long> getTreeChildrenOrganizationIds(long parentOrganizationId) {
-        Set<Long> childrenIds = Sets.newHashSet(sqlSession().selectList(ORGANIZATION_NAMESPACE + ".findOrganizationChildrenObjectIds",
-                parentOrganizationId));
-        Set<Long> treeChildren = Sets.newHashSet(childrenIds);
-
-        for (Long childId : childrenIds) {
-            treeChildren.addAll(getTreeChildrenOrganizationIds(childId));
-        }
-
-        return treeChildren;
     }
 }
