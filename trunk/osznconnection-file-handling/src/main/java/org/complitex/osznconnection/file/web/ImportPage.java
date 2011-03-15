@@ -46,8 +46,11 @@ public class ImportPage extends TemplatePage {
 
         container.add(new FeedbackPanel("messages"));
 
-        Form form = new Form("form");
-        container.add(form);
+        Form form_dictionary = new Form("form_dictionary");
+        container.add(form_dictionary);
+
+        Form form_correction = new Form("form_correction");
+        container.add(form_correction);
 
         //Организация
         final IModel<DomainObject> organizationModel = new Model<DomainObject>();
@@ -68,13 +71,13 @@ public class ImportPage extends TemplatePage {
                     }
                 });
         organization.setRequired(true);
-        form.add(organization);
+        form_correction.add(organization);
 
-        Button process = new Button("process"){
+        Button dictionary = new Button("process_dictionary"){
             @Override
             public void onSubmit() {
                 if (!importService.isProcessing()) {
-                    importService.process(organizationModel.getObject().getId());
+                    importService.processDictionary();
 
                     container.add(newTimer());
                 }
@@ -85,14 +88,26 @@ public class ImportPage extends TemplatePage {
                 return !importService.isProcessing();
             }
         };
-        form.add(process);
+        form_dictionary.add(dictionary);
 
-        container.add(new Label("header_dictionary_import", getStringOrKey("dictionary_import")){
+        Button correction = new Button("process_correction"){
+            @Override
+            public void onSubmit() {
+                if (!importService.isProcessing()) {
+                    importService.processCorrections(organizationModel.getObject().getId());
+
+                    container.add(newTimer());
+                }
+            }
+
             @Override
             public boolean isVisible() {
-                return !importService.getMessages().isEmpty();
+                return !importService.isProcessing();
             }
-        });
+        };
+        form_correction.add(correction);
+
+        container.add(new Label("header_dictionary_import", getStringOrKey("dictionary_import")));
 
         container.add(new ListView<ImportMessage>("dictionary_import",
                 new LoadableDetachableModel<List<? extends ImportMessage>>() {
@@ -116,12 +131,7 @@ public class ImportPage extends TemplatePage {
             }
         });
 
-        container.add(new Label("header_correction_import", getStringOrKey("correction_import")){
-            @Override
-            public boolean isVisible() {
-                return !importService.getCorrectionMessages().isEmpty();
-            }
-        });
+        container.add(new Label("header_correction_import", getStringOrKey("correction_import")));
 
         container.add(new ListView<ImportMessage>("correction_import",
                 new LoadableDetachableModel<List<? extends ImportMessage>>() {

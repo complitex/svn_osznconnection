@@ -93,9 +93,8 @@ public class ImportService {
         return Collections.unmodifiableList(new ArrayList<ImportMessage>(correctionMap.values()));
     }
 
-    @SuppressWarnings({"ConstantConditions"})
     @Asynchronous
-    public void process(Long organizationId){
+    public void processDictionary(){
         if (processing){
             return;
         }
@@ -160,6 +159,43 @@ public class ImportService {
                 @Override
                 public void completeImport(PrivilegeImportFile importFile) {}
             });
+
+            success = true;
+
+            userTransaction.commit();
+        } catch (Exception e) {
+            log.error("Ошибка импорта", e);
+
+            try {
+                userTransaction.rollback();
+            } catch (SystemException e1) {
+                log.error("Ошибка отката транзакции", e1);
+            }
+
+            error = true;
+            errorMessage = e instanceof AbstractException ? e.getMessage() : new ImportCriticalException(e).getMessage();
+        }finally {
+            processing = false;
+        }
+    }
+
+     @Asynchronous
+    public void processCorrections(Long organizationId){
+        if (processing){
+            return;
+        }
+
+        dictionaryMap.clear();
+        correctionMap.clear();
+        processing = true;
+        error = false;
+        success = false;
+        errorMessage = null;
+
+        configBean.getString(DictionaryConfig.IMPORT_FILE_STORAGE_DIR, true); //reload config cache
+
+        try {
+            userTransaction.begin();
 
             //Address correction
             addressCorrectionImportService.process(organizationId, INTERNAL_ORGANIZATION_ID,
