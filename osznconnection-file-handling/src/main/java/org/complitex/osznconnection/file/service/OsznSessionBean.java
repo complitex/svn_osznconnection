@@ -4,6 +4,7 @@ import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.service.SessionBean;
 import org.complitex.dictionary.strategy.StrategyFactory;
 import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
+import org.complitex.osznconnection.organization.strategy.OsznOrganizationStrategy;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -21,6 +22,9 @@ public class OsznSessionBean {
 
     @EJB
     protected StrategyFactory strategyFactory;
+
+    @EJB
+    protected IOsznOrganizationStrategy osznOrganizationStrategy;
 
     public boolean isAdmin(){
         return sessionBean.isAdmin();
@@ -49,7 +53,7 @@ public class OsznSessionBean {
     }
 
     private IOsznOrganizationStrategy getOsznOrganizationStrategy(){
-        return ((IOsznOrganizationStrategy)strategyFactory.getStrategy("organization"));
+        return osznOrganizationStrategy;
     }
 
     public boolean hasOuterOrganization(Long objectId){
