@@ -10,14 +10,9 @@
 
         <div wicket:id="container">
             <div wicket:id="messages"></div>
+            <span wicket:id="error" class="feedbackPanelERROR"></span>
 
             <h2 wicket:id="header_dictionary_import"></h2>
-
-            <table>
-                <tr wicket:id="dictionary_import">
-                    <td wicket:id="message"></td>
-                </tr>
-            </table>
 
             <form action="#" wicket:id="form_dictionary">
                 <input type="submit" class="btnBig" wicket:id="process_dictionary" wicket:message="value:process_dictionary"/>
@@ -25,13 +20,15 @@
 
             <br/>
 
-            <h2 wicket:id="header_correction_import"></h2>
-
             <table>
-                <tr wicket:id="correction_import">
+                <tr wicket:id="dictionary_import">
                     <td wicket:id="message"></td>
                 </tr>
             </table>
+
+            <br/>
+
+            <h2 wicket:id="header_correction_import"></h2>
 
             <form action="#" wicket:id="form_correction">
                 <select wicket:id="organization"></select>
@@ -40,7 +37,11 @@
 
             <br/>
 
-            <span wicket:id="error" class="feedbackPanelERROR"></span>
+            <table>
+                <tr wicket:id="correction_import">
+                    <td wicket:id="message"></td>
+                </tr>
+            </table>
         </div>
     </div>
 </wicket:extend>
