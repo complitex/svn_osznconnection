@@ -50,7 +50,7 @@ public class OsznOrganizationStrategy extends OrganizationStrategy implements IO
     }
 
     @Override
-    public Class<? extends AbstractComplexAttributesPanel> getComplexAttributesPanelClass() {
+    public Class<? extends AbstractComplexAttributesPanel> getComplexAttributesPanelAfterClass() {
         return OsznOrganizationEditComponent.class;
     }
 
