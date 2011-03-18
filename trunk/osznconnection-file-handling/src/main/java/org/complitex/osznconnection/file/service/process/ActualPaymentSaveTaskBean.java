@@ -129,7 +129,8 @@ public class ActualPaymentSaveTaskBean implements ITaskBean<RequestFile> {
 
         try {
             //устанавливаем абсолютный путь для сохранения файла запроса
-            File file = RequestFileStorage.getInstance().createOutputFile(requestFile.getName(), requestFile.getDirectory());
+            File file = RequestFileStorage.getInstance().createOutputActualPaymentFile(requestFile.getName(),
+                    requestFile.getDirectory());
             requestFile.setAbsolutePath(file.getAbsolutePath());
 
             //Удаляем файл есть такой есть

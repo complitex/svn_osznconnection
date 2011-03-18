@@ -134,5 +134,6 @@ public class ProcessStatus {
         processedIndex.clear();
         linkError.clear();
         preprocessErrorCount = 0;
+        executorStatus.init();
     }
 }

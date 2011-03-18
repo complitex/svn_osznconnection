@@ -7,8 +7,11 @@ import org.complitex.dictionary.entity.IConfig;
  *         Date: 04.10.2010 11:12:46
  */
 public enum FileHandlingConfig implements IConfig{
-    LOAD_INPUT_FILE_STORAGE_DIR("c:\\storage\\in"),
-    SAVE_OUTPUT_FILE_STORAGE_DIR("c:\\storage\\out"),
+    LOAD_INPUT_REQUEST_FILE_STORAGE_DIR("c:\\storage\\subsidy_in"),
+    SAVE_OUTPUT_REQUEST_FILE_STORAGE_DIR("c:\\storage\\subsidy_out"),
+
+    LOAD_INPUT_ACTUAL_PAYMENT_FILE_STORAGE_DIR("c:\\storage\\actual_in"),
+    SAVE_OUTPUT_ACTUAL_PAYMENT_FILE_STORAGE_DIR("c:\\storage\\actual_out"),
 
     LOAD_THREAD_SIZE("2"),
     BIND_THREAD_SIZE("4"),

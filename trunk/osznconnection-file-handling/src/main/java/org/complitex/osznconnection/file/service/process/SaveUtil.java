@@ -33,8 +33,8 @@ public class SaveUtil {
 
     private final static Locale SYSTEM = new Locale("ru");
     
-    private final static Set<RequestStatus> NOT_REPORTABLE_STATUSES = ImmutableSet.of(RequestStatus.PROCESSED, RequestStatus.ACCOUNT_NUMBER_RESOLVED,
-            RequestStatus.ADDRESS_CORRECTED);
+    private final static Set<RequestStatus> NOT_REPORTABLE_STATUSES = ImmutableSet.of(RequestStatus.PROCESSED,
+            RequestStatus.ACCOUNT_NUMBER_RESOLVED, RequestStatus.ADDRESS_CORRECTED);
 
     public static void createResult(List<RequestFileGroup> processed, IWarningRenderer warningRenderer)
             throws StorageNotFoundException {
@@ -63,7 +63,7 @@ public class SaveUtil {
             Date now = DateUtil.getCurrentDate();
             String name = RESULT_FILE_NAME + "_" + sdfFile.format(now) + "." + RESULT_FILE_EXT;
 
-            File file = RequestFileStorage.getInstance().createOutputFile(name, directory);
+            File file = RequestFileStorage.getInstance().createOutputRequestFile(name, directory);
 
             Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), FILE_ENCODING));
 

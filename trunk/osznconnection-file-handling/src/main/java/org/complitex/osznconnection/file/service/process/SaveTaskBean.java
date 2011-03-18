@@ -22,7 +22,6 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -153,7 +152,7 @@ public class SaveTaskBean implements ITaskBean<RequestFileGroup>{
 
         try {
             //устанавливаем абсолютный путь для сохранения файла запроса
-            File file = RequestFileStorage.getInstance().createOutputFile(requestFile.getName(), requestFile.getDirectory());
+            File file = RequestFileStorage.getInstance().createOutputRequestFile(requestFile.getName(), requestFile.getDirectory());
             requestFile.setAbsolutePath(file.getAbsolutePath());
 
             //Удаляем файл есть такой есть

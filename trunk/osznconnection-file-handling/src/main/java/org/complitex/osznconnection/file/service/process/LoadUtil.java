@@ -38,11 +38,11 @@ public class LoadUtil {
     private static List<File> getFiles(final String districtDir, final int monthFrom, final int monthTo)
             throws StorageNotFoundException {
 
-        return RequestFileStorage.getInstance().getInputFiles(districtDir, new FileFilter() {
+        return RequestFileStorage.getInstance().getInputRequestFiles(districtDir, new FileFilter() {
 
             @Override
             public boolean accept(File file) {
-                if(file.isDirectory()){
+                if (file.isDirectory()) {
                     return true;
                 }
 
@@ -51,7 +51,7 @@ public class LoadUtil {
                 //TARIF
                 if (name.equalsIgnoreCase("TARIF12.DBF")) {
                     return true;
-                }else{ //PAYMENT, BENEFIT
+                } else { //PAYMENT, BENEFIT
                     for (int m = monthFrom; m <= monthTo; ++m) {
                         String month = (m <= 9 ? "0" + m : "" + m);
                         String pattern = "((A_)|(AF))\\d{4}" + month + "\\.DBF";
@@ -71,11 +71,11 @@ public class LoadUtil {
                                                     final int year)
             throws StorageNotFoundException {
 
-        return RequestFileStorage.getInstance().getInputFiles(districtDir, new FileFilter() {
+        return RequestFileStorage.getInstance().getInputActualPaymentFiles(districtDir, new FileFilter() {
 
             @Override
             public boolean accept(File file) {
-                if(file.isDirectory()){
+                if (file.isDirectory()) {
                     return true;
                 }
 
@@ -84,7 +84,7 @@ public class LoadUtil {
                 //ACTUAL PAYMENT
                 for (int m = monthFrom; m <= monthTo; ++m) {
                     String month = (m <= 9 ? "0" + m : "" + m);
-                    String pattern = "(B)\\d{3}" + month + String.valueOf(year).substring(2,4) + "\\.DBF";
+                    String pattern = ".*" + month + String.valueOf(year).substring(2, 4) + "\\.DBF";
 
                     if (Pattern.compile(pattern, Pattern.CASE_INSENSITIVE).matcher(name).matches()) {
                         return true;
