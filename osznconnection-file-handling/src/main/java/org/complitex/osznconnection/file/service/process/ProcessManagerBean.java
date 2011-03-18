@@ -183,18 +183,6 @@ public class ProcessManagerBean {
             processStatus.startPreprocess(); // предобработка
             processStatus.init();
 
-            //создание ключа для текущего пользователя
-            if (sessionBean.createPermissionId(RequestFileGroup.TABLE) == null){
-                processStatus.preprocessError();
-
-                log.error("Ошибка процесса загрузки файлов. Причина: ошибка получения ключа безопасности");
-                logBean.error(Module.NAME, ProcessManagerBean.class, RequestFileGroup.class, null, Log.EVENT.CREATE,
-                        "Ошибка процесса загрузки файлов. Ошибка получения ключа безопасности. " +
-                                "Возможно пользователю не добавлено ни одной организации.");
-
-                return;
-            }
-
             LoadUtil.LoadGroupParameter loadParameter = LoadUtil.getLoadParameter(organizationId, districtCode, monthFrom, monthTo, year);
 
             List<RequestFile> linkError = loadParameter.getLinkError();
@@ -267,18 +255,6 @@ public class ProcessManagerBean {
         try {
             ProcessStatus processStatus = initProcessStatus(ACTUAL_PAYMENT, LOAD_ACTUAL_PAYMENT);
 
-            //создание ключа для текущего пользователя
-            if (sessionBean.createPermissionId(RequestFile.TABLE) == null){
-                processStatus.preprocessError();
-
-                log.error("Ошибка процесса загрузки файлов. Причина: ошибка получения ключа безопасности");
-                logBean.error(Module.NAME, ProcessManagerBean.class, RequestFile.class, null, Log.EVENT.CREATE,
-                       "Ошибка процесса загрузки файлов. Ошибка получения ключа безопасности. " +
-                                "Возможно пользователю не добавлено ни одной организации.");
-
-                return;
-            }
-
             executorBean.execute(LoadUtil.getActualPayments(organizationId, districtCode, monthFrom, monthTo, year),
                     actualPaymentLoadTaskBean,
                     processStatus.getExecutorStatus(),
@@ -322,18 +298,6 @@ public class ProcessManagerBean {
     public void loadTarif(Long organizationId, String districtCode, int monthFrom, int monthTo, int year){
         try {
             ProcessStatus processStatus = initProcessStatus(TARIF, LOAD_TARIF);
-
-            //создание ключа для текущего пользователя
-            if (sessionBean.createPermissionId(RequestFile.TABLE) == null){
-                processStatus.preprocessError();
-
-                log.error("Ошибка процесса загрузки файлов. Причина: ошибка получения ключа безопасности");
-                logBean.error(Module.NAME, ProcessManagerBean.class, RequestFile.class, null, Log.EVENT.CREATE,
-                       "Ошибка процесса загрузки файлов. Ошибка получения ключа безопасности. " +
-                                "Возможно пользователю не добавлено ни одной организации.");
-
-                return;
-            }
 
             executorBean.execute(LoadUtil.getTarifs(organizationId, districtCode, monthFrom, monthTo, year),
                     loadTarifTaskBean,

@@ -6,25 +6,35 @@ import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInst
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
+import org.apache.wicket.markup.html.form.CheckBoxMultipleChoice;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.util.time.Duration;
+import org.complitex.address.entity.AddressImportFile;
 import org.complitex.dictionary.entity.DomainObject;
+import org.complitex.dictionary.entity.IImportFile;
 import org.complitex.dictionary.entity.ImportMessage;
 import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
 import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
+import org.complitex.osznconnection.file.entity.CorrectionImportFile;
 import org.complitex.osznconnection.file.service.ImportService;
 import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
+import org.complitex.osznconnection.ownership.entity.OwnershipImportFile;
+import org.complitex.osznconnection.privilege.entity.PrivilegeImportFile;
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.TemplatePage;
 
 import javax.ejb.EJB;
-import java.util.List;
+import java.util.*;
+
+import static org.complitex.address.entity.AddressImportFile.*;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -44,18 +54,38 @@ public class ImportPage extends TemplatePage {
         final WebMarkupContainer container = new WebMarkupContainer("container");
         add(container);
 
+        final IModel<List<IImportFile>> dictionaryModel = new ListModel<IImportFile>();
+        final IModel<List<IImportFile>> correctionModel = new ListModel<IImportFile>();
+
         container.add(new FeedbackPanel("messages"));
 
-        Form form_dictionary = new Form("form_dictionary");
-        container.add(form_dictionary);
+        Form form = new Form("form");
+        container.add(form);
 
-        Form form_correction = new Form("form_correction");
-        container.add(form_correction);
+        //Справочники
+        List<IImportFile> dictionaryList = new ArrayList<IImportFile>();
+        Collections.addAll(dictionaryList, values());
+        Collections.addAll(dictionaryList, PrivilegeImportFile.values());
+        Collections.addAll(dictionaryList, OwnershipImportFile.values());
+
+        form.add(new CheckBoxMultipleChoice<IImportFile>("dictionary", dictionaryModel, dictionaryList,
+                new IChoiceRenderer<IImportFile>() {
+                    @Override
+                    public Object getDisplayValue(IImportFile object) {
+
+                        return object.getFileName() + getStatus(importService.getDictionaryMessage(object));
+                    }
+
+                    @Override
+                    public String getIdValue(IImportFile object, int index) {
+                        return object.name();
+                    }
+                }));
 
         //Организация
         final IModel<DomainObject> organizationModel = new Model<DomainObject>();
 
-        DisableAwareDropDownChoice<DomainObject> organization = new DisableAwareDropDownChoice<DomainObject>("organization",
+        final DisableAwareDropDownChoice<DomainObject> organization = new DisableAwareDropDownChoice<DomainObject>("organization",
                 organizationModel,
                 new LoadableDetachableModel<List<DomainObject>>() {
 
@@ -70,14 +100,39 @@ public class ImportPage extends TemplatePage {
                         return organizationStrategy.displayDomainObject(object, getLocale());
                     }
                 });
-        organization.setRequired(true);
-        form_correction.add(organization);
+        form.add(organization);
 
-        Button dictionary = new Button("process_dictionary"){
+        //Коррекции
+        List<IImportFile> correctionList = new ArrayList<IImportFile>();
+        Collections.addAll(correctionList, CITY, DISTRICT, STREET_TYPE, STREET, BUILDING);
+        Collections.addAll(correctionList, CorrectionImportFile.values());
+
+        form.add(new CheckBoxMultipleChoice<IImportFile>("corrections", correctionModel, correctionList,
+                new IChoiceRenderer<IImportFile>() {
+                    @Override
+                    public Object getDisplayValue(IImportFile object) {
+
+                        return object.getFileName() + getStatus(importService.getCorrectionMessage(object));
+                    }
+
+                    @Override
+                    public String getIdValue(IImportFile object, int index) {
+                        return object.name();
+                    }
+                }));
+
+        //Кнопка импортировать
+        Button process = new Button("process"){
             @Override
             public void onSubmit() {
+                if (!correctionModel.getObject().isEmpty() && organization.getDefaultModelObject() == null){
+                    error(getStringOrKey("error_organization_required"));
+                    return;
+                }
+
                 if (!importService.isProcessing()) {
-                    importService.processDictionary();
+                    importService.process(dictionaryModel.getObject(), correctionModel.getObject(),
+                            organizationModel.getObject() != null ? organizationModel.getObject().getId() : null);
 
                     container.add(newTimer());
                 }
@@ -88,79 +143,20 @@ public class ImportPage extends TemplatePage {
                 return !importService.isProcessing();
             }
         };
-        form_dictionary.add(dictionary);
+        form.add(process);
 
-        Button correction = new Button("process_correction"){
-            @Override
-            public void onSubmit() {
-                if (!importService.isProcessing()) {
-                    importService.processCorrections(organizationModel.getObject().getId());
-
-                    container.add(newTimer());
-                }
-            }
-
-            @Override
-            public boolean isVisible() {
-                return !importService.isProcessing();
-            }
-        };
-        form_correction.add(correction);
-
-        container.add(new Label("header_dictionary_import", getStringOrKey("dictionary_import")));
-
-        container.add(new ListView<ImportMessage>("dictionary_import",
-                new LoadableDetachableModel<List<? extends ImportMessage>>() {
-                    @Override
-                    protected List<? extends ImportMessage> load() {
-                        return importService.getMessages();
-                    }
-                }){
-            {
-                setReuseItems(false);
-            }
-
-            @Override
-            protected void populateItem(ListItem<ImportMessage> item) {
-                ImportMessage message = item.getModelObject();
-
-                String m = getStringOrKey(message.getImportFile().name()) +
-                        " (" + message.getIndex() + "/" + message.getCount() + ")";
-
-                item.add(new Label("message", m));
-            }
-        });
-
-        container.add(new Label("header_correction_import", getStringOrKey("correction_import")));
-
-        container.add(new ListView<ImportMessage>("correction_import",
-                new LoadableDetachableModel<List<? extends ImportMessage>>() {
-                    @Override
-                    protected List<? extends ImportMessage> load() {
-                        return importService.getCorrectionMessages();
-                    }
-                }){
-            {
-                setReuseItems(false);
-            }
-
-            @Override
-            protected void populateItem(ListItem<ImportMessage> item) {
-                ImportMessage message = item.getModelObject();
-
-                String m = getStringOrKey(message.getImportFile().name()) +
-                        " (" + message.getIndex() + "/" + message.getCount() + ")";
-
-                item.add(new Label("message", m));
-            }
-        });
-
+        //Ошибки
         container.add(new Label("error", new LoadableDetachableModel<Object>() {
             @Override
             protected Object load() {
                 return importService.getErrorMessage();
             }
-        }));
+        }){
+            @Override
+            public boolean isVisible() {
+                return importService.getErrorMessage() != null;
+            }
+        });
     }
 
     private AjaxSelfUpdatingTimerBehavior newTimer(){
@@ -182,4 +178,19 @@ public class ImportPage extends TemplatePage {
             }
         };
     }
+
+    private String getStatus(ImportMessage im){
+        if (im != null) {
+            if (im.getIndex() < 1 && !importService.isProcessing()){
+                return " - " + getStringOrKey("error");
+            }else if (im.getIndex() == im.getCount()){
+                return " - " + getStringFormat("complete", im.getIndex());
+            }else{
+                return " - " + getStringFormat("processing", im.getIndex(), im.getCount());
+            }
+        }
+
+        return "";
+    }
+
 }

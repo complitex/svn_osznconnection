@@ -39,7 +39,7 @@ public class PrivilegeImportService extends AbstractImportService{
      * @throws ImportFileNotFoundException
      * @throws ImportFileReadException
      */
-    public void process(IImportListener<PrivilegeImportFile> listener)
+    public void process(IImportListener listener)
             throws ImportFileNotFoundException, ImportFileReadException {
         listener.beginImport(PRIVILEGE, getRecordCount(PRIVILEGE));
 

@@ -38,7 +38,7 @@ public class OwnershipCorrectionImportService extends AbstractImportService{
      * @throws ImportFileReadException
      * @throws ImportObjectLinkException
      */
-    public void process(long orgId, long intOrgId, IImportListener<CorrectionImportFile> listener)
+    public void process(long orgId, long intOrgId, IImportListener listener)
             throws ImportFileNotFoundException, ImportFileReadException, ImportObjectLinkException {
         listener.beginImport(OWNERSHIP_CORRECTION, getRecordCount(OWNERSHIP_CORRECTION));
 

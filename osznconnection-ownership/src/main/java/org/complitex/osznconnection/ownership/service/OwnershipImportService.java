@@ -4,6 +4,7 @@ import au.com.bytecode.opencsv.CSVReader;
 import org.complitex.dictionary.entity.AbstractImportService;
 import org.complitex.dictionary.entity.Attribute;
 import org.complitex.dictionary.entity.DomainObject;
+import org.complitex.dictionary.entity.IImportFile;
 import org.complitex.dictionary.service.IImportListener;
 import org.complitex.dictionary.service.StringCultureBean;
 import org.complitex.dictionary.service.exception.ImportFileNotFoundException;
@@ -39,7 +40,7 @@ public class OwnershipImportService extends AbstractImportService{
      * @throws ImportFileNotFoundException
      * @throws ImportFileReadException
      */
-    public void process(IImportListener<OwnershipImportFile> listener)
+    public void process(IImportListener listener)
             throws ImportFileNotFoundException, ImportFileReadException {
         listener.beginImport(OWNERSHIP, getRecordCount(OWNERSHIP));
 
