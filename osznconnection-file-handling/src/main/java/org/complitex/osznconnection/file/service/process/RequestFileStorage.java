@@ -39,10 +39,26 @@ public class RequestFileStorage {
      * @return Список файлов в дочерней директории корневой директории файлового хранилища
      * @throws org.complitex.osznconnection.file.service.exception.StorageNotFoundException Директория не найдена
      */
-    public List<File> getInputFiles(String child, FileFilter filter) throws StorageNotFoundException {
+    public List<File> getInputRequestFiles(String child, FileFilter filter) throws StorageNotFoundException {
         List<File> files = new ArrayList<File>();
 
-        File dir = new File(EjbBeanLocator.getBean(ConfigBean.class).getString(FileHandlingConfig.LOAD_INPUT_FILE_STORAGE_DIR, true), child);
+        File dir = new File(EjbBeanLocator.getBean(ConfigBean.class)
+                .getString(FileHandlingConfig.LOAD_INPUT_REQUEST_FILE_STORAGE_DIR, true), child);
+
+        if (!dir.exists()) {
+            throw new StorageNotFoundException(dir.getAbsolutePath());
+        }
+
+        addFiles(files, dir, filter);
+
+        return files;
+    }
+
+    public List<File> getInputActualPaymentFiles(String child, FileFilter filter) throws StorageNotFoundException {
+        List<File> files = new ArrayList<File>();
+
+        File dir = new File(EjbBeanLocator.getBean(ConfigBean.class)
+                .getString(FileHandlingConfig.LOAD_INPUT_ACTUAL_PAYMENT_FILE_STORAGE_DIR, true), child);
 
         if (!dir.exists()) {
             throw new StorageNotFoundException(dir.getAbsolutePath());
@@ -63,8 +79,19 @@ public class RequestFileStorage {
         }
     }
 
-    public void checkOutputFileStorageExists() throws StorageNotFoundException {
-        File parent = new File(EjbBeanLocator.getBean(ConfigBean.class).getString(FileHandlingConfig.SAVE_OUTPUT_FILE_STORAGE_DIR, true));
+    public void checkOutputRequestFileStorageExists() throws StorageNotFoundException {
+        File parent = new File(EjbBeanLocator.getBean(ConfigBean.class)
+                .getString(FileHandlingConfig.SAVE_OUTPUT_REQUEST_FILE_STORAGE_DIR, true));
+
+        //Желательно чтобы директория для исходящих файлов запроса уже была создана
+        if (!parent.exists()) {
+            throw new StorageNotFoundException(parent.getAbsolutePath());
+        }
+    }
+
+    public void checkOutputActualPaymentFileStorageExists() throws StorageNotFoundException {
+        File parent = new File(EjbBeanLocator.getBean(ConfigBean.class)
+                .getString(FileHandlingConfig.SAVE_OUTPUT_ACTUAL_PAYMENT_FILE_STORAGE_DIR, true));
 
         //Желательно чтобы директория для исходящих файлов запроса уже была создана
         if (!parent.exists()) {
@@ -73,11 +100,26 @@ public class RequestFileStorage {
     }
 
     @SuppressWarnings({"ResultOfMethodCallIgnored"})
-    public File createOutputFile(String name, String child) throws StorageNotFoundException {
-        checkOutputFileStorageExists();
+    public File createOutputRequestFile(String name, String child) throws StorageNotFoundException {
+        checkOutputRequestFileStorageExists();
 
         //Создаем директорию с именем кода района если что
-        File dir = new File(EjbBeanLocator.getBean(ConfigBean.class).getString(FileHandlingConfig.SAVE_OUTPUT_FILE_STORAGE_DIR, false), child);
+        File dir = new File(EjbBeanLocator.getBean(ConfigBean.class)
+                .getString(FileHandlingConfig.SAVE_OUTPUT_REQUEST_FILE_STORAGE_DIR, false), child);
+        if (!dir.exists()) {
+            dir.mkdir();
+        }
+
+        return new File(dir, name);
+    }
+
+    @SuppressWarnings({"ResultOfMethodCallIgnored"})
+    public File createOutputActualPaymentFile(String name, String child) throws StorageNotFoundException {
+        checkOutputActualPaymentFileStorageExists();
+
+        //Создаем директорию с именем кода района если что
+        File dir = new File(EjbBeanLocator.getBean(ConfigBean.class)
+                .getString(FileHandlingConfig.SAVE_OUTPUT_ACTUAL_PAYMENT_FILE_STORAGE_DIR, false), child);
         if (!dir.exists()) {
             dir.mkdir();
         }
@@ -101,7 +143,7 @@ public class RequestFileStorage {
     }
 
     public String getRelativeParent(File file) {
-        File root = new File(EjbBeanLocator.getBean(ConfigBean.class).getString(FileHandlingConfig.LOAD_INPUT_FILE_STORAGE_DIR, false));
+        File root = new File(EjbBeanLocator.getBean(ConfigBean.class).getString(FileHandlingConfig.LOAD_INPUT_REQUEST_FILE_STORAGE_DIR, false));
         String absolutePath = file.getParent();
 
         return absolutePath.substring(root.getAbsolutePath().length());
