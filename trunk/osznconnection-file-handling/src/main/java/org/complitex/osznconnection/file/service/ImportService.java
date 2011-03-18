@@ -7,8 +7,7 @@ import org.complitex.dictionary.entity.IImportFile;
 import org.complitex.dictionary.entity.ImportMessage;
 import org.complitex.dictionary.service.ConfigBean;
 import org.complitex.dictionary.service.IImportListener;
-import org.complitex.dictionary.service.exception.AbstractException;
-import org.complitex.dictionary.service.exception.ImportCriticalException;
+import org.complitex.dictionary.service.exception.*;
 import org.complitex.osznconnection.file.entity.CorrectionImportFile;
 import org.complitex.osznconnection.ownership.entity.OwnershipImportFile;
 import org.complitex.osznconnection.ownership.service.OwnershipImportService;
@@ -19,8 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Resource;
 import javax.ejb.*;
-import javax.transaction.SystemException;
-import javax.transaction.UserTransaction;
+import javax.transaction.*;
 import java.util.*;
 
 /**
@@ -33,7 +31,7 @@ import java.util.*;
 public class ImportService {
     private final static Logger log = LoggerFactory.getLogger(ImportService.class);
 
-    public static final long INTERNAL_ORGANIZATION_ID = 0L;
+    public static final long INT_ORG_ID = 0L;
 
     @Resource
     private UserTransaction userTransaction;
@@ -69,6 +67,38 @@ public class ImportService {
 
     private Map<IImportFile, ImportMessage> correctionMap = new LinkedHashMap<IImportFile, ImportMessage>();
 
+    private IImportListener dictionaryListener = new IImportListener() {
+
+        @Override
+        public void beginImport(IImportFile importFile, int recordCount) {
+            dictionaryMap.put(importFile, new ImportMessage(importFile, recordCount, 0));
+        }
+
+        @Override
+        public void recordProcessed(IImportFile importFile, int recordIndex) {
+            dictionaryMap.get(importFile).setIndex(recordIndex);
+        }
+
+        @Override
+        public void completeImport(IImportFile importFile) {}
+    };
+
+    private IImportListener correctionListener = new IImportListener() {
+
+        @Override
+        public void beginImport(IImportFile importFile, int recordCount) {
+            correctionMap.put(importFile, new ImportMessage(importFile, recordCount, 0));
+        }
+
+        @Override
+        public void recordProcessed(IImportFile importFile, int recordIndex) {
+            correctionMap.get(importFile).setIndex(recordIndex);
+        }
+
+        @Override
+        public void completeImport(IImportFile importFile) {}
+    };
+
     public boolean isProcessing() {
         return processing;
     }
@@ -85,12 +115,29 @@ public class ImportService {
         return errorMessage;
     }
 
-    public List<ImportMessage> getMessages(){
+    public List<ImportMessage> getDictionaryMessages(){
         return Collections.unmodifiableList(new ArrayList<ImportMessage>(dictionaryMap.values()));
+    }
+
+    public ImportMessage getDictionaryMessage(IImportFile importFile){
+        return dictionaryMap.get(importFile);
     }
 
     public List<ImportMessage> getCorrectionMessages(){
         return Collections.unmodifiableList(new ArrayList<ImportMessage>(correctionMap.values()));
+    }
+
+    public ImportMessage getCorrectionMessage(IImportFile importFile){
+        return correctionMap.get(importFile);
+    }
+
+    private void init(){
+        dictionaryMap.clear();
+        correctionMap.clear();
+        processing = true;
+        error = false;
+        success = false;
+        errorMessage = null;
     }
 
     @Asynchronous
@@ -99,12 +146,7 @@ public class ImportService {
             return;
         }
 
-        dictionaryMap.clear();
-        correctionMap.clear();
-        processing = true;
-        error = false;
-        success = false;
-        errorMessage = null;
+        init();
 
         configBean.getString(DictionaryConfig.IMPORT_FILE_STORAGE_DIR, true); //reload config cache
 
@@ -112,53 +154,13 @@ public class ImportService {
             userTransaction.begin();
 
             //Address
-            addressImportService.process(new IImportListener<AddressImportFile>() {
-
-                @Override
-                public void beginImport(AddressImportFile importFile, int recordCount) {
-                    dictionaryMap.put(importFile, new ImportMessage(importFile, recordCount, 0));
-                }
-
-                @Override
-                public void recordProcessed(AddressImportFile importFile, int recordIndex) {
-                    dictionaryMap.get(importFile).setIndex(recordIndex);
-                }
-
-                @Override
-                public void completeImport(AddressImportFile importFile) {}
-            });
+            addressImportService.process(dictionaryListener);
 
             //Ownership
-            ownershipImportService.process(new IImportListener<OwnershipImportFile>() {
-                @Override
-                public void beginImport(OwnershipImportFile importFile, int recordCount) {
-                    dictionaryMap.put(importFile, new ImportMessage(importFile, recordCount, 0));
-                }
-
-                @Override
-                public void recordProcessed(OwnershipImportFile importFile, int recordIndex) {
-                    dictionaryMap.get(importFile).setIndex(recordIndex);
-                }
-
-                @Override
-                public void completeImport(OwnershipImportFile importFile) {}
-            });
+            ownershipImportService.process(dictionaryListener);
 
             //Privilege
-            privilegeImportService.process(new IImportListener<PrivilegeImportFile>() {
-                @Override
-                public void beginImport(PrivilegeImportFile importFile, int recordCount) {
-                     dictionaryMap.put(importFile, new ImportMessage(importFile, recordCount, 0));
-                }
-
-                @Override
-                public void recordProcessed(PrivilegeImportFile importFile, int recordIndex) {
-                     dictionaryMap.get(importFile).setIndex(recordIndex);
-                }
-
-                @Override
-                public void completeImport(PrivilegeImportFile importFile) {}
-            });
+            privilegeImportService.process(dictionaryListener);
 
             success = true;
 
@@ -179,18 +181,13 @@ public class ImportService {
         }
     }
 
-     @Asynchronous
+    @Asynchronous
     public void processCorrections(Long organizationId){
         if (processing){
             return;
         }
 
-        dictionaryMap.clear();
-        correctionMap.clear();
-        processing = true;
-        error = false;
-        success = false;
-        errorMessage = null;
+        init();
 
         configBean.getString(DictionaryConfig.IMPORT_FILE_STORAGE_DIR, true); //reload config cache
 
@@ -198,60 +195,135 @@ public class ImportService {
             userTransaction.begin();
 
             //Address correction
-            addressCorrectionImportService.process(organizationId, INTERNAL_ORGANIZATION_ID,
-                    new IImportListener<AddressImportFile>() {
-
-                @Override
-                public void beginImport(AddressImportFile importFile, int recordCount) {
-                    correctionMap.put(importFile, new ImportMessage(importFile, recordCount, 0));
-                }
-
-                @Override
-                public void recordProcessed(AddressImportFile importFile, int recordIndex) {
-                    correctionMap.get(importFile).setIndex(recordIndex);
-                }
-
-                @Override
-                public void completeImport(AddressImportFile importFile) {}
-            });
+            addressCorrectionImportService.process(organizationId, INT_ORG_ID, correctionListener);
 
             //Ownership correction
-            ownershipCorrectionImportService.process(organizationId, INTERNAL_ORGANIZATION_ID,
-                    new IImportListener<CorrectionImportFile>() {
-                @Override
-                public void beginImport(CorrectionImportFile importFile, int recordCount) {
-                    correctionMap.put(importFile, new ImportMessage(importFile, recordCount, 0));
-                }
-
-                @Override
-                public void recordProcessed(CorrectionImportFile importFile, int recordIndex) {
-                     correctionMap.get(importFile).setIndex(recordIndex);
-                }
-
-                @Override
-                public void completeImport(CorrectionImportFile importFile) {}
-            });
+            ownershipCorrectionImportService.process(organizationId, INT_ORG_ID, correctionListener);
 
             //Privilege correction
-            privilegeCorrectionImportService.process(organizationId, INTERNAL_ORGANIZATION_ID,
-                    new IImportListener<CorrectionImportFile>() {
-                @Override
-                public void beginImport(CorrectionImportFile importFile, int recordCount) {
-                    correctionMap.put(importFile, new ImportMessage(importFile, recordCount, 0));
-                }
-
-                @Override
-                public void recordProcessed(CorrectionImportFile importFile, int recordIndex) {
-                     correctionMap.get(importFile).setIndex(recordIndex);
-                }
-
-                @Override
-                public void completeImport(CorrectionImportFile importFile) {}
-            });
+            privilegeCorrectionImportService.process(organizationId, INT_ORG_ID, correctionListener);
 
             success = true;
 
             userTransaction.commit();
+        } catch (Exception e) {
+            log.error("Ошибка импорта", e);
+
+            try {
+                userTransaction.rollback();
+            } catch (SystemException e1) {
+                log.error("Ошибка отката транзакции", e1);
+            }
+
+            error = true;
+            errorMessage = e instanceof AbstractException ? e.getMessage() : new ImportCriticalException(e).getMessage();
+        }finally {
+            processing = false;
+        }
+    }
+
+    private <T extends IImportFile> void processDictionary(T importFile) throws SystemException,
+            NotSupportedException, ImportFileNotFoundException, ImportFileReadException, ImportObjectLinkException,
+            RollbackException, HeuristicRollbackException, HeuristicMixedException {
+        userTransaction.begin();
+
+        if (importFile instanceof AddressImportFile){ //Address
+            switch ((AddressImportFile)importFile){
+                case COUNTRY:
+                    addressImportService.importCountry(dictionaryListener);
+                    break;
+                case REGION:
+                    addressImportService.importRegion(dictionaryListener);
+                    break;
+                case CITY_TYPE:
+                    addressImportService.importCityType(dictionaryListener);
+                    break;
+                case CITY:
+                    addressImportService.importCity(dictionaryListener);
+                    break;
+                case DISTRICT:
+                    addressImportService.importDistrict(dictionaryListener);
+                    break;
+                case STREET_TYPE:
+                    addressImportService.importStreetType(dictionaryListener);
+                    break;
+                case STREET:
+                    addressImportService.importStreet(dictionaryListener);
+                    break;
+                case BUILDING:
+                    addressImportService.importBuilding(dictionaryListener);
+                    break;
+            }
+        }else if (importFile instanceof OwnershipImportFile){ // Ownership
+            ownershipImportService.process(dictionaryListener);
+        }else if (importFile instanceof PrivilegeImportFile){ //Privilege
+            privilegeImportService.process(dictionaryListener);
+        }
+
+        success = true;
+
+        userTransaction.commit();
+    }
+
+    private <T extends IImportFile> void processCorrection(T importFile, long orgId) throws SystemException,
+            NotSupportedException, ImportFileNotFoundException, ImportObjectLinkException, ImportFileReadException,
+            RollbackException, HeuristicRollbackException, HeuristicMixedException {
+
+        userTransaction.begin();
+
+        if (importFile instanceof AddressImportFile){ //Address
+            switch ((AddressImportFile) importFile){
+                case CITY:
+                    addressCorrectionImportService.importCityToCorrection(orgId, INT_ORG_ID, correctionListener);
+                    break;
+                case DISTRICT:
+                    addressCorrectionImportService.importDistrictToCorrection(orgId, INT_ORG_ID, correctionListener);
+                    break;
+                case STREET_TYPE:
+                    addressCorrectionImportService.importStreetTypeToCorrection(orgId, INT_ORG_ID, correctionListener);
+                    break;
+                case STREET:
+                    addressCorrectionImportService.importStreetToCorrection(orgId, INT_ORG_ID, correctionListener);
+                    break;
+                case BUILDING:
+                    addressCorrectionImportService.importBuildingToCorrection(orgId, INT_ORG_ID,  correctionListener);
+                    break;
+            }
+        }else if (importFile instanceof CorrectionImportFile){ //Correction
+            switch ((CorrectionImportFile)importFile){
+                case OWNERSHIP_CORRECTION:
+                    ownershipCorrectionImportService.process(orgId, INT_ORG_ID, correctionListener);
+                    break;
+                case PRIVILEGE_CORRECTION:
+                    privilegeCorrectionImportService.process(orgId, INT_ORG_ID, correctionListener);
+                    break;
+            }
+        }
+
+        success = true;
+
+        userTransaction.commit();
+    }
+
+    public <T extends IImportFile> void process(List<T> dictionaryFiles, List<T> correctionFiles, Long orgId){
+        if (processing){
+            return;
+        }
+
+        init();
+
+        configBean.getString(DictionaryConfig.IMPORT_FILE_STORAGE_DIR, true); //reload config cache
+
+        try {
+            //Dictionary
+            for(T t : dictionaryFiles){
+                processDictionary(t);
+            }
+
+            //Correction
+            for (T t : correctionFiles){
+                processCorrection(t, orgId);
+            }
         } catch (Exception e) {
             log.error("Ошибка импорта", e);
 

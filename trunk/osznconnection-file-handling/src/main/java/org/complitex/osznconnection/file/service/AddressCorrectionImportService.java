@@ -52,7 +52,7 @@ public class AddressCorrectionImportService extends AbstractImportService{
     @EJB
     private BuildingAddressStrategy buildingAddressStrategy;
 
-    public void process(long organizationId, long internalOrganizationId, IImportListener<AddressImportFile> listener)
+    public void process(long organizationId, long internalOrganizationId, IImportListener listener)
             throws ImportFileNotFoundException, ImportObjectLinkException, ImportFileReadException {
         importCityToCorrection(organizationId, internalOrganizationId, listener);
         importDistrictToCorrection(organizationId, internalOrganizationId, listener);
@@ -66,7 +66,7 @@ public class AddressCorrectionImportService extends AbstractImportService{
      * @throws ImportFileNotFoundException
      * @throws ImportFileReadException
      */
-    private void importCityToCorrection(Long orgId, Long intOrgId, IImportListener<AddressImportFile> listener)
+    public void importCityToCorrection(Long orgId, Long intOrgId, IImportListener listener)
             throws ImportFileNotFoundException, ImportFileReadException, ImportObjectLinkException {
         listener.beginImport(CITY, getRecordCount(CITY));
 
@@ -110,7 +110,7 @@ public class AddressCorrectionImportService extends AbstractImportService{
      * @throws ImportFileNotFoundException
      * @throws ImportFileReadException
      */
-    private void importDistrictToCorrection(Long orgId, Long intOrgId, IImportListener<AddressImportFile> listener)
+    public void importDistrictToCorrection(Long orgId, Long intOrgId, IImportListener listener)
             throws ImportFileNotFoundException, ImportFileReadException, ImportObjectLinkException {
         listener.beginImport(DISTRICT, getRecordCount(DISTRICT));
 
@@ -166,7 +166,7 @@ public class AddressCorrectionImportService extends AbstractImportService{
      * @throws ImportFileNotFoundException
      * @throws ImportFileReadException
      */
-    private void importStreetTypeToCorrection(Long orgId, Long intOrgId, IImportListener<AddressImportFile> listener)
+    public void importStreetTypeToCorrection(Long orgId, Long intOrgId, IImportListener listener)
             throws ImportFileNotFoundException, ImportFileReadException, ImportObjectLinkException {
         listener.beginImport(STREET_TYPE, getRecordCount(STREET_TYPE));
 
@@ -210,7 +210,7 @@ public class AddressCorrectionImportService extends AbstractImportService{
      * @throws ImportFileNotFoundException
      * @throws ImportFileReadException
      */
-    private void importStreetToCorrection(Long orgId, Long intOrgId, IImportListener<AddressImportFile> listener)
+    public void importStreetToCorrection(Long orgId, Long intOrgId, IImportListener listener)
             throws ImportFileNotFoundException, ImportFileReadException, ImportObjectLinkException {
         listener.beginImport(STREET, getRecordCount(STREET));
 
@@ -273,7 +273,7 @@ public class AddressCorrectionImportService extends AbstractImportService{
      * @throws ImportFileNotFoundException
      * @throws ImportFileReadException
      */
-    private void importBuildingToCorrection(Long orgId, Long intOrgId, IImportListener<AddressImportFile> listener)
+    public void importBuildingToCorrection(Long orgId, Long intOrgId, IImportListener listener)
             throws ImportFileNotFoundException, ImportFileReadException, ImportObjectLinkException {
         listener.beginImport(BUILDING, getRecordCount(BUILDING));
 

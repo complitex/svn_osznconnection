@@ -39,7 +39,7 @@ public class PrivilegeCorrectionImportService extends AbstractImportService{
      * @throws ImportFileReadException
      * @throws org.complitex.dictionary.service.exception.ImportObjectLinkException
      */
-    public void process(long orgId, long intOrgId, IImportListener<CorrectionImportFile> listener)
+    public void process(long orgId, long intOrgId, IImportListener listener)
             throws ImportFileNotFoundException, ImportFileReadException, ImportObjectLinkException {
         listener.beginImport(PRIVILEGE_CORRECTION, getRecordCount(PRIVILEGE_CORRECTION));
 
