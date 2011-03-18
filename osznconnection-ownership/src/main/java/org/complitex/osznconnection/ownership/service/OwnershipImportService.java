@@ -68,7 +68,7 @@ public class OwnershipImportService extends AbstractImportService{
                 listener.recordProcessed(OWNERSHIP, recordIndex);
             }
 
-            listener.completeImport(OWNERSHIP);
+            listener.completeImport(OWNERSHIP, recordIndex);
         } catch (IOException e) {
             throw new ImportFileReadException(e, OWNERSHIP.getFileName(), recordIndex);
         } catch (NumberFormatException e){

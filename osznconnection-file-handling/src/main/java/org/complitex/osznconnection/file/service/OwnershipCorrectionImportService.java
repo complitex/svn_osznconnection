@@ -63,7 +63,7 @@ public class OwnershipCorrectionImportService extends AbstractImportService{
                 listener.recordProcessed(OWNERSHIP_CORRECTION, recordIndex);
             }
 
-            listener.completeImport(OWNERSHIP_CORRECTION);
+            listener.completeImport(OWNERSHIP_CORRECTION, recordIndex);
         } catch (IOException e) {
             throw new ImportFileReadException(e, OWNERSHIP_CORRECTION.getFileName(), recordIndex);
         } catch (NumberFormatException e) {

@@ -91,7 +91,7 @@ public class AddressCorrectionImportService extends AbstractImportService{
                 listener.recordProcessed(CITY, recordIndex);
             }
 
-            listener.completeImport(CITY);
+            listener.completeImport(CITY, recordIndex);
         } catch (IOException e) {
             throw new ImportFileReadException(e, CITY.getFileName(), recordIndex);
         } catch (NumberFormatException e) {
@@ -147,7 +147,7 @@ public class AddressCorrectionImportService extends AbstractImportService{
                 listener.recordProcessed(DISTRICT, recordIndex);
             }
 
-            listener.completeImport(DISTRICT);
+            listener.completeImport(DISTRICT, recordIndex);
         } catch (IOException e) {
             throw new ImportFileReadException(e, DISTRICT.getFileName(), recordIndex);
         } catch (NumberFormatException e) {
@@ -191,7 +191,7 @@ public class AddressCorrectionImportService extends AbstractImportService{
                 listener.recordProcessed(STREET_TYPE, recordIndex);
             }
 
-            listener.completeImport(STREET_TYPE);
+            listener.completeImport(STREET_TYPE, recordIndex);
         } catch (IOException e) {
             throw new ImportFileReadException(e, STREET_TYPE.getFileName(), recordIndex);
         } catch (NumberFormatException e){
@@ -254,7 +254,7 @@ public class AddressCorrectionImportService extends AbstractImportService{
                 listener.recordProcessed(STREET, recordIndex);
             }
 
-            listener.completeImport(STREET);
+            listener.completeImport(STREET, recordIndex);
         } catch (IOException e) {
             throw new ImportFileReadException(e, STREET.getFileName(), recordIndex);
         } catch (NumberFormatException e) {
@@ -307,7 +307,7 @@ public class AddressCorrectionImportService extends AbstractImportService{
                 listener.recordProcessed(BUILDING, recordIndex);
             }
 
-            listener.completeImport(BUILDING);
+            listener.completeImport(BUILDING, recordIndex);
         } catch (IOException e) {
             throw new ImportFileReadException(e, BUILDING.getFileName(), recordIndex);
         } catch (NumberFormatException e) {
