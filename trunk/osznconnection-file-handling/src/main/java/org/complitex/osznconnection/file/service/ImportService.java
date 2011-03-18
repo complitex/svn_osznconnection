@@ -5,9 +5,12 @@ import org.complitex.address.service.AddressImportService;
 import org.complitex.dictionary.entity.DictionaryConfig;
 import org.complitex.dictionary.entity.IImportFile;
 import org.complitex.dictionary.entity.ImportMessage;
+import org.complitex.dictionary.entity.Log;
 import org.complitex.dictionary.service.ConfigBean;
 import org.complitex.dictionary.service.IImportListener;
+import org.complitex.dictionary.service.LogBean;
 import org.complitex.dictionary.service.exception.*;
+import org.complitex.osznconnection.file.Module;
 import org.complitex.osznconnection.file.entity.CorrectionImportFile;
 import org.complitex.osznconnection.ownership.entity.OwnershipImportFile;
 import org.complitex.osznconnection.ownership.service.OwnershipImportService;
@@ -57,6 +60,9 @@ public class ImportService {
     @EJB
     private ConfigBean configBean;
 
+    @EJB
+    private LogBean logBean;
+
     private boolean processing;
     private boolean error;
     private boolean success;
@@ -80,7 +86,10 @@ public class ImportService {
         }
 
         @Override
-        public void completeImport(IImportFile importFile) {}
+        public void completeImport(IImportFile importFile, int recordCount) {
+            logBean.info(Module.NAME, ImportService.class, importFile.getClass(), null, Log.EVENT.CREATE,
+                            "Имя файла: {0}, количество записей: {1}", importFile.getFileName(), recordCount);
+        }
     };
 
     private IImportListener correctionListener = new IImportListener() {
@@ -96,7 +105,10 @@ public class ImportService {
         }
 
         @Override
-        public void completeImport(IImportFile importFile) {}
+        public void completeImport(IImportFile importFile, int recordCount) {
+             logBean.info(Module.NAME, ImportService.class, importFile.getClass(), null, Log.EVENT.CREATE,
+                            "Имя файла: {0}, количество записей: {1}", importFile.getFileName(), recordCount);
+        }
     };
 
     public boolean isProcessing() {
@@ -176,6 +188,8 @@ public class ImportService {
 
             error = true;
             errorMessage = e instanceof AbstractException ? e.getMessage() : new ImportCriticalException(e).getMessage();
+
+            logBean.error(Module.NAME, ImportService.class, null, null, Log.EVENT.CREATE, errorMessage);
         }finally {
             processing = false;
         }
@@ -335,6 +349,8 @@ public class ImportService {
 
             error = true;
             errorMessage = e instanceof AbstractException ? e.getMessage() : new ImportCriticalException(e).getMessage();
+
+            logBean.error(Module.NAME, ImportService.class, null, null, Log.EVENT.CREATE, errorMessage);
         }finally {
             processing = false;
         }

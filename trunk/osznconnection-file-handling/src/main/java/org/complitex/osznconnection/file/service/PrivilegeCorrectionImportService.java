@@ -64,7 +64,7 @@ public class PrivilegeCorrectionImportService extends AbstractImportService{
                 listener.recordProcessed(PRIVILEGE_CORRECTION, recordIndex);
             }
 
-            listener.completeImport(PRIVILEGE_CORRECTION);
+            listener.completeImport(PRIVILEGE_CORRECTION, recordIndex);
         } catch (IOException e) {
             throw new ImportFileReadException(e, PRIVILEGE_CORRECTION.getFileName(), recordIndex);
         } catch (NumberFormatException e) {
