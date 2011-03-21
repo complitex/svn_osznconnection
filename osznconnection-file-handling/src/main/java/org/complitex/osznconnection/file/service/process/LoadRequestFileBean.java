@@ -42,7 +42,7 @@ public class LoadRequestFileBean {
 
     @SuppressWarnings({"EjbProhibitedPackageUsageInspection", "ConstantConditions"})
     public boolean load(RequestFile requestFile, ILoadRequestFile loadRequestFile) throws ExecuteException {
-        String currentFieldName = "-1";
+        String currentFieldName = "0";
         int index = -1;
         int batchSize = configBean.getInteger(FileHandlingConfig.LOAD_BATCH_SIZE, true);
 

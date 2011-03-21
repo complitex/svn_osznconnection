@@ -20,11 +20,6 @@ public class RequestFile implements ILoggable {
         BENEFIT, PAYMENT, TARIF, ACTUAL_PAYMENT
     }
 
-    public final static String PAYMENT_FILE_PREFIX = "A_";
-    public final static String BENEFIT_FILE_PREFIX = "AF";
-    public final static String TARIF_FILE_PREFIX = "TARIF";
-    public final static String ACTUAL_PAYMENT_FILE_PREFIX = "B";
-
     private Long id;
     private Long groupId;
     private Date loaded;
@@ -53,20 +48,6 @@ public class RequestFile implements ILoggable {
 
     public boolean isBenefit() {
         return TYPE.BENEFIT.equals(type);
-    }
-
-    public void updateTypeByName() {
-        if (name != null && name.length() > 2) {
-            if (name.indexOf(BENEFIT_FILE_PREFIX) == 0){
-                type =  TYPE.BENEFIT;
-            }else if (name.indexOf(PAYMENT_FILE_PREFIX) == 0){
-                type = TYPE.PAYMENT;
-            }else if (name.indexOf(TARIF_FILE_PREFIX) == 0){
-                type = TYPE.TARIF;
-            }else if (name.indexOf(ACTUAL_PAYMENT_FILE_PREFIX) == 0){
-                type = TYPE.ACTUAL_PAYMENT;
-            }
-        }
     }
 
     @Override
