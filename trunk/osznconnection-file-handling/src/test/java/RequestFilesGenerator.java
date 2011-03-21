@@ -24,8 +24,8 @@ public class RequestFilesGenerator{
     public static void main(String... arg) throws IOException {
         for (String m : MONTHS){
             for (String c : CODES){
-                generate(STORAGE, RequestFile.TYPE.BENEFIT, RequestFile.BENEFIT_FILE_PREFIX, c, m, COUNT);
-                generate(STORAGE, RequestFile.TYPE.PAYMENT, RequestFile.PAYMENT_FILE_PREFIX, c, m, COUNT);
+                generate(STORAGE, RequestFile.TYPE.BENEFIT, "AF", c, m, COUNT);
+                generate(STORAGE, RequestFile.TYPE.PAYMENT, "A_", c, m, COUNT);
             }
         }        
     }
