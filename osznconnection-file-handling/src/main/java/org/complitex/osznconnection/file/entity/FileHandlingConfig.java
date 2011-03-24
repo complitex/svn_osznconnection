@@ -16,7 +16,7 @@ public enum FileHandlingConfig implements IConfig{
     PAYMENT_FILENAME_PREFIX("A_", "mask"),
     BENEFIT_FILENAME_PREFIX("AF", "mask"),
     PAYMENT_BENEFIT_FILENAME_SUFFIX("\\d{4}{MM}\\.DBF", "mask"),
-    ACTUAL_PAYMENT_FILENAME_MASK(".*{MM}{YY}\\.DFB", "mask"),
+    ACTUAL_PAYMENT_FILENAME_MASK(".*{MM}{YY}\\.DBF", "mask"),
     TARIF_PAYMENT_FILENAME_MASK("TARIF12\\.DBF", "mask"),
 
     LOAD_THREAD_SIZE("2", "thread"),
