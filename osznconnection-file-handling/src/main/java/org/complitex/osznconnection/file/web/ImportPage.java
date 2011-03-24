@@ -154,7 +154,7 @@ public class ImportPage extends TemplatePage {
         }){
             @Override
             public boolean isVisible() {
-                return importService.getErrorMessage() != null;
+                return importService.isError();
             }
         });
     }

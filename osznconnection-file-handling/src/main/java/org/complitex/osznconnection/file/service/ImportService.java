@@ -88,7 +88,7 @@ public class ImportService {
         @Override
         public void completeImport(IImportFile importFile, int recordCount) {
             logBean.info(Module.NAME, ImportService.class, importFile.getClass(), null, Log.EVENT.CREATE,
-                            "Имя файла: {0}, количество записей: {1}", importFile.getFileName(), recordCount);
+                    "Имя файла: {0}, количество записей: {1}", importFile.getFileName(), recordCount);
         }
     };
 
@@ -106,8 +106,8 @@ public class ImportService {
 
         @Override
         public void completeImport(IImportFile importFile, int recordCount) {
-             logBean.info(Module.NAME, ImportService.class, importFile.getClass(), null, Log.EVENT.CREATE,
-                            "Имя файла: {0}, количество записей: {1}", importFile.getFileName(), recordCount);
+            logBean.info(Module.NAME, ImportService.class, importFile.getClass(), null, Log.EVENT.CREATE,
+                    "Имя файла: {0}, количество записей: {1}", importFile.getFileName(), recordCount);
         }
     };
 
@@ -127,16 +127,8 @@ public class ImportService {
         return errorMessage;
     }
 
-    public List<ImportMessage> getDictionaryMessages(){
-        return Collections.unmodifiableList(new ArrayList<ImportMessage>(dictionaryMap.values()));
-    }
-
     public ImportMessage getDictionaryMessage(IImportFile importFile){
         return dictionaryMap.get(importFile);
-    }
-
-    public List<ImportMessage> getCorrectionMessages(){
-        return Collections.unmodifiableList(new ArrayList<ImportMessage>(correctionMap.values()));
     }
 
     public ImportMessage getCorrectionMessage(IImportFile importFile){
@@ -152,139 +144,19 @@ public class ImportService {
         errorMessage = null;
     }
 
-    @Asynchronous
-    public void processDictionary(){
-        if (processing){
-            return;
-        }
-
-        init();
-
-        configBean.getString(DictionaryConfig.IMPORT_FILE_STORAGE_DIR, true); //reload config cache
-
-        try {
-            userTransaction.begin();
-
-            //Address
-            addressImportService.process(dictionaryListener);
-
-            //Ownership
-            ownershipImportService.process(dictionaryListener);
-
-            //Privilege
-            privilegeImportService.process(dictionaryListener);
-
-            success = true;
-
-            userTransaction.commit();
-        } catch (Exception e) {
-            log.error("Ошибка импорта", e);
-
-            try {
-                userTransaction.rollback();
-            } catch (SystemException e1) {
-                log.error("Ошибка отката транзакции", e1);
-            }
-
-            error = true;
-            errorMessage = e instanceof AbstractException ? e.getMessage() : new ImportCriticalException(e).getMessage();
-
-            logBean.error(Module.NAME, ImportService.class, null, null, Log.EVENT.CREATE, errorMessage);
-        }finally {
-            processing = false;
-        }
-    }
-
-    @Asynchronous
-    public void processCorrections(Long organizationId){
-        if (processing){
-            return;
-        }
-
-        init();
-
-        configBean.getString(DictionaryConfig.IMPORT_FILE_STORAGE_DIR, true); //reload config cache
-
-        try {
-            userTransaction.begin();
-
-            //Address correction
-            addressCorrectionImportService.process(organizationId, INT_ORG_ID, correctionListener);
-
-            //Ownership correction
-            ownershipCorrectionImportService.process(organizationId, INT_ORG_ID, correctionListener);
-
-            //Privilege correction
-            privilegeCorrectionImportService.process(organizationId, INT_ORG_ID, correctionListener);
-
-            success = true;
-
-            userTransaction.commit();
-        } catch (Exception e) {
-            log.error("Ошибка импорта", e);
-
-            try {
-                userTransaction.rollback();
-            } catch (SystemException e1) {
-                log.error("Ошибка отката транзакции", e1);
-            }
-
-            error = true;
-            errorMessage = e instanceof AbstractException ? e.getMessage() : new ImportCriticalException(e).getMessage();
-        }finally {
-            processing = false;
-        }
-    }
-
-    private <T extends IImportFile> void processDictionary(T importFile) throws SystemException,
-            NotSupportedException, ImportFileNotFoundException, ImportFileReadException, ImportObjectLinkException,
-            RollbackException, HeuristicRollbackException, HeuristicMixedException {
-        userTransaction.begin();
-
+    private <T extends IImportFile> void processDictionary(T importFile) throws ImportFileNotFoundException,
+            ImportObjectLinkException, ImportFileReadException {
         if (importFile instanceof AddressImportFile){ //Address
-            switch ((AddressImportFile)importFile){
-                case COUNTRY:
-                    addressImportService.importCountry(dictionaryListener);
-                    break;
-                case REGION:
-                    addressImportService.importRegion(dictionaryListener);
-                    break;
-                case CITY_TYPE:
-                    addressImportService.importCityType(dictionaryListener);
-                    break;
-                case CITY:
-                    addressImportService.importCity(dictionaryListener);
-                    break;
-                case DISTRICT:
-                    addressImportService.importDistrict(dictionaryListener);
-                    break;
-                case STREET_TYPE:
-                    addressImportService.importStreetType(dictionaryListener);
-                    break;
-                case STREET:
-                    addressImportService.importStreet(dictionaryListener);
-                    break;
-                case BUILDING:
-                    addressImportService.importBuilding(dictionaryListener);
-                    break;
-            }
+            addressImportService.process(importFile, dictionaryListener);
         }else if (importFile instanceof OwnershipImportFile){ // Ownership
             ownershipImportService.process(dictionaryListener);
         }else if (importFile instanceof PrivilegeImportFile){ //Privilege
             privilegeImportService.process(dictionaryListener);
         }
-
-        success = true;
-
-        userTransaction.commit();
     }
 
-    private <T extends IImportFile> void processCorrection(T importFile, long orgId) throws SystemException,
-            NotSupportedException, ImportFileNotFoundException, ImportObjectLinkException, ImportFileReadException,
-            RollbackException, HeuristicRollbackException, HeuristicMixedException {
-
-        userTransaction.begin();
-
+    private <T extends IImportFile> void processCorrection(T importFile, long orgId) throws ImportFileNotFoundException,
+            ImportObjectLinkException, ImportFileReadException {
         if (importFile instanceof AddressImportFile){ //Address
             switch ((AddressImportFile) importFile){
                 case CITY:
@@ -313,12 +185,9 @@ public class ImportService {
                     break;
             }
         }
-
-        success = true;
-
-        userTransaction.commit();
     }
 
+    @Asynchronous
     public <T extends IImportFile> void process(List<T> dictionaryFiles, List<T> correctionFiles, Long orgId){
         if (processing){
             return;
@@ -331,13 +200,23 @@ public class ImportService {
         try {
             //Dictionary
             for(T t : dictionaryFiles){
+                userTransaction.begin();
+
                 processDictionary(t);
+
+                userTransaction.commit();
             }
 
             //Correction
             for (T t : correctionFiles){
+                userTransaction.begin();
+
                 processCorrection(t, orgId);
+
+                userTransaction.commit();
             }
+
+            success = true;
         } catch (Exception e) {
             log.error("Ошибка импорта", e);
 
