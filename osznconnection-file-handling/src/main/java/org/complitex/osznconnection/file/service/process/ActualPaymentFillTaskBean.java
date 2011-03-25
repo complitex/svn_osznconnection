@@ -107,8 +107,17 @@ public class ActualPaymentFillTaskBean implements ITaskBean<RequestFile> {
         if (RequestStatus.unboundStatuses().contains(actualPayment.getStatus())) {
             return;
         }
+        long startTime = 0;
+        if (log.isDebugEnabled()) {
+            startTime = System.currentTimeMillis();
+        }
         adapter.processActualPayment(actualPayment, date);
+        log.debug("Processing actualPayment (id = {}) took {} sec.", actualPayment.getId(), (System.currentTimeMillis() - startTime) / 1000);
+        if (log.isDebugEnabled()) {
+            startTime = System.currentTimeMillis();
+        }
         actualPaymentBean.update(actualPayment);
+        log.debug("Updating of actualPayment (id = {}) took {} sec.", actualPayment.getId(), (System.currentTimeMillis() - startTime) / 1000);
     }
 
     private void processActualPayment(RequestFile actualPaymentFile) throws FillException, DBException {
@@ -116,7 +125,12 @@ public class ActualPaymentFillTaskBean implements ITaskBean<RequestFile> {
         ICalculationCenterAdapter adapter = calculationCenterBean.getDefaultCalculationCenterAdapter();
 
         //извлечь из базы все id подлежащие обработке для файла actualPayment и доставать записи порциями по BATCH_SIZE штук.
+        long startTime = 0;
+        if (log.isDebugEnabled()) {
+            startTime = System.currentTimeMillis();
+        }
         List<Long> notResolvedPaymentIds = actualPaymentBean.findIdsForProcessing(actualPaymentFile.getId());
+        log.debug("Finding of actualPayment ids for processing took {} sec.", (System.currentTimeMillis() - startTime) / 1000);
         List<Long> batch = Lists.newArrayList();
 
         int batchSize = configBean.getInteger(FileHandlingConfig.FILL_BATCH_SIZE, true);
