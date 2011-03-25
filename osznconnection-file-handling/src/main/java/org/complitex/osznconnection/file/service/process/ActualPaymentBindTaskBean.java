@@ -10,7 +10,6 @@ import org.complitex.dictionary.entity.Log.EVENT;
 import org.complitex.dictionary.service.ConfigBean;
 import org.complitex.dictionary.service.executor.ExecuteException;
 import org.complitex.dictionary.service.executor.ITaskBean;
-import org.complitex.dictionary.util.DateUtil;
 import org.complitex.osznconnection.file.Module;
 import org.complitex.osznconnection.file.calculation.adapter.ICalculationCenterAdapter;
 import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
@@ -117,7 +116,7 @@ public class ActualPaymentBindTaskBean implements ITaskBean<RequestFile> {
                 //связать actualPayment запись
                 try {
                     userTransaction.begin();
-                    bind(actualPayment, DateUtil.getFirstDayOf(actualPaymentFile.getLoaded()), calculationCenterId, adapter);
+                    bind(actualPayment, actualPaymentBean.getFirstDay(actualPayment, actualPaymentFile), calculationCenterId, adapter);
                     userTransaction.commit();
                 } catch (Exception e) {
                     log.error("The actual payment item ( id = " + actualPayment.getId() + ") was bound with error: ", e);

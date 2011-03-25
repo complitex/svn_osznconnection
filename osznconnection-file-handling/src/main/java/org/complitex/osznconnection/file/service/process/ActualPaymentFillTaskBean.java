@@ -5,7 +5,6 @@ import org.complitex.dictionary.entity.Log;
 import org.complitex.dictionary.service.ConfigBean;
 import org.complitex.dictionary.service.executor.ExecuteException;
 import org.complitex.dictionary.service.executor.ITaskBean;
-import org.complitex.dictionary.util.DateUtil;
 import org.complitex.osznconnection.file.Module;
 import org.complitex.osznconnection.file.calculation.adapter.ICalculationCenterAdapter;
 import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
@@ -134,7 +133,7 @@ public class ActualPaymentFillTaskBean implements ITaskBean<RequestFile> {
                 //обработать actualPayment запись
                 try {
                     userTransaction.begin();
-                    process(actualPayment, DateUtil.getFirstDayOf(actualPaymentFile.getLoaded()), adapter);
+                    process(actualPayment, actualPaymentBean.getFirstDay(actualPayment, actualPaymentFile), adapter);
                     userTransaction.commit();
                 } catch (Exception e) {
                     log.error("The actual payment item (id = " + actualPayment.getId() + ") was processed with error: ", e);

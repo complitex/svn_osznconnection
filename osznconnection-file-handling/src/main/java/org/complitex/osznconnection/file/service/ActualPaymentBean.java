@@ -5,6 +5,7 @@
 package org.complitex.osznconnection.file.service;
 
 import com.google.common.collect.Maps;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -12,6 +13,7 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import org.complitex.dictionary.mybatis.Transactional;
+import org.complitex.dictionary.util.DateUtil;
 import org.complitex.osznconnection.file.entity.AbstractRequest;
 import org.complitex.osznconnection.file.entity.ActualPayment;
 import org.complitex.osznconnection.file.entity.ActualPaymentDBF;
@@ -183,5 +185,14 @@ public class ActualPaymentBean extends AbstractRequestBean {
         params.put("fileId", fileId);
         sqlSession().update(MAPPING_NAMESPACE + ".clearBeforeProcessing", params);
         clearWarnings(fileId, RequestFile.TYPE.ACTUAL_PAYMENT);
+    }
+
+    public Date getFirstDay(ActualPayment actualPayment, RequestFile actualPaymentFile) {
+        Date beginDate = (Date) actualPayment.getField(ActualPaymentDBF.DAT_BEG);
+        if (beginDate != null) {
+            return beginDate;
+        } else {
+            return DateUtil.getFirstDayOfMonth(actualPaymentFile.getYear(), actualPaymentFile.getMonth());
+        }
     }
 }
