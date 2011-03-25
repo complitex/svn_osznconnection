@@ -109,7 +109,7 @@
             p.registry as p_registry, p.month as p_month, p.year as p_year, p.dbf_record_count as p_dbf_record_count,
             p.length as p_length, p.check_sum as p_check_sum, p.type as p_type,
             count(`payment`.`id`) as loaded_record_count,
-            count(`payment`.`account_number`) as binded_record_count,
+            (count(`payment`.`account_number`) + count(IF(`payment`.`status` = 215, 1, NULL))) as binded_record_count,
             count(IF(`payment`.`status` = 215, 1, NULL)) as filled_record_count
         <include refid="requestFileGroupFilterFrom"/>
         <include refid="requestFileGroupFilterWhere"/>
@@ -138,7 +138,7 @@
             (select
                 g.`id`,
                 count(`payment`.`id`) as loaded_record_count,
-                count(`payment`.`account_number`) as binded_record_count,
+                (count(`payment`.`account_number`) + count(IF(`payment`.`status` = 215, 1, NULL)))  as binded_record_count,
                 count(IF(`payment`.`status` = 215, 1, NULL)) as filled_record_count
             <include refid="requestFileGroupFilterFrom"/>
             <include refid="requestFileGroupFilterWhere"/>) as q
