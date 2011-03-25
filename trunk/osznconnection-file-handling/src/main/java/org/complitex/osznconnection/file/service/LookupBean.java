@@ -18,7 +18,6 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import java.util.List;
-import org.complitex.dictionary.util.DateUtil;
 import org.complitex.osznconnection.file.calculation.adapter.exception.UnknownAccountNumberTypeException;
 import org.complitex.osznconnection.file.entity.AbstractRequest;
 import org.complitex.osznconnection.file.entity.ActualPayment;
@@ -38,6 +37,8 @@ public class LookupBean extends AbstractBean {
     private CalculationCenterBean calculationCenterBean;
     @EJB
     private RequestFileBean requestFileBean;
+    @EJB
+    private ActualPaymentBean actualPaymentBean;
 
     /**
      * Разрешить исходящий в ЦН адрес по схеме "локальная адресная база -> адрес центра начислений"
@@ -87,7 +88,7 @@ public class LookupBean extends AbstractBean {
         RequestFile actualPaymentFile = requestFileBean.findById(actualPayment.getRequestFileId());
         return acquireAccountDetailsByAddress(actualPayment, actualPayment.getOutgoingDistrict(), actualPayment.getOutgoingStreetType(),
                 actualPayment.getOutgoingStreet(), actualPayment.getOutgoingBuildingNumber(), actualPayment.getOutgoingBuildingCorp(),
-                actualPayment.getOutgoingApartment(), DateUtil.getFirstDayOf(actualPaymentFile.getLoaded()));
+                actualPayment.getOutgoingApartment(), actualPaymentBean.getFirstDay(actualPayment, actualPaymentFile));
     }
 
     @Transactional
