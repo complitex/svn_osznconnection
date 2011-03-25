@@ -179,12 +179,17 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
         params.put("date", date);
 
         String result = null;
+        long startTime = 0;
+        if (log.isDebugEnabled()) {
+            startTime = System.currentTimeMillis();
+        }
         try {
             result = (String) sqlSession().selectOne(MAPPING_NAMESPACE + ".acquirePersonAccount", params);
         } catch (Exception e) {
             throw new DBException(e);
         } finally {
             log.info("acquirePersonAccount. Parameters : {}, result : {}", params, result);
+            log.debug("acquirePersonAccount. Time of operation: {} sec.", (System.currentTimeMillis() - startTime) / 1000);
         }
 
         if (result.equals("0")) {
@@ -246,12 +251,17 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
         params.put("pFlatNum", apartment);
         params.put("date", date);
 
+        long startTime = 0;
+        if (log.isDebugEnabled()) {
+            startTime = System.currentTimeMillis();
+        }
         try {
             sqlSession().selectOne(MAPPING_NAMESPACE + ".acquireAccountDetailsByAddress", params);
         } catch (Exception e) {
             throw new DBException(e);
         } finally {
             log.info("acquireAccountDetailsByAddress. Parameters : {}", params);
+            log.debug("acquireAccountDetailsByAddress. Time of operation: {} sec.", (System.currentTimeMillis() - startTime) / 1000);
         }
 
         Integer resultCode = (Integer) params.get("resultCode");
@@ -326,12 +336,17 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
         params.put("accountNumber", payment.getAccountNumber());
         params.put("dat1", payment.getField(PaymentDBF.DAT1));
 
+        long startTime = 0;
+        if (log.isDebugEnabled()) {
+            startTime = System.currentTimeMillis();
+        }
         try {
             sqlSession().selectOne(MAPPING_NAMESPACE + ".processPaymentAndBenefit", params);
         } catch (Exception e) {
             throw new DBException(e);
         } finally {
             log.info("processPaymentAndBenefit. Parameters : {}", params);
+            log.debug("processPaymentAndBenefit. Time of operation: {} sec.", (System.currentTimeMillis() - startTime) / 1000);
         }
 
         Integer resultCode = (Integer) params.get("resultCode");
@@ -516,12 +531,17 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
         params.put("accountNumber", benefit.getAccountNumber());
         params.put("dat1", dat1);
 
+        long startTime = 0;
+        if (log.isDebugEnabled()) {
+            startTime = System.currentTimeMillis();
+        }
         try {
             sqlSession().selectOne(MAPPING_NAMESPACE + ".getBenefitData", params);
         } catch (Exception e) {
             throw new DBException(e);
         } finally {
             log.info("getBenefitData. Parameters : {}", params);
+            log.debug("getBenefitData. Time of operation: {} sec.", (System.currentTimeMillis() - startTime) / 1000);
         }
 
         Integer resultCode = (Integer) params.get("resultCode");
@@ -792,12 +812,17 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
         params.put("accountNumber", accountNumber);
         params.put("dat1", dat1);
 
+        long startTime = 0;
+        if (log.isDebugEnabled()) {
+            startTime = System.currentTimeMillis();
+        }
         try {
             sqlSession().selectOne(MAPPING_NAMESPACE + ".processBenefit", params);
         } catch (Exception e) {
             throw new DBException(e);
         } finally {
             log.info("processBenefit. Parameters : {}", params);
+            log.debug("processBenefit. Time of operation: {} sec.", (System.currentTimeMillis() - startTime) / 1000);
         }
 
         Integer resultCode = (Integer) params.get("resultCode");
@@ -1051,12 +1076,17 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
         params.put("pAccCode", account);
         params.put("pAccCodeType", accountType);
 
+        long startTime = 0;
+        if (log.isDebugEnabled()) {
+            startTime = System.currentTimeMillis();
+        }
         try {
             sqlSession().selectOne(MAPPING_NAMESPACE + ".getAttrsByAccCode", params);
         } catch (Exception e) {
             throw new DBException(e);
         } finally {
             log.info("acquireAccountDetailsByAccount. Parameters : {}", params);
+            log.debug("acquireAccountDetailsByAccount. Time of operation: {} sec.", (System.currentTimeMillis() - startTime) / 1000);
         }
 
         Integer resultCode = (Integer) params.get("resultCode");
@@ -1128,12 +1158,17 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
         params.put("accountNumber", actualPayment.getAccountNumber());
         params.put("date", new Timestamp(date.getTime()));
 
+        long startTime = 0;
+        if (log.isDebugEnabled()) {
+            startTime = System.currentTimeMillis();
+        }
         try {
             sqlSession().selectOne(MAPPING_NAMESPACE + ".processActualPayment", params);
         } catch (Exception e) {
             throw new DBException(e);
         } finally {
             log.info("processActualPayment. Parameters : {}", params);
+            log.debug("processActualPayment. Time of operation: {} sec.", (System.currentTimeMillis() - startTime) / 1000);
         }
 
         Integer resultCode = (Integer) params.get("resultCode");

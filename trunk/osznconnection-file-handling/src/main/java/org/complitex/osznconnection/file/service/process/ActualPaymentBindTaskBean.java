@@ -66,18 +66,35 @@ public class ActualPaymentBindTaskBean implements ITaskBean<RequestFile> {
 
 
     private boolean resolveAddress(ActualPayment actualPayment, long calculationCenterId, ICalculationCenterAdapter adapter) {
+        long startTime = 0;
+        if (log.isDebugEnabled()) {
+            startTime = System.currentTimeMillis();
+        }
         addressService.resolveAddress(actualPayment, calculationCenterId, adapter);
+        log.debug("Resolving of actualPayment address (id = {}) took {} sec.", actualPayment.getId(), (System.currentTimeMillis() - startTime) / 1000);
         return addressService.isAddressResolved(actualPayment);
     }
 
     private boolean resolveLocalAccount(ActualPayment actualPayment, long calculationCenterId) {
+        long startTime = 0;
+        if (log.isDebugEnabled()) {
+            startTime = System.currentTimeMillis();
+        }
         personAccountService.resolveLocalAccount(actualPayment, calculationCenterId);
+        log.debug("Resolving of actualPayment (id = {}) for local account took {} sec.", actualPayment.getId(),
+                (System.currentTimeMillis() - startTime) / 1000);
         return actualPayment.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED;
     }
 
     private boolean resolveRemoteAccountNumber(ActualPayment actualPayment, Date date, long calculationCenterId, ICalculationCenterAdapter adapter)
             throws DBException {
+        long startTime = 0;
+        if (log.isDebugEnabled()) {
+            startTime = System.currentTimeMillis();
+        }
         personAccountService.resolveRemoteAccount(actualPayment, date, calculationCenterId, adapter);
+        log.debug("Resolving of actualPayment (id = {}) for remote account number took {} sec.", actualPayment.getId(),
+                (System.currentTimeMillis() - startTime) / 1000);
         return actualPayment.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED;
     }
 
@@ -89,7 +106,12 @@ public class ActualPaymentBindTaskBean implements ITaskBean<RequestFile> {
         }
 
         // обновляем actualPayment запись
+        long startTime = 0;
+        if (log.isDebugEnabled()) {
+            startTime = System.currentTimeMillis();
+        }
         actualPaymentBean.update(actualPayment);
+        log.debug("Updating of actualPayment (id = {}) took {} sec.", actualPayment.getId(), (System.currentTimeMillis() - startTime) / 1000);
     }
 
     private void bindActualPaymentFile(RequestFile actualPaymentFile) throws BindException, DBException {
@@ -98,7 +120,12 @@ public class ActualPaymentBindTaskBean implements ITaskBean<RequestFile> {
         ICalculationCenterAdapter adapter = calculationCenterBean.getDefaultCalculationCenterAdapter();
 
         //извлечь из базы все id подлежащие связыванию для файла actualPayment и доставать записи порциями по BATCH_SIZE штук.
+        long startTime = 0;
+        if (log.isDebugEnabled()) {
+            startTime = System.currentTimeMillis();
+        }
         List<Long> notResolvedPaymentIds = actualPaymentBean.findIdsForBinding(actualPaymentFile.getId());
+        log.debug("Finding of actualPayment ids for binding took {} sec.", (System.currentTimeMillis() - startTime) / 1000);
         List<Long> batch = Lists.newArrayList();
 
         int batchSize = configBean.getInteger(FileHandlingConfig.BIND_BATCH_SIZE, true);
@@ -135,7 +162,7 @@ public class ActualPaymentBindTaskBean implements ITaskBean<RequestFile> {
     public boolean execute(RequestFile requestFile) throws ExecuteException {
         requestFile.setStatus(requestFileBean.getRequestFileStatus(requestFile)); //обновляем статус из базы данных
 
-        if (requestFile.isProcessing()){ //проверяем что не обрабатывается в данный момент
+        if (requestFile.isProcessing()) { //проверяем что не обрабатывается в данный момент
             throw new BindException(new AlreadyProcessingException(requestFile), true, requestFile);
         }
 
