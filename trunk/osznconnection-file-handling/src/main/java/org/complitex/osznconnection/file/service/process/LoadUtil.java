@@ -96,25 +96,13 @@ public class LoadUtil {
         });
     }
 
-    private static List<File> getInputActualPaymentFiles(final String districtDir, final int monthFrom, final int monthTo,
-                                                   final int year, final IConfig... filenameMasks) throws StorageNotFoundException {
+    private static List<File> getInputActualPaymentFiles(final IConfig mask, final String districtDir,
+                                                         final int month, final int year) throws StorageNotFoundException {
         return RequestFileStorage.getInstance().getInputActualPaymentFiles(districtDir, new FileFilter() {
 
             @Override
             public boolean accept(File file) {
-                if (file.isDirectory()) {
-                    return true;
-                }
-
-                for (int m = monthFrom; m <= monthTo; ++m) {
-                    for (IConfig c : filenameMasks){
-                        if (isMatches(c, file.getName(), m, year)){
-                            return true;
-                        }
-                    }
-                }
-
-                return false;
+                return file.isDirectory() || isMatches(mask, file.getName(), month, year);
             }
         });
     }
@@ -234,27 +222,30 @@ public class LoadUtil {
         return tarifs;
     }
 
-     public static List<RequestFile> getActualPayments(Long organizationId, String districtCode, int monthFrom, int monthTo, int year)
-            throws StorageNotFoundException {
-        List<File> files = getInputActualPaymentFiles(districtCode, monthFrom, monthTo, year, ACTUAL_PAYMENT_FILENAME_MASK);
+     public static List<RequestFile> getActualPayments(Long organizationId, String districtCode, int monthFrom,
+                                                       int monthTo, int year) throws StorageNotFoundException {
+         List<RequestFile> actualPayments = new ArrayList<RequestFile>();
 
-        List<RequestFile> actualPayments = new ArrayList<RequestFile>();
+         for (int month = monthFrom; month <= monthTo; ++month) {
+             List<File> files = getInputActualPaymentFiles(ACTUAL_PAYMENT_FILENAME_MASK, districtCode, month, year);
 
-        for (File file : files) {
-            //fill fields
-            RequestFile requestFile = new RequestFile();
+             for (File file : files) {
+                 //fill fields
+                 RequestFile requestFile = new RequestFile();
 
-            requestFile.setName(file.getName());
-            requestFile.setLength(file.length());
-            requestFile.setAbsolutePath(file.getAbsolutePath());
-            requestFile.setDirectory(RequestFileStorage.getInstance().getRelativeParent(file));
-            requestFile.setOrganizationId(organizationId);
-            requestFile.setYear(year);
-            requestFile.setType(RequestFile.TYPE.ACTUAL_PAYMENT);
+                 requestFile.setName(file.getName());
+                 requestFile.setLength(file.length());
+                 requestFile.setAbsolutePath(file.getAbsolutePath());
+                 requestFile.setDirectory(RequestFileStorage.getInstance().getRelativeParent(file));
+                 requestFile.setOrganizationId(organizationId);
+                 requestFile.setMonth(month);
+                 requestFile.setYear(year);
+                 requestFile.setType(RequestFile.TYPE.ACTUAL_PAYMENT);
 
-            actualPayments.add(requestFile);
+                 actualPayments.add(requestFile);
+             }
+         }
 
-        }
-        return actualPayments;
+         return actualPayments;
     }
 }
