@@ -10,7 +10,7 @@
                 <tr wicket:id="districtContainer">
                     <th>
                         <wicket:message key="district"/> 
-                        <span wicket:id="districtRequired"><b class="blue">*</b></span> :
+                        <span wicket:id="districtRequired"> <b class="blue">*</b></span> :
                     </th>
                     <td>
                         <span wicket:id="district"></span>
@@ -22,6 +22,14 @@
                     </th>
                     <td>
                         <span wicket:id="parent"></span>
+                    </td>
+                </tr>
+                <tr wicket:id="currentCaculationCenterContainer">
+                    <th>
+                        <span wicket:id="currentCalculationCenterLabel"></span> :
+                    </th>
+                    <td>
+                        <input type="checkbox" wicket:id="currentCalculationCenter"/>
                     </td>
                 </tr>
             </table>

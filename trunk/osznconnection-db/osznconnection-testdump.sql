@@ -1,18 +1,18 @@
 -- Organizations
 insert into organization(object_id, entity_type_id) values (1,900), (2,901);
 insert into organization_string_culture(id, locale_id, value) values (3, 1, UPPER('ОСЗН 1')), (3,2,UPPER('ОСЗН 1')), (4, 1, UPPER('1234')),
-(5, 1, UPPER('Модуль начислений №1')), (5, 2, UPPER('Модуль начислений №1')), (6, 1, UPPER('123'));
+(5, 1, UPPER('Модуль начислений №1')), (5, 2, UPPER('Модуль начислений №1')), (6, 1, UPPER('123')), (7, 1, UPPER('true'));
 insert into organization_attribute(attribute_id, object_id, attribute_type_id, value_id, value_type_id) values
 (1,1,900,3,900), (1,1,901,4,901), (1,1,902,3,902),
-(1,2,900,5,900), (1,2,901,6,901);
+(1,2,900,5,900), (1,2,901,6,901), (1,2,904,7,904);
 
 -- User organizations
 insert into organization(object_id, entity_type_id) values (3,902), (4,902);
-insert into organization_string_culture(id, locale_id, value) values (7, 1, UPPER('КП "ЖИЛКОМСЕРВИС"')), (8,1,UPPER('ЛЕНИНСКИЙ ФИЛИАЛ КП "ЖИЛКОМСЕРВИС"')),
-(9, 1, UPPER('12345')), (10, 1, UPPER('123456'));
+insert into organization_string_culture(id, locale_id, value) values (8, 1, UPPER('КП "ЖИЛКОМСЕРВИС"')), (9,1,UPPER('ЛЕНИНСКИЙ ФИЛИАЛ КП "ЖИЛКОМСЕРВИС"')),
+(10, 1, UPPER('12345')), (11, 1, UPPER('123456'));
 insert into organization_attribute(attribute_id, object_id, attribute_type_id, value_id, value_type_id) values
-(1,3,900,7,900), (1,3,901,9,901),
-(1,4,900,8,900), (1,4,901,10,901), (1,4,903,3,903);
+(1,3,900,8,900), (1,3,901,10,901),
+(1,4,900,9,900), (1,4,901,11,901), (1,4,903,3,903);
 
 -- Files
 insert into request_file_group(id) values (1);
@@ -102,9 +102,6 @@ insert into privilege_correction(organization_id, correction, object_id, organiz
 
 -- Tarif
 insert into tarif(`T11_CS_UNI`, `T11_CODE2`, `request_file_id`, `T11_CODE1`) values (0,123,3,1);
-
--- calculation center info
-insert into calculation_center_preference(calculation_center_id, adapter_class) values (2, 'org.complitex.osznconnection.file.calculation.adapter.DefaultCalculationCenterAdapter');
 
 -- config test
 --insert into config(`name`, `value`) values ('SAVE_OUTPUT_FILE_STORAGE_DIR', 'D:\\Artem\\Projects\\org.complitex\\storage\\out');

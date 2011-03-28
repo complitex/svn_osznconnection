@@ -47,14 +47,14 @@ public class LookupBean extends AbstractBean {
      */
     @Transactional
     public void resolveOutgoingAddress(Payment payment) {
-        Long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterInfo().getCalculationCenterId();
+        Long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterId();
         ICalculationCenterAdapter adapter = calculationCenterBean.getDefaultCalculationCenterAdapter();
         addressService.resolveOutgoingAddress(payment, calculationCenterId, adapter);
     }
 
     @Transactional
     public void resolveOutgoingAddress(ActualPayment actualPayment) {
-        Long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterInfo().getCalculationCenterId();
+        Long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterId();
         ICalculationCenterAdapter adapter = calculationCenterBean.getDefaultCalculationCenterAdapter();
         addressService.resolveOutgoingAddress(actualPayment, calculationCenterId, adapter);
     }
@@ -94,7 +94,7 @@ public class LookupBean extends AbstractBean {
     @Transactional
     public String resolveOutgoingDistrict(Payment payment) {
         payment.setStatus(RequestStatus.LOADED);
-        Long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterInfo().getCalculationCenterId();
+        Long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterId();
         ICalculationCenterAdapter adapter = calculationCenterBean.getDefaultCalculationCenterAdapter();
         addressService.resolveOutgoingDistrict(payment, calculationCenterId, adapter);
         if (!(payment.getStatus() == RequestStatus.DISTRICT_UNRESOLVED || payment.getStatus() == RequestStatus.MORE_ONE_REMOTE_DISTRICT_CORRECTION)) {
@@ -107,7 +107,7 @@ public class LookupBean extends AbstractBean {
     @Transactional
     public String resolveOutgoingDistrict(ActualPayment actualPayment) {
         actualPayment.setStatus(RequestStatus.LOADED);
-        Long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterInfo().getCalculationCenterId();
+        Long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterId();
         ICalculationCenterAdapter adapter = calculationCenterBean.getDefaultCalculationCenterAdapter();
         addressService.resolveOutgoingDistrict(actualPayment, calculationCenterId, adapter);
         if (!(actualPayment.getStatus() == RequestStatus.DISTRICT_UNRESOLVED

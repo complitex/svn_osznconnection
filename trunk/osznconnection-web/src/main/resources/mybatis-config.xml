@@ -76,7 +76,6 @@
         <mapper resource="org/complitex/osznconnection/file/service/status/details/StatusDetailBean.xml"/>
         <mapper resource="org/complitex/osznconnection/file/service/warning/RequestWarningBean.xml"/>
 
-        <mapper resource="org/complitex/osznconnection/file/calculation/service/CalculationCenterBean.xml"/>
         <mapper resource="org/complitex/osznconnection/file/calculation/adapter/DefaultCalculationCenterAdapter.xml"/>
     </mappers>
 </configuration>

@@ -12,6 +12,9 @@ INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES
 (904, 1, UPPER('ОСЗН')), (904, 2, UPPER('ОСЗН')),
 (905, 1, UPPER('Модуль начислений')), (905, 2, UPPER('Центр нарахувань'));
 INSERT INTO `entity_type`(`id`, `entity_id`, `entity_type_name_id`) VALUES (900, 900, 904), (901, 900, 905);
+INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (908, 1, UPPER('Является текущим модулем начислений')), (908, 2, UPPER('Является текущим модулем начислений'));
+INSERT INTO `entity_attribute_type`(`id`, `entity_id`, `mandatory`, `attribute_type_name_id`, `system`) VALUES (904, 900, 0, 908, 1);
+INSERT INTO `entity_attribute_value_type`(`id`, `attribute_type_id`, `attribute_value_type`) VALUES (904, 904, UPPER('boolean'));
 
 -- --------------------------------
 -- Ownership

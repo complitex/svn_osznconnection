@@ -684,19 +684,6 @@ CREATE TABLE `privilege_correction` (
     CONSTRAINT `fk_privilege_correction__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`object_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- calculation_center_preference --
-DROP TABLE IF EXISTS `calculation_center_preference`;
-
-CREATE TABLE `calculation_center_preference` (
-    `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
-    `calculation_center_id` BIGINT(20) NOT NULL,
-    `adapter_class` VARCHAR(100) NOT NULL,
-    PRIMARY KEY (`id`),
-    KEY `key_calculation_center_id` (`calculation_center_id`),
-    CONSTRAINT `fk_calculation_center_preference__organization` FOREIGN KEY (`calculation_center_id`)
-      REFERENCES `organization` (`object_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 -- ------------------------------
 -- Status descriptions. Read only, use only for reports.
 -- ------------------------------

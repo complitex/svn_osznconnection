@@ -7,38 +7,32 @@ package org.complitex.osznconnection.file.calculation.service;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.osznconnection.file.calculation.adapter.ICalculationCenterAdapter;
-import org.complitex.osznconnection.file.entity.CalculationCenterPreference;
 
 import javax.annotation.Resource;
+import javax.ejb.EJB;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
+import org.complitex.osznconnection.file.calculation.adapter.DefaultCalculationCenterAdapter;
+import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
 
 /**
- * Возвращает информацию о текущем ЦН, которая хранится в таблице calculation_center_preference.
- * Из таблицы достается только одна строчка, так что если в таблице более одной записи - какая из них будет текущей
- * не определено, и такая ситуация считается ошибкой настройки системы.
  * 
  * @author Artem
  */
-@Stateless(name = "CalculationCenterBean")
+@Stateless
 public class CalculationCenterBean extends AbstractBean {
+
+    @EJB(name = "OsznOrganizationStrategy")
+    private IOsznOrganizationStrategy organizationStrategy;
     @Resource
     private SessionContext sessionContext;
 
-    private static final String MAPPING_NAMESPACE = CalculationCenterBean.class.getName();
-
     @Transactional
-    public CalculationCenterPreference getCurrentCalculationCenterInfo() {
-        CalculationCenterPreference ccp = (CalculationCenterPreference) sqlSession().selectOne(MAPPING_NAMESPACE + ".getCurrentCenterInfo");
-
-        if (ccp == null){
-            throw new RuntimeException("Calculation center preference is not found in database.");
-        }
-
-        return ccp;
+    public long getCurrentCalculationCenterId() {
+        return organizationStrategy.getCurrentCalculationCenterId();
     }
 
-    public ICalculationCenterAdapter getDefaultCalculationCenterAdapter(){
-        return (ICalculationCenterAdapter) sessionContext.lookup("java:module/" + getCurrentCalculationCenterInfo().getAdapterClass());
+    public ICalculationCenterAdapter getDefaultCalculationCenterAdapter() {
+        return (ICalculationCenterAdapter) sessionContext.lookup("java:module/" + DefaultCalculationCenterAdapter.class.getName());
     }
 }

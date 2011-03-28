@@ -140,7 +140,7 @@ public class FillTaskBean implements ITaskBean<RequestFileGroup> {
      */
     private void processPayment(RequestFile paymentFile) throws FillException, DBException {
         //получаем информацию о текущем центре начисления
-        Long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterInfo().getCalculationCenterId();
+        Long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterId();
         ICalculationCenterAdapter adapter = calculationCenterBean.getDefaultCalculationCenterAdapter();
 
         //извлечь из базы все id подлежащие обработке для файла payment и доставать записи порциями по BATCH_SIZE штук.
@@ -208,7 +208,7 @@ public class FillTaskBean implements ITaskBean<RequestFileGroup> {
      */
     private void processBenefit(RequestFile benefitFile) throws FillException, DBException {
         //получаем информацию о текущем центре начисления
-        Long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterInfo().getCalculationCenterId();
+        Long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterId();
         ICalculationCenterAdapter adapter = calculationCenterBean.getDefaultCalculationCenterAdapter();
 
         List<String> allAccountNumbers = benefitBean.getAllAccountNumbers(benefitFile.getId());

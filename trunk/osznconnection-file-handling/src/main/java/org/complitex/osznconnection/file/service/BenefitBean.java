@@ -288,7 +288,7 @@ public class BenefitBean extends AbstractRequestBean {
 
     public Collection<BenefitData> getBenefitData(Benefit benefit) throws DBException {
         long osznId = benefit.getOrganizationId();
-        long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterInfo().getCalculationCenterId();
+        long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterId();
         ICalculationCenterAdapter adapter = calculationCenterBean.getDefaultCalculationCenterAdapter();
         Date dat1 = findDat1(benefit.getAccountNumber(), benefit.getRequestFileId());
         Collection<BenefitData> benefitData = adapter.getBenefitData(benefit, dat1);
