@@ -16,9 +16,11 @@ import org.apache.wicket.PageParameters;
 import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.complitex.address.strategy.street_type.StreetTypeStrategy;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.entity.example.DomainObjectExample;
 import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
@@ -29,7 +31,9 @@ import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.FormTemplatePage;
 import org.complitex.osznconnection.file.entity.Correction;
 import org.complitex.osznconnection.file.web.component.correction.edit.AbstractCorrectionEditPanel;
-import org.complitex.address.strategy.street_type.StreetTypeStrategy;
+import org.complitex.dictionary.service.LocaleBean;
+import org.complitex.dictionary.strategy.IStrategy;
+import org.complitex.dictionary.strategy.StrategyFactory;
 
 /**
  *
@@ -42,20 +46,28 @@ public class StreetTypeCorrectionEdit extends FormTemplatePage {
 
     private class StreetTypeChoicePanel extends Panel {
 
-        @EJB(name = "Street_typeStrategy")
-        private StreetTypeStrategy streetTypeStrategy;
+        @EJB
+        private StrategyFactory strategyFactory;
+        @EJB
+        private LocaleBean localeBean;
 
         public StreetTypeChoicePanel(String id, final Correction streetTypeCorrection) {
             super(id);
 
-            final List<? extends DomainObject> allStreetTypes = getEntityTypes();
+            final IModel<List<? extends DomainObject>> allStreetTypesModel = new LoadableDetachableModel<List<? extends DomainObject>>() {
+
+                @Override
+                protected List<? extends DomainObject> load() {
+                    return getEntityTypes();
+                }
+            };
             IModel<DomainObject> entityTypeModel = new Model<DomainObject>() {
 
                 @Override
                 public DomainObject getObject() {
                     final Long streetTypeId = streetTypeCorrection.getObjectId();
                     if (streetTypeId != null) {
-                        return Iterables.find(allStreetTypes, new Predicate<DomainObject>() {
+                        return Iterables.find(allStreetTypesModel.getObject(), new Predicate<DomainObject>() {
 
                             @Override
                             public boolean apply(DomainObject streetTypeObject) {
@@ -75,19 +87,26 @@ public class StreetTypeCorrectionEdit extends FormTemplatePage {
 
                 @Override
                 public Object getDisplayValue(DomainObject object) {
-                    return streetTypeStrategy.displayDomainObject(object, getLocale());
+                    return getStreetTypeStrategy().displayDomainObject(object, getLocale());
                 }
             };
             DisableAwareDropDownChoice<DomainObject> streetType = new DisableAwareDropDownChoice<DomainObject>("streetType",
-                    entityTypeModel, allStreetTypes, renderer);
+                    entityTypeModel, allStreetTypesModel, renderer);
             streetType.setRequired(true);
             add(streetType);
         }
 
         private List<? extends DomainObject> getEntityTypes() {
             DomainObjectExample example = new DomainObjectExample();
-            streetTypeStrategy.configureExample(example, ImmutableMap.<String, Long>of(), null);
-            return streetTypeStrategy.find(example);
+            example.setLocaleId(localeBean.convert(getLocale()).getId());
+            example.setOrderByAttributeTypeId(StreetTypeStrategy.NAME);
+            example.setAsc(true);
+            getStreetTypeStrategy().configureExample(example, ImmutableMap.<String, Long>of(), null);
+            return getStreetTypeStrategy().find(example);
+        }
+
+        private IStrategy getStreetTypeStrategy() {
+            return strategyFactory.getStrategy("street_type");
         }
     }
     private AbstractCorrectionEditPanel correctionEditPanel;
