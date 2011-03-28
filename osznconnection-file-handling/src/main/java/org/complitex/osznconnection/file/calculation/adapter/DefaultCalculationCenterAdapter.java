@@ -98,13 +98,21 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
     @Override
     public void prepareApartment(Payment payment, String apartment, String apartmentCode) {
         String flat = (String) payment.getField(PaymentDBF.FLAT);
-        if (flat != null) {
-            flat = flat.trim();
+        payment.setOutgoingApartment(removeWhiteSpaces(flat));
+    }
+
+    private String removeWhiteSpaces(String value){
+        if(value == null){
+            return null;
         }
-        if (Strings.isEmpty(flat)) {
-            flat = "";
+        char[] chars = value.toCharArray();
+        StringBuilder result = new StringBuilder();
+        for (char c : chars) {
+            if (c != ' ') {
+                result.append(c);
+            }
         }
-        payment.setOutgoingApartment(flat);
+        return result.toString();
     }
 
     @Override
@@ -142,13 +150,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
     @Override
     public void prepareApartment(ActualPayment actualPayment, String apartment, String apartmentCode) {
         String flat = (String) actualPayment.getField(ActualPaymentDBF.FLAT);
-        if (flat != null) {
-            flat = flat.trim();
-        }
-        if (Strings.isEmpty(flat)) {
-            flat = "";
-        }
-        actualPayment.setOutgoingApartment(flat);
+        actualPayment.setOutgoingApartment(removeWhiteSpaces(flat));
     }
 
     /**
