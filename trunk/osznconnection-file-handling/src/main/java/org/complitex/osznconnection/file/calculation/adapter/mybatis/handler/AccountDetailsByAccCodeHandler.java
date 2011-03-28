@@ -33,8 +33,23 @@ public class AccountDetailsByAccCodeHandler implements TypeHandler {
     @Override
     public Object getResult(CallableStatement cs, int columnIndex) throws SQLException {
         ResultSet rs = null;
+        List<AccountDetail> accountDetails = Lists.newArrayList();
         try {
             rs = (ResultSet) cs.getObject(columnIndex);
+
+            while (rs.next()) {
+                AccountDetail detail = new AccountDetail();
+                detail.setAccountNumber(rs.getString("mn_code"));
+                detail.setOwnerName(rs.getString("FIO"));
+                detail.setMegabankAccountNumber(rs.getString("ERC_CODE"));
+                detail.setOwnNumSr(rs.getString("zheu_code"));
+                detail.setStreetType(rs.getString("STREET_SORT"));
+                detail.setStreet(rs.getString("STREET_NAME"));
+                detail.setBuildingNumber(rs.getString("HOUSE_NAME"));
+                detail.setBuildingCorp(rs.getString("HOUSE_PART"));
+                detail.setApartment(rs.getString("FLAT"));
+                accountDetails.add(detail);
+            }
         } catch (SQLException e) {
             String message = e.getMessage();
             if (OracleErrors.CURSOR_IS_CLOSED_ERROR.equals(message)) {
@@ -42,27 +57,11 @@ public class AccountDetailsByAccCodeHandler implements TypeHandler {
             } else {
                 throw e;
             }
+        } finally {
+            if (rs != null) {
+                rs.close();
+            }
         }
-
-        if (rs == null) {
-            return null;
-        }
-
-        List<AccountDetail> accountDetails = Lists.newArrayList();
-        while (rs.next()) {
-            AccountDetail detail = new AccountDetail();
-            detail.setAccountNumber(rs.getString("mn_code"));
-            detail.setOwnerName(rs.getString("FIO"));
-            detail.setMegabankAccountNumber(rs.getString("ERC_CODE"));
-            detail.setOwnNumSr(rs.getString("zheu_code"));
-            detail.setStreetType(rs.getString("STREET_SORT"));
-            detail.setStreet(rs.getString("STREET_NAME"));
-            detail.setBuildingNumber(rs.getString("HOUSE_NAME"));
-            detail.setBuildingCorp(rs.getString("HOUSE_PART"));
-            detail.setApartment(rs.getString("FLAT"));
-            accountDetails.add(detail);
-        }
-
         return accountDetails;
     }
 }

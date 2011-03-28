@@ -21,7 +21,6 @@
         </environment>
     </environments>
     <mappers>
-        <mapper resource="org/complitex/osznconnection/file/calculation/service/CalculationCenterBean.xml"/>
         <mapper resource="org/complitex/osznconnection/file/calculation/adapter/DefaultCalculationCenterAdapter.xml"/>
     </mappers>
 
