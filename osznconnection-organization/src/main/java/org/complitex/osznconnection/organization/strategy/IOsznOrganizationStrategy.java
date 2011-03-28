@@ -18,6 +18,11 @@ public interface IOsznOrganizationStrategy extends IOrganizationStrategy {
     public long OSZN = 900;
     public long CALCULATION_CENTER = 901;
 
+    /**
+     * Attribute type ids
+     */
+    public long CURRENT_CALCULATION_CENTER = 904;
+
     @Transactional
     List<DomainObject> getAllOuterOrganizations(Locale locale);
 
@@ -26,4 +31,7 @@ public interface IOsznOrganizationStrategy extends IOrganizationStrategy {
 
     @Transactional
     List<DomainObject> getAllCalculationCentres(Locale locale);
+
+    @Transactional
+    long getCurrentCalculationCenterId();
 }

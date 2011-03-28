@@ -116,7 +116,7 @@ public class ActualPaymentBindTaskBean implements ITaskBean<RequestFile> {
 
     private void bindActualPaymentFile(RequestFile actualPaymentFile) throws BindException, DBException {
         //получаем информацию о текущем центре начисления
-        Long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterInfo().getCalculationCenterId();
+        Long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterId();
         ICalculationCenterAdapter adapter = calculationCenterBean.getDefaultCalculationCenterAdapter();
 
         //извлечь из базы все id подлежащие связыванию для файла actualPayment и доставать записи порциями по BATCH_SIZE штук.
