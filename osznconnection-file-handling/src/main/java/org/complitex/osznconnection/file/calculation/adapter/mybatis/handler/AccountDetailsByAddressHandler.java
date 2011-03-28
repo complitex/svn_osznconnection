@@ -33,8 +33,17 @@ public class AccountDetailsByAddressHandler implements TypeHandler {
     @Override
     public Object getResult(CallableStatement cs, int columnIndex) throws SQLException {
         ResultSet rs = null;
+        List<AccountDetail> accountDetails = Lists.newArrayList();
         try {
             rs = (ResultSet) cs.getObject(columnIndex);
+
+            while (rs.next()) {
+                AccountDetail detail = new AccountDetail();
+                detail.setAccountNumber(rs.getString("acc_code"));
+                detail.setOwnerName(rs.getString("owner_fio"));
+                detail.setOwnerINN(rs.getString("owner_inn"));
+                accountDetails.add(detail);
+            }
         } catch (SQLException e) {
             String message = e.getMessage();
             if (OracleErrors.CURSOR_IS_CLOSED_ERROR.equals(message)) {
@@ -42,21 +51,11 @@ public class AccountDetailsByAddressHandler implements TypeHandler {
             } else {
                 throw e;
             }
+        } finally {
+            if (rs != null) {
+                rs.close();
+            }
         }
-
-        if (rs == null) {
-            return null;
-        }
-
-        List<AccountDetail> accountDetails = Lists.newArrayList();
-        while (rs.next()) {
-            AccountDetail detail = new AccountDetail();
-            detail.setAccountNumber(rs.getString("acc_code"));
-            detail.setOwnerName(rs.getString("owner_fio"));
-            detail.setOwnerINN(rs.getString("owner_inn"));
-            accountDetails.add(detail);
-        }
-
         return accountDetails;
     }
 }

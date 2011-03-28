@@ -33,8 +33,23 @@ public class BenefitDataHandler implements TypeHandler {
     @Override
     public List<BenefitData> getResult(CallableStatement cs, int columnIndex) throws SQLException {
         ResultSet rs = null;
+        List<BenefitData> benefitDatas = Lists.newArrayList();
         try {
             rs = (ResultSet) cs.getObject(columnIndex);
+
+            while (rs.next()) {
+                BenefitData benefitData = new BenefitData();
+                benefitData.setLastName(rs.getString("ln"));
+                benefitData.setFirstName(rs.getString("fn"));
+                benefitData.setMiddleName(rs.getString("mn"));
+                benefitData.setInn(rs.getString("inn"));
+                benefitData.setPassportNumber(rs.getString("pn"));
+                benefitData.setPassportSerial(rs.getString("ps"));
+                benefitData.setOrderFamily(rs.getString("ord"));
+                benefitData.setCode(rs.getString("cc"));
+                benefitData.setUserCount(rs.getString("uc"));
+                benefitDatas.add(benefitData);
+            }
         } catch (SQLException e) {
             String message = e.getMessage();
             if (OracleErrors.CURSOR_IS_CLOSED_ERROR.equals(message)) {
@@ -42,27 +57,11 @@ public class BenefitDataHandler implements TypeHandler {
             } else {
                 throw e;
             }
+        } finally {
+            if (rs != null) {
+                rs.close();
+            }
         }
-
-        if (rs == null) {
-            return null;
-        }
-
-        List<BenefitData> benefitDatas = Lists.newArrayList();
-        while (rs.next()) {
-            BenefitData benefitData = new BenefitData();
-            benefitData.setLastName(rs.getString("ln"));
-            benefitData.setFirstName(rs.getString("fn"));
-            benefitData.setMiddleName(rs.getString("mn"));
-            benefitData.setInn(rs.getString("inn"));
-            benefitData.setPassportNumber(rs.getString("pn"));
-            benefitData.setPassportSerial(rs.getString("ps"));
-            benefitData.setOrderFamily(rs.getString("ord"));
-            benefitData.setCode(rs.getString("cc"));
-            benefitData.setUserCount(rs.getString("uc"));
-            benefitDatas.add(benefitData);
-        }
-
         return benefitDatas;
     }
 }
