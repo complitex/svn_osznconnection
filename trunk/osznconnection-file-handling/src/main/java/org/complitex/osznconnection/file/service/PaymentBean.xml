@@ -314,7 +314,7 @@
                 <if test="buildingNumber != null">
                     AND TO_CYRILLIC(`BLD_NUM`) = TO_CYRILLIC(#{buildingNumber})
                 </if>
-                <if test="buildingNumber != null">
+                <if test="buildingCorp != null">
                     AND TO_CYRILLIC(`CORP_NUM`) = TO_CYRILLIC(#{buildingCorp})
                 </if>
     </update>
