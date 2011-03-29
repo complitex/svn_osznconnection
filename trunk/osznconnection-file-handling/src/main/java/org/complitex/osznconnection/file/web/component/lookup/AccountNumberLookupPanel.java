@@ -71,7 +71,7 @@ public abstract class AccountNumberLookupPanel<T extends AbstractRequest> extend
 
         accountModel = new Model<String>();
         TextField<String> account = new TextField<String>("account", accountModel);
-        account.add(new AjaxFormComponentUpdatingBehavior("onblur") {
+        account.add(new AjaxFormComponentUpdatingBehavior("onchange") {
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
