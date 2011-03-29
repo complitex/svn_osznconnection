@@ -33,6 +33,7 @@ import org.complitex.osznconnection.file.calculation.adapter.exception.UnknownAc
 import org.complitex.osznconnection.file.entity.PaymentAndBenefitData;
 import org.complitex.osznconnection.file.service.warning.RequestWarningBean;
 import org.complitex.osznconnection.file.service.warning.WebWarningRenderer;
+import static org.complitex.dictionary.util.StringUtil.removeWhiteSpaces;
 
 /**
  * Класс по умолчанию для взаимодействия с ЦН.
@@ -99,20 +100,6 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
     public void prepareApartment(Payment payment, String apartment, String apartmentCode) {
         String flat = (String) payment.getField(PaymentDBF.FLAT);
         payment.setOutgoingApartment(removeWhiteSpaces(flat));
-    }
-
-    private String removeWhiteSpaces(String value){
-        if(value == null){
-            return null;
-        }
-        char[] chars = value.toCharArray();
-        StringBuilder result = new StringBuilder();
-        for (char c : chars) {
-            if (c != ' ') {
-                result.append(c);
-            }
-        }
-        return result.toString();
     }
 
     @Override

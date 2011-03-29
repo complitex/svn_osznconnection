@@ -145,7 +145,7 @@
     <select id="findInternalObjectIds" parameterType="map" resultType="long">
         SELECT DISTINCT e.`object_id` FROM `${entity}` e
             JOIN `${entity}_attribute` attr ON (attr.`status` = 'ACTIVE' AND e.`object_id` = attr.`object_id` AND attr.`attribute_type_id` = #{attributeTypeId})
-            JOIN `${entity}_string_culture` sc ON (sc.`id` = attr.`value_id` AND sc.`value` = TRIM(TO_CYRILLIC(#{correction})))
+            JOIN `${entity}_string_culture` sc ON (sc.`id` = attr.`value_id` AND sc.`value` = TRIM(#{correction}))
         WHERE e.`status` = 'ACTIVE'
     </select>
 
@@ -161,7 +161,7 @@
             </if>
         WHERE s.`status` = 'ACTIVE'
             AND s.`parent_id` = #{parentId}
-            AND name.`value` = TRIM(TO_CYRILLIC(#{correction}))
+            AND name.`value` = TRIM(#{correction})
             <if test="streetTypeId != null">
                 AND a_type.`value_id` = #{streetTypeId}
             </if>
@@ -173,10 +173,10 @@
             JOIN `street_attribute` street_attr_name ON (street_attr_name.`status` = 'ACTIVE' AND s.`object_id` = street_attr_name.`object_id`
                 AND street_attr_name.`attribute_type_id` = 300)
             JOIN `street_string_culture` street_name ON (street_name.`id` = street_attr_name.`value_id` AND
-                    street_name.`value` = TRIM(TO_CYRILLIC(#{street})))
+                    street_name.`value` = TRIM(#{street}))
             JOIN `building_address` addr ON (addr.`status` = 'ACTIVE' AND addr.`parent_id` = s.`object_id` AND addr.`parent_entity_id` = 300)
             JOIN `building_address_attribute` num_attr ON (num_attr.`status` = 'ACTIVE' AND num_attr.`object_id` = addr.`object_id` AND num_attr.`attribute_type_id` = 1500)
-            JOIN `building_address_string_culture` num ON (num.`id` = num_attr.`value_id` AND num.`value` = TO_CYRILLIC(#{number}))
+            JOIN `building_address_string_culture` num ON (num.`id` = num_attr.`value_id` AND num.`value` = #{number})
             LEFT JOIN `building_address_attribute` corp_attr ON (corp_attr.`status` = 'ACTIVE' AND corp_attr.`object_id` = addr.`object_id` AND corp_attr.`attribute_type_id` = 1501)
             LEFT JOIN `building_address_string_culture` corp ON (corp.`id` = corp_attr.`value_id`)
         WHERE s.`status` = 'ACTIVE' AND s.`parent_id` = #{cityId} AND s.`parent_entity_id` = 400
@@ -186,7 +186,7 @@
                     corp.`value` IS NULL
                 </when>
                 <otherwise>
-                    corp.`value` = TO_CYRILLIC(#{corp})
+                    corp.`value` = #{corp}
                 </otherwise>
             </choose>
     </select>
@@ -202,14 +202,14 @@
             LEFT JOIN `building_address_string_culture` corp_sc ON (corp_sc.`id` = corp.`value_id`)
 
         WHERE b.`status` = 'ACTIVE'
-        AND num_sc.`value` = TO_CYRILLIC(#{number})
+        AND num_sc.`value` = #{number}
         AND
             <choose>
                 <when test="corp == null">
                     corp_sc.`value` IS NULL
                 </when>
                 <otherwise>
-                    corp_sc.`value` = TO_CYRILLIC(#{corp})
+                    corp_sc.`value` = #{corp}
                 </otherwise>
             </choose>
         AND
