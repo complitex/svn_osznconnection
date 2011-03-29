@@ -20,6 +20,7 @@ import javax.ejb.Stateless;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import static org.complitex.dictionary.util.StringUtil.*;
 
 /**
  * Класс для работы с коррекциями адресов.
@@ -217,7 +218,7 @@ public class AddressCorrectionBean extends CorrectionBean {
     }
 
     public Correction createDistrictCorrection(String district, long cityCorrectionId, long districtObjectId,
-                                               long organizationId, long internalOrganizationId) {
+            long organizationId, long internalOrganizationId) {
         Correction correction = new Correction("district");
         correction.setParentId(cityCorrectionId);
         correction.setCorrection(district);
@@ -228,7 +229,7 @@ public class AddressCorrectionBean extends CorrectionBean {
     }
 
     public Correction createStreetTypeCorrection(String streetType, long streetTypeObjectId, long organizationId,
-                                                 long internalOrganizationId) {
+            long internalOrganizationId) {
         Correction correction = new Correction("street_type");
         correction.setParentId(null);
         correction.setCorrection(streetType);
@@ -239,7 +240,7 @@ public class AddressCorrectionBean extends CorrectionBean {
     }
 
     public StreetCorrection createStreetCorrection(String street, String streetCode, Long streetTypeCorrectionId,
-                                                   long cityCorrectionId,
+            long cityCorrectionId,
             long streetObjectId, long organizationId, long internalOrganizationId) {
         StreetCorrection correction = new StreetCorrection();
         correction.setParentId(cityCorrectionId);
@@ -253,7 +254,7 @@ public class AddressCorrectionBean extends CorrectionBean {
     }
 
     public BuildingCorrection createBuildingCorrection(String number, String corp, long streetCorrectionId,
-                                                       long buildingObjectId, long organizationId,
+            long buildingObjectId, long organizationId,
             long internalOrganizationId) {
         BuildingCorrection correction = new BuildingCorrection();
         correction.setParentId(streetCorrectionId);
@@ -270,25 +271,25 @@ public class AddressCorrectionBean extends CorrectionBean {
     }
 
     public void insertDistrictCorrection(String district, long cityCorrectionId, long districtObjectId,
-                                         long organizationId, long internalOrganizationId) {
+            long organizationId, long internalOrganizationId) {
         insert(createDistrictCorrection(district, cityCorrectionId, districtObjectId, organizationId,
                 internalOrganizationId));
     }
 
     public void insertStreetTypeCorrection(String streetType, long streetTypeObjectId, long organizationId,
-                                           long internalOrganizationId) {
+            long internalOrganizationId) {
         insert(createStreetTypeCorrection(streetType, streetTypeObjectId, organizationId, internalOrganizationId));
     }
 
     public void insertStreetCorrection(String street, String streetCode, Long streetTypeCorrectionId,
-                                       long cityCorrectionId, long streetObjectId, long organizationId,
-                                       long internalOrganizationId) {
+            long cityCorrectionId, long streetObjectId, long organizationId,
+            long internalOrganizationId) {
         insertStreet(createStreetCorrection(street, streetCode, streetTypeCorrectionId, cityCorrectionId, streetObjectId,
                 organizationId, internalOrganizationId));
     }
 
     public void insertBuildingCorrection(String number, String corp, long streetCorrectionId, long buildingObjectId,
-                                         long organizationId, long internalOrganizationId) {
+            long organizationId, long internalOrganizationId) {
         insertBuilding(createBuildingCorrection(number, corp, streetCorrectionId, buildingObjectId, organizationId,
                 internalOrganizationId));
     }
@@ -307,7 +308,8 @@ public class AddressCorrectionBean extends CorrectionBean {
     private List<Long> findInternalObjectIds(String entity, String correction, long attributeTypeId) {
         Map<String, Object> params = Maps.newHashMap();
         params.put("entity", entity);
-        params.put("correction", correction != null ? correction.trim() : "");
+        String toCyrillicCorrection = toCyrillic(correction);
+        params.put("correction", toCyrillicCorrection != null ? toCyrillicCorrection : "");
         params.put("attributeTypeId", attributeTypeId);
         return sqlSession().selectList(ADDRESS_BEAN_MAPPING_NAMESPACE + ".findInternalObjectIds", params);
     }
@@ -337,11 +339,11 @@ public class AddressCorrectionBean extends CorrectionBean {
      * @param cityId
      * @return
      */
-    @SuppressWarnings({"unchecked"})
     @Transactional
     public List<Long> findInternalStreetIds(Long streetTypeId, String street, long cityId) {
         Map<String, Object> params = Maps.newHashMap();
-        params.put("correction", street);
+        String toCyrillicStreet = toCyrillic(street);
+        params.put("correction", toCyrillicStreet);
         params.put("parentId", cityId);
         params.put("streetTypeId", streetTypeId);
 
@@ -361,11 +363,10 @@ public class AddressCorrectionBean extends CorrectionBean {
     @Transactional
     public List<Long> findInternalBuildingIds(String buildingNumber, String buildingCorp, Long streetId, Long cityId) {
         Map<String, Object> params = Maps.newHashMap();
-        params.put("number", buildingNumber == null ? "" : prepareBuildingData(buildingNumber));
-        if (!Strings.isEmpty(buildingCorp)) {
-            buildingCorp = prepareBuildingData(buildingCorp);
-        }
-        params.put("corp", Strings.isEmpty(buildingCorp) ? null : buildingCorp);
+        String preparedNumber = removeWhiteSpaces(toCyrillic(buildingNumber));
+        params.put("number", preparedNumber == null ? "" : preparedNumber);
+        String preparedCorp = removeWhiteSpaces(toCyrillic(buildingCorp));
+        params.put("corp", Strings.isEmpty(preparedCorp) ? null : preparedCorp);
         long parentId = streetId != null ? streetId : cityId;
         long parentEntityId = streetId != null ? 300 : 400;
         params.put("parentId", parentId);
@@ -377,31 +378,15 @@ public class AddressCorrectionBean extends CorrectionBean {
     @Transactional
     public List<Long> findInternalStreetIdsByNameAndBuilding(long cityId, String street, String buildingNumber, String buildingCorp) {
         Map<String, Object> params = Maps.newHashMap();
-        params.put("street", street);
+        String toCyrillicStreet = toCyrillic(street);
+        params.put("street", toCyrillicStreet);
         params.put("cityId", cityId);
-        params.put("number", buildingNumber == null ? "" : prepareBuildingData(buildingNumber));
-        if (!Strings.isEmpty(buildingCorp)) {
-            buildingCorp = prepareBuildingData(buildingCorp);
-        }
-        params.put("corp", Strings.isEmpty(buildingCorp) ? null : buildingCorp);
+        String preparedNumber = removeWhiteSpaces(toCyrillic(buildingNumber));
+        params.put("number", preparedNumber == null ? "" : preparedNumber);
+        String preparedCorp = removeWhiteSpaces(toCyrillic(buildingCorp));
+        params.put("corp", Strings.isEmpty(preparedCorp) ? null : preparedCorp);
 
         return sqlSession().selectList(ADDRESS_BEAN_MAPPING_NAMESPACE + ".findInternalStreetIdsByNameAndBuilding", params);
-    }
-
-    /**
-     * Удалить ВСЕ(не только начальные и конечные) пробелы в номере и корпусе дома
-     * @param data номер либо корпус дома
-     * @return
-     */
-    private String prepareBuildingData(String data) {
-        char[] chars = data.toCharArray();
-        StringBuilder result = new StringBuilder();
-        for (char c : chars) {
-            if (c != ' ') {
-                result.append(c);
-            }
-        }
-        return result.toString();
     }
 
     @Transactional
@@ -415,11 +400,9 @@ public class AddressCorrectionBean extends CorrectionBean {
     @Transactional
     public Correction findCityCorrectionById(Long id) {
         Correction correction = (Correction) sqlSession().selectOne(ADDRESS_BEAN_MAPPING_NAMESPACE + ".findCityCorrectionById", id);
-
         if (correction != null) {
             correction.setEntity("city");
         }
-
         return correction;
     }
 
@@ -432,7 +415,6 @@ public class AddressCorrectionBean extends CorrectionBean {
     @Transactional
     public StreetCorrection findStreetCorrectionById(Long id) {
         StreetCorrection streetCorrection = (StreetCorrection) sqlSession().selectOne(ADDRESS_BEAN_MAPPING_NAMESPACE + ".findStreetCorrectionById", id);
-
         if (streetCorrection != null) {
             streetCorrection.setEntity("street");
         }
@@ -611,7 +593,7 @@ public class AddressCorrectionBean extends CorrectionBean {
     }
 
     @Transactional
-    public boolean checkAddressExistence(Correction correction){
+    public boolean checkAddressExistence(Correction correction) {
         return (Integer) sqlSession().selectOne(ADDRESS_BEAN_MAPPING_NAMESPACE + ".checkAddressExistence", correction) > 0;
     }
 
@@ -625,15 +607,15 @@ public class AddressCorrectionBean extends CorrectionBean {
         sqlSession().update(ADDRESS_BEAN_MAPPING_NAMESPACE + ".updateStreet", streetCorrection);
     }
 
-    public Long getCityCorrectionId(Long objectId, Long organizationId, Long internalOrganizationId){
+    public Long getCityCorrectionId(Long objectId, Long organizationId, Long internalOrganizationId) {
         return getCorrectionId("city", objectId, organizationId, internalOrganizationId);
     }
 
-    public Long getStreetTypeCorrectionId(Long objectId, Long organizationId, Long internalOrganizationId){
+    public Long getStreetTypeCorrectionId(Long objectId, Long organizationId, Long internalOrganizationId) {
         return getCorrectionId("street_type", objectId, organizationId, internalOrganizationId);
     }
 
-    public Long getStreetCorrectionId(Long objectId, Long organizationId, Long internalOrganizationId){
+    public Long getStreetCorrectionId(Long objectId, Long organizationId, Long internalOrganizationId) {
         return getCorrectionId("street", objectId, organizationId, internalOrganizationId);
     }
 }
