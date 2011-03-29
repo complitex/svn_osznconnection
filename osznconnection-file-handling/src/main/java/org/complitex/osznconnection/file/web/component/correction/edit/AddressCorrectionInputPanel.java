@@ -163,7 +163,7 @@ public class AddressCorrectionInputPanel extends Panel {
                 return Collections.emptyList();
             }
         };
-        city.add(new AjaxFormComponentUpdatingBehavior("onblur") {
+        city.add(new AjaxFormComponentUpdatingBehavior("onchange") {
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
@@ -233,7 +233,7 @@ public class AddressCorrectionInputPanel extends Panel {
                     return Collections.emptyList();
                 }
             };
-            street.add(new AjaxFormComponentUpdatingBehavior("onblur") {
+            street.add(new AjaxFormComponentUpdatingBehavior("onchange") {
 
                 @Override
                 protected void onUpdate(AjaxRequestTarget target) {

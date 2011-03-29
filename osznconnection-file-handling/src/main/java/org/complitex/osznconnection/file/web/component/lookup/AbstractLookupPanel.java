@@ -122,7 +122,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
         apartmentModel = new Model<String>();
         TextField<String> apartment = new TextField<String>("apartment", apartmentModel);
         apartment.setOutputMarkupId(true);
-        apartment.add(new AjaxFormComponentUpdatingBehavior("onblur") {
+        apartment.add(new AjaxFormComponentUpdatingBehavior("onchange") {
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
