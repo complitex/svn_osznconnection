@@ -34,7 +34,7 @@ public class ActualPaymentBean extends AbstractRequestBean {
     public static final String MAPPING_NAMESPACE = ActualPaymentBean.class.getName();
 
     public enum OrderBy {
-
+        OWN_NUM(ActualPaymentDBF.OWN_NUM.name()),
         FIRST_NAME(ActualPaymentDBF.F_NAM.name()),
         MIDDLE_NAME(ActualPaymentDBF.M_NAM.name()),
         LAST_NAME(ActualPaymentDBF.SUR_NAM.name()),

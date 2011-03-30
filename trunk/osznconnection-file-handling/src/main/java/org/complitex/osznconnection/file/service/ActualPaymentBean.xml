@@ -148,6 +148,9 @@
     </update>
 
     <sql id="filter">
+        <if test="ownNum != null">
+            AND ap.`OWN_NUM` LIKE CONCAT('%',#{ownNum},'%')
+        </if>
         <if test="firstName != null">
             AND ap.`F_NAM` LIKE CONCAT('%',#{firstName},'%')
         </if>
@@ -190,7 +193,7 @@
         w.`id` warning_id, w.`request_id` warning_reqiest_id, w.`request_file_type` warning_request_file_type, w.`status` warning_status,
         p.`request_warning_id` param_request_warning_id, p.`order` param_order, p.`type` param_type, p.`value` param_value
         FROM (
-            SELECT ap.`id`, ap.`status`, ap.`request_file_id`, ap.`F_NAM`, ap.`M_NAM`, ap.`SUR_NAM`,
+            SELECT ap.`id`, ap.`status`, ap.`request_file_id`, ap.`OWN_NUM`, ap.`F_NAM`, ap.`M_NAM`, ap.`SUR_NAM`,
                 ap.`N_NAME`, ap.`VUL_CAT`, ap.`VUL_NAME`, ap.`VUL_CODE`, ap.`BLD_NUM`, ap.`CORP_NUM`, ap.`FLAT`,
                 f.`organization_id`,
                 ap.`internal_city_id`, ap.`internal_street_id`, ap.`internal_street_type_id`, ap.`internal_building_id`,
@@ -200,24 +203,30 @@
             JOIN `request_file` f ON f.`id` = ap.`request_file_id`
                 WHERE ap.`request_file_id` = #{requestFileId}
                 <include refid="org.complitex.osznconnection.file.service.ActualPaymentBean.filter"/>
+            <if test="orderByClause != null">
+                <choose>
+                    <when test="orderByClause == 'OWN_NUM' or orderByClause == 'BLD_NUM' or orderByClause == 'FLAT'">
+                        ORDER BY ${orderByClause}+0
+                    </when>
+                    <otherwise>
+                        ORDER BY ${orderByClause}
+                    </otherwise>
+                </choose>
+                <choose>
+                    <when test="asc">
+                        ASC
+                    </when>
+                    <otherwise>
+                        DESC
+                    </otherwise>
+                </choose>
+            </if>
             <if test="size != 0">
                 limit #{start},#{size}
             </if>
         ) s
         LEFT JOIN `request_warning` w ON (w.`request_id` = s.`id` AND w.`request_file_type` = 'PAYMENT')
         LEFT JOIN `request_warning_parameter` p ON w.`id` = p.`request_warning_id`
-        
-        <if test="orderByClause != null">
-            ORDER BY ${orderByClause}
-            <choose>
-                <when test="asc">
-                    ASC
-                </when>
-                <otherwise>
-                    DESC
-                </otherwise>
-            </choose>
-        </if>
     </select>
 
     <update id="update" parameterType="org.complitex.osznconnection.file.entity.ActualPayment">

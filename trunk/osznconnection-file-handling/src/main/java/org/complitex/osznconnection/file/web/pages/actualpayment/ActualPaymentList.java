@@ -155,6 +155,7 @@ public final class ActualPaymentList extends TemplatePage {
         };
         dataProvider.setSort("", true);
 
+        filterForm.add(new TextField<String>("ownNumFilter", new PropertyModel<String>(example, "ownNum")));
         filterForm.add(new TextField<String>("firstNameFilter", new PropertyModel<String>(example, "firstName")));
         filterForm.add(new TextField<String>("middleNameFilter", new PropertyModel<String>(example, "middleName")));
         filterForm.add(new TextField<String>("lastNameFilter", new PropertyModel<String>(example, "lastName")));
@@ -223,6 +224,7 @@ public final class ActualPaymentList extends TemplatePage {
             protected void populateItem(Item<ActualPayment> item) {
                 final ActualPayment actualPayment = item.getModelObject();
 
+                item.add(new Label("ownNum", (String) actualPayment.getField(ActualPaymentDBF.OWN_NUM)));
                 item.add(new Label("firstName", (String) actualPayment.getField(ActualPaymentDBF.F_NAM)));
                 item.add(new Label("middleName", (String) actualPayment.getField(ActualPaymentDBF.M_NAM)));
                 item.add(new Label("lastName", (String) actualPayment.getField(ActualPaymentDBF.SUR_NAM)));
@@ -274,6 +276,7 @@ public final class ActualPaymentList extends TemplatePage {
         };
         filterForm.add(data);
 
+        filterForm.add(new ArrowOrderByBorder("ownNumHeader", ActualPaymentBean.OrderBy.OWN_NUM.getOrderBy(), dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("firstNameHeader", ActualPaymentBean.OrderBy.FIRST_NAME.getOrderBy(), dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("middleNameHeader", ActualPaymentBean.OrderBy.MIDDLE_NAME.getOrderBy(), dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("lastNameHeader", ActualPaymentBean.OrderBy.LAST_NAME.getOrderBy(), dataProvider, data, content));
