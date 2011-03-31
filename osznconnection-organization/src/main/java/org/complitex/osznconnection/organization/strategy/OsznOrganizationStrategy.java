@@ -192,9 +192,9 @@ public class OsznOrganizationStrategy extends OrganizationStrategy implements IO
 
     @Transactional
     @Override
-    public void insert(DomainObject organization) {
-        super.insert(organization);
-        setCurrentCalculationCenter(organization, DateUtil.getCurrentDate());
+    public void insert(DomainObject organization, Date insertDate) {
+        super.insert(organization, insertDate);
+        setCurrentCalculationCenter(organization, insertDate);
     }
 
     @Transactional
