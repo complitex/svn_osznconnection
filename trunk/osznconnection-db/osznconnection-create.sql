@@ -495,7 +495,7 @@ CREATE TABLE `person_account` (
     `calc_center_id` bigint(20) NOT NULL,
     PRIMARY KEY (`id`),
     UNIQUE KEY `uk_person_account` (`first_name`, `middle_name`, `last_name`, `city`, `street_type`, `street`, `street_code`, `building_num`,
-        `building_corp`, `apartment`, `own_num_sr`, `oszn_id`, `calc_center_id`),
+        `building_corp`, `apartment`, `oszn_id`, `calc_center_id`),
     KEY `key_oszn_id` (`oszn_id`),
     KEY `key_calc_center_id` (`calc_center_id`),
     CONSTRAINT `fk_person_account__osnz_organization` FOREIGN KEY (`oszn_id`) REFERENCES `organization` (`object_id`),
