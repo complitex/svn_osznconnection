@@ -136,7 +136,7 @@ public class PersonAccountService extends AbstractBean {
         }
 
         long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterId();
-        personAccountLocalBean.insert(payment.getAccountNumber(), (String) payment.getField(PaymentDBF.F_NAM),
+        personAccountLocalBean.saveOrUpdate(payment.getAccountNumber(), (String) payment.getField(PaymentDBF.F_NAM),
                 (String) payment.getField(PaymentDBF.M_NAM), (String) payment.getField(PaymentDBF.SUR_NAM),
                 (String) payment.getField(PaymentDBF.N_NAME), null, (String) payment.getField(PaymentDBF.VUL_NAME), null,
                 (String) payment.getField(PaymentDBF.BLD_NUM), (String) payment.getField(PaymentDBF.CORP_NUM),
@@ -158,7 +158,7 @@ public class PersonAccountService extends AbstractBean {
         }
 
         long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterId();
-        personAccountLocalBean.insert(actualPayment.getAccountNumber(), (String) actualPayment.getField(ActualPaymentDBF.F_NAM),
+        personAccountLocalBean.saveOrUpdate(actualPayment.getAccountNumber(), (String) actualPayment.getField(ActualPaymentDBF.F_NAM),
                 (String) actualPayment.getField(ActualPaymentDBF.M_NAM), (String) actualPayment.getField(ActualPaymentDBF.SUR_NAM),
                 (String) actualPayment.getField(ActualPaymentDBF.N_NAME), (String) actualPayment.getField(ActualPaymentDBF.VUL_CAT),
                 (String) actualPayment.getField(ActualPaymentDBF.VUL_NAME), (String) actualPayment.getField(ActualPaymentDBF.VUL_CODE),

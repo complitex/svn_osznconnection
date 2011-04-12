@@ -92,16 +92,25 @@ public class PersonAccountLocalBean extends AbstractBean {
         }
     }
 
-    /**
-     * Сохранить номер л/c локально. Данные о ФИО и адресе сохраняются как есть, т.е. без применения функций TRIM или TO_CYRILLIC.
-     * Перед вставкой проверяется - есть ли уже такая запись методом findLocalAccountNumber, и если есть, то обновляется, если нет - вставляется.
-     * Если при проверке найдено более одной записи удовлетворяющей условиям поиска, то выбрасывается исключение.
-     * @param calculationCenterId
-     */
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public void saveOrUpdate(String accountNumber, String firstName, String middleName, String lastName, String city, String streetType,
+            String street, String streetCode, String buildingNumber, String buildingCorp, String apartment, String ownNumSr, long organizationId,
+            long calculationCenterId) {
+        saveOrUpdateIfNecessary(accountNumber, firstName, middleName, lastName, city, streetType, street, streetCode, buildingNumber,
+                buildingCorp, apartment, ownNumSr, organizationId, calculationCenterId, true);
+    }
+
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void insert(String accountNumber, String firstName, String middleName, String lastName, String city, String streetType,
             String street, String streetCode, String buildingNumber, String buildingCorp, String apartment, String ownNumSr, long organizationId,
             long calculationCenterId) {
+        saveOrUpdateIfNecessary(accountNumber, firstName, middleName, lastName, city, streetType, street, streetCode, buildingNumber,
+                buildingCorp, apartment, ownNumSr, organizationId, calculationCenterId, false);
+    }
+
+    private void saveOrUpdateIfNecessary(String accountNumber, String firstName, String middleName, String lastName, String city, String streetType,
+            String street, String streetCode, String buildingNumber, String buildingCorp, String apartment, String ownNumSr, long organizationId,
+            long calculationCenterId, boolean updateIfNecessary) {
 
         PersonAccount personAccount = new PersonAccount();
         personAccount.setFirstName(firstName);
@@ -149,8 +158,37 @@ public class PersonAccountLocalBean extends AbstractBean {
 
             if (sqlException != null && MySqlErrors.isDublicateError(sqlException)) {
                 //the same person account entry has already been inserted in parallel.
-                //update person account entry.
-                updateInSeparateTransaction(personAccount);
+                if (updateIfNecessary) {
+                    //update person account entry.
+                    PersonAccount dbAccount = findAccount(personAccount);
+                    if (dbAccount != null) {
+                        personAccount.setId(dbAccount.getId());
+                        SqlSession updateSession = null;
+                        try {
+                            updateSession = getSqlSessionManager().openSession();
+                            updateSession.update(MAPPING_NAMESPACE + "." + UPDATE_OPERATION, personAccount);
+                            updateSession.commit();
+                        } catch (Exception updateExc) {
+                            //try to rollback
+                            try {
+                                if (updateSession != null) {
+                                    updateSession.rollback();
+                                }
+                            } catch (Exception rollExc) {
+                                log.error("Couldn't rollback update transaction.", rollExc);
+                            }
+                            throw new RuntimeException(updateExc);
+                        } finally {
+                            try {
+                                if (updateSession != null) {
+                                    updateSession.close();
+                                }
+                            } catch (Exception exc) {
+                                log.error("Couldn't close update sql session.", exc);
+                            }
+                        }
+                    }
+                }
             } else {
                 throw new RuntimeException(insertExc);
             }
@@ -195,38 +233,6 @@ public class PersonAccountLocalBean extends AbstractBean {
     @Transactional
     public void update(PersonAccount personAccount) {
         sqlSession().update(MAPPING_NAMESPACE + "." + UPDATE_OPERATION, personAccount);
-    }
-
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    private void updateInSeparateTransaction(PersonAccount personAccount) {
-        PersonAccount dbAccount = findAccount(personAccount);
-        if (dbAccount != null) {
-            personAccount.setId(dbAccount.getId());
-            SqlSession updateSession = null;
-            try {
-                updateSession = getSqlSessionManager().openSession();
-                updateSession.update(MAPPING_NAMESPACE + "." + UPDATE_OPERATION, personAccount);
-                updateSession.commit();
-            } catch (Exception updateExc) {
-                //try to rollback
-                try {
-                    if (updateSession != null) {
-                        updateSession.rollback();
-                    }
-                } catch (Exception rollExc) {
-                    log.error("Couldn't rollback update transaction.", rollExc);
-                }
-                throw new RuntimeException(updateExc);
-            } finally {
-                try {
-                    if (updateSession != null) {
-                        updateSession.close();
-                    }
-                } catch (Exception exc) {
-                    log.error("Couldn't close update sql session.", exc);
-                }
-            }
-        }
     }
 
     @Transactional
