@@ -3,6 +3,7 @@ package org.complitex.osznconnection.file.service.process;
 import org.complitex.dictionary.entity.IConfig;
 import org.complitex.dictionary.service.ConfigBean;
 import org.complitex.dictionary.util.EjbBeanLocator;
+import org.complitex.osznconnection.file.entity.FileHandlingConfig;
 import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.entity.RequestFileGroup;
 import org.complitex.osznconnection.file.service.exception.StorageNotFoundException;
@@ -116,7 +117,8 @@ public class LoadUtil {
 
         requestFile.setName(file.getName());
         requestFile.setType(type);
-        requestFile.setDirectory(RequestFileStorage.getInstance().getRelativeParent(file));
+        requestFile.setDirectory(RequestFileStorage.getInstance().getRelativeParent(file,
+                FileHandlingConfig.LOAD_INPUT_REQUEST_FILE_STORAGE_DIR));
         requestFile.setLength(file.length());
         requestFile.setAbsolutePath(file.getAbsolutePath());
         requestFile.setOrganizationId(organizationId);
@@ -211,7 +213,8 @@ public class LoadUtil {
             requestFile.setName(file.getName());
             requestFile.setLength(file.length());
             requestFile.setAbsolutePath(file.getAbsolutePath());
-            requestFile.setDirectory(RequestFileStorage.getInstance().getRelativeParent(file));
+            requestFile.setDirectory(RequestFileStorage.getInstance().getRelativeParent(file,
+                    FileHandlingConfig.LOAD_INPUT_REQUEST_FILE_STORAGE_DIR));
             requestFile.setOrganizationId(organizationId);
             requestFile.setYear(year);
             requestFile.setType(RequestFile.TYPE.TARIF);
@@ -236,7 +239,8 @@ public class LoadUtil {
                  requestFile.setName(file.getName());
                  requestFile.setLength(file.length());
                  requestFile.setAbsolutePath(file.getAbsolutePath());
-                 requestFile.setDirectory(RequestFileStorage.getInstance().getRelativeParent(file));
+                 requestFile.setDirectory(RequestFileStorage.getInstance().getRelativeParent(file,
+                         FileHandlingConfig.LOAD_INPUT_ACTUAL_PAYMENT_FILE_STORAGE_DIR));
                  requestFile.setOrganizationId(organizationId);
                  requestFile.setMonth(month);
                  requestFile.setYear(year);
