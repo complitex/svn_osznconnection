@@ -142,8 +142,8 @@ public class RequestFileStorage {
         new File(path).delete();
     }
 
-    public String getRelativeParent(File file) {
-        File root = new File(EjbBeanLocator.getBean(ConfigBean.class).getString(FileHandlingConfig.LOAD_INPUT_REQUEST_FILE_STORAGE_DIR, false));
+    public String getRelativeParent(File file, FileHandlingConfig dir) {
+        File root = new File(EjbBeanLocator.getBean(ConfigBean.class).getString(dir, false));
         String absolutePath = file.getParent();
 
         return absolutePath.substring(root.getAbsolutePath().length());
