@@ -56,7 +56,6 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
     private StrategyFactory strategyFactory;
     @EJB
     private StatusRenderService statusRenderService;
-    
     private IModel<String> accountInfoModel;
     private IModel<String> apartmentModel;
     private IModel<List<? extends AccountDetail>> accountsModel;
@@ -74,17 +73,17 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
 
     private class SimpleResourceModel extends AbstractReadOnlyModel<String> {
 
-            private String resourceKey;
+        private String resourceKey;
 
-            public SimpleResourceModel(String resourceKey) {
-                this.resourceKey = resourceKey;
-            }
-
-            @Override
-            public String getObject() {
-                return AbstractLookupPanel.this.getString(resourceKey);
-            }
+        public SimpleResourceModel(String resourceKey) {
+            this.resourceKey = resourceKey;
         }
+
+        @Override
+        public String getObject() {
+            return AbstractLookupPanel.this.getString(resourceKey);
+        }
+    }
 
     public AbstractLookupPanel(String id, Component... toUpdate) {
         super(id);
@@ -142,27 +141,28 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
                 AccountDetail detail = null;
                 accountNumberPickerPanel.setVisible(false);
                 if (validateInternalAddress(request)) {
-                    resolveOutgoingAddress(request);
-                    if (request.getStatus() == RequestStatus.ACCOUNT_NUMBER_NOT_FOUND) {
-                        try {
-                            List<AccountDetail> accountList = acquireAccountDetailsByAddress(request);
-                            if (accountList == null || accountList.isEmpty()) {
-                                error(statusRenderService.displayStatus(request.getStatus(), getLocale()));
-                            } else {
-                                if (accountList.size() == 1 && !Strings.isEmpty(accountList.get(0).getAccountNumber())) {
-                                    detail = accountList.get(0);
+                    if (resolveOutgoingAddressSafely(request, target)) {
+                        if (request.getStatus() == RequestStatus.ACCOUNT_NUMBER_NOT_FOUND) {
+                            try {
+                                List<AccountDetail> accountList = acquireAccountDetailsByAddress(request);
+                                if (accountList == null || accountList.isEmpty()) {
+                                    error(statusRenderService.displayStatus(request.getStatus(), getLocale()));
                                 } else {
-                                    accountsModel.setObject(accountList);
-                                    accountNumberPickerPanel.clear();
-                                    accountNumberPickerPanel.setVisible(true);
+                                    if (accountList.size() == 1 && !Strings.isEmpty(accountList.get(0).getAccountNumber())) {
+                                        detail = accountList.get(0);
+                                    } else {
+                                        accountsModel.setObject(accountList);
+                                        accountNumberPickerPanel.clear();
+                                        accountNumberPickerPanel.setVisible(true);
+                                    }
                                 }
+                            } catch (DBException e) {
+                                error(getString("remote_db_error"));
+                                log.error("", e);
                             }
-                        } catch (DBException e) {
-                            error(getString("db_error"));
-                            log.error("", e);
+                        } else {
+                            error(statusRenderService.displayStatus(request.getStatus(), getLocale()));
                         }
-                    } else {
-                        error(statusRenderService.displayStatus(request.getStatus(), getLocale()));
                     }
                 }
 
@@ -225,12 +225,17 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
             @Override
             public void onClick(AjaxRequestTarget target) {
                 if (validate()) {
-                    updateAccountNumber(initialRequest, accountModel.getObject().getAccountNumber());
-
-                    for (Component component : toUpdate) {
-                        target.addComponent(component);
+                    try {
+                        updateAccountNumber(initialRequest, accountModel.getObject().getAccountNumber());
+                        for (Component component : toUpdate) {
+                            target.addComponent(component);
+                        }
+                        closeDialog(target);
+                    } catch (Exception e) {
+                        error(getString("db_error"));
+                        log.error("", e);
+                        target.addComponent(messages);
                     }
-                    closeDialog(target);
                 } else {
                     target.addComponent(messages);
                 }
@@ -333,6 +338,18 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
 
     public void open(AjaxRequestTarget target, T request, Long cityId, Long streetId, Long buildingId, String apartment) {
         open(target, request, cityId, streetId, buildingId, apartment, null);
+    }
+
+    private boolean resolveOutgoingAddressSafely(T request, AjaxRequestTarget target) {
+        try {
+            resolveOutgoingAddress(request);
+        } catch (Exception e) {
+            error(getString("db_error"));
+            log.error("", e);
+            target.addComponent(messages);
+            return false;
+        }
+        return true;
     }
 
     protected abstract void resolveOutgoingAddress(T request);
