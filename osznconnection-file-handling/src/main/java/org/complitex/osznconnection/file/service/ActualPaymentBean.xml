@@ -194,7 +194,7 @@
         p.`request_warning_id` param_request_warning_id, p.`order` param_order, p.`type` param_type, p.`value` param_value
         FROM (
             SELECT ap.`id`, ap.`status`, ap.`request_file_id`, ap.`OWN_NUM`, ap.`F_NAM`, ap.`M_NAM`, ap.`SUR_NAM`,
-                ap.`N_NAME`, ap.`VUL_CAT`, ap.`VUL_NAME`, ap.`VUL_CODE`, ap.`BLD_NUM`, ap.`CORP_NUM`, ap.`FLAT`,
+                ap.`N_NAME`, ap.`VUL_CAT`, ap.`VUL_NAME`, ap.`VUL_CODE`, ap.`BLD_NUM`, ap.`CORP_NUM`, ap.`FLAT`, ap.`DAT_BEG`,
                 f.`organization_id`,
                 ap.`internal_city_id`, ap.`internal_street_id`, ap.`internal_street_type_id`, ap.`internal_building_id`,
                 ap.`outgoing_city`, ap.`outgoing_district`, ap.`outgoing_street`, ap.`outgoing_street_type`, ap.`outgoing_building_number`,

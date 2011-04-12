@@ -4,6 +4,7 @@
  */
 package org.complitex.osznconnection.file.service;
 
+import java.sql.SQLException;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.osznconnection.file.entity.PersonAccount;
@@ -11,6 +12,12 @@ import org.complitex.osznconnection.file.entity.PersonAccount;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import java.util.List;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import org.apache.ibatis.session.SqlSession;
+import org.complitex.dictionary.mysql.MySqlErrors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Класс для работы с локальной таблицей номеров л/c person_account.
@@ -19,7 +26,9 @@ import java.util.List;
 @Stateless(name = "PersonAccountLocalBean")
 public class PersonAccountLocalBean extends AbstractBean {
 
+    private static final Logger log = LoggerFactory.getLogger(PersonAccountLocalBean.class);
     private static final String MAPPING_NAMESPACE = PersonAccountLocalBean.class.getName();
+    private static final String UPDATE_OPERATION = "update";
 
     public static enum OrderBy {
 
@@ -37,7 +46,6 @@ public class PersonAccountLocalBean extends AbstractBean {
             return orderBy;
         }
     }
-
     @EJB
     private OsznSessionBean osznSessionBean;
 
@@ -68,11 +76,17 @@ public class PersonAccountLocalBean extends AbstractBean {
         example.setOsznId(organizationId);
         example.setCalculationCenterId(calculationCenterId);
 
+        PersonAccount account = findAccount(example);
+        return account != null ? account.getAccountNumber() : null;
+    }
+
+    @Transactional
+    private PersonAccount findAccount(PersonAccount example) {
         List<PersonAccount> results = sqlSession().selectList(MAPPING_NAMESPACE + ".findAccountNumber", example);
         if (results.isEmpty()) {
             return null;
         } else if (results.size() == 1) {
-            return results.get(0).getAccountNumber();
+            return results.get(0);
         } else {
             throw new RuntimeException("More one entry in person_account table with the same data. Table person_account is in inconsistent state!");
         }
@@ -84,8 +98,8 @@ public class PersonAccountLocalBean extends AbstractBean {
      * Если при проверке найдено более одной записи удовлетворяющей условиям поиска, то выбрасывается исключение.
      * @param calculationCenterId
      */
-    @Transactional
-    public void saveOrUpdate(String accountNumber, String firstName, String middleName, String lastName, String city, String streetType,
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public void insert(String accountNumber, String firstName, String middleName, String lastName, String city, String streetType,
             String street, String streetCode, String buildingNumber, String buildingCorp, String apartment, String ownNumSr, long organizationId,
             long calculationCenterId) {
 
@@ -105,14 +119,49 @@ public class PersonAccountLocalBean extends AbstractBean {
         personAccount.setCalculationCenterId(calculationCenterId);
         personAccount.setAccountNumber(accountNumber);
 
-        List<PersonAccount> results = sqlSession().selectList(MAPPING_NAMESPACE + ".findAccountNumber", personAccount);
-        if (results.isEmpty()) {
-            insert(personAccount);
-        } else if (results.size() == 1) {
-            personAccount.setId(results.get(0).getId());
-            update(personAccount);
-        } else {
-            throw new RuntimeException("More one entry in person_account table with the same data. Table person_account is in inconsistent state!");
+        SqlSession insertSession = null;
+        try {
+            insertSession = getSqlSessionManager().openSession();
+            insert(personAccount, insertSession);
+            insertSession.commit();
+        } catch (Exception insertExc) {
+            //try to rollback
+            try {
+                if (insertSession != null) {
+                    insertSession.rollback();
+                }
+            } catch (Exception rollExc) {
+                log.error("Couldn't rollback insert transaction.", rollExc);
+            }
+
+            SQLException sqlException = null;
+            Throwable t = insertExc;
+            while (true) {
+                if (t == null) {
+                    break;
+                }
+                if (t instanceof SQLException) {
+                    sqlException = (SQLException) t;
+                    break;
+                }
+                t = t.getCause();
+            }
+
+            if (sqlException != null && MySqlErrors.isDublicateError(sqlException)) {
+                //the same person account entry has already been inserted in parallel.
+                //update person account entry.
+                updateInSeparateTransaction(personAccount);
+            } else {
+                throw new RuntimeException(insertExc);
+            }
+        } finally {
+            try {
+                if (insertSession != null) {
+                    insertSession.close();
+                }
+            } catch (Exception e) {
+                log.error("Couldn't close insert sql session.", e);
+            }
         }
     }
 
@@ -136,17 +185,48 @@ public class PersonAccountLocalBean extends AbstractBean {
      * Если значение корпуса null, то сохраняется пустая строка.
      * @param personAccount
      */
-    @Transactional
-    public void insert(PersonAccount personAccount) {
+    private void insert(PersonAccount personAccount, SqlSession session) {
         if (personAccount.getBuildingCorp() == null) {
             personAccount.setBuildingCorp("");
         }
-        sqlSession().insert(MAPPING_NAMESPACE + ".insert", personAccount);
+        session.insert(MAPPING_NAMESPACE + ".insert", personAccount);
     }
 
     @Transactional
     public void update(PersonAccount personAccount) {
-        sqlSession().update(MAPPING_NAMESPACE + ".update", personAccount);
+        sqlSession().update(MAPPING_NAMESPACE + "." + UPDATE_OPERATION, personAccount);
+    }
+
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    private void updateInSeparateTransaction(PersonAccount personAccount) {
+        PersonAccount dbAccount = findAccount(personAccount);
+        if (dbAccount != null) {
+            personAccount.setId(dbAccount.getId());
+            SqlSession updateSession = null;
+            try {
+                updateSession = getSqlSessionManager().openSession();
+                updateSession.update(MAPPING_NAMESPACE + "." + UPDATE_OPERATION, personAccount);
+                updateSession.commit();
+            } catch (Exception updateExc) {
+                //try to rollback
+                try {
+                    if (updateSession != null) {
+                        updateSession.rollback();
+                    }
+                } catch (Exception rollExc) {
+                    log.error("Couldn't rollback update transaction.", rollExc);
+                }
+                throw new RuntimeException(updateExc);
+            } finally {
+                try {
+                    if (updateSession != null) {
+                        updateSession.close();
+                    }
+                } catch (Exception exc) {
+                    log.error("Couldn't close update sql session.", exc);
+                }
+            }
+        }
     }
 
     @Transactional
