@@ -98,6 +98,17 @@
         AND `street_type_correction_id` = #{streetTypeCorrectionId}
     </select>
 
+    <select id="findLocalCorrectionStreetObjectIds" parameterType="map" resultType="long">
+        SELECT DISTINCT `object_id` FROM `street_correction`
+        WHERE `organization_id` = #{organizationId} AND `parent_id` = #{parentId} AND TRIM(`correction`) = TRIM(#{street})
+    </select>
+
+    <select id="findStreetLocalCorrectionsByStreetId" parameterType="map" resultMap="streetCorrection">
+        SELECT * FROM `street_correction`
+        WHERE `organization_id` = #{organizationId} AND `parent_id` = #{parentId} AND TRIM(`correction`) = TRIM(#{street})
+        AND `object_id` = #{streetId}
+    </select>
+
     <insert id="insertStreet" parameterType="org.complitex.osznconnection.file.entity.StreetCorrection" keyProperty="id" useGeneratedKeys="true">
         INSERT INTO `street_correction`(`organization_id`, `parent_id`, `correction`, `object_id`,
             `organization_code`, `internal_organization_id`, `street_type_correction_id`)

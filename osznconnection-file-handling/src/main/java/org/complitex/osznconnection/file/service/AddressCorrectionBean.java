@@ -78,7 +78,7 @@ public class AddressCorrectionBean extends CorrectionBean {
      * @param parentId
      * @return
      */
-    @SuppressWarnings({"unchecked"})
+    @Transactional
     public List<StreetCorrection> findStreetLocalCorrections(Long parentId, Long streetTypeCorrectionId, String street, String streetCode,
             long organizationId) {
         Map<String, Object> params = Maps.newHashMap();
@@ -87,8 +87,26 @@ public class AddressCorrectionBean extends CorrectionBean {
         params.put("code", streetCode);
         params.put("streetTypeCorrectionId", streetTypeCorrectionId);
         params.put("organizationId", organizationId);
-
         return sqlSession().selectList(ADDRESS_BEAN_MAPPING_NAMESPACE + ".findStreetLocalCorrections", params);
+    }
+
+    @Transactional
+    public List<Long> findLocalCorrectionStreetObjectIds(Long parentId, String street, long organizationId){
+        Map<String, Object> params = Maps.newHashMap();
+        params.put("parentId", parentId);
+        params.put("street", street);
+        params.put("organizationId", organizationId);
+        return sqlSession().selectList(ADDRESS_BEAN_MAPPING_NAMESPACE + ".findLocalCorrectionStreetObjectIds", params);
+    }
+
+    @Transactional
+    public List<StreetCorrection> findStreetLocalCorrectionsByStreetId(long streetId, long parentId, String street, long organizationId){
+        Map<String, Object> params = Maps.newHashMap();
+        params.put("streetId", streetId);
+        params.put("parentId", parentId);
+        params.put("street", street);
+        params.put("organizationId", organizationId);
+        return sqlSession().selectList(ADDRESS_BEAN_MAPPING_NAMESPACE + ".findStreetLocalCorrectionsByStreetId", params);
     }
 
     /**
@@ -98,7 +116,6 @@ public class AddressCorrectionBean extends CorrectionBean {
      * @param buildingNumber
      * @return
      */
-    @SuppressWarnings({"unchecked"})
     @Transactional
     public List<BuildingCorrection> findBuildingLocalCorrections(Long parentId, String buildingNumber, String buildingCorp, long organizationId) {
         Map<String, Object> params = Maps.newHashMap();
