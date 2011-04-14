@@ -58,8 +58,6 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
     private StrategyFactory strategyFactory;
     @EJB
     private StatusRenderService statusRenderService;
-    @EJB(name = "Street_typeStrategy")
-    private IStrategy streetTypeStrategy;
     private CORRECTED_ENTITY correctedEntity;
     private Dialog dialog;
     private SearchComponent searchComponent;
@@ -130,13 +128,13 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
         container.add(searchComponent);
 
         DomainObjectExample example = new DomainObjectExample();
-        List<? extends DomainObject> streetTypes = streetTypeStrategy.find(example);
+        List<? extends DomainObject> streetTypes = strategyFactory.getStrategy("street_type").find(example);
         streetTypeModel = new Model<DomainObject>();
         DomainObjectDisableAwareRenderer renderer = new DomainObjectDisableAwareRenderer() {
 
             @Override
             public Object getDisplayValue(DomainObject object) {
-                return streetTypeStrategy.displayDomainObject(object, getLocale());
+                return strategyFactory.getStrategy("street_type").displayDomainObject(object, getLocale());
             }
         };
         streetTypeSelect = new DisableAwareDropDownChoice<DomainObject>("streetTypeSelect", streetTypeModel,
@@ -274,12 +272,12 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
         return ImmutableList.of("city", "street", "building");
     }
 
-    protected void initCorrectedEntity() {
+    protected void initCorrectedEntity(boolean ignoreStreetType) {
         if (cityId == null) {
             correctedEntity = CORRECTED_ENTITY.CITY;
             return;
         }
-        if (streetTypeId == null) {
+        if (streetTypeId == null && !ignoreStreetType) {
             correctedEntity = CORRECTED_ENTITY.STREET_TYPE;
             return;
         }
@@ -296,10 +294,56 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
         dialog.close(target);
     }
 
+    /**
+     * Only for non-street-type requests.
+     * @param target
+     * @param request
+     * @param firstName
+     * @param middleName
+     * @param lastName
+     * @param city
+     * @param street
+     * @param buildingNumber
+     * @param buildingCorp
+     * @param apartment
+     * @param cityId
+     * @param streetId
+     * @param buildingId
+     */
+    public void open(AjaxRequestTarget target, T request, String firstName, String middleName, String lastName, String city,
+            String street, String buildingNumber, String buildingCorp, String apartment, Long cityId, Long streetId, Long buildingId) {
+        open(target, request, firstName, middleName, lastName, city, streetType, street, buildingNumber, buildingCorp,
+                apartment, cityId, streetTypeId, streetId, buildingId, false);
+    }
+
+    /**
+     * Only for street-type-enabled requests.
+     * @param target
+     * @param request
+     * @param firstName
+     * @param middleName
+     * @param lastName
+     * @param city
+     * @param streetType
+     * @param street
+     * @param buildingNumber
+     * @param buildingCorp
+     * @param apartment
+     * @param cityId
+     * @param streetTypeId
+     * @param streetId
+     * @param buildingId
+     */
     public void open(AjaxRequestTarget target, T request, String firstName, String middleName, String lastName, String city,
             String streetType, String street, String buildingNumber, String buildingCorp, String apartment, Long cityId, Long streetTypeId,
             Long streetId, Long buildingId) {
+        open(target, request, firstName, middleName, lastName, city, streetType, street, buildingNumber, buildingCorp,
+                apartment, cityId, streetTypeId, streetId, buildingId, true);
+    }
 
+    private void open(AjaxRequestTarget target, T request, String firstName, String middleName, String lastName, String city,
+            String streetType, String street, String buildingNumber, String buildingCorp, String apartment, Long cityId, Long streetTypeId,
+            Long streetId, Long buildingId, boolean streetTypeEnabled) {
         this.request = request;
 
         this.firstName = firstName;
@@ -316,7 +360,7 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
         this.streetId = streetId;
         this.buildingId = buildingId;
 
-        initCorrectedEntity();
+        initCorrectedEntity(!streetTypeEnabled);
         if (correctedEntity != CORRECTED_ENTITY.STREET_TYPE) {
             initSearchComponentState(componentState);
             SearchComponent newSearchComponent = new SearchComponent("searchComponent", componentState, initFilters(), null, ShowMode.ACTIVE, true);

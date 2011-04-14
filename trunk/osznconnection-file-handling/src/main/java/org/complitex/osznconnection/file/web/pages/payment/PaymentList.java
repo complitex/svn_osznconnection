@@ -238,13 +238,13 @@ public final class PaymentList extends TemplatePage {
                     public void onClick(AjaxRequestTarget target) {
                         addressCorrectionPanel.open(target, payment, (String) payment.getField(PaymentDBF.F_NAM),
                                 (String) payment.getField(PaymentDBF.M_NAM), (String) payment.getField(PaymentDBF.SUR_NAM),
-                                (String) payment.getField(PaymentDBF.N_NAME), null, (String) payment.getField(PaymentDBF.VUL_NAME),
+                                (String) payment.getField(PaymentDBF.N_NAME), (String) payment.getField(PaymentDBF.VUL_NAME),
                                 (String) payment.getField(PaymentDBF.BLD_NUM), (String) payment.getField(PaymentDBF.CORP_NUM),
-                                (String) payment.getField(PaymentDBF.FLAT), payment.getInternalCityId(), payment.getInternalStreetTypeId(),
+                                (String) payment.getField(PaymentDBF.FLAT), payment.getInternalCityId(),
                                 payment.getInternalStreetId(), payment.getInternalBuildingId());
                     }
                 };
-                addressCorrectionLink.setVisible(payment.getStatus().isAddressCorrectableForPayment());
+                addressCorrectionLink.setVisible(payment.getStatus().isAddressCorrectable());
                 item.add(addressCorrectionLink);
 
                 AjaxLink accountCorrectionLink = new IndicatingAjaxLink("accountCorrectionLink") {
