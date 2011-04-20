@@ -166,17 +166,17 @@ public class PersonAccountLocalBean extends AbstractBean {
             if (accountNumber != null) {
                 return accountNumber;
             } else {
-                List<PersonAccount> withTheSameOwnNumSr = newArrayList(filter(accounts, new Predicate<PersonAccount>() {
+                List<PersonAccount> withTheSameStreetType = newArrayList(filter(accounts, new Predicate<PersonAccount>() {
 
                     @Override
                     public boolean apply(PersonAccount input) {
                         return currentStreetType.equals(input.getStreetType());
                     }
                 }));
-                if (withTheSameOwnNumSr.isEmpty()) {
+                if (withTheSameStreetType.isEmpty()) {
                     return null;
-                } else if (withTheSameOwnNumSr.size() == 1) {
-                    return withTheSameOwnNumSr.get(0).getAccountNumber();
+                } else if (withTheSameStreetType.size() == 1) {
+                    return withTheSameStreetType.get(0).getAccountNumber();
                 } else {
                     throw new IllegalStateException(INCONSISTENT_STATE_ERROR_MESSAGE);
                 }
@@ -284,29 +284,21 @@ public class PersonAccountLocalBean extends AbstractBean {
                         updateAccountNumberAndOwnNumSr(account, session);
                     }
                 } else {
-                    String accountNumber = haveTheSameAccountNumber(accounts);
-                    if (accountNumber != null) {
-                        for (PersonAccount account : accounts) {
-                            account.setAccountNumber(newAccountNumber);
-                            updateAccountNumber(account, session);
-                        }
-                    } else {
-                        List<PersonAccount> withTheSameOwnNumSr = newArrayList(filter(accounts, new Predicate<PersonAccount>() {
+                    List<PersonAccount> withTheSameOwnNumSr = newArrayList(filter(accounts, new Predicate<PersonAccount>() {
 
-                            @Override
-                            public boolean apply(PersonAccount input) {
-                                return currentOwnNumSr.equals(input.getOwnNumSr());
-                            }
-                        }));
-                        if (withTheSameOwnNumSr.isEmpty()) {
-                            insert(newPersonAccount, session);
-                        } else if (withTheSameOwnNumSr.size() == 1) {
-                            PersonAccount account = withTheSameOwnNumSr.get(0);
-                            account.setAccountNumber(accountNumber);
-                            updateAccountNumber(account, session);
-                        } else {
-                            throw new IllegalStateException(INCONSISTENT_STATE_ERROR_MESSAGE);
+                        @Override
+                        public boolean apply(PersonAccount input) {
+                            return currentOwnNumSr.equals(input.getOwnNumSr());
                         }
+                    }));
+                    if (withTheSameOwnNumSr.isEmpty()) {
+                        insert(newPersonAccount, session);
+                    } else if (withTheSameOwnNumSr.size() == 1) {
+                        PersonAccount account = withTheSameOwnNumSr.get(0);
+                        account.setAccountNumber(newAccountNumber);
+                        updateAccountNumber(account, session);
+                    } else {
+                        throw new IllegalStateException(INCONSISTENT_STATE_ERROR_MESSAGE);
                     }
                 }
             }
@@ -362,29 +354,21 @@ public class PersonAccountLocalBean extends AbstractBean {
                         updateAccountNumberAndStreetType(account, session);
                     }
                 } else {
-                    String accountNumber = haveTheSameAccountNumber(accounts);
-                    if (accountNumber != null) {
-                        for (PersonAccount account : accounts) {
-                            account.setAccountNumber(newAccountNumber);
-                            updateAccountNumber(account, session);
-                        }
-                    } else {
-                        List<PersonAccount> withTheSameOwnNumSr = newArrayList(filter(accounts, new Predicate<PersonAccount>() {
+                    List<PersonAccount> withTheSameStreetType = newArrayList(filter(accounts, new Predicate<PersonAccount>() {
 
-                            @Override
-                            public boolean apply(PersonAccount input) {
-                                return currentStreetType.equals(input.getOwnNumSr());
-                            }
-                        }));
-                        if (withTheSameOwnNumSr.isEmpty()) {
-                            insert(newPersonAccount, session);
-                        } else if (withTheSameOwnNumSr.size() == 1) {
-                            PersonAccount account = withTheSameOwnNumSr.get(0);
-                            account.setAccountNumber(accountNumber);
-                            updateAccountNumber(account, session);
-                        } else {
-                            throw new IllegalStateException(INCONSISTENT_STATE_ERROR_MESSAGE);
+                        @Override
+                        public boolean apply(PersonAccount input) {
+                            return currentStreetType.equals(input.getStreetType());
                         }
+                    }));
+                    if (withTheSameStreetType.isEmpty()) {
+                        insert(newPersonAccount, session);
+                    } else if (withTheSameStreetType.size() == 1) {
+                        PersonAccount account = withTheSameStreetType.get(0);
+                        account.setAccountNumber(newAccountNumber);
+                        updateAccountNumber(account, session);
+                    } else {
+                        throw new IllegalStateException(INCONSISTENT_STATE_ERROR_MESSAGE);
                     }
                 }
             }
