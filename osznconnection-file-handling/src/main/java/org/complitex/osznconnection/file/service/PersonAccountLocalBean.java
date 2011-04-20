@@ -4,6 +4,9 @@
  */
 package org.complitex.osznconnection.file.service;
 
+import com.google.common.base.Predicate;
+import static com.google.common.collect.Lists.*;
+import static com.google.common.collect.Iterables.*;
 import java.sql.SQLException;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.AbstractBean;
@@ -15,7 +18,13 @@ import java.util.List;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import org.apache.ibatis.session.SqlSession;
+import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.mysql.MySqlErrors;
+import org.complitex.osznconnection.file.entity.ActualPayment;
+import org.complitex.osznconnection.file.entity.ActualPaymentDBF;
+import org.complitex.osznconnection.file.entity.Payment;
+import org.complitex.osznconnection.file.entity.PaymentDBF;
+import org.complitex.osznconnection.file.entity.example.PersonAccountExample;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,11 +37,12 @@ public class PersonAccountLocalBean extends AbstractBean {
 
     private static final Logger log = LoggerFactory.getLogger(PersonAccountLocalBean.class);
     private static final String MAPPING_NAMESPACE = PersonAccountLocalBean.class.getName();
-    private static final String UPDATE_OPERATION = "update";
+    private static final String INCONSISTENT_STATE_ERROR_MESSAGE =
+            "More one entry in person_account table with the same data. Table person_account is in inconsistent state!";
 
     public static enum OrderBy {
 
-        FIRST_NAME("first_name"), MIDDLE_NAME("middle_name"), LAST_NAME("last_name"), CITY("city"), STREET("street"), STREET_CODE("street_code"),
+        FIRST_NAME("first_name"), MIDDLE_NAME("middle_name"), LAST_NAME("last_name"), CITY("city"), STREET("street"),
         BUILDING_NUMBER("building_num"), BUILDING_CORP("building_corp"), APARTMENT("apartment"),
         ACCOUNT_NUMBER("account_number"), OWN_NUM_SR("own_num_sr"),
         OSZN("oszn"), CALCULATION_CENTER("calculation_center");
@@ -49,102 +59,171 @@ public class PersonAccountLocalBean extends AbstractBean {
     @EJB
     private OsznSessionBean osznSessionBean;
 
-    /**
-     * Найти номер л/c в локальной таблице. Поиск идет по ФИО и адресу ОСЗН, текущему ЦН и ОСЗН,
-     * причем для элементов адреса при поиске применяется SQL функция TRIM().
-     * Если найдено более одной записи удовлетворяющей условиям поиска, то выбрасывается исключение.
-     * @param calculationCenterId
-     * @return
-     */
-    @Transactional
-    public String findLocalAccountNumber(String firstName, String middleName, String lastName, String city, String streetType,
-            String street, String streetCode, String buildingNumber, String buildingCorp, String apartment, String ownNumSr, long organizationId,
-            long calculationCenterId) {
-
-        PersonAccount example = new PersonAccount();
+    private List<PersonAccount> findAccounts(String firstName, String middleName, String lastName, String city,
+            String street, String buildingNumber, String buildingCorp, String apartment, long organizationId, long calculationCenterId,
+            boolean blocking, SqlSession session) {
+        PersonAccountExample example = new PersonAccountExample();
         example.setFirstName(firstName);
         example.setMiddleName(middleName);
         example.setLastName(lastName);
         example.setCity(city);
-        example.setStreetType(streetType);
         example.setStreet(street);
-        example.setStreetCode(streetCode);
         example.setBuildingNumber(buildingNumber);
         example.setBuildingCorp(buildingCorp);
         example.setApartment(apartment);
-        example.setOwnNumSr(ownNumSr);
         example.setOsznId(organizationId);
         example.setCalculationCenterId(calculationCenterId);
-
-        PersonAccount account = findAccount(example);
-        return account != null ? account.getAccountNumber() : null;
-    }
-
-    @Transactional
-    private PersonAccount findAccount(PersonAccount example) {
-        List<PersonAccount> results = sqlSession().selectList(MAPPING_NAMESPACE + ".findAccountNumber", example);
-        if (results.isEmpty()) {
-            return null;
-        } else if (results.size() == 1) {
-            return results.get(0);
+        if (blocking) {
+            return session.selectList(MAPPING_NAMESPACE + ".findAccountsBlocking", example);
         } else {
-            throw new RuntimeException("More one entry in person_account table with the same data. Table person_account is in inconsistent state!");
+            return session.selectList(MAPPING_NAMESPACE + ".findAccounts", example);
         }
     }
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public void saveOrUpdate(String accountNumber, String firstName, String middleName, String lastName, String city, String streetType,
-            String street, String streetCode, String buildingNumber, String buildingCorp, String apartment, String ownNumSr, long organizationId,
-            long calculationCenterId) {
-        saveOrUpdateIfNecessary(accountNumber, firstName, middleName, lastName, city, streetType, street, streetCode, buildingNumber,
-                buildingCorp, apartment, ownNumSr, organizationId, calculationCenterId, true);
+    private String haveTheSameAccountNumber(List<PersonAccount> accounts) {
+        if (accounts == null || accounts.isEmpty()) {
+            throw new IllegalArgumentException("Accounts can't be null or empty.");
+        }
+
+        String firstAccountNumber = accounts.get(0).getAccountNumber();
+        for (PersonAccount account : accounts) {
+            if (!firstAccountNumber.equals(account.getAccountNumber())) {
+                return null;
+            }
+        }
+        return firstAccountNumber;
     }
 
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-    public void insert(String accountNumber, String firstName, String middleName, String lastName, String city, String streetType,
-            String street, String streetCode, String buildingNumber, String buildingCorp, String apartment, String ownNumSr, long organizationId,
-            long calculationCenterId) {
-        saveOrUpdateIfNecessary(accountNumber, firstName, middleName, lastName, city, streetType, street, streetCode, buildingNumber,
-                buildingCorp, apartment, ownNumSr, organizationId, calculationCenterId, false);
+    @Transactional
+    public String findLocalAccountNumber(Payment payment, long calculationCenterId) {
+        List<PersonAccount> accounts = findAccounts((String) payment.getField(PaymentDBF.F_NAM),
+                (String) payment.getField(PaymentDBF.M_NAM), (String) payment.getField(PaymentDBF.SUR_NAM),
+                (String) payment.getField(PaymentDBF.N_NAME), (String) payment.getField(PaymentDBF.VUL_NAME),
+                (String) payment.getField(PaymentDBF.BLD_NUM), (String) payment.getField(PaymentDBF.CORP_NUM),
+                (String) payment.getField(PaymentDBF.FLAT), payment.getOrganizationId(), calculationCenterId, false,
+                sqlSession());
+        final String currentOwnNumSr = (String) payment.getField(PaymentDBF.OWN_NUM_SR);
+        if (accounts.isEmpty()) {
+            return null;
+        } else if (accounts.size() == 1) {
+            PersonAccount account = accounts.get(0);
+            if (!Strings.isEmpty(account.getOwnNumSr())) {
+                return account.getOwnNumSr().equals(currentOwnNumSr) ? account.getAccountNumber() : null;
+            } else {
+                account.setOwnNumSr(currentOwnNumSr);
+                updateAccountNumberAndOwnNumSr(account, sqlSession());
+                return account.getAccountNumber();
+            }
+        } else {
+            String accountNumber = haveTheSameAccountNumber(accounts);
+            if (accountNumber != null) {
+                for (PersonAccount account : accounts) {
+                    account.setOwnNumSr(currentOwnNumSr);
+                    updateAccountNumberAndOwnNumSr(account, sqlSession());
+                }
+                return accountNumber;
+            } else {
+                List<PersonAccount> withTheSameOwnNumSr = newArrayList(filter(accounts, new Predicate<PersonAccount>() {
+
+                    @Override
+                    public boolean apply(PersonAccount input) {
+                        return currentOwnNumSr.equals(input.getOwnNumSr());
+                    }
+                }));
+                if (withTheSameOwnNumSr.isEmpty()) {
+                    return null;
+                } else if (withTheSameOwnNumSr.size() == 1) {
+                    return withTheSameOwnNumSr.get(0).getAccountNumber();
+                } else {
+                    throw new IllegalStateException(INCONSISTENT_STATE_ERROR_MESSAGE);
+                }
+            }
+        }
     }
 
-    private void saveOrUpdateIfNecessary(String accountNumber, String firstName, String middleName, String lastName, String city, String streetType,
-            String street, String streetCode, String buildingNumber, String buildingCorp, String apartment, String ownNumSr, long organizationId,
-            long calculationCenterId, boolean updateIfNecessary) {
+    @Transactional
+    public String findLocalAccountNumber(ActualPayment actualPayment, long calculationCenterId) {
+        List<PersonAccount> accounts = findAccounts((String) actualPayment.getField(ActualPaymentDBF.F_NAM),
+                (String) actualPayment.getField(ActualPaymentDBF.M_NAM), (String) actualPayment.getField(ActualPaymentDBF.SUR_NAM),
+                (String) actualPayment.getField(ActualPaymentDBF.N_NAME), (String) actualPayment.getField(ActualPaymentDBF.VUL_NAME),
+                (String) actualPayment.getField(ActualPaymentDBF.BLD_NUM), (String) actualPayment.getField(ActualPaymentDBF.CORP_NUM),
+                (String) actualPayment.getField(ActualPaymentDBF.FLAT), actualPayment.getOrganizationId(), calculationCenterId, false,
+                sqlSession());
+        final String currentStreetType = (String) actualPayment.getField(ActualPaymentDBF.VUL_CAT);
+        if (accounts.isEmpty()) {
+            return null;
+        } else if (accounts.size() == 1) {
+            PersonAccount account = accounts.get(0);
+            if (!Strings.isEmpty(account.getStreetType())) {
+                return account.getStreetType().equals(currentStreetType) ? account.getAccountNumber() : null;
+            } else {
+                account.setStreetType(currentStreetType);
+                updateAccountNumberAndStreetType(account, sqlSession());
+                return account.getAccountNumber();
+            }
+        } else {
+            String accountNumber = haveTheSameAccountNumber(accounts);
+            if (accountNumber != null) {
+                return accountNumber;
+            } else {
+                List<PersonAccount> withTheSameOwnNumSr = newArrayList(filter(accounts, new Predicate<PersonAccount>() {
 
+                    @Override
+                    public boolean apply(PersonAccount input) {
+                        return currentStreetType.equals(input.getStreetType());
+                    }
+                }));
+                if (withTheSameOwnNumSr.isEmpty()) {
+                    return null;
+                } else if (withTheSameOwnNumSr.size() == 1) {
+                    return withTheSameOwnNumSr.get(0).getAccountNumber();
+                } else {
+                    throw new IllegalStateException(INCONSISTENT_STATE_ERROR_MESSAGE);
+                }
+            }
+        }
+    }
+
+    private PersonAccount newPersonAccount(Payment payment, String accountNumber, long calculationCenterId) {
         PersonAccount personAccount = new PersonAccount();
-        personAccount.setFirstName(firstName);
-        personAccount.setMiddleName(middleName);
-        personAccount.setLastName(lastName);
-        personAccount.setCity(city);
-        personAccount.setStreetType(streetType);
-        personAccount.setStreet(street);
-        personAccount.setStreetCode(streetCode);
-        personAccount.setBuildingNumber(buildingNumber);
-        personAccount.setBuildingCorp(buildingCorp);
-        personAccount.setApartment(apartment);
-        personAccount.setOwnNumSr(ownNumSr);
-        personAccount.setOsznId(organizationId);
+        personAccount.setFirstName((String) payment.getField(PaymentDBF.F_NAM));
+        personAccount.setMiddleName((String) payment.getField(PaymentDBF.M_NAM));
+        personAccount.setLastName((String) payment.getField(PaymentDBF.SUR_NAM));
+        personAccount.setCity((String) payment.getField(PaymentDBF.N_NAME));
+        personAccount.setStreet((String) payment.getField(PaymentDBF.VUL_NAME));
+        personAccount.setBuildingNumber((String) payment.getField(PaymentDBF.BLD_NUM));
+        personAccount.setBuildingCorp((String) payment.getField(PaymentDBF.CORP_NUM));
+        personAccount.setApartment((String) payment.getField(PaymentDBF.FLAT));
+        personAccount.setOwnNumSr((String) payment.getField(PaymentDBF.OWN_NUM_SR));
+        personAccount.setOsznId(payment.getOrganizationId());
         personAccount.setCalculationCenterId(calculationCenterId);
         personAccount.setAccountNumber(accountNumber);
+        return personAccount;
+    }
 
-        SqlSession insertSession = null;
+    private static interface TransactionTemplate {
+
+        void doInTransaction(SqlSession session);
+    }
+
+    private void handleTransaction(TransactionTemplate transactionTemplate) {
+        SqlSession session = null;
         try {
-            insertSession = getSqlSessionManager().openSession();
-            insert(personAccount, insertSession);
-            insertSession.commit();
-        } catch (Exception insertExc) {
+            session = getSqlSessionManager().openSession();
+            transactionTemplate.doInTransaction(session);
+            session.commit();
+        } catch (Exception e) {
             //try to rollback
             try {
-                if (insertSession != null) {
-                    insertSession.rollback();
+                if (session != null) {
+                    session.rollback();
                 }
             } catch (Exception rollExc) {
                 log.error("Couldn't rollback insert transaction.", rollExc);
             }
 
             SQLException sqlException = null;
-            Throwable t = insertExc;
+            Throwable t = e;
             while (true) {
                 if (t == null) {
                     break;
@@ -158,49 +237,158 @@ public class PersonAccountLocalBean extends AbstractBean {
 
             if (sqlException != null && MySqlErrors.isDublicateError(sqlException)) {
                 //the same person account entry has already been inserted in parallel.
-                if (updateIfNecessary) {
-                    //update person account entry.
-                    PersonAccount dbAccount = findAccount(personAccount);
-                    if (dbAccount != null) {
-                        personAccount.setId(dbAccount.getId());
-                        SqlSession updateSession = null;
-                        try {
-                            updateSession = getSqlSessionManager().openSession();
-                            updateSession.update(MAPPING_NAMESPACE + "." + UPDATE_OPERATION, personAccount);
-                            updateSession.commit();
-                        } catch (Exception updateExc) {
-                            //try to rollback
-                            try {
-                                if (updateSession != null) {
-                                    updateSession.rollback();
-                                }
-                            } catch (Exception rollExc) {
-                                log.error("Couldn't rollback update transaction.", rollExc);
-                            }
-                            throw new RuntimeException(updateExc);
-                        } finally {
-                            try {
-                                if (updateSession != null) {
-                                    updateSession.close();
-                                }
-                            } catch (Exception exc) {
-                                log.error("Couldn't close update sql session.", exc);
-                            }
-                        }
-                    }
-                }
+                //TODO: doing nothing. Maybe some action should be taken.
             } else {
-                throw new RuntimeException(insertExc);
+                throw new RuntimeException(e);
             }
         } finally {
             try {
-                if (insertSession != null) {
-                    insertSession.close();
+                if (session != null) {
+                    session.close();
                 }
             } catch (Exception e) {
                 log.error("Couldn't close insert sql session.", e);
             }
         }
+    }
+
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public void saveOrUpdate(final Payment payment, final long calculationCenterId) {
+        handleTransaction(new TransactionTemplate() {
+
+            @Override
+            public void doInTransaction(SqlSession session) {
+                String newAccountNumber = payment.getAccountNumber();
+                PersonAccount newPersonAccount = newPersonAccount(payment, newAccountNumber, calculationCenterId);
+                List<PersonAccount> accounts = findAccounts((String) payment.getField(PaymentDBF.F_NAM),
+                        (String) payment.getField(PaymentDBF.M_NAM), (String) payment.getField(PaymentDBF.SUR_NAM),
+                        (String) payment.getField(PaymentDBF.N_NAME), (String) payment.getField(PaymentDBF.VUL_NAME),
+                        (String) payment.getField(PaymentDBF.BLD_NUM), (String) payment.getField(PaymentDBF.CORP_NUM),
+                        (String) payment.getField(PaymentDBF.FLAT), payment.getOrganizationId(), calculationCenterId, false,
+                        sqlSession());
+                final String currentOwnNumSr = (String) payment.getField(PaymentDBF.OWN_NUM_SR);
+                if (accounts.isEmpty()) {
+                    insert(newPersonAccount, session);
+                } else if (accounts.size() == 1) {
+                    PersonAccount account = accounts.get(0);
+                    if (!Strings.isEmpty(account.getOwnNumSr())) {
+                        if (currentOwnNumSr.equals(account.getOwnNumSr())) {
+                            account.setAccountNumber(newAccountNumber);
+                            updateAccountNumber(account, session);
+                        } else {
+                            insert(newPersonAccount, session);
+                        }
+                    } else {
+                        account.setAccountNumber(newAccountNumber);
+                        account.setOwnNumSr(currentOwnNumSr);
+                        updateAccountNumberAndOwnNumSr(account, session);
+                    }
+                } else {
+                    String accountNumber = haveTheSameAccountNumber(accounts);
+                    if (accountNumber != null) {
+                        for (PersonAccount account : accounts) {
+                            account.setAccountNumber(newAccountNumber);
+                            updateAccountNumber(account, session);
+                        }
+                    } else {
+                        List<PersonAccount> withTheSameOwnNumSr = newArrayList(filter(accounts, new Predicate<PersonAccount>() {
+
+                            @Override
+                            public boolean apply(PersonAccount input) {
+                                return currentOwnNumSr.equals(input.getOwnNumSr());
+                            }
+                        }));
+                        if (withTheSameOwnNumSr.isEmpty()) {
+                            insert(newPersonAccount, session);
+                        } else if (withTheSameOwnNumSr.size() == 1) {
+                            PersonAccount account = withTheSameOwnNumSr.get(0);
+                            account.setAccountNumber(accountNumber);
+                            updateAccountNumber(account, session);
+                        } else {
+                            throw new IllegalStateException(INCONSISTENT_STATE_ERROR_MESSAGE);
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    private PersonAccount newPersonAccount(ActualPayment actualPayment, String accountNumber, long calculationCenterId) {
+        PersonAccount personAccount = new PersonAccount();
+        personAccount.setFirstName((String) actualPayment.getField(ActualPaymentDBF.F_NAM));
+        personAccount.setMiddleName((String) actualPayment.getField(ActualPaymentDBF.M_NAM));
+        personAccount.setLastName((String) actualPayment.getField(ActualPaymentDBF.SUR_NAM));
+        personAccount.setCity((String) actualPayment.getField(ActualPaymentDBF.N_NAME));
+        personAccount.setStreet((String) actualPayment.getField(ActualPaymentDBF.VUL_NAME));
+        personAccount.setBuildingNumber((String) actualPayment.getField(ActualPaymentDBF.BLD_NUM));
+        personAccount.setBuildingCorp((String) actualPayment.getField(ActualPaymentDBF.CORP_NUM));
+        personAccount.setApartment((String) actualPayment.getField(ActualPaymentDBF.FLAT));
+        personAccount.setStreetType((String) actualPayment.getField(ActualPaymentDBF.VUL_CAT));
+        personAccount.setOsznId(actualPayment.getOrganizationId());
+        personAccount.setCalculationCenterId(calculationCenterId);
+        personAccount.setAccountNumber(accountNumber);
+        return personAccount;
+    }
+
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public void saveOrUpdate(final ActualPayment actualPayment, final long calculationCenterId) {
+        handleTransaction(new TransactionTemplate() {
+
+            @Override
+            public void doInTransaction(SqlSession session) {
+                String newAccountNumber = actualPayment.getAccountNumber();
+                PersonAccount newPersonAccount = newPersonAccount(actualPayment, newAccountNumber, calculationCenterId);
+                List<PersonAccount> accounts = findAccounts((String) actualPayment.getField(ActualPaymentDBF.F_NAM),
+                        (String) actualPayment.getField(ActualPaymentDBF.M_NAM), (String) actualPayment.getField(ActualPaymentDBF.SUR_NAM),
+                        (String) actualPayment.getField(ActualPaymentDBF.N_NAME), (String) actualPayment.getField(ActualPaymentDBF.VUL_NAME),
+                        (String) actualPayment.getField(ActualPaymentDBF.BLD_NUM), (String) actualPayment.getField(ActualPaymentDBF.CORP_NUM),
+                        (String) actualPayment.getField(ActualPaymentDBF.FLAT), actualPayment.getOrganizationId(), calculationCenterId, false,
+                        sqlSession());
+                final String currentStreetType = (String) actualPayment.getField(ActualPaymentDBF.VUL_CAT);
+                if (accounts.isEmpty()) {
+                    insert(newPersonAccount, session);
+                } else if (accounts.size() == 1) {
+                    PersonAccount account = accounts.get(0);
+                    if (!Strings.isEmpty(account.getStreetType())) {
+                        if (currentStreetType.equals(account.getStreetType())) {
+                            account.setAccountNumber(newAccountNumber);
+                            updateAccountNumber(account, session);
+                        } else {
+                            insert(newPersonAccount, session);
+                        }
+                    } else {
+                        account.setAccountNumber(newAccountNumber);
+                        account.setStreetType(currentStreetType);
+                        updateAccountNumberAndStreetType(account, session);
+                    }
+                } else {
+                    String accountNumber = haveTheSameAccountNumber(accounts);
+                    if (accountNumber != null) {
+                        for (PersonAccount account : accounts) {
+                            account.setAccountNumber(newAccountNumber);
+                            updateAccountNumber(account, session);
+                        }
+                    } else {
+                        List<PersonAccount> withTheSameOwnNumSr = newArrayList(filter(accounts, new Predicate<PersonAccount>() {
+
+                            @Override
+                            public boolean apply(PersonAccount input) {
+                                return currentStreetType.equals(input.getOwnNumSr());
+                            }
+                        }));
+                        if (withTheSameOwnNumSr.isEmpty()) {
+                            insert(newPersonAccount, session);
+                        } else if (withTheSameOwnNumSr.size() == 1) {
+                            PersonAccount account = withTheSameOwnNumSr.get(0);
+                            account.setAccountNumber(accountNumber);
+                            updateAccountNumber(account, session);
+                        } else {
+                            throw new IllegalStateException(INCONSISTENT_STATE_ERROR_MESSAGE);
+                        }
+                    }
+                }
+            }
+        });
     }
 
     @Transactional
@@ -221,18 +409,50 @@ public class PersonAccountLocalBean extends AbstractBean {
     /**
      * Вставить новую запись PersonAccount.
      * Если значение корпуса null, то сохраняется пустая строка.
-     * @param personAccount
+     * @param account
      */
     private void insert(PersonAccount personAccount, SqlSession session) {
-        if (personAccount.getBuildingCorp() == null) {
-            personAccount.setBuildingCorp("");
-        }
+        checkBuildingCorp(personAccount);
+        checkOwnNumSr(personAccount);
+        checkStreetType(personAccount);
         session.insert(MAPPING_NAMESPACE + ".insert", personAccount);
+    }
+
+    private void checkStreetType(PersonAccount account) {
+        if (account.getStreetType() == null) {
+            account.setStreetType("");
+        }
+    }
+
+    private void checkOwnNumSr(PersonAccount account) {
+        if (account.getOwnNumSr() == null) {
+            account.setOwnNumSr("");
+        }
+    }
+
+    private void checkBuildingCorp(PersonAccount account) {
+        if (account.getBuildingCorp() == null) {
+            account.setBuildingCorp("");
+        }
     }
 
     @Transactional
     public void update(PersonAccount personAccount) {
-        sqlSession().update(MAPPING_NAMESPACE + "." + UPDATE_OPERATION, personAccount);
+        sqlSession().update(MAPPING_NAMESPACE + ".updateAccountNumber", personAccount);
+    }
+
+    private void updateAccountNumber(PersonAccount account, SqlSession session) {
+        session.update(MAPPING_NAMESPACE + ".updateAccountNumber", account);
+    }
+
+    private void updateAccountNumberAndStreetType(PersonAccount account, SqlSession session) {
+        checkStreetType(account);
+        session.update(MAPPING_NAMESPACE + ".updateAccountNumberAndStreetType", account);
+    }
+
+    private void updateAccountNumberAndOwnNumSr(PersonAccount account, SqlSession session) {
+        checkOwnNumSr(account);
+        session.update(MAPPING_NAMESPACE + ".updateAccountNumberAndOwnNumSr", account);
     }
 
     @Transactional
