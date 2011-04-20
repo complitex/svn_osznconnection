@@ -50,13 +50,13 @@ import org.complitex.template.web.pages.ScrollListPage;
 @AuthorizeInstantiation(SecurityRole.AUTHORIZED)
 public class PersonAccountList extends ScrollListPage {
 
-    @EJB(name = "PersonAccountLocalBean")
+    @EJB
     private PersonAccountLocalBean personAccountLocalBean;
 
     @EJB(name = "OsznOrganizationStrategy")
     private IOsznOrganizationStrategy organizationStrategy;
 
-    @EJB(name = "LocaleBean")
+    @EJB
     private LocaleBean localeBean;
 
     private IModel<PersonAccountExample> example;
@@ -129,7 +129,6 @@ public class PersonAccountList extends ScrollListPage {
         filterForm.add(new TextField<String>("lastNameFilter", new PropertyModel<String>(example, "lastName")));
         filterForm.add(new TextField<String>("cityFilter", new PropertyModel<String>(example, "city")));
         filterForm.add(new TextField<String>("streetFilter", new PropertyModel<String>(example, "street")));
-        filterForm.add(new TextField<String>("streetCodeFilter", new PropertyModel<String>(example, "streetCode")));
         filterForm.add(new TextField<String>("buildingNumberFilter", new PropertyModel<String>(example, "buildingNumber")));
         filterForm.add(new TextField<String>("buildingCorpFilter", new PropertyModel<String>(example, "buildingCorp")));
         filterForm.add(new TextField<String>("apartmentFilter", new PropertyModel<String>(example, "apartment")));
@@ -229,7 +228,6 @@ public class PersonAccountList extends ScrollListPage {
                 item.add(new Label("lastName", personAccount.getLastName()));
                 item.add(new Label("city", personAccount.getCity()));
                 item.add(new Label("street", AddressRenderer.displayStreet(personAccount.getStreetType(), personAccount.getStreet(), getLocale())));
-                item.add(new Label("streetCode", personAccount.getStreetCode()));
                 item.add(new Label("buildingNumber", personAccount.getBuildingNumber()));
                 item.add(new Label("buildingCorp", !Strings.isEmpty(personAccount.getBuildingCorp()) ? personAccount.getBuildingCorp()
                         : ""));
@@ -250,7 +248,6 @@ public class PersonAccountList extends ScrollListPage {
         filterForm.add(new ArrowOrderByBorder("middleNameHeader", PersonAccountLocalBean.OrderBy.MIDDLE_NAME.getOrderBy(), dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("cityHeader", PersonAccountLocalBean.OrderBy.CITY.getOrderBy(), dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("streetHeader", PersonAccountLocalBean.OrderBy.STREET.getOrderBy(), dataProvider, data, content));
-        filterForm.add(new ArrowOrderByBorder("streetCodeHeader", PersonAccountLocalBean.OrderBy.STREET_CODE.getOrderBy(), dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("buildingNumberHeader", PersonAccountLocalBean.OrderBy.BUILDING_NUMBER.getOrderBy(), dataProvider,
                 data, content));
         filterForm.add(new ArrowOrderByBorder("buildingCorpHeader", PersonAccountLocalBean.OrderBy.BUILDING_CORP.getOrderBy(), dataProvider,

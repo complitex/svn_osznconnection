@@ -44,7 +44,7 @@ public final class PersonAccountEdit extends FormTemplatePage {
 
     private static final Logger log = LoggerFactory.getLogger(PersonAccountEdit.class);
     public static final String CORRECTION_ID = "correction_id";
-    @EJB(name = "PersonAccountLocalBean")
+    @EJB
     private PersonAccountLocalBean personAccountLocalBean;
     @EJB(name = "OsznOrganizationStrategy")
     private IOsznOrganizationStrategy organizationStrategy;
@@ -113,7 +113,6 @@ public final class PersonAccountEdit extends FormTemplatePage {
         form.add(new TextField<String>("city").setRequired(true).setEnabled(false));
         form.add(new TextField<String>("streetType").setEnabled(false));
         form.add(new TextField<String>("street").setRequired(true).setEnabled(false));
-        form.add(new TextField<String>("streetCode").setEnabled(false));
         form.add(new TextField<String>("buildingNumber").setRequired(true).setEnabled(false));
         form.add(new TextField<String>("buildingCorp").setEnabled(false));
         form.add(new TextField<String>("apartment").setRequired(true).setEnabled(false));

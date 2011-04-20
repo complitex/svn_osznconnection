@@ -19,7 +19,6 @@ public class PersonAccount implements Serializable {
     private String ownNumSr;
     private String city;
     private String streetType;
-    private String streetCode;
     private String street;
     private String buildingNumber;
     private String buildingCorp;
@@ -154,14 +153,6 @@ public class PersonAccount implements Serializable {
 
     public void setOszn(String oszn) {
         this.oszn = oszn;
-    }
-
-    public String getStreetCode() {
-        return streetCode;
-    }
-
-    public void setStreetCode(String streetCode) {
-        this.streetCode = streetCode;
     }
 
     public String getStreetType() {
