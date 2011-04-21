@@ -359,8 +359,7 @@ public class AddressCorrectionBean extends CorrectionBean {
     @Transactional
     public List<Long> findInternalStreetIds(Long streetTypeId, String street, long cityId) {
         Map<String, Object> params = Maps.newHashMap();
-        String toCyrillicStreet = toCyrillic(street);
-        params.put("correction", toCyrillicStreet);
+        params.put("correction", toCyrillic(street));
         params.put("parentId", cityId);
         params.put("streetTypeId", streetTypeId);
 
@@ -395,8 +394,7 @@ public class AddressCorrectionBean extends CorrectionBean {
     @Transactional
     public List<Long> findInternalStreetIdsByNameAndBuilding(long cityId, String street, String buildingNumber, String buildingCorp) {
         Map<String, Object> params = Maps.newHashMap();
-        String toCyrillicStreet = toCyrillic(street);
-        params.put("street", toCyrillicStreet);
+        params.put("street", toCyrillic(street));
         params.put("cityId", cityId);
         String preparedNumber = removeWhiteSpaces(toCyrillic(buildingNumber));
         params.put("number", preparedNumber == null ? "" : preparedNumber);
@@ -404,6 +402,16 @@ public class AddressCorrectionBean extends CorrectionBean {
         params.put("corp", Strings.isEmpty(preparedCorp) ? null : preparedCorp);
 
         return sqlSession().selectList(ADDRESS_BEAN_MAPPING_NAMESPACE + ".findInternalStreetIdsByNameAndBuilding", params);
+    }
+
+    @Transactional
+    public List<Long> findInternalStreetIdsByDistrict(long cityId, String street, long osznId) {
+        Map<String, Object> params = Maps.newHashMap();
+        params.put("street", toCyrillic(street));
+        params.put("cityId", cityId);
+        params.put("osznId", osznId);
+
+        return sqlSession().selectList(ADDRESS_BEAN_MAPPING_NAMESPACE + ".findInternalStreetIdsByDistrict", params);
     }
 
     @Transactional
