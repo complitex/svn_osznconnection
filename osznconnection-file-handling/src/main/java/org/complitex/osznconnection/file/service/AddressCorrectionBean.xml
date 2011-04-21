@@ -202,6 +202,25 @@
             </choose>
     </select>
 
+    <select id="findInternalStreetIdsByDistrict" parameterType="map" resultType="long">
+        SELECT DISTINCT s.`object_id`
+            FROM `street` s
+            JOIN `street_attribute` street_attr_name ON (street_attr_name.`status` = 'ACTIVE' AND s.`object_id` = street_attr_name.`object_id`
+                AND street_attr_name.`attribute_type_id` = 300)
+            JOIN `street_string_culture` street_name ON (street_name.`id` = street_attr_name.`value_id` AND
+                    street_name.`value` = TRIM(#{street}))
+        WHERE s.`status` = 'ACTIVE' AND s.`parent_id` = #{cityId} AND s.`parent_entity_id` = 400
+        AND EXISTS(
+            SELECT 1 FROM `building_address` addr
+                JOIN `building` b ON (b.`status` = 'ACTIVE' AND ((b.`parent_id` = addr.`object_id` AND b.`parent_entity_id` = 1500)
+                    OR EXISTS(SELECT 1 FROM `building_attribute` ba WHERE ba.`object_id` = b.`object_id` AND ba.`status` = 'ACTIVE'
+                    AND ba.`attribute_type_id` = 501 AND ba.`value_id` = addr.`object_id`)))
+                JOIN `building_attribute` dstr ON (dstr.`status` = 'ACTIVE' AND dstr.`object_id` = b.`object_id`)
+                JOIN `organization_attribute` oa ON (oa.`status` = 'ACTIVE' AND oa.`object_id` = #{osznId} AND oa.`attribute_type_id` = 902)
+            WHERE addr.`status` = 'ACTIVE' AND addr.`parent_id` = s.`object_id` AND addr.`parent_entity_id` = 300
+                AND dstr.`value_id` = oa.`value_id`)
+    </select>
+
     <select id="findInternalBuildingIds" parameterType="map" resultType="long">
         SELECT DISTINCT b.`object_id` FROM `building` b
             JOIN `building_address` addr ON (((b.`parent_id` = addr.`object_id`) OR

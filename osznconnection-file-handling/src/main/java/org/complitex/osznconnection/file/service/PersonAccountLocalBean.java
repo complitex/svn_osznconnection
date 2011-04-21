@@ -201,12 +201,12 @@ public class PersonAccountLocalBean extends AbstractBean {
         return personAccount;
     }
 
-    private static interface TransactionTemplate {
+    private static interface TransactionCallback {
 
         void doInTransaction(SqlSession session);
     }
 
-    private void handleTransaction(TransactionTemplate transactionTemplate) {
+    private void handleTransaction(TransactionCallback transactionTemplate) {
         SqlSession session = null;
         try {
             session = getSqlSessionManager().openSession();
@@ -254,7 +254,7 @@ public class PersonAccountLocalBean extends AbstractBean {
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void saveOrUpdate(final Payment payment, final long calculationCenterId) {
-        handleTransaction(new TransactionTemplate() {
+        handleTransaction(new TransactionCallback() {
 
             @Override
             public void doInTransaction(SqlSession session) {
@@ -324,7 +324,7 @@ public class PersonAccountLocalBean extends AbstractBean {
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void saveOrUpdate(final ActualPayment actualPayment, final long calculationCenterId) {
-        handleTransaction(new TransactionTemplate() {
+        handleTransaction(new TransactionCallback() {
 
             @Override
             public void doInTransaction(SqlSession session) {

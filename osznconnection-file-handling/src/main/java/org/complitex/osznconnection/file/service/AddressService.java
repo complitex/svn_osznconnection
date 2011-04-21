@@ -25,6 +25,7 @@ import org.complitex.address.strategy.building.entity.Building;
 import org.complitex.address.strategy.street.StreetStrategy;
 import org.complitex.dictionary.service.LocaleBean;
 import org.complitex.dictionary.strategy.IStrategy;
+import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
 import org.complitex.osznconnection.file.service.exception.MoreOneCorrectionException;
 import org.complitex.osznconnection.file.service.exception.NotFoundCorrectionException;
 import org.complitex.osznconnection.file.web.component.address.AddressCorrectionPanel.CORRECTED_ENTITY;
@@ -52,6 +53,8 @@ public class AddressService extends AbstractBean {
     private LocaleBean localeBean;
     @EJB
     private StreetStrategy streetStrategy;
+    @EJB(name = "OsznOrganizationStrategy")
+    private IOsznOrganizationStrategy organizationStrategy;
 
     private void resolveLocalAddress(ActualPayment actualPayment) {
         //осзн id
@@ -300,31 +303,50 @@ public class AddressService extends AbstractBean {
                     }
                     //перейти к обработке дома
                 } else if (streetIds.size() > 1) { // нашли больше одной улицы
-                    // пытаемся искать дополнительно по номеру и корпусу дома
-                    streetIds = addressCorrectionBean.findInternalStreetIdsByNameAndBuilding(cityId, streetName, buildingNumber, buildingCorp);
-                    if (streetIds.size() == 1) { //нашли ровно одну улицу с заданным номером и корпусом дома
+                    //пытаемся найти по району
+                    streetIds = addressCorrectionBean.findInternalStreetIdsByDistrict(cityId, street, organizationId);
+                    if (streetIds.size() == 1) { //нашли ровно одну улицу по району
                         streetId = streetIds.get(0);
-
-                        //проставить дом для payment и выйти
-                        List<Long> buildingIds = addressCorrectionBean.findInternalBuildingIds(buildingNumber, buildingCorp, streetId, cityId);
-                        if (buildingIds.size() == 1) {
-                            Long buildingId = buildingIds.get(0);
-                            payment.setInternalBuildingId(buildingId);
-                            Building building = (Building) buildingStrategy.findById(buildingId, true);
-                            streetId = building.getPrimaryStreetId();
-                            payment.setInternalStreetId(streetId);
-                            DomainObject streetObject = streetStrategy.findById(streetId, true);
-                            payment.setInternalStreetTypeId(StreetStrategy.getStreetType(streetObject));
-                            Long internalCityId = streetObject.getParentId();
-                            payment.setInternalCityId(internalCityId);
+                        DomainObject streetObject = streetStrategy.findById(streetId, true);
+                        payment.setInternalStreetId(streetId);
+                        long streetTypeObjectId = StreetStrategy.getStreetType(streetObject);
+                        payment.setInternalStreetTypeId(streetTypeObjectId);
+                        payment.setInternalCityId(streetObject.getParentId());
+                        List<StreetCorrection> streetCorrections = addressCorrectionBean.findStreetLocalCorrectionsByStreetId(
+                                streetId, cityCorrection.getId(), street, organizationId);
+                        if (streetCorrections.size() >= 1) {
+                            streetCorrection = streetCorrections.get(0);
                         } else {
-                            throw new IllegalStateException("Building id was not found.");
+                            throw new IllegalStateException("Street correction was not found.");
                         }
-                        payment.setStatus(RequestStatus.CITY_UNRESOLVED);
-                        return;
-                    } else { // по доп. информации, состоящей из номера и корпуса дома, не смогли однозначно определить улицу
-                        payment.setStatus(RequestStatus.STREET_AND_BUILDING_UNRESOLVED_LOCALLY);
-                        return;
+                        //перейти к обработке дома
+                    } else {
+                        // пытаемся искать дополнительно по номеру и корпусу дома
+                        streetIds = addressCorrectionBean.findInternalStreetIdsByNameAndBuilding(cityId, streetName, buildingNumber, buildingCorp);
+                        if (streetIds.size() == 1) { //нашли ровно одну улицу с заданным номером и корпусом дома
+                            streetId = streetIds.get(0);
+
+                            //проставить дом для payment и выйти
+                            List<Long> buildingIds = addressCorrectionBean.findInternalBuildingIds(buildingNumber, buildingCorp, streetId, cityId);
+                            if (buildingIds.size() == 1) {
+                                Long buildingId = buildingIds.get(0);
+                                payment.setInternalBuildingId(buildingId);
+                                Building building = (Building) buildingStrategy.findById(buildingId, true);
+                                streetId = building.getPrimaryStreetId();
+                                payment.setInternalStreetId(streetId);
+                                DomainObject streetObject = streetStrategy.findById(streetId, true);
+                                payment.setInternalStreetTypeId(StreetStrategy.getStreetType(streetObject));
+                                Long internalCityId = streetObject.getParentId();
+                                payment.setInternalCityId(internalCityId);
+                            } else {
+                                throw new IllegalStateException("Building id was not found.");
+                            }
+                            payment.setStatus(RequestStatus.CITY_UNRESOLVED);
+                            return;
+                        } else { // по доп. информации, состоящей из номера и корпуса дома, не смогли однозначно определить улицу
+                            payment.setStatus(RequestStatus.STREET_AND_BUILDING_UNRESOLVED_LOCALLY);
+                            return;
+                        }
                     }
                 } else {
                     throw new IllegalStateException("Street name `" + streetName + "` was not found.");
@@ -350,66 +372,78 @@ public class AddressService extends AbstractBean {
                 //нужно создать коррекцию для дома
 
                 //create street type correction at first
-                Correction streetTypeCorrection = null;
-                List<Correction> streetTypeCorrections = addressCorrectionBean.findStreetTypeLocalCorrections(streetType, organizationId);
-                if (streetTypeCorrections.size() == 1) {
-                    streetTypeCorrection = streetTypeCorrections.get(0);
-                } else if (streetTypeCorrections.size() > 1) {
-                    payment.setStatus(RequestStatus.MORE_ONE_LOCAL_STREET_TYPE_CORRECTION);
+                Correction streetTypeCorrection = findOrCreateStreetTypeCorrection(payment, streetType, streetTypeObjectId, organizationId);
+                if (streetTypeCorrection == null) {
                     return;
-                } else {
-                    streetTypeCorrection = addressCorrectionBean.createStreetTypeCorrection(streetType, streetTypeObjectId, organizationId,
-                            IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID);
-                    addressCorrectionBean.insert(streetTypeCorrection);
                 }
 
                 //create street correction
-                List<StreetCorrection> streetCorrections = addressCorrectionBean.findStreetLocalCorrections(cityCorrection.getId(),
-                        streetTypeCorrection.getId(), street, null, organizationId);
-                if (streetCorrections.size() == 1) {
-                    streetCorrection = streetCorrections.get(0);
-                    if (!streetId.equals(streetCorrection.getObjectId())) {
-                        payment.setStatus(RequestStatus.MORE_ONE_LOCAL_STREET_CORRECTION);
-                        return;
-                    }
-                } else if (streetCorrections.size() > 1) {
-                    payment.setStatus(RequestStatus.MORE_ONE_LOCAL_STREET_CORRECTION);
+                streetCorrection = findOrCreateStreetCorrection(payment, cityCorrection.getId(), streetTypeCorrection.getId(),
+                        street, streetId, organizationId);
+                if (streetCorrection == null) {
                     return;
-                } else {
-                    streetCorrection = addressCorrectionBean.createStreetCorrection(street, null, streetTypeCorrection.getId(), cityCorrection.getId(),
-                            streetId, organizationId, IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID);
-                    addressCorrectionBean.insertStreet(streetCorrection);
                 }
                 // перейти к обработке дома
             } else if (streetIds.size() > 1) { // нашли более одной улицы
-                // пытаемся искать дополнительно по номеру и корпусу дома
-                streetIds = addressCorrectionBean.findInternalStreetIdsByNameAndBuilding(cityId, street, buildingNumber, buildingCorp);
-                if (streetIds.size() == 1) {
+                //пытаемся найти по району
+                streetIds = addressCorrectionBean.findInternalStreetIdsByDistrict(cityId, street, organizationId);
+                if (streetIds.size() == 1) { //нашли ровно одну улицу по району
                     streetId = streetIds.get(0);
 
-                    //не нужно создавать коррекцию для улицы
-                    //не нужно создавать коррекцию для дома
+                    DomainObject streetObject = streetStrategy.findById(streetId, true);
+                    payment.setInternalStreetId(streetId);
+                    long streetTypeObjectId = StreetStrategy.getStreetType(streetObject);
+                    DomainObject streetTypeObject = streetTypeStrategy.findById(streetTypeObjectId, true);
+                    payment.setInternalStreetTypeId(streetTypeObjectId);
+                    payment.setInternalCityId(streetObject.getParentId());
+                    String streetType = streetTypeStrategy.displayDomainObject(streetTypeObject, localeBean.getSystemLocale());
 
-                    //проставить дом для payment и выйти
-                    List<Long> buildingIds = addressCorrectionBean.findInternalBuildingIds(buildingNumber, buildingCorp, streetId, cityId);
-                    if (buildingIds.size() == 1) {
-                        Long buildingId = buildingIds.get(0);
-                        payment.setInternalBuildingId(buildingId);
-                        Building building = (Building) buildingStrategy.findById(buildingId, true);
-                        streetId = building.getPrimaryStreetId();
-                        payment.setInternalStreetId(streetId);
-                        DomainObject streetObject = streetStrategy.findById(streetId, true);
-                        payment.setInternalStreetTypeId(StreetStrategy.getStreetType(streetObject));
-                        Long internalCityId = streetObject.getParentId();
-                        payment.setInternalCityId(internalCityId);
-                    } else {
-                        throw new IllegalStateException("Building id was not found.");
+                    //нужно создать коррекцию для улицы
+                    //нужно создать коррекцию для дома
+
+                    //create street type correction at first
+                    Correction streetTypeCorrection = findOrCreateStreetTypeCorrection(payment, streetType, streetTypeObjectId, organizationId);
+                    if (streetTypeCorrection == null) {
+                        return;
                     }
-                    payment.setStatus(RequestStatus.CITY_UNRESOLVED);
-                    return;
-                } else { // по доп. информации, состоящей из номера и корпуса дома, не смогли однозначно определить улицу
-                    payment.setStatus(RequestStatus.STREET_AND_BUILDING_UNRESOLVED_LOCALLY);
-                    return;
+
+                    //create street correction
+                    streetCorrection = findOrCreateStreetCorrection(payment, cityCorrection.getId(), streetTypeCorrection.getId(),
+                            street, streetId, organizationId);
+                    if (streetCorrection == null) {
+                        return;
+                    }
+                    // перейти к обработке дома
+                } else {
+                    // пытаемся искать дополнительно по номеру и корпусу дома
+                    streetIds = addressCorrectionBean.findInternalStreetIdsByNameAndBuilding(cityId, street, buildingNumber, buildingCorp);
+                    if (streetIds.size() == 1) {
+                        streetId = streetIds.get(0);
+
+                        //не нужно создавать коррекцию для улицы
+                        //не нужно создавать коррекцию для дома
+
+                        //проставить дом для payment и выйти
+                        List<Long> buildingIds = addressCorrectionBean.findInternalBuildingIds(buildingNumber, buildingCorp, streetId, cityId);
+                        if (buildingIds.size() == 1) {
+                            Long buildingId = buildingIds.get(0);
+                            payment.setInternalBuildingId(buildingId);
+                            Building building = (Building) buildingStrategy.findById(buildingId, true);
+                            streetId = building.getPrimaryStreetId();
+                            payment.setInternalStreetId(streetId);
+                            DomainObject streetObject = streetStrategy.findById(streetId, true);
+                            payment.setInternalStreetTypeId(StreetStrategy.getStreetType(streetObject));
+                            Long internalCityId = streetObject.getParentId();
+                            payment.setInternalCityId(internalCityId);
+                        } else {
+                            throw new IllegalStateException("Building id was not found.");
+                        }
+                        payment.setStatus(RequestStatus.CITY_UNRESOLVED);
+                        return;
+                    } else { // по доп. информации, состоящей из номера и корпуса дома, не смогли однозначно определить улицу
+                        payment.setStatus(RequestStatus.STREET_AND_BUILDING_UNRESOLVED_LOCALLY);
+                        return;
+                    }
                 }
             } else { // не нашли ни одной улицы
                 payment.setStatus(RequestStatus.STREET_UNRESOLVED_LOCALLY);
@@ -456,6 +490,48 @@ public class AddressService extends AbstractBean {
                 payment.setInternalCityId(internalCityId);
             }
             payment.setStatus(RequestStatus.CITY_UNRESOLVED);
+        }
+    }
+
+    @Transactional
+    private Correction findOrCreateStreetTypeCorrection(AbstractRequest request, String streetType, long streetTypeObjectId, long organizationId) {
+        Correction streetTypeCorrection = null;
+        List<Correction> streetTypeCorrections = addressCorrectionBean.findStreetTypeLocalCorrections(streetType, organizationId);
+        if (streetTypeCorrections.size() == 1) {
+            streetTypeCorrection = streetTypeCorrections.get(0);
+            return streetTypeCorrection;
+        } else if (streetTypeCorrections.size() > 1) {
+            request.setStatus(RequestStatus.MORE_ONE_LOCAL_STREET_TYPE_CORRECTION);
+            return null;
+        } else {
+            streetTypeCorrection = addressCorrectionBean.createStreetTypeCorrection(streetType, streetTypeObjectId, organizationId,
+                    IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID);
+            addressCorrectionBean.insert(streetTypeCorrection);
+            return streetTypeCorrection;
+        }
+    }
+
+    @Transactional
+    private StreetCorrection findOrCreateStreetCorrection(AbstractRequest request, long cityCorrectionId, long streetTypeCorrectionId,
+            String street, long streetObjectId, long organizationId) {
+        StreetCorrection streetCorrection = null;
+        List<StreetCorrection> streetCorrections = addressCorrectionBean.findStreetLocalCorrections(cityCorrectionId,
+                streetTypeCorrectionId, street, null, organizationId);
+        if (streetCorrections.size() == 1) {
+            streetCorrection = streetCorrections.get(0);
+            if (streetObjectId != streetCorrection.getObjectId()) {
+                request.setStatus(RequestStatus.MORE_ONE_LOCAL_STREET_CORRECTION);
+                return null;
+            }
+            return streetCorrection;
+        } else if (streetCorrections.size() > 1) {
+            request.setStatus(RequestStatus.MORE_ONE_LOCAL_STREET_CORRECTION);
+            return null;
+        } else {
+            streetCorrection = addressCorrectionBean.createStreetCorrection(street, null, streetTypeCorrectionId, cityCorrectionId,
+                    streetObjectId, organizationId, IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID);
+            addressCorrectionBean.insertStreet(streetCorrection);
+            return streetCorrection;
         }
     }
 
