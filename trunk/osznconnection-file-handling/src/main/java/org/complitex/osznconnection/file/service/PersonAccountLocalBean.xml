@@ -7,7 +7,6 @@
         <result property="firstName" column="first_name"/>
         <result property="middleName" column="middle_name"/>
         <result property="lastName" column="last_name"/>
-        <result property="ownNumSr" column="own_num_sr"/>
         <result property="city" column="city"/>
         <result property="streetType" column="street_type"/>
         <result property="street" column="street"/>
@@ -74,10 +73,7 @@
             <if test="accountNumber != null">
                 AND pa.`account_number` LIKE CONCAT('%', #{accountNumber}, '%')
             </if>
-            <if test="ownNumSr != null">
-                AND pa.`own_num_sr` LIKE CONCAT('%', #{ownNumSr}, '%')
-            </if>
-             <if test="osznId != null">
+            <if test="osznId != null">
                 AND pa.`oszn_id` = #{osznId}
             </if>
             <if test="calculationCenterId != null">
@@ -91,9 +87,9 @@
 
     <insert id="insert" parameterType="org.complitex.osznconnection.file.entity.PersonAccount" keyProperty="id" useGeneratedKeys="true">
         INSERT INTO `person_account` (`city`, `street_type`, `street`, `building_num`, `building_corp`, `apartment`,
-                `account_number`, `first_name`, `middle_name`, `last_name`, `own_num_sr`, `oszn_id`, `calc_center_id`)
+                `account_number`, `first_name`, `middle_name`, `last_name`, `oszn_id`, `calc_center_id`)
         VALUES (#{city}, #{streetType}, #{street}, #{buildingNumber}, #{buildingCorp}, #{apartment},
-                #{accountNumber}, #{firstName}, #{middleName}, #{lastName}, #{ownNumSr}, #{osznId}, #{calculationCenterId})
+                #{accountNumber}, #{firstName}, #{middleName}, #{lastName}, #{osznId}, #{calculationCenterId})
     </insert>
 
      <update id="updateAccountNumber" parameterType="org.complitex.osznconnection.file.entity.PersonAccount">
@@ -102,10 +98,6 @@
      </update>
      <update id="updateAccountNumberAndStreetType" parameterType="org.complitex.osznconnection.file.entity.PersonAccount">
          UPDATE `person_account` SET `account_number` = #{accountNumber}, `street_type` = #{streetType}
-                WHERE `id` = #{id}
-     </update>
-     <update id="updateAccountNumberAndOwnNumSr" parameterType="org.complitex.osznconnection.file.entity.PersonAccount">
-         UPDATE `person_account` SET `account_number` = #{accountNumber}, `own_num_sr` = #{ownNumSr}
                 WHERE `id` = #{id}
      </update>
 

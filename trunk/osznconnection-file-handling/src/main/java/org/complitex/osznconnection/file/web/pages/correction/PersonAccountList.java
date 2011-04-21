@@ -133,7 +133,6 @@ public class PersonAccountList extends ScrollListPage {
         filterForm.add(new TextField<String>("buildingCorpFilter", new PropertyModel<String>(example, "buildingCorp")));
         filterForm.add(new TextField<String>("apartmentFilter", new PropertyModel<String>(example, "apartment")));
         filterForm.add(new TextField<String>("accountNumberFilter", new PropertyModel<String>(example, "accountNumber")));
-        filterForm.add(new TextField<String>("ownNumSrFilter", new PropertyModel<String>(example, "ownNumSr")));
 
         final IModel<List<DomainObject>> osznsModel = new LoadableDetachableModel<List<DomainObject>>() {
 
@@ -233,7 +232,6 @@ public class PersonAccountList extends ScrollListPage {
                         : ""));
                 item.add(new Label("apartment", personAccount.getApartment()));
                 item.add(new Label("accountNumber", personAccount.getAccountNumber()));
-                item.add(new Label("ownNumSr", personAccount.getOwnNumSr()));
                 item.add(new Label("oszn", personAccount.getOszn()));
                 item.add(new Label("calculationCenter", personAccount.getCalculationCenter()));
                 item.add(new ScrollBookmarkablePageLink("edit", PersonAccountEdit.class,
@@ -255,7 +253,6 @@ public class PersonAccountList extends ScrollListPage {
         filterForm.add(new ArrowOrderByBorder("apartmentHeader", PersonAccountLocalBean.OrderBy.APARTMENT.getOrderBy(), dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("accountNumberHeader", PersonAccountLocalBean.OrderBy.ACCOUNT_NUMBER.getOrderBy(), dataProvider,
                 data, content));
-        filterForm.add(new ArrowOrderByBorder("ownNumSrHeader", PersonAccountLocalBean.OrderBy.OWN_NUM_SR.getOrderBy(), dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("osznHeader", PersonAccountLocalBean.OrderBy.OSZN.getOrderBy(), dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("calculationCenterHeader", PersonAccountLocalBean.OrderBy.CALCULATION_CENTER.getOrderBy(),
                 dataProvider, data, content));

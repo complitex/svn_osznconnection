@@ -117,7 +117,6 @@ public final class PersonAccountEdit extends FormTemplatePage {
         form.add(new TextField<String>("buildingCorp").setEnabled(false));
         form.add(new TextField<String>("apartment").setRequired(true).setEnabled(false));
         form.add(new TextField<String>("accountNumber").setRequired(true));
-        form.add(new TextField<String>("ownNumSr").setEnabled(false));
 
         final IModel<List<DomainObject>> allOsznsModel = new LoadableDetachableModel<List<DomainObject>>() {
 
