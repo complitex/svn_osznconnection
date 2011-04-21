@@ -38,14 +38,13 @@ public class PersonAccountLocalBean extends AbstractBean {
     private static final Logger log = LoggerFactory.getLogger(PersonAccountLocalBean.class);
     private static final String MAPPING_NAMESPACE = PersonAccountLocalBean.class.getName();
     private static final String INCONSISTENT_STATE_ERROR_MESSAGE =
-            "More one entry in person_account table with the same data. Table person_account is in inconsistent state!";
+            "More one person have the same full name and address but different account numbers.";
 
     public static enum OrderBy {
 
         FIRST_NAME("first_name"), MIDDLE_NAME("middle_name"), LAST_NAME("last_name"), CITY("city"), STREET("street"),
         BUILDING_NUMBER("building_num"), BUILDING_CORP("building_corp"), APARTMENT("apartment"),
-        ACCOUNT_NUMBER("account_number"), OWN_NUM_SR("own_num_sr"),
-        OSZN("oszn"), CALCULATION_CENTER("calculation_center");
+        ACCOUNT_NUMBER("account_number"), OSZN("oszn"), CALCULATION_CENTER("calculation_center");
         private String orderBy;
 
         private OrderBy(String orderBy) {
@@ -102,41 +101,17 @@ public class PersonAccountLocalBean extends AbstractBean {
                 (String) payment.getField(PaymentDBF.BLD_NUM), (String) payment.getField(PaymentDBF.CORP_NUM),
                 (String) payment.getField(PaymentDBF.FLAT), payment.getOrganizationId(), calculationCenterId, false,
                 sqlSession());
-        final String currentOwnNumSr = (String) payment.getField(PaymentDBF.OWN_NUM_SR);
         if (accounts.isEmpty()) {
             return null;
         } else if (accounts.size() == 1) {
             PersonAccount account = accounts.get(0);
-            if (!Strings.isEmpty(account.getOwnNumSr())) {
-                return account.getOwnNumSr().equals(currentOwnNumSr) ? account.getAccountNumber() : null;
-            } else {
-                account.setOwnNumSr(currentOwnNumSr);
-                updateAccountNumberAndOwnNumSr(account, sqlSession());
-                return account.getAccountNumber();
-            }
+            return account.getAccountNumber();
         } else {
             String accountNumber = haveTheSameAccountNumber(accounts);
             if (accountNumber != null) {
-                for (PersonAccount account : accounts) {
-                    account.setOwnNumSr(currentOwnNumSr);
-                    updateAccountNumberAndOwnNumSr(account, sqlSession());
-                }
                 return accountNumber;
             } else {
-                List<PersonAccount> withTheSameOwnNumSr = newArrayList(filter(accounts, new Predicate<PersonAccount>() {
-
-                    @Override
-                    public boolean apply(PersonAccount input) {
-                        return currentOwnNumSr.equals(input.getOwnNumSr());
-                    }
-                }));
-                if (withTheSameOwnNumSr.isEmpty()) {
-                    return null;
-                } else if (withTheSameOwnNumSr.size() == 1) {
-                    return withTheSameOwnNumSr.get(0).getAccountNumber();
-                } else {
-                    throw new IllegalStateException(INCONSISTENT_STATE_ERROR_MESSAGE);
-                }
+                throw new IllegalStateException(INCONSISTENT_STATE_ERROR_MESSAGE);
             }
         }
     }
@@ -182,23 +157,6 @@ public class PersonAccountLocalBean extends AbstractBean {
                 }
             }
         }
-    }
-
-    private PersonAccount newPersonAccount(Payment payment, String accountNumber, long calculationCenterId) {
-        PersonAccount personAccount = new PersonAccount();
-        personAccount.setFirstName((String) payment.getField(PaymentDBF.F_NAM));
-        personAccount.setMiddleName((String) payment.getField(PaymentDBF.M_NAM));
-        personAccount.setLastName((String) payment.getField(PaymentDBF.SUR_NAM));
-        personAccount.setCity((String) payment.getField(PaymentDBF.N_NAME));
-        personAccount.setStreet((String) payment.getField(PaymentDBF.VUL_NAME));
-        personAccount.setBuildingNumber((String) payment.getField(PaymentDBF.BLD_NUM));
-        personAccount.setBuildingCorp((String) payment.getField(PaymentDBF.CORP_NUM));
-        personAccount.setApartment((String) payment.getField(PaymentDBF.FLAT));
-        personAccount.setOwnNumSr((String) payment.getField(PaymentDBF.OWN_NUM_SR));
-        personAccount.setOsznId(payment.getOrganizationId());
-        personAccount.setCalculationCenterId(calculationCenterId);
-        personAccount.setAccountNumber(accountNumber);
-        return personAccount;
     }
 
     private static interface TransactionCallback {
@@ -252,6 +210,22 @@ public class PersonAccountLocalBean extends AbstractBean {
         }
     }
 
+    private PersonAccount newPersonAccount(Payment payment, String accountNumber, long calculationCenterId) {
+        PersonAccount personAccount = new PersonAccount();
+        personAccount.setFirstName((String) payment.getField(PaymentDBF.F_NAM));
+        personAccount.setMiddleName((String) payment.getField(PaymentDBF.M_NAM));
+        personAccount.setLastName((String) payment.getField(PaymentDBF.SUR_NAM));
+        personAccount.setCity((String) payment.getField(PaymentDBF.N_NAME));
+        personAccount.setStreet((String) payment.getField(PaymentDBF.VUL_NAME));
+        personAccount.setBuildingNumber((String) payment.getField(PaymentDBF.BLD_NUM));
+        personAccount.setBuildingCorp((String) payment.getField(PaymentDBF.CORP_NUM));
+        personAccount.setApartment((String) payment.getField(PaymentDBF.FLAT));
+        personAccount.setOsznId(payment.getOrganizationId());
+        personAccount.setCalculationCenterId(calculationCenterId);
+        personAccount.setAccountNumber(accountNumber);
+        return personAccount;
+    }
+
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void saveOrUpdate(final Payment payment, final long calculationCenterId) {
         handleTransaction(new TransactionCallback() {
@@ -266,37 +240,19 @@ public class PersonAccountLocalBean extends AbstractBean {
                         (String) payment.getField(PaymentDBF.BLD_NUM), (String) payment.getField(PaymentDBF.CORP_NUM),
                         (String) payment.getField(PaymentDBF.FLAT), payment.getOrganizationId(), calculationCenterId, false,
                         sqlSession());
-                final String currentOwnNumSr = (String) payment.getField(PaymentDBF.OWN_NUM_SR);
                 if (accounts.isEmpty()) {
                     insert(newPersonAccount, session);
                 } else if (accounts.size() == 1) {
                     PersonAccount account = accounts.get(0);
-                    if (!Strings.isEmpty(account.getOwnNumSr())) {
-                        if (currentOwnNumSr.equals(account.getOwnNumSr())) {
+                    account.setAccountNumber(newAccountNumber);
+                    updateAccountNumber(account, session);
+                } else {
+                    String accountNumber = haveTheSameAccountNumber(accounts);
+                    if (accountNumber != null) {
+                        for (PersonAccount account : accounts) {
                             account.setAccountNumber(newAccountNumber);
                             updateAccountNumber(account, session);
-                        } else {
-                            insert(newPersonAccount, session);
                         }
-                    } else {
-                        account.setAccountNumber(newAccountNumber);
-                        account.setOwnNumSr(currentOwnNumSr);
-                        updateAccountNumberAndOwnNumSr(account, session);
-                    }
-                } else {
-                    List<PersonAccount> withTheSameOwnNumSr = newArrayList(filter(accounts, new Predicate<PersonAccount>() {
-
-                        @Override
-                        public boolean apply(PersonAccount input) {
-                            return currentOwnNumSr.equals(input.getOwnNumSr());
-                        }
-                    }));
-                    if (withTheSameOwnNumSr.isEmpty()) {
-                        insert(newPersonAccount, session);
-                    } else if (withTheSameOwnNumSr.size() == 1) {
-                        PersonAccount account = withTheSameOwnNumSr.get(0);
-                        account.setAccountNumber(newAccountNumber);
-                        updateAccountNumber(account, session);
                     } else {
                         throw new IllegalStateException(INCONSISTENT_STATE_ERROR_MESSAGE);
                     }
@@ -397,7 +353,6 @@ public class PersonAccountLocalBean extends AbstractBean {
      */
     private void insert(PersonAccount personAccount, SqlSession session) {
         checkBuildingCorp(personAccount);
-        checkOwnNumSr(personAccount);
         checkStreetType(personAccount);
         session.insert(MAPPING_NAMESPACE + ".insert", personAccount);
     }
@@ -405,12 +360,6 @@ public class PersonAccountLocalBean extends AbstractBean {
     private void checkStreetType(PersonAccount account) {
         if (account.getStreetType() == null) {
             account.setStreetType("");
-        }
-    }
-
-    private void checkOwnNumSr(PersonAccount account) {
-        if (account.getOwnNumSr() == null) {
-            account.setOwnNumSr("");
         }
     }
 
@@ -432,11 +381,6 @@ public class PersonAccountLocalBean extends AbstractBean {
     private void updateAccountNumberAndStreetType(PersonAccount account, SqlSession session) {
         checkStreetType(account);
         session.update(MAPPING_NAMESPACE + ".updateAccountNumberAndStreetType", account);
-    }
-
-    private void updateAccountNumberAndOwnNumSr(PersonAccount account, SqlSession session) {
-        checkOwnNumSr(account);
-        session.update(MAPPING_NAMESPACE + ".updateAccountNumberAndOwnNumSr", account);
     }
 
     @Transactional

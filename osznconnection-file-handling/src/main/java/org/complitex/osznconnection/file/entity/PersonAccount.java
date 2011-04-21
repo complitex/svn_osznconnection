@@ -16,7 +16,6 @@ public class PersonAccount implements Serializable {
     private String firstName;
     private String middleName;
     private String lastName;
-    private String ownNumSr;
     private String city;
     private String streetType;
     private String street;
@@ -28,7 +27,6 @@ public class PersonAccount implements Serializable {
     private Long calculationCenterId;
     private String oszn;
     private String calculationCenter;
-
     private boolean admin;
     private String organizations;
 
@@ -105,14 +103,6 @@ public class PersonAccount implements Serializable {
 
     public void setMiddleName(String middleName) {
         this.middleName = middleName;
-    }
-
-    public String getOwnNumSr() {
-        return ownNumSr;
-    }
-
-    public void setOwnNumSr(String ownNumSr) {
-        this.ownNumSr = ownNumSr;
     }
 
     public String getStreet() {

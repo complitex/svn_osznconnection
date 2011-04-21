@@ -25,7 +25,6 @@ import org.complitex.address.strategy.building.entity.Building;
 import org.complitex.address.strategy.street.StreetStrategy;
 import org.complitex.dictionary.service.LocaleBean;
 import org.complitex.dictionary.strategy.IStrategy;
-import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
 import org.complitex.osznconnection.file.service.exception.MoreOneCorrectionException;
 import org.complitex.osznconnection.file.service.exception.NotFoundCorrectionException;
 import org.complitex.osznconnection.file.web.component.address.AddressCorrectionPanel.CORRECTED_ENTITY;
@@ -53,8 +52,6 @@ public class AddressService extends AbstractBean {
     private LocaleBean localeBean;
     @EJB
     private StreetStrategy streetStrategy;
-    @EJB(name = "OsznOrganizationStrategy")
-    private IOsznOrganizationStrategy organizationStrategy;
 
     private void resolveLocalAddress(ActualPayment actualPayment) {
         //осзн id
