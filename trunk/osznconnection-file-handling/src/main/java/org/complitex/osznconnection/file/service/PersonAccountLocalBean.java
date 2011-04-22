@@ -4,9 +4,6 @@
  */
 package org.complitex.osznconnection.file.service;
 
-import com.google.common.base.Predicate;
-import static com.google.common.collect.Lists.*;
-import static com.google.common.collect.Iterables.*;
 import java.sql.SQLException;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.AbstractBean;
@@ -141,20 +138,7 @@ public class PersonAccountLocalBean extends AbstractBean {
             if (accountNumber != null) {
                 return accountNumber;
             } else {
-                List<PersonAccount> withTheSameStreetType = newArrayList(filter(accounts, new Predicate<PersonAccount>() {
-
-                    @Override
-                    public boolean apply(PersonAccount input) {
-                        return currentStreetType.equals(input.getStreetType());
-                    }
-                }));
-                if (withTheSameStreetType.isEmpty()) {
-                    return null;
-                } else if (withTheSameStreetType.size() == 1) {
-                    return withTheSameStreetType.get(0).getAccountNumber();
-                } else {
-                    throw new IllegalStateException(INCONSISTENT_STATE_ERROR_MESSAGE);
-                }
+                throw new IllegalStateException(INCONSISTENT_STATE_ERROR_MESSAGE);
             }
         }
     }
@@ -302,7 +286,13 @@ public class PersonAccountLocalBean extends AbstractBean {
                             account.setAccountNumber(newAccountNumber);
                             updateAccountNumber(account, session);
                         } else {
-                            insert(newPersonAccount, session);
+                            if (account.getAccountNumber().equals(newAccountNumber)) {
+                                insert(newPersonAccount, session);
+                            } else {
+                                account.setAccountNumber(newAccountNumber);
+                                account.setStreetType(currentStreetType);
+                                updateAccountNumberAndStreetType(account, session);
+                            }
                         }
                     } else {
                         account.setAccountNumber(newAccountNumber);
@@ -310,19 +300,12 @@ public class PersonAccountLocalBean extends AbstractBean {
                         updateAccountNumberAndStreetType(account, session);
                     }
                 } else {
-                    List<PersonAccount> withTheSameStreetType = newArrayList(filter(accounts, new Predicate<PersonAccount>() {
-
-                        @Override
-                        public boolean apply(PersonAccount input) {
-                            return currentStreetType.equals(input.getStreetType());
+                    String accountNumber = haveTheSameAccountNumber(accounts);
+                    if (accountNumber != null) {
+                        for (PersonAccount account : accounts) {
+                            account.setAccountNumber(newAccountNumber);
+                            updateAccountNumber(account, session);
                         }
-                    }));
-                    if (withTheSameStreetType.isEmpty()) {
-                        insert(newPersonAccount, session);
-                    } else if (withTheSameStreetType.size() == 1) {
-                        PersonAccount account = withTheSameStreetType.get(0);
-                        account.setAccountNumber(newAccountNumber);
-                        updateAccountNumber(account, session);
                     } else {
                         throw new IllegalStateException(INCONSISTENT_STATE_ERROR_MESSAGE);
                     }
@@ -369,14 +352,14 @@ public class PersonAccountLocalBean extends AbstractBean {
      * @param personAccount
      */
     @Transactional
-    public boolean validate(PersonAccount personAccount){
+    public boolean validate(PersonAccount personAccount) {
         List<PersonAccount> accounts = findAccounts(personAccount.getFirstName(), personAccount.getMiddleName(),
                 personAccount.getLastName(), personAccount.getCity(), personAccount.getStreet(), personAccount.getBuildingNumber(),
                 personAccount.getBuildingCorp(), personAccount.getApartment(), personAccount.getOsznId(),
                 personAccount.getCalculationCenterId(), false, sqlSession());
-        if(accounts.size() > 1){
+        if (accounts.size() > 1) {
             String accountNumber = haveTheSameAccountNumber(accounts);
-            if(accountNumber != null){
+            if (accountNumber != null) {
                 return accountNumber.equals(personAccount.getAccountNumber()) ? true : false;
             } else {
                 throw new IllegalStateException(INCONSISTENT_STATE_ERROR_MESSAGE);
