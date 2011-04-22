@@ -125,7 +125,7 @@ public class AddressService extends AbstractBean {
         Long streetId = null;
         StreetCorrection streetCorrection = null;
         List<StreetCorrection> streetCorrections = addressCorrectionBean.findStreetLocalCorrections(cityCorrection.getId(), streetTypeCorrection.getId(),
-                null, streetCode, organizationId);
+                street, organizationId);
         if (streetCorrections.size() == 1) {
             streetCorrection = streetCorrections.get(0);
             streetId = streetCorrection.getObjectId();
@@ -513,7 +513,7 @@ public class AddressService extends AbstractBean {
             String street, long streetObjectId, long organizationId) {
         StreetCorrection streetCorrection = null;
         List<StreetCorrection> streetCorrections = addressCorrectionBean.findStreetLocalCorrections(cityCorrectionId,
-                streetTypeCorrectionId, street, null, organizationId);
+                streetTypeCorrectionId, street, organizationId);
         if (streetCorrections.size() == 1) {
             streetCorrection = streetCorrections.get(0);
             if (streetObjectId != streetCorrection.getObjectId()) {
@@ -806,7 +806,7 @@ public class AddressService extends AbstractBean {
                     }
 
                     List<StreetCorrection> streetCorrections = addressCorrectionBean.findStreetLocalCorrections(cityCorrection.getId(),
-                            streetTypeCorrection.getId(), street, null, organizationId);
+                            streetTypeCorrection.getId(), street, organizationId);
                     if (streetCorrections.size() > 0) {
                         throw new DublicateCorrectionException();
                     } else {
@@ -840,7 +840,7 @@ public class AddressService extends AbstractBean {
                         Correction streetTypeCorrection = streetTypeCorrections.get(0);
 
                         List<StreetCorrection> streetCorrections = addressCorrectionBean.findStreetLocalCorrections(cityCorrection.getId(),
-                                streetTypeCorrection.getId(), street, null, organizationId);
+                                streetTypeCorrection.getId(), street, organizationId);
                         if (streetCorrections.size() == 1) {
                             StreetCorrection streetCorrection = streetCorrections.get(0);
 
@@ -932,7 +932,7 @@ public class AddressService extends AbstractBean {
                         Correction streetTypeCorrection = streetTypeCorrections.get(0);
 
                         List<StreetCorrection> streetCorrections = addressCorrectionBean.findStreetLocalCorrections(cityCorrection.getId(),
-                                streetTypeCorrection.getId(), null, streetCode, organizationId);
+                                streetTypeCorrection.getId(), street, organizationId);
                         if (streetCorrections.size() > 0) {
                             throw new DublicateCorrectionException();
                         } else {
@@ -967,7 +967,7 @@ public class AddressService extends AbstractBean {
                         Correction streetTypeCorrection = streetTypeCorrections.get(0);
 
                         List<StreetCorrection> streetCorrections = addressCorrectionBean.findStreetLocalCorrections(cityCorrection.getId(),
-                                streetTypeCorrection.getId(), null, streetCode, organizationId);
+                                streetTypeCorrection.getId(), street, organizationId);
                         if (streetCorrections.size() == 1) {
                             StreetCorrection streetCorrection = streetCorrections.get(0);
 
