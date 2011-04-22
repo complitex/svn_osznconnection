@@ -84,13 +84,9 @@
             + (select count(*) from `tarif` where `request_file_id` = rf.`id`)
             + (select count(*) from `actual_payment` where `request_file_id` = rf.`id`))
                 as loaded_record_count,
-            (select (select count(*) from `payment` where `request_file_id` = rf.`id` and `status` = 214)
-            + (select count(*) from `benefit` where `request_file_id` = rf.`id` and `status` = 214)
-            + (select count(*) from `actual_payment` where `request_file_id` = rf.`id` and `status` = 214))
+            (select count(*) from `actual_payment` where `request_file_id` = rf.`id` and `account_number` is not null)
                 as binded_record_count,
-            (select (select count(*) from `payment` where `request_file_id` = rf.`id` and `status` = 215)
-            + (select count(*) from `benefit` where `request_file_id` = rf.`id` and `status` = 215)
-            + (select count(*) from `actual_payment` where `request_file_id` = rf.`id` and `status` = 215))
+            (select count(*) from `actual_payment` where `request_file_id` = rf.`id` and `status` = 215)
                 as filled_record_count
             from
             `request_file` rf
@@ -115,19 +111,14 @@
         select count(*) from
             (select *,
                 (select (select count(*) from `payment` where `request_file_id` = rf.`id`)
-                + (select count(*) from `benefit` where `request_file_id` = rf.`id`)
                 + (select count(*) from `tarif` where `request_file_id` = rf.`id`)
                 + (select count(*) from `actual_payment` where `request_file_id` = rf.`id`))
                     as loaded_record_count,
-                (select (select count(*) from `payment` where `request_file_id` = rf.`id` and `status` = 214)
-                + (select count(*) from `benefit` where `request_file_id` = rf.`id` and `status` = 214)
-                + (select count(*) from `actual_payment` where `request_file_id` = rf.`id` and `status` = 214))
+                (select count(*) from `actual_payment` where `request_file_id` = rf.`id` and `account_number` is not null)
                     as binded_record_count,
-                (select (select count(*) from `payment` where `request_file_id` = rf.`id` and `status` = 215)
-                + (select count(*) from `benefit` where `request_file_id` = rf.`id` and `status` = 215)
-                + (select count(*) from `actual_payment` where `request_file_id` = rf.`id` and `status` = 215))
+                (select count(*) from `actual_payment` where `request_file_id` = rf.`id` and `status` = 215)
                     as filled_record_count
-                from
+            from
                 `request_file` rf
                 <include refid="requestFilesFilterWhere"/>) as q
     </select>

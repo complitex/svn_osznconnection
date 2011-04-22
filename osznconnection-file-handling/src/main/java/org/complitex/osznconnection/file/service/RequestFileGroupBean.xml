@@ -109,7 +109,7 @@
             p.registry as p_registry, p.month as p_month, p.year as p_year, p.dbf_record_count as p_dbf_record_count,
             p.length as p_length, p.check_sum as p_check_sum, p.type as p_type,
             count(`payment`.`id`) as loaded_record_count,
-            (count(`payment`.`account_number`) + count(IF(`payment`.`status` = 215, 1, NULL))) as binded_record_count,
+            count(`payment`.`account_number`) as binded_record_count,
             count(IF(`payment`.`status` = 215, 1, NULL)) as filled_record_count
         <include refid="requestFileGroupFilterFrom"/>
         <include refid="requestFileGroupFilterWhere"/>
@@ -138,10 +138,27 @@
             (select
                 g.`id`,
                 count(`payment`.`id`) as loaded_record_count,
-                (count(`payment`.`account_number`) + count(IF(`payment`.`status` = 215, 1, NULL)))  as binded_record_count,
+                count(`payment`.`account_number`)  as binded_record_count,
                 count(IF(`payment`.`status` = 215, 1, NULL)) as filled_record_count
             <include refid="requestFileGroupFilterFrom"/>
             <include refid="requestFileGroupFilterWhere"/>) as q
+    </select>
+
+    <select id="selectRequestFilesGroup" parameterType="long" resultMap="requestFileGroupResultMap">
+         select
+            g.id as gid,
+            g.status as status,
+            b.id as b_id, b.loaded as b_loaded, b.name as b_name, b.directory as b_directory, b.organization_id as b_organization_id,
+            b.registry as b_registry, b.month as b_month, b.year as b_year, b.dbf_record_count as b_dbf_record_count,
+            b.length as b_length, b.check_sum as b_check_sum, b.type as b_type,
+            p.id as p_id, p.loaded as p_loaded, p.name as p_name, p.directory as p_directory, p.organization_id as p_organization_id,
+            p.registry as p_registry, p.month as p_month, p.year as p_year, p.dbf_record_count as p_dbf_record_count,
+            p.length as p_length, p.check_sum as p_check_sum, p.type as p_type,
+            count(`payment`.`id`) as loaded_record_count,
+            count(`payment`.`account_number`) as binded_record_count,
+            count(IF(`payment`.`status` = 215, 1, NULL)) as filled_record_count
+        <include refid="requestFileGroupFilterFrom"/>
+        where g.id = #{id}
     </select>
 
     <select id="getBenefitFileId" parameterType="map" resultType="long">
