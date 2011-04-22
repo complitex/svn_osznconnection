@@ -174,24 +174,34 @@
                 WHERE
                     b.`request_file_id` = #{requestFileId}
                     <include refid="org.complitex.osznconnection.file.service.BenefitBean.filter"/>
-                <if test="size != 0">
-                    limit #{start},#{size}
-                </if>
+                    <if test="orderByClause != null">
+                        <choose>
+                            <when test="orderByClause == 'building_number' or orderByClause == 'building_corp'
+                                  or orderByClause == 'apartment'">
+                                ORDER BY `${orderByClause}`+0
+                            </when>
+                            <when test="orderByClause == 'OWN_NUM_SR'">
+                                ORDER BY b.`${orderByClause}`+0
+                            </when>
+                            <otherwise>
+                                ORDER BY `${orderByClause}`
+                            </otherwise>
+                        </choose>
+                        <choose>
+                            <when test="asc">
+                                ASC
+                            </when>
+                            <otherwise>
+                                DESC
+                            </otherwise>
+                        </choose>
+                    </if>
+                    <if test="size != 0">
+                        limit #{start},#{size}
+                    </if>
         ) s
         LEFT JOIN `request_warning` w ON (w.`request_id` = s.`id` AND w.`request_file_type` = 'BENEFIT')
         LEFT JOIN `request_warning_parameter` p ON w.`id` = p.`request_warning_id`
-        
-        <if test="orderByClause != null">
-            ORDER BY ${orderByClause}
-            <choose>
-                <when test="asc">
-                    ASC
-                </when>
-                <otherwise>
-                    DESC
-                </otherwise>
-            </choose>
-        </if>
     </select>
 
     <select id="countByFile" resultType="int" parameterType="hashmap">
