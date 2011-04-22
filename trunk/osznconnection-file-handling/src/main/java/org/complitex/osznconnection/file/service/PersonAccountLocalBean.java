@@ -59,7 +59,7 @@ public class PersonAccountLocalBean extends AbstractBean {
     private OsznSessionBean osznSessionBean;
 
     private List<PersonAccount> findAccounts(String firstName, String middleName, String lastName, String city,
-            String street, String buildingNumber, String buildingCorp, String apartment, long organizationId, long calculationCenterId,
+            String street, String buildingNumber, String buildingCorp, String apartment, long osznId, long calculationCenterId,
             boolean blocking, SqlSession session) {
         PersonAccountExample example = new PersonAccountExample();
         example.setFirstName(firstName);
@@ -70,7 +70,7 @@ public class PersonAccountLocalBean extends AbstractBean {
         example.setBuildingNumber(buildingNumber);
         example.setBuildingCorp(buildingCorp);
         example.setApartment(apartment);
-        example.setOsznId(organizationId);
+        example.setOsznId(osznId);
         example.setCalculationCenterId(calculationCenterId);
         if (blocking) {
             return session.selectList(MAPPING_NAMESPACE + ".findAccountsBlocking", example);
@@ -346,11 +346,6 @@ public class PersonAccountLocalBean extends AbstractBean {
         return sqlSession().selectList(MAPPING_NAMESPACE + ".find", example);
     }
 
-    /**
-     * Вставить новую запись PersonAccount.
-     * Если значение корпуса null, то сохраняется пустая строка.
-     * @param account
-     */
     private void insert(PersonAccount personAccount, SqlSession session) {
         checkBuildingCorp(personAccount);
         checkStreetType(personAccount);
@@ -369,9 +364,35 @@ public class PersonAccountLocalBean extends AbstractBean {
         }
     }
 
+    /**
+     * Web interface validation.
+     * @param personAccount
+     */
+    @Transactional
+    public boolean validate(PersonAccount personAccount){
+        List<PersonAccount> accounts = findAccounts(personAccount.getFirstName(), personAccount.getMiddleName(),
+                personAccount.getLastName(), personAccount.getCity(), personAccount.getStreet(), personAccount.getBuildingNumber(),
+                personAccount.getBuildingCorp(), personAccount.getApartment(), personAccount.getOsznId(),
+                personAccount.getCalculationCenterId(), false, sqlSession());
+        if(accounts.size() > 1){
+            String accountNumber = haveTheSameAccountNumber(accounts);
+            if(accountNumber != null){
+                return accountNumber.equals(personAccount.getAccountNumber()) ? true : false;
+            } else {
+                throw new IllegalStateException(INCONSISTENT_STATE_ERROR_MESSAGE);
+            }
+        } else {
+            return true;
+        }
+    }
+
+    /**
+     * Web interface update operation.
+     * @param personAccount
+     */
     @Transactional
     public void update(PersonAccount personAccount) {
-        sqlSession().update(MAPPING_NAMESPACE + ".updateAccountNumber", personAccount);
+        updateAccountNumber(personAccount, sqlSession());
     }
 
     private void updateAccountNumber(PersonAccount account, SqlSession session) {
