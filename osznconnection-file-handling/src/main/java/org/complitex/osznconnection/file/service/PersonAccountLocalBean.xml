@@ -10,12 +10,12 @@
         <result property="city" column="city"/>
         <result property="streetType" column="street_type"/>
         <result property="street" column="street"/>
-        <result property="buildingNumber" column="building_number"/>
+        <result property="buildingNumber" column="building_num"/>
         <result property="buildingCorp" column="building_corp"/>
         <result property="apartment" column="apartment"/>
         <result property="accountNumber" column="account_number"/>
         <result property="osznId" column="oszn_id"/>
-        <result property="calculationCenterId" column="calculation_center_id"/>
+        <result property="calculationCenterId" column="calc_center_id"/>
         <result property="oszn" column="oszn"/>
         <result property="calculationCenter" column="calculation_center"/>
     </resultMap>

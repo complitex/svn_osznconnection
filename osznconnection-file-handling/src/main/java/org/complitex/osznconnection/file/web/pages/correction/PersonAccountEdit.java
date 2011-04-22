@@ -8,10 +8,11 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import javax.ejb.EJB;
 import org.apache.wicket.PageParameters;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.authorization.UnauthorizedInstantiationException;
 import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.Link;
@@ -75,6 +76,23 @@ public final class PersonAccountEdit extends FormTemplatePage {
         }
     }
 
+    private boolean validate() {
+        boolean valid = false;
+        try {
+            valid = personAccountLocalBean.validate(personAccount);
+            if (!valid) {
+                error(getString("more_one_person_error"));
+            }
+        } catch (IllegalStateException e) {
+            log.error("", e);
+            error(getString("inconsistent_error"));
+        } catch (Exception e) {
+            error(getString("db_error"));
+            log.error("", e);
+        }
+        return valid;
+    }
+
     private void delete() {
         try {
             personAccountLocalBean.delete(personAccount);
@@ -100,7 +118,8 @@ public final class PersonAccountEdit extends FormTemplatePage {
         add(new Label("title", labelModel));
         add(new Label("label", labelModel));
 
-        FeedbackPanel messages = new FeedbackPanel("messages");
+        final FeedbackPanel messages = new FeedbackPanel("messages");
+        messages.setOutputMarkupId(true);
         add(messages);
 
         final IModel<PersonAccount> model = new CompoundPropertyModel<PersonAccount>(personAccount);
@@ -186,15 +205,24 @@ public final class PersonAccountEdit extends FormTemplatePage {
         form.add(calculationCenter);
 
         //save-cancel functional
-        Button submit = new Button("submit") {
+        AjaxButton submit = new AjaxButton("submit", form) {
 
             @Override
-            public void onSubmit() {
-                saveOrUpdate();
+            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                if (PersonAccountEdit.this.validate()) {
+                    saveOrUpdate();
+                } else {
+                    target.addComponent(messages);
+                }
+            }
+
+            @Override
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
+                target.addComponent(messages);
             }
         };
         form.add(submit);
-        Link cancel = new Link("cancel") {
+        Link<Void> cancel = new Link<Void>("cancel") {
 
             @Override
             public void onClick() {
