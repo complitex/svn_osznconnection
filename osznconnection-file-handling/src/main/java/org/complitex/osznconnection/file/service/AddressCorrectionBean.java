@@ -79,12 +79,10 @@ public class AddressCorrectionBean extends CorrectionBean {
      * @return
      */
     @Transactional
-    public List<StreetCorrection> findStreetLocalCorrections(Long parentId, Long streetTypeCorrectionId, String street, String streetCode,
-            long organizationId) {
+    public List<StreetCorrection> findStreetLocalCorrections(Long parentId, Long streetTypeCorrectionId, String street, long organizationId) {
         Map<String, Object> params = Maps.newHashMap();
         params.put("parentId", parentId);
         params.put("correction", street);
-        params.put("code", streetCode);
         params.put("streetTypeCorrectionId", streetTypeCorrectionId);
         params.put("organizationId", organizationId);
         return sqlSession().selectList(ADDRESS_BEAN_MAPPING_NAMESPACE + ".findStreetLocalCorrections", params);
@@ -257,8 +255,7 @@ public class AddressCorrectionBean extends CorrectionBean {
     }
 
     public StreetCorrection createStreetCorrection(String street, String streetCode, Long streetTypeCorrectionId,
-            long cityCorrectionId,
-            long streetObjectId, long organizationId, long internalOrganizationId) {
+            long cityCorrectionId, long streetObjectId, long organizationId, long internalOrganizationId) {
         StreetCorrection correction = new StreetCorrection();
         correction.setParentId(cityCorrectionId);
         correction.setCorrection(street);
@@ -271,8 +268,7 @@ public class AddressCorrectionBean extends CorrectionBean {
     }
 
     public BuildingCorrection createBuildingCorrection(String number, String corp, long streetCorrectionId,
-            long buildingObjectId, long organizationId,
-            long internalOrganizationId) {
+            long buildingObjectId, long organizationId, long internalOrganizationId) {
         BuildingCorrection correction = new BuildingCorrection();
         correction.setParentId(streetCorrectionId);
         correction.setCorrection(number);
@@ -299,8 +295,7 @@ public class AddressCorrectionBean extends CorrectionBean {
     }
 
     public void insertStreetCorrection(String street, String streetCode, Long streetTypeCorrectionId,
-            long cityCorrectionId, long streetObjectId, long organizationId,
-            long internalOrganizationId) {
+            long cityCorrectionId, long streetObjectId, long organizationId, long internalOrganizationId) {
         insertStreet(createStreetCorrection(street, streetCode, streetTypeCorrectionId, cityCorrectionId, streetObjectId,
                 organizationId, internalOrganizationId));
     }
