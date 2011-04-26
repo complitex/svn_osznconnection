@@ -99,7 +99,7 @@ public class AddressCorrectionEdit extends FormTemplatePage {
             SearchComponentState componentState = new SearchComponentState();
             if (!isNew()) {
                 long objectId = correction.getObjectId();
-                Strategy.RestrictedObjectInfo info = getStrategy(entity).findParentInSearchComponent(objectId, null);
+                Strategy.SimpleObjectInfo info = getStrategy(entity).findParentInSearchComponent(objectId, null);
                 if (info != null) {
                     componentState = getStrategy(entity).getSearchComponentStateForParent(info.getId(), info.getEntityTable(), null);
                     componentState.put(entity, findObject(objectId, entity));
