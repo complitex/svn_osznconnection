@@ -1,5 +1,6 @@
 package org.complitex.osznconnection.file.entity;
 
+import org.complitex.dictionary.entity.IExecutorObject;
 import org.complitex.dictionary.entity.ILoggable;
 import org.complitex.dictionary.entity.LogChangeList;
 import org.complitex.dictionary.util.DateUtil;
@@ -13,7 +14,7 @@ import java.util.List;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 29.09.2010 14:31:02
  */
-public class RequestFileGroup implements ILoggable{
+public class RequestFileGroup implements IExecutorObject{
     public final static String TABLE = "request_file_group";
 
     private Long id;

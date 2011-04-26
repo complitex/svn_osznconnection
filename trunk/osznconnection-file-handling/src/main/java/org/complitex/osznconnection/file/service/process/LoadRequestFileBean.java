@@ -141,7 +141,6 @@ public class LoadRequestFileBean {
             }
 
             //Загрузка завершена
-            requestFile.setLoaded(DateUtil.getCurrentDate());
             requestFile.setLoadedRecordCount(index + 1);
             requestFileBean.save(requestFile);
         }catch (Exception e) {

@@ -2,6 +2,7 @@ package org.complitex.osznconnection.file.service.process;
 
 import com.linuxense.javadbf.DBFField;
 import com.linuxense.javadbf.DBFWriter;
+import org.complitex.dictionary.entity.IExecutorObject;
 import org.complitex.dictionary.entity.Log;
 import org.complitex.dictionary.service.executor.ExecuteException;
 import org.complitex.dictionary.service.executor.ITaskBean;
@@ -26,7 +27,7 @@ import java.util.List;
  * Date: 20.01.11 23:40
  */
 @Stateless(name = "ActualPaymentSaveTaskBean")
-public class ActualPaymentSaveTaskBean implements ITaskBean<RequestFile> {
+public class ActualPaymentSaveTaskBean implements ITaskBean {
     private static final Logger log = LoggerFactory.getLogger(ActualPaymentSaveTaskBean.class);
 
     @EJB(beanName = "RequestFileBean")
@@ -36,8 +37,10 @@ public class ActualPaymentSaveTaskBean implements ITaskBean<RequestFile> {
     private ActualPaymentBean actualPaymentBean;
 
     @Override
-    public boolean execute(RequestFile requestFile) throws ExecuteException {
-         requestFile.setStatus(requestFileBean.getRequestFileStatus(requestFile)); //обновляем статус из базы данных
+    public boolean execute(IExecutorObject executorObject) throws ExecuteException {
+        RequestFile requestFile = (RequestFile) executorObject;
+
+        requestFile.setStatus(requestFileBean.getRequestFileStatus(requestFile)); //обновляем статус из базы данных
 
         if (requestFile.isProcessing()){ //проверяем что не обрабатывается в данный момент
             throw new SaveException(new AlreadyProcessingException(requestFile), true, requestFile);
@@ -56,7 +59,9 @@ public class ActualPaymentSaveTaskBean implements ITaskBean<RequestFile> {
     }
 
     @Override
-    public void onError(RequestFile requestFile) {
+    public void onError(IExecutorObject executorObject) {
+        RequestFile requestFile = (RequestFile) executorObject;
+
         requestFile.setStatus(RequestFileStatus.SAVE_ERROR);
         requestFileBean.save(requestFile);
     }

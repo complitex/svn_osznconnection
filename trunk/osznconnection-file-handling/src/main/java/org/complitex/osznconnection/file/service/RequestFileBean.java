@@ -30,12 +30,10 @@ public class RequestFileBean extends AbstractBean {
     @EJB
     private OsznSessionBean osznSessionBean;
 
-    @Transactional
     public RequestFile findById(long fileId) {
         return (RequestFile) sqlSession().selectOne(MAPPING_NAMESPACE + ".findById", fileId);
     }
 
-    @Transactional
     @SuppressWarnings({"unchecked"})
     public List<RequestFile> getRequestFiles(RequestFileFilter filter){
         filter.setAdmin(osznSessionBean.isAdmin());
@@ -44,7 +42,6 @@ public class RequestFileBean extends AbstractBean {
         return sqlSession().selectList(MAPPING_NAMESPACE + ".selectRequestFiles", filter);
     }
 
-    @Transactional
     public int size(RequestFileFilter filter){
         filter.setAdmin(osznSessionBean.isAdmin());
         filter.setOrganizations(osznSessionBean.getAllOuterOrganizationString());
@@ -52,7 +49,6 @@ public class RequestFileBean extends AbstractBean {
         return (Integer) sqlSession().selectOne(MAPPING_NAMESPACE + ".selectRequestFilesCount", filter);
     }
 
-    @Transactional
     public void save(RequestFile requestFile){
         if (requestFile.getId() == null){
             sqlSession().insert(MAPPING_NAMESPACE + ".insertRequestFile", requestFile);

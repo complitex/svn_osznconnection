@@ -1,6 +1,7 @@
 package org.complitex.osznconnection.file.service.process;
 
 import com.google.common.collect.Lists;
+import org.complitex.dictionary.entity.IExecutorObject;
 import org.complitex.dictionary.entity.Log;
 import org.complitex.dictionary.service.ConfigBean;
 import org.complitex.dictionary.service.executor.ExecuteException;
@@ -31,7 +32,7 @@ import java.util.List;
  */
 @Stateless(name = "BindTaskBean")
 @TransactionManagement(TransactionManagementType.BEAN)
-public class BindTaskBean implements ITaskBean<RequestFileGroup> {
+public class BindTaskBean implements ITaskBean{
 
     private static final Logger log = LoggerFactory.getLogger(BindTaskBean.class);
     @Resource
@@ -52,7 +53,9 @@ public class BindTaskBean implements ITaskBean<RequestFileGroup> {
     private RequestFileGroupBean requestFileGroupBean;
 
     @Override
-    public boolean execute(RequestFileGroup group) throws ExecuteException {
+    public boolean execute(IExecutorObject executorObject) throws ExecuteException {
+        RequestFileGroup group = (RequestFileGroup) executorObject;
+
         group.setStatus(requestFileGroupBean.getRequestFileStatus(group)); //обновляем статус из базы данных
 
         if (group.isProcessing()){ //проверяем что не обрабатывается в данный момент
@@ -95,7 +98,9 @@ public class BindTaskBean implements ITaskBean<RequestFileGroup> {
     }
 
     @Override
-    public void onError(RequestFileGroup group) {
+   public void onError(IExecutorObject executorObject) {
+        RequestFileGroup group = (RequestFileGroup) executorObject;
+
         group.setStatus(RequestFileStatus.BIND_ERROR);
         requestFileGroupBean.save(group);
     }

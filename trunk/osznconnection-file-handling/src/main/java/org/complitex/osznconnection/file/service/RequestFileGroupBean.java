@@ -41,6 +41,10 @@ public class RequestFileGroupBean extends AbstractBean{
         return (Integer)sqlSession().selectOne(MAPPING_NAMESPACE + ".selectRequestFilesGroupsCount", filter);
     }
 
+    public RequestFileGroup getRequestFileGroup(Long id){
+        return (RequestFileGroup) sqlSession().selectOne(MAPPING_NAMESPACE + ".selectRequestFilesGroup", id);
+    }
+
     public void delete(RequestFileGroup requestFileGroup) {
         if (requestFileGroup.getBenefitFile() != null){
             requestFileBean.delete(requestFileGroup.getBenefitFile());

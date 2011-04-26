@@ -1,5 +1,6 @@
 package org.complitex.osznconnection.file.service.process;
 
+import org.complitex.dictionary.entity.IExecutorObject;
 import org.complitex.dictionary.entity.Log;
 import org.complitex.dictionary.service.SessionBean;
 import org.complitex.dictionary.service.executor.ExecuteException;
@@ -24,7 +25,7 @@ import java.util.List;
  */
 @Stateless(name = "LoadTarifTaskBean")
 @TransactionManagement(TransactionManagementType.BEAN)
-public class LoadTarifTaskBean implements ITaskBean<RequestFile>{
+public class LoadTarifTaskBean implements ITaskBean{
     @EJB(beanName = "RequestFileBean")
     private RequestFileBean requestFileBean;
 
@@ -38,7 +39,9 @@ public class LoadTarifTaskBean implements ITaskBean<RequestFile>{
     private SessionBean sessionBean;
 
     @Override
-    public boolean execute(RequestFile requestFile) throws ExecuteException {
+    public boolean execute(IExecutorObject executorObject) throws ExecuteException {
+        RequestFile requestFile = (RequestFile) executorObject;
+
         //delete previous tarif
         requestFileBean.deleteTarif(requestFile.getOrganizationId());
 
@@ -64,7 +67,9 @@ public class LoadTarifTaskBean implements ITaskBean<RequestFile>{
     }
 
     @Override
-    public void onError(RequestFile requestFile) {
+    public void onError(IExecutorObject executorObject) {
+        RequestFile requestFile = (RequestFile) executorObject;
+
         requestFileBean.delete(requestFile);
     }
 

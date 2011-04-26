@@ -35,6 +35,7 @@ import org.complitex.dictionary.util.StringUtil;
 import org.complitex.dictionary.web.component.*;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
+import org.complitex.osznconnection.file.service.process.ProcessType;
 import org.complitex.template.web.component.toolbar.ToolbarButton;
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.TemplatePage;
@@ -53,7 +54,7 @@ import javax.ejb.EJB;
 import java.util.*;
 import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
 
-import static org.complitex.osznconnection.file.service.process.ProcessManagerBean.TYPE.TARIF;
+import static org.complitex.osznconnection.file.service.process.ProcessType.LOAD_TARIF;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -347,17 +348,17 @@ public class TarifFileList extends TemplatePage {
                         processManagerBean.loadTarif(organizationId, districtCode, monthFrom, monthTo, year);
                         addTimer(dataViewContainer, filterForm, messages);
                     }
-                }, TARIF);
+                }, false);
 
         add(requestFileLoadPanel);
     }
 
     private boolean isProcessing() {
-        return processManagerBean.isProcessing(TARIF);
+        return processManagerBean.isProcessing(LOAD_TARIF);
     }
 
     private boolean isLoading(RequestFile requestFile){
-        return processManagerBean.isProcessing(TARIF)
+        return processManagerBean.isProcessing(LOAD_TARIF)
                 && requestFile.getLoadedRecordCount() < requestFile.getDbfRecordCount();
     }
 
@@ -367,7 +368,7 @@ public class TarifFileList extends TemplatePage {
     }
 
     private boolean isLoadError(RequestFile requestFile){
-        return !processManagerBean.isProcessing(TARIF) && !isLoaded(requestFile);
+        return !processManagerBean.isProcessing(LOAD_TARIF) && !isLoaded(requestFile);
     }
 
     private void showMessages() {
@@ -376,7 +377,7 @@ public class TarifFileList extends TemplatePage {
     }
 
     private void showMessages(AjaxRequestTarget target) {
-        List<RequestFile> list = processManagerBean.getProcessed(TARIF, TarifFileList.class);
+        List<RequestFile> list = processManagerBean.getProcessed(LOAD_TARIF, TarifFileList.class);
 
         for (RequestFile rf : list){
 
@@ -390,17 +391,17 @@ public class TarifFileList extends TemplatePage {
         }
 
         //Process completed
-        if (processManagerBean.isCompleted(TARIF) && !completedDisplayed) {
-            info(getStringFormat("process.done", processManagerBean.getSuccessCount(TARIF),
-                    processManagerBean.getSkippedCount(TARIF), processManagerBean.getErrorCount(TARIF)));
+        if (processManagerBean.isCompleted(LOAD_TARIF) && !completedDisplayed) {
+            info(getStringFormat("process.done", processManagerBean.getSuccessCount(LOAD_TARIF),
+                    processManagerBean.getSkippedCount(LOAD_TARIF), processManagerBean.getErrorCount(LOAD_TARIF)));
 
             completedDisplayed = true;
         }
 
         //Process error
-        if (processManagerBean.isCriticalError(TARIF) && !completedDisplayed) {
-            error(getStringFormat("process.critical_error", processManagerBean.getSuccessCount(TARIF),
-                    processManagerBean.getSkippedCount(TARIF), processManagerBean.getErrorCount(TARIF)));
+        if (processManagerBean.isCriticalError(LOAD_TARIF) && !completedDisplayed) {
+            error(getStringFormat("process.critical_error", processManagerBean.getSuccessCount(LOAD_TARIF),
+                    processManagerBean.getSkippedCount(LOAD_TARIF), processManagerBean.getErrorCount(LOAD_TARIF)));
 
             completedDisplayed = true;
         }
@@ -444,8 +445,8 @@ public class TarifFileList extends TemplatePage {
     private void addTimer(WebMarkupContainer dataViewContainer, Form<?> filterForm, AjaxFeedbackPanel messages) {
         boolean needCreateNewTimer = true;
 
-        List<AjaxSelfUpdatingTimerBehavior> timers = null;
-        timers = Lists.newArrayList(Iterables.filter(dataViewContainer.getBehaviors(), AjaxSelfUpdatingTimerBehavior.class));
+        List<AjaxSelfUpdatingTimerBehavior> timers = Lists.newArrayList(Iterables.filter(dataViewContainer.getBehaviors(),
+                AjaxSelfUpdatingTimerBehavior.class));
         if (timers != null && !timers.isEmpty()) {
             for (AjaxSelfUpdatingTimerBehavior timer : timers) {
                 if (!timer.isStopped()) {

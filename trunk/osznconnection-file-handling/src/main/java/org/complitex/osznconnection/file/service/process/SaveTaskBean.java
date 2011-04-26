@@ -2,6 +2,7 @@ package org.complitex.osznconnection.file.service.process;
 
 import com.linuxense.javadbf.DBFField;
 import com.linuxense.javadbf.DBFWriter;
+import org.complitex.dictionary.entity.IExecutorObject;
 import org.complitex.dictionary.entity.Log;
 import org.complitex.dictionary.service.executor.ExecuteException;
 import org.complitex.dictionary.service.executor.ITaskBean;
@@ -28,7 +29,7 @@ import java.util.List;
  *         Date: 01.11.10 12:58
  */
 @Stateless(name = "SaveTaskBean")
-public class SaveTaskBean implements ITaskBean<RequestFileGroup>{
+public class SaveTaskBean implements ITaskBean{
     private static final Logger log = LoggerFactory.getLogger(SaveTaskBean.class);
 
     @EJB(beanName = "PaymentBean")
@@ -41,7 +42,9 @@ public class SaveTaskBean implements ITaskBean<RequestFileGroup>{
     private RequestFileGroupBean requestFileGroupBean;
 
     @Override
-    public boolean execute(RequestFileGroup group) throws ExecuteException {
+    public boolean execute(IExecutorObject executorObject) throws ExecuteException {
+        RequestFileGroup group = (RequestFileGroup) executorObject;
+
         group.setStatus(requestFileGroupBean.getRequestFileStatus(group)); //обновляем статус из базы данных
 
         if (group.isProcessing()){ //проверяем что не обрабатывается в данный момент
@@ -62,7 +65,9 @@ public class SaveTaskBean implements ITaskBean<RequestFileGroup>{
     }
 
     @Override
-    public void onError(RequestFileGroup group) {
+    public void onError(IExecutorObject executorObject) {
+        RequestFileGroup group = (RequestFileGroup) executorObject;
+
         group.setStatus(RequestFileStatus.SAVE_ERROR);
         requestFileGroupBean.save(group);
     }

@@ -1,5 +1,6 @@
 package org.complitex.osznconnection.file.service.process;
 
+import org.complitex.dictionary.entity.IExecutorObject;
 import org.complitex.dictionary.entity.Log;
 import org.complitex.dictionary.service.SessionBean;
 import org.complitex.dictionary.service.executor.ExecuteException;
@@ -25,7 +26,7 @@ import java.util.List;
  */
 @Stateless(name = "LoadGroupTaskBean")
 @TransactionManagement(TransactionManagementType.BEAN)
-public class LoadGroupTaskBean implements ITaskBean<RequestFileGroup>{
+public class LoadGroupTaskBean implements ITaskBean{
     private static final Logger log = LoggerFactory.getLogger(LoadGroupTaskBean.class);
 
     @EJB(beanName = "PaymentBean")
@@ -43,11 +44,10 @@ public class LoadGroupTaskBean implements ITaskBean<RequestFileGroup>{
     @EJB(beanName = "LoadRequestFileBean")
     private LoadRequestFileBean loadRequestFileBean;
 
-    @EJB
-    private SessionBean sessionBean;
-
     @Override
-    public boolean execute(RequestFileGroup group) throws ExecuteException {
+    public boolean execute(IExecutorObject executorObject) throws ExecuteException {
+        RequestFileGroup group = (RequestFileGroup) executorObject;
+
         group.setStatus(RequestFileStatus.LOADING);
 
         requestFileGroupBean.save(group);
@@ -111,7 +111,9 @@ public class LoadGroupTaskBean implements ITaskBean<RequestFileGroup>{
     }
 
     @Override
-    public void onError(RequestFileGroup group) {
+    public void onError(IExecutorObject executorObject) {
+        RequestFileGroup group = (RequestFileGroup) executorObject;
+
         requestFileGroupBean.delete(group);
     }
 

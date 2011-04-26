@@ -1,6 +1,7 @@
 package org.complitex.osznconnection.file.service.process;
 
 import com.google.common.collect.ImmutableSet;
+import org.complitex.dictionary.entity.IExecutorObject;
 import org.complitex.dictionary.util.DateUtil;
 import org.complitex.dictionary.util.ResourceUtil;
 import org.complitex.osznconnection.file.entity.AbstractRequest;
@@ -36,12 +37,14 @@ public class SaveUtil {
     private final static Set<RequestStatus> NOT_REPORTABLE_STATUSES = ImmutableSet.of(RequestStatus.PROCESSED,
             RequestStatus.ACCOUNT_NUMBER_RESOLVED, RequestStatus.ADDRESS_CORRECTED);
 
-    public static void createResult(List<RequestFileGroup> processed, IWarningRenderer warningRenderer)
+    public static void createResult(List<IExecutorObject> processed, IWarningRenderer warningRenderer)
             throws StorageNotFoundException {
         Map<String, List<RequestFileGroup>> catalog = new HashMap<String, List<RequestFileGroup>>();
 
         //sort groups by directory
-        for (RequestFileGroup group : processed) {
+        for (IExecutorObject object : processed) {
+            RequestFileGroup group = (RequestFileGroup) object;
+
             List<RequestFileGroup> list = catalog.get(group.getDirectory());
 
             if (list == null) {
