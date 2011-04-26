@@ -15,7 +15,6 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.entity.example.DomainObjectExample;
-import org.complitex.dictionary.strategy.Strategy;
 import org.complitex.dictionary.strategy.StrategyFactory;
 import org.complitex.dictionary.web.component.search.ISearchCallback;
 import org.complitex.dictionary.web.component.search.SearchComponent;
@@ -37,6 +36,7 @@ import java.util.Map;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.strategy.IStrategy;
+import org.complitex.dictionary.strategy.IStrategy.SimpleObjectInfo;
 import org.complitex.dictionary.web.component.ShowMode;
 import org.complitex.osznconnection.file.entity.StreetCorrection;
 import org.complitex.osznconnection.file.web.component.correction.edit.AddressCorrectionInputPanel;
@@ -99,7 +99,7 @@ public class AddressCorrectionEdit extends FormTemplatePage {
             SearchComponentState componentState = new SearchComponentState();
             if (!isNew()) {
                 long objectId = correction.getObjectId();
-                Strategy.SimpleObjectInfo info = getStrategy(entity).findParentInSearchComponent(objectId, null);
+                SimpleObjectInfo info = getStrategy(entity).findParentInSearchComponent(objectId, null);
                 if (info != null) {
                     componentState = getStrategy(entity).getSearchComponentStateForParent(info.getId(), info.getEntityTable(), null);
                     componentState.put(entity, findObject(objectId, entity));
