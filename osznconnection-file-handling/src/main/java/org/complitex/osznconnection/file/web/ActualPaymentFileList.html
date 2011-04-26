@@ -46,7 +46,7 @@
                     </th>
                 </tr>
                 <tr>
-                    <th><input id="select" type="checkbox" onclick="selectAll(this)"></th>
+                    <th><input wicket:id="select_all" type="checkbox" onclick="selectAll(this)"></th>
                     <th><input type="text" wicket:id="id"/></th>
                     <th class="center">
                         <div style="width:102px">
@@ -67,10 +67,11 @@
                 </tr>
                 </thead>
                 <tbody wicket:id="request_files_container">
-                <tr wicket:id="request_files">
+                <tr wicket:id="request_files" style="height:28px">
                     <td>
                         <input class="select" type="checkbox" wicket:id="selected"/>
                         <img wicket:id="processing" align="top"/>
+                        <img wicket:id="waiting" align="top"/>
                     </td>
                     <td><span wicket:id="id"></span></td>
                     <td><span wicket:id="loaded"></span></td>
@@ -92,12 +93,23 @@
             <div wicket:id="paging"></div>
 
             <div align="right" style="margin-top:10px;">
-                <input type="submit" class="btnBig" wicket:id="bind" wicket:message="value:bind"/>
-                <input type="submit" class="btnBig" wicket:id="process" wicket:message="value:process"/>
-                <input type="submit" class="btnBig" wicket:id="save" wicket:message="value:save"/>
-                <input type="submit" class="btnMiddle" wicket:id="delete" wicket:message="value:delete"
-                       onclick="return confirm('Удалить выбранные файлы?');"/>
-                <input type="submit" class="btnBig" wicket:id="cancel" wicket:message="value:cancel"/>
+                 <table wicket:id="buttons">
+                    <tr>
+                        <td><input type="submit" class="btnMiddle" wicket:id="load" wicket:message="value:load"/></td>
+                        <td><input type="submit" class="btnMiddle" wicket:id="bind" wicket:message="value:bind"/></td>
+                        <td><input type="submit" class="btnMiddle" wicket:id="process" wicket:message="value:process"/></td>
+                        <td><input type="submit" class="btnMiddle" wicket:id="save" wicket:message="value:save"/></td>
+                        <td><input type="submit" class="btnMiddle" wicket:id="delete" wicket:message="value:delete"
+                                onclick="return confirm('Удалить выбранные файлы?');"/></td>
+                    </tr>
+                    <tr>
+                        <td><input type="submit" class="btnMiddle" wicket:id="load_cancel" wicket:message="value:cancel"/></td>
+                        <td><input type="submit" class="btnMiddle" wicket:id="bind_cancel" wicket:message="value:cancel"/></td>
+                        <td><input type="submit" class="btnMiddle" wicket:id="fill_cancel" wicket:message="value:cancel"/></td>
+                        <td><input type="submit" class="btnMiddle" wicket:id="save_cancel" wicket:message="value:cancel"/></td>
+                        <td></td>
+                    </tr>
+                </table>
             </div>
         </form>
     </div>

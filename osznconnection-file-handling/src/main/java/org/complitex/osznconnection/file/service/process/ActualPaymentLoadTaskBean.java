@@ -1,5 +1,6 @@
 package org.complitex.osznconnection.file.service.process;
 
+import org.complitex.dictionary.entity.IExecutorObject;
 import org.complitex.dictionary.entity.Log;
 import org.complitex.dictionary.service.SessionBean;
 import org.complitex.dictionary.service.executor.ExecuteException;
@@ -21,7 +22,7 @@ import java.util.List;
  */
 @Stateless(name = "ActualPaymentLoadTaskBean")
 @TransactionManagement(TransactionManagementType.BEAN)
-public class ActualPaymentLoadTaskBean implements ITaskBean<RequestFile> {
+public class ActualPaymentLoadTaskBean implements ITaskBean {
     @EJB(beanName = "RequestFileBean")
     private RequestFileBean requestFileBean;
 
@@ -35,7 +36,9 @@ public class ActualPaymentLoadTaskBean implements ITaskBean<RequestFile> {
     private SessionBean sessionBean;
 
     @Override
-    public boolean execute(RequestFile requestFile) throws ExecuteException {
+    public boolean execute(IExecutorObject executorObject) throws ExecuteException {
+        RequestFile requestFile = (RequestFile) executorObject;
+
         requestFile.setStatus(RequestFileStatus.LOADING);
 
         boolean noSkip = loadRequestFileBean.load(requestFile, new LoadRequestFileBean.ILoadRequestFile() {
@@ -69,7 +72,9 @@ public class ActualPaymentLoadTaskBean implements ITaskBean<RequestFile> {
     }
 
     @Override
-    public void onError(RequestFile requestFile) {
+    public void onError(IExecutorObject executorObject) {
+        RequestFile requestFile = (RequestFile) executorObject;
+
         requestFileBean.delete(requestFile);
     }
 

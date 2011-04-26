@@ -6,6 +6,7 @@ import org.apache.wicket.PageParameters;
 import org.apache.wicket.ResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.datetime.markup.html.basic.DateLabel;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
@@ -29,6 +30,7 @@ import org.complitex.dictionary.util.DateUtil;
 import org.complitex.dictionary.util.StringUtil;
 import org.complitex.dictionary.web.component.*;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
+import org.complitex.dictionary.web.component.paging.IPagingNavigatorListener;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
 import org.complitex.dictionary.web.component.scroll.ScrollListBehavior;
 import org.complitex.osznconnection.file.Module;
@@ -38,7 +40,9 @@ import org.complitex.osznconnection.file.entity.RequestFileGroup;
 import org.complitex.osznconnection.file.entity.RequestFileStatus;
 import org.complitex.osznconnection.file.service.RequestFileBean;
 import org.complitex.osznconnection.file.service.process.ProcessManagerBean;
+import org.complitex.osznconnection.file.service.process.ProcessType;
 import org.complitex.osznconnection.file.web.component.LoadButton;
+import org.complitex.osznconnection.file.web.component.ReuseIfLongIdEqualStrategy;
 import org.complitex.osznconnection.file.web.pages.actualpayment.ActualPaymentList;
 import org.complitex.resources.WebCommonResourceInitializer;
 import org.complitex.template.web.component.toolbar.ToolbarButton;
@@ -51,7 +55,7 @@ import java.util.*;
 import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
 import org.complitex.template.web.pages.ScrollListPage;
 
-import static org.complitex.osznconnection.file.service.process.ProcessManagerBean.TYPE.ACTUAL_PAYMENT;
+import static org.complitex.osznconnection.file.service.process.ProcessType.*;
 
 /**
  * User: Anatoly A. Ivanov java@inhell.ru
@@ -62,6 +66,7 @@ public class ActualPaymentFileList extends ScrollListPage {
     private static final Logger log = LoggerFactory.getLogger(ActualPaymentFileList.class);
 
     private final static String IMAGE_AJAX_LOADER = "images/ajax-loader2.gif";
+    private final static String IMAGE_AJAX_WAITING = "images/ajax-waiting.gif";
 
     @EJB
     private RequestFileBean requestFileBean;
@@ -77,11 +82,15 @@ public class ActualPaymentFileList extends ScrollListPage {
 
     private int waitForStopTimer;
     private int timerIndex = 0;
-    private boolean completedDisplayed = false;
+    private Map<ProcessType, Boolean> completedDisplayed = new HashMap<ProcessType, Boolean>();
 
     private final static String ITEM_ID_PREFIX = "item";
 
     private RequestFileLoadPanel requestFileLoadPanel;
+    private WebMarkupContainer buttonContainer;
+    private PagingNavigator pagingNavigator;
+
+    private Map<Long, IModel<Boolean>> selectModels;
 
     public ActualPaymentFileList(PageParameters parameters) {
         super(parameters);
@@ -93,7 +102,7 @@ public class ActualPaymentFileList extends ScrollListPage {
         init(null);
     }
 
-    private void init(Long requestFileId) {
+    private void init(Long filterRequestFileId) {
         add(JavascriptPackageResource.getHeaderContribution(WebCommonResourceInitializer.HIGHLIGHT_JS));
 
         add(new Label("title", getString("title")));
@@ -111,7 +120,7 @@ public class ActualPaymentFileList extends ScrollListPage {
             setFilterObject(filterObject);
         }
 
-        filterObject.setId(requestFileId);
+        filterObject.setId(filterRequestFileId);
 
         final IModel<RequestFileFilter> filterModel = new CompoundPropertyModel<RequestFileFilter>(filterObject);
 
@@ -133,6 +142,19 @@ public class ActualPaymentFileList extends ScrollListPage {
             }
         };
         filterForm.add(filter_reset);
+
+        //Select all checkbox
+        filterForm.add(new CheckBox("select_all", new Model<Boolean>(false)){
+            @Override
+            public boolean isEnabled() {
+                return !isProcessing();
+            }
+
+            @Override
+            public void updateModel() {
+                //skip update model
+            }
+        });
 
         //Id
         filterForm.add(new TextField<String>("id"));
@@ -192,7 +214,7 @@ public class ActualPaymentFileList extends ScrollListPage {
                 }));
 
         //Модель выбранных элементов списка
-        final Map<RequestFile, IModel<Boolean>> selectModels = new HashMap<RequestFile, IModel<Boolean>>();
+        selectModels = new HashMap<Long, IModel<Boolean>>();
 
         //Модель данных списка
         final SortableDataProvider<RequestFile> dataProvider = new SortableDataProvider<RequestFile>() {
@@ -214,9 +236,10 @@ public class ActualPaymentFileList extends ScrollListPage {
 
                 List<RequestFile> requestFiles = requestFileBean.getRequestFiles(filter);
 
-                selectModels.clear();
                 for (RequestFile rf : requestFiles) {
-                    selectModels.put(rf, new Model<Boolean>(false));
+                    if (selectModels.get(rf.getId()) == null) {
+                        selectModels.put(rf.getId(), new Model<Boolean>(false));
+                    }
                 }
 
                 return requestFiles.iterator();
@@ -232,7 +255,7 @@ public class ActualPaymentFileList extends ScrollListPage {
                 return new Model<RequestFile>(object);
             }
         };
-        dataProvider.setSort(getSortProperty("loaded"), getSortOrder(false));
+        dataProvider.setSort(getSortProperty("id"), getSortOrder(false));
 
         //Контейнер для ajax
         final WebMarkupContainer dataViewContainer = new WebMarkupContainer("request_files_container");
@@ -243,57 +266,115 @@ public class ActualPaymentFileList extends ScrollListPage {
         final DataView<RequestFile> dataView = new DataView<RequestFile>("request_files", dataProvider, 1) {
 
             @Override
-            protected void populateItem(Item<RequestFile> item) {
-                RequestFile rf = item.getModelObject();
+            protected void populateItem(final Item<RequestFile> item) {
+                Long requestFileId = item.getModelObject().getId();
 
                 item.setOutputMarkupId(true);
-                item.setMarkupId(ITEM_ID_PREFIX + rf.getId());
+                item.setMarkupId(ITEM_ID_PREFIX + requestFileId);
 
-                CheckBox checkBox = new CheckBox("selected", selectModels.get(rf));
-                checkBox.setVisible(!rf.isProcessing() || !isProcessing());
-                checkBox.setEnabled(!isProcessing());
+               //Выбор файлов
+                CheckBox checkBox = new CheckBox("selected", selectModels.get(requestFileId)){
+                    @Override
+                    public boolean isVisible() {
+                        RequestFile requestFile = item.getModelObject();
+                        return (!requestFile.isProcessing() && !isWaiting(requestFile)) || !isProcessing();
+                    }
+
+                    @Override
+                    public boolean isEnabled() {
+                        return !isWaiting(item.getModelObject());
+                    }
+                };
+
+                checkBox.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+                    @Override
+                    protected void onUpdate(AjaxRequestTarget target) {
+                        //update form component model
+                    }
+                });
+                checkBox.setMarkupId("select" + requestFileId);
+                checkBox.setOutputMarkupPlaceholderTag(true);
                 item.add(checkBox);
 
-                Image processing = new Image("processing", new ResourceReference(IMAGE_AJAX_LOADER));
-                processing.setVisible(rf.isProcessing());
-                item.add(processing);
+                //Анимация в обработке
+                item.add(new Image("processing", new ResourceReference(IMAGE_AJAX_LOADER)){
+                    @Override
+                    public boolean isVisible() {
+                        return item.getModelObject().isProcessing();
+                    }
+                });
 
-                item.add(new Label("id", StringUtil.valueOf(rf.getId())));
+                //Анимация ожидание
+                Image waiting = new Image("waiting", new ResourceReference(IMAGE_AJAX_WAITING)){
+                    @Override
+                    public boolean isVisible() {
+                        return isWaiting(item.getModelObject()) && !item.getModelObject().isProcessing();
+                    }
+                };
+                item.add(waiting);
 
-                item.add(DateLabel.forDatePattern("loaded", new Model<Date>(rf.getLoaded()), "dd.MM.yy HH:mm:ss"));
-                item.add(new BookmarkablePageLinkPanel<RequestFile>("name", rf.getFullName(),
-                        ScrollListBehavior.SCROLL_PREFIX+String.valueOf(rf.getId()), ActualPaymentList.class,
-                        new PageParameters("request_file_id=" + rf.getId())));
+                //Идентификатор файла
+                item.add(new Label("id", StringUtil.valueOf(requestFileId)));
 
-                DomainObject domainObject = organizationStrategy.findById(rf.getOrganizationId(), true);
+               //Дата загрузки
+                item.add(DateLabel.forDatePattern("loaded", new Model<Date>(item.getModelObject().getLoaded()),
+                        DateUtil.isCurrentDay(item.getModelObject().getLoaded()) ? "HH:mm:ss" : "dd.MM.yy HH:mm:ss"));
+
+                //Организация
+                DomainObject domainObject = organizationStrategy.findById(item.getModelObject().getOrganizationId(), true);
                 String organization = organizationStrategy.displayDomainObject(domainObject, getLocale());
                 item.add(new Label("organization", organization));
 
-                item.add(new Label("month", DateUtil.displayMonth(rf.getMonth(), getLocale())));
-                item.add(new Label("year", StringUtil.valueOf(rf.getYear())));
+                item.add(new Label("month", DateUtil.displayMonth(item.getModelObject().getMonth(), getLocale())));
+                item.add(new Label("year", StringUtil.valueOf(item.getModelObject().getYear())));
 
-                 //loaded, binding filled count
-                item.add(new Label("loaded_record_count", StringUtil.valueOf(rf.getLoadedRecordCount())));
-                item.add(new Label("binded_record_count", StringUtil.valueOf(rf.getBindedRecordCount())));
-                item.add(new Label("filled_record_count", StringUtil.valueOf(rf.getFilledRecordCount())));
+                //Название
+                item.add(new BookmarkablePageLinkPanel<RequestFile>("name", item.getModelObject().getFullName(),
+                        ScrollListBehavior.SCROLL_PREFIX+String.valueOf(item.getModelObject().getId()), ActualPaymentList.class,
+                        new PageParameters("request_file_id=" + item.getModelObject().getId())));
 
-                String dots = "";
-                if (rf.isProcessing()){
-                    if (processManagerBean.isProcessing(ACTUAL_PAYMENT)){
-                        dots += StringUtil.getDots(timerIndex%5);
+                //Количество загруженных записей
+                item.add(new Label("loaded_record_count", new LoadableDetachableModel<String>() {
+                    @Override
+                    protected String load() {
+                        return StringUtil.valueOf(item.getModelObject().getLoadedRecordCount());
                     }
-                }
+                }));
 
-                item.add(new Label("status", getStringOrKey(rf.getStatus()) + dots));
+                //Количество связанных записей
+                item.add(new Label("binded_record_count", new LoadableDetachableModel<String>() {
+                    @Override
+                    protected String load() {
+                        return StringUtil.valueOf(item.getModelObject().getBindedRecordCount());
+                    }
+                }));
+
+                //Количество обработанных записей
+                item.add(new Label("filled_record_count", new LoadableDetachableModel<String>(){
+                    @Override
+                    protected String load() {
+                        return  StringUtil.valueOf(item.getModelObject().getFilledRecordCount());
+                    }
+                }));
+
+                //Статус
+                item.add(new Label("status", new LoadableDetachableModel<String>() {
+                    @Override
+                    protected String load() {
+                        String dots = "";
+                        if (item.getModelObject().isProcessing() && isProcessing()){
+                            dots += StringUtil.getDots(timerIndex%5);
+                        }
+
+                        return getStringOrKey(item.getModelObject().getStatus()) + dots;
+                    }
+                }));
             }
         };
         dataViewContainer.add(dataView);
 
-        showMessages();
-
-        if (isProcessing()) {
-            dataViewContainer.add(newTimer(filterForm, messages));
-        }
+        //Reuse Strategy
+        dataView.setItemReuseStrategy(new ReuseIfLongIdEqualStrategy());
 
         //Сортировка
         filterForm.add(new ArrowOrderByBorder("header.id", "id", dataProvider, dataView, filterForm));
@@ -308,99 +389,80 @@ public class ActualPaymentFileList extends ScrollListPage {
         filterForm.add(new ArrowOrderByBorder("header.status", "status", dataProvider, dataView, filterForm));
 
         //Постраничная навигация
-        filterForm.add(new PagingNavigator("paging", dataView, getClass().getName(), filterForm));
+        pagingNavigator = new PagingNavigator("paging", dataView, getClass().getName(), filterForm);
+        pagingNavigator.addListener(new IPagingNavigatorListener(){ //clear select checkbox model on page change
+
+            @Override
+            public void onChangePage() {
+                clearSelect();
+            }
+        });
+        filterForm.add(pagingNavigator);
+
+         //Контейнер кнопок для ajax
+        buttonContainer = new WebMarkupContainer("buttons");
+        buttonContainer.setOutputMarkupId(true);
+        filterForm.add(buttonContainer);
+
+        //Загрузить
+        buttonContainer.add(new Button("load"){
+            @Override
+            public void onSubmit() {
+                requestFileLoadPanel.open();
+            }
+        });
 
         //Связать
-        Button bind = new Button("bind") {
+        buttonContainer.add(new Button("bind") {
 
             @Override
             public void onSubmit() {
-                List<RequestFile> requestFiles = new ArrayList<RequestFile>();
+                completedDisplayed.put(BIND_ACTUAL_PAYMENT, false);
 
-                for (RequestFile rf : selectModels.keySet()) {
-                    if (selectModels.get(rf).getObject()) {
-                        requestFiles.add(rf);
-                    }
-                }
+                processManagerBean.bindActualPayment(getSelected());
 
-                completedDisplayed = false;
-
-                processManagerBean.bindActualPayment(requestFiles);
-
-                selectModels.clear();
+                clearSelect();
                 addTimer(dataViewContainer, filterForm, messages);
             }
-
-            @Override
-            public boolean isVisible() {
-                return !isProcessing();
-            }
-        };
-        filterForm.add(bind);
+        });
 
         //Обработать
-        Button process = new Button("process") {
+        buttonContainer.add(new Button("process") {
 
             @Override
             public void onSubmit() {
-                List<RequestFile> requestFiles = new ArrayList<RequestFile>();
+                completedDisplayed.put(FILL_ACTUAL_PAYMENT, false);
 
-                for (RequestFile rf : selectModels.keySet()) {
-                    if (selectModels.get(rf).getObject()) {
-                        requestFiles.add(rf);
-                    }
-                }
+                processManagerBean.fillActualPayment(getSelected());
 
-                completedDisplayed = false;
-
-                processManagerBean.fillActualPayment(requestFiles);
-
-                selectModels.clear();
+                clearSelect();
                 addTimer(dataViewContainer, filterForm, messages);
             }
-
-            @Override
-            public boolean isVisible() {
-                return !isProcessing();
-            }
-        };
-        filterForm.add(process);
+        });
 
         //Выгрузить
-        Button save = new Button("save") {
+        buttonContainer.add(new Button("save") {
 
             @Override
             public void onSubmit() {
-                List<RequestFile> requestFiles = new ArrayList<RequestFile>();
+                completedDisplayed.put(SAVE_ACTUAL_PAYMENT, false);
 
-                for (RequestFile rf : selectModels.keySet()) {
-                    if (selectModels.get(rf).getObject()) {
-                        requestFiles.add(rf);
-                    }
-                }
+                processManagerBean.saveActualPayment(getSelected());
 
-                completedDisplayed = false;
-
-                processManagerBean.saveActualPayment(requestFiles);
-
-                selectModels.clear();
+                clearSelect();
                 addTimer(dataViewContainer, filterForm, messages);
             }
-
-            @Override
-            public boolean isVisible() {
-                return !isProcessing();
-            }
-        };
-        filterForm.add(save);
+        });
 
         //Удалить
-        Button delete = new Button("delete") {
+        buttonContainer.add(new Button("delete") {
 
             @Override
             public void onSubmit() {
-                for (RequestFile requestFile : selectModels.keySet()) {
-                    if (selectModels.get(requestFile).getObject()) {
+                for (Long requestFileId : getSelected()) {
+                    RequestFile requestFile = requestFileBean.findById(requestFileId);
+
+                    if (requestFile != null){
                         try {
                             requestFileBean.delete(requestFile);
 
@@ -420,30 +482,71 @@ public class ActualPaymentFileList extends ScrollListPage {
                     }
                 }
             }
+        });
 
-            @Override
-            public boolean isVisible() {
-                return !isProcessing();
-            }
-        };
-        filterForm.add(delete);
-
-         //Отменить
-        Button cancel = new Button("cancel") {
+        //Отменить загрузку
+        buttonContainer.add(new Button("load_cancel") {
 
             @Override
             public void onSubmit() {
-                processManagerBean.cancel(ACTUAL_PAYMENT);
+                processManagerBean.cancel(LOAD_ACTUAL_PAYMENT);
 
-                info(getStringOrKey("process.cancel"));
+                info(getStringOrKey("load_process.canceling"));
             }
 
             @Override
             public boolean isVisible() {
-                return isProcessing() && !processManagerBean.isStop(ACTUAL_PAYMENT);
+                return processManagerBean.isProcessing(LOAD_ACTUAL_PAYMENT);
             }
-        };
-        filterForm.add(cancel);
+        });
+        
+        //Отменить связывание
+        buttonContainer.add(new Button("bind_cancel") {
+
+            @Override
+            public void onSubmit() {
+                processManagerBean.cancel(BIND_ACTUAL_PAYMENT);
+
+                info(getStringOrKey("bind_process.canceling"));
+            }
+
+            @Override
+            public boolean isVisible() {
+                return processManagerBean.isProcessing(BIND_ACTUAL_PAYMENT);
+            }
+        });
+        
+        //Отменить обработку
+        buttonContainer.add(new Button("fill_cancel") {
+
+            @Override
+            public void onSubmit() {
+                processManagerBean.cancel(FILL_ACTUAL_PAYMENT);
+
+                info(getStringOrKey("fill_process.canceling"));
+            }
+
+            @Override
+            public boolean isVisible() {
+                return processManagerBean.isProcessing(FILL_ACTUAL_PAYMENT);
+            }
+        });
+        
+        //Отменить выгрузку
+        buttonContainer.add(new Button("save_cancel") {
+
+            @Override
+            public void onSubmit() {
+                processManagerBean.cancel(SAVE_ACTUAL_PAYMENT);
+
+                info(getStringOrKey("save_process.canceling"));
+            }
+
+            @Override
+            public boolean isVisible() {
+                return processManagerBean.isProcessing(SAVE_ACTUAL_PAYMENT);
+            }
+        });
 
         //Диалог загрузки
         requestFileLoadPanel = new RequestFileLoadPanel("load_panel",
@@ -452,80 +555,114 @@ public class ActualPaymentFileList extends ScrollListPage {
 
                     @Override
                     public void load(Long organizationId, String districtCode, int monthFrom, int monthTo, int year) {
-                        completedDisplayed = false;
+                        completedDisplayed.put(LOAD_ACTUAL_PAYMENT, false);
                         processManagerBean.loadActualPayment(organizationId, districtCode, monthFrom, monthTo, year);
                         addTimer(dataViewContainer, filterForm, messages);
                     }
-                }, ACTUAL_PAYMENT);
-
+                });
         add(requestFileLoadPanel);
+
+        //Отобразить сообщения
+        showMessages();
+
+        //Запуск таймера
+        if (isProcessing()) {
+            dataViewContainer.add(newTimer(filterForm, messages));
+        }
     }
 
-    private boolean isProcessing() {
-        return processManagerBean.isProcessing(ACTUAL_PAYMENT);
-    }
+    private List<Long> getSelected(){
+        List<Long> ids = new ArrayList<Long>();
 
-    private void showMessages() {
-
-        showMessages(null);
-    }
-
-    private void showMessages(AjaxRequestTarget target) {
-        List<RequestFile> list = processManagerBean.getProcessed(ACTUAL_PAYMENT, ActualPaymentFileList.class);
-
-        for (RequestFile rf : list){
-
-            switch (rf.getStatus()){
-                case SKIPPED:
-                    highlightProcessed(target, rf);
-                    info(getStringFormat("actual_payment.skipped", rf.getFullName(),
-                            processManagerBean.getProcess(ACTUAL_PAYMENT).ordinal()));
-                    break;
-                case LOADED:
-                case BOUND:
-                case FILLED:
-                case SAVED:
-                    highlightProcessed(target, rf);
-                    info(getStringFormat("actual_payment.processed", rf.getFullName(),
-                            processManagerBean.getProcess(ACTUAL_PAYMENT).ordinal()));
-                    break;
-                case LOAD_ERROR:
-                case BIND_ERROR:
-                case FILL_ERROR:
-                case SAVE_ERROR:
-                    highlightError(target, rf);
-                    info(getStringFormat("actual_payment.process_error", rf.getFullName(),
-                            processManagerBean.getProcess(ACTUAL_PAYMENT).ordinal()));
-                    break;
+        for (Long id : selectModels.keySet()) {
+            if (selectModels.get(id).getObject()) {
+                ids.add(id);
             }
         }
 
-       //Process completed
-        if (processManagerBean.isCompleted(ACTUAL_PAYMENT) && !completedDisplayed) {
-            info(getStringFormat("process.done", processManagerBean.getSuccessCount(ACTUAL_PAYMENT),
-                    processManagerBean.getSkippedCount(ACTUAL_PAYMENT), processManagerBean.getErrorCount(ACTUAL_PAYMENT),
-                    processManagerBean.getProcess(ACTUAL_PAYMENT).ordinal()));
+        return  ids;
+    }
 
-            completedDisplayed = true;
+    private void clearSelect(){
+        for (IModel<Boolean> model : selectModels.values()){
+            model.setObject(false);
         }
+    }
 
-        //Process canceled
-        if (processManagerBean.isCanceled(ACTUAL_PAYMENT) && !completedDisplayed) {
-            info(getStringFormat("process.canceled", processManagerBean.getSuccessCount(ACTUAL_PAYMENT),
-                    processManagerBean.getSkippedCount(ACTUAL_PAYMENT), processManagerBean.getErrorCount(ACTUAL_PAYMENT),
-                    processManagerBean.getProcess(ACTUAL_PAYMENT).ordinal()));
+    private boolean isProcessing() {
+        return processManagerBean.isProcessing(LOAD_ACTUAL_PAYMENT)
+                || processManagerBean.isProcessing(BIND_ACTUAL_PAYMENT)
+                || processManagerBean.isProcessing(FILL_ACTUAL_PAYMENT)
+                || processManagerBean.isProcessing(SAVE_ACTUAL_PAYMENT);
+    }
 
-            completedDisplayed = true;
+    private boolean isWaiting(RequestFile requestFile){
+        return processManagerBean.isWaiting(LOAD_ACTUAL_PAYMENT, requestFile)
+                || processManagerBean.isWaiting(BIND_ACTUAL_PAYMENT, requestFile)
+                || processManagerBean.isWaiting(FILL_ACTUAL_PAYMENT, requestFile)
+                || processManagerBean.isWaiting(SAVE_ACTUAL_PAYMENT, requestFile);
+    }
+
+    private void showMessages() {
+        showMessages(null);
+    }
+    
+    private void addMessages(String keyPrefix, AjaxRequestTarget target, ProcessType processType,
+                             RequestFileStatus processedStatus, RequestFileStatus errorStatus){
+        List<RequestFile> loadList = processManagerBean.getProcessed(processType, ActualPaymentFileList.class);
+
+        for (RequestFile requestFile : loadList){
+            if (requestFile.getStatus().equals(RequestFileStatus.SKIPPED)){
+                highlightProcessed(target, requestFile);
+                info(getStringFormat(keyPrefix + ".skipped", requestFile.getFullName()));
+            }else if (requestFile.getStatus().equals(processedStatus)){
+                highlightProcessed(target, requestFile);
+                info(getStringFormat(keyPrefix + ".processed", requestFile.getFullName()));
+            }else if (requestFile.getStatus().equals(errorStatus)){
+                highlightError(target, requestFile);
+                error(getStringFormat(keyPrefix + ".error", requestFile.getFullName()));
+            }
         }
+    }
 
-        //Process error
-        if (processManagerBean.isCriticalError(ACTUAL_PAYMENT) && !completedDisplayed) {
-            error(getStringFormat("process.critical_error", processManagerBean.getSuccessCount(ACTUAL_PAYMENT),
-                    processManagerBean.getSkippedCount(ACTUAL_PAYMENT), processManagerBean.getErrorCount(ACTUAL_PAYMENT),
-                    processManagerBean.getProcess(ACTUAL_PAYMENT).ordinal()));
+    private void addCompetedMessages(String keyPrefix, ProcessType processType){
+        if (completedDisplayed.get(processType) == null || !completedDisplayed.get(processType)) {
+            //Process completed
+            if (processManagerBean.isCompleted(processType)) {
+                info(getStringFormat(keyPrefix + ".completed", processManagerBean.getSuccessCount(processType),
+                        processManagerBean.getSkippedCount(processType), processManagerBean.getErrorCount(processType)));
 
-            completedDisplayed = true;
+                completedDisplayed.put(processType, true);
+            }
+
+            //Process canceled
+            if (processManagerBean.isCanceled(processType)) {
+                info(getStringFormat(keyPrefix + ".canceled", processManagerBean.getSuccessCount(processType),
+                        processManagerBean.getSkippedCount(processType), processManagerBean.getErrorCount(processType)));
+
+                completedDisplayed.put(processType, true);
+            }
+
+            //Process error
+            if (processManagerBean.isCriticalError(processType)) {
+                error(getStringFormat(keyPrefix + ".critical_error", processManagerBean.getSuccessCount(processType),
+                        processManagerBean.getSkippedCount(processType), processManagerBean.getErrorCount(processType)));
+
+                completedDisplayed.put(processType, true);
+            }
         }
+    }
+
+    private void showMessages(AjaxRequestTarget target) {
+        addMessages("load_process", target, LOAD_ACTUAL_PAYMENT, RequestFileStatus.LOADED, RequestFileStatus.LOAD_ERROR);
+        addMessages("bind_process", target, BIND_ACTUAL_PAYMENT, RequestFileStatus.BOUND, RequestFileStatus.BIND_ERROR);
+        addMessages("fill_process", target, FILL_ACTUAL_PAYMENT, RequestFileStatus.FILLED, RequestFileStatus.FILL_ERROR);
+        addMessages("save_process", target, SAVE_ACTUAL_PAYMENT, RequestFileStatus.SAVED, RequestFileStatus.SAVE_ERROR);
+
+        addCompetedMessages("load_process", LOAD_ACTUAL_PAYMENT);
+        addCompetedMessages("bind_process", BIND_ACTUAL_PAYMENT);
+        addCompetedMessages("fill_process", FILL_ACTUAL_PAYMENT);
+        addCompetedMessages("save_process", SAVE_ACTUAL_PAYMENT);
     }
 
     private void highlightProcessed(AjaxRequestTarget target, RequestFile requestFile) {
@@ -558,6 +695,8 @@ public class ActualPaymentFileList extends ScrollListPage {
                 } else {
                     //update feedback messages panel
                     target.addComponent(messages);
+                    target.addComponent(buttonContainer);
+                    target.addComponent(pagingNavigator);
                 }
 
                 timerIndex++;
@@ -568,8 +707,8 @@ public class ActualPaymentFileList extends ScrollListPage {
     private void addTimer(WebMarkupContainer dataViewContainer, Form<?> filterForm, AjaxFeedbackPanel messages) {
         boolean needCreateNewTimer = true;
 
-        List<AjaxSelfUpdatingTimerBehavior> timers = null;
-        timers = Lists.newArrayList(Iterables.filter(dataViewContainer.getBehaviors(), AjaxSelfUpdatingTimerBehavior.class));
+        List<AjaxSelfUpdatingTimerBehavior>  timers = Lists.newArrayList(Iterables.filter(dataViewContainer.getBehaviors(),
+                AjaxSelfUpdatingTimerBehavior.class));
         if (timers != null && !timers.isEmpty()) {
             for (AjaxSelfUpdatingTimerBehavior timer : timers) {
                 if (!timer.isStopped()) {

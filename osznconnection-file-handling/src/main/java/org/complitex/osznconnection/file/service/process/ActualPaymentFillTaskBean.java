@@ -1,6 +1,7 @@
 package org.complitex.osznconnection.file.service.process;
 
 import com.google.common.collect.Lists;
+import org.complitex.dictionary.entity.IExecutorObject;
 import org.complitex.dictionary.entity.Log;
 import org.complitex.dictionary.service.ConfigBean;
 import org.complitex.dictionary.service.executor.ExecuteException;
@@ -33,7 +34,7 @@ import java.util.List;
  */
 @Stateless
 @TransactionManagement(TransactionManagementType.BEAN)
-public class ActualPaymentFillTaskBean implements ITaskBean<RequestFile> {
+public class ActualPaymentFillTaskBean implements ITaskBean {
     private static final Logger log = LoggerFactory.getLogger(ActualPaymentFillTaskBean.class);
 
     @Resource
@@ -52,7 +53,9 @@ public class ActualPaymentFillTaskBean implements ITaskBean<RequestFile> {
     private RequestFileBean requestFileBean;
 
     @Override
-    public boolean execute(RequestFile requestFile) throws ExecuteException {
+    public boolean execute(IExecutorObject executorObject) throws ExecuteException {
+        RequestFile requestFile = (RequestFile) executorObject;
+
         requestFile.setStatus(requestFileBean.getRequestFileStatus(requestFile)); //обновляем статус из базы данных
 
         if (requestFile.isProcessing()){ //проверяем что не обрабатывается в данный момент
@@ -83,7 +86,9 @@ public class ActualPaymentFillTaskBean implements ITaskBean<RequestFile> {
     }
 
     @Override
-    public void onError(RequestFile requestFile) {
+    public void onError(IExecutorObject executorObject) {
+        RequestFile requestFile = (RequestFile) executorObject;
+
         requestFile.setStatus(RequestFileStatus.FILL_ERROR);
         requestFileBean.save(requestFile);
     }

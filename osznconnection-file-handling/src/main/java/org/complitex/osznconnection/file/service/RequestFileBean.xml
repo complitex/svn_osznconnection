@@ -28,10 +28,10 @@
             keyProperty="id" useGeneratedKeys="true">
         insert into `request_file`
             (`group_id`, `organization_id`, `name`, `directory`, `registry`, `month`, `year`, `dbf_record_count`, `length`, `check_sum`,
-            `type`, `loaded`)
+            `type`, `loaded`, `status`)
         values
             (#{groupId}, #{organizationId}, #{name}, #{directory}, #{registry}, #{month}, #{year}, #{dbfRecordCount}, #{length}, #{checkSum},
-                #{type}, #{loaded});
+                #{type}, #{loaded}, #{status});
     </insert>
 
     <update id="updateRequestFile" parameterType="org.complitex.osznconnection.file.entity.RequestFile">

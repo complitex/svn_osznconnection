@@ -1,5 +1,6 @@
 package org.complitex.osznconnection.file.entity;
 
+import org.complitex.dictionary.entity.IExecutorObject;
 import org.complitex.dictionary.entity.ILoggable;
 import org.complitex.dictionary.entity.LogChangeList;
 
@@ -13,7 +14,7 @@ import java.util.List;
  *
  * Информация о файле запроса: имя, дата загрузки, организация, дата, количество записей, размер файла, статус.
  */
-public class RequestFile implements ILoggable {
+public class RequestFile implements IExecutorObject {
     public final static String TABLE = "request_file";
 
     public static enum TYPE {

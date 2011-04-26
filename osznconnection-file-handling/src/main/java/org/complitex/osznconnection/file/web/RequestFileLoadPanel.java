@@ -1,5 +1,6 @@
 package org.complitex.osznconnection.file.web;
 
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
@@ -40,12 +41,17 @@ public class RequestFileLoadPanel extends Panel {
         void load(Long organizationId, String districtCode, int monthFrom, int monthTo, int year);
     }
 
-    public RequestFileLoadPanel(String id, String title, final ILoader loader, final ProcessManagerBean.TYPE type) {
+    public RequestFileLoadPanel(String id, String title, final ILoader loader){
+        this(id, title, loader, true);
+    }
+
+    public RequestFileLoadPanel(String id, String title, final ILoader loader, final boolean showDatePeriod) {
         super(id);
 
         dialog = new Dialog("dialog");
         dialog.setModal(true);
-        dialog.setWidth(480);
+        dialog.setWidth(380);
+        dialog.setMinHeight(100);
         dialog.setOpenEvent(JsScopeUiEvent.quickScope(new JsStatement().self().chain("parents", "'.ui-dialog:first'").
                 chain("find", "'.ui-dialog-titlebar-close'").
                 chain("hide").render()));
@@ -83,39 +89,39 @@ public class RequestFileLoadPanel extends Panel {
         organization.setRequired(true);
         form.add(organization);
 
+        final DropDownChoice<Integer> year = new YearDropDownChoice("year", new Model<Integer>());
+        year.setRequired(showDatePeriod);
+        form.add(year);
+
+        WebMarkupContainer datePeriodContainer = new WebMarkupContainer("date_period_container");
+        datePeriodContainer.setVisible(showDatePeriod);
+        form.add(datePeriodContainer);
+
         //Период
         final DropDownChoice<Integer> from = new MonthDropDownChoice("from", new Model<Integer>());
-        from.setRequired(true);
-        form.add(from);
+        from.setRequired(showDatePeriod);
+        datePeriodContainer.add(from);
 
         final DropDownChoice<Integer> to = new MonthDropDownChoice("to", new Model<Integer>());
-        to.setRequired(true);
-        form.add(to);
-
-        final DropDownChoice<Integer> year = new YearDropDownChoice("year", new Model<Integer>());
-        year.setRequired(true);
-        form.add(year);
+        to.setRequired(showDatePeriod);
+        datePeriodContainer.add(to);
 
         //Загрузить
         Button load = new Button("load") {
 
             @Override
             public void onSubmit() {
-                int f = from.getModelObject();
-                int t = to.getModelObject();
+                int f = showDatePeriod ? from.getModelObject() : 0;
+                int t = showDatePeriod ? to.getModelObject() : 0;
 
-                if (t < f) {
+                if (t < f && showDatePeriod) {
                     error(getString("error.to_less_then_from"));
                     return;
                 }
 
-                if (!processManagerBean.isProcessing(type)) {
-                    DomainObject oszn = organizationModel.getObject();
-                    loader.load(oszn.getId(), organizationStrategy.getDistrictCode(oszn), f, t, year.getModelObject());
-                    getSession().info(getString("info.start_loading"));
-                } else {
-                    getSession().error(getString("error.loading_in_progress"));
-                }
+                DomainObject oszn = organizationModel.getObject();
+                loader.load(oszn.getId(), organizationStrategy.getDistrictCode(oszn), f, t, year.getModelObject());
+//                getSession().info(getString("info.start_loading"));
 
                 dialog.setAutoOpen(false);
                 dialog.close();
