@@ -35,6 +35,7 @@ import org.complitex.osznconnection.file.entity.RequestWarningStatus;
 import org.complitex.osznconnection.file.service.BenefitBean;
 import org.complitex.osznconnection.file.service.StatusRenderService;
 import org.complitex.osznconnection.file.service.warning.WebWarningRenderer;
+import org.complitex.osznconnection.file.web.pages.util.AddressRenderer;
 import org.odlabs.wiquery.core.javascript.JsStatement;
 import org.odlabs.wiquery.ui.core.JsScopeUiEvent;
 import org.slf4j.Logger;
@@ -125,7 +126,7 @@ public class BenefitConnectPanel extends Panel {
 
             @Override
             public String getObject() {
-                return benefit.getDisplayName();
+                return benefit.getField(BenefitDBF.SUR_NAM) + " " + benefit.getField(BenefitDBF.F_NAM) + " " + benefit.getField(BenefitDBF.M_NAM);
             }
         }));
 
@@ -133,7 +134,8 @@ public class BenefitConnectPanel extends Panel {
 
             @Override
             public String getObject() {
-                return benefit.getDisplayAddress();
+                return AddressRenderer.displayAddress(null, benefit.getCity(), null, benefit.getStreet(), benefit.getBuildingNumber(),
+                        benefit.getBuildingCorp(), benefit.getApartment(), getLocale());
             }
         }));
 
