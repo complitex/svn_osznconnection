@@ -14,7 +14,6 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.complitex.dictionary.entity.DomainObject;
-import org.complitex.dictionary.entity.example.DomainObjectExample;
 import org.complitex.dictionary.strategy.StrategyFactory;
 import org.complitex.dictionary.web.component.search.ISearchCallback;
 import org.complitex.dictionary.web.component.search.SearchComponent;
@@ -118,9 +117,7 @@ public class AddressCorrectionEdit extends FormTemplatePage {
         }
 
         protected DomainObject findObject(long objectId, String entity) {
-            DomainObjectExample example = new DomainObjectExample();
-            example.setId(objectId);
-            return getStrategy(entity).find(example).get(0);
+            return getStrategy(entity).findById(objectId, true);
         }
 
         protected abstract List<String> getSearchFilters();
