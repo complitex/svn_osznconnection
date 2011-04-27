@@ -14,7 +14,6 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.complitex.dictionary.entity.DomainObject;
-import org.complitex.dictionary.entity.example.DomainObjectExample;
 import org.complitex.dictionary.web.component.search.ISearchCallback;
 import org.complitex.dictionary.web.component.search.SearchComponent;
 import org.complitex.dictionary.web.component.search.SearchComponentState;
@@ -91,10 +90,7 @@ public final class PrivilegeCorrectionEdit extends FormTemplatePage {
             }
 
             private DomainObject findPrivilege(long privilegeId) {
-                DomainObjectExample example = new DomainObjectExample();
-                example.setId(privilegeId);
-                DomainObject object = privilegeStrategy.find(example).get(0);
-                return object;
+                return privilegeStrategy.findById(privilegeId, true);
             }
 
             @Override

@@ -54,7 +54,7 @@ public class PrivilegeDescriptionTemplateMenu extends ResourceTemplateMenu {
 
             @Override
             public String getTagId() {
-                return "ownership_description_item";
+                return "privilege_description_item";
             }
         });
         return links;
@@ -62,6 +62,6 @@ public class PrivilegeDescriptionTemplateMenu extends ResourceTemplateMenu {
 
     @Override
     public String getTagId() {
-        return "ownership_description_menu";
+        return "privilege_description_menu";
     }
 }
