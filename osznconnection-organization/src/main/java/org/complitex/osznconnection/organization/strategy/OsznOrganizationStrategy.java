@@ -31,7 +31,6 @@ import org.complitex.dictionary.entity.Attribute;
 import org.complitex.dictionary.entity.StringCulture;
 import org.complitex.dictionary.service.StringCultureBean;
 import org.complitex.dictionary.util.CloneUtil;
-import org.complitex.dictionary.util.DateUtil;
 
 /**
  *
