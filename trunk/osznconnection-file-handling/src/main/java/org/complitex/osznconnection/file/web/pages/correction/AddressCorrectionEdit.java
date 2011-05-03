@@ -6,6 +6,7 @@ package org.complitex.osznconnection.file.web.pages.correction;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -64,7 +65,7 @@ public class AddressCorrectionEdit extends FormTemplatePage {
         }
 
         @Override
-        public void found(SearchComponent component, Map<String, Long> ids, AjaxRequestTarget target) {
+        public void found(Component component, Map<String, Long> ids, AjaxRequestTarget target) {
             Long id = ids.get(entity);
             if (id != null && id > 0) {
                 correction.setObjectId(id);

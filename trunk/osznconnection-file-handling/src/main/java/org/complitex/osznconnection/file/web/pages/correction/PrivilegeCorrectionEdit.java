@@ -6,6 +6,7 @@ package org.complitex.osznconnection.file.web.pages.correction;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -13,25 +14,25 @@ import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInst
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.model.StringResourceModel;
 import org.complitex.dictionary.entity.DomainObject;
+import org.complitex.dictionary.web.component.ShowMode;
 import org.complitex.dictionary.web.component.search.ISearchCallback;
 import org.complitex.dictionary.web.component.search.SearchComponent;
 import org.complitex.dictionary.web.component.search.SearchComponentState;
+import org.complitex.osznconnection.file.entity.Correction;
+import org.complitex.osznconnection.file.web.component.correction.edit.AbstractCorrectionEditPanel;
+import org.complitex.osznconnection.privilege.strategy.PrivilegeStrategy;
 import org.complitex.template.web.component.toolbar.DeleteItemButton;
 import org.complitex.template.web.component.toolbar.ToolbarButton;
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.FormTemplatePage;
-import org.complitex.osznconnection.file.entity.Correction;
-import org.complitex.osznconnection.file.web.component.correction.edit.AbstractCorrectionEditPanel;
-import org.complitex.osznconnection.privilege.strategy.PrivilegeStrategy;
 
 import javax.ejb.EJB;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import org.apache.wicket.model.StringResourceModel;
-import org.complitex.dictionary.web.component.ShowMode;
 
 /**
  * Страница для редактирования коррекций привилегий.
@@ -53,7 +54,7 @@ public final class PrivilegeCorrectionEdit extends FormTemplatePage {
         }
 
         @Override
-        public void found(SearchComponent component, Map<String, Long> ids, AjaxRequestTarget target) {
+        public void found(Component component, Map<String, Long> ids, AjaxRequestTarget target) {
             Long id = ids.get(privilegeStrategy.getEntityTable());
             if (id != null && id > 0) {
                 correction.setObjectId(id);
