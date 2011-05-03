@@ -50,7 +50,7 @@ public class RequestFileLoadPanel extends Panel {
 
         dialog = new Dialog("dialog");
         dialog.setModal(true);
-        dialog.setWidth(380);
+        dialog.setWidth(420);
         dialog.setMinHeight(100);
         dialog.setOpenEvent(JsScopeUiEvent.quickScope(new JsStatement().self().chain("parents", "'.ui-dialog:first'").
                 chain("find", "'.ui-dialog-titlebar-close'").
