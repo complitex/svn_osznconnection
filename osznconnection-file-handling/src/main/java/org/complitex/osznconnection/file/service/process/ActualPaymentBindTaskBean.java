@@ -129,7 +129,9 @@ public class ActualPaymentBindTaskBean implements ITaskBean {
             startTime = System.currentTimeMillis();
         }
         List<Long> notResolvedPaymentIds = actualPaymentBean.findIdsForBinding(actualPaymentFile.getId());
-        log.debug("Finding of actualPayment ids for binding took {} sec.", (System.currentTimeMillis() - startTime) / 1000);
+        if (log.isDebugEnabled()) {
+            log.debug("Finding of actualPayment ids for binding took {} sec.", (System.currentTimeMillis() - startTime) / 1000);
+        }
         List<Long> batch = Lists.newArrayList();
 
         int batchSize = configBean.getInteger(FileHandlingConfig.BIND_BATCH_SIZE, true);
