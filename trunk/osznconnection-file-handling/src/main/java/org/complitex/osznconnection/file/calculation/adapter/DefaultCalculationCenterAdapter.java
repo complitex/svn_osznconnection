@@ -247,7 +247,6 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
     }
 
     /**
-     * Получить детали по л/c, если acquirePersonAccount() возвратила код -1 : больше 1 л/с.
      * Процедура COMP.Z$RUNTIME_SZ_UTL.GETACCATTRS.
      * Используется для уточнения в UI номера л/c, когда больше одного человека в ЦН, имеющие разные номера л/c,
      * привязаны к одному адресу и для поиска номеров л/c в PaymentLookupPanel.
