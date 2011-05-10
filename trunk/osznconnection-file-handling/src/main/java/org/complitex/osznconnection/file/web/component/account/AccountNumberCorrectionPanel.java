@@ -22,7 +22,6 @@ import java.util.List;
 import org.apache.wicket.Component;
 import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
 import org.complitex.osznconnection.file.entity.AbstractRequest;
-import org.complitex.osznconnection.file.service.LookupBean;
 import org.complitex.osznconnection.file.service.StatusRenderService;
 
 /**
@@ -31,9 +30,7 @@ import org.complitex.osznconnection.file.service.StatusRenderService;
  */
 public abstract class AccountNumberCorrectionPanel<T extends AbstractRequest> extends Panel {
 
-    @EJB(name = "LookupBean")
-    private LookupBean lookupBean;
-    @EJB(name = "StatusRenderService")
+    @EJB
     private StatusRenderService statusRenderService;
     private T request;
     private Dialog dialog;

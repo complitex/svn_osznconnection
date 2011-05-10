@@ -4,10 +4,11 @@
  */
 package org.complitex.osznconnection.file.calculation.adapter;
 
+import com.google.common.base.Function;
 import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import static com.google.common.collect.Iterables.*;
+import static com.google.common.collect.Lists.*;
+import static com.google.common.collect.Maps.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import org.apache.wicket.util.string.Strings;
@@ -28,7 +29,9 @@ import org.complitex.dictionary.service.LocaleBean;
 import org.complitex.dictionary.service.LogBean;
 import org.complitex.dictionary.util.ResourceUtil;
 import org.complitex.osznconnection.file.Module;
+import org.complitex.osznconnection.file.calculation.adapter.entity.PuAccountNumberInfo;
 import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
+import org.complitex.osznconnection.file.calculation.adapter.exception.PuAccountNumberInfoParseException;
 import org.complitex.osznconnection.file.calculation.adapter.exception.UnknownAccountNumberTypeException;
 import org.complitex.osznconnection.file.entity.PaymentAndBenefitData;
 import org.complitex.osznconnection.file.service.warning.RequestWarningBean;
@@ -156,60 +159,91 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
      *
      */
     @Override
-    public void acquirePersonAccount(AbstractRequest request, String district, String streetType, String street, String buildingNumber,
-            String buildingCorp, String apartment, Date date) throws DBException {
-        Map<String, Object> params = Maps.newHashMap();
-        params.put("pDistrName", district);
-        params.put("pStSortName", streetType);
-        params.put("pStreetName", street);
-        params.put("pHouseNum", buildingNumber);
-        params.put("pHousePart", buildingCorp);
-        params.put("pFlatNum", apartment);
-        params.put("date", date);
+    public void acquirePersonAccount(RequestFile.TYPE requestFileType, AbstractRequest request, String puAccountNumber,
+            String district, String streetType, String street, String buildingNumber, String buildingCorp, String apartment,
+            Date date) throws DBException {
 
-        String result = null;
-        long startTime = 0;
-        if (log.isDebugEnabled()) {
-            startTime = System.currentTimeMillis();
+        if (puAccountNumber == null) {
+            puAccountNumber = "";
         }
-        try {
-            result = (String) sqlSession().selectOne(MAPPING_NAMESPACE + ".acquirePersonAccount", params);
-        } catch (Exception e) {
-            throw new DBException(e);
-        } finally {
-            log.info("acquirePersonAccount. Parameters : {}, result : {}", params, result);
-            log.debug("acquirePersonAccount. Time of operation: {} sec.", (System.currentTimeMillis() - startTime) / 1000);
+        puAccountNumber = puAccountNumber.trim();
+
+        List<AccountDetail> accountDetails = acquireAccountDetailsByAddress(request, district, streetType, street,
+                buildingNumber, buildingCorp, apartment, date);
+        if (accountDetails == null || accountDetails.isEmpty()) {
+            return;
         }
 
-        if (result.equals("0")) {
-            request.setStatus(RequestStatus.ACCOUNT_NUMBER_NOT_FOUND);
-        } else if (result.equals("-1")) {
-            request.setStatus(RequestStatus.MORE_ONE_ACCOUNTS);
-        } else if (result.equals("-2")) {
-            request.setStatus(RequestStatus.APARTMENT_NOT_FOUND);
-        } else if (result.equals("-3")) {
-            request.setStatus(RequestStatus.BUILDING_CORP_NOT_FOUND);
-        } else if (result.equals("-4")) {
-            request.setStatus(RequestStatus.BUILDING_NOT_FOUND);
-        } else if (result.equals("-5")) {
-            request.setStatus(RequestStatus.STREET_NOT_FOUND);
-        } else if (result.equals("-6")) {
-            request.setStatus(RequestStatus.STREET_TYPE_NOT_FOUND);
-        } else if (result.equals("-7")) {
-            request.setStatus(RequestStatus.DISTRICT_NOT_FOUND);
-        } else {
-            if (Strings.isEmpty(result)) {
-                log.error("acquirePersonAccount. Unexpected result code: {}. Request id: {}, request class: {}",
-                        new Object[]{result, request.getId(), request.getClass()});
-                logBean.error(Module.NAME, getClass(), request.getClass(), request.getId(), EVENT.GETTING_DATA,
-                        ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_unexpected", localeBean.getSystemLocale(), "GETMNCODEBYADDRESS",
-                        result));
-                request.setStatus(RequestStatus.BINDING_INVALID_FORMAT);
-            } else {
-                request.setAccountNumber(result);
+        Collection<AccountDetail> errorDetails = newArrayList();
+        for (AccountDetail accountDetail : accountDetails) {
+            PuAccountNumberInfo puAccountNumberInfo = null;
+            try {
+                puAccountNumberInfo = PuAccountNumberInfoParser.parse(accountDetail.getPuAccountNumberInfo());
+            } catch (PuAccountNumberInfoParseException e) {
+                errorDetails.add(accountDetail);
+                continue;
+            }
+            if (puAccountNumber.length() < puAccountNumberInfo.getPuAccountNumber().length()) {
+                continue;
+            }
+            if (puAccountNumber.equals(puAccountNumberInfo.getPuAccountNumber())
+                    || PuAccountNumberInfoParser.match(puAccountNumber, puAccountNumberInfo.getPuAccountNumber())
+                    || puAccountNumber.equals(puAccountNumberInfo.getFullInfo())
+                    || isMegabankAccount(puAccountNumber, accountDetail.getMegabankAccountNumber())
+                    || isCalcCenterAccount(puAccountNumber, accountDetail.getAccountNumber())) {
+                request.setAccountNumber(accountDetail.getAccountNumber());
                 request.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
+                return;
             }
         }
+        if (accountDetails.size() == 1) {
+            if (!errorDetails.isEmpty()) {
+                log.error("acquirePersonAccount. Parsing of remote PU account number was failed for following account details: {}. "
+                        + "Request id: {}, request class: {}", new Object[]{errorDetails, request.getId(), request.getClass()});
+
+                List<String> errorPuAccountNumbers = newArrayList(transform(errorDetails, new Function<AccountDetail, String>() {
+
+                    @Override
+                    public String apply(AccountDetail errorDetail) {
+                        return errorDetail.getPuAccountNumberInfo();
+                    }
+                }));
+                List<String> accountNumbers = newArrayList(transform(errorDetails, new Function<AccountDetail, String>() {
+
+                    @Override
+                    public String apply(AccountDetail errorDetail) {
+                        return errorDetail.getAccountNumber();
+                    }
+                }));
+                Object errorPuAccountNumbersParam = errorPuAccountNumbers.size() == 1 ? errorPuAccountNumbers.get(0) : errorPuAccountNumbers;
+                Object accountNumbersParam = accountNumbers.size() == 1 ? accountNumbers.get(0) : accountNumbers;
+                errorPuAccountNumbersParam = errorPuAccountNumbersParam == null ? "null" : errorPuAccountNumbersParam;
+                accountNumbersParam = accountNumbersParam == null ? "null" : accountNumbersParam;
+
+                RequestWarning warning = new RequestWarning(request.getId(), requestFileType,
+                        RequestWarningStatus.PU_ACCOUNT_NUMBER_INVALID_FORMAT);
+                warning.addParameter(new RequestWarningParameter(0, errorPuAccountNumbersParam));
+                warning.addParameter(new RequestWarningParameter(1, accountNumbersParam));
+                warningBean.save(warning);
+
+                logBean.error(Module.NAME, getClass(), request.getClass(), request.getId(), EVENT.GETTING_DATA,
+                        ResourceUtil.getFormatString(RESOURCE_BUNDLE, "pu_account_number_parsing_error", localeBean.getSystemLocale(),
+                        errorPuAccountNumbersParam, accountNumbersParam));
+                request.setStatus(RequestStatus.BINDING_INVALID_FORMAT);
+            } else {
+                request.setStatus(RequestStatus.ACCOUNT_NUMBER_MISMATCH);
+            }
+        } else {
+            request.setStatus(RequestStatus.MORE_ONE_ACCOUNTS);
+        }
+    }
+
+    private boolean isMegabankAccount(String realPuAccountNumber, String megabankAccount) {
+        return (realPuAccountNumber.length() == 9) && realPuAccountNumber.equals(megabankAccount);
+    }
+
+    private boolean isCalcCenterAccount(String realPuAccountNumber, String calcCenterAccount) {
+        return (realPuAccountNumber.length() == 10) && realPuAccountNumber.equals(calcCenterAccount);
     }
 
     /**
@@ -231,7 +265,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
             String buildingNumber, String buildingCorp, String apartment, Date date) throws DBException {
         List<AccountDetail> accountCorrectionDetails = null;
 
-        Map<String, Object> params = Maps.newHashMap();
+        Map<String, Object> params = newHashMap();
         params.put("pDistrName", district);
         params.put("pStSortName", streetType);
         params.put("pStreetName", street);
@@ -250,7 +284,9 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
             throw new DBException(e);
         } finally {
             log.info("acquireAccountDetailsByAddress. Parameters : {}", params);
-            log.debug("acquireAccountDetailsByAddress. Time of operation: {} sec.", (System.currentTimeMillis() - startTime) / 1000);
+            if (log.isDebugEnabled()) {
+                log.debug("acquireAccountDetailsByAddress. Time of operation: {} sec.", (System.currentTimeMillis() - startTime) / 1000);
+            }
         }
 
         Integer resultCode = (Integer) params.get("resultCode");
@@ -321,7 +357,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
             throws DBException {
         payment.setField(PaymentDBF.OPP, "00000001");
 
-        Map<String, Object> params = Maps.newHashMap();
+        Map<String, Object> params = newHashMap();
         params.put("accountNumber", payment.getAccountNumber());
         params.put("dat1", payment.getField(PaymentDBF.DAT1));
 
@@ -335,7 +371,9 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
             throw new DBException(e);
         } finally {
             log.info("processPaymentAndBenefit. Parameters : {}", params);
-            log.debug("processPaymentAndBenefit. Time of operation: {} sec.", (System.currentTimeMillis() - startTime) / 1000);
+            if (log.isDebugEnabled()) {
+                log.debug("processPaymentAndBenefit. Time of operation: {} sec.", (System.currentTimeMillis() - startTime) / 1000);
+            }
         }
 
         Integer resultCode = (Integer) params.get("resultCode");
@@ -516,7 +554,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
 
     @Override
     public Collection<BenefitData> getBenefitData(Benefit benefit, Date dat1) throws DBException {
-        Map<String, Object> params = Maps.newHashMap();
+        Map<String, Object> params = newHashMap();
         params.put("accountNumber", benefit.getAccountNumber());
         params.put("dat1", dat1);
 
@@ -530,7 +568,9 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
             throw new DBException(e);
         } finally {
             log.info("getBenefitData. Parameters : {}", params);
-            log.debug("getBenefitData. Time of operation: {} sec.", (System.currentTimeMillis() - startTime) / 1000);
+            if (log.isDebugEnabled()) {
+                log.debug("getBenefitData. Time of operation: {} sec.", (System.currentTimeMillis() - startTime) / 1000);
+            }
         }
 
         Integer resultCode = (Integer) params.get("resultCode");
@@ -545,11 +585,11 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
                 case 1:
                     List<BenefitData> benefitData = (List<BenefitData>) params.get("benefitData");
                     if (benefitData != null && !benefitData.isEmpty()) {
-                        if (checkOrderFam("getBenefitData", benefitData, Lists.newArrayList(benefit), dat1)
-                                && checkBenefitCode("getBenefitData", benefitData, Lists.newArrayList(benefit), dat1)) {
+                        if (checkOrderFam("getBenefitData", benefitData, newArrayList(benefit), dat1)
+                                && checkBenefitCode("getBenefitData", benefitData, newArrayList(benefit), dat1)) {
                             Collection<BenefitData> emptyList = getEmptyBenefitData(benefitData);
                             if (emptyList != null && !emptyList.isEmpty()) {
-                                logEmptyBenefitData("getBenefitData", Lists.newArrayList(benefit), dat1);
+                                logEmptyBenefitData("getBenefitData", newArrayList(benefit), dat1);
                             }
 
                             Collection<BenefitData> finalBenefitData = getBenefitDataWithMinPriv("getBenefitData", benefitData);
@@ -652,7 +692,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
             }
         }
 
-        Map<String, BenefitData> orderFams = Maps.newHashMap();
+        Map<String, BenefitData> orderFams = newHashMap();
         for (BenefitData data : benefitData) {
             String orderFam = data.getOrderFamily();
             BenefitData dublicate = orderFams.get(orderFam);
@@ -702,13 +742,13 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
     }
 
     protected Map<BenefitDataId, Collection<BenefitData>> groupBenefitData(String method, Collection<BenefitData> benefitData) {
-        Map<BenefitDataId, Collection<BenefitData>> groupMap = Maps.newHashMap();
+        Map<BenefitDataId, Collection<BenefitData>> groupMap = newHashMap();
         for (BenefitData data : benefitData) {
             BenefitDataId id = new BenefitDataId(data.getInn(), data.getFirstName() + data.getMiddleName() + data.getLastName(),
                     data.getPassportSerial() + data.getPassportNumber());
             Collection<BenefitData> list = groupMap.get(id);
             if (list == null) {
-                list = Lists.newArrayList();
+                list = newArrayList();
                 groupMap.put(id, list);
             }
             list.add(data);
@@ -719,7 +759,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
     protected Collection<BenefitData> getBenefitDataWithMinPriv(String method, Collection<BenefitData> benefitData) {
         Collection<BenefitData> nonEmptyList = getNonEmptyBenefitData(benefitData);
         Map<BenefitDataId, Collection<BenefitData>> groupMap = groupBenefitData(method, nonEmptyList);
-        Collection<BenefitData> benefitDataWithMinPriv = Lists.newArrayList();
+        Collection<BenefitData> benefitDataWithMinPriv = newArrayList();
         for (Map.Entry<BenefitDataId, Collection<BenefitData>> group : groupMap.entrySet()) {
             BenefitData min = Collections.min(group.getValue(), BENEFIT_DATA_COMPARATOR);
             benefitDataWithMinPriv.add(min);
@@ -728,7 +768,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
     }
 
     protected Collection<BenefitData> getEmptyBenefitData(Collection<BenefitData> benefitData) {
-        return Lists.newArrayList(Iterables.filter(benefitData, new Predicate<BenefitData>() {
+        return newArrayList(filter(benefitData, new Predicate<BenefitData>() {
 
             @Override
             public boolean apply(BenefitData data) {
@@ -738,13 +778,13 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
     }
 
     protected Collection<BenefitData> getNonEmptyBenefitData(Collection<BenefitData> benefitData) {
-        Collection<BenefitData> nonEmptyList = Lists.newArrayList(benefitData);
+        Collection<BenefitData> nonEmptyList = newArrayList(benefitData);
         nonEmptyList.removeAll(getEmptyBenefitData(benefitData));
         return nonEmptyList;
     }
 
     protected List<BenefitData> getBenefitDataByINN(List<BenefitData> benefitDatas, final String inn) {
-        return Lists.newArrayList(Iterables.filter(benefitDatas, new Predicate<BenefitData>() {
+        return newArrayList(filter(benefitDatas, new Predicate<BenefitData>() {
 
             @Override
             public boolean apply(BenefitData benefitData) {
@@ -797,7 +837,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
     public void processBenefit(Date dat1, List<Benefit> benefits, long calculationCenterId) throws DBException {
         String accountNumber = benefits.get(0).getAccountNumber();
 
-        Map<String, Object> params = Maps.newHashMap();
+        Map<String, Object> params = newHashMap();
         params.put("accountNumber", accountNumber);
         params.put("dat1", dat1);
 
@@ -811,7 +851,9 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
             throw new DBException(e);
         } finally {
             log.info("processBenefit. Parameters : {}", params);
-            log.debug("processBenefit. Time of operation: {} sec.", (System.currentTimeMillis() - startTime) / 1000);
+            if (log.isDebugEnabled()) {
+                log.debug("processBenefit. Time of operation: {} sec.", (System.currentTimeMillis() - startTime) / 1000);
+            }
         }
 
         Integer resultCode = (Integer) params.get("resultCode");
@@ -1031,7 +1073,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
     }
 
     protected List<Benefit> findByPassportNumber(List<Benefit> benefits, final String passportNumber) {
-        return Lists.newArrayList(Iterables.filter(benefits, new Predicate<Benefit>() {
+        return newArrayList(filter(benefits, new Predicate<Benefit>() {
 
             @Override
             public boolean apply(Benefit benefit) {
@@ -1041,7 +1083,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
     }
 
     protected List<Benefit> findByINN(List<Benefit> benefits, final String inn) {
-        return Lists.newArrayList(Iterables.filter(benefits, new Predicate<Benefit>() {
+        return newArrayList(filter(benefits, new Predicate<Benefit>() {
 
             @Override
             public boolean apply(Benefit benefit) {
@@ -1060,7 +1102,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
         int accountType = determineAccountType(account);
         List<AccountDetail> accountCorrectionDetails = null;
 
-        Map<String, Object> params = Maps.newHashMap();
+        Map<String, Object> params = newHashMap();
         params.put("pDistrName", district);
         params.put("pAccCode", account);
         params.put("pAccCodeType", accountType);
@@ -1075,7 +1117,9 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
             throw new DBException(e);
         } finally {
             log.info("acquireAccountDetailsByAccount. Parameters : {}", params);
-            log.debug("acquireAccountDetailsByAccount. Time of operation: {} sec.", (System.currentTimeMillis() - startTime) / 1000);
+            if (log.isDebugEnabled()) {
+                log.debug("acquireAccountDetailsByAccount. Time of operation: {} sec.", (System.currentTimeMillis() - startTime) / 1000);
+            }
         }
 
         Integer resultCode = (Integer) params.get("resultCode");
@@ -1143,7 +1187,7 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
 
     @Override
     public void processActualPayment(ActualPayment actualPayment, Date date) throws DBException {
-        Map<String, Object> params = Maps.newHashMap();
+        Map<String, Object> params = newHashMap();
         params.put("accountNumber", actualPayment.getAccountNumber());
         params.put("date", new Timestamp(date.getTime()));
 
@@ -1157,7 +1201,9 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
             throw new DBException(e);
         } finally {
             log.info("processActualPayment. Parameters : {}", params);
-            log.debug("processActualPayment. Time of operation: {} sec.", (System.currentTimeMillis() - startTime) / 1000);
+            if (log.isDebugEnabled()) {
+                log.debug("processActualPayment. Time of operation: {} sec.", (System.currentTimeMillis() - startTime) / 1000);
+            }
         }
 
         Integer resultCode = (Integer) params.get("resultCode");

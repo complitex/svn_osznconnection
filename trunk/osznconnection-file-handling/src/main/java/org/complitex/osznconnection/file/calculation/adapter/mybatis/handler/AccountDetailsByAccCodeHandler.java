@@ -42,7 +42,7 @@ public class AccountDetailsByAccCodeHandler implements TypeHandler {
                 detail.setAccountNumber(rs.getString("mn_code"));
                 detail.setOwnerName(rs.getString("FIO"));
                 detail.setMegabankAccountNumber(rs.getString("ERC_CODE"));
-                detail.setOwnNumSr(rs.getString("zheu_code"));
+                detail.setPuAccountNumberInfo(rs.getString("zheu_code"));
                 detail.setStreetType(rs.getString("STREET_SORT"));
                 detail.setStreet(rs.getString("STREET_NAME"));
                 detail.setBuildingNumber(rs.getString("HOUSE_NAME"));

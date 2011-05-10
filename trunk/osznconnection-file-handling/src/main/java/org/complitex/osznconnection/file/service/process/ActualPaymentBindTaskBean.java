@@ -42,29 +42,22 @@ import java.util.List;
 @Stateless
 @TransactionManagement(TransactionManagementType.BEAN)
 public class ActualPaymentBindTaskBean implements ITaskBean {
-    private static final Logger log = LoggerFactory.getLogger(ActualPaymentBindTaskBean.class);
 
+    private static final Logger log = LoggerFactory.getLogger(ActualPaymentBindTaskBean.class);
     @Resource
     private UserTransaction userTransaction;
-
-    @EJB(beanName = "ConfigBean")
+    @EJB
     protected ConfigBean configBean;
-
-    @EJB(beanName = "AddressService")
+    @EJB
     private AddressService addressService;
-
-    @EJB(beanName = "PersonAccountService")
+    @EJB
     private PersonAccountService personAccountService;
-
-    @EJB(beanName = "CalculationCenterBean")
+    @EJB
     private CalculationCenterBean calculationCenterBean;
-
     @EJB
     private ActualPaymentBean actualPaymentBean;
-
-    @EJB(beanName = "RequestFileBean")
+    @EJB
     private RequestFileBean requestFileBean;
-
 
     private boolean resolveAddress(ActualPayment actualPayment, long calculationCenterId, ICalculationCenterAdapter adapter) {
         long startTime = 0;
@@ -72,7 +65,10 @@ public class ActualPaymentBindTaskBean implements ITaskBean {
             startTime = System.currentTimeMillis();
         }
         addressService.resolveAddress(actualPayment, calculationCenterId, adapter);
-        log.debug("Resolving of actualPayment address (id = {}) took {} sec.", actualPayment.getId(), (System.currentTimeMillis() - startTime) / 1000);
+        if (log.isDebugEnabled()) {
+            log.debug("Resolving of actualPayment address (id = {}) took {} sec.", actualPayment.getId(),
+                    (System.currentTimeMillis() - startTime) / 1000);
+        }
         return addressService.isAddressResolved(actualPayment);
     }
 
@@ -82,8 +78,10 @@ public class ActualPaymentBindTaskBean implements ITaskBean {
             startTime = System.currentTimeMillis();
         }
         personAccountService.resolveLocalAccount(actualPayment, calculationCenterId);
-        log.debug("Resolving of actualPayment (id = {}) for local account took {} sec.", actualPayment.getId(),
-                (System.currentTimeMillis() - startTime) / 1000);
+        if (log.isDebugEnabled()) {
+            log.debug("Resolving of actualPayment (id = {}) for local account took {} sec.", actualPayment.getId(),
+                    (System.currentTimeMillis() - startTime) / 1000);
+        }
         return actualPayment.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED;
     }
 
@@ -94,8 +92,10 @@ public class ActualPaymentBindTaskBean implements ITaskBean {
             startTime = System.currentTimeMillis();
         }
         personAccountService.resolveRemoteAccount(actualPayment, date, calculationCenterId, adapter);
-        log.debug("Resolving of actualPayment (id = {}) for remote account number took {} sec.", actualPayment.getId(),
-                (System.currentTimeMillis() - startTime) / 1000);
+        if (log.isDebugEnabled()) {
+            log.debug("Resolving of actualPayment (id = {}) for remote account number took {} sec.", actualPayment.getId(),
+                    (System.currentTimeMillis() - startTime) / 1000);
+        }
         return actualPayment.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED;
     }
 
@@ -112,7 +112,10 @@ public class ActualPaymentBindTaskBean implements ITaskBean {
             startTime = System.currentTimeMillis();
         }
         actualPaymentBean.update(actualPayment);
-        log.debug("Updating of actualPayment (id = {}) took {} sec.", actualPayment.getId(), (System.currentTimeMillis() - startTime) / 1000);
+        if (log.isDebugEnabled()) {
+            log.debug("Updating of actualPayment (id = {}) took {} sec.", actualPayment.getId(),
+                    (System.currentTimeMillis() - startTime) / 1000);
+        }
     }
 
     private void bindActualPaymentFile(RequestFile actualPaymentFile) throws BindException, DBException {

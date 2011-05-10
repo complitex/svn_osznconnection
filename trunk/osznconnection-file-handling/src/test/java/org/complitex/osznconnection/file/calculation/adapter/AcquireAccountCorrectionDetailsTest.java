@@ -21,6 +21,7 @@ public class AcquireAccountCorrectionDetailsTest extends AbstractTest {
             new AcquireAccountCorrectionDetailsTest().executeTest();
         } catch (DBException e) {
             System.out.println("DB error.");
+            e.printStackTrace();
         } catch (UnknownAccountNumberTypeException e) {
             System.out.println("Unknown account number type exception.");
         } catch (Exception e) {
@@ -53,7 +54,7 @@ public class AcquireAccountCorrectionDetailsTest extends AbstractTest {
         p.setOutgoingStreetType("УЛ");
         p.setOutgoingBuildingNumber("25А");
         p.setOutgoingBuildingCorp("");
-        p.setOutgoingApartment("40");
+        p.setOutgoingApartment("19");
         p.setField(PaymentDBF.DAT1, new Date());
         p.setField(PaymentDBF.OWN_NUM_SR, "1234567");
         return p;
@@ -61,6 +62,6 @@ public class AcquireAccountCorrectionDetailsTest extends AbstractTest {
 
     @Override
     protected void test(ICalculationCenterAdapter adapter) throws Exception {
-        testByOsznAccount(adapter);
+        testByAddress(adapter);
     }
 }
