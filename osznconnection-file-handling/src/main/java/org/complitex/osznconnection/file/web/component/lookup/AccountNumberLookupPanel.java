@@ -107,7 +107,7 @@ public abstract class AccountNumberLookupPanel<T extends AbstractRequest> extend
                 item.add(new Label("name", StringUtil.valueOf(detail.getOwnerName())));
                 item.add(new Label("address", displayAddress(detail)));
                 item.add(new Label("megabankAccount", StringUtil.valueOf(detail.getMegabankAccountNumber())));
-                item.add(new Label("ownNumSrAccount", StringUtil.valueOf(detail.getOwnNumSr())));
+                item.add(new Label("puAccountNumberInfo", StringUtil.valueOf(detail.getPuAccountNumberInfo())));
             }
         };
         radioGroup.add(details);

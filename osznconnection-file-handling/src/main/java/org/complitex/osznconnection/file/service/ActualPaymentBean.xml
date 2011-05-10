@@ -261,6 +261,7 @@
     <select id="findForOperation" parameterType="map" resultMap="actualPaymentResultMap">
         SELECT ap.`id`, ap.`status`, ap.`request_file_id`, ap.`F_NAM`, ap.`M_NAM`, ap.`SUR_NAM`,
         ap.`N_NAME`, ap.`VUL_CAT`, ap.`VUL_NAME`, ap.`VUL_CODE`, ap.`BLD_NUM`, ap.`CORP_NUM`, ap.`FLAT`, ap.`DAT_BEG`,
+        ap.`OWN_NUM`,
         f.`organization_id`,
         ap.`internal_city_id`, ap.`internal_street_id`, ap.`internal_street_type_id`, ap.`internal_building_id`,
         ap.`outgoing_city`, ap.`outgoing_district`, ap.`outgoing_street`, ap.`outgoing_street_type`, ap.`outgoing_building_number`,

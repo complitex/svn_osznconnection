@@ -75,7 +75,8 @@ public class PersonAccountService extends AbstractBean {
      */
     @Transactional
     public void resolveRemoteAccount(Payment payment, long calculationCenterId, ICalculationCenterAdapter adapter) throws DBException {
-        adapter.acquirePersonAccount(payment, payment.getOutgoingDistrict(), payment.getOutgoingStreetType(), payment.getOutgoingStreet(),
+        adapter.acquirePersonAccount(RequestFile.TYPE.PAYMENT, payment, (String) payment.getField(PaymentDBF.OWN_NUM_SR),
+                payment.getOutgoingDistrict(), payment.getOutgoingStreetType(), payment.getOutgoingStreet(),
                 payment.getOutgoingBuildingNumber(), payment.getOutgoingBuildingCorp(), payment.getOutgoingApartment(),
                 (Date) payment.getField(PaymentDBF.DAT1));
         if (payment.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED) {
@@ -87,7 +88,8 @@ public class PersonAccountService extends AbstractBean {
     @Transactional
     public void resolveRemoteAccount(ActualPayment actualPayment, Date date, long calculationCenterId, ICalculationCenterAdapter adapter)
             throws DBException {
-        adapter.acquirePersonAccount(actualPayment, actualPayment.getOutgoingDistrict(), actualPayment.getOutgoingStreetType(),
+        adapter.acquirePersonAccount(RequestFile.TYPE.ACTUAL_PAYMENT, actualPayment, (String) actualPayment.getField(ActualPaymentDBF.OWN_NUM),
+                actualPayment.getOutgoingDistrict(), actualPayment.getOutgoingStreetType(),
                 actualPayment.getOutgoingStreet(), actualPayment.getOutgoingBuildingNumber(), actualPayment.getOutgoingBuildingCorp(),
                 actualPayment.getOutgoingApartment(), date);
         if (actualPayment.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED) {

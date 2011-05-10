@@ -42,6 +42,8 @@ public class AccountDetailsByAddressHandler implements TypeHandler {
                 detail.setAccountNumber(rs.getString("acc_code"));
                 detail.setOwnerName(rs.getString("owner_fio"));
                 detail.setOwnerINN(rs.getString("owner_inn"));
+                detail.setPuAccountNumberInfo(rs.getString("erc_zheu_code"));
+                detail.setMegabankAccountNumber(rs.getString("erc_code"));
                 accountDetails.add(detail);
             }
         } catch (SQLException e) {

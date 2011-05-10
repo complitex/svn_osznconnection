@@ -53,6 +53,11 @@ public enum RequestStatus implements IEnumCode {
       нужный л/c вручную */
     MORE_ONE_ACCOUNTS(213),
 
+    /**
+     * Номер л/с ПУ не соответсствует номеру л/с ЖЭКа из центра начислений.
+     */
+    ACCOUNT_NUMBER_MISMATCH(241),
+
     /* Номер л/c разрешен */
     ACCOUNT_NUMBER_RESOLVED(214),
 
@@ -122,7 +127,7 @@ public enum RequestStatus implements IEnumCode {
             MORE_ONE_LOCAL_STREET_TYPE, STREET_NOT_FOUND, STREET_UNRESOLVED_LOCALLY, STREET_AND_BUILDING_UNRESOLVED_LOCALLY, STREET_TYPE_UNRESOLVED_LOCALLY, MORE_ONE_LOCAL_STREET_CORRECTION,
             MORE_ONE_LOCAL_STREET_TYPE_CORRECTION, MORE_ONE_REMOTE_STREET_CORRECTION,
             APARTMENT_NOT_FOUND,
-            MORE_ONE_ACCOUNTS, BINDING_INVALID_FORMAT, PAYMENT_NOT_EXISTS));
+            MORE_ONE_ACCOUNTS, ACCOUNT_NUMBER_MISMATCH, BINDING_INVALID_FORMAT, PAYMENT_NOT_EXISTS));
 
     /**
      * Возвращает список статусов которые могут иметь несвязанные записи.

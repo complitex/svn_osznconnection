@@ -17,6 +17,7 @@ import org.complitex.osznconnection.file.calculation.adapter.exception.DBExcepti
 import org.complitex.osznconnection.file.calculation.adapter.exception.UnknownAccountNumberTypeException;
 import org.complitex.osznconnection.file.entity.AbstractRequest;
 import org.complitex.osznconnection.file.entity.ActualPayment;
+import org.complitex.osznconnection.file.entity.RequestFile;
 
 /**
  * Базовый интерфейс для реализаций адаптера взаимодействия с ЦН.
@@ -49,8 +50,9 @@ public interface ICalculationCenterAdapter {
 
     void prepareApartment(ActualPayment actualPayment, String apartment, String apartmentCode);
 
-    void acquirePersonAccount(AbstractRequest request, String district, String streetType, String street, String buildingNumber, String buildingCorp,
-            String apartment, Date date) throws DBException;
+    void acquirePersonAccount(RequestFile.TYPE requestFileType, AbstractRequest request, String puAccountNumber,
+            String district, String streetType, String street, String buildingNumber, String buildingCorp, String apartment,
+            Date date) throws DBException;
 
     List<AccountDetail> acquireAccountDetailsByAddress(AbstractRequest request, String district, String streetType, String street,
             String buildingNumber, String buildingCorp, String apartment, Date date) throws DBException;
