@@ -18,6 +18,7 @@
         <result property="calculationCenterId" column="calc_center_id"/>
         <result property="oszn" column="oszn"/>
         <result property="calculationCenter" column="calculation_center"/>
+        <result property="puAccountNumber" column="pu_account_number"/>
     </resultMap>
 
     <sql id="findAccountsClause">
@@ -31,6 +32,7 @@
              AND TRIM(pa.`middle_name`) = TRIM(#{middleName})
              AND TRIM(pa.`last_name`) = TRIM(#{lastName})
              AND pa.`oszn_id` = #{osznId} AND pa.`calc_center_id` = #{calculationCenterId}
+             AND pa.`pu_account_number` = #{puAccountNumber}
     </sql>
 
     <select id="findAccounts" parameterType="org.complitex.osznconnection.file.entity.example.PersonAccountExample"
@@ -79,6 +81,9 @@
             <if test="calculationCenterId != null">
                 AND pa.`calc_center_id` = #{calculationCenterId}
             </if>
+            <if test="puAccountNumber != null">
+                AND pa.`pu_account_number` = #{puAccountNumber}
+            </if>
              <if test="not admin">
                 AND pa.`oszn_id` in ${organizations}
             </if>
@@ -87,9 +92,9 @@
 
     <insert id="insert" parameterType="org.complitex.osznconnection.file.entity.PersonAccount" keyProperty="id" useGeneratedKeys="true">
         INSERT INTO `person_account` (`city`, `street_type`, `street`, `building_num`, `building_corp`, `apartment`,
-                `account_number`, `first_name`, `middle_name`, `last_name`, `oszn_id`, `calc_center_id`)
+                `account_number`, `first_name`, `middle_name`, `last_name`, `oszn_id`, `calc_center_id`, `pu_account_number`)
         VALUES (#{city}, #{streetType}, #{street}, #{buildingNumber}, #{buildingCorp}, #{apartment},
-                #{accountNumber}, #{firstName}, #{middleName}, #{lastName}, #{osznId}, #{calculationCenterId})
+                #{accountNumber}, #{firstName}, #{middleName}, #{lastName}, #{osznId}, #{calculationCenterId}, #{puAccountNumber})
     </insert>
 
      <update id="updateAccountNumber" parameterType="org.complitex.osznconnection.file.entity.PersonAccount">

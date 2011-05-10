@@ -29,6 +29,7 @@ public class PersonAccount implements Serializable {
     private String calculationCenter;
     private boolean admin;
     private String organizations;
+    private String puAccountNumber;
 
     public PersonAccount() {
     }
@@ -167,5 +168,13 @@ public class PersonAccount implements Serializable {
 
     public void setOrganizations(String organizations) {
         this.organizations = organizations;
+    }
+
+    public String getPuAccountNumber() {
+        return puAccountNumber;
+    }
+
+    public void setPuAccountNumber(String puAccountNumber) {
+        this.puAccountNumber = puAccountNumber;
     }
 }
