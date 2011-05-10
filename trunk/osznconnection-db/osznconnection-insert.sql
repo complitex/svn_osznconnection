@@ -301,4 +301,4 @@ INSERT INTO `organization_attribute`(`attribute_id`, `object_id`, `attribute_typ
 (1,0,900,1,900), (1,0,901,2,901);
 
 -- Current database version
-INSERT INTO `update` (`version`) VALUE ('20110510_673_0.1.15');
+INSERT INTO `update` (`version`) VALUE ('20110510_676_0.1.16');

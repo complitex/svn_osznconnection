@@ -126,6 +126,7 @@ public final class PersonAccountEdit extends FormTemplatePage {
         Form<PersonAccount> form = new Form<PersonAccount>("form", model);
         add(form);
 
+        form.add(new TextField<String>("puAccountNumber").setRequired(true).setEnabled(false));
         form.add(new TextField<String>("lastName").setRequired(true).setEnabled(false));
         form.add(new TextField<String>("firstName").setRequired(true).setEnabled(false));
         form.add(new TextField<String>("middleName").setRequired(true).setEnabled(false));

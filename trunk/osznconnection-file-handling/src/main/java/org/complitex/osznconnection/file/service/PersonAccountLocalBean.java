@@ -41,7 +41,8 @@ public class PersonAccountLocalBean extends AbstractBean {
 
         FIRST_NAME("first_name"), MIDDLE_NAME("middle_name"), LAST_NAME("last_name"), CITY("city"), STREET("street"),
         BUILDING_NUMBER("building_num"), BUILDING_CORP("building_corp"), APARTMENT("apartment"),
-        ACCOUNT_NUMBER("account_number"), OSZN("oszn"), CALCULATION_CENTER("calculation_center");
+        ACCOUNT_NUMBER("account_number"), OSZN("oszn"), CALCULATION_CENTER("calculation_center"),
+        PU_ACCOUNT_NUMBER("pu_account_number");
         private String orderBy;
 
         private OrderBy(String orderBy) {
@@ -57,7 +58,7 @@ public class PersonAccountLocalBean extends AbstractBean {
 
     private List<PersonAccount> findAccounts(String firstName, String middleName, String lastName, String city,
             String street, String buildingNumber, String buildingCorp, String apartment, long osznId, long calculationCenterId,
-            boolean blocking, SqlSession session) {
+            String puAccountNumber, boolean blocking, SqlSession session) {
         PersonAccountExample example = new PersonAccountExample();
         example.setFirstName(firstName);
         example.setMiddleName(middleName);
@@ -69,6 +70,7 @@ public class PersonAccountLocalBean extends AbstractBean {
         example.setApartment(apartment);
         example.setOsznId(osznId);
         example.setCalculationCenterId(calculationCenterId);
+        example.setPuAccountNumber(puAccountNumber);
         if (blocking) {
             return session.selectList(MAPPING_NAMESPACE + ".findAccountsBlocking", example);
         } else {
@@ -96,8 +98,8 @@ public class PersonAccountLocalBean extends AbstractBean {
                 (String) payment.getField(PaymentDBF.M_NAM), (String) payment.getField(PaymentDBF.SUR_NAM),
                 (String) payment.getField(PaymentDBF.N_NAME), (String) payment.getField(PaymentDBF.VUL_NAME),
                 (String) payment.getField(PaymentDBF.BLD_NUM), (String) payment.getField(PaymentDBF.CORP_NUM),
-                (String) payment.getField(PaymentDBF.FLAT), payment.getOrganizationId(), calculationCenterId, false,
-                sqlSession());
+                (String) payment.getField(PaymentDBF.FLAT), payment.getOrganizationId(), calculationCenterId,
+                (String) payment.getField(PaymentDBF.OWN_NUM_SR), false, sqlSession());
         if (accounts.isEmpty()) {
             return null;
         } else if (accounts.size() == 1) {
@@ -119,8 +121,8 @@ public class PersonAccountLocalBean extends AbstractBean {
                 (String) actualPayment.getField(ActualPaymentDBF.M_NAM), (String) actualPayment.getField(ActualPaymentDBF.SUR_NAM),
                 (String) actualPayment.getField(ActualPaymentDBF.N_NAME), (String) actualPayment.getField(ActualPaymentDBF.VUL_NAME),
                 (String) actualPayment.getField(ActualPaymentDBF.BLD_NUM), (String) actualPayment.getField(ActualPaymentDBF.CORP_NUM),
-                (String) actualPayment.getField(ActualPaymentDBF.FLAT), actualPayment.getOrganizationId(), calculationCenterId, false,
-                sqlSession());
+                (String) actualPayment.getField(ActualPaymentDBF.FLAT), actualPayment.getOrganizationId(), calculationCenterId,
+                (String) actualPayment.getField(ActualPaymentDBF.OWN_NUM), false, sqlSession());
         final String currentStreetType = (String) actualPayment.getField(ActualPaymentDBF.VUL_CAT);
         if (accounts.isEmpty()) {
             return null;
@@ -206,6 +208,7 @@ public class PersonAccountLocalBean extends AbstractBean {
         personAccount.setApartment((String) payment.getField(PaymentDBF.FLAT));
         personAccount.setOsznId(payment.getOrganizationId());
         personAccount.setCalculationCenterId(calculationCenterId);
+        personAccount.setPuAccountNumber((String) payment.getField(PaymentDBF.OWN_NUM_SR));
         personAccount.setAccountNumber(accountNumber);
         return personAccount;
     }
@@ -222,8 +225,8 @@ public class PersonAccountLocalBean extends AbstractBean {
                         (String) payment.getField(PaymentDBF.M_NAM), (String) payment.getField(PaymentDBF.SUR_NAM),
                         (String) payment.getField(PaymentDBF.N_NAME), (String) payment.getField(PaymentDBF.VUL_NAME),
                         (String) payment.getField(PaymentDBF.BLD_NUM), (String) payment.getField(PaymentDBF.CORP_NUM),
-                        (String) payment.getField(PaymentDBF.FLAT), payment.getOrganizationId(), calculationCenterId, false,
-                        sqlSession());
+                        (String) payment.getField(PaymentDBF.FLAT), payment.getOrganizationId(), calculationCenterId,
+                        (String) payment.getField(PaymentDBF.OWN_NUM_SR), false, sqlSession());
                 if (accounts.isEmpty()) {
                     insert(newPersonAccount, session);
                 } else if (accounts.size() == 1) {
@@ -258,6 +261,7 @@ public class PersonAccountLocalBean extends AbstractBean {
         personAccount.setStreetType((String) actualPayment.getField(ActualPaymentDBF.VUL_CAT));
         personAccount.setOsznId(actualPayment.getOrganizationId());
         personAccount.setCalculationCenterId(calculationCenterId);
+        personAccount.setPuAccountNumber((String) actualPayment.getField(ActualPaymentDBF.OWN_NUM));
         personAccount.setAccountNumber(accountNumber);
         return personAccount;
     }
@@ -274,8 +278,8 @@ public class PersonAccountLocalBean extends AbstractBean {
                         (String) actualPayment.getField(ActualPaymentDBF.M_NAM), (String) actualPayment.getField(ActualPaymentDBF.SUR_NAM),
                         (String) actualPayment.getField(ActualPaymentDBF.N_NAME), (String) actualPayment.getField(ActualPaymentDBF.VUL_NAME),
                         (String) actualPayment.getField(ActualPaymentDBF.BLD_NUM), (String) actualPayment.getField(ActualPaymentDBF.CORP_NUM),
-                        (String) actualPayment.getField(ActualPaymentDBF.FLAT), actualPayment.getOrganizationId(), calculationCenterId, false,
-                        sqlSession());
+                        (String) actualPayment.getField(ActualPaymentDBF.FLAT), actualPayment.getOrganizationId(), calculationCenterId,
+                        (String) actualPayment.getField(ActualPaymentDBF.OWN_NUM), false, sqlSession());
                 final String currentStreetType = (String) actualPayment.getField(ActualPaymentDBF.VUL_CAT);
                 if (accounts.isEmpty()) {
                     insert(newPersonAccount, session);
@@ -356,7 +360,7 @@ public class PersonAccountLocalBean extends AbstractBean {
         List<PersonAccount> accounts = findAccounts(personAccount.getFirstName(), personAccount.getMiddleName(),
                 personAccount.getLastName(), personAccount.getCity(), personAccount.getStreet(), personAccount.getBuildingNumber(),
                 personAccount.getBuildingCorp(), personAccount.getApartment(), personAccount.getOsznId(),
-                personAccount.getCalculationCenterId(), false, sqlSession());
+                personAccount.getCalculationCenterId(), personAccount.getPuAccountNumber(), false, sqlSession());
         if (accounts.size() > 1) {
             String accountNumber = haveTheSameAccountNumber(accounts);
             if (accountNumber != null) {

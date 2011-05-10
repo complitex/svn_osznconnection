@@ -52,13 +52,10 @@ public class PersonAccountList extends ScrollListPage {
 
     @EJB
     private PersonAccountLocalBean personAccountLocalBean;
-
     @EJB(name = "OsznOrganizationStrategy")
     private IOsznOrganizationStrategy organizationStrategy;
-
     @EJB
     private LocaleBean localeBean;
-
     private IModel<PersonAccountExample> example;
 
     public PersonAccountList() {
@@ -124,6 +121,7 @@ public class PersonAccountList extends ScrollListPage {
         };
         dataProvider.setSort(getSortProperty(""), getSortOrder(true));
 
+        filterForm.add(new TextField<String>("puAccountNumberFilter", new PropertyModel<String>(example, "puAccountNumber")));
         filterForm.add(new TextField<String>("firstNameFilter", new PropertyModel<String>(example, "firstName")));
         filterForm.add(new TextField<String>("middleNameFilter", new PropertyModel<String>(example, "middleName")));
         filterForm.add(new TextField<String>("lastNameFilter", new PropertyModel<String>(example, "lastName")));
@@ -222,6 +220,7 @@ public class PersonAccountList extends ScrollListPage {
             @Override
             protected void populateItem(Item<PersonAccount> item) {
                 PersonAccount personAccount = item.getModelObject();
+                item.add(new Label("puAccountNumber", personAccount.getPuAccountNumber()));
                 item.add(new Label("firstName", personAccount.getFirstName()));
                 item.add(new Label("middleName", personAccount.getMiddleName()));
                 item.add(new Label("lastName", personAccount.getLastName()));
@@ -241,6 +240,8 @@ public class PersonAccountList extends ScrollListPage {
         };
         filterForm.add(data);
 
+        filterForm.add(new ArrowOrderByBorder("puAccountNumberHeader", PersonAccountLocalBean.OrderBy.PU_ACCOUNT_NUMBER.getOrderBy(),
+                dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("lastNameHeader", PersonAccountLocalBean.OrderBy.LAST_NAME.getOrderBy(), dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("firstNameHeader", PersonAccountLocalBean.OrderBy.FIRST_NAME.getOrderBy(), dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("middleNameHeader", PersonAccountLocalBean.OrderBy.MIDDLE_NAME.getOrderBy(), dataProvider, data, content));
