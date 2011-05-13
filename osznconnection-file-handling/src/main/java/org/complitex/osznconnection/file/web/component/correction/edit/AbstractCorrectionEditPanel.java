@@ -17,7 +17,6 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.model.ResourceModel;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
 import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
@@ -112,12 +111,12 @@ public abstract class AbstractCorrectionEditPanel extends Panel {
         return false;
     }
 
-    protected boolean checkCorrectionEmptiness(){
+    protected boolean checkCorrectionEmptiness() {
         return true;
     }
 
     protected final boolean validate() {
-        boolean valid = validateHook();
+        boolean valid = preValidate();
         if (checkCorrectionEmptiness() && Strings.isEmpty(getModel().getCorrection())) {
             error(getNullCorrectionErrorMessage());
             valid = false;
@@ -135,7 +134,7 @@ public abstract class AbstractCorrectionEditPanel extends Panel {
         return valid;
     }
 
-    protected boolean validateHook(){
+    protected boolean preValidate() {
         return true;
     }
 

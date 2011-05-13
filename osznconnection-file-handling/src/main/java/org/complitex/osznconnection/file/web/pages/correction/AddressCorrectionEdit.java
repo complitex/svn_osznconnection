@@ -205,7 +205,7 @@ public class AddressCorrectionEdit extends FormTemplatePage {
         }
 
         @Override
-        protected boolean validateHook() {
+        protected boolean preValidate() {
             if (Strings.isEmpty(getModel().getCorrection()) || getModel().getParentId() == null) {
                 error(getString("correction_required"));
                 return false;
@@ -325,7 +325,7 @@ public class AddressCorrectionEdit extends FormTemplatePage {
         }
 
         @Override
-        protected boolean validateHook() {
+        protected boolean preValidate() {
             if (Strings.isEmpty(getModel().getCorrection()) || getModel().getParentId() == null) {
                 error(getString("correction_required"));
                 return false;
@@ -426,7 +426,7 @@ public class AddressCorrectionEdit extends FormTemplatePage {
         }
 
         @Override
-        protected boolean validateHook() {
+        protected boolean preValidate() {
             if (Strings.isEmpty(getModel().getCorrection()) || getModel().getParentId() == null) {
                 error(getString("correction_required"));
                 return false;
