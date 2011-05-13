@@ -30,6 +30,7 @@ import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.complitex.address.strategy.street_type.StreetTypeStrategy;
 import org.complitex.dictionary.entity.example.DomainObjectExample;
 import org.complitex.dictionary.strategy.IStrategy;
 import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
@@ -58,6 +59,8 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
     private StrategyFactory strategyFactory;
     @EJB
     private StatusRenderService statusRenderService;
+    @EJB(name = "Street_typeStrategy")
+    private StreetTypeStrategy streetTypeStrategy;
     private CORRECTED_ENTITY correctedEntity;
     private Dialog dialog;
     private SearchComponent searchComponent;
@@ -128,13 +131,13 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
         container.add(searchComponent);
 
         DomainObjectExample example = new DomainObjectExample();
-        List<? extends DomainObject> streetTypes = strategyFactory.getStrategy("street_type").find(example);
+        List<? extends DomainObject> streetTypes = streetTypeStrategy.find(example);
         streetTypeModel = new Model<DomainObject>();
         DomainObjectDisableAwareRenderer renderer = new DomainObjectDisableAwareRenderer() {
 
             @Override
             public Object getDisplayValue(DomainObject object) {
-                return strategyFactory.getStrategy("street_type").displayDomainObject(object, getLocale());
+                return streetTypeStrategy.displayFullName(object, getLocale());
             }
         };
         streetTypeSelect = new DisableAwareDropDownChoice<DomainObject>("streetTypeSelect", streetTypeModel,
