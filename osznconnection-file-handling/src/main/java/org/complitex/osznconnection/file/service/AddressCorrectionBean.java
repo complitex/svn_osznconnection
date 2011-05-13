@@ -20,6 +20,7 @@ import javax.ejb.Stateless;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import org.complitex.address.strategy.street_type.StreetTypeStrategy;
 import static org.complitex.dictionary.util.StringUtil.*;
 
 /**
@@ -35,6 +36,8 @@ public class AddressCorrectionBean extends CorrectionBean {
     private LocaleBean localeBean;
     @EJB
     private OsznSessionBean osznSessionBean;
+    @EJB
+    private StreetTypeStrategy streetTypeStrategy;
 
     /**
      * Находит id внутреннего объекта системы в таблице коррекций
@@ -89,7 +92,7 @@ public class AddressCorrectionBean extends CorrectionBean {
     }
 
     @Transactional
-    public List<Long> findLocalCorrectionStreetObjectIds(Long parentId, String street, long organizationId){
+    public List<Long> findLocalCorrectionStreetObjectIds(Long parentId, String street, long organizationId) {
         Map<String, Object> params = Maps.newHashMap();
         params.put("parentId", parentId);
         params.put("street", street);
@@ -98,7 +101,7 @@ public class AddressCorrectionBean extends CorrectionBean {
     }
 
     @Transactional
-    public List<StreetCorrection> findStreetLocalCorrectionsByStreetId(long streetId, long parentId, String street, long organizationId){
+    public List<StreetCorrection> findStreetLocalCorrectionsByStreetId(long streetId, long parentId, String street, long organizationId) {
         Map<String, Object> params = Maps.newHashMap();
         params.put("streetId", streetId);
         params.put("parentId", parentId);
@@ -486,6 +489,7 @@ public class AddressCorrectionBean extends CorrectionBean {
         IStrategy cityStrategy = strategyFactory.getStrategy("city");
         IStrategy streetStrategy = strategyFactory.getStrategy("street");
         IStrategy buildingStrategy = strategyFactory.getStrategy("building");
+        Locale locale = localeBean.convert(localeBean.getLocale(example.getLocaleId()));
 
         for (Correction c : list) {
             try {
@@ -495,15 +499,12 @@ public class AddressCorrectionBean extends CorrectionBean {
                     building = buildingStrategy.findById(c.getObjectId(), true);
                     c.setEditable(false);
                 }
-
                 SearchComponentState state = buildingStrategy.getSearchComponentStateForParent(building.getParentId(), "building_address", null);
                 DomainObject street = state.get("street");
                 DomainObject city = state.get("city");
-                Locale locale = localeBean.convert(localeBean.getLocale(example.getLocaleId()));
                 String displayBuilding = buildingStrategy.displayDomainObject(building, locale);
                 String displayStreet = streetStrategy.displayDomainObject(street, locale);
                 String displayCity = cityStrategy.displayDomainObject(city, locale);
-
                 c.setDisplayObject(displayCity + ", " + displayStreet + ", " + displayBuilding);
             } catch (Exception e) {
                 log.warn("[Полный адрес не найден]", e);
@@ -511,7 +512,6 @@ public class AddressCorrectionBean extends CorrectionBean {
                 c.setEditable(false);
             }
         }
-
         return list;
     }
 
@@ -534,32 +534,26 @@ public class AddressCorrectionBean extends CorrectionBean {
 
         IStrategy streetStrategy = strategyFactory.getStrategy("street");
         IStrategy cityStrategy = strategyFactory.getStrategy("city");
+        Locale locale = localeBean.convert(localeBean.getLocale(example.getLocaleId()));
 
         for (Correction c : streets) {
             DomainObject street = streetStrategy.findById(c.getObjectId(), false);
-
             if (street == null) {
                 street = streetStrategy.findById(c.getObjectId(), true);
                 c.setEditable(false);
             }
-
             DomainObject city = null;
-
             if (c.isEditable()) {
                 city = cityStrategy.findById(street.getParentId(), false);
             }
-
             if (city == null) {
                 city = cityStrategy.findById(street.getParentId(), true);
                 c.setEditable(false);
             }
-
-            Locale locale = localeBean.convert(localeBean.getLocale(example.getLocaleId()));
             String displayCity = cityStrategy.displayDomainObject(city, locale);
             String displayStreet = streetStrategy.displayDomainObject(street, locale);
             c.setDisplayObject(displayCity + ", " + displayStreet);
         }
-
         return streets;
     }
 
@@ -574,32 +568,47 @@ public class AddressCorrectionBean extends CorrectionBean {
         List<Correction> districts = sqlSession().selectList(ADDRESS_BEAN_MAPPING_NAMESPACE + ".findDistricts", example);
         IStrategy districtStrategy = strategyFactory.getStrategy("district");
         IStrategy cityStrategy = strategyFactory.getStrategy("city");
+        Locale locale = localeBean.convert(localeBean.getLocale(example.getLocaleId()));
 
         for (Correction c : districts) {
             DomainObject district = districtStrategy.findById(c.getObjectId(), false);
-
             if (district == null) {
                 district = districtStrategy.findById(c.getObjectId(), true);
                 c.setEditable(false);
             }
-
             DomainObject city = null;
-
             if (c.isEditable()) {
                 city = cityStrategy.findById(district.getParentId(), false);
             }
-
             if (city == null) {
                 city = cityStrategy.findById(district.getParentId(), true);
                 c.setEditable(false);
             }
-
-            Locale locale = localeBean.convert(localeBean.getLocale(example.getLocaleId()));
             String displayCity = cityStrategy.displayDomainObject(city, locale);
             String displayDistrict = districtStrategy.displayDomainObject(district, locale);
             c.setDisplayObject(displayCity + ", " + displayDistrict);
         }
         return districts;
+    }
+
+    @Transactional
+    public List<Correction> findStreetTypes(CorrectionExample example) {
+        example.setAdmin(osznSessionBean.isAdmin());
+        example.setOrganizations(osznSessionBean.getAllOuterOrganizationString());
+
+        List<Correction> streetTypeCorrections = sqlSession().selectList(CORRECTION_BEAN_MAPPING_NAMESPACE + ".find", example);
+        if (streetTypeCorrections != null && !streetTypeCorrections.isEmpty()) {
+            Locale locale = localeBean.convert(localeBean.getLocale(example.getLocaleId()));
+            for (Correction streetTypeCorrection : streetTypeCorrections) {
+                DomainObject streetTypeObject = streetTypeStrategy.findById(streetTypeCorrection.getObjectId(), false);
+                if (streetTypeObject == null) {
+                    streetTypeObject = streetTypeStrategy.findById(streetTypeCorrection.getObjectId(), true);
+                    streetTypeCorrection.setEditable(false);
+                }
+                streetTypeCorrection.setDisplayObject(streetTypeStrategy.displayFullName(streetTypeObject, locale));
+            }
+        }
+        return streetTypeCorrections;
     }
 
     @Transactional
