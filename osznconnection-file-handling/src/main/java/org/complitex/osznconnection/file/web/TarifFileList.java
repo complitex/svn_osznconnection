@@ -9,7 +9,6 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.datetime.markup.html.basic.DateLabel;
-import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.markup.html.JavascriptPackageResource;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -35,7 +34,6 @@ import org.complitex.dictionary.util.StringUtil;
 import org.complitex.dictionary.web.component.*;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
-import org.complitex.osznconnection.file.service.process.ProcessType;
 import org.complitex.template.web.component.toolbar.ToolbarButton;
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.TemplatePage;
@@ -52,6 +50,7 @@ import org.complitex.resources.WebCommonResourceInitializer;
 
 import javax.ejb.EJB;
 import java.util.*;
+import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
 
 import static org.complitex.osznconnection.file.service.process.ProcessType.LOAD_TARIF;
@@ -64,25 +63,17 @@ import static org.complitex.osznconnection.file.service.process.ProcessType.LOAD
 public class TarifFileList extends TemplatePage {
 
     private final static String IMAGE_AJAX_LOADER = "images/ajax-loader2.gif";
-
-    @EJB(name = "RequestFileBean")
+    @EJB
     private RequestFileBean requestFileBean;
-
     @EJB(name = "OsznOrganizationStrategy")
     private IOsznOrganizationStrategy organizationStrategy;
-
-    @EJB(name = "ProcessManagerBean")
+    @EJB
     private ProcessManagerBean processManagerBean;
-
-    @EJB(name = "LogBean")
+    @EJB
     private LogBean logBean;
-
     private int waitForStopTimer;
-
     private boolean completedDisplayed = false;
-
     private final static String ITEM_ID_PREFIX = "item";
-
     private RequestFileLoadPanel requestFileLoadPanel;
 
     public TarifFileList(PageParameters parameters) {
@@ -178,10 +169,10 @@ public class TarifFileList extends TemplatePage {
         final Map<RequestFile, IModel<Boolean>> selectModels = new HashMap<RequestFile, IModel<Boolean>>();
 
         //Модель данных списка
-        final SortableDataProvider<RequestFile> dataProvider = new SortableDataProvider<RequestFile>() {
+        final DataProvider<RequestFile> dataProvider = new DataProvider<RequestFile>() {
 
             @Override
-            public Iterator<? extends RequestFile> iterator(int first, int count) {
+            protected Iterable<? extends RequestFile> getData(int first, int count) {
                 RequestFileFilter filter = filterModel.getObject();
 
                 //save preferences to session
@@ -202,17 +193,12 @@ public class TarifFileList extends TemplatePage {
                     selectModels.put(rf, new Model<Boolean>(false));
                 }
 
-                return requestFiles.iterator();
+                return requestFiles;
             }
 
             @Override
-            public int size() {
+            protected int getSize() {
                 return requestFileBean.size(filterModel.getObject());
-            }
-
-            @Override
-            public IModel<RequestFile> model(RequestFile object) {
-                return new Model<RequestFile>(object);
             }
         };
         dataProvider.setSort(getSortProperty("loaded"), getSortOrder(false));
@@ -257,11 +243,11 @@ public class TarifFileList extends TemplatePage {
 
                 String status = "";
 
-                if (isLoaded(rf)){
+                if (isLoaded(rf)) {
                     status = getStringOrKey("status.loaded");
-                }else if (isLoading(rf)){
+                } else if (isLoading(rf)) {
                     status = getStringOrKey("status.loading");
-                }else if (isLoadError(rf)){
+                } else if (isLoadError(rf)) {
                     status = getStringOrKey("status.load_error");
                 }
 
@@ -337,10 +323,10 @@ public class TarifFileList extends TemplatePage {
         };
         filterForm.add(delete);
 
-         //Диалог загрузки
+        //Диалог загрузки
         requestFileLoadPanel = new RequestFileLoadPanel("load_panel",
                 getString("load_panel_title"),
-                new RequestFileLoadPanel.ILoader(){
+                new RequestFileLoadPanel.ILoader() {
 
                     @Override
                     public void load(Long organizationId, String districtCode, int monthFrom, int monthTo, int year) {
@@ -357,17 +343,17 @@ public class TarifFileList extends TemplatePage {
         return processManagerBean.isProcessing(LOAD_TARIF);
     }
 
-    private boolean isLoading(RequestFile requestFile){
+    private boolean isLoading(RequestFile requestFile) {
         return processManagerBean.isProcessing(LOAD_TARIF)
                 && requestFile.getLoadedRecordCount() < requestFile.getDbfRecordCount();
     }
 
-    private boolean isLoaded(RequestFile requestFile){
+    private boolean isLoaded(RequestFile requestFile) {
         return requestFile.getLoadedRecordCount().equals(requestFile.getDbfRecordCount())
                 && requestFile.getDbfRecordCount() != 0;
     }
 
-    private boolean isLoadError(RequestFile requestFile){
+    private boolean isLoadError(RequestFile requestFile) {
         return !processManagerBean.isProcessing(LOAD_TARIF) && !isLoaded(requestFile);
     }
 
@@ -379,12 +365,12 @@ public class TarifFileList extends TemplatePage {
     private void showMessages(AjaxRequestTarget target) {
         List<RequestFile> list = processManagerBean.getProcessed(LOAD_TARIF, TarifFileList.class);
 
-        for (RequestFile rf : list){
+        for (RequestFile rf : list) {
 
-            if (rf.getLoadedRecordCount().equals(rf.getDbfRecordCount()) && rf.getDbfRecordCount() != 0){
+            if (rf.getLoadedRecordCount().equals(rf.getDbfRecordCount()) && rf.getDbfRecordCount() != 0) {
                 info(getStringFormat("tarif.loaded", rf.getFullName()));
                 highlightProcessed(target, rf);
-            }else {
+            } else {
                 error(getStringFormat("tarif.load_error", rf.getFullName()));
                 highlightError(target, rf);
             }

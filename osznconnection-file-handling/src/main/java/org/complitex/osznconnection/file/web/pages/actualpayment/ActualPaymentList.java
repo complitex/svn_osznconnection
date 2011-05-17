@@ -11,7 +11,6 @@ import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.authorization.UnauthorizedInstantiationException;
 import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
-import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -52,8 +51,8 @@ import org.slf4j.LoggerFactory;
 import javax.ejb.EJB;
 import java.io.File;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
+import org.complitex.dictionary.web.component.datatable.DataProvider;
 
 /**
  *
@@ -129,28 +128,23 @@ public final class ActualPaymentList extends TemplatePage {
         };
         add(statusDetailPanel);
 
-        final SortableDataProvider<ActualPayment> dataProvider = new SortableDataProvider<ActualPayment>() {
+        final DataProvider<ActualPayment> dataProvider = new DataProvider<ActualPayment>() {
 
             @Override
-            public Iterator<? extends ActualPayment> iterator(int first, int count) {
+            protected Iterable<? extends ActualPayment> getData(int first, int count) {
                 example.getObject().setAsc(getSort().isAscending());
                 if (!Strings.isEmpty(getSort().getProperty())) {
                     example.getObject().setOrderByClause(getSort().getProperty());
                 }
                 example.getObject().setStart(first);
                 example.getObject().setSize(count);
-                return actualPaymentBean.find(example.getObject()).iterator();
+                return actualPaymentBean.find(example.getObject());
             }
 
             @Override
-            public int size() {
+            protected int getSize() {
                 example.getObject().setAsc(getSort().isAscending());
                 return actualPaymentBean.count(example.getObject());
-            }
-
-            @Override
-            public IModel<ActualPayment> model(ActualPayment object) {
-                return new Model<ActualPayment>(object);
             }
         };
         dataProvider.setSort("", true);

@@ -9,7 +9,6 @@ import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.datetime.markup.html.basic.DateLabel;
-import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.markup.html.JavascriptPackageResource;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -52,6 +51,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import java.util.*;
+import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
 import org.complitex.template.web.pages.ScrollListPage;
 
@@ -63,33 +63,25 @@ import static org.complitex.osznconnection.file.service.process.ProcessType.*;
  */
 @AuthorizeInstantiation(SecurityRole.AUTHORIZED)
 public class ActualPaymentFileList extends ScrollListPage {
-    private static final Logger log = LoggerFactory.getLogger(ActualPaymentFileList.class);
 
+    private static final Logger log = LoggerFactory.getLogger(ActualPaymentFileList.class);
     private final static String IMAGE_AJAX_LOADER = "images/ajax-loader2.gif";
     private final static String IMAGE_AJAX_WAITING = "images/ajax-waiting.gif";
-
     @EJB
     private RequestFileBean requestFileBean;
-
     @EJB(name = "OsznOrganizationStrategy")
     private IOsznOrganizationStrategy organizationStrategy;
-
     @EJB
     private ProcessManagerBean processManagerBean;
-
     @EJB
     private LogBean logBean;
-
     private int waitForStopTimer;
     private int timerIndex = 0;
     private Map<ProcessType, Boolean> completedDisplayed = new HashMap<ProcessType, Boolean>();
-
     private final static String ITEM_ID_PREFIX = "item";
-
     private RequestFileLoadPanel requestFileLoadPanel;
     private WebMarkupContainer buttonContainer;
     private PagingNavigator pagingNavigator;
-
     private Map<Long, IModel<Boolean>> selectModels;
 
     public ActualPaymentFileList(PageParameters parameters) {
@@ -144,7 +136,8 @@ public class ActualPaymentFileList extends ScrollListPage {
         filterForm.add(filter_reset);
 
         //Select all checkbox
-        filterForm.add(new CheckBox("select_all", new Model<Boolean>(false)){
+        filterForm.add(new CheckBox("select_all", new Model<Boolean>(false)) {
+
             @Override
             public boolean isEnabled() {
                 return !isProcessing();
@@ -188,7 +181,7 @@ public class ActualPaymentFileList extends ScrollListPage {
         //Год
         filterForm.add(new YearDropDownChoice("year"));
 
-         //Загружено записей
+        //Загружено записей
         filterForm.add(new TextField<Integer>("loadedRecordCount", Integer.class));
 
         //Связано записей
@@ -217,10 +210,10 @@ public class ActualPaymentFileList extends ScrollListPage {
         selectModels = new HashMap<Long, IModel<Boolean>>();
 
         //Модель данных списка
-        final SortableDataProvider<RequestFile> dataProvider = new SortableDataProvider<RequestFile>() {
+        final DataProvider<RequestFile> dataProvider = new DataProvider<RequestFile>() {
 
             @Override
-            public Iterator<? extends RequestFile> iterator(int first, int count) {
+            protected Iterable<? extends RequestFile> getData(int first, int count) {
                 RequestFileFilter filter = filterModel.getObject();
 
                 //save preferences to session
@@ -242,17 +235,12 @@ public class ActualPaymentFileList extends ScrollListPage {
                     }
                 }
 
-                return requestFiles.iterator();
+                return requestFiles;
             }
 
             @Override
-            public int size() {
+            protected int getSize() {
                 return requestFileBean.size(filterModel.getObject());
-            }
-
-            @Override
-            public IModel<RequestFile> model(RequestFile object) {
-                return new Model<RequestFile>(object);
             }
         };
         dataProvider.setSort(getSortProperty("id"), getSortOrder(false));
@@ -272,8 +260,9 @@ public class ActualPaymentFileList extends ScrollListPage {
                 item.setOutputMarkupId(true);
                 item.setMarkupId(ITEM_ID_PREFIX + requestFileId);
 
-               //Выбор файлов
-                CheckBox checkBox = new CheckBox("selected", selectModels.get(requestFileId)){
+                //Выбор файлов
+                CheckBox checkBox = new CheckBox("selected", selectModels.get(requestFileId)) {
+
                     @Override
                     public boolean isVisible() {
                         RequestFile requestFile = item.getModelObject();
@@ -287,6 +276,7 @@ public class ActualPaymentFileList extends ScrollListPage {
                 };
 
                 checkBox.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+
                     @Override
                     protected void onUpdate(AjaxRequestTarget target) {
                         //update form component model
@@ -297,7 +287,8 @@ public class ActualPaymentFileList extends ScrollListPage {
                 item.add(checkBox);
 
                 //Анимация в обработке
-                item.add(new Image("processing", new ResourceReference(IMAGE_AJAX_LOADER)){
+                item.add(new Image("processing", new ResourceReference(IMAGE_AJAX_LOADER)) {
+
                     @Override
                     public boolean isVisible() {
                         return item.getModelObject().isProcessing();
@@ -305,7 +296,8 @@ public class ActualPaymentFileList extends ScrollListPage {
                 });
 
                 //Анимация ожидание
-                Image waiting = new Image("waiting", new ResourceReference(IMAGE_AJAX_WAITING)){
+                Image waiting = new Image("waiting", new ResourceReference(IMAGE_AJAX_WAITING)) {
+
                     @Override
                     public boolean isVisible() {
                         return isWaiting(item.getModelObject()) && !item.getModelObject().isProcessing();
@@ -316,7 +308,7 @@ public class ActualPaymentFileList extends ScrollListPage {
                 //Идентификатор файла
                 item.add(new Label("id", StringUtil.valueOf(requestFileId)));
 
-               //Дата загрузки
+                //Дата загрузки
                 item.add(DateLabel.forDatePattern("loaded", new Model<Date>(item.getModelObject().getLoaded()),
                         DateUtil.isCurrentDay(item.getModelObject().getLoaded()) ? "HH:mm:ss" : "dd.MM.yy HH:mm:ss"));
 
@@ -330,11 +322,12 @@ public class ActualPaymentFileList extends ScrollListPage {
 
                 //Название
                 item.add(new BookmarkablePageLinkPanel<RequestFile>("name", item.getModelObject().getFullName(),
-                        ScrollListBehavior.SCROLL_PREFIX+String.valueOf(item.getModelObject().getId()), ActualPaymentList.class,
+                        ScrollListBehavior.SCROLL_PREFIX + String.valueOf(item.getModelObject().getId()), ActualPaymentList.class,
                         new PageParameters("request_file_id=" + item.getModelObject().getId())));
 
                 //Количество загруженных записей
                 item.add(new Label("loaded_record_count", new LoadableDetachableModel<String>() {
+
                     @Override
                     protected String load() {
                         return StringUtil.valueOf(item.getModelObject().getLoadedRecordCount());
@@ -343,6 +336,7 @@ public class ActualPaymentFileList extends ScrollListPage {
 
                 //Количество связанных записей
                 item.add(new Label("binded_record_count", new LoadableDetachableModel<String>() {
+
                     @Override
                     protected String load() {
                         return StringUtil.valueOf(item.getModelObject().getBindedRecordCount());
@@ -350,20 +344,22 @@ public class ActualPaymentFileList extends ScrollListPage {
                 }));
 
                 //Количество обработанных записей
-                item.add(new Label("filled_record_count", new LoadableDetachableModel<String>(){
+                item.add(new Label("filled_record_count", new LoadableDetachableModel<String>() {
+
                     @Override
                     protected String load() {
-                        return  StringUtil.valueOf(item.getModelObject().getFilledRecordCount());
+                        return StringUtil.valueOf(item.getModelObject().getFilledRecordCount());
                     }
                 }));
 
                 //Статус
                 item.add(new Label("status", new LoadableDetachableModel<String>() {
+
                     @Override
                     protected String load() {
                         String dots = "";
-                        if (item.getModelObject().isProcessing() && isProcessing()){
-                            dots += StringUtil.getDots(timerIndex%5);
+                        if (item.getModelObject().isProcessing() && isProcessing()) {
+                            dots += StringUtil.getDots(timerIndex % 5);
                         }
 
                         return getStringOrKey(item.getModelObject().getStatus()) + dots;
@@ -390,7 +386,7 @@ public class ActualPaymentFileList extends ScrollListPage {
 
         //Постраничная навигация
         pagingNavigator = new PagingNavigator("paging", dataView, getClass().getName(), filterForm);
-        pagingNavigator.addListener(new IPagingNavigatorListener(){ //clear select checkbox model on page change
+        pagingNavigator.addListener(new IPagingNavigatorListener() { //clear select checkbox model on page change
 
             @Override
             public void onChangePage() {
@@ -399,13 +395,14 @@ public class ActualPaymentFileList extends ScrollListPage {
         });
         filterForm.add(pagingNavigator);
 
-         //Контейнер кнопок для ajax
+        //Контейнер кнопок для ajax
         buttonContainer = new WebMarkupContainer("buttons");
         buttonContainer.setOutputMarkupId(true);
         filterForm.add(buttonContainer);
 
         //Загрузить
-        buttonContainer.add(new Button("load"){
+        buttonContainer.add(new Button("load") {
+
             @Override
             public void onSubmit() {
                 requestFileLoadPanel.open();
@@ -462,7 +459,7 @@ public class ActualPaymentFileList extends ScrollListPage {
                 for (Long requestFileId : getSelected()) {
                     RequestFile requestFile = requestFileBean.findById(requestFileId);
 
-                    if (requestFile != null){
+                    if (requestFile != null) {
                         try {
                             requestFileBean.delete(requestFile);
 
@@ -499,7 +496,7 @@ public class ActualPaymentFileList extends ScrollListPage {
                 return processManagerBean.isProcessing(LOAD_ACTUAL_PAYMENT);
             }
         });
-        
+
         //Отменить связывание
         buttonContainer.add(new Button("bind_cancel") {
 
@@ -515,7 +512,7 @@ public class ActualPaymentFileList extends ScrollListPage {
                 return processManagerBean.isProcessing(BIND_ACTUAL_PAYMENT);
             }
         });
-        
+
         //Отменить обработку
         buttonContainer.add(new Button("fill_cancel") {
 
@@ -531,7 +528,7 @@ public class ActualPaymentFileList extends ScrollListPage {
                 return processManagerBean.isProcessing(FILL_ACTUAL_PAYMENT);
             }
         });
-        
+
         //Отменить выгрузку
         buttonContainer.add(new Button("save_cancel") {
 
@@ -551,7 +548,7 @@ public class ActualPaymentFileList extends ScrollListPage {
         //Диалог загрузки
         requestFileLoadPanel = new RequestFileLoadPanel("load_panel",
                 getString("load_panel_title"),
-                new RequestFileLoadPanel.ILoader(){
+                new RequestFileLoadPanel.ILoader() {
 
                     @Override
                     public void load(Long organizationId, String districtCode, int monthFrom, int monthTo, int year) {
@@ -571,7 +568,7 @@ public class ActualPaymentFileList extends ScrollListPage {
         }
     }
 
-    private List<Long> getSelected(){
+    private List<Long> getSelected() {
         List<Long> ids = new ArrayList<Long>();
 
         for (Long id : selectModels.keySet()) {
@@ -580,11 +577,11 @@ public class ActualPaymentFileList extends ScrollListPage {
             }
         }
 
-        return  ids;
+        return ids;
     }
 
-    private void clearSelect(){
-        for (IModel<Boolean> model : selectModels.values()){
+    private void clearSelect() {
+        for (IModel<Boolean> model : selectModels.values()) {
             model.setObject(false);
         }
     }
@@ -596,7 +593,7 @@ public class ActualPaymentFileList extends ScrollListPage {
                 || processManagerBean.isProcessing(SAVE_ACTUAL_PAYMENT);
     }
 
-    private boolean isWaiting(RequestFile requestFile){
+    private boolean isWaiting(RequestFile requestFile) {
         return processManagerBean.isWaiting(LOAD_ACTUAL_PAYMENT, requestFile)
                 || processManagerBean.isWaiting(BIND_ACTUAL_PAYMENT, requestFile)
                 || processManagerBean.isWaiting(FILL_ACTUAL_PAYMENT, requestFile)
@@ -606,26 +603,26 @@ public class ActualPaymentFileList extends ScrollListPage {
     private void showMessages() {
         showMessages(null);
     }
-    
+
     private void addMessages(String keyPrefix, AjaxRequestTarget target, ProcessType processType,
-                             RequestFileStatus processedStatus, RequestFileStatus errorStatus){
+            RequestFileStatus processedStatus, RequestFileStatus errorStatus) {
         List<RequestFile> loadList = processManagerBean.getProcessed(processType, ActualPaymentFileList.class);
 
-        for (RequestFile requestFile : loadList){
-            if (requestFile.getStatus().equals(RequestFileStatus.SKIPPED)){
+        for (RequestFile requestFile : loadList) {
+            if (requestFile.getStatus().equals(RequestFileStatus.SKIPPED)) {
                 highlightProcessed(target, requestFile);
                 info(getStringFormat(keyPrefix + ".skipped", requestFile.getFullName()));
-            }else if (requestFile.getStatus().equals(processedStatus)){
+            } else if (requestFile.getStatus().equals(processedStatus)) {
                 highlightProcessed(target, requestFile);
                 info(getStringFormat(keyPrefix + ".processed", requestFile.getFullName()));
-            }else if (requestFile.getStatus().equals(errorStatus)){
+            } else if (requestFile.getStatus().equals(errorStatus)) {
                 highlightError(target, requestFile);
                 error(getStringFormat(keyPrefix + ".error", requestFile.getFullName()));
             }
         }
     }
 
-    private void addCompetedMessages(String keyPrefix, ProcessType processType){
+    private void addCompetedMessages(String keyPrefix, ProcessType processType) {
         if (completedDisplayed.get(processType) == null || !completedDisplayed.get(processType)) {
             //Process completed
             if (processManagerBean.isCompleted(processType)) {
@@ -707,7 +704,7 @@ public class ActualPaymentFileList extends ScrollListPage {
     private void addTimer(WebMarkupContainer dataViewContainer, Form<?> filterForm, AjaxFeedbackPanel messages) {
         boolean needCreateNewTimer = true;
 
-        List<AjaxSelfUpdatingTimerBehavior>  timers = Lists.newArrayList(Iterables.filter(dataViewContainer.getBehaviors(),
+        List<AjaxSelfUpdatingTimerBehavior> timers = Lists.newArrayList(Iterables.filter(dataViewContainer.getBehaviors(),
                 AjaxSelfUpdatingTimerBehavior.class));
         if (timers != null && !timers.isEmpty()) {
             for (AjaxSelfUpdatingTimerBehavior timer : timers) {

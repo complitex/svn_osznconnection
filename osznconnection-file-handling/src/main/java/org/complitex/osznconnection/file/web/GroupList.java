@@ -9,8 +9,6 @@ import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.datetime.markup.html.basic.DateLabel;
-import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
-import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.JavascriptPackageResource;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -54,6 +52,7 @@ import org.complitex.template.web.security.SecurityRole;
 
 import javax.ejb.EJB;
 import java.util.*;
+import org.complitex.dictionary.web.component.datatable.DataProvider;
 
 import static org.complitex.osznconnection.file.service.process.ProcessType.*;
 
@@ -66,32 +65,24 @@ public class GroupList extends ScrollListPage {
 
     private final static String IMAGE_AJAX_LOADER = "images/ajax-loader2.gif";
     private final static String IMAGE_AJAX_WAITING = "images/ajax-waiting.gif";
-
-    @EJB(name = "RequestFileGroupBean")
+    @EJB
     private RequestFileGroupBean requestFileGroupBean;
-
     @EJB(name = "OsznOrganizationStrategy")
     private IOsznOrganizationStrategy organizationStrategy;
-
-    @EJB(name = "ProcessManagerBean")
+    @EJB
     private ProcessManagerBean processManagerBean;
-
-    @EJB(name = "LogBean")
+    @EJB
     private LogBean logBean;
-
     private int waitForStopTimer;
     private int timerIndex = 0;
     private Map<ProcessType, Boolean> completedDisplayed = new HashMap<ProcessType, Boolean>();
-
     private final static String ITEM_GROUP_ID_PREFIX = "item";
-
     private RequestFileLoadPanel requestFileLoadPanel;
     private WebMarkupContainer buttonContainer;
     private PagingNavigator pagingNavigator;
-
     private Map<Long, IModel<Boolean>> selectModels;
 
-    public GroupList(PageParameters params){
+    public GroupList(PageParameters params) {
         super(params);
         init(params.getAsLong("group_id"));
     }
@@ -112,7 +103,7 @@ public class GroupList extends ScrollListPage {
 
         //Фильтр модель
         RequestFileGroupFilter groupFilterObject = (RequestFileGroupFilter) getFilterObject(null);
-        if (groupFilterObject == null){
+        if (groupFilterObject == null) {
             groupFilterObject = new RequestFileGroupFilter();
             setFilterObject(groupFilterObject);
         }
@@ -140,7 +131,8 @@ public class GroupList extends ScrollListPage {
         filterForm.add(filter_reset);
 
         //Select all checkbox
-        filterForm.add(new CheckBox("select_all", new Model<Boolean>(false)){
+        filterForm.add(new CheckBox("select_all", new Model<Boolean>(false)) {
+
             @Override
             public boolean isEnabled() {
                 return !isProcessing();
@@ -222,10 +214,10 @@ public class GroupList extends ScrollListPage {
         selectModels = new HashMap<Long, IModel<Boolean>>();
 
         //Модель данных списка
-        final SortableDataProvider<RequestFileGroup> dataProvider = new SortableDataProvider<RequestFileGroup>() {
+        final DataProvider<RequestFileGroup> dataProvider = new DataProvider<RequestFileGroup>() {
 
             @Override
-            public Iterator<? extends RequestFileGroup> iterator(int first, int count) {
+            protected Iterable<? extends RequestFileGroup> getData(int first, int count) {
                 RequestFileGroupFilter groupFilter = filterModel.getObject();
 
                 //save preferences to session
@@ -247,17 +239,12 @@ public class GroupList extends ScrollListPage {
                     }
                 }
 
-                return requestFileGroups.iterator();
+                return requestFileGroups;
             }
 
             @Override
-            public int size() {
+            protected int getSize() {
                 return requestFileGroupBean.getRequestFileGroupsCount(filterModel.getObject());
-            }
-
-            @Override
-            public IModel<RequestFileGroup> model(RequestFileGroup object) {
-                return new Model<RequestFileGroup>(object);
             }
         };
         dataProvider.setSort(getSortProperty("id"), getSortOrder(false));
@@ -278,7 +265,8 @@ public class GroupList extends ScrollListPage {
                 item.setMarkupId(ITEM_GROUP_ID_PREFIX + groupId);
 
                 //Выбор файла
-                CheckBox checkBox = new CheckBox("selected", selectModels.get(groupId)){
+                CheckBox checkBox = new CheckBox("selected", selectModels.get(groupId)) {
+
                     @Override
                     public boolean isVisible() {
                         RequestFileGroup group = item.getModelObject();
@@ -292,6 +280,7 @@ public class GroupList extends ScrollListPage {
                 };
 
                 checkBox.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+
                     @Override
                     protected void onUpdate(AjaxRequestTarget target) {
                         //update form component model
@@ -302,7 +291,8 @@ public class GroupList extends ScrollListPage {
                 item.add(checkBox);
 
                 //Анимация в обработке
-                item.add(new Image("processing", new ResourceReference(IMAGE_AJAX_LOADER)){
+                item.add(new Image("processing", new ResourceReference(IMAGE_AJAX_LOADER)) {
+
                     @Override
                     public boolean isVisible() {
                         return item.getModelObject().isProcessing();
@@ -310,7 +300,8 @@ public class GroupList extends ScrollListPage {
                 });
 
                 //Анимация ожидание
-                Image waiting = new Image("waiting", new ResourceReference(IMAGE_AJAX_WAITING)){
+                Image waiting = new Image("waiting", new ResourceReference(IMAGE_AJAX_WAITING)) {
+
                     @Override
                     public boolean isVisible() {
                         return isWaiting(item.getModelObject()) && !item.getModelObject().isProcessing();
@@ -339,13 +330,14 @@ public class GroupList extends ScrollListPage {
                 item.add(new Label("directory", item.getModelObject().getDirectory()));
 
                 //Название и ссылка на записи начислений
-                item.add(new Label("paymentName", ""){
+                item.add(new Label("paymentName", "") {
+
                     @Override
                     protected void onBeforeRender() {
-                        if (item.getModelObject().getPaymentFile().getId() != null){
+                        if (item.getModelObject().getPaymentFile().getId() != null) {
                             this.replaceWith(new BookmarkablePageLinkPanel<RequestFile>("paymentName",
                                     item.getModelObject().getPaymentFile().getName(),
-                                    ScrollListBehavior.SCROLL_PREFIX+String.valueOf(item.getModelObject().getPaymentFile().getId()),
+                                    ScrollListBehavior.SCROLL_PREFIX + String.valueOf(item.getModelObject().getPaymentFile().getId()),
                                     PaymentList.class,
                                     new PageParameters("request_file_id=" + item.getModelObject().getPaymentFile().getId())));
                         }
@@ -356,13 +348,14 @@ public class GroupList extends ScrollListPage {
 
 
                 //Название и ссылка на записи льгот
-                item.add(new Label("benefitName", ""){
+                item.add(new Label("benefitName", "") {
+
                     @Override
                     protected void onBeforeRender() {
-                        if (item.getModelObject().getBenefitFile().getId() != null){
+                        if (item.getModelObject().getBenefitFile().getId() != null) {
                             this.replaceWith(new BookmarkablePageLinkPanel<RequestFile>("benefitName",
                                     item.getModelObject().getBenefitFile().getName(),
-                                    ScrollListBehavior.SCROLL_PREFIX+String.valueOf(item.getModelObject().getBenefitFile().getId()),
+                                    ScrollListBehavior.SCROLL_PREFIX + String.valueOf(item.getModelObject().getBenefitFile().getId()),
                                     BenefitList.class,
                                     new PageParameters("request_file_id=" + item.getModelObject().getBenefitFile().getId())));
                         }
@@ -373,6 +366,7 @@ public class GroupList extends ScrollListPage {
 
                 //Количество загруженных записей
                 item.add(new Label("loaded_record_count", new LoadableDetachableModel<String>() {
+
                     @Override
                     protected String load() {
                         return StringUtil.valueOf(item.getModelObject().getLoadedRecordCount());
@@ -381,6 +375,7 @@ public class GroupList extends ScrollListPage {
 
                 //Количество связанных записей
                 item.add(new Label("binded_record_count", new LoadableDetachableModel<String>() {
+
                     @Override
                     protected String load() {
                         return StringUtil.valueOf(item.getModelObject().getBindedRecordCount());
@@ -388,20 +383,22 @@ public class GroupList extends ScrollListPage {
                 }));
 
                 //Количество обработанных записей
-                item.add(new Label("filled_record_count", new LoadableDetachableModel<String>(){
+                item.add(new Label("filled_record_count", new LoadableDetachableModel<String>() {
+
                     @Override
                     protected String load() {
-                        return  StringUtil.valueOf(item.getModelObject().getFilledRecordCount());
+                        return StringUtil.valueOf(item.getModelObject().getFilledRecordCount());
                     }
                 }));
 
                 //Статус
                 item.add(new Label("status", new LoadableDetachableModel<String>() {
+
                     @Override
                     protected String load() {
                         String dots = "";
-                        if (item.getModelObject().isProcessing() && isProcessing()){
-                            dots += StringUtil.getDots(timerIndex%5);
+                        if (item.getModelObject().isProcessing() && isProcessing()) {
+                            dots += StringUtil.getDots(timerIndex % 5);
                         }
 
                         return getStringOrKey(item.getModelObject().getStatus()) + dots;
@@ -431,7 +428,7 @@ public class GroupList extends ScrollListPage {
 
         //Постраничная навигация
         pagingNavigator = new PagingNavigator("paging", dataView, getClass().getName(), filterForm);
-        pagingNavigator.addListener(new IPagingNavigatorListener(){ //clear select checkbox model on page change
+        pagingNavigator.addListener(new IPagingNavigatorListener() { //clear select checkbox model on page change
 
             @Override
             public void onChangePage() {
@@ -446,7 +443,8 @@ public class GroupList extends ScrollListPage {
         filterForm.add(buttonContainer);
 
         //Загрузить
-        buttonContainer.add(new Button("load"){
+        buttonContainer.add(new Button("load") {
+
             @Override
             public void onSubmit() {
                 requestFileLoadPanel.open();
@@ -594,7 +592,7 @@ public class GroupList extends ScrollListPage {
         //Диалог загрузки
         requestFileLoadPanel = new RequestFileLoadPanel("load_panel",
                 getString("load_panel_title"),
-                new RequestFileLoadPanel.ILoader(){
+                new RequestFileLoadPanel.ILoader() {
 
                     @Override
                     public void load(Long organizationId, String districtCode, int monthFrom, int monthTo, int year) {
@@ -615,7 +613,7 @@ public class GroupList extends ScrollListPage {
         }
     }
 
-    private List<Long> getSelected(){
+    private List<Long> getSelected() {
         List<Long> ids = new ArrayList<Long>();
 
         for (Long id : selectModels.keySet()) {
@@ -624,11 +622,11 @@ public class GroupList extends ScrollListPage {
             }
         }
 
-        return  ids;
+        return ids;
     }
 
-    private void clearSelect(){
-        for (IModel<Boolean> model : selectModels.values()){
+    private void clearSelect() {
+        for (IModel<Boolean> model : selectModels.values()) {
             model.setObject(false);
         }
     }
@@ -640,7 +638,7 @@ public class GroupList extends ScrollListPage {
                 || processManagerBean.isProcessing(SAVE_GROUP);
     }
 
-    private boolean isWaiting(RequestFileGroup group){
+    private boolean isWaiting(RequestFileGroup group) {
         return processManagerBean.isWaiting(LOAD_GROUP, group)
                 || processManagerBean.isWaiting(BIND_GROUP, group)
                 || processManagerBean.isWaiting(FILL_GROUP, group)
@@ -652,24 +650,24 @@ public class GroupList extends ScrollListPage {
     }
 
     private void addMessages(String keyPrefix, AjaxRequestTarget target, ProcessType processType,
-                             RequestFileStatus processedStatus, RequestFileStatus errorStatus){
+            RequestFileStatus processedStatus, RequestFileStatus errorStatus) {
         List<RequestFileGroup> loadList = processManagerBean.getProcessed(processType, GroupList.class);
 
-        for (RequestFileGroup group : loadList){
-            if (group.getStatus().equals(RequestFileStatus.SKIPPED)){
+        for (RequestFileGroup group : loadList) {
+            if (group.getStatus().equals(RequestFileStatus.SKIPPED)) {
                 highlightProcessed(target, group);
                 info(getStringFormat(keyPrefix + ".skipped", group.getFullName()));
-            }else if (group.getStatus().equals(processedStatus)){
+            } else if (group.getStatus().equals(processedStatus)) {
                 highlightProcessed(target, group);
                 info(getStringFormat(keyPrefix + ".processed", group.getFullName()));
-            }else if (group.getStatus().equals(errorStatus)){
+            } else if (group.getStatus().equals(errorStatus)) {
                 highlightError(target, group);
                 error(getStringFormat(keyPrefix + ".error", group.getFullName()));
             }
         }
     }
 
-    private void addCompetedMessages(String keyPrefix, ProcessType processType){
+    private void addCompetedMessages(String keyPrefix, ProcessType processType) {
         if (completedDisplayed.get(processType) == null || !completedDisplayed.get(processType)) {
             //Process completed
             if (processManagerBean.isCompleted(processType)) {
@@ -703,7 +701,7 @@ public class GroupList extends ScrollListPage {
         addMessages("fill_process", target, FILL_GROUP, RequestFileStatus.FILLED, RequestFileStatus.FILL_ERROR);
         addMessages("save_process", target, SAVE_GROUP, RequestFileStatus.SAVED, RequestFileStatus.SAVE_ERROR);
 
-        for (RequestFile rf : processManagerBean.getLinkError(LOAD_GROUP, true)){
+        for (RequestFile rf : processManagerBean.getLinkError(LOAD_GROUP, true)) {
             error(getStringFormat("request_file.link_error", rf.getFullName()));
         }
 
@@ -713,7 +711,7 @@ public class GroupList extends ScrollListPage {
         addCompetedMessages("save_process", SAVE_GROUP);
     }
 
-    private void highlightProcessed(AjaxRequestTarget target, RequestFileGroup group){
+    private void highlightProcessed(AjaxRequestTarget target, RequestFileGroup group) {
         if (target != null) {
             target.appendJavascript("$('#" + ITEM_GROUP_ID_PREFIX + group.getId() + "')"
                     + ".animate({ backgroundColor: 'lightgreen' }, 300)"
@@ -721,7 +719,7 @@ public class GroupList extends ScrollListPage {
         }
     }
 
-    private void highlightError(AjaxRequestTarget target, RequestFileGroup group){
+    private void highlightError(AjaxRequestTarget target, RequestFileGroup group) {
         if (target != null) {
             target.appendJavascript("$('#" + ITEM_GROUP_ID_PREFIX + group.getId() + "')"
                     + ".animate({ backgroundColor: 'darksalmon' }, 300)"
