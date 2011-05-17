@@ -13,7 +13,6 @@ import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
-import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
@@ -35,12 +34,12 @@ import org.complitex.osznconnection.file.entity.example.CorrectionExample;
 import org.complitex.osznconnection.file.service.CorrectionBean;
 
 import javax.ejb.EJB;
-import java.util.Iterator;
 import java.util.List;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
 import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
+import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.dictionary.web.component.scroll.ScrollBookmarkablePageLink;
 import org.complitex.template.web.component.toolbar.AddItemButton;
 import org.complitex.osznconnection.file.web.model.OrganizationModel;
@@ -118,12 +117,11 @@ public abstract class AbstractCorrectionList extends ScrollListPage {
 
         example = new Model<CorrectionExample>((CorrectionExample) getFilterObject(newExample()));
 
-        final SortableDataProvider<Correction> dataProvider = new SortableDataProvider<Correction>() {
+        final DataProvider<Correction> dataProvider = new DataProvider<Correction>() {
 
             @Override
-            public Iterator<? extends Correction> iterator(int first, int count) {
+            protected Iterable<? extends Correction> getData(int first, int count) {
                 CorrectionExample exampleObject = example.getObject();
-
                 //save preferences to session
                 setFilterObject(example.getObject());
                 setSortOrder(getSort().isAscending());
@@ -136,18 +134,13 @@ public abstract class AbstractCorrectionList extends ScrollListPage {
                 exampleObject.setStart(first);
                 exampleObject.setSize(count);
                 exampleObject.setLocaleId(localeBean.convert(getLocale()).getId());
-                return find(exampleObject).iterator();
+                return find(exampleObject);
             }
 
             @Override
-            public int size() {
+            protected int getSize() {
                 example.getObject().setAsc(getSort().isAscending());
                 return count(example.getObject());
-            }
-
-            @Override
-            public IModel<Correction> model(Correction object) {
-                return new Model<Correction>(object);
             }
         };
         dataProvider.setSort(getSortProperty(""), getSortOrder(true));

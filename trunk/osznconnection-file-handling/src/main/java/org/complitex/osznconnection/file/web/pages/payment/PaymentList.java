@@ -11,7 +11,6 @@ import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.authorization.UnauthorizedInstantiationException;
 import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
-import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
@@ -49,8 +48,8 @@ import org.complitex.template.web.template.TemplatePage;
 import javax.ejb.EJB;
 import java.io.File;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
+import org.complitex.dictionary.web.component.datatable.DataProvider;
 
 /**
  *
@@ -125,28 +124,23 @@ public final class PaymentList extends TemplatePage {
         };
         add(statusDetailPanel);
 
-        final SortableDataProvider<Payment> dataProvider = new SortableDataProvider<Payment>() {
+        final DataProvider<Payment> dataProvider = new DataProvider<Payment>() {
 
             @Override
-            public Iterator<? extends Payment> iterator(int first, int count) {
+            protected Iterable<? extends Payment> getData(int first, int count) {
                 example.getObject().setAsc(getSort().isAscending());
                 if (!Strings.isEmpty(getSort().getProperty())) {
                     example.getObject().setOrderByClause(getSort().getProperty());
                 }
                 example.getObject().setStart(first);
                 example.getObject().setSize(count);
-                return paymentBean.find(example.getObject()).iterator();
+                return paymentBean.find(example.getObject());
             }
 
             @Override
-            public int size() {
+            protected int getSize() {
                 example.getObject().setAsc(getSort().isAscending());
                 return paymentBean.count(example.getObject());
-            }
-
-            @Override
-            public IModel<Payment> model(Payment object) {
-                return new Model<Payment>(object);
             }
         };
         dataProvider.setSort("", true);

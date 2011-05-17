@@ -10,7 +10,6 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
-import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
@@ -31,12 +30,12 @@ import org.complitex.osznconnection.file.entity.example.PersonAccountExample;
 import org.complitex.osznconnection.file.service.PersonAccountLocalBean;
 
 import javax.ejb.EJB;
-import java.util.Iterator;
 import java.util.List;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
 import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
+import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.dictionary.web.component.scroll.ScrollBookmarkablePageLink;
 import org.complitex.osznconnection.file.web.model.OrganizationModel;
 import org.complitex.osznconnection.file.web.pages.util.AddressRenderer;
@@ -88,10 +87,10 @@ public class PersonAccountList extends ScrollListPage {
 
         example = new Model<PersonAccountExample>((PersonAccountExample) getFilterObject(newExample()));
 
-        final SortableDataProvider<PersonAccount> dataProvider = new SortableDataProvider<PersonAccount>() {
+        final DataProvider<PersonAccount> dataProvider = new DataProvider<PersonAccount>() {
 
             @Override
-            public Iterator<? extends PersonAccount> iterator(int first, int count) {
+            protected Iterable<? extends PersonAccount> getData(int first, int count) {
                 //save preferences to session
                 setFilterObject(example.getObject());
                 setSortOrder(getSort().isAscending());
@@ -104,19 +103,13 @@ public class PersonAccountList extends ScrollListPage {
                 example.getObject().setStart(first);
                 example.getObject().setSize(count);
                 example.getObject().setLocaleId(localeBean.convert(getLocale()).getId());
-
-                return personAccountLocalBean.find(example.getObject()).iterator();
+                return personAccountLocalBean.find(example.getObject());
             }
 
             @Override
-            public int size() {
+            protected int getSize() {
                 example.getObject().setAsc(getSort().isAscending());
                 return personAccountLocalBean.count(example.getObject());
-            }
-
-            @Override
-            public IModel<PersonAccount> model(PersonAccount object) {
-                return new Model<PersonAccount>(object);
             }
         };
         dataProvider.setSort(getSortProperty(""), getSortOrder(true));
