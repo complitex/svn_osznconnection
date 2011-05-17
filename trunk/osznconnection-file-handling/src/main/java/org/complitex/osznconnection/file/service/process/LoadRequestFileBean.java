@@ -7,6 +7,7 @@ import org.complitex.dictionary.service.executor.ExecuteException;
 import org.complitex.dictionary.util.DateUtil;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.service.RequestFileBean;
+import org.complitex.osznconnection.file.service.exception.EmptyFileException;
 import org.complitex.osznconnection.file.service.exception.FieldNotFoundException;
 import org.complitex.osznconnection.file.service.exception.LoadException;
 import org.complitex.osznconnection.file.service.exception.SqlSessionException;
@@ -101,6 +102,8 @@ public class LoadRequestFileBean {
                     Integer registry = (Integer) request.getDbfFields().get(PaymentDBF.REE_NUM.name());
                     if (registry != null){
                         requestFile.setRegistry(registry);
+                    }else {
+                        throw new FieldNotFoundException(PaymentDBF.REE_NUM.name());
                     }
 
                     //проверка загружен ли файл
@@ -132,6 +135,12 @@ public class LoadRequestFileBean {
                     batch.clear();
                 }
             }
+
+            //пропуск загрузки если файл пустой
+            if (index < 0){
+                throw new EmptyFileException();
+            }
+
             try {
                 if (!batch.isEmpty()){
                     loadRequestFile.save(batch);
