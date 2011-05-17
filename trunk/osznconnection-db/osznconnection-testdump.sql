@@ -52,7 +52,7 @@ values
 -- Actual payments
 insert into actual_payment(OWN_NUM, F_NAM, M_NAM, SUR_NAM, N_NAME, VUL_CAT, VUL_NAME, VUL_CODE, BLD_NUM, CORP_NUM, FLAT, DAT_BEG, request_file_id)
 values
-    ('107374638','Матвей', 'Матвеевич', 'Матвеев', 'Харьков', 'УЛ1', 'ФРАНТИШЕКА КРАЛА', 123, '25А','', '19', '2010-09-09', 4);
+    ('107374638','Матвей', 'Матвеевич', 'Матвеев', 'Харьков', 'УЛ', 'ФРАНТИШЕКА КРАЛА', 123, '25А','', '19', '2010-09-09', 4);
 --    (123,'Матвей', 'Матвеевич', 'Матвеев', 'Харьков', 'УЛ.', 'ФРАНТИШЕКА КРАЛА', 123, '25А','', '19', '2009-01-01', 4);
 
 
@@ -74,6 +74,8 @@ insert into building_correction(organization_id, correction, correction_corp, ob
 
 insert into street_correction(id, organization_id, correction, object_id, internal_organization_id, parent_id, street_type_correction_id) values (3,2,UPPER('ФРАНТИШЕКА КРАЛА'),5,0,2,13);
 insert into building_correction(organization_id, correction, correction_corp, object_id, internal_organization_id, parent_id) values (2,'25А','',7,0,3);
+insert into street_correction(id, organization_id, correction, object_id, internal_organization_id, parent_id, street_type_correction_id) values (4,2,UPPER('ФРАНТИШЕКА КРАЛА'),5,0,2,13);
+insert into building_correction(organization_id, correction, correction_corp, object_id, internal_organization_id, parent_id) values (2,'23','',8,0,4);
 
 insert into district_correction(organization_id, correction, object_id, internal_organization_id, parent_id) values (2,UPPER('Центральный'),3,0,2);
 
