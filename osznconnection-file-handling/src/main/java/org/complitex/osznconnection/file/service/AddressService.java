@@ -546,7 +546,8 @@ public class AddressService extends AbstractBean {
      */
     @Transactional
     public void resolveOutgoingAddress(Payment payment, long calculationCenterId, ICalculationCenterAdapter adapter) {
-        List<Correction> cityCorrections = addressCorrectionBean.findCityRemoteCorrections(calculationCenterId, payment.getInternalCityId());
+        List<Correction> cityCorrections = addressCorrectionBean.findCityRemoteCorrections(calculationCenterId,
+                payment.getInternalCityId());
         if (cityCorrections.size() == 1) {
             Correction cityCorrection = cityCorrections.get(0);
             adapter.prepareCity(payment, cityCorrection.getCorrection(), cityCorrection.getCode());
@@ -566,25 +567,32 @@ public class AddressService extends AbstractBean {
         }
 
         //поиск улицы
-        List<StreetCorrection> streetCorrections = addressCorrectionBean.findStreetRemoteCorrections(calculationCenterId, payment.getInternalStreetId());
+        StreetCorrection streetCorrection = null;
+        List<StreetCorrection> streetCorrections = addressCorrectionBean.findStreetRemoteCorrections(calculationCenterId,
+                payment.getInternalStreetId());
         if (streetCorrections.size() == 1) {
-            StreetCorrection streetCorrection = streetCorrections.get(0);
-            adapter.prepareStreet(payment, streetCorrection.getCorrection(), streetCorrection.getCode());
-
-            //получаем тип улицы
-            Correction streetTypeCorrection = streetCorrection.getStreetTypeCorrection();
-            if (streetTypeCorrection == null) {
-                payment.setStatus(RequestStatus.STREET_TYPE_UNRESOLVED);
-                return;
-            } else {
-                adapter.prepareStreetType(payment, streetTypeCorrection.getCorrection(), streetTypeCorrection.getCode());
-            }
+            streetCorrection = streetCorrections.get(0);
         } else if (streetCorrections.size() > 1) {
-            payment.setStatus(RequestStatus.MORE_ONE_REMOTE_STREET_CORRECTION);
-            return;
+            streetCorrections = addressCorrectionBean.findStreetRemoteCorrectionsByBuilding(calculationCenterId,
+                    payment.getInternalStreetId(), payment.getInternalBuildingId());
+            if (streetCorrections.size() == 1) {
+                streetCorrection = streetCorrections.get(0);
+            } else {
+                payment.setStatus(RequestStatus.MORE_ONE_REMOTE_STREET_CORRECTION);
+                return;
+            }
         } else {
             payment.setStatus(RequestStatus.STREET_UNRESOLVED);
             return;
+        }
+        adapter.prepareStreet(payment, streetCorrection.getCorrection(), streetCorrection.getCode());
+        //получаем тип улицы
+        Correction streetTypeCorrection = streetCorrection.getStreetTypeCorrection();
+        if (streetTypeCorrection == null) {
+            payment.setStatus(RequestStatus.STREET_TYPE_UNRESOLVED);
+            return;
+        } else {
+            adapter.prepareStreetType(payment, streetTypeCorrection.getCorrection(), streetTypeCorrection.getCode());
         }
 
         //поиск дома
@@ -592,7 +600,8 @@ public class AddressService extends AbstractBean {
                 payment.getInternalBuildingId());
         if (buildingCorrections.size() == 1) {
             BuildingCorrection buildingCorrection = buildingCorrections.get(0);
-            adapter.prepareBuilding(payment, buildingCorrection.getCorrection(), buildingCorrection.getCorrectionCorp(), buildingCorrection.getCode());
+            adapter.prepareBuilding(payment, buildingCorrection.getCorrection(), buildingCorrection.getCorrectionCorp(),
+                    buildingCorrection.getCode());
         } else if (buildingCorrections.size() > 1) {
             payment.setStatus(RequestStatus.MORE_ONE_REMOTE_BUILDING_CORRECTION);
             return;
@@ -608,7 +617,8 @@ public class AddressService extends AbstractBean {
 
     @Transactional
     public void resolveOutgoingDistrict(Payment payment, long calculationCenterId, ICalculationCenterAdapter adapter) {
-        List<Correction> districtCorrections = addressCorrectionBean.findDistrictRemoteCorrections(calculationCenterId, payment.getOrganizationId());
+        List<Correction> districtCorrections = addressCorrectionBean.findDistrictRemoteCorrections(calculationCenterId,
+                payment.getOrganizationId());
         if (districtCorrections.size() == 1) {
             Correction districtCorrection = districtCorrections.get(0);
             adapter.prepareDistrict(payment, districtCorrection.getCorrection(), districtCorrection.getCode());
@@ -621,7 +631,8 @@ public class AddressService extends AbstractBean {
 
     @Transactional
     public void resolveOutgoingAddress(ActualPayment actualPayment, long calculationCenterId, ICalculationCenterAdapter adapter) {
-        List<Correction> cityCorrections = addressCorrectionBean.findCityRemoteCorrections(calculationCenterId, actualPayment.getInternalCityId());
+        List<Correction> cityCorrections = addressCorrectionBean.findCityRemoteCorrections(calculationCenterId,
+                actualPayment.getInternalCityId());
         if (cityCorrections.size() == 1) {
             Correction cityCorrection = cityCorrections.get(0);
             adapter.prepareCity(actualPayment, cityCorrection.getCorrection(), cityCorrection.getCode());
@@ -641,26 +652,32 @@ public class AddressService extends AbstractBean {
         }
 
         //поиск улицы
+        StreetCorrection streetCorrection = null;
         List<StreetCorrection> streetCorrections = addressCorrectionBean.findStreetRemoteCorrections(calculationCenterId,
                 actualPayment.getInternalStreetId());
         if (streetCorrections.size() == 1) {
-            StreetCorrection streetCorrection = streetCorrections.get(0);
-            adapter.prepareStreet(actualPayment, streetCorrection.getCorrection(), streetCorrection.getCode());
-
-            //получаем тип улицы
-            Correction streetTypeCorrection = streetCorrection.getStreetTypeCorrection();
-            if (streetTypeCorrection == null) {
-                actualPayment.setStatus(RequestStatus.STREET_TYPE_UNRESOLVED);
-                return;
-            } else {
-                adapter.prepareStreetType(actualPayment, streetTypeCorrection.getCorrection(), streetTypeCorrection.getCode());
-            }
+            streetCorrection = streetCorrections.get(0);
         } else if (streetCorrections.size() > 1) {
-            actualPayment.setStatus(RequestStatus.MORE_ONE_REMOTE_STREET_CORRECTION);
-            return;
+            streetCorrections = addressCorrectionBean.findStreetRemoteCorrectionsByBuilding(calculationCenterId,
+                    actualPayment.getInternalStreetId(), actualPayment.getInternalBuildingId());
+            if (streetCorrections.size() == 1) {
+                streetCorrection = streetCorrections.get(0);
+            } else {
+                actualPayment.setStatus(RequestStatus.MORE_ONE_REMOTE_STREET_CORRECTION);
+                return;
+            }
         } else {
             actualPayment.setStatus(RequestStatus.STREET_UNRESOLVED);
             return;
+        }
+        adapter.prepareStreet(actualPayment, streetCorrection.getCorrection(), streetCorrection.getCode());
+        //получаем тип улицы
+        Correction streetTypeCorrection = streetCorrection.getStreetTypeCorrection();
+        if (streetTypeCorrection == null) {
+            actualPayment.setStatus(RequestStatus.STREET_TYPE_UNRESOLVED);
+            return;
+        } else {
+            adapter.prepareStreetType(actualPayment, streetTypeCorrection.getCorrection(), streetTypeCorrection.getCode());
         }
 
         //поиск дома
@@ -698,17 +715,13 @@ public class AddressService extends AbstractBean {
     }
 
     /**
-     * Разрешен ли адрес
-     * @param actualPayment
-     * @return
+     * Разрешен ли адрес.
+     * Адрес считаем разрешенным, если статус payment записи не входит в список статусов, указывающих на то что адрес не разрешен локально,
+     * не входит в список статусов, указывающих на то что адрес не разрешен в ЦН, и не равен RequestStatus.ADDRESS_CORRECTED,
+     * который указывает на то, что адрес откорректировали в UI.
+     * См. RequestStatus
      */
     public boolean isAddressResolved(AbstractRequest request) {
-        /*
-         * Адрес считаем разрешенным, если статус payment записи не входит в список статусов, указывающих на то что адрес не разрешен локально,
-         * не входит в список статусов, указывающих на то что адрес не разрешен в ЦН, и не равен RequestStatus.ADDRESS_CORRECTED,
-         * который указывает на то, что адрес откорректировали в UI.
-         * См. RequestStatus
-         */
         return request.getStatus().isAddressResolved();
     }
 

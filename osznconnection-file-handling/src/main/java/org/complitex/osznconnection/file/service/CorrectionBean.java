@@ -13,8 +13,6 @@ import org.complitex.dictionary.strategy.IStrategy;
 import org.complitex.dictionary.strategy.StrategyFactory;
 import org.complitex.osznconnection.file.entity.Correction;
 import org.complitex.osznconnection.file.entity.example.CorrectionExample;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -27,16 +25,12 @@ import java.util.Map;
  */
 @Stateless
 public class CorrectionBean extends AbstractBean {
-    private static final Logger log = LoggerFactory.getLogger(CorrectionBean.class);
 
     protected static final String CORRECTION_BEAN_MAPPING_NAMESPACE = CorrectionBean.class.getName();
-
     @EJB
     protected StrategyFactory strategyFactory;
-
     @EJB
     private LocaleBean localeBean;
-
     @EJB
     private OsznSessionBean osznSessionBean;
 
@@ -58,7 +52,6 @@ public class CorrectionBean extends AbstractBean {
         }
     }
 
-    @SuppressWarnings({"unchecked"})
     @Transactional
     public List<Correction> find(CorrectionExample example) {
         example.setAdmin(osznSessionBean.isAdmin());
@@ -75,7 +68,7 @@ public class CorrectionBean extends AbstractBean {
             for (Correction correction : corrections) {
                 DomainObject object = strategy.findById(correction.getObjectId(), false);
 
-                if (object == null){ //объект доступен только для просмотра
+                if (object == null) { //объект доступен только для просмотра
                     object = strategy.findById(correction.getObjectId(), true);
                     correction.setEditable(false);
                 }

@@ -136,6 +136,13 @@
         AND c.`object_id` = #{objectId}
     </select>
 
+    <select id="findStreetRemoteCorrectionsByBuilding" resultMap="org.complitex.osznconnection.file.service.AddressCorrectionBean.streetCorrection"
+            parameterType="map">
+        SELECT c.`correction`, c.`street_type_correction_id`, c.`organization_code` FROM `street_correction` c
+                JOIN `building_correction` b ON (b.`object_id` = #{buildingId} AND b.`parent_id` = c.`id` AND b.`organization_id` = #{calcCenterId})
+            WHERE c.`organization_id` = #{calcCenterId} AND c.`object_id` = #{streetId}
+    </select>
+
     <select id="findDistrictRemoteCorrections" resultMap="org.complitex.osznconnection.file.service.CorrectionBean.correction"
             parameterType="map">
         SELECT c.`correction`, c.`organization_code` FROM `district_correction` c
