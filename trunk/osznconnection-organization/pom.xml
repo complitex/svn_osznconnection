@@ -11,7 +11,7 @@
 
     <groupId>org.complitex.osznconnection</groupId>
     <artifactId>osznconnection-organization</artifactId>
-    <name>OsznConnection Organization</name>
+    <name>Osznconnection - Organization</name>
 
     <dependencies>
         <dependency>

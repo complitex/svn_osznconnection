@@ -9,7 +9,7 @@
     </parent>
     <groupId>org.complitex.osznconnection</groupId>
     <artifactId>osznconnection-address</artifactId>
-    <name>OsznConnection Address</name>
+    <name>Osznconnection - Address</name>
     <dependencies>
         <dependency>
             <groupId>org.complitex</groupId>

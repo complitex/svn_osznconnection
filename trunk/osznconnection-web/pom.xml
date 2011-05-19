@@ -11,7 +11,7 @@
     <artifactId>osznconnection-web</artifactId>
     <packaging>war</packaging>
 
-    <name>OsznConnection Web</name>
+    <name>Osznconnection - Web</name>
 
     <dependencies>
         <dependency>

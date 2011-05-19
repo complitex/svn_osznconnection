@@ -11,7 +11,7 @@
 
     <groupId>org.complitex.osznconnection</groupId>
     <artifactId>osznconnection-privilege</artifactId>
-    <name>Privilege</name>
+    <name>Osznconnection - Privilege</name>
 
     <dependencies>
         <dependency>

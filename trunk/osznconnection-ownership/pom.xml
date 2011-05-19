@@ -11,7 +11,7 @@
 
     <groupId>org.complitex.osznconnection</groupId>
     <artifactId>osznconnection-ownership</artifactId>
-    <name>Ownership</name>
+    <name>Osznconnection - Ownership</name>
 
     <dependencies>
         <dependency>
