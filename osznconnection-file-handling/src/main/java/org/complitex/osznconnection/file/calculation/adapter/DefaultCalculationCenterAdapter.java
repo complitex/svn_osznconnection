@@ -163,8 +163,9 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
             String district, String streetType, String street, String buildingNumber, String buildingCorp, String apartment,
             Date date) throws DBException {
 
-        if (puAccountNumber == null) {
-            puAccountNumber = "";
+        if(Strings.isEmpty(puAccountNumber)){
+            request.setStatus(RequestStatus.ACCOUNT_NUMBER_MISMATCH);
+            return;
         }
         puAccountNumber = puAccountNumber.trim();
 
@@ -187,8 +188,8 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
                 continue;
             }
             if (puAccountNumber.equals(puAccountNumberInfo.getPuAccountNumber())
-                    || PuAccountNumberInfoParser.match(puAccountNumber, puAccountNumberInfo.getPuAccountNumber())
-                    || puAccountNumber.equals(puAccountNumberInfo.getFullInfo())
+                    || PuAccountNumberInfoParser.matches(puAccountNumber, puAccountNumberInfo.getPuAccountNumber())
+                    || PuAccountNumberInfoParser.matches(puAccountNumber, puAccountNumberInfo.getPuId(), puAccountNumberInfo.getPuAccountNumber())
                     || isMegabankAccount(puAccountNumber, accountDetail.getMegabankAccountNumber())
                     || isCalcCenterAccount(puAccountNumber, accountDetail.getAccountNumber())) {
                 request.setAccountNumber(accountDetail.getAccountNumber());

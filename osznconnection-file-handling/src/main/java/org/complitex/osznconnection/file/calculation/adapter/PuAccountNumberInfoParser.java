@@ -4,7 +4,8 @@
  */
 package org.complitex.osznconnection.file.calculation.adapter;
 
-import java.util.Arrays;
+import org.apache.wicket.util.string.Strings;
+import org.complitex.dictionary.util.StringUtil;
 import org.complitex.osznconnection.file.calculation.adapter.entity.PuAccountNumberInfo;
 import org.complitex.osznconnection.file.calculation.adapter.exception.PuAccountNumberInfoParseException;
 
@@ -24,42 +25,52 @@ public class PuAccountNumberInfoParser {
         puAccountNumberInfo = puAccountNumberInfo.trim();
         String[] parts = puAccountNumberInfo.split("\\.");
         if (parts == null || parts.length != 2) {
-            if (puAccountNumberInfo.endsWith(".")) {
-                if (parts.length == 0) {
-                    return new PuAccountNumberInfo("", "");
-                } else if (parts.length == 1) {
-                    return new PuAccountNumberInfo(parts[0], "");
-                }
-            }
             throw new PuAccountNumberInfoParseException();
         }
-        return new PuAccountNumberInfo(parts[0], parts[1]);
+        String puId = parts[0];
+        if (puId != null) {
+            puId = puId.trim();
+        }
+        String puAccountNumber = parts[1];
+        if (puAccountNumber != null) {
+            puAccountNumber = puAccountNumber.trim();
+        }
+        if (Strings.isEmpty(puId) || Strings.isEmpty(puAccountNumber) || !StringUtil.isNumeric(puId) ||
+                !StringUtil.isNumeric(puAccountNumber)) {
+            throw new PuAccountNumberInfoParseException();
+        }
+        return new PuAccountNumberInfo(puId, puAccountNumber);
     }
 
-    public static boolean match(String realPuAccountNumber, String remotePuAccountNumber) {
-        if (realPuAccountNumber == null) {
-            throw new IllegalArgumentException("Real PU account number is null.");
+    public static boolean matches(String realPuAccountNumber, String remotePuAccountNumber) {
+        if (Strings.isEmpty(realPuAccountNumber)) {
+            throw new IllegalArgumentException("Real pu account number is null or empty.");
         }
-        realPuAccountNumber = realPuAccountNumber.trim();
-        
-        if (remotePuAccountNumber == null || remotePuAccountNumber.isEmpty()) {
-            return false;
+        if (Strings.isEmpty(remotePuAccountNumber)) {
+            throw new IllegalArgumentException("Remote pu account number is null or empty.");
         }
-        int i = realPuAccountNumber.indexOf(remotePuAccountNumber);
-        if (i >= 0) {
-            String head = realPuAccountNumber.substring(0, i);
-            if (head.isEmpty()) {
-                return true;
-            }
-            return head.equals(zeroString(i));
+        if (!StringUtil.isNumeric(remotePuAccountNumber)) {
+            throw new IllegalArgumentException("Remote pu account number is not numeric.");
         }
-        return false;
+        return realPuAccountNumber.matches("0*" + remotePuAccountNumber);
     }
-    static final char ZERO = '0';
 
-    static String zeroString(int length) {
-        char[] chars = new char[length];
-        Arrays.fill(chars, ZERO);
-        return new String(chars);
+    public static boolean matches(String realPuAccountNumber, String remotePuId, String remotePuAccountNumber) {
+        if (Strings.isEmpty(realPuAccountNumber)) {
+            throw new IllegalArgumentException("Real pu account number is null or empty.");
+        }
+        if (Strings.isEmpty(remotePuId)) {
+            throw new IllegalArgumentException("Remote pu id is null or empty.");
+        }
+        if (Strings.isEmpty(remotePuAccountNumber)) {
+            throw new IllegalArgumentException("Remote pu account number is null or empty.");
+        }
+        if (!StringUtil.isNumeric(remotePuId)) {
+            throw new IllegalArgumentException("Remote pu id is not numeric.");
+        }
+        if (!StringUtil.isNumeric(remotePuAccountNumber)) {
+            throw new IllegalArgumentException("Remote pu account number is not numeric.");
+        }
+        return realPuAccountNumber.matches("0*" + remotePuId + "0*" + remotePuAccountNumber);
     }
 }

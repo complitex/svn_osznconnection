@@ -93,7 +93,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
     private void init(final Component... toUpdate) {
         dialog = new Dialog("dialog");
         dialog.setModal(true);
-        dialog.setWidth(600);
+        dialog.setWidth(800);
         dialog.setOpenEvent(JsScopeUiEvent.quickScope(new JsStatement().self().chain("parents", "'.ui-dialog:first'").
                 chain("find", "'.ui-dialog-titlebar-close'").
                 chain("hide").render()));
@@ -167,7 +167,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
                 }
 
                 accountModel.setObject(detail);
-                accountInfoModel.setObject(AccountNumberPickerPanel.displayAccountDetail(detail));
+                accountInfoModel.setObject(AccountNumberPickerPanel.displayAccountDetail(detail, getLocale()));
                 target.addComponent(accountInfo);
                 target.addComponent(messages);
                 if (accountNumberPickerPanel.isVisible() || visible) {
@@ -190,7 +190,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
             @Override
             protected void updateAccountNumber(AccountDetail accountDetail, AjaxRequestTarget target) {
                 accountModel.setObject(accountDetail);
-                accountInfoModel.setObject(AccountNumberPickerPanel.displayAccountDetail(accountDetail));
+                accountInfoModel.setObject(AccountNumberPickerPanel.displayAccountDetail(accountDetail, getLocale()));
                 target.addComponent(accountInfo);
             }
         };
@@ -204,7 +204,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
             @Override
             protected void updateAccountNumber(AccountDetail accountDetail, AjaxRequestTarget target, boolean refresh) {
                 accountModel.setObject(accountDetail);
-                accountInfoModel.setObject(AccountNumberLookupPanel.displayAccountDetail(accountDetail));
+                accountInfoModel.setObject(AccountNumberPickerPanel.displayAccountDetail(accountDetail, getLocale()));
                 target.addComponent(accountInfo);
                 if (refresh) {
                     accordion.setActive(new AccordionActive(1));

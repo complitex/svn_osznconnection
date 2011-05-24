@@ -4,8 +4,6 @@
  */
 package org.complitex.osznconnection.file.calculation.adapter.entity;
 
-import org.complitex.dictionary.util.StringUtil;
-
 /**
  *
  * @author Artem
@@ -26,12 +24,5 @@ public class PuAccountNumberInfo {
 
     public String getPuAccountNumber() {
         return puAccountNumber;
-    }
-
-    public String getFullInfo() {
-        if (puId == null && puAccountNumber == null) {
-            return null;
-        }
-        return StringUtil.valueOf(puId) + StringUtil.valueOf(puAccountNumber);
     }
 }

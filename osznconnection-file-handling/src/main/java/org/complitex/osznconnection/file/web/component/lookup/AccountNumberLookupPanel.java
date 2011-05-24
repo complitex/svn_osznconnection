@@ -6,18 +6,12 @@ package org.complitex.osznconnection.file.web.component.lookup;
 
 import java.util.List;
 import javax.ejb.EJB;
-import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.form.AjaxFormChoiceComponentUpdatingBehavior;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Radio;
-import org.apache.wicket.markup.html.form.RadioGroup;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.markup.html.list.ListItem;
-import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
@@ -25,14 +19,13 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.util.WildcardListModel;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.util.CloneUtil;
-import org.complitex.dictionary.util.StringUtil;
 import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
 import org.complitex.osznconnection.file.calculation.adapter.exception.UnknownAccountNumberTypeException;
 import org.complitex.osznconnection.file.entity.AbstractRequest;
 import org.complitex.osznconnection.file.entity.AccountDetail;
 import org.complitex.osznconnection.file.service.LookupBean;
 import org.complitex.osznconnection.file.service.StatusRenderService;
-import org.complitex.osznconnection.file.web.pages.util.AddressRenderer;
+import org.complitex.osznconnection.file.web.component.account.AccountNumberPickerPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +36,6 @@ import org.slf4j.LoggerFactory;
 public abstract class AccountNumberLookupPanel<T extends AbstractRequest> extends Panel {
 
     private static final Logger log = LoggerFactory.getLogger(AccountNumberLookupPanel.class);
-
     @EJB
     private StatusRenderService statusRenderService;
     @EJB
@@ -54,7 +46,7 @@ public abstract class AccountNumberLookupPanel<T extends AbstractRequest> extend
     private FeedbackPanel messages;
     private IModel<String> accountRequiredModel;
     private WebMarkupContainer detailsContainer;
-    private IModel<AccountDetail> accountDetailModel;
+    private AccountNumberPickerPanel accountNumberPickerPanel;
 
     public AccountNumberLookupPanel(String id, IModel<String> accountLabelModel, IModel<String> accountRequiredModel, FeedbackPanel messages) {
         super(id);
@@ -84,33 +76,15 @@ public abstract class AccountNumberLookupPanel<T extends AbstractRequest> extend
         detailsContainer.setVisible(false);
         container.add(detailsContainer);
 
-        accountDetailModel = new Model<AccountDetail>();
-        final RadioGroup<AccountDetail> radioGroup = new RadioGroup<AccountDetail>("radioGroup", accountDetailModel);
-        radioGroup.add(new AjaxFormChoiceComponentUpdatingBehavior() {
-
-            @Override
-            protected void onUpdate(AjaxRequestTarget target) {
-                updateAccountNumber(accountDetailModel.getObject(), target, false);
-            }
-        });
-        detailsContainer.add(radioGroup);
-
         accountDetailsModel = new WildcardListModel<AccountDetail>();
-        ListView<AccountDetail> details = new ListView<AccountDetail>("details", accountDetailsModel) {
+        accountNumberPickerPanel = new AccountNumberPickerPanel("accountNumberPickerPanel", accountDetailsModel) {
 
             @Override
-            protected void populateItem(ListItem<AccountDetail> item) {
-                AccountDetail detail = item.getModelObject();
-
-                item.add(new Radio<AccountDetail>("radio", item.getModel(), radioGroup).setEnabled(!Strings.isEmpty(detail.getAccountNumber())));
-                item.add(new Label("accountNumber", StringUtil.valueOf(detail.getAccountNumber())));
-                item.add(new Label("name", StringUtil.valueOf(detail.getOwnerName())));
-                item.add(new Label("address", displayAddress(detail)));
-                item.add(new Label("megabankAccount", StringUtil.valueOf(detail.getMegabankAccountNumber())));
-                item.add(new Label("puAccountNumberInfo", StringUtil.valueOf(detail.getPuAccountNumberInfo())));
+            protected void updateAccountNumber(AccountDetail accountDetail, AjaxRequestTarget target) {
+                AccountNumberLookupPanel.this.updateAccountNumber(accountDetail, target, false);
             }
         };
-        radioGroup.add(details);
+        detailsContainer.add(accountNumberPickerPanel);
 
         IndicatingAjaxLink<Void> lookup = new IndicatingAjaxLink<Void>("lookup") {
 
@@ -133,7 +107,7 @@ public abstract class AccountNumberLookupPanel<T extends AbstractRequest> extend
                                     detail = accountDetails.get(0);
                                 } else {
                                     accountDetailsModel.setObject(accountDetails);
-                                    accountDetailModel.setObject(null);
+                                    accountNumberPickerPanel.clear();
                                     detailsContainer.setVisible(true);
                                 }
                             }
@@ -141,7 +115,7 @@ public abstract class AccountNumberLookupPanel<T extends AbstractRequest> extend
                             error(getString("db_error"));
                             log.error("", e);
 
-                        } catch (UnknownAccountNumberTypeException e){
+                        } catch (UnknownAccountNumberTypeException e) {
                             error(getString("unknown_account_number_type"));
                         }
                     } else {
@@ -167,34 +141,16 @@ public abstract class AccountNumberLookupPanel<T extends AbstractRequest> extend
     public void initialize(T request, String account) {
         this.request = CloneUtil.cloneObject(request);
         accountModel.setObject(Strings.isEmpty(account) ? null : account);
-        accountDetailModel.setObject(null);
+        accountNumberPickerPanel.clear();
         accountDetailsModel.setObject(null);
         detailsContainer.setVisible(false);
-    }
-
-    private static String displayAddress(AccountDetail detail) {
-        return AddressRenderer.displayAddress(detail.getStreetType(), detail.getStreet(), detail.getBuildingNumber(), detail.getBuildingCorp(),
-                detail.getApartment(), Session.get().getLocale());
-    }
-
-    public static String displayAccountDetail(AccountDetail detail) {
-        if (detail == null) {
-            return null;
-        }
-        String display = StringUtil.valueOf(detail.getAccountNumber()) + " ";
-        display += StringUtil.valueOf(detail.getOwnerName());
-        String address = displayAddress(detail);
-        if (!Strings.isEmpty(address)) {
-            display += ", " + address;
-        }
-        return display;
     }
 
     protected abstract String resolveOutgoingDistrict(T request);
 
     protected List<AccountDetail> acquireAccountDetailsByAccount(T request, String district, String account) throws DBException,
-            UnknownAccountNumberTypeException{
-         return lookupBean.acquireAccountDetailsByAccount(request, district, account);
+            UnknownAccountNumberTypeException {
+        return lookupBean.acquireAccountDetailsByAccount(request, district, account);
     }
 
     protected abstract void updateAccountNumber(AccountDetail accountDetail, AjaxRequestTarget target, boolean refresh);
