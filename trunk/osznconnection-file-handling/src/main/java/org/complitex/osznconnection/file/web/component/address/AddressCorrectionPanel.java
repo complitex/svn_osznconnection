@@ -90,7 +90,7 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
         //Диалог
         dialog = new Dialog("dialog");
         dialog.setModal(true);
-        dialog.setWidth(600);
+        dialog.setWidth(650);
         dialog.setOpenEvent(JsScopeUiEvent.quickScope(new JsStatement().self().chain("parents", "'.ui-dialog:first'").
                 chain("find", "'.ui-dialog-titlebar-close'").
                 chain("hide").render()));
