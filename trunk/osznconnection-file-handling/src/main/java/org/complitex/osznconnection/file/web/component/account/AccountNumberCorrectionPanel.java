@@ -45,7 +45,7 @@ public abstract class AccountNumberCorrectionPanel<T extends AbstractRequest> ex
 
         dialog = new Dialog("dialog");
         dialog.setModal(true);
-        dialog.setWidth(450);
+        dialog.setWidth(650);
         dialog.setOpenEvent(JsScopeUiEvent.quickScope(new JsStatement().self().chain("parents", "'.ui-dialog:first'").
                 chain("find", "'.ui-dialog-titlebar-close'").
                 chain("hide").render()));
