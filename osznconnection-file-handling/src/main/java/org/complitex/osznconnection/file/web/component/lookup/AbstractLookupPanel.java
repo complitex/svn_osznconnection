@@ -93,7 +93,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
     private void init(final Component... toUpdate) {
         dialog = new Dialog("dialog");
         dialog.setModal(true);
-        dialog.setWidth(800);
+        dialog.setWidth(650);
         dialog.setOpenEvent(JsScopeUiEvent.quickScope(new JsStatement().self().chain("parents", "'.ui-dialog:first'").
                 chain("find", "'.ui-dialog-titlebar-close'").
                 chain("hide").render()));
