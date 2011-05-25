@@ -105,7 +105,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
         dialog.add(messages);
 
         accordion = new Accordion("accordion");
-        accordion.setAnimationEffect(new AccordionAnimated(false));
+        accordion.setAnimated(new AccordionAnimated(false));
         accordion.setOutputMarkupPlaceholderTag(true);
         accordion.setAutoHeight(false);
         dialog.add(accordion);
