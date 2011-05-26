@@ -14,6 +14,7 @@ import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.service.*;
 import org.complitex.osznconnection.file.service.exception.AlreadyProcessingException;
 import org.complitex.osznconnection.file.service.exception.BindException;
+import org.complitex.osznconnection.file.service.exception.CanceledByUserException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,6 +76,8 @@ public class BindTaskBean implements ITaskBean{
             bindPaymentFile(paymentFile);
         } catch (DBException e) {
             throw new RuntimeException(e);
+        } catch (CanceledByUserException e) {
+            throw new BindException(e, true, group);
         }
 
         //связывание файла benefit
@@ -178,7 +181,7 @@ public class BindTaskBean implements ITaskBean{
      * @param paymentFile Файл запроса начислений
      * @throws BindException Ошибка связывания
      */
-    private void bindPaymentFile(RequestFile paymentFile) throws BindException, DBException {
+    private void bindPaymentFile(RequestFile paymentFile) throws BindException, DBException, CanceledByUserException {
         //получаем информацию о текущем центре начисления
         Long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterId();
         ICalculationCenterAdapter adapter = calculationCenterBean.getDefaultCalculationCenterAdapter();
@@ -199,6 +202,10 @@ public class BindTaskBean implements ITaskBean{
             //достать из базы очередную порцию записей
             List<Payment> payments = paymentBean.findForOperation(paymentFile.getId(), batch);
             for (Payment payment : payments) {
+                if (paymentFile.isCanceled()){
+                    throw new CanceledByUserException();
+                }
+
                 //связать payment запись
                 try {
                     userTransaction.begin();

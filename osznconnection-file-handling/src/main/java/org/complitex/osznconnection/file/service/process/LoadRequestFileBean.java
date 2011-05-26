@@ -7,10 +7,7 @@ import org.complitex.dictionary.service.executor.ExecuteException;
 import org.complitex.dictionary.util.DateUtil;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.service.RequestFileBean;
-import org.complitex.osznconnection.file.service.exception.EmptyFileException;
-import org.complitex.osznconnection.file.service.exception.FieldNotFoundException;
-import org.complitex.osznconnection.file.service.exception.LoadException;
-import org.complitex.osznconnection.file.service.exception.SqlSessionException;
+import org.complitex.osznconnection.file.service.exception.*;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -78,6 +75,10 @@ public class LoadRequestFileBean {
             List<AbstractRequest> batch = new ArrayList<AbstractRequest>();
 
             while((rowObjects = reader.nextRecord()) != null) {
+                if (requestFile.isCanceled()){
+                    throw new CanceledByUserException();
+                }
+
                 index++;
 
                 AbstractRequest request = loadRequestFile.newObject();

@@ -22,6 +22,7 @@ import org.complitex.osznconnection.file.service.PersonAccountService;
 import org.complitex.osznconnection.file.service.RequestFileBean;
 import org.complitex.osznconnection.file.service.exception.AlreadyProcessingException;
 import org.complitex.osznconnection.file.service.exception.BindException;
+import org.complitex.osznconnection.file.service.exception.CanceledByUserException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -118,7 +119,7 @@ public class ActualPaymentBindTaskBean implements ITaskBean {
         }
     }
 
-    private void bindActualPaymentFile(RequestFile actualPaymentFile) throws BindException, DBException {
+    private void bindActualPaymentFile(RequestFile actualPaymentFile) throws BindException, DBException, CanceledByUserException {
         //получаем информацию о текущем центре начисления
         Long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterId();
         ICalculationCenterAdapter adapter = calculationCenterBean.getDefaultCalculationCenterAdapter();
@@ -146,6 +147,10 @@ public class ActualPaymentBindTaskBean implements ITaskBean {
             //достать из базы очередную порцию записей
             List<ActualPayment> actualPayments = actualPaymentBean.findForOperation(actualPaymentFile.getId(), batch);
             for (ActualPayment actualPayment : actualPayments) {
+                 if (actualPaymentFile.isCanceled()){
+                     throw new CanceledByUserException();
+                 }
+
                 //связать actualPayment запись
                 try {
                     userTransaction.begin();
@@ -184,6 +189,8 @@ public class ActualPaymentBindTaskBean implements ITaskBean {
             bindActualPaymentFile(requestFile);
         } catch (DBException e) {
             throw new RuntimeException(e);
+        } catch (CanceledByUserException e) {
+            throw new BindException(e, true, requestFile);
         }
 
         //проверить все ли записи в actualPayment файле связались

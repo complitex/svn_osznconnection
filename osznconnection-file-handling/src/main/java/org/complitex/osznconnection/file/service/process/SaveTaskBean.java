@@ -12,6 +12,7 @@ import org.complitex.osznconnection.file.service.BenefitBean;
 import org.complitex.osznconnection.file.service.PaymentBean;
 import org.complitex.osznconnection.file.service.RequestFileGroupBean;
 import org.complitex.osznconnection.file.service.exception.AlreadyProcessingException;
+import org.complitex.osznconnection.file.service.exception.CanceledByUserException;
 import org.complitex.osznconnection.file.service.exception.SaveException;
 import org.complitex.osznconnection.file.service.exception.SqlSessionException;
 import org.slf4j.Logger;
@@ -180,6 +181,10 @@ public class SaveTaskBean implements ITaskBean{
             }
 
             for (AbstractRequest abstractRequest : rows) {
+                if (requestFile.isCanceled()){
+                    throw new CanceledByUserException();
+                }
+
                 Object[] rowData = new Object[fields.length];
 
                 for (int i = 0; i < fields.length; ++i) {

@@ -43,6 +43,8 @@ public class RequestFile implements IExecutorObject {
 
     private List<AbstractRequest> requests;
 
+    private boolean cancel = false;
+
     public boolean isPayment() {
         return TYPE.PAYMENT.equals(type);
     }
@@ -88,11 +90,11 @@ public class RequestFile implements IExecutorObject {
         return (directory != null ? directory + File.separator : "") + name;
     }
 
-     public boolean isProcessing() {
-       return RequestFileStatus.LOADING.equals(status)
-               || RequestFileStatus.BINDING.equals(status)
-               || RequestFileStatus.FILLING.equals(status)
-               || RequestFileStatus.SAVING.equals(status);
+    public boolean isProcessing() {
+        return RequestFileStatus.LOADING.equals(status)
+                || RequestFileStatus.BINDING.equals(status)
+                || RequestFileStatus.FILLING.equals(status)
+                || RequestFileStatus.SAVING.equals(status);
     }
 
     public Long getId() {
@@ -270,5 +272,15 @@ public class RequestFile implements IExecutorObject {
                 ", absolutePath='" + absolutePath + '\'' +
                 ", requests=" + requests +
                 '}';
+    }
+
+    @Override
+    public void cancel() {
+        cancel = true;
+    }
+
+    @Override
+    public boolean isCanceled() {
+        return cancel;
     }
 }
