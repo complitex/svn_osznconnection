@@ -15,6 +15,7 @@ import org.complitex.osznconnection.file.service.BenefitBean;
 import org.complitex.osznconnection.file.service.PaymentBean;
 import org.complitex.osznconnection.file.service.RequestFileGroupBean;
 import org.complitex.osznconnection.file.service.exception.AlreadyProcessingException;
+import org.complitex.osznconnection.file.service.exception.CanceledByUserException;
 import org.complitex.osznconnection.file.service.exception.FillException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -163,6 +164,10 @@ public class FillTaskBean implements ITaskBean {
             //достать из базы очередную порцию записей
             List<Payment> payments = paymentBean.findForOperation(paymentFile.getId(), batch);
             for (Payment payment : payments) {
+                if (paymentFile.isCanceled()){
+                    throw new FillException(new CanceledByUserException(), true, paymentFile);
+                }
+
                 //обработать payment запись
                 try {
                     userTransaction.begin();

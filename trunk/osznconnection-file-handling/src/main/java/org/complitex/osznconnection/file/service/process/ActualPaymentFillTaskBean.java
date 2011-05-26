@@ -14,6 +14,7 @@ import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.service.ActualPaymentBean;
 import org.complitex.osznconnection.file.service.RequestFileBean;
 import org.complitex.osznconnection.file.service.exception.AlreadyProcessingException;
+import org.complitex.osznconnection.file.service.exception.CanceledByUserException;
 import org.complitex.osznconnection.file.service.exception.FillException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,6 +73,8 @@ public class ActualPaymentFillTaskBean implements ITaskBean {
             processActualPayment(requestFile);
         } catch (DBException e) {
             throw new RuntimeException(e);
+        } catch (CanceledByUserException e) {
+            throw new FillException(e, true, requestFile);
         }
 
         //проверить все ли записи в actualPayment файле обработались
@@ -125,7 +128,7 @@ public class ActualPaymentFillTaskBean implements ITaskBean {
         log.debug("Updating of actualPayment (id = {}) took {} sec.", actualPayment.getId(), (System.currentTimeMillis() - startTime) / 1000);
     }
 
-    private void processActualPayment(RequestFile actualPaymentFile) throws FillException, DBException {
+    private void processActualPayment(RequestFile actualPaymentFile) throws FillException, DBException, CanceledByUserException {
         //получаем информацию о текущем центре начисления
         ICalculationCenterAdapter adapter = calculationCenterBean.getDefaultCalculationCenterAdapter();
 
@@ -149,6 +152,10 @@ public class ActualPaymentFillTaskBean implements ITaskBean {
             //достать из базы очередную порцию записей
             List<ActualPayment> actualPayments = actualPaymentBean.findForOperation(actualPaymentFile.getId(), batch);
             for (ActualPayment actualPayment : actualPayments) {
+                if (actualPaymentFile.isCanceled()){
+                    throw new CanceledByUserException();
+                }
+
                 //обработать actualPayment запись
                 try {
                     userTransaction.begin();

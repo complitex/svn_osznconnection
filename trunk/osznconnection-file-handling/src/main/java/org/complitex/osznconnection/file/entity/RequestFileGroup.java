@@ -28,6 +28,8 @@ public class RequestFileGroup implements IExecutorObject{
 
     private RequestFileStatus status;
 
+    private boolean cancel = false;
+
     @Override
     public String getLogObjectName() {
         return getFullName();
@@ -185,5 +187,17 @@ public class RequestFileGroup implements IExecutorObject{
                 ", filledRecordCount=" + filledRecordCount +
                 ", status=" + status +
                 '}';
+    }
+
+    @Override
+    public void cancel() {
+        cancel = true;
+        paymentFile.cancel();
+        benefitFile.cancel();
+    }
+
+    @Override
+    public boolean isCanceled() {
+        return cancel;
     }
 }
