@@ -270,7 +270,7 @@ public class GroupList extends ScrollListPage {
                     @Override
                     public boolean isVisible() {
                         RequestFileGroup group = item.getModelObject();
-                        return (!group.isProcessing() && !isWaiting(group)) || !isProcessing();
+                        return (!group.isProcessing() && !isWaiting(group));
                     }
 
                     @Override
@@ -662,7 +662,9 @@ public class GroupList extends ScrollListPage {
                 info(getStringFormat(keyPrefix + ".processed", group.getFullName()));
             } else if (group.getStatus().equals(errorStatus)) {
                 highlightError(target, group);
-                error(getStringFormat(keyPrefix + ".error", group.getFullName()) + ": " + group.getErrorMessage());
+
+                String message = group.getErrorMessage() != null ?  ": " + group.getErrorMessage() : "";
+                error(getStringFormat(keyPrefix + ".error", group.getFullName()) + message);
             }
         }
     }
