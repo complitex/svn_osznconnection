@@ -140,7 +140,7 @@ public class ActualPaymentFileList extends ScrollListPage {
 
             @Override
             public boolean isEnabled() {
-                return !isProcessing();
+                return !isGlobalProcessing();
             }
 
             @Override
@@ -358,7 +358,7 @@ public class ActualPaymentFileList extends ScrollListPage {
                     @Override
                     protected String load() {
                         String dots = "";
-                        if (item.getModelObject().isProcessing() && isProcessing()) {
+                        if (item.getModelObject().isProcessing() && isGlobalProcessing()) {
                             dots += StringUtil.getDots(timerIndex % 5);
                         }
 
@@ -563,7 +563,7 @@ public class ActualPaymentFileList extends ScrollListPage {
         showMessages();
 
         //Запуск таймера
-        if (isProcessing()) {
+        if (isGlobalProcessing()) {
             dataViewContainer.add(newTimer(filterForm, messages));
         }
     }
@@ -586,18 +586,18 @@ public class ActualPaymentFileList extends ScrollListPage {
         }
     }
 
-    private boolean isProcessing() {
-        return processManagerBean.isProcessing(LOAD_ACTUAL_PAYMENT)
-                || processManagerBean.isProcessing(BIND_ACTUAL_PAYMENT)
-                || processManagerBean.isProcessing(FILL_ACTUAL_PAYMENT)
-                || processManagerBean.isProcessing(SAVE_ACTUAL_PAYMENT);
+    private boolean isGlobalProcessing() {
+        return processManagerBean.isGlobalProcessing(LOAD_ACTUAL_PAYMENT)
+                || processManagerBean.isGlobalProcessing(BIND_ACTUAL_PAYMENT)
+                || processManagerBean.isGlobalProcessing(FILL_ACTUAL_PAYMENT)
+                || processManagerBean.isGlobalProcessing(SAVE_ACTUAL_PAYMENT);
     }
 
     private boolean isWaiting(RequestFile requestFile) {
-        return processManagerBean.isWaiting(LOAD_ACTUAL_PAYMENT, requestFile)
-                || processManagerBean.isWaiting(BIND_ACTUAL_PAYMENT, requestFile)
-                || processManagerBean.isWaiting(FILL_ACTUAL_PAYMENT, requestFile)
-                || processManagerBean.isWaiting(SAVE_ACTUAL_PAYMENT, requestFile);
+        return processManagerBean.isGlobalWaiting(LOAD_ACTUAL_PAYMENT, requestFile)
+                || processManagerBean.isGlobalWaiting(BIND_ACTUAL_PAYMENT, requestFile)
+                || processManagerBean.isGlobalWaiting(FILL_ACTUAL_PAYMENT, requestFile)
+                || processManagerBean.isGlobalWaiting(SAVE_ACTUAL_PAYMENT, requestFile);
     }
 
     private void showMessages() {
@@ -688,7 +688,7 @@ public class ActualPaymentFileList extends ScrollListPage {
             protected void onPostProcessTarget(AjaxRequestTarget target) {
                 showMessages(target);
 
-                if (!isProcessing() && ++waitForStopTimer > 2) {
+                if (!isGlobalProcessing() && ++waitForStopTimer > 2) {
                     this.stop();
                     target.addComponent(filterForm);
                 } else {

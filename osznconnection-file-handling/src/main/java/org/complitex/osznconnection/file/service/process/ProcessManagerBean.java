@@ -148,9 +148,19 @@ public class ProcessManagerBean {
         getProcess(processType).cancel();
     }
 
-    public boolean isWaiting(ProcessType processType, IExecutorObject executorObject){
+    public boolean isGlobalWaiting(ProcessType processType, IExecutorObject executorObject){
         for (Process process : getAllUsersProcess(processType)){
             if (process.isRunning() && process.isWaiting(executorObject)){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+     public boolean isGlobalProcessing(ProcessType processType){
+        for (Process process : getAllUsersProcess(processType)){
+            if (process.isProcessing()){
                 return true;
             }
         }
@@ -228,8 +238,8 @@ public class ProcessManagerBean {
         for (Long id : ids){
             RequestFileGroup group = requestFileGroupBean.getRequestFileGroup(id);
 
-            if (group != null && !group.isProcessing() && !isWaiting(BIND_GROUP, group) && !isWaiting(FILL_GROUP, group)
-                    && !isWaiting(SAVE_GROUP, group)){
+            if (group != null && !group.isProcessing() && !isGlobalWaiting(BIND_GROUP, group) && !isGlobalWaiting(FILL_GROUP, group)
+                    && !isGlobalWaiting(SAVE_GROUP, group)){
                 groups.add(group);
             }
         }
@@ -243,8 +253,8 @@ public class ProcessManagerBean {
         for (Long id : ids){
             RequestFile requestFile = requestFileBean.findById(id);
 
-            if (requestFile != null && !requestFile.isProcessing() && !isWaiting(BIND_ACTUAL_PAYMENT, requestFile)
-                    && !isWaiting(FILL_ACTUAL_PAYMENT, requestFile) && !isWaiting(SAVE_ACTUAL_PAYMENT, requestFile)){
+            if (requestFile != null && !requestFile.isProcessing() && !isGlobalWaiting(BIND_ACTUAL_PAYMENT, requestFile)
+                    && !isGlobalWaiting(FILL_ACTUAL_PAYMENT, requestFile) && !isGlobalWaiting(SAVE_ACTUAL_PAYMENT, requestFile)){
                 requestFiles.add(requestFile);
             }
         }
