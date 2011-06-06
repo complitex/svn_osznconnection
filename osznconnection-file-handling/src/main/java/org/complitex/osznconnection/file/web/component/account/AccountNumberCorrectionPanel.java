@@ -34,14 +34,15 @@ public abstract class AccountNumberCorrectionPanel<T extends AbstractRequest> ex
     private StatusRenderService statusRenderService;
     private T request;
     private Dialog dialog;
-    private IModel<String> accountNumberModel;
-    private AccountNumberPickerPanel accountNumberPickerPanel;
-    private List<AccountDetail> accountCorrectionDetails;
-    private WebMarkupContainer infoContainer;
+    private final IModel<AccountDetail> accountDetailModel;
+    private final AccountNumberPickerPanel accountNumberPickerPanel;
+    private final IModel<List<? extends AccountDetail>> accountDetailsModel;
+    private final WebMarkupContainer infoContainer;
 
     public AccountNumberCorrectionPanel(String id, final Component... toUpdate) {
         super(id);
-        accountNumberModel = new Model<String>();
+        accountDetailModel = new Model<AccountDetail>();
+        accountDetailsModel = Model.ofList(null);
 
         dialog = new Dialog("dialog");
         dialog.setModal(true);
@@ -61,17 +62,12 @@ public abstract class AccountNumberCorrectionPanel<T extends AbstractRequest> ex
         messages.setOutputMarkupId(true);
         infoContainer.add(messages);
 
-        accountNumberPickerPanel = new AccountNumberPickerPanel("accountNumberPickerPanel",
-                Model.ofList(accountCorrectionDetails)) {
-
-            @Override
-            protected void updateAccountNumber(AccountDetail accountDetail, AjaxRequestTarget target) {
-                accountNumberModel.setObject(accountDetail.getAccountNumber());
-            }
+        accountNumberPickerPanel = new AccountNumberPickerPanel("accountNumberPickerPanel", accountDetailsModel,
+                accountDetailModel) {
 
             @Override
             public boolean isVisible() {
-                return getAccountCorrectionDetails() != null && !getAccountCorrectionDetails().isEmpty();
+                return accountDetailsModel.getObject() != null && !accountDetailsModel.getObject().isEmpty();
             }
         };
 
@@ -82,7 +78,7 @@ public abstract class AccountNumberCorrectionPanel<T extends AbstractRequest> ex
             @Override
             public void onClick(AjaxRequestTarget target) {
                 if (validate()) {
-                    correctAccountNumber(request, accountNumberModel.getObject());
+                    correctAccountNumber(request, accountDetailModel.getObject().getAccountNumber());
 
                     if (toUpdate != null) {
                         for (Component component : toUpdate) {
@@ -97,7 +93,7 @@ public abstract class AccountNumberCorrectionPanel<T extends AbstractRequest> ex
 
             @Override
             public boolean isVisible() {
-                return getAccountCorrectionDetails() != null && !getAccountCorrectionDetails().isEmpty();
+                return accountDetailsModel.getObject() != null && !accountDetailsModel.getObject().isEmpty();
             }
         };
         infoContainer.add(save);
@@ -112,12 +108,9 @@ public abstract class AccountNumberCorrectionPanel<T extends AbstractRequest> ex
         infoContainer.add(cancel);
     }
 
-    private List<AccountDetail> getAccountCorrectionDetails() {
-        return accountCorrectionDetails;
-    }
-
     private boolean validate() {
-        boolean validated = !Strings.isEmpty(accountNumberModel.getObject());
+        boolean validated = accountDetailModel.getObject() != null
+                && !Strings.isEmpty(accountDetailModel.getObject().getAccountNumber());
         if (!validated) {
             error(getString("account_number_required"));
         }
@@ -129,18 +122,18 @@ public abstract class AccountNumberCorrectionPanel<T extends AbstractRequest> ex
     public void open(AjaxRequestTarget target, T request) {
 
         this.request = request;
+        List<? extends AccountDetail> accountDetails = null;
         try {
-            accountCorrectionDetails = acquireAccountDetailsByAddress(request);
-            if (accountCorrectionDetails == null || accountCorrectionDetails.isEmpty()) {
+            accountDetails = acquireAccountDetailsByAddress(request);
+            if (accountDetails == null || accountDetails.isEmpty()) {
                 error(statusRenderService.displayStatus(request.getStatus(), getLocale()));
             }
         } catch (DBException e) {
             error(getString("db_error"));
         }
 
-        accountNumberPickerPanel.getAccountDetailsModel().setObject(accountCorrectionDetails);
-        accountNumberPickerPanel.clear();
-        accountNumberModel.setObject(null);
+        accountDetailsModel.setObject(accountDetails);
+        accountDetailModel.setObject(null);
         target.addComponent(infoContainer);
         dialog.open(target);
     }

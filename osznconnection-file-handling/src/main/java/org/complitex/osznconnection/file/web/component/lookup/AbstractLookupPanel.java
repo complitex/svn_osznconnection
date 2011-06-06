@@ -8,13 +8,11 @@ import com.google.common.collect.ImmutableList;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.model.util.WildcardListModel;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.strategy.StrategyFactory;
 import org.complitex.dictionary.web.component.search.SearchComponent;
@@ -28,20 +26,20 @@ import org.odlabs.wiquery.ui.core.JsScopeUiEvent;
 import org.odlabs.wiquery.ui.dialog.Dialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import javax.ejb.EJB;
 import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
-import org.apache.wicket.model.AbstractReadOnlyModel;
-import org.apache.wicket.util.string.Strings;
+import static org.apache.wicket.util.string.Strings.*;
 import org.complitex.dictionary.util.CloneUtil;
 import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
 import org.complitex.osznconnection.file.service.StatusRenderService;
 import org.complitex.address.strategy.street.StreetStrategy;
 import org.complitex.dictionary.strategy.IStrategy;
 import org.complitex.dictionary.web.component.ShowMode;
+import org.complitex.osznconnection.file.calculation.adapter.exception.UnknownAccountNumberTypeException;
 import org.complitex.osznconnection.file.entity.AbstractRequest;
+import org.complitex.osznconnection.file.service.LookupBean;
 import org.complitex.osznconnection.file.web.component.account.AccountNumberPickerPanel;
 import org.odlabs.wiquery.ui.accordion.AccordionActive;
 
@@ -56,34 +54,21 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
     private StrategyFactory strategyFactory;
     @EJB
     private StatusRenderService statusRenderService;
-    private IModel<String> accountInfoModel;
+    @EJB
+    private LookupBean lookupBean;
     private IModel<String> apartmentModel;
-    private IModel<List<? extends AccountDetail>> accountsModel;
-    private IModel<AccountDetail> accountModel;
+    private IModel<List<? extends AccountDetail>> accountDetailsModel;
+    private IModel<AccountDetail> accountDetailModel;
     private AccountNumberPickerPanel accountNumberPickerPanel;
     private FeedbackPanel messages;
     private Dialog dialog;
     private Accordion accordion;
-    private Label accountInfo;
     private SearchComponentState addressSearchComponentState;
     private SearchComponent addressSearchComponent;
     private T request;
     private T initialRequest;
-    private AccountNumberLookupPanel<T> accountLookupPanel;
-
-    private class SimpleResourceModel extends AbstractReadOnlyModel<String> {
-
-        private String resourceKey;
-
-        public SimpleResourceModel(String resourceKey) {
-            this.resourceKey = resourceKey;
-        }
-
-        @Override
-        public String getObject() {
-            return AbstractLookupPanel.this.getString(resourceKey);
-        }
-    }
+    private IModel<String> accountNumberModel;
+    private int lastAccordionActive;
 
     public AbstractLookupPanel(String id, Component... toUpdate) {
         super(id);
@@ -112,12 +97,6 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
 
         //lookup by address
         addressSearchComponentState = new SearchComponentState();
-
-        accountInfoModel = new Model<String>();
-        accountInfo = new Label("accountInfo", accountInfoModel);
-        accountInfo.setOutputMarkupId(true);
-        dialog.add(accountInfo);
-
         apartmentModel = new Model<String>();
         TextField<String> apartment = new TextField<String>("apartment", apartmentModel);
         apartment.setOutputMarkupId(true);
@@ -133,27 +112,35 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
 
             @Override
             public void onClick(AjaxRequestTarget target) {
+                lastAccordionActive = 0;
+
+                boolean wasVisible = accountNumberPickerPanel.isVisible();
+                accountDetailsModel.setObject(null);
+                accountDetailModel.setObject(null);
+
                 initInternalAddress(request, getObjectId(addressSearchComponentState.get("city")),
                         getObjectId(addressSearchComponentState.get("street")), getStreetType(addressSearchComponentState.get("street")),
                         getObjectId(addressSearchComponentState.get("building")), apartmentModel.getObject());
 
-                boolean visible = accountNumberPickerPanel.isVisible();
-                AccountDetail detail = null;
-                accountNumberPickerPanel.setVisible(false);
-                if (validateInternalAddress(request)) {
-                    if (resolveOutgoingAddressSafely(request, target)) {
+                if (isInternalAddressCorrect(request)) {
+                    boolean outgoingAddressResolved = false;
+                    try {
+                        resolveOutgoingAddress(request);
+                        outgoingAddressResolved = true;
+                    } catch (Exception e) {
+                        error(getString("db_error"));
+                        log.error("", e);
+                    }
+                    if (outgoingAddressResolved) {
                         if (request.getStatus() == RequestStatus.ACCOUNT_NUMBER_NOT_FOUND) {
                             try {
-                                List<AccountDetail> accountList = acquireAccountDetailsByAddress(request);
-                                if (accountList == null || accountList.isEmpty()) {
+                                List<AccountDetail> accountDetails = acquireAccountDetailsByAddress(request);
+                                if (accountDetails == null || accountDetails.isEmpty()) {
                                     error(statusRenderService.displayStatus(request.getStatus(), getLocale()));
                                 } else {
-                                    if (accountList.size() == 1 && !Strings.isEmpty(accountList.get(0).getAccountNumber())) {
-                                        detail = accountList.get(0);
-                                    } else {
-                                        accountsModel.setObject(accountList);
-                                        accountNumberPickerPanel.clear();
-                                        accountNumberPickerPanel.setVisible(true);
+                                    accountDetailsModel.setObject(accountDetails);
+                                    if (accountDetails.size() == 1) {
+                                        accountDetailModel.setObject(accountDetails.get(0));
                                     }
                                 }
                             } catch (DBException e) {
@@ -164,15 +151,15 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
                             error(statusRenderService.displayStatus(request.getStatus(), getLocale()));
                         }
                     }
+                } else {
+                    error(getString("address_required"));
                 }
 
-                accountModel.setObject(detail);
-                accountInfoModel.setObject(AccountNumberPickerPanel.displayAccountDetail(detail, getLocale()));
-                target.addComponent(accountInfo);
                 target.addComponent(messages);
-                if (accountNumberPickerPanel.isVisible() || visible) {
-                    accordion.setActive(new AccordionActive(0));
-                    target.addComponent(accordion);
+                boolean becameVisible = accountDetailsModel.getObject() != null && !accountDetailsModel.getObject().isEmpty();
+                accountNumberPickerPanel.setVisible(becameVisible);
+                if (wasVisible || becameVisible) {
+                    target.addComponent(accountNumberPickerPanel);
                 }
             }
         };
@@ -183,50 +170,86 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
         addressSearchComponent.setVisible(false);
         accordion.add(addressSearchComponent);
 
-        accountModel = new Model<AccountDetail>();
-        accountsModel = new WildcardListModel<AccountDetail>();
-        accountNumberPickerPanel = new AccountNumberPickerPanel("accountNumberPickerPanel", accountsModel) {
-
-            @Override
-            protected void updateAccountNumber(AccountDetail accountDetail, AjaxRequestTarget target) {
-                accountModel.setObject(accountDetail);
-                accountInfoModel.setObject(AccountNumberPickerPanel.displayAccountDetail(accountDetail, getLocale()));
-                target.addComponent(accountInfo);
-            }
-        };
-        accountNumberPickerPanel.setVisible(false);
-        accordion.add(accountNumberPickerPanel);
-
         //lookup by account number
-        accountLookupPanel = new AccountNumberLookupPanel<T>("lookupByAccount",
-                new SimpleResourceModel("lookup_by_account_label"), new SimpleResourceModel("lookup_by_account_required"), messages) {
+        accountNumberModel = new Model<String>();
+        TextField<String> accountNumber = new TextField<String>("accountNumber", accountNumberModel);
+        accountNumber.add(new AjaxFormComponentUpdatingBehavior("onchange") {
 
             @Override
-            protected void updateAccountNumber(AccountDetail accountDetail, AjaxRequestTarget target, boolean refresh) {
-                accountModel.setObject(accountDetail);
-                accountInfoModel.setObject(AccountNumberPickerPanel.displayAccountDetail(accountDetail, getLocale()));
-                target.addComponent(accountInfo);
-                if (refresh) {
-                    accordion.setActive(new AccordionActive(1));
-                    target.addComponent(accordion);
+            protected void onUpdate(AjaxRequestTarget target) {
+            }
+        });
+        accordion.add(accountNumber);
+        IndicatingAjaxLink<Void> lookupByAccount = new IndicatingAjaxLink<Void>("lookupByAccount") {
+
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                lastAccordionActive = 1;
+
+                boolean wasVisible = accountNumberPickerPanel.isVisible();
+                accountDetailsModel.setObject(null);
+                accountDetailModel.setObject(null);
+
+                if (!isEmpty(accountNumberModel.getObject())) {
+                    String outgoingDistrict = null;
+                    try {
+                        outgoingDistrict = resolveOutgoingDistrict(request);
+                    } catch (Exception e) {
+                        log.error("", e);
+                        error(getString("db_error"));
+                    }
+                    if (!isEmpty(outgoingDistrict)) {
+                        try {
+                            List<AccountDetail> accountDetails = acquireAccountDetailsByAccount(request, outgoingDistrict,
+                                    accountNumberModel.getObject());
+                            if (accountDetails == null || accountDetails.isEmpty()) {
+                                error(statusRenderService.displayStatus(request.getStatus(), getLocale()));
+                            } else {
+                                accountDetailsModel.setObject(accountDetails);
+                                if (accountDetails.size() == 1) {
+                                    accountDetailModel.setObject(accountDetails.get(0));
+                                }
+                            }
+                        } catch (DBException e) {
+                            error(getString("remote_db_error"));
+                            log.error("", e);
+                        } catch (UnknownAccountNumberTypeException e) {
+                            error(getString("unknown_account_number_type"));
+                        }
+                    } else {
+                        error(statusRenderService.displayStatus(request.getStatus(), getLocale()));
+                    }
+                } else {
+                    error(getString("lookup_by_account_required"));
+                }
+
+                target.addComponent(messages);
+                boolean becameVisible = accountDetailsModel.getObject() != null && !accountDetailsModel.getObject().isEmpty();
+                accountNumberPickerPanel.setVisible(becameVisible);
+                if (wasVisible || becameVisible) {
+                    target.addComponent(accountNumberPickerPanel);
                 }
             }
-
-            @Override
-            protected String resolveOutgoingDistrict(T request) {
-                return AbstractLookupPanel.this.resolveOutgoingDistrict(request);
-            }
         };
-        accordion.add(accountLookupPanel);
+        accordion.add(lookupByAccount);
+
+        //account number picker panel
+        accountDetailModel = new Model<AccountDetail>();
+        accountDetailsModel = Model.ofList(null);
+        accountNumberPickerPanel = new AccountNumberPickerPanel("accountNumberPickerPanel", accountDetailsModel, accountDetailModel);
+        accountNumberPickerPanel.setOutputMarkupPlaceholderTag(true);
+        accountNumberPickerPanel.setVisible(false);
+        dialog.add(accountNumberPickerPanel);
 
         // save/cancel
         dialog.add(new AjaxLink("save") {
 
             @Override
             public void onClick(AjaxRequestTarget target) {
-                if (validate()) {
+                if (accountDetailModel.getObject() != null
+                        && !isEmpty(accountDetailModel.getObject().getAccountNumber())) {
                     try {
-                        updateAccountNumber(initialRequest, accountModel.getObject().getAccountNumber());
+                        updateAccountNumber(initialRequest, accountDetailModel.getObject().getAccountNumber());
                         for (Component component : toUpdate) {
                             target.addComponent(component);
                         }
@@ -237,6 +260,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
                         target.addComponent(messages);
                     }
                 } else {
+                    error(getString("account_number_not_chosen"));
                     target.addComponent(messages);
                 }
             }
@@ -251,22 +275,13 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
         });
     }
 
-    protected void closeDialog(AjaxRequestTarget target) {
+    protected final void closeDialog(AjaxRequestTarget target) {
         addressSearchComponent.setVisible(false);
         target.addComponent(addressSearchComponent);
         dialog.close(target);
     }
 
-    protected boolean validate() {
-        AccountDetail accountDetail = accountModel.getObject();
-        boolean validated = (accountDetail != null) && !Strings.isEmpty(accountDetail.getAccountNumber());
-        if (!validated) {
-            error(getString("account_number_not_chosen"));
-        }
-        return validated;
-    }
-
-    protected Long getObjectId(DomainObject object) {
+    protected final Long getObjectId(DomainObject object) {
         return object == null ? null : object.getId();
     }
 
@@ -276,46 +291,34 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
 
     protected abstract void initInternalAddress(T request, Long cityId, Long streetId, Long streetTypeId, Long buildingId, String apartment);
 
-    protected void initSearchComponentState(SearchComponentState componentState, Long cityId, Long streetId, Long buildingId) {
+    protected final void initSearchComponentState(SearchComponentState componentState, Long cityId, Long streetId, Long buildingId) {
         componentState.clear();
-
         if (cityId != null) {
             componentState.put("city", findObject(cityId, "city"));
         }
-
         if (streetId != null) {
             componentState.put("street", findObject(streetId, "street"));
         }
-
         if (buildingId != null) {
             componentState.put("building", findObject(buildingId, "building"));
         }
     }
 
-    protected DomainObject findObject(Long objectId, String entity) {
+    protected final DomainObject findObject(Long objectId, String entity) {
         IStrategy strategy = strategyFactory.getStrategy(entity);
         return strategy.findById(objectId, true);
     }
 
-    protected boolean validateInternalAddress(T request) {
-        boolean validated = isInternalAddressCorrect(request);
-        if (!validated) {
-            error(getString("address_required"));
-        }
-        return validated;
-    }
-
     protected abstract boolean isInternalAddressCorrect(T request);
 
-    public void open(AjaxRequestTarget target, T request, Long cityId, Long streetId, Long buildingId, String apartment,
-            String ownNumSr) {
+    public void open(AjaxRequestTarget target, T request, Long cityId, Long streetId, Long buildingId, String apartment) {
         this.request = CloneUtil.cloneObject(request);
         this.initialRequest = request;
 
-        accountModel.setObject(null);
-        accountsModel.setObject(null);
-        accountInfoModel.setObject(null);
-        target.addComponent(accountInfo);
+        accountDetailModel.setObject(null);
+        accountDetailsModel.setObject(null);
+        accountNumberPickerPanel.setVisible(false);
+        target.addComponent(accountNumberPickerPanel);
 
         //lookup by address
         apartmentModel.setObject(apartment);
@@ -323,33 +326,20 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
         addressSearchComponent.reinitialize(target);
         addressSearchComponent.setVisible(true);
 
-        if (accountNumberPickerPanel.isVisible()) {
-            accountNumberPickerPanel.setVisible(false);
-        }
-        accountNumberPickerPanel.clear();
-
         //lookup by account number
-        accountLookupPanel.initialize(request, null);
+        accountNumberModel.setObject(null);
+
+        //set active accordion item
+        accordion.setActive(new AccordionActive(lastAccordionActive));
 
         target.addComponent(accordion);
         target.addComponent(messages);
         dialog.open(target);
     }
 
-    public void open(AjaxRequestTarget target, T request, Long cityId, Long streetId, Long buildingId, String apartment) {
-        open(target, request, cityId, streetId, buildingId, apartment, null);
-    }
-
-    private boolean resolveOutgoingAddressSafely(T request, AjaxRequestTarget target) {
-        try {
-            resolveOutgoingAddress(request);
-        } catch (Exception e) {
-            error(getString("db_error"));
-            log.error("", e);
-            target.addComponent(messages);
-            return false;
-        }
-        return true;
+    protected final List<AccountDetail> acquireAccountDetailsByAccount(T request, String district, String account)
+            throws DBException, UnknownAccountNumberTypeException {
+        return lookupBean.acquireAccountDetailsByAccount(request, district, account);
     }
 
     protected abstract void resolveOutgoingAddress(T request);
