@@ -30,6 +30,8 @@ public class RequestFileGroup implements IExecutorObject{
 
     private boolean cancel = false;
 
+    private String errorMessage;
+
     @Override
     public String getLogObjectName() {
         return getFullName();
@@ -199,5 +201,13 @@ public class RequestFileGroup implements IExecutorObject{
     @Override
     public boolean isCanceled() {
         return cancel;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 }
