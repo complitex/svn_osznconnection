@@ -135,7 +135,7 @@ public class GroupList extends ScrollListPage {
 
             @Override
             public boolean isEnabled() {
-                return !isProcessing();
+                return !isGlobalProcessing();
             }
 
             @Override
@@ -397,7 +397,7 @@ public class GroupList extends ScrollListPage {
                     @Override
                     protected String load() {
                         String dots = "";
-                        if (item.getModelObject().isProcessing() && isProcessing()) {
+                        if (item.getModelObject().isProcessing() && isGlobalProcessing()) {
                             dots += StringUtil.getDots(timerIndex % 5);
                         }
 
@@ -608,7 +608,7 @@ public class GroupList extends ScrollListPage {
         showMessages();
 
         //Запуск таймера
-        if (isProcessing()) {
+        if (isGlobalProcessing()) {
             dataViewContainer.add(newTimer(filterForm, messages));
         }
     }
@@ -631,18 +631,18 @@ public class GroupList extends ScrollListPage {
         }
     }
 
-    private boolean isProcessing() {
-        return processManagerBean.isProcessing(LOAD_GROUP)
-                || processManagerBean.isProcessing(BIND_GROUP)
-                || processManagerBean.isProcessing(FILL_GROUP)
-                || processManagerBean.isProcessing(SAVE_GROUP);
+    private boolean isGlobalProcessing() {
+        return processManagerBean.isGlobalProcessing(LOAD_GROUP)
+                || processManagerBean.isGlobalProcessing(BIND_GROUP)
+                || processManagerBean.isGlobalProcessing(FILL_GROUP)
+                || processManagerBean.isGlobalProcessing(SAVE_GROUP);
     }
 
     private boolean isWaiting(RequestFileGroup group) {
-        return processManagerBean.isWaiting(LOAD_GROUP, group)
-                || processManagerBean.isWaiting(BIND_GROUP, group)
-                || processManagerBean.isWaiting(FILL_GROUP, group)
-                || processManagerBean.isWaiting(SAVE_GROUP, group);
+        return processManagerBean.isGlobalWaiting(LOAD_GROUP, group)
+                || processManagerBean.isGlobalWaiting(BIND_GROUP, group)
+                || processManagerBean.isGlobalWaiting(FILL_GROUP, group)
+                || processManagerBean.isGlobalWaiting(SAVE_GROUP, group);
     }
 
     private void showMessages() {
@@ -755,7 +755,7 @@ public class GroupList extends ScrollListPage {
             protected void onPostProcessTarget(AjaxRequestTarget target) {
                 showMessages(target);
 
-                if (!isProcessing() && ++waitForStopTimer > 2) {
+                if (!isGlobalProcessing() && ++waitForStopTimer > 2) {
                     this.stop();
                     target.addComponent(filterForm);
                 } else {
