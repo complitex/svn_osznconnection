@@ -266,7 +266,7 @@ public class ActualPaymentFileList extends ScrollListPage {
                     @Override
                     public boolean isVisible() {
                         RequestFile requestFile = item.getModelObject();
-                        return (!requestFile.isProcessing() && !isWaiting(requestFile)) || !isProcessing();
+                        return (!requestFile.isProcessing() && !isWaiting(requestFile));
                     }
 
                     @Override
