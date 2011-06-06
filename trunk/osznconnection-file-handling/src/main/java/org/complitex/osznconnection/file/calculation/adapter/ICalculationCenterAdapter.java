@@ -50,7 +50,7 @@ public interface ICalculationCenterAdapter {
 
     void prepareApartment(ActualPayment actualPayment, String apartment, String apartmentCode);
 
-    void acquirePersonAccount(RequestFile.TYPE requestFileType, AbstractRequest request, String puAccountNumber,
+    void acquirePersonAccount(RequestFile.TYPE requestFileType, AbstractRequest request, String lastName, String puAccountNumber,
             String district, String streetType, String street, String buildingNumber, String buildingCorp, String apartment,
             Date date) throws DBException;
 
