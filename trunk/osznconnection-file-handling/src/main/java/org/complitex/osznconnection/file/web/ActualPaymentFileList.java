@@ -617,7 +617,7 @@ public class ActualPaymentFileList extends ScrollListPage {
                 info(getStringFormat(keyPrefix + ".processed", requestFile.getFullName()));
             } else if (requestFile.getStatus().equals(errorStatus)) {
                 highlightError(target, requestFile);
-                error(getStringFormat(keyPrefix + ".error", requestFile.getFullName()));
+                error(getStringFormat(keyPrefix + ".error", requestFile.getFullName()) + ": " + requestFile.getErrorMessage());
             }
         }
     }

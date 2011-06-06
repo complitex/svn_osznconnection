@@ -113,6 +113,7 @@ public class LoadGroupTaskBean implements ITaskBean{
     @Override
     public void onError(IExecutorObject executorObject) {
         RequestFileGroup group = (RequestFileGroup) executorObject;
+        group.setStatus(RequestFileStatus.LOAD_ERROR);
 
         requestFileGroupBean.delete(group);
     }

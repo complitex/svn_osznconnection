@@ -45,6 +45,8 @@ public class RequestFile implements IExecutorObject {
 
     private boolean cancel = false;
 
+    private String errorMessage;
+
     public boolean isPayment() {
         return TYPE.PAYMENT.equals(type);
     }
@@ -282,5 +284,13 @@ public class RequestFile implements IExecutorObject {
     @Override
     public boolean isCanceled() {
         return cancel;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 }

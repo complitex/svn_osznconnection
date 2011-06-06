@@ -662,7 +662,7 @@ public class GroupList extends ScrollListPage {
                 info(getStringFormat(keyPrefix + ".processed", group.getFullName()));
             } else if (group.getStatus().equals(errorStatus)) {
                 highlightError(target, group);
-                error(getStringFormat(keyPrefix + ".error", group.getFullName()));
+                error(getStringFormat(keyPrefix + ".error", group.getFullName()) + ": " + group.getErrorMessage());
             }
         }
     }
