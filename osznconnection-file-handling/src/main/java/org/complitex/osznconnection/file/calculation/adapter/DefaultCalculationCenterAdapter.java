@@ -159,11 +159,11 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
      *
      */
     @Override
-    public void acquirePersonAccount(RequestFile.TYPE requestFileType, AbstractRequest request, String puAccountNumber,
-            String district, String streetType, String street, String buildingNumber, String buildingCorp, String apartment,
-            Date date) throws DBException {
+    public void acquirePersonAccount(RequestFile.TYPE requestFileType, AbstractRequest request, String lastName,
+            String puAccountNumber, String district, String streetType, String street, String buildingNumber,
+            String buildingCorp, String apartment, Date date) throws DBException {
 
-        if(Strings.isEmpty(puAccountNumber)){
+        if (Strings.isEmpty(puAccountNumber)) {
             request.setStatus(RequestStatus.ACCOUNT_NUMBER_MISMATCH);
             return;
         }
@@ -189,7 +189,10 @@ public class DefaultCalculationCenterAdapter extends AbstractCalculationCenterAd
             }
             if (puAccountNumber.equals(puAccountNumberInfo.getPuAccountNumber())
                     || PuAccountNumberInfoParser.matches(puAccountNumber, puAccountNumberInfo.getPuAccountNumber())
-                    || PuAccountNumberInfoParser.matches(puAccountNumber, puAccountNumberInfo.getPuId(), puAccountNumberInfo.getPuAccountNumber())
+                    || PuAccountNumberInfoParser.matches(puAccountNumber, puAccountNumberInfo.getPuId(),
+                    puAccountNumberInfo.getPuAccountNumber())
+                    || PuAccountNumberInfoParser.matches(puAccountNumber, lastName, puAccountNumberInfo.getPuAccountNumber(),
+                    accountDetail.getOwnerName())
                     || isMegabankAccount(puAccountNumber, accountDetail.getMegabankAccountNumber())
                     || isCalcCenterAccount(puAccountNumber, accountDetail.getAccountNumber())) {
                 request.setAccountNumber(accountDetail.getAccountNumber());

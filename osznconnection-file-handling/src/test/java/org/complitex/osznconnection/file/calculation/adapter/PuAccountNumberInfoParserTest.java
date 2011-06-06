@@ -81,6 +81,9 @@ public class PuAccountNumberInfoParserTest {
         assertEquals(PuAccountNumberInfoParser.matches("210021470", "21", "2147"), false);
         assertEquals(PuAccountNumberInfoParser.matches("021000021470", "21", "21470"), true);
         assertEquals(PuAccountNumberInfoParser.matches("02102147", "210", "2147"), true);
-
+        assertEquals(PuAccountNumberInfoParser.matches("www01234", "lastname", "1234", "lastname A.B."), true);
+        assertEquals(PuAccountNumberInfoParser.matches("www01234", "lastname", "234", "lastname aaa bb"), false);
+        assertEquals(PuAccountNumberInfoParser.matches("www01234", "lastname", "1234", " "), false);
+        assertEquals(PuAccountNumberInfoParser.matches("0001234", "lastname", "1234", "lastname"), true);
     }
 }
