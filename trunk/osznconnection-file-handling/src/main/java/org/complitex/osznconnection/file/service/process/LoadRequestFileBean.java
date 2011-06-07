@@ -103,8 +103,6 @@ public class LoadRequestFileBean {
                     Integer registry = (Integer) request.getDbfFields().get(PaymentDBF.REE_NUM.name());
                     if (registry != null){
                         requestFile.setRegistry(registry);
-                    }else {
-                        throw new FieldNotFoundException(PaymentDBF.REE_NUM.name());
                     }
 
                     //проверка загружен ли файл
