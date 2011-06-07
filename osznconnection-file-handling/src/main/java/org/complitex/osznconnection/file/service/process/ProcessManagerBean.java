@@ -186,6 +186,12 @@ public class ProcessManagerBean {
             process.getQueue().addAll(list);
 
             executorBean.execute(process);
+        }else {
+            int freeThreadCount = process.getMaxThread()- process.getRunningThreadCount();
+
+            for (int i = 0; i < freeThreadCount; ++i){
+                executorBean.executeNext(process);
+            }
         }
     }
 
@@ -222,6 +228,12 @@ public class ProcessManagerBean {
                 process.setTask(EjbBeanLocator.getBean(LoadGroupTaskBean.class));
 
                 executorBean.execute(process);
+            }else {
+                int freeThreadCount = process.getMaxThread()- process.getRunningThreadCount();
+
+                for (int i = 0; i < freeThreadCount; ++i){
+                    executorBean.executeNext(process);
+                }
             }
         } catch (StorageNotFoundException e) {
             process.preprocessError();
