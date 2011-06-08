@@ -87,7 +87,7 @@ public class PuAccountNumberInfoParser {
         if (isEmpty(remoteName)) {
             return false;
         }
-        return remoteName.toUpperCase().startsWith(realLastName.toUpperCase())
-                && realPuAccountNumber.matches("\\w*" + remotePuAccountNumber);
+        return remoteName.trim().toUpperCase().startsWith(realLastName.trim().toUpperCase())
+                && realPuAccountNumber.endsWith(remotePuAccountNumber);
     }
 }
