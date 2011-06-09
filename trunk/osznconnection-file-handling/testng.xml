@@ -7,4 +7,9 @@
             <class name="org.complitex.osznconnection.file.calculation.adapter.PuAccountNumberInfoParserTest"/>
         </classes>
     </test>
+    <test name="BuildingNumberConverterTest">
+        <classes>
+            <class name="org.complitex.osznconnection.file.service.BuildingNumberConverterTest"/>
+        </classes>
+    </test>
 </suite>
