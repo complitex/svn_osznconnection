@@ -102,7 +102,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 </tr>
 </thead>
 <tbody valign='top'>
-<tr class='odd'>
+<tr class='even'>
  <td class='primaryKey' title='Primary Key'>id</td>
  <td class='detail'>bigint</td>
  <td class='detail' align='right'>19</td>
@@ -111,19 +111,19 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'></td>
  <td class='detail'>
   <table border='0' width='100%' cellspacing='0' cellpadding='0'>
-   <tr class='relative odd' valign='top'>
+   <tr class='relative even' valign='top'>
     <td class='relatedTable detail' title="actual_payment.request_file_id refs request_file.id via fk_actual_payment__request_file"><a href='actual_payment.html'>actual_payment</a><span class='relatedKey'>.request_file_id</span>
     </td>
     <td class='constraint detail'>fk_actual_payment__request_file<span title='Restrict delete:
  Parent cannot be deleted if children exist'>&nbsp;R</span></td>
    </tr>
-   <tr class='relative odd' valign='top'>
+   <tr class='relative even' valign='top'>
     <td class='relatedTable detail' title="benefit.request_file_id refs request_file.id via fk_benefit__request_file"><a href='benefit.html'>benefit</a><span class='relatedKey'>.request_file_id</span>
     </td>
     <td class='constraint detail'>fk_benefit__request_file<span title='Restrict delete:
  Parent cannot be deleted if children exist'>&nbsp;R</span></td>
    </tr>
-   <tr class='relative odd' valign='top'>
+   <tr class='relative even' valign='top'>
     <td class='relatedTable detail' title="payment.request_file_id refs request_file.id via fk_payment__request_file"><a href='payment.html'>payment</a><span class='relatedKey'>.request_file_id</span>
     </td>
     <td class='constraint detail'>fk_payment__request_file<span title='Restrict delete:
@@ -134,7 +134,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Идентификатор файла запроса</td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='indexedColumn' title='Indexed'>group_id</td>
  <td class='detail'>bigint</td>
  <td class='detail' align='right'>19</td>
@@ -144,7 +144,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'></td>
  <td class='detail'>
   <table border='0' width='100%' cellspacing='0' cellpadding='0'>
-   <tr class='relative even' valign='top'>
+   <tr class='relative odd' valign='top'>
     <td class='relatedTable detail' title="request_file.group_id refs request_file_group.id via fk_request_file__request_file_group"><a href='request_file_group.html'>request_file_group</a><span class='relatedKey'>.id</span>
     </td>
     <td class='constraint detail'>fk_request_file__request_file_group<span title='Restrict delete:
@@ -154,7 +154,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  </td>
  <td class='comment detail'>Идентификатор группы</td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='indexedColumn' title='Indexed'>loaded</td>
  <td class='detail'>datetime</td>
  <td class='detail' align='right'>19</td>
@@ -165,7 +165,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Дата загрузки</td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='indexedColumn' title='Indexed'>name</td>
  <td class='detail'>varchar</td>
  <td class='detail' align='right'>20</td>
@@ -176,7 +176,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Имя файла</td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='detail'>directory</td>
  <td class='detail'>varchar</td>
  <td class='detail' align='right'>255</td>
@@ -187,7 +187,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Директория файла</td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='indexedColumn' title='Indexed'>organization_id</td>
  <td class='detail'>bigint</td>
  <td class='detail' align='right'>19</td>
@@ -197,7 +197,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'></td>
  <td class='detail'>
   <table border='0' width='100%' cellspacing='0' cellpadding='0'>
-   <tr class='relative even' valign='top'>
+   <tr class='relative odd' valign='top'>
     <td class='relatedTable detail' title="request_file.organization_id refs organization.object_id via fk_request_file__organization"><a href='organization.html'>organization</a><span class='relatedKey'>.object_id</span>
     </td>
     <td class='constraint detail'>fk_request_file__organization<span title='Restrict delete:
@@ -207,7 +207,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  </td>
  <td class='comment detail'>Идентификатор организации</td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='indexedColumn' title='Indexed'>registry</td>
  <td class='detail'>int</td>
  <td class='detail' align='right'>10</td>
@@ -218,7 +218,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Номер реестра</td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='indexedColumn' title='Indexed'>month</td>
  <td class='detail'>int</td>
  <td class='detail' align='right'>10</td>
@@ -229,7 +229,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Номер месяца</td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='indexedColumn' title='Indexed'>year</td>
  <td class='detail'>int</td>
  <td class='detail' align='right'>10</td>
@@ -240,7 +240,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Номер года</td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='detail'>dbf_record_count</td>
  <td class='detail'>bigint</td>
  <td class='detail' align='right'>19</td>
@@ -251,7 +251,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Количество записей в исходном файле</td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='detail'>length</td>
  <td class='detail'>bigint</td>
  <td class='detail' align='right'>19</td>
@@ -262,7 +262,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Размер файла. Не используется</td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='detail'>check_sum</td>
  <td class='detail'>varchar</td>
  <td class='detail' align='right'>32</td>
@@ -273,7 +273,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Контрольная сумма. Не используется</td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='indexedColumn' title='Indexed'>type</td>
  <td class='detail'>varchar</td>
  <td class='detail' align='right'>50</td>
@@ -284,7 +284,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Тип файла. Возможные значения: BENEFIT, PAYMENT, TARIF, ACTUAL_PAYMENT</td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='detail'>status</td>
  <td class='detail'>int</td>
  <td class='detail' align='right'>10</td>
@@ -296,7 +296,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='comment detail'>См. таблицу status_description и класс RequestFileStatus</td>
 </tr>
 </table>
-<p title='14 columns'>Table contained 4 rows at Ср июн 22 18:02 NOVST 2011<p/>
+<p title='14 columns'>Table contained 4 rows at Ср июн 22 19:31 NOVST 2011<p/>
 </td></tr></table>
 <div class='indent'>
 <b>Indexes:</b>

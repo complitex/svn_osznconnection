@@ -102,7 +102,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 </tr>
 </thead>
 <tbody valign='top'>
-<tr class='odd'>
+<tr class='even'>
  <td class='primaryKey' title='Primary Key'>pk_id</td>
  <td class='detail'>bigint</td>
  <td class='detail' align='right'>19</td>
@@ -113,7 +113,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Суррогатный ключ</td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='indexedColumn' title='Indexed'>object_id</td>
  <td class='detail'>bigint</td>
  <td class='detail' align='right'>19</td>
@@ -122,13 +122,13 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'></td>
  <td class='detail'>
   <table border='0' width='100%' cellspacing='0' cellpadding='0'>
-   <tr class='relative even' valign='top'>
+   <tr class='relative odd' valign='top'>
     <td class='relatedTable detail' title="city_type_attribute.object_id refs city_type.object_id via fk_city_type_attribute__city_type"><a href='city_type_attribute.html'>city_type_attribute</a><span class='relatedKey'>.object_id</span>
     </td>
     <td class='constraint detail'>fk_city_type_attribute__city_type<span title='Restrict delete:
  Parent cannot be deleted if children exist'>&nbsp;R</span></td>
    </tr>
-   <tr class='relative even' valign='top'>
+   <tr class='relative odd' valign='top'>
     <td class='relatedTable detail' title="city_type_correction.object_id refs city_type.object_id via fk_city_type_correction__city_type"><a href='city_type_correction.html'>city_type_correction</a><span class='relatedKey'>.object_id</span>
     </td>
     <td class='constraint detail'>fk_city_type_correction__city_type<span title='Restrict delete:
@@ -139,7 +139,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Идентификатор объекта</td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='indexedColumn' title='Indexed'>parent_id</td>
  <td class='detail'>bigint</td>
  <td class='detail' align='right'>19</td>
@@ -148,9 +148,9 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail' align='right'>null</td>
  <td class='detail'></td>
  <td class='detail'> </td>
- <td class='comment detail'>Идентификатор родительского объекта</td>
+ <td class='comment detail'>Идентификатор родительского объекта: не используется</td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='indexedColumn' title='Indexed'>parent_entity_id</td>
  <td class='detail'>bigint</td>
  <td class='detail' align='right'>19</td>
@@ -160,7 +160,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'></td>
  <td class='detail'>
   <table border='0' width='100%' cellspacing='0' cellpadding='0'>
-   <tr class='relative even' valign='top'>
+   <tr class='relative odd' valign='top'>
     <td class='relatedTable detail' title="city_type.parent_entity_id refs entity.id via fk_city_type__entity"><a href='entity.html'>entity</a><span class='relatedKey'>.id</span>
     </td>
     <td class='constraint detail'>fk_city_type__entity<span title='Restrict delete:
@@ -168,9 +168,9 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
    </tr>
   </table>
  </td>
- <td class='comment detail'>Идентификатор сущности родительского объекта</td>
+ <td class='comment detail'>Идентификатор сущности родительского объекта: не используется</td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='indexedColumn' title='Indexed'>entity_type_id</td>
  <td class='detail'>bigint</td>
  <td class='detail' align='right'>19</td>
@@ -180,7 +180,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'></td>
  <td class='detail'>
   <table border='0' width='100%' cellspacing='0' cellpadding='0'>
-   <tr class='relative odd' valign='top'>
+   <tr class='relative even' valign='top'>
     <td class='relatedTable detail' title="city_type.entity_type_id refs entity_type.id via fk_city_type__entity_type"><a href='entity_type.html'>entity_type</a><span class='relatedKey'>.id</span>
     </td>
     <td class='constraint detail'>fk_city_type__entity_type<span title='Restrict delete:
@@ -188,9 +188,9 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
    </tr>
   </table>
  </td>
- <td class='comment detail'>Идентификатор типа сущности</td>
+ <td class='comment detail'>Идентификатор типа сущности: не используется</td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='indexedColumn' title='Indexed'>start_date</td>
  <td class='detail'>timestamp</td>
  <td class='detail' align='right'>19</td>
@@ -201,7 +201,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Дата начала периода действия объекта</td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='indexedColumn' title='Indexed'>end_date</td>
  <td class='detail'>timestamp</td>
  <td class='detail' align='right'>19</td>
@@ -212,7 +212,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Дата окончания периода действия объекта</td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='indexedColumn' title='Indexed'>status</td>
  <td class='detail'>varchar</td>
  <td class='detail' align='right'>20</td>
@@ -221,9 +221,9 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail' align='right'>ACTIVE</td>
  <td class='detail'></td>
  <td class='detail'> </td>
- <td class='comment detail'>Статус. См. класс StatusType</td>
+ <td class='comment detail'>Статус: ACTIVE, INACTIVE, ARCHIVE</td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='indexedColumn' title='Indexed'>permission_id</td>
  <td class='detail'>bigint</td>
  <td class='detail' align='right'>19</td>
@@ -233,7 +233,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'></td>
  <td class='detail'>
   <table border='0' width='100%' cellspacing='0' cellpadding='0'>
-   <tr class='relative odd' valign='top'>
+   <tr class='relative even' valign='top'>
     <td class='relatedTable detail' title="city_type.permission_id refs permission.permission_id via fk_city_type__permission"><a href='permission.html'>permission</a><span class='relatedKey'>.permission_id</span>
     </td>
     <td class='constraint detail'>fk_city_type__permission<span title='Restrict delete:
@@ -243,7 +243,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  </td>
  <td class='comment detail'>Ключ прав доступа к объекту</td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='indexedColumn' title='Indexed'>external_id</td>
  <td class='detail'>bigint</td>
  <td class='detail' align='right'>19</td>
@@ -255,7 +255,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='comment detail'>Внешний идентификатор импорта записи</td>
 </tr>
 </table>
-<p title='10 columns'>Table contained 2 rows at Ср июн 22 18:02 NOVST 2011<p/>
+<p title='10 columns'>Table contained 2 rows at Ср июн 22 19:31 NOVST 2011<p/>
 </td></tr></table>
 <div class='indent'>
 <b>Indexes:</b>
