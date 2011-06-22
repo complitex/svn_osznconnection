@@ -1,0 +1,1 @@
+java -jar schemaSpy_5.0.0.jar -t mysql -host localhost -db osznconnection -u root -p root -dp ..\mysql-connector-java-5.1.10.jar -gv "C:\Program Files (x86)\Graphviz 2.28" -o schema -ahic -charset utf8 
