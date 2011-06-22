@@ -102,7 +102,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 </tr>
 </thead>
 <tbody valign='top'>
-<tr class='even'>
+<tr class='odd'>
  <td class='primaryKey' title='Primary Key'>pk_id</td>
  <td class='detail'>bigint</td>
  <td class='detail' align='right'>19</td>
@@ -113,7 +113,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Суррогатный ключ</td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='indexedColumn' title='Indexed'>attribute_id</td>
  <td class='detail'>bigint</td>
  <td class='detail' align='right'>19</td>
@@ -124,7 +124,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Идентификатор атрибута</td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='indexedColumn' title='Indexed'>object_id</td>
  <td class='detail'>bigint</td>
  <td class='detail' align='right'>19</td>
@@ -134,7 +134,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'></td>
  <td class='detail'>
   <table border='0' width='100%' cellspacing='0' cellpadding='0'>
-   <tr class='relative even' valign='top'>
+   <tr class='relative odd' valign='top'>
     <td class='relatedTable detail' title="district_attribute.object_id refs district.object_id via fk_district_attribute__district"><a href='district.html'>district</a><span class='relatedKey'>.object_id</span>
     </td>
     <td class='constraint detail'>fk_district_attribute__district<span title='Restrict delete:
@@ -144,7 +144,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  </td>
  <td class='comment detail'>Идентификатор объекта</td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='indexedColumn' title='Indexed'>attribute_type_id</td>
  <td class='detail'>bigint</td>
  <td class='detail' align='right'>19</td>
@@ -154,7 +154,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'></td>
  <td class='detail'>
   <table border='0' width='100%' cellspacing='0' cellpadding='0'>
-   <tr class='relative odd' valign='top'>
+   <tr class='relative even' valign='top'>
     <td class='relatedTable detail' title="district_attribute.attribute_type_id refs entity_attribute_type.id via fk_district_attribute__entity_attribute_type"><a href='entity_attribute_type.html'>entity_attribute_type</a><span class='relatedKey'>.id</span>
     </td>
     <td class='constraint detail'>fk_district_attribute__entity_attribute_type<span title='Restrict delete:
@@ -162,9 +162,9 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
    </tr>
   </table>
  </td>
- <td class='comment detail'>Идентификатор типа атрибута</td>
+ <td class='comment detail'>Идентификатор типа атрибута: 600 - НАИМЕНОВАНИЕ РАЙОНА, 601 - КОД РАЙОНА</td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='indexedColumn' title='Indexed'>value_id</td>
  <td class='detail'>bigint</td>
  <td class='detail' align='right'>19</td>
@@ -175,7 +175,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Идентификатор значения</td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='indexedColumn' title='Indexed'>value_type_id</td>
  <td class='detail'>bigint</td>
  <td class='detail' align='right'>19</td>
@@ -185,7 +185,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'></td>
  <td class='detail'>
   <table border='0' width='100%' cellspacing='0' cellpadding='0'>
-   <tr class='relative odd' valign='top'>
+   <tr class='relative even' valign='top'>
     <td class='relatedTable detail' title="district_attribute.value_type_id refs entity_attribute_value_type.id via fk_district_attribute__entity_attribute_value_type"><a href='entity_attribute_value_type.html'>entity_attribute_value_type</a><span class='relatedKey'>.id</span>
     </td>
     <td class='constraint detail'>fk_district_attribute__entity_attribute_value_type<span title='Restrict delete:
@@ -193,9 +193,9 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
    </tr>
   </table>
  </td>
- <td class='comment detail'>Идентификатор типа значения атрибута</td>
+ <td class='comment detail'>Идентификатор типа значения атрибута: 600 - STRING_CULTURE, 601 - STRING</td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='indexedColumn' title='Indexed'>start_date</td>
  <td class='detail'>timestamp</td>
  <td class='detail' align='right'>19</td>
@@ -206,7 +206,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Дата начала периода действия атрибута</td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='indexedColumn' title='Indexed'>end_date</td>
  <td class='detail'>timestamp</td>
  <td class='detail' align='right'>19</td>
@@ -217,7 +217,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Дата окончания периода действия атрибута</td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='indexedColumn' title='Indexed'>status</td>
  <td class='detail'>varchar</td>
  <td class='detail' align='right'>20</td>
@@ -226,10 +226,10 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail' align='right'>ACTIVE</td>
  <td class='detail'></td>
  <td class='detail'> </td>
- <td class='comment detail'>Статус. См. класс StatusType</td>
+ <td class='comment detail'>Статус: ACTIVE, INACTIVE, ARCHIVE</td>
 </tr>
 </table>
-<p title='9 columns'>Table contained 8 rows at Ср июн 22 18:02 NOVST 2011<p/>
+<p title='9 columns'>Table contained 8 rows at Ср июн 22 19:31 NOVST 2011<p/>
 </td></tr></table>
 <div class='indent'>
 <b>Indexes:</b>
