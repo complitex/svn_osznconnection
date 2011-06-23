@@ -151,13 +151,13 @@ public class TarifFileList extends TemplatePage {
                 return organizationStrategy.displayDomainObject(object, getLocale());
             }
         };
-        filterForm.add(new DisableAwareDropDownChoice<DomainObject>("organization", osznsModel, renderer));
+        filterForm.add(new DisableAwareDropDownChoice<DomainObject>("organization", osznsModel, renderer).setNullValid(true));
 
         //Месяц
-        filterForm.add(new MonthDropDownChoice("month"));
+        filterForm.add(new MonthDropDownChoice("month").setNullValid(true));
 
         //Год
-        filterForm.add(new YearDropDownChoice("year"));
+        filterForm.add(new YearDropDownChoice("year").setNullValid(true));
 
         //Всего записей
         filterForm.add(new TextField<Integer>("dbfRecordCount", new Model<Integer>(), Integer.class));

@@ -156,10 +156,8 @@ public class PersonAccountList extends ScrollListPage {
                 return organizationStrategy.displayDomainObject(object, getLocale());
             }
         };
-        DisableAwareDropDownChoice<DomainObject> osznFilter = new DisableAwareDropDownChoice<DomainObject>("osznFilter",
-                osznModel, osznsModel, renderer);
-
-        filterForm.add(osznFilter);
+        filterForm.add(new DisableAwareDropDownChoice<DomainObject>("osznFilter",
+                osznModel, osznsModel, renderer).setNullValid(true));
 
         final IModel<List<DomainObject>> calculationCentresModel = new LoadableDetachableModel<List<DomainObject>>() {
 

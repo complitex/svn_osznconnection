@@ -173,13 +173,13 @@ public class ActualPaymentFileList extends ScrollListPage {
                 return organizationStrategy.displayDomainObject(object, getLocale());
             }
         };
-        filterForm.add(new DisableAwareDropDownChoice<DomainObject>("organization", osznsModel, renderer));
+        filterForm.add(new DisableAwareDropDownChoice<DomainObject>("organization", osznsModel, renderer).setNullValid(true));
 
         //Месяц
-        filterForm.add(new MonthDropDownChoice("month"));
+        filterForm.add(new MonthDropDownChoice("month").setNullValid(true));
 
         //Год
-        filterForm.add(new YearDropDownChoice("year"));
+        filterForm.add(new YearDropDownChoice("year").setNullValid(true));
 
         //Загружено записей
         filterForm.add(new TextField<Integer>("loadedRecordCount", Integer.class));
@@ -204,7 +204,7 @@ public class ActualPaymentFileList extends ScrollListPage {
                     public String getIdValue(RequestFileStatus object, int index) {
                         return object.name();
                     }
-                }));
+                }).setNullValid(true));
 
         //Модель выбранных элементов списка
         selectModels = new HashMap<Long, IModel<Boolean>>();

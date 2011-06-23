@@ -165,16 +165,16 @@ public class GroupList extends ScrollListPage {
                 return organizationStrategy.displayDomainObject(object, getLocale());
             }
         };
-        filterForm.add(new DisableAwareDropDownChoice<DomainObject>("organization", osznsModel, renderer));
+        filterForm.add(new DisableAwareDropDownChoice<DomainObject>("organization", osznsModel, renderer).setNullValid(true));
 
         //Номер реестра
         filterForm.add(new TextField<String>("registry"));
 
         //Месяц
-        filterForm.add(new MonthDropDownChoice("month"));
+        filterForm.add(new MonthDropDownChoice("month").setNullValid(true));
 
         //Год
-        filterForm.add(new YearDropDownChoice("year"));
+        filterForm.add(new YearDropDownChoice("year").setNullValid(true));
 
         //Директория
         filterForm.add(new TextField<String>("directory"));
@@ -208,7 +208,7 @@ public class GroupList extends ScrollListPage {
                     public String getIdValue(RequestFileStatus object, int index) {
                         return object.name();
                     }
-                }));
+                }).setNullValid(true));
 
         //Модель выбранных элементов списка
         selectModels = new HashMap<Long, IModel<Boolean>>();

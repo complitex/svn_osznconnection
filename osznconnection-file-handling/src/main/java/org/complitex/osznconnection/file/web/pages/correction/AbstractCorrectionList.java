@@ -16,6 +16,7 @@ import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.AbstractSingleSelectChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.repeater.Item;
@@ -176,10 +177,10 @@ public abstract class AbstractCorrectionList extends ScrollListPage {
                 return organizationStrategy.displayDomainObject(object, getLocale());
             }
         };
-        DisableAwareDropDownChoice<DomainObject> organizationFilter = new DisableAwareDropDownChoice<DomainObject>("organizationFilter",
-                outerOrganizationModel, allOuterOrganizationsModel, renderer);
 
-        filterForm.add(organizationFilter);
+        filterForm.add(new DisableAwareDropDownChoice<DomainObject>("organizationFilter",
+                outerOrganizationModel, allOuterOrganizationsModel, renderer).setNullValid(true));
+
         filterForm.add(new TextField<String>("correctionFilter", new PropertyModel<String>(example, "correction")));
         filterForm.add(new TextField<String>("codeFilter", new PropertyModel<String>(example, "code")));
         filterForm.add(new TextField<String>("internalObjectFilter", new PropertyModel<String>(example, "internalObject")));
@@ -202,9 +203,9 @@ public abstract class AbstractCorrectionList extends ScrollListPage {
                 return internalOrganizations;
             }
         };
-        DisableAwareDropDownChoice<DomainObject> internalOrganizationFilter = new DisableAwareDropDownChoice<DomainObject>("internalOrganizationFilter",
-                internalOrganizationModel, internalOrganizations, renderer);
-        filterForm.add(internalOrganizationFilter);
+
+        filterForm.add( new DisableAwareDropDownChoice<DomainObject>("internalOrganizationFilter",
+                internalOrganizationModel, internalOrganizations, renderer).setNullValid(true));
 
         AjaxLink reset = new IndicatingAjaxLink("reset") {
 
