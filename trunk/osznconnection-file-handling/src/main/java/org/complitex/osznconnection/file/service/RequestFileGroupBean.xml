@@ -179,4 +179,18 @@
             parameterType="long">
         select `status` from `request_file_group` where `id` = #{id}
     </select>
+
+    <update id="fixLoadingOnInit">
+        update `request_file_group` set `status` = 111 where `status` = 112;
+    </update>
+    <update id="fixBingingOnInit">
+        update `request_file_group` set `status` = 121 where `status` = 122;
+    </update>
+    <update id="fixFillingOnInit">
+        update `request_file_group` set `status` = 131 where `status` = 132;
+    </update>
+    <update id="fixSavingOnInit">
+        update `request_file_group` set `status` = 141 where `status` = 142;
+    </update>
+
 </mapper>
