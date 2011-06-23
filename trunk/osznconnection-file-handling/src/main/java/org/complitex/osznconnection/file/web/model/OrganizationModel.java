@@ -33,7 +33,11 @@ public abstract class OrganizationModel extends Model<DomainObject> {
 
     @Override
     public void setObject(DomainObject object) {
-        setOrganizationId(object.getId());
+        if (object != null) {
+            setOrganizationId(object.getId());
+        } else {
+            setOrganizationId(null);
+        }
     }
 
     public abstract Long getOrganizationId();

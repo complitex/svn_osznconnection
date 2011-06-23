@@ -149,7 +149,7 @@ public final class BenefitList extends TemplatePage {
         filterForm.add(new TextField<String>("privFilter", new PropertyModel<String>(example, "privilege")));
         filterForm.add(new TextField<String>("apartmentFilter", new PropertyModel<String>(example, "apartment")));
         filterForm.add(new DropDownChoice<RequestStatus>("statusFilter", new PropertyModel<RequestStatus>(example, "status"),
-                Arrays.asList(RequestStatus.values()), new StatusRenderer()));
+                Arrays.asList(RequestStatus.values()), new StatusRenderer()).setNullValid(true));
 
         AjaxLink reset = new AjaxLink("reset") {
 
