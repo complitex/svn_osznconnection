@@ -270,12 +270,12 @@ public class GroupList extends ScrollListPage {
                     @Override
                     public boolean isVisible() {
                         RequestFileGroup group = item.getModelObject();
-                        return (!group.isProcessing() && !isWaiting(group));
+                        return (!group.isProcessing() && !isGlobalWaiting(group));
                     }
 
                     @Override
                     public boolean isEnabled() {
-                        return !isWaiting(item.getModelObject());
+                        return !isGlobalWaiting(item.getModelObject());
                     }
                 };
 
@@ -304,7 +304,7 @@ public class GroupList extends ScrollListPage {
 
                     @Override
                     public boolean isVisible() {
-                        return isWaiting(item.getModelObject()) && !item.getModelObject().isProcessing();
+                        return isGlobalWaiting(item.getModelObject()) && !item.getModelObject().isProcessing();
                     }
                 };
                 item.add(waiting);
@@ -638,7 +638,7 @@ public class GroupList extends ScrollListPage {
                 || processManagerBean.isGlobalProcessing(SAVE_GROUP);
     }
 
-    private boolean isWaiting(RequestFileGroup group) {
+    private boolean isGlobalWaiting(RequestFileGroup group) {
         return processManagerBean.isGlobalWaiting(LOAD_GROUP, group)
                 || processManagerBean.isGlobalWaiting(BIND_GROUP, group)
                 || processManagerBean.isGlobalWaiting(FILL_GROUP, group)

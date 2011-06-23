@@ -97,4 +97,11 @@ public class RequestFileGroupBean extends AbstractBean{
     public RequestFileStatus getRequestFileStatus(RequestFileGroup group){
         return (RequestFileStatus) sqlSession().selectOne(MAPPING_NAMESPACE + ".selectGroupStatus", group.getId());
     }
+
+    public void fixProcessingOnInit(){
+        sqlSession().update(MAPPING_NAMESPACE + ".fixLoadingOnInit");
+        sqlSession().update(MAPPING_NAMESPACE + ".fixBingingOnInit");
+        sqlSession().update(MAPPING_NAMESPACE + ".fixFillingOnInit");
+        sqlSession().update(MAPPING_NAMESPACE + ".fixSavingOnInit");
+    }
 }

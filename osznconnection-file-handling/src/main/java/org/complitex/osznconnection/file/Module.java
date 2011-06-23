@@ -4,6 +4,8 @@ import org.complitex.dictionary.service.ConfigBean;
 import org.complitex.dictionary.service.LogManager;
 import org.complitex.osznconnection.file.entity.FileHandlingConfig;
 import org.complitex.osznconnection.file.entity.RequestFileGroup;
+import org.complitex.osznconnection.file.service.RequestFileBean;
+import org.complitex.osznconnection.file.service.RequestFileGroupBean;
 import org.complitex.osznconnection.file.web.GroupList;
 
 import javax.annotation.PostConstruct;
@@ -23,6 +25,12 @@ public class Module {
     @EJB
     private ConfigBean configBean;
 
+    @EJB
+    private RequestFileBean requestFileBean;
+
+    @EJB
+    private RequestFileGroupBean requestFileGroupBean;
+
     @PostConstruct
     public void init() {
         //todo tarif and request file
@@ -31,5 +39,8 @@ public class Module {
 
         //init config
         configBean.init(FileHandlingConfig.class.getName(), FileHandlingConfig.values());
+
+        requestFileBean.fixProcessingOnInit();
+        requestFileGroupBean.fixProcessingOnInit();
     }
 }

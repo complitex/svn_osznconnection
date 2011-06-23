@@ -103,4 +103,11 @@ public class RequestFileBean extends AbstractBean {
     public RequestFileStatus getRequestFileStatus(RequestFile requestFile) {
         return (RequestFileStatus) sqlSession().selectOne(MAPPING_NAMESPACE + ".selectRequestFileStatus", requestFile);
     }
+
+    public void fixProcessingOnInit(){
+        sqlSession().update(MAPPING_NAMESPACE + ".fixLoadingOnInit");
+        sqlSession().update(MAPPING_NAMESPACE + ".fixBingingOnInit");
+        sqlSession().update(MAPPING_NAMESPACE + ".fixFillingOnInit");
+        sqlSession().update(MAPPING_NAMESPACE + ".fixSavingOnInit");
+    }
 }
