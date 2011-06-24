@@ -59,7 +59,7 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
     private StrategyFactory strategyFactory;
     @EJB
     private StatusRenderService statusRenderService;
-    @EJB(name = "Street_typeStrategy")
+    @EJB
     private StreetTypeStrategy streetTypeStrategy;
     private CORRECTED_ENTITY correctedEntity;
     private Dialog dialog;
