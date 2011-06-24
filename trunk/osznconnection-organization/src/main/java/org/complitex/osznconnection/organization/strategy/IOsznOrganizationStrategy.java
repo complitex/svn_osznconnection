@@ -16,11 +16,11 @@ public interface IOsznOrganizationStrategy extends IOrganizationStrategy {
     /**
      * Attribute type ids
      */
-    public long CURRENT_CALCULATION_CENTER = 904;
+    long CURRENT_CALCULATION_CENTER = 904;
     /**
      * Itself organization instance.
      */
-    public long ITSELF_ORGANIZATION_OBJECT_ID = 0;
+    long ITSELF_ORGANIZATION_OBJECT_ID = 0;
 
     @Transactional
     List<DomainObject> getAllOuterOrganizations(Locale locale);
