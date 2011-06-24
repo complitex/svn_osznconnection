@@ -4,16 +4,19 @@
 INSERT INTO `sequence` (`sequence_name`, `sequence_value`) VALUES
 ('ownership',1), ('ownership_string_culture',1),
 ('privilege',1), ('privilege_string_culture',1);
+-- --------------------------------
+-- Organization type
+-- --------------------------------
+INSERT INTO `organization_type`(`object_id`) VALUES (2),(3);
+INSERT INTO `organization_type_string_culture`(`id`, `locale_id`, `value`) VALUES (2, 1, UPPER('ОСЗН')), (2, 2,UPPER('ОСЗН')),
+(3, 1, UPPER('Модуль начислений')), (3, 2,UPPER('Центр нарахувань'));
+INSERT INTO `organization_type_attribute`(`attribute_id`, `object_id`, `attribute_type_id`, `value_id`, `value_type_id`) VALUES (1,2,2300,2,2300),(1,3,2300,3,2300);
 
 -- --------------------------------
 -- Organization
 -- --------------------------------
-INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES
-(904, 1, UPPER('ОСЗН')), (904, 2, UPPER('ОСЗН')),
-(905, 1, UPPER('Модуль начислений')), (905, 2, UPPER('Центр нарахувань'));
-INSERT INTO `entity_type`(`id`, `entity_id`, `entity_type_name_id`) VALUES (900, 900, 904), (901, 900, 905);
-INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (908, 1, UPPER('Является текущим модулем начислений')), (908, 2, UPPER('Является текущим модулем начислений'));
-INSERT INTO `entity_attribute_type`(`id`, `entity_id`, `mandatory`, `attribute_type_name_id`, `system`) VALUES (904, 900, 0, 908, 1);
+INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (906, 1, UPPER('Является текущим модулем начислений')), (906, 2, UPPER('Является текущим модулем начислений'));
+INSERT INTO `entity_attribute_type`(`id`, `entity_id`, `mandatory`, `attribute_type_name_id`, `system`) VALUES (904, 900, 0, 906, 1);
 INSERT INTO `entity_attribute_value_type`(`id`, `attribute_type_id`, `attribute_value_type`) VALUES (904, 904, UPPER('boolean'));
 
 -- --------------------------------
@@ -301,4 +304,4 @@ INSERT INTO `organization_attribute`(`attribute_id`, `object_id`, `attribute_typ
 (1,0,900,1,900), (1,0,901,2,901);
 
 -- Current database version
-INSERT INTO `update` (`version`) VALUE ('20110513_677_0.1.17');
+INSERT INTO `update` (`version`) VALUE ('20110624_706_0.1.18');

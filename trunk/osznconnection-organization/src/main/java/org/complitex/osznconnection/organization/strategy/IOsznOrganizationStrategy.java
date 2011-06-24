@@ -12,16 +12,15 @@ import java.util.Locale;
  * @author Artem
  */
 public interface IOsznOrganizationStrategy extends IOrganizationStrategy {
-    /**
-     * Entity type ids
-     */
-    public long OSZN = 900;
-    public long CALCULATION_CENTER = 901;
 
     /**
      * Attribute type ids
      */
     public long CURRENT_CALCULATION_CENTER = 904;
+    /**
+     * Itself organization instance.
+     */
+    public long ITSELF_ORGANIZATION_OBJECT_ID = 0;
 
     @Transactional
     List<DomainObject> getAllOuterOrganizations(Locale locale);
@@ -34,4 +33,7 @@ public interface IOsznOrganizationStrategy extends IOrganizationStrategy {
 
     @Transactional
     long getCurrentCalculationCenterId();
+
+    @Transactional
+    DomainObject getItselfOrganization();
 }
