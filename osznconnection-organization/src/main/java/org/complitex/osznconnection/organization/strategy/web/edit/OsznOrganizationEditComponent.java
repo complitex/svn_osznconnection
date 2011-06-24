@@ -1,9 +1,7 @@
 package org.complitex.osznconnection.organization.strategy.web.edit;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import javax.ejb.EJB;
-import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -19,6 +17,8 @@ import org.complitex.dictionary.service.StringCultureBean;
 import org.complitex.dictionary.web.component.DomainObjectInputPanel.SimpleTypeModel;
 import org.complitex.organization.strategy.web.edit.OrganizationEditComponent;
 import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
+import org.complitex.osznconnection.organization.strategy.OsznOrganizationStrategy;
+import org.complitex.osznconnection.organization_type.strategy.OsznOrganizationTypeStrategy;
 
 /**
  * 
@@ -41,8 +41,8 @@ public class OsznOrganizationEditComponent extends OrganizationEditComponent {
     protected void init() {
         super.init();
 
-        // current calculation center flag
         final DomainObject organization = getDomainObject();
+        // current calculation center flag
         currentCaculationCenterContainer = new WebMarkupContainer("currentCaculationCenterContainer");
         currentCaculationCenterContainer.setOutputMarkupPlaceholderTag(true);
         add(currentCaculationCenterContainer);
@@ -63,43 +63,69 @@ public class OsznOrganizationEditComponent extends OrganizationEditComponent {
                 : new SimpleTypeModel<Boolean>(stringBean.getSystemStringCulture(currentCalculationCenterAttribute.getLocalizedValues()),
                 new BooleanConverter());
         CheckBox currentCalculationCenter = new CheckBox("currentCalculationCenter", model);
+        currentCalculationCenter.setEnabled(enabled());
         currentCaculationCenterContainer.add(currentCalculationCenter);
-        boolean visibility = getCurrentCalculationCenterVisibility();
-        currentCaculationCenterContainer.setVisible(visibility);
+        currentCaculationCenterContainer.setVisible(isCalculationCenter());
     }
 
     @Override
-    protected Collection<Component> onTypeChanged() {
-        Collection<Component> componentsToUpdate = super.onTypeChanged();
-        if (componentsToUpdate == null) {
-            componentsToUpdate = new ArrayList<Component>();
+    protected void onOrganizationTypeChanged(AjaxRequestTarget target) {
+        super.onOrganizationTypeChanged(target);
+
+        //current calculation center container
+        boolean currentCalculationCenterContainerWasVisible = currentCaculationCenterContainer.isVisible();
+        currentCaculationCenterContainer.setVisible(isCalculationCenter());
+        boolean currentCalculationCenterContainerVisibleNow = currentCaculationCenterContainer.isVisible();
+        if (currentCalculationCenterContainerWasVisible ^ currentCalculationCenterContainerVisibleNow) {
+            target.addComponent(currentCaculationCenterContainer);
         }
-        componentsToUpdate.add(currentCaculationCenterContainer);
-        boolean visibility = getCurrentCalculationCenterVisibility();
-        currentCaculationCenterContainer.setVisible(visibility);
-        if (!visibility) {
+    }
+
+    private boolean isCalculationCenter() {
+        for (DomainObject organizationType : getOrganizationTypesModel().getObject()) {
+            if (organizationType.getId().equals(OsznOrganizationTypeStrategy.CALCULATION_CENTER)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isOszn() {
+        for (DomainObject organizationType : getOrganizationTypesModel().getObject()) {
+            if (organizationType.getId().equals(OsznOrganizationTypeStrategy.OSZN)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    protected boolean isDistrictRequired() {
+        return isOszn();
+    }
+
+    @Override
+    protected boolean isDistrictVisible() {
+        return super.isDistrictVisible() || isOszn();
+    }
+
+    @Override
+    protected void onPersist() {
+        super.onPersist();
+        if (!isCalculationCenter()) {
             getDomainObject().removeAttribute(IOsznOrganizationStrategy.CURRENT_CALCULATION_CENTER);
         }
-
-        return componentsToUpdate;
-    }
-
-    private boolean getCurrentCalculationCenterVisibility() {
-        Long entityTypeId = getDomainObject().getEntityTypeId();
-        if ((currentCalculationCenterAttribute != null) && (entityTypeId != null) && entityTypeId.equals(IOsznOrganizationStrategy.CALCULATION_CENTER)) {
-            return true;
-        } else {
-            return false;
-        }
     }
 
     @Override
-    protected boolean isDistrictVisible(Long entityTypeId) {
-        return super.isDistrictVisible(entityTypeId) || entityTypeId.equals(IOsznOrganizationStrategy.OSZN);
+    protected String getStrategyName() {
+        return OsznOrganizationStrategy.OSZN_ORGANIZATION_STRATEGY_NAME;
     }
 
     @Override
-    protected boolean isDistrictNotRequired(Long entityTypeId) {
-        return super.isDistrictNotRequired(entityTypeId);
+    protected boolean isOrganizationTypeEnabled() {
+        Long organizationId = getDomainObject().getId();
+        return !(organizationId != null && (organizationId == IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID))
+                && super.isOrganizationTypeEnabled();
     }
 }

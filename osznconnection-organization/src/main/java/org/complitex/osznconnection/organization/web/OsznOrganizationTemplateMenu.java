@@ -14,6 +14,7 @@ import org.complitex.template.web.security.SecurityRole;
 @AuthorizeInstantiation(SecurityRole.AUTHORIZED)
 public class OsznOrganizationTemplateMenu extends OrganizationTemplateMenu {
 
+    @Override
     protected IStrategy getStrategy() {
         return EjbBeanLocator.getBean(OsznOrganizationStrategy.class);
     }

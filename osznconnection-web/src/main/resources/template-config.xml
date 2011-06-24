@@ -8,6 +8,7 @@
         <menu class="org.complitex.address.menu.AddressMenu"/>
         <menu class="org.complitex.osznconnection.file.web.pages.correction.CorrectionMenu"/>
         <menu class="org.complitex.osznconnection.organization.web.OsznOrganizationTemplateMenu"/>
+        <menu class="org.complitex.osznconnection.organization_type.menu.OsznOrganizationTypeMenu"/>
         <menu class="org.complitex.osznconnection.ownership.web.OwnershipTemplateMenu"/>
         <menu class="org.complitex.osznconnection.privilege.web.PrivilegeTemplateMenu"/>
         <menu class="org.complitex.address.menu.AddressDescriptionMenu"/>
