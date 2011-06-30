@@ -485,7 +485,7 @@ public class AddressCorrectionBean extends CorrectionBean {
         IStrategy cityStrategy = strategyFactory.getStrategy("city");
         IStrategy streetStrategy = strategyFactory.getStrategy("street");
         IStrategy buildingStrategy = strategyFactory.getStrategy("building");
-        Locale locale = localeBean.convert(localeBean.getLocale(example.getLocaleId()));
+        Locale locale = localeBean.convert(localeBean.getLocaleObject(example.getLocaleId()));
 
         for (Correction c : list) {
             try {
@@ -529,7 +529,7 @@ public class AddressCorrectionBean extends CorrectionBean {
 
         IStrategy streetStrategy = strategyFactory.getStrategy("street");
         IStrategy cityStrategy = strategyFactory.getStrategy("city");
-        Locale locale = localeBean.convert(localeBean.getLocale(example.getLocaleId()));
+        Locale locale = localeBean.convert(localeBean.getLocaleObject(example.getLocaleId()));
 
         for (Correction c : streets) {
             DomainObject street = streetStrategy.findById(c.getObjectId(), false);
@@ -562,7 +562,7 @@ public class AddressCorrectionBean extends CorrectionBean {
         List<Correction> districts = sqlSession().selectList(ADDRESS_BEAN_MAPPING_NAMESPACE + ".findDistricts", example);
         IStrategy districtStrategy = strategyFactory.getStrategy("district");
         IStrategy cityStrategy = strategyFactory.getStrategy("city");
-        Locale locale = localeBean.convert(localeBean.getLocale(example.getLocaleId()));
+        Locale locale = localeBean.convert(localeBean.getLocaleObject(example.getLocaleId()));
 
         for (Correction c : districts) {
             DomainObject district = districtStrategy.findById(c.getObjectId(), false);
@@ -592,7 +592,7 @@ public class AddressCorrectionBean extends CorrectionBean {
 
         List<Correction> streetTypeCorrections = sqlSession().selectList(CORRECTION_BEAN_MAPPING_NAMESPACE + ".find", example);
         if (streetTypeCorrections != null && !streetTypeCorrections.isEmpty()) {
-            Locale locale = localeBean.convert(localeBean.getLocale(example.getLocaleId()));
+            Locale locale = localeBean.convert(localeBean.getLocaleObject(example.getLocaleId()));
             for (Correction streetTypeCorrection : streetTypeCorrections) {
                 DomainObject streetTypeObject = streetTypeStrategy.findById(streetTypeCorrection.getObjectId(), false);
                 if (streetTypeObject == null) {
