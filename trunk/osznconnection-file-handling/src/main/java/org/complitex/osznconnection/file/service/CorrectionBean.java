@@ -73,7 +73,7 @@ public class CorrectionBean extends AbstractBean {
                     correction.setEditable(false);
                 }
 
-                correction.setDisplayObject(strategy.displayDomainObject(object, localeBean.convert(localeBean.getLocale(localeId))));
+                correction.setDisplayObject(strategy.displayDomainObject(object, localeBean.convert(localeBean.getLocaleObject(localeId))));
             }
         }
     }
