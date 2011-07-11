@@ -17,7 +17,6 @@ CREATE TABLE `ownership` (
   `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
   `parent_id` BIGINT(20) COMMENT 'Не используется',
   `parent_entity_id` BIGINT(20) COMMENT 'Не используется',
-  `entity_type_id` BIGINT(20) COMMENT 'Не используется',
   `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия параметров объекта',
   `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата завершения периода действия параметров объекта',
   `status` varchar(20) NOT NULL DEFAULT 'ACTIVE' COMMENT 'Статус объекта: ACTIVE, INACTIVE или ARCHIVE',
@@ -29,12 +28,10 @@ CREATE TABLE `ownership` (
   KEY `key_object_id` (`object_id`),  
   KEY `key_parent_id` (`parent_id`),
   KEY `key_parent_entity_id` (`parent_entity_id`),
-  KEY `key_entity_type_id` (`entity_type_id`),
   KEY `key_start_date` (`start_date`),
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
   KEY `key_permission_id` (`permission_id`),
-  CONSTRAINT `fk_ownership__entity_type` FOREIGN KEY (`entity_type_id`) REFERENCES `entity_type` (`id`),
   CONSTRAINT `fk_ownership__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
   CONSTRAINT `fk_ownership__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
 ) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Форма собственности';
@@ -91,7 +88,6 @@ CREATE TABLE `privilege` (
   `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта',
   `parent_id` BIGINT(20) COMMENT 'Не используется',
   `parent_entity_id` BIGINT(20) COMMENT 'Не используется',
-  `entity_type_id` BIGINT(20) COMMENT 'Не используется',
   `start_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата начала периода действия параметров объекта',
   `end_date` TIMESTAMP NULL DEFAULT NULL COMMENT 'Дата окончания периода действия параметров объекта',
   `status` varchar(20) NOT NULL DEFAULT 'ACTIVE' COMMENT 'Статус объекта: ACTIVE, INACTIVE или ARCHIVE',
@@ -103,12 +99,10 @@ CREATE TABLE `privilege` (
   KEY `key_object_id` (`object_id`),
   KEY `key_parent_id` (`parent_id`),
   KEY `key_parent_entity_id` (`parent_entity_id`),
-  KEY `key_entity_type_id` (`entity_type_id`),
   KEY `key_start_date` (`start_date`),
   KEY `key_end_date` (`end_date`),
   KEY `key_status` (`status`),
   KEY `key_permission_id` (`permission_id`),
-  CONSTRAINT `fk_privilege__entity_type` FOREIGN KEY (`entity_type_id`) REFERENCES `entity_type` (`id`),
   CONSTRAINT `fk_privilege__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
   CONSTRAINT `fk_privilege__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
 ) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Привилегия';
