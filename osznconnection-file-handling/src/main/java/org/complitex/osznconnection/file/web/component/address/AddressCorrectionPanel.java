@@ -5,43 +5,43 @@
 package org.complitex.osznconnection.file.web.component.address;
 
 import com.google.common.collect.ImmutableList;
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.complitex.dictionary.entity.DomainObject;
-import org.complitex.dictionary.strategy.StrategyFactory;
-import org.complitex.dictionary.web.component.search.SearchComponent;
-import org.complitex.dictionary.web.component.search.SearchComponentState;
-import org.complitex.osznconnection.file.service.exception.MoreOneCorrectionException;
-import org.complitex.osznconnection.file.service.exception.NotFoundCorrectionException;
-import org.complitex.osznconnection.file.web.pages.util.AddressRenderer;
-import org.complitex.address.strategy.street.StreetStrategy;
-import org.odlabs.wiquery.core.javascript.JsStatement;
-import org.odlabs.wiquery.ui.core.JsScopeUiEvent;
-import org.odlabs.wiquery.ui.dialog.Dialog;
-
-import javax.ejb.EJB;
-import java.util.List;
-import org.apache.wicket.Component;
-import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.complitex.address.strategy.street.StreetStrategy;
 import org.complitex.address.strategy.street_type.StreetTypeStrategy;
+import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.entity.example.DomainObjectExample;
 import org.complitex.dictionary.strategy.IStrategy;
+import org.complitex.dictionary.strategy.StrategyFactory;
 import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
 import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
 import org.complitex.dictionary.web.component.ShowMode;
+import org.complitex.dictionary.web.component.search.SearchComponentState;
+import org.complitex.dictionary.web.component.search.WiQuerySearchComponent;
 import org.complitex.osznconnection.file.entity.AbstractRequest;
 import org.complitex.osznconnection.file.entity.RequestStatus;
 import org.complitex.osznconnection.file.service.StatusRenderService;
 import org.complitex.osznconnection.file.service.exception.DublicateCorrectionException;
+import org.complitex.osznconnection.file.service.exception.MoreOneCorrectionException;
+import org.complitex.osznconnection.file.service.exception.NotFoundCorrectionException;
+import org.complitex.osznconnection.file.web.pages.util.AddressRenderer;
+import org.odlabs.wiquery.core.javascript.JsStatement;
+import org.odlabs.wiquery.ui.core.JsScopeUiEvent;
+import org.odlabs.wiquery.ui.dialog.Dialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.ejb.EJB;
+import java.util.List;
 
 /**
  * Панель для корректировки адреса вручную, когда нет соответствующей коррекции и поиск по локальной адресной базе не дал результатов.
@@ -63,7 +63,7 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
     private StreetTypeStrategy streetTypeStrategy;
     private CORRECTED_ENTITY correctedEntity;
     private Dialog dialog;
-    private SearchComponent searchComponent;
+    private WiQuerySearchComponent searchComponent;
     private SearchComponentState componentState;
     private DisableAwareDropDownChoice<DomainObject> streetTypeSelect;
     private FeedbackPanel messages;
@@ -127,7 +127,7 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
 
         componentState = new SearchComponentState();
         // at start create fake search component
-        searchComponent = new SearchComponent("searchComponent", componentState, ImmutableList.of(""), null, ShowMode.ACTIVE, true);
+        searchComponent = new WiQuerySearchComponent("searchComponent", componentState, ImmutableList.of(""), null, ShowMode.ACTIVE, true);
         container.add(searchComponent);
 
         DomainObjectExample example = new DomainObjectExample();
@@ -366,7 +366,7 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
         initCorrectedEntity(!streetTypeEnabled);
         if (correctedEntity != CORRECTED_ENTITY.STREET_TYPE) {
             initSearchComponentState(componentState);
-            SearchComponent newSearchComponent = new SearchComponent("searchComponent", componentState, initFilters(), null, ShowMode.ACTIVE, true);
+            WiQuerySearchComponent newSearchComponent = new WiQuerySearchComponent("searchComponent", componentState, initFilters(), null, ShowMode.ACTIVE, true);
             searchComponent.replaceWith(newSearchComponent);
             searchComponent = newSearchComponent;
             streetTypeSelect.setVisible(false);

@@ -28,16 +28,14 @@
                 </tr>
                 <tr>
                     <td>
-                        <input wicket:id="city" type="text" style="margin-right: 5px"/>
+                        <div wicket:id="city" style="margin-right: 5px"></div>
                     </td>
                     <td wicket:id="districtContainer">
-                        <input wicket:id="district" type="text" style="margin-right: 5px"/>
+                        <input type="text" wicket:id="district" style="margin-right: 5px"/>
                     </td>
                     <td wicket:id="streetContainer">
-                        <select wicket:id="streetType">
-                            <option></option>
-                        </select>
-                        <input wicket:id="street" type="text" style="margin-right: 5px"/>
+                            <select wicket:id="streetType"></select>
+                            <span wicket:id="street" style="margin-right: 5px"></span>
                     </td>
                     <wicket:container wicket:id="buildingContainer">
                         <td>

@@ -5,43 +5,45 @@
 package org.complitex.osznconnection.file.web.component.lookup;
 
 import com.google.common.collect.ImmutableList;
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.complitex.address.strategy.street.StreetStrategy;
 import org.complitex.dictionary.entity.DomainObject;
+import org.complitex.dictionary.strategy.IStrategy;
 import org.complitex.dictionary.strategy.StrategyFactory;
-import org.complitex.dictionary.web.component.search.SearchComponent;
+import org.complitex.dictionary.util.CloneUtil;
+import org.complitex.dictionary.web.component.ShowMode;
 import org.complitex.dictionary.web.component.search.SearchComponentState;
+import org.complitex.dictionary.web.component.search.WiQuerySearchComponent;
+import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
+import org.complitex.osznconnection.file.calculation.adapter.exception.UnknownAccountNumberTypeException;
+import org.complitex.osznconnection.file.entity.AbstractRequest;
 import org.complitex.osznconnection.file.entity.AccountDetail;
 import org.complitex.osznconnection.file.entity.RequestStatus;
+import org.complitex.osznconnection.file.service.LookupBean;
+import org.complitex.osznconnection.file.service.StatusRenderService;
+import org.complitex.osznconnection.file.web.component.account.AccountNumberPickerPanel;
 import org.odlabs.wiquery.core.javascript.JsStatement;
 import org.odlabs.wiquery.ui.accordion.Accordion;
+import org.odlabs.wiquery.ui.accordion.AccordionActive;
 import org.odlabs.wiquery.ui.accordion.AccordionAnimated;
 import org.odlabs.wiquery.ui.core.JsScopeUiEvent;
 import org.odlabs.wiquery.ui.dialog.Dialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import javax.ejb.EJB;
 import java.util.List;
-import org.apache.wicket.Component;
-import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
-import static org.apache.wicket.util.string.Strings.*;
-import org.complitex.dictionary.util.CloneUtil;
-import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
-import org.complitex.osznconnection.file.service.StatusRenderService;
-import org.complitex.address.strategy.street.StreetStrategy;
-import org.complitex.dictionary.strategy.IStrategy;
-import org.complitex.dictionary.web.component.ShowMode;
-import org.complitex.osznconnection.file.calculation.adapter.exception.UnknownAccountNumberTypeException;
-import org.complitex.osznconnection.file.entity.AbstractRequest;
-import org.complitex.osznconnection.file.service.LookupBean;
-import org.complitex.osznconnection.file.web.component.account.AccountNumberPickerPanel;
-import org.odlabs.wiquery.ui.accordion.AccordionActive;
+
+import static org.apache.wicket.util.string.Strings.isEmpty;
 
 /**
  * 
@@ -64,7 +66,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
     private Dialog dialog;
     private Accordion accordion;
     private SearchComponentState addressSearchComponentState;
-    private SearchComponent addressSearchComponent;
+    private WiQuerySearchComponent addressSearchComponent;
     private T request;
     private T initialRequest;
     private IModel<String> accountNumberModel;
@@ -164,7 +166,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
             }
         };
         accordion.add(lookupByAddress);
-        addressSearchComponent = new SearchComponent("addressSearchComponent", addressSearchComponentState,
+        addressSearchComponent = new WiQuerySearchComponent("addressSearchComponent", addressSearchComponentState,
                 ImmutableList.of("city", "street", "building"), null, ShowMode.ACTIVE, true);
         addressSearchComponent.setOutputMarkupPlaceholderTag(true);
         addressSearchComponent.setVisible(false);
