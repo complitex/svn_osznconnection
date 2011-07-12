@@ -18,8 +18,8 @@ import org.apache.wicket.model.StringResourceModel;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.web.component.ShowMode;
 import org.complitex.dictionary.web.component.search.ISearchCallback;
-import org.complitex.dictionary.web.component.search.SearchComponent;
 import org.complitex.dictionary.web.component.search.SearchComponentState;
+import org.complitex.dictionary.web.component.search.WiQuerySearchComponent;
 import org.complitex.osznconnection.file.entity.Correction;
 import org.complitex.osznconnection.file.web.component.correction.edit.AbstractCorrectionEditPanel;
 import org.complitex.osznconnection.privilege.strategy.PrivilegeStrategy;
@@ -81,7 +81,7 @@ public final class PrivilegeCorrectionEdit extends FormTemplatePage {
                     componentState.put(privilegeStrategy.getEntityTable(), findPrivilege(correction.getObjectId()));
                 }
 
-                return new SearchComponent(id, componentState, ImmutableList.of(privilegeStrategy.getEntityTable()),
+                return new WiQuerySearchComponent(id, componentState, ImmutableList.of(privilegeStrategy.getEntityTable()),
                         new PrivilegeCallback(correction), ShowMode.ACTIVE, true);
             }
 

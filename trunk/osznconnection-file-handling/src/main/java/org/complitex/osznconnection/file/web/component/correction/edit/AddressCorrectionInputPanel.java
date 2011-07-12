@@ -4,18 +4,12 @@
  */
 package org.complitex.osznconnection.file.web.component.correction.edit;
 
-import java.util.Collections;
-import java.util.List;
-import javax.ejb.EJB;
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
-import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AbstractAutoCompleteTextRenderer;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteSettings;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.ChoiceRenderer;
-import org.apache.wicket.markup.html.form.DropDownChoice;
-import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.form.*;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
@@ -24,12 +18,17 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.service.EntityBean;
 import org.complitex.dictionary.service.StringCultureBean;
-import org.complitex.dictionary.web.component.AbstractAutoCompleteTextField;
 import org.complitex.osznconnection.file.entity.Correction;
 import org.complitex.osznconnection.file.entity.StreetCorrection;
 import org.complitex.osznconnection.file.entity.example.CorrectionExample;
 import org.complitex.osznconnection.file.service.AddressCorrectionBean;
 import org.complitex.osznconnection.file.web.pages.util.AddressRenderer;
+import org.odlabs.wiquery.ui.autocomplete.AutocompleteAjaxComponent;
+
+import javax.ejb.EJB;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  *
@@ -44,62 +43,19 @@ public class AddressCorrectionInputPanel extends Panel {
     @EJB
     private EntityBean entityBean;
 
-    private static class CorrectionRenderer<T extends Correction> extends AbstractAutoCompleteTextRenderer<T> {
+    private static class CorrectionRenderer<T extends Correction> implements IChoiceRenderer<T> {
 
         @Override
-        protected String getTextValue(T correction) {
-            return correction.getCorrection();
+        public Object getDisplayValue(T object) {
+            return object.getCorrection();
+        }
+
+        @Override
+        public String getIdValue(T object, int index) {
+            return object.getId() + "";
         }
     }
 
-    private static abstract class AutoCompleteCorrectionTextField<T extends Correction> extends AbstractAutoCompleteTextField<T> {
-
-        private CorrectionRenderer<T> renderer;
-
-        public AutoCompleteCorrectionTextField(String id, CorrectionModel<T> model, CorrectionRenderer<T> renderer, AutoCompleteSettings settings) {
-            super(id, null, String.class, renderer, settings);
-            model.setAutoComplete(this);
-            this.setModel(model);
-            this.renderer = renderer;
-        }
-
-        @Override
-        protected String getChoiceValue(T choice) throws Throwable {
-            return renderer.getTextValue(choice);
-        }
-
-        public CorrectionRenderer<T> getRenderer() {
-            return renderer;
-        }
-    }
-
-    private static class CorrectionModel<T extends Correction> extends Model<String> {
-
-        private AutoCompleteCorrectionTextField<T> autoComplete;
-        private IModel<T> model;
-
-        public CorrectionModel(IModel<T> model) {
-            this.model = model;
-        }
-
-        @Override
-        public String getObject() {
-            T object = model.getObject();
-            if (object != null) {
-                return autoComplete.getRenderer().getTextValue(object);
-            }
-            return null;
-        }
-
-        @Override
-        public void setObject(String object) {
-            model.setObject(autoComplete.findChoice());
-        }
-
-        private void setAutoComplete(AutoCompleteCorrectionTextField autoComplete) {
-            this.autoComplete = autoComplete;
-        }
-    }
     private static final int AUTO_COMPLETE_SIZE = 10;
     private static final AutoCompleteSettings settings = new AutoCompleteSettings();
 
@@ -109,6 +65,8 @@ public class AddressCorrectionInputPanel extends Panel {
         final boolean isDistrict = "district".equals(correction.getEntity());
         final boolean isStreet = "street".equals(correction.getEntity());
         final boolean isBuilding = "building".equals(correction.getEntity());
+
+        final List<Component> correctionFields = new ArrayList<Component>();
 
         add(new Label("cityLabel", new AbstractReadOnlyModel<String>() {
 
@@ -149,21 +107,40 @@ public class AddressCorrectionInputPanel extends Panel {
             }
         }));
 
+        final WebMarkupContainer districtContainer = new WebMarkupContainer("districtContainer");
+        districtContainer.setVisible(isDistrict);
+        add(districtContainer);
+        districtContainer.add(new TextField<String>("district", new PropertyModel<String>(correction, "correction")).setOutputMarkupId(true));
+
+        final WebMarkupContainer streetContainer = new WebMarkupContainer("streetContainer");
+        streetContainer.setVisible(isStreet || isBuilding);
+        add(streetContainer);
+
+        final WebMarkupContainer buildingContainer = new WebMarkupContainer("buildingContainer");
+        buildingContainer.setVisible(isBuilding);
+        add(buildingContainer);
+
         final IModel<Correction> cityModel = new Model<Correction>();
-        AutoCompleteCorrectionTextField<Correction> city = new AutoCompleteCorrectionTextField<Correction>("city",
-                new CorrectionModel<Correction>(cityModel), new CorrectionRenderer<Correction>(), settings) {
+
+        add(new AutocompleteAjaxComponent<Correction>("city", cityModel, new CorrectionRenderer<Correction>()) {
+            {
+                setAutoUpdate(true);
+            }
 
             @Override
-            protected List<Correction> getChoiceList(String cityInput) {
+            public List<Correction> getValues(String term) {
                 if (correction.getOrganizationId() != null) {
-                    CorrectionExample example = createExample(cityInput, correction.getOrganizationId(), null);
-                    List<Correction> cityCorrections = addressCorrectionBean.findCityCorrections(example);
-                    return cityCorrections;
+                    CorrectionExample example = createExample(term, correction.getOrganizationId(), null);
+
+                    return addressCorrectionBean.findCityCorrections(example);
                 }
                 return Collections.emptyList();
             }
-        };
-        city.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+
+            @Override
+            public Correction getValueOnSearchFail(String input) {
+                return null;
+            }
 
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
@@ -171,18 +148,14 @@ public class AddressCorrectionInputPanel extends Panel {
                     Long cityId = cityModel.getObject() != null ? cityModel.getObject().getId() : null;
                     correction.setParentId(cityId);
                 }
+
+                if (districtContainer.isVisible()){
+                    target.focusComponent(districtContainer.get(0));
+                }else if (streetContainer.isVisible()) {
+                    target.focusComponent(((AutocompleteAjaxComponent) streetContainer.get(1)).getAutocompleteField());
+                }
             }
         });
-        add(city);
-
-        WebMarkupContainer districtContainer = new WebMarkupContainer("districtContainer");
-        districtContainer.setVisible(isDistrict);
-        add(districtContainer);
-        districtContainer.add(new TextField("district", new PropertyModel<String>(correction, "correction")));
-
-        WebMarkupContainer streetContainer = new WebMarkupContainer("streetContainer");
-        streetContainer.setVisible(isStreet || isBuilding);
-        add(streetContainer);
 
         IModel<Correction> streetTypeModel = new PropertyModel<Correction>(correction, "streetTypeCorrection");
         IModel<List<Correction>> allStreetTypeCorrectionsModel = new AbstractReadOnlyModel<List<Correction>>() {
@@ -202,57 +175,94 @@ public class AddressCorrectionInputPanel extends Panel {
         streetType.setVisible(isStreet);
 
         final IModel<StreetCorrection> streetModel = new Model<StreetCorrection>();
-        TextField street = null;
+
+        FormComponent street;
+
         if (isBuilding) {
-            CorrectionRenderer<StreetCorrection> streetCorrectionRenderer = new CorrectionRenderer<StreetCorrection>() {
+            IChoiceRenderer<StreetCorrection> streetCorrectionRenderer = new IChoiceRenderer<StreetCorrection>() {
 
                 @Override
-                protected String getTextValue(StreetCorrection streetCorrection) {
+                public Object getDisplayValue(StreetCorrection object) {
                     String streetType = null;
-                    if (streetCorrection.getStreetTypeCorrection() != null) {
-                        streetType = streetCorrection.getStreetTypeCorrection().getCorrection();
+                    if (object.getStreetTypeCorrection() != null) {
+                        streetType = object.getStreetTypeCorrection().getCorrection();
                     }
                     if (Strings.isEmpty(streetType)) {
                         streetType = null;
                     }
 
-                    return AddressRenderer.displayStreet(streetType, streetCorrection.getCorrection(), getLocale());
+                    return AddressRenderer.displayStreet(streetType, object.getCorrection(), getLocale());
                 }
-            };
-            street = new AutoCompleteCorrectionTextField<StreetCorrection>("street", new CorrectionModel<StreetCorrection>(streetModel),
-                    streetCorrectionRenderer, settings) {
 
                 @Override
-                protected List<StreetCorrection> getChoiceList(String streetInput) {
+                public String getIdValue(StreetCorrection object, int index) {
+                    return object.getId() + "";
+                }
+            };
+
+            street = new AutocompleteAjaxComponent<StreetCorrection>("street", streetModel, streetCorrectionRenderer) {
+                {
+                    setAutoUpdate(true);
+                }
+
+                @Override
+                public List<StreetCorrection> getValues(String term) {
                     Correction cityCorrection = cityModel.getObject();
                     if (cityCorrection != null && correction.getOrganizationId() != null) {
-                        CorrectionExample example = createExample(streetInput, correction.getOrganizationId(), cityCorrection.getId());
-                        List<StreetCorrection> streetCorrections = addressCorrectionBean.findStreetCorrections(example);
-                        return streetCorrections;
+                        CorrectionExample example = createExample(term, correction.getOrganizationId(), cityCorrection.getId());
+
+                        return addressCorrectionBean.findStreetCorrections(example);
                     }
                     return Collections.emptyList();
                 }
-            };
-            street.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+
+                @Override
+                public StreetCorrection getValueOnSearchFail(String input) {
+                    return null;
+                }
 
                 @Override
                 protected void onUpdate(AjaxRequestTarget target) {
-                    if (isBuilding) {
-                        Long streetId = streetModel.getObject() != null ? streetModel.getObject().getId() : null;
-                        correction.setParentId(streetId);
+                    Long streetId = streetModel.getObject() != null ? streetModel.getObject().getId() : null;
+                    correction.setParentId(streetId);
+
+                    if (buildingContainer.isVisible()){
+                        target.focusComponent(buildingContainer.get(0));
                     }
                 }
-            });
-        } else {
-            street = new TextField<String>("street", new PropertyModel<String>(correction, "correction"));
+            };
+        }
+        else {
+            street = new AutocompleteAjaxComponent<String>("street", new PropertyModel<String>(correction, "correction")){
+
+                @Override
+                public List<String> getValues(String term) {
+                    Correction cityCorrection = cityModel.getObject();
+                    if (cityCorrection != null && correction.getOrganizationId() != null) {
+                        CorrectionExample example = createExample(term, correction.getOrganizationId(), cityCorrection.getId());
+
+                        List<String> list = new ArrayList<String>();
+
+                        for (StreetCorrection c : addressCorrectionBean.findStreetCorrections(example)){
+                            list.add(c.getCorrection());
+                        }
+
+                        return list;
+                    }
+                    return Collections.emptyList();
+                }
+
+                @Override
+                public String getValueOnSearchFail(String input) {
+                    return input;
+                }
+            };
         }
         streetContainer.add(streetType);
         streetContainer.add(street);
 
-        WebMarkupContainer buildingContainer = new WebMarkupContainer("buildingContainer");
-        buildingContainer.setVisible(isBuilding);
-        add(buildingContainer);
         TextField<String> building = new TextField<String>("building", new PropertyModel<String>(correction, "correction"));
+        building.setOutputMarkupId(true);
         buildingContainer.add(building);
         buildingContainer.add(new TextField<String>("buildingCorp", new PropertyModel<String>(correction, "correctionCorp")));
     }

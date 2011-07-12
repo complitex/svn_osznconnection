@@ -14,33 +14,33 @@ import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInst
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.entity.DomainObject;
+import org.complitex.dictionary.strategy.IStrategy;
+import org.complitex.dictionary.strategy.IStrategy.SimpleObjectInfo;
 import org.complitex.dictionary.strategy.StrategyFactory;
+import org.complitex.dictionary.web.component.ShowMode;
 import org.complitex.dictionary.web.component.search.ISearchCallback;
-import org.complitex.dictionary.web.component.search.SearchComponent;
 import org.complitex.dictionary.web.component.search.SearchComponentState;
+import org.complitex.dictionary.web.component.search.WiQuerySearchComponent;
+import org.complitex.osznconnection.file.entity.BuildingCorrection;
+import org.complitex.osznconnection.file.entity.Correction;
+import org.complitex.osznconnection.file.entity.StreetCorrection;
+import org.complitex.osznconnection.file.service.AddressCorrectionBean;
+import org.complitex.osznconnection.file.web.component.correction.edit.AbstractCorrectionEditPanel;
+import org.complitex.osznconnection.file.web.component.correction.edit.AddressCorrectionInputPanel;
+import org.complitex.osznconnection.file.web.pages.util.AddressRenderer;
 import org.complitex.template.web.component.toolbar.DeleteItemButton;
 import org.complitex.template.web.component.toolbar.ToolbarButton;
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.FormTemplatePage;
-import org.complitex.osznconnection.file.entity.BuildingCorrection;
-import org.complitex.osznconnection.file.entity.Correction;
-import org.complitex.osznconnection.file.service.AddressCorrectionBean;
-import org.complitex.osznconnection.file.web.component.correction.edit.AbstractCorrectionEditPanel;
 
 import javax.ejb.EJB;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import org.apache.wicket.model.StringResourceModel;
-import org.apache.wicket.util.string.Strings;
-import org.complitex.dictionary.strategy.IStrategy;
-import org.complitex.dictionary.strategy.IStrategy.SimpleObjectInfo;
-import org.complitex.dictionary.web.component.ShowMode;
-import org.complitex.osznconnection.file.entity.StreetCorrection;
-import org.complitex.osznconnection.file.web.component.correction.edit.AddressCorrectionInputPanel;
-import org.complitex.osznconnection.file.web.pages.util.AddressRenderer;
 
 /**
  * Страница для редактирования коррекций адресов.
@@ -105,7 +105,7 @@ public class AddressCorrectionEdit extends FormTemplatePage {
                     componentState.put(entity, findObject(objectId, entity));
                 }
             }
-            return new SearchComponent(id, componentState, getSearchFilters(), new Callback(correction, entity), ShowMode.ACTIVE, true);
+            return new WiQuerySearchComponent(id, componentState, getSearchFilters(), new Callback(correction, entity), ShowMode.ACTIVE, true);
         }
 
         @Override
