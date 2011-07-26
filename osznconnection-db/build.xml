@@ -5,9 +5,10 @@
     <target name="create">
         <sql driver="com.mysql.jdbc.Driver" encoding="UTF-8" url="${url}" userid="${username}" password="${password}">
             <classpath>
-                <pathelement location="mysql-connector-java-5.1.10.jar"/>
+                <pathelement location="${jdbc}"/>
             </classpath>
 
+            <transaction src="../../complitex/complitex-db/complitex-dictionary-create.sql"/>
             <transaction src="../../complitex/complitex-db/complitex-create.sql"/>
 
             <transaction src="osznconnection-create.sql"/>
@@ -15,7 +16,7 @@
 
         <sql driver="com.mysql.jdbc.Driver" encoding="UTF-8" url="${url}" userid="${username}" password="${password}" delimiter="/">
             <classpath>
-                <pathelement location="mysql-connector-java-5.1.10.jar"/>
+                <pathelement location="${jdbc}"/>
             </classpath>
 
             <transaction src="osznconnection-functions.sql"/>
@@ -23,7 +24,7 @@
 
         <sql driver="com.mysql.jdbc.Driver" encoding="UTF-8" url="${url}" userid="${username}" password="${password}">
             <classpath>
-                <pathelement location="mysql-connector-java-5.1.10.jar"/>
+                <pathelement location="${jdbc}"/>
             </classpath>
 
             <transaction src="../../complitex/complitex-db/complitex-insert.sql"/>
@@ -42,7 +43,7 @@
     <target name="populate_test_data">
         <sql driver="com.mysql.jdbc.Driver" encoding="UTF-8" url="${url}" userid="${username}" password="${password}">
             <classpath>
-                <pathelement location="mysql-connector-java-5.1.10.jar"/>
+                <pathelement location="${jdbc}"/>
             </classpath>
 
             <transaction src="../../complitex/complitex-db/complitex-testdump.sql"/>
@@ -56,7 +57,7 @@
     <target name="populate_address_base">
         <sql driver="com.mysql.jdbc.Driver" encoding="UTF-8" url="${url}" userid="${username}" password="${password}">
             <classpath>
-                <pathelement location="mysql-connector-java-5.1.10.jar"/>
+                <pathelement location="${jdbc}"/>
             </classpath>
 
             <transaction src="import/address_base.sql"/>            
