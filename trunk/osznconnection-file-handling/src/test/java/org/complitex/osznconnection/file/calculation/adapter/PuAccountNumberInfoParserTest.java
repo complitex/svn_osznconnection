@@ -81,6 +81,11 @@ public class PuAccountNumberInfoParserTest {
         assertEquals(PuAccountNumberInfoParser.matches("210021470", "21", "2147"), false);
         assertEquals(PuAccountNumberInfoParser.matches("021000021470", "21", "21470"), true);
         assertEquals(PuAccountNumberInfoParser.matches("02102147", "210", "2147"), true);
+        assertEquals(PuAccountNumberInfoParser.matches("122.1226", "122", "1226"), true);
+        assertEquals(PuAccountNumberInfoParser.matches("122\\1226", "122", "1226"), true);
+        assertEquals(PuAccountNumberInfoParser.matches("122/1226", "122", "1226"), true);
+        assertEquals(PuAccountNumberInfoParser.matches("122\1226", "122", "1226"), false);
+        assertEquals(PuAccountNumberInfoParser.matches("122;1226", "122", "1226"), false);
         assertEquals(PuAccountNumberInfoParser.matches("www1234", "матвеев", "1234", "  МАТвеев А.В."), true);
         assertEquals(PuAccountNumberInfoParser.matches("www01234", "lastname", "234", "lastname aaa bb"), true);
         assertEquals(PuAccountNumberInfoParser.matches("www01234", "lastname", "1234", " "), false);

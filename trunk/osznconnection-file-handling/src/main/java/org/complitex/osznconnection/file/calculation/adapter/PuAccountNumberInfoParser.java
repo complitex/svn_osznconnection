@@ -13,7 +13,7 @@ import org.complitex.osznconnection.file.calculation.adapter.exception.PuAccount
  *
  * @author Artem
  */
-public class PuAccountNumberInfoParser {
+public final class PuAccountNumberInfoParser {
 
     private PuAccountNumberInfoParser() {
     }
@@ -70,7 +70,10 @@ public class PuAccountNumberInfoParser {
         if (!isNumeric(remotePuAccountNumber)) {
             throw new IllegalArgumentException("Remote pu account number is not numeric.");
         }
-        return realPuAccountNumber.matches("0*" + remotePuId + "0*" + remotePuAccountNumber);
+        return realPuAccountNumber.matches("0*" + remotePuId + "0*" + remotePuAccountNumber)
+                || realPuAccountNumber.equals(remotePuId + "." + remotePuAccountNumber)
+                || realPuAccountNumber.equals(remotePuId + "/" + remotePuAccountNumber)
+                || realPuAccountNumber.equals(remotePuId + "\\" + remotePuAccountNumber);
     }
 
     public static boolean matches(String realPuAccountNumber, String realLastName, String remotePuAccountNumber,
