@@ -208,7 +208,7 @@ BEGIN
 	DELETE FROM `entity_attribute_type` WHERE `id` = 904;
 	DELETE FROM `string_culture` WHERE `id` = 906;
 
-	INSERT INTO `update` (`version`) VALUE ('20120203__0.1.20');
+	INSERT INTO `update` (`version`) VALUE ('20120203_720_0.1.20');
     END IF;
 END/
 DELIMITER ;
