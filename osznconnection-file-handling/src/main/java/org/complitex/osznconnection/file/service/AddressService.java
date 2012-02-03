@@ -12,10 +12,7 @@ import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.dictionary.strategy.StrategyFactory;
-import org.complitex.osznconnection.file.calculation.adapter.ICalculationCenterAdapter;
 import org.complitex.osznconnection.file.entity.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -27,6 +24,7 @@ import org.complitex.dictionary.service.LocaleBean;
 import org.complitex.dictionary.strategy.IStrategy;
 import org.complitex.osznconnection.file.service.exception.MoreOneCorrectionException;
 import org.complitex.osznconnection.file.service.exception.NotFoundCorrectionException;
+import org.complitex.osznconnection.file.service_provider.ServiceProviderAdapter;
 import org.complitex.osznconnection.file.web.component.address.AddressCorrectionPanel.CORRECTED_ENTITY;
 import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
 
@@ -37,7 +35,6 @@ import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrat
 @Stateless(name = "AddressService")
 public class AddressService extends AbstractBean {
 
-    private static final Logger log = LoggerFactory.getLogger(AddressService.class);
     @EJB
     private AddressCorrectionBean addressCorrectionBean;
     @EJB
@@ -52,6 +49,8 @@ public class AddressService extends AbstractBean {
     private LocaleBean localeBean;
     @EJB
     private StreetStrategy streetStrategy;
+    @EJB
+    private ServiceProviderAdapter adapter;
 
     private void resolveLocalAddress(ActualPayment actualPayment) {
         //осзн id
@@ -545,8 +544,8 @@ public class AddressService extends AbstractBean {
      * @param actualPayment
      */
     @Transactional
-    public void resolveOutgoingAddress(Payment payment, long calculationCenterId, ICalculationCenterAdapter adapter) {
-        List<Correction> cityCorrections = addressCorrectionBean.findCityRemoteCorrections(calculationCenterId,
+    public void resolveOutgoingAddress(Payment payment, CalculationCenterInfo calculationCenterInfo) {
+        List<Correction> cityCorrections = addressCorrectionBean.findCityRemoteCorrections(calculationCenterInfo.getOrganizationId(),
                 payment.getInternalCityId());
         if (cityCorrections.size() == 1) {
             Correction cityCorrection = cityCorrections.get(0);
@@ -560,7 +559,7 @@ public class AddressService extends AbstractBean {
         }
 
         //поиск района
-        resolveOutgoingDistrict(payment, calculationCenterId, adapter);
+        resolveOutgoingDistrict(payment, calculationCenterInfo);
         if (payment.getStatus().equals(RequestStatus.MORE_ONE_REMOTE_DISTRICT_CORRECTION)
                 || payment.getStatus().equals(RequestStatus.DISTRICT_UNRESOLVED)) {
             return;
@@ -568,12 +567,12 @@ public class AddressService extends AbstractBean {
 
         //поиск улицы
         StreetCorrection streetCorrection = null;
-        List<StreetCorrection> streetCorrections = addressCorrectionBean.findStreetRemoteCorrections(calculationCenterId,
+        List<StreetCorrection> streetCorrections = addressCorrectionBean.findStreetRemoteCorrections(calculationCenterInfo.getOrganizationId(),
                 payment.getInternalStreetId());
         if (streetCorrections.size() == 1) {
             streetCorrection = streetCorrections.get(0);
         } else if (streetCorrections.size() > 1) {
-            streetCorrections = addressCorrectionBean.findStreetRemoteCorrectionsByBuilding(calculationCenterId,
+            streetCorrections = addressCorrectionBean.findStreetRemoteCorrectionsByBuilding(calculationCenterInfo.getOrganizationId(),
                     payment.getInternalStreetId(), payment.getInternalBuildingId());
             if (streetCorrections.size() == 1) {
                 streetCorrection = streetCorrections.get(0);
@@ -596,7 +595,7 @@ public class AddressService extends AbstractBean {
         }
 
         //поиск дома
-        List<BuildingCorrection> buildingCorrections = addressCorrectionBean.findBuildingRemoteCorrections(calculationCenterId,
+        List<BuildingCorrection> buildingCorrections = addressCorrectionBean.findBuildingRemoteCorrections(calculationCenterInfo.getOrganizationId(),
                 payment.getInternalBuildingId());
         if (buildingCorrections.size() == 1) {
             BuildingCorrection buildingCorrection = buildingCorrections.get(0);
@@ -616,8 +615,8 @@ public class AddressService extends AbstractBean {
     }
 
     @Transactional
-    public void resolveOutgoingDistrict(Payment payment, long calculationCenterId, ICalculationCenterAdapter adapter) {
-        List<Correction> districtCorrections = addressCorrectionBean.findDistrictRemoteCorrections(calculationCenterId,
+    public void resolveOutgoingDistrict(Payment payment, CalculationCenterInfo calculationCenterInfo) {
+        List<Correction> districtCorrections = addressCorrectionBean.findDistrictRemoteCorrections(calculationCenterInfo.getOrganizationId(),
                 payment.getOrganizationId());
         if (districtCorrections.size() == 1) {
             Correction districtCorrection = districtCorrections.get(0);
@@ -630,8 +629,8 @@ public class AddressService extends AbstractBean {
     }
 
     @Transactional
-    public void resolveOutgoingAddress(ActualPayment actualPayment, long calculationCenterId, ICalculationCenterAdapter adapter) {
-        List<Correction> cityCorrections = addressCorrectionBean.findCityRemoteCorrections(calculationCenterId,
+    public void resolveOutgoingAddress(ActualPayment actualPayment, CalculationCenterInfo calculationCenterInfo) {
+        List<Correction> cityCorrections = addressCorrectionBean.findCityRemoteCorrections(calculationCenterInfo.getOrganizationId(),
                 actualPayment.getInternalCityId());
         if (cityCorrections.size() == 1) {
             Correction cityCorrection = cityCorrections.get(0);
@@ -645,7 +644,7 @@ public class AddressService extends AbstractBean {
         }
 
         //поиск района
-        resolveOutgoingDistrict(actualPayment, calculationCenterId, adapter);
+        resolveOutgoingDistrict(actualPayment, calculationCenterInfo);
         if (actualPayment.getStatus().equals(RequestStatus.MORE_ONE_REMOTE_DISTRICT_CORRECTION)
                 || actualPayment.getStatus().equals(RequestStatus.DISTRICT_UNRESOLVED)) {
             return;
@@ -653,12 +652,12 @@ public class AddressService extends AbstractBean {
 
         //поиск улицы
         StreetCorrection streetCorrection = null;
-        List<StreetCorrection> streetCorrections = addressCorrectionBean.findStreetRemoteCorrections(calculationCenterId,
+        List<StreetCorrection> streetCorrections = addressCorrectionBean.findStreetRemoteCorrections(calculationCenterInfo.getOrganizationId(),
                 actualPayment.getInternalStreetId());
         if (streetCorrections.size() == 1) {
             streetCorrection = streetCorrections.get(0);
         } else if (streetCorrections.size() > 1) {
-            streetCorrections = addressCorrectionBean.findStreetRemoteCorrectionsByBuilding(calculationCenterId,
+            streetCorrections = addressCorrectionBean.findStreetRemoteCorrectionsByBuilding(calculationCenterInfo.getOrganizationId(),
                     actualPayment.getInternalStreetId(), actualPayment.getInternalBuildingId());
             if (streetCorrections.size() == 1) {
                 streetCorrection = streetCorrections.get(0);
@@ -681,7 +680,7 @@ public class AddressService extends AbstractBean {
         }
 
         //поиск дома
-        List<BuildingCorrection> buildingCorrections = addressCorrectionBean.findBuildingRemoteCorrections(calculationCenterId,
+        List<BuildingCorrection> buildingCorrections = addressCorrectionBean.findBuildingRemoteCorrections(calculationCenterInfo.getOrganizationId(),
                 actualPayment.getInternalBuildingId());
         if (buildingCorrections.size() == 1) {
             BuildingCorrection buildingCorrection = buildingCorrections.get(0);
@@ -701,8 +700,8 @@ public class AddressService extends AbstractBean {
     }
 
     @Transactional
-    public void resolveOutgoingDistrict(ActualPayment actualPayment, long calculationCenterId, ICalculationCenterAdapter adapter) {
-        List<Correction> districtCorrections = addressCorrectionBean.findDistrictRemoteCorrections(calculationCenterId,
+    public void resolveOutgoingDistrict(ActualPayment actualPayment, CalculationCenterInfo calculationCenterInfo) {
+        List<Correction> districtCorrections = addressCorrectionBean.findDistrictRemoteCorrections(calculationCenterInfo.getOrganizationId(),
                 actualPayment.getOrganizationId());
         if (districtCorrections.size() == 1) {
             Correction districtCorrection = districtCorrections.get(0);
@@ -729,25 +728,24 @@ public class AddressService extends AbstractBean {
      * разрешить адрес по схеме "ОСЗН адрес -> локальная адресная база -> адрес центра начислений"
      * @param actualPayment
      * @param calculationCenterId
-     * @param adapter
      */
     @Transactional
-    public void resolveAddress(Payment payment, long calculationCenterId, ICalculationCenterAdapter adapter) {
+    public void resolveAddress(Payment payment, CalculationCenterInfo calculationCenterInfo) {
         //разрешить адрес локально
         resolveLocalAddress(payment);
         //если адрес локально разрешен, разрешить адрес для ЦН.
         if (payment.getStatus().isAddressResolvedLocally()) {
-            resolveOutgoingAddress(payment, calculationCenterId, adapter);
+            resolveOutgoingAddress(payment, calculationCenterInfo);
         }
     }
 
     @Transactional
-    public void resolveAddress(ActualPayment actualPayment, long calculationCenterId, ICalculationCenterAdapter adapter) {
+    public void resolveAddress(ActualPayment actualPayment, CalculationCenterInfo calculationCenterInfo) {
         //разрешить адрес локально
         resolveLocalAddress(actualPayment);
         //если адрес локально разрешен, разрешить адрес для ЦН.
         if (actualPayment.getStatus().isAddressResolvedLocally()) {
-            resolveOutgoingAddress(actualPayment, calculationCenterId, adapter);
+            resolveOutgoingAddress(actualPayment, calculationCenterInfo);
         }
     }
 

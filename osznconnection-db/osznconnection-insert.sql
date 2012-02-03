@@ -15,9 +15,15 @@ INSERT INTO `organization_type_attribute`(`attribute_id`, `object_id`, `attribut
 -- --------------------------------
 -- Organization
 -- --------------------------------
-INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (906, 1, UPPER('Является текущим модулем начислений')), (906, 2, UPPER('Является текущим модулем начислений'));
-INSERT INTO `entity_attribute_type`(`id`, `entity_id`, `mandatory`, `attribute_type_name_id`, `system`) VALUES (904, 900, 0, 906, 1);
-INSERT INTO `entity_attribute_value_type`(`id`, `attribute_type_id`, `attribute_value_type`) VALUES (904, 904, UPPER('boolean'));
+-- Reference to calculation center. It is user organization only attribute. --
+INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (912, 1, UPPER('Модуль начислений')), (912, 2, UPPER('Модуль начислений'));
+INSERT INTO `entity_attribute_type`(`id`, `entity_id`, `mandatory`, `attribute_type_name_id`, `system`) VALUES (911, 900, 0, 912, 1);
+INSERT INTO `entity_attribute_value_type`(`id`, `attribute_type_id`, `attribute_value_type`) VALUES (911, 911, 'organization');
+
+-- Reference to the set of service provider types. It is calculation center only attribute. --
+INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (913, 1, UPPER('Типы услуг')), (913, 2, UPPER('Типы услуг'));
+INSERT INTO `entity_attribute_type`(`id`, `entity_id`, `mandatory`, `attribute_type_name_id`, `system`) VALUES (912, 900, 0, 913, 1);
+INSERT INTO `entity_attribute_value_type`(`id`, `attribute_type_id`, `attribute_value_type`) VALUES (912, 912, 'service_provider_type');
 
 -- --------------------------------
 -- Ownership
@@ -296,6 +302,35 @@ INSERT INTO `status_description`(`code`, `name`) VALUES
 (306, 'Нечисловой код льготы в справочнике соответствий для ОСЗН'), (307, 'Нечисловой порядок льготы'),
 (308, 'Номер л/с ЖЭКа в МН не соответствует шаблону: <номер ЖЭКа>.<номер л/с ЖЭКа>.');
 
+-- --------------------------------
+-- Service provider type
+-- --------------------------------
+INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (1600, 1, 'Тип услуги'), (1600, 2, 'Тип услуги');
+INSERT INTO `entity`(`id`, `entity_table`, `entity_name_id`, `strategy_factory`) VALUES (1600, 'service_provider_type', 1600, '');
+INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (1601, 1, UPPER('Название')), (1601, 2, UPPER('Назва'));
+INSERT INTO `entity_attribute_type`(`id`, `entity_id`, `mandatory`, `attribute_type_name_id`, `system`) VALUES (1600, 1600, 1, 1601, 1);
+INSERT INTO `entity_attribute_value_type`(`id`, `attribute_type_id`, `attribute_value_type`) VALUES (1600, 1600, UPPER('string_culture'));
+
+-- --------------------------------
+-- Predefined service provider types
+-- --------------------------------
+-- Some service provider types are commented. Uncomment them as the need is arising.
+INSERT INTO `service_provider_type`(`object_id`) VALUES (1),(7); 
+-- (2),(3),(4),(5),(6),(8);
+INSERT INTO `service_provider_type_string_culture`(`id`, `locale_id`, `value`) VALUES 
+(1, 1, UPPER('квартплата')), (1, 2,UPPER('оплата житла')),
+--(2, 1, UPPER('отопление')), (2, 2, UPPER('опалення')),
+--(3, 1, UPPER('горячее водоснабжение')), (3, 2, UPPER('гаряче водопостачання')),
+--(4, 1, UPPER('холодное водоснабжение')), (4, 2, UPPER('холодне водопостачання')), 
+--(5, 1, UPPER('газоснабжение')), (5, 2, UPPER('газопостачання')),
+--(6, 1, UPPER('электроэнергия')), (6, 2, UPPER('електроенергія')),
+(7, 1, UPPER('вывоз мусора')), (7, 2, UPPER('вивезення сміття'));
+--(8, 1, UPPER('водоотведение')), (8, 2, UPPER('водовідведення'));
+
+INSERT INTO `service_provider_type_attribute`(`attribute_id`, `object_id`, `attribute_type_id`, `value_id`, `value_type_id`) VALUES
+(1,1,1600,1,1600),(1,7,1600,7,1600);
+-- ,(1,2,1600,2,1600),(1,3,1600,3,1600),(1,4,1600,4,1600),(1,5,1600,5,1600),(1,6,1600,6,1600),(1,8,1600,8,1600);
+
 -- Itself organization
 INSERT INTO `organization`(`object_id`) VALUES (0);
 INSERT INTO `organization_string_culture`(`id`, `locale_id`, `value`) VALUES
@@ -304,4 +339,4 @@ INSERT INTO `organization_attribute`(`attribute_id`, `object_id`, `attribute_typ
 (1,0,900,1,900), (1,0,901,2,901);
 
 -- Current database version
-INSERT INTO `update` (`version`) VALUE ('20110711_712_0.1.19');
+INSERT INTO `update` (`version`) VALUE ('201202__0.1.20');

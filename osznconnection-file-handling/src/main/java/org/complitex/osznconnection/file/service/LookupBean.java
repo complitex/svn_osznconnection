@@ -7,9 +7,6 @@ package org.complitex.osznconnection.file.service;
 import java.util.Date;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.AbstractBean;
-import org.complitex.osznconnection.file.calculation.adapter.ICalculationCenterAdapter;
-import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
-import org.complitex.osznconnection.file.calculation.service.CalculationCenterBean;
 import org.complitex.osznconnection.file.entity.AccountDetail;
 import org.complitex.osznconnection.file.entity.Payment;
 
@@ -18,12 +15,15 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import java.util.List;
-import org.complitex.osznconnection.file.calculation.adapter.exception.UnknownAccountNumberTypeException;
 import org.complitex.osznconnection.file.entity.AbstractRequest;
 import org.complitex.osznconnection.file.entity.ActualPayment;
 import org.complitex.osznconnection.file.entity.PaymentDBF;
 import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.entity.RequestStatus;
+import org.complitex.osznconnection.file.service_provider.CalculationCenterBean;
+import org.complitex.osznconnection.file.service_provider.ServiceProviderAdapter;
+import org.complitex.osznconnection.file.service_provider.exception.DBException;
+import org.complitex.osznconnection.file.service_provider.exception.UnknownAccountNumberTypeException;
 
 /**
  * @author Artem
@@ -39,6 +39,8 @@ public class LookupBean extends AbstractBean {
     private RequestFileBean requestFileBean;
     @EJB
     private ActualPaymentBean actualPaymentBean;
+    @EJB
+    private ServiceProviderAdapter adapter;
 
     /**
      * Разрешить исходящий в ЦН адрес по схеме "локальная адресная база -> адрес центра начислений"
@@ -47,16 +49,12 @@ public class LookupBean extends AbstractBean {
      */
     @Transactional
     public void resolveOutgoingAddress(Payment payment) {
-        Long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterId();
-        ICalculationCenterAdapter adapter = calculationCenterBean.getDefaultCalculationCenterAdapter();
-        addressService.resolveOutgoingAddress(payment, calculationCenterId, adapter);
+        addressService.resolveOutgoingAddress(payment, calculationCenterBean.getInfo());
     }
 
     @Transactional
     public void resolveOutgoingAddress(ActualPayment actualPayment) {
-        Long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterId();
-        ICalculationCenterAdapter adapter = calculationCenterBean.getDefaultCalculationCenterAdapter();
-        addressService.resolveOutgoingAddress(actualPayment, calculationCenterId, adapter);
+        addressService.resolveOutgoingAddress(actualPayment, calculationCenterBean.getInfo());
     }
 
     /**
@@ -70,8 +68,8 @@ public class LookupBean extends AbstractBean {
     @TransactionAttribute(TransactionAttributeType.NEVER)
     private List<AccountDetail> acquireAccountDetailsByAddress(AbstractRequest request, String district, String streetType, String street,
             String buildingNumber, String buildingCorp, String apartment, Date date) throws DBException {
-        ICalculationCenterAdapter adapter = calculationCenterBean.getDefaultCalculationCenterAdapter();
-        return adapter.acquireAccountDetailsByAddress(request, district, streetType, street, buildingNumber, buildingCorp, apartment, date);
+        return adapter.acquireAccountDetailsByAddress(calculationCenterBean.getInfo().getServiceProviderTypeIds(), request,
+                district, streetType, street, buildingNumber, buildingCorp, apartment, date);
     }
 
     @Transactional
@@ -94,10 +92,9 @@ public class LookupBean extends AbstractBean {
     @Transactional
     public String resolveOutgoingDistrict(Payment payment) {
         payment.setStatus(RequestStatus.LOADED);
-        Long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterId();
-        ICalculationCenterAdapter adapter = calculationCenterBean.getDefaultCalculationCenterAdapter();
-        addressService.resolveOutgoingDistrict(payment, calculationCenterId, adapter);
-        if (!(payment.getStatus() == RequestStatus.DISTRICT_UNRESOLVED || payment.getStatus() == RequestStatus.MORE_ONE_REMOTE_DISTRICT_CORRECTION)) {
+        addressService.resolveOutgoingDistrict(payment, calculationCenterBean.getInfo());
+        if (!(payment.getStatus() == RequestStatus.DISTRICT_UNRESOLVED
+                || payment.getStatus() == RequestStatus.MORE_ONE_REMOTE_DISTRICT_CORRECTION)) {
             return payment.getOutgoingDistrict();
         } else {
             return null;
@@ -107,9 +104,7 @@ public class LookupBean extends AbstractBean {
     @Transactional
     public String resolveOutgoingDistrict(ActualPayment actualPayment) {
         actualPayment.setStatus(RequestStatus.LOADED);
-        Long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterId();
-        ICalculationCenterAdapter adapter = calculationCenterBean.getDefaultCalculationCenterAdapter();
-        addressService.resolveOutgoingDistrict(actualPayment, calculationCenterId, adapter);
+        addressService.resolveOutgoingDistrict(actualPayment, calculationCenterBean.getInfo());
         if (!(actualPayment.getStatus() == RequestStatus.DISTRICT_UNRESOLVED
                 || actualPayment.getStatus() == RequestStatus.MORE_ONE_REMOTE_DISTRICT_CORRECTION)) {
             return actualPayment.getOutgoingDistrict();
@@ -122,7 +117,7 @@ public class LookupBean extends AbstractBean {
     @TransactionAttribute(TransactionAttributeType.NEVER)
     public List<AccountDetail> acquireAccountDetailsByAccount(AbstractRequest request, String district, String account)
             throws DBException, UnknownAccountNumberTypeException {
-        ICalculationCenterAdapter adapter = calculationCenterBean.getDefaultCalculationCenterAdapter();
-        return adapter.acquireAccountDetailsByAccount(request, district, account);
+        return adapter.acquireAccountDetailsByAccount(calculationCenterBean.getInfo().getServiceProviderTypeIds(),
+                request, district, account);
     }
 }

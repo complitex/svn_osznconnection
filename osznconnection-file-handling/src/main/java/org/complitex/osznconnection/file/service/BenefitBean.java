@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import java.util.Collection;
 import org.complitex.dictionary.mybatis.Transactional;
-import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.entity.example.BenefitExample;
 
@@ -16,9 +15,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.ejb.EJB;
-import org.complitex.osznconnection.file.calculation.adapter.ICalculationCenterAdapter;
 import org.complitex.osznconnection.file.entity.BenefitData;
-import org.complitex.osznconnection.file.calculation.service.CalculationCenterBean;
+import org.complitex.osznconnection.file.service_provider.CalculationCenterBean;
+import org.complitex.osznconnection.file.service_provider.ServiceProviderAdapter;
+import org.complitex.osznconnection.file.service_provider.exception.DBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +41,8 @@ public class BenefitBean extends AbstractRequestBean {
     private PrivilegeCorrectionBean privilegeCorrectionBean;
     @EJB
     private RequestFileGroupBean requestFileGroupBean;
+    @EJB
+    private ServiceProviderAdapter adapter;
 
     public enum OrderBy {
 
@@ -288,10 +290,10 @@ public class BenefitBean extends AbstractRequestBean {
 
     public Collection<BenefitData> getBenefitData(Benefit benefit) throws DBException {
         long osznId = benefit.getOrganizationId();
-        long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterId();
-        ICalculationCenterAdapter adapter = calculationCenterBean.getDefaultCalculationCenterAdapter();
+        CalculationCenterInfo calculationCenterInfo = calculationCenterBean.getInfo();
         Date dat1 = findDat1(benefit.getAccountNumber(), benefit.getRequestFileId());
-        Collection<BenefitData> benefitData = adapter.getBenefitData(benefit, dat1);
+        Collection<BenefitData> benefitData = adapter.getBenefitData(calculationCenterInfo.getServiceProviderTypeIds(), 
+                benefit, dat1);
 
         Collection<BenefitData> notConnectedBenefitData = null;
         if (benefitData != null && !benefitData.isEmpty()) {
@@ -317,13 +319,14 @@ public class BenefitBean extends AbstractRequestBean {
 
                 if (suitable) {
                     String osznBenefitCode = null;
-                    Long internalPrivilege = privilegeCorrectionBean.findInternalPrivilege(benefitDataItem.getCode(), calculationCenterId);
+                    Long internalPrivilege = privilegeCorrectionBean.findInternalPrivilege(benefitDataItem.getCode(),
+                            calculationCenterInfo.getOrganizationId());
                     if (internalPrivilege != null) {
                         osznBenefitCode = privilegeCorrectionBean.findPrivilegeCode(internalPrivilege, osznId);
                     }
                     benefitDataItem.setPrivilegeObjectId(internalPrivilege);
                     benefitDataItem.setOsznPrivilegeCode(osznBenefitCode);
-                    benefitDataItem.setCalcCenterId(calculationCenterId);
+                    benefitDataItem.setCalcCenterId(calculationCenterInfo.getOrganizationId());
                     notConnectedBenefitData.add(benefitDataItem);
                 }
             }

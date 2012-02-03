@@ -48,12 +48,11 @@ public class TarifBean extends AbstractBean {
      * @param organizationId ОСЗН
      * @return
      */
-    @SuppressWarnings({"unchecked"})
     @Transactional
-    public Integer getCODE2_1(Double T11_CS_UNI, long organizationId) {
+    public Integer getCode2(Double T11_CS_UNI, long organizationId) {
         Map<String, Object> params = Maps.newHashMap();
         params.put("T11_CS_UNI", T11_CS_UNI);
         params.put("organizationId", organizationId);
-        return (Integer) sqlSession().selectOne(MAPPING_NAMESPACE + ".getCODE2_1", params);
+        return (Integer) sqlSession().selectOne(MAPPING_NAMESPACE + ".getCode2", params);
     }
 }

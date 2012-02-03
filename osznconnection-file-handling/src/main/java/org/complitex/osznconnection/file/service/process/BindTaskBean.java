@@ -7,9 +7,6 @@ import org.complitex.dictionary.service.ConfigBean;
 import org.complitex.dictionary.service.executor.ExecuteException;
 import org.complitex.dictionary.service.executor.ITaskBean;
 import org.complitex.osznconnection.file.Module;
-import org.complitex.osznconnection.file.calculation.adapter.ICalculationCenterAdapter;
-import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
-import org.complitex.osznconnection.file.calculation.service.CalculationCenterBean;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.service.*;
 import org.complitex.osznconnection.file.service.exception.AlreadyProcessingException;
@@ -26,6 +23,8 @@ import javax.ejb.TransactionManagementType;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import java.util.List;
+import org.complitex.osznconnection.file.service_provider.CalculationCenterBean;
+import org.complitex.osznconnection.file.service_provider.exception.DBException;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -33,24 +32,24 @@ import java.util.List;
  */
 @Stateless(name = "BindTaskBean")
 @TransactionManagement(TransactionManagementType.BEAN)
-public class BindTaskBean implements ITaskBean{
+public class BindTaskBean implements ITaskBean {
 
     private static final Logger log = LoggerFactory.getLogger(BindTaskBean.class);
     @Resource
     private UserTransaction userTransaction;
-    @EJB(beanName = "ConfigBean")
+    @EJB
     protected ConfigBean configBean;
-    @EJB(beanName = "AddressService")
+    @EJB
     private AddressService addressService;
-    @EJB(beanName = "PersonAccountService")
+    @EJB
     private PersonAccountService personAccountService;
-    @EJB(beanName = "PaymentBean")
+    @EJB
     private PaymentBean paymentBean;
-    @EJB(beanName = "BenefitBean")
+    @EJB
     private BenefitBean benefitBean;
-    @EJB(beanName = "CalculationCenterBean")
+    @EJB
     private CalculationCenterBean calculationCenterBean;
-    @EJB(beanName = "RequestFileGroupBean")
+    @EJB
     private RequestFileGroupBean requestFileGroupBean;
 
     @Override
@@ -59,7 +58,7 @@ public class BindTaskBean implements ITaskBean{
 
         group.setStatus(requestFileGroupBean.getRequestFileStatus(group)); //обновляем статус из базы данных
 
-        if (group.isProcessing()){ //проверяем что не обрабатывается в данный момент
+        if (group.isProcessing()) { //проверяем что не обрабатывается в данный момент
             throw new BindException(new AlreadyProcessingException(group), true, group);
         }
 
@@ -101,7 +100,7 @@ public class BindTaskBean implements ITaskBean{
     }
 
     @Override
-   public void onError(IExecutorObject executorObject) {
+    public void onError(IExecutorObject executorObject) {
         RequestFileGroup group = (RequestFileGroup) executorObject;
 
         group.setStatus(RequestFileStatus.BIND_ERROR);
@@ -126,19 +125,17 @@ public class BindTaskBean implements ITaskBean{
     /**
      * Разрешить адрес по схеме "ОСЗН адрес -> локальная адресная база -> адрес центра начислений"
      * @param payment Запись запроса начислений
-     * @param calculationCenterId Центр начислений
      * @param adapter Адаптер центра начислений
      * @return Разрешен ли адрес
      */
-    private boolean resolveAddress(Payment payment, long calculationCenterId, ICalculationCenterAdapter adapter) {
-        addressService.resolveAddress(payment, calculationCenterId, adapter);
+    private boolean resolveAddress(Payment payment, CalculationCenterInfo calculationCenterInfo) {
+        addressService.resolveAddress(payment, calculationCenterInfo);
         return addressService.isAddressResolved(payment);
     }
 
     /**
      * Разрешить номер личного счета из локальной таблицы person_account
      * @param payment Запись запроса начислений
-     * @param calculationCenterId Центр начислений
      * @return Разрешен ли номер л/с
      */
     private boolean resolveLocalAccount(Payment payment, long calculationCenterId) {
@@ -149,12 +146,11 @@ public class BindTaskBean implements ITaskBean{
     /**
      * Разрешить номер л/с в центре начислений
      * @param payment Запись запроса начислений
-     * @param calculationCenterId Центр начислений
      * @param adapter Адаптер центра начислений
      * @return Разрешен ли номер л/с
      */
-    private boolean resolveRemoteAccountNumber(Payment payment, long calculationCenterId, ICalculationCenterAdapter adapter) throws DBException {
-        personAccountService.resolveRemoteAccount(payment, calculationCenterId, adapter);
+    private boolean resolveRemoteAccountNumber(Payment payment, CalculationCenterInfo calculationCenterInfo) throws DBException {
+        personAccountService.resolveRemoteAccount(payment, calculationCenterInfo);
         return payment.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED;
     }
 
@@ -165,10 +161,10 @@ public class BindTaskBean implements ITaskBean{
      * Если не успешно, то попытаться разрешить адрес по схеме "ОСЗН адрес -> локальная адресная база -> адрес центра начислений".
      * Если адрес разрешен, то пытаемся разрешить номер л/c в ЦН.
      */
-    private void bind(Payment payment, long calculationCenterId, ICalculationCenterAdapter adapter) throws DBException {
-        if (!resolveLocalAccount(payment, calculationCenterId)) {
-            if (resolveAddress(payment, calculationCenterId, adapter)) {
-                resolveRemoteAccountNumber(payment, calculationCenterId, adapter);
+    private void bind(Payment payment, CalculationCenterInfo calculationCenterInfo) throws DBException {
+        if (!resolveLocalAccount(payment, calculationCenterInfo.getOrganizationId())) {
+            if (resolveAddress(payment, calculationCenterInfo)) {
+                resolveRemoteAccountNumber(payment, calculationCenterInfo);
             }
         }
 
@@ -183,8 +179,7 @@ public class BindTaskBean implements ITaskBean{
      */
     private void bindPaymentFile(RequestFile paymentFile) throws BindException, DBException, CanceledByUserException {
         //получаем информацию о текущем центре начисления
-        Long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterId();
-        ICalculationCenterAdapter adapter = calculationCenterBean.getDefaultCalculationCenterAdapter();
+        CalculationCenterInfo calculationCenterInfo = calculationCenterBean.getInfo();
 
         //извлечь из базы все id подлежащие связыванию для файла payment и доставать записи порциями по BATCH_SIZE штук.
         List<Long> notResolvedPaymentIds = paymentBean.findIdsForBinding(paymentFile.getId());
@@ -202,14 +197,14 @@ public class BindTaskBean implements ITaskBean{
             //достать из базы очередную порцию записей
             List<Payment> payments = paymentBean.findForOperation(paymentFile.getId(), batch);
             for (Payment payment : payments) {
-                if (paymentFile.isCanceled()){
+                if (paymentFile.isCanceled()) {
                     throw new CanceledByUserException();
                 }
 
                 //связать payment запись
                 try {
                     userTransaction.begin();
-                    bind(payment, calculationCenterId, adapter);
+                    bind(payment, calculationCenterInfo);
                     userTransaction.commit();
                 } catch (Exception e) {
                     log.error("The payment item ( id = " + payment.getId() + ") was bound with error: ", e);

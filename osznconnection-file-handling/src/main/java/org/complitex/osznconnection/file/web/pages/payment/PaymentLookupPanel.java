@@ -12,8 +12,8 @@ import org.complitex.osznconnection.file.service.LookupBean;
 import javax.ejb.EJB;
 import java.util.List;
 import org.apache.wicket.Component;
-import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
 import org.complitex.osznconnection.file.service.PersonAccountService;
+import org.complitex.osznconnection.file.service_provider.exception.DBException;
 import org.complitex.osznconnection.file.web.component.lookup.AbstractLookupPanel;
 
 /**

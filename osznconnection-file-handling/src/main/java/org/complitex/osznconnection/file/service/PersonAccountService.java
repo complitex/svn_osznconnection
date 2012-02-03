@@ -8,13 +8,13 @@ import java.util.Date;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.AbstractBean;
-import org.complitex.osznconnection.file.calculation.adapter.ICalculationCenterAdapter;
-import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
-import org.complitex.osznconnection.file.calculation.service.CalculationCenterBean;
 import org.complitex.osznconnection.file.entity.*;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import org.complitex.osznconnection.file.service_provider.CalculationCenterBean;
+import org.complitex.osznconnection.file.service_provider.ServiceProviderAdapter;
+import org.complitex.osznconnection.file.service_provider.exception.DBException;
 
 /**
  * Разрешает номер л/c
@@ -37,6 +37,8 @@ public class PersonAccountService extends AbstractBean {
     private ActualPaymentBean actualPaymentBean;
     @EJB
     private RequestFileBean requestFileBean;
+    @EJB
+    private ServiceProviderAdapter adapter;
 
     /**
      * Попытаться разрешить номер личного счета локально, т.е. из локальной таблицы person_account
@@ -74,27 +76,29 @@ public class PersonAccountService extends AbstractBean {
      * @param adapter
      */
     @Transactional
-    public void resolveRemoteAccount(Payment payment, long calculationCenterId, ICalculationCenterAdapter adapter) throws DBException {
-        adapter.acquirePersonAccount(RequestFile.TYPE.PAYMENT, payment, (String) payment.getField(PaymentDBF.SUR_NAM),
+    public void resolveRemoteAccount(Payment payment, CalculationCenterInfo calculationCenterInfo) throws DBException {
+        adapter.acquirePersonAccount(calculationCenterInfo.getServiceProviderTypeIds(), RequestFile.TYPE.PAYMENT, payment,
+                (String) payment.getField(PaymentDBF.SUR_NAM),
                 (String) payment.getField(PaymentDBF.OWN_NUM_SR), payment.getOutgoingDistrict(), payment.getOutgoingStreetType(),
                 payment.getOutgoingStreet(), payment.getOutgoingBuildingNumber(), payment.getOutgoingBuildingCorp(),
                 payment.getOutgoingApartment(), (Date) payment.getField(PaymentDBF.DAT1));
         if (payment.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED) {
             benefitBean.updateAccountNumber(payment.getId(), payment.getAccountNumber());
-            personAccountLocalBean.saveOrUpdate(payment, calculationCenterId);
+            personAccountLocalBean.saveOrUpdate(payment, calculationCenterInfo.getOrganizationId());
         }
     }
 
     @Transactional
-    public void resolveRemoteAccount(ActualPayment actualPayment, Date date, long calculationCenterId, ICalculationCenterAdapter adapter)
+    public void resolveRemoteAccount(ActualPayment actualPayment, Date date, CalculationCenterInfo calculationCenterInfo)
             throws DBException {
-        adapter.acquirePersonAccount(RequestFile.TYPE.ACTUAL_PAYMENT, actualPayment, (String) actualPayment.getField(ActualPaymentDBF.SUR_NAM),
+        adapter.acquirePersonAccount(calculationCenterInfo.getServiceProviderTypeIds(), RequestFile.TYPE.ACTUAL_PAYMENT, actualPayment,
+                (String) actualPayment.getField(ActualPaymentDBF.SUR_NAM),
                 (String) actualPayment.getField(ActualPaymentDBF.OWN_NUM), actualPayment.getOutgoingDistrict(),
                 actualPayment.getOutgoingStreetType(), actualPayment.getOutgoingStreet(),
                 actualPayment.getOutgoingBuildingNumber(), actualPayment.getOutgoingBuildingCorp(),
                 actualPayment.getOutgoingApartment(), date);
         if (actualPayment.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED) {
-            personAccountLocalBean.saveOrUpdate(actualPayment, calculationCenterId);
+            personAccountLocalBean.saveOrUpdate(actualPayment, calculationCenterInfo.getOrganizationId());
         }
     }
 
@@ -116,8 +120,8 @@ public class PersonAccountService extends AbstractBean {
             requestFileGroupBean.updateStatus(benefitFileId, RequestFileStatus.BOUND);
         }
 
-        long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterId();
-        personAccountLocalBean.saveOrUpdate(payment, calculationCenterId);
+        CalculationCenterInfo calculationCenterInfo = calculationCenterBean.getInfo();
+        personAccountLocalBean.saveOrUpdate(payment, calculationCenterInfo.getOrganizationId());
     }
 
     @Transactional
@@ -133,7 +137,7 @@ public class PersonAccountService extends AbstractBean {
             requestFileBean.save(actualPaymentFile);
         }
 
-        long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterId();
-        personAccountLocalBean.saveOrUpdate(actualPayment, calculationCenterId);
+        CalculationCenterInfo calculationCenterInfo = calculationCenterBean.getInfo();
+        personAccountLocalBean.saveOrUpdate(actualPayment, calculationCenterInfo.getOrganizationId());
     }
 }

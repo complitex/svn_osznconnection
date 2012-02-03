@@ -70,26 +70,26 @@ public enum PaymentDBF {
     RESERV1(Integer.class, 10),       //60	RESERV1	    NUMERIC	    10	0	Резерв
     RESERV2(String.class, 10);        //61	RESERV2	    CHARACTER	10		Резерв
 
-    private Class type;
+    private Class<?> type;
     private int length;
     private int scale = 0;
 
-    PaymentDBF(Class type, int length, int scale) {
+    PaymentDBF(Class<?> type, int length, int scale) {
         this.type = type;
         this.length = length;
         this.scale = scale;
     }
 
-    PaymentDBF(Class type, int length) {
+    PaymentDBF(Class<?> type, int length) {
         this.type = type;
         this.length = length;
     }
 
-    PaymentDBF(Class type) {
+    PaymentDBF(Class<?> type) {
         this.type = type;
     }
 
-    public Class getType() {
+    public Class<?> getType() {
         return type;
     }
 

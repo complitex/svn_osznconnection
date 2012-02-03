@@ -12,9 +12,6 @@ import org.complitex.dictionary.service.ConfigBean;
 import org.complitex.dictionary.service.executor.ExecuteException;
 import org.complitex.dictionary.service.executor.ITaskBean;
 import org.complitex.osznconnection.file.Module;
-import org.complitex.osznconnection.file.calculation.adapter.ICalculationCenterAdapter;
-import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
-import org.complitex.osznconnection.file.calculation.service.CalculationCenterBean;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.service.ActualPaymentBean;
 import org.complitex.osznconnection.file.service.AddressService;
@@ -35,6 +32,9 @@ import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import java.util.Date;
 import java.util.List;
+import org.complitex.osznconnection.file.service_provider.CalculationCenterBean;
+import org.complitex.osznconnection.file.service_provider.ServiceProviderAdapter;
+import org.complitex.osznconnection.file.service_provider.exception.DBException;
 
 /**
  *
@@ -59,13 +59,15 @@ public class ActualPaymentBindTaskBean implements ITaskBean {
     private ActualPaymentBean actualPaymentBean;
     @EJB
     private RequestFileBean requestFileBean;
+    @EJB
+    private ServiceProviderAdapter adapter;
 
-    private boolean resolveAddress(ActualPayment actualPayment, long calculationCenterId, ICalculationCenterAdapter adapter) {
+    private boolean resolveAddress(ActualPayment actualPayment, CalculationCenterInfo calculationCenterInfo) {
         long startTime = 0;
         if (log.isDebugEnabled()) {
             startTime = System.currentTimeMillis();
         }
-        addressService.resolveAddress(actualPayment, calculationCenterId, adapter);
+        addressService.resolveAddress(actualPayment, calculationCenterInfo);
         if (log.isDebugEnabled()) {
             log.debug("Resolving of actualPayment address (id = {}) took {} sec.", actualPayment.getId(),
                     (System.currentTimeMillis() - startTime) / 1000);
@@ -86,13 +88,13 @@ public class ActualPaymentBindTaskBean implements ITaskBean {
         return actualPayment.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED;
     }
 
-    private boolean resolveRemoteAccountNumber(ActualPayment actualPayment, Date date, long calculationCenterId, ICalculationCenterAdapter adapter)
+    private boolean resolveRemoteAccountNumber(ActualPayment actualPayment, Date date, CalculationCenterInfo calculationCenterInfo)
             throws DBException {
         long startTime = 0;
         if (log.isDebugEnabled()) {
             startTime = System.currentTimeMillis();
         }
-        personAccountService.resolveRemoteAccount(actualPayment, date, calculationCenterId, adapter);
+        personAccountService.resolveRemoteAccount(actualPayment, date, calculationCenterInfo);
         if (log.isDebugEnabled()) {
             log.debug("Resolving of actualPayment (id = {}) for remote account number took {} sec.", actualPayment.getId(),
                     (System.currentTimeMillis() - startTime) / 1000);
@@ -100,10 +102,10 @@ public class ActualPaymentBindTaskBean implements ITaskBean {
         return actualPayment.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED;
     }
 
-    private void bind(ActualPayment actualPayment, Date date, long calculationCenterId, ICalculationCenterAdapter adapter) throws DBException {
-        if (!resolveLocalAccount(actualPayment, calculationCenterId)) {
-            if (resolveAddress(actualPayment, calculationCenterId, adapter)) {
-                resolveRemoteAccountNumber(actualPayment, date, calculationCenterId, adapter);
+    private void bind(ActualPayment actualPayment, Date date, CalculationCenterInfo calculationCenterInfo) throws DBException {
+        if (!resolveLocalAccount(actualPayment, calculationCenterInfo.getOrganizationId())) {
+            if (resolveAddress(actualPayment, calculationCenterInfo)) {
+                resolveRemoteAccountNumber(actualPayment, date, calculationCenterInfo);
             }
         }
 
@@ -121,8 +123,7 @@ public class ActualPaymentBindTaskBean implements ITaskBean {
 
     private void bindActualPaymentFile(RequestFile actualPaymentFile) throws BindException, DBException, CanceledByUserException {
         //получаем информацию о текущем центре начисления
-        Long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterId();
-        ICalculationCenterAdapter adapter = calculationCenterBean.getDefaultCalculationCenterAdapter();
+        CalculationCenterInfo calculationCenterInfo = calculationCenterBean.getInfo();
 
         //извлечь из базы все id подлежащие связыванию для файла actualPayment и доставать записи порциями по BATCH_SIZE штук.
         long startTime = 0;
@@ -147,14 +148,14 @@ public class ActualPaymentBindTaskBean implements ITaskBean {
             //достать из базы очередную порцию записей
             List<ActualPayment> actualPayments = actualPaymentBean.findForOperation(actualPaymentFile.getId(), batch);
             for (ActualPayment actualPayment : actualPayments) {
-                 if (actualPaymentFile.isCanceled()){
-                     throw new CanceledByUserException();
-                 }
+                if (actualPaymentFile.isCanceled()) {
+                    throw new CanceledByUserException();
+                }
 
                 //связать actualPayment запись
                 try {
                     userTransaction.begin();
-                    bind(actualPayment, actualPaymentBean.getFirstDay(actualPayment, actualPaymentFile), calculationCenterId, adapter);
+                    bind(actualPayment, actualPaymentBean.getFirstDay(actualPayment, actualPaymentFile), calculationCenterInfo);
                     userTransaction.commit();
                 } catch (Exception e) {
                     log.error("The actual payment item ( id = " + actualPayment.getId() + ") was bound with error: ", e);

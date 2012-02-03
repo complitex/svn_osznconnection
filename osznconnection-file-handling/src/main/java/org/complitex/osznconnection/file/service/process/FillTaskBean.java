@@ -7,9 +7,6 @@ import org.complitex.dictionary.service.ConfigBean;
 import org.complitex.dictionary.service.executor.ExecuteException;
 import org.complitex.dictionary.service.executor.ITaskBean;
 import org.complitex.osznconnection.file.Module;
-import org.complitex.osznconnection.file.calculation.adapter.ICalculationCenterAdapter;
-import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
-import org.complitex.osznconnection.file.calculation.service.CalculationCenterBean;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.service.BenefitBean;
 import org.complitex.osznconnection.file.service.PaymentBean;
@@ -29,6 +26,9 @@ import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import java.util.Date;
 import java.util.List;
+import org.complitex.osznconnection.file.service_provider.CalculationCenterBean;
+import org.complitex.osznconnection.file.service_provider.ServiceProviderAdapter;
+import org.complitex.osznconnection.file.service_provider.exception.DBException;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -41,16 +41,18 @@ public class FillTaskBean implements ITaskBean {
     private static final Logger log = LoggerFactory.getLogger(FillTaskBean.class);
     @Resource
     private UserTransaction userTransaction;
-    @EJB(beanName = "ConfigBean")
+    @EJB
     protected ConfigBean configBean;
-    @EJB(beanName = "PaymentBean")
+    @EJB
     private PaymentBean paymentBean;
-    @EJB(beanName = "BenefitBean")
+    @EJB
     private BenefitBean benefitBean;
-    @EJB(beanName = "CalculationCenterBean")
+    @EJB
     private CalculationCenterBean calculationCenterBean;
-    @EJB(beanName = "RequestFileGroupBean")
+    @EJB
     private RequestFileGroupBean requestFileGroupBean;
+    @EJB
+    private ServiceProviderAdapter adapter;
 
     @Override
     public boolean execute(IExecutorObject executorObject) throws ExecuteException {
@@ -58,7 +60,7 @@ public class FillTaskBean implements ITaskBean {
 
         group.setStatus(requestFileGroupBean.getRequestFileStatus(group)); //обновляем статус из базы данных
 
-        if (group.isProcessing()){ //проверяем что не обрабатывается в данный момент
+        if (group.isProcessing()) { //проверяем что не обрабатывается в данный момент
             throw new FillException(new AlreadyProcessingException(group), true, group);
         }
 
@@ -103,7 +105,7 @@ public class FillTaskBean implements ITaskBean {
     }
 
     @Override
-    public Class getControllerClass() {
+    public Class<?> getControllerClass() {
         return FillTaskBean.class;
     }
 
@@ -122,16 +124,14 @@ public class FillTaskBean implements ITaskBean {
      * записи(BenefitBean.populateBenefit()).
      *
      * @param payment Запись запроса начислений
-     * @param adapter Адаптер центра начислений
-     * @param calculationCenterId Центр начислений
      */
-    private void process(Payment payment, ICalculationCenterAdapter adapter, long calculationCenterId) throws DBException {
+    private void process(Payment payment, CalculationCenterInfo calculationCenterInfo) throws DBException {
         if (RequestStatus.unboundStatuses().contains(payment.getStatus())) {
             return;
         }
 
         List<Benefit> benefits = benefitBean.findByOZN(payment);
-        adapter.processPaymentAndBenefit(payment, benefits, calculationCenterId);
+        adapter.processPaymentAndBenefit(calculationCenterInfo, payment, benefits);
 
         paymentBean.update(payment);
         for (Benefit benefit : benefits) {
@@ -146,8 +146,7 @@ public class FillTaskBean implements ITaskBean {
      */
     private void processPayment(RequestFile paymentFile) throws FillException, DBException {
         //получаем информацию о текущем центре начисления
-        Long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterId();
-        ICalculationCenterAdapter adapter = calculationCenterBean.getDefaultCalculationCenterAdapter();
+        CalculationCenterInfo calculationCenterInfo = calculationCenterBean.getInfo();
 
         //извлечь из базы все id подлежащие обработке для файла payment и доставать записи порциями по BATCH_SIZE штук.
         List<Long> notResolvedPaymentIds = paymentBean.findIdsForProcessing(paymentFile.getId());
@@ -164,16 +163,16 @@ public class FillTaskBean implements ITaskBean {
             //достать из базы очередную порцию записей
             List<Payment> payments = paymentBean.findForOperation(paymentFile.getId(), batch);
             for (Payment payment : payments) {
-                if (paymentFile.isCanceled()){
+                if (paymentFile.isCanceled()) {
                     throw new FillException(new CanceledByUserException(), true, paymentFile);
                 }
 
                 //обработать payment запись
                 try {
                     userTransaction.begin();
-                    process(payment, adapter, calculationCenterId);
+                    process(payment, calculationCenterInfo);
                     userTransaction.commit();
-                } catch (DBException e){
+                } catch (DBException e) {
                     try {
                         userTransaction.rollback();
                     } catch (SystemException e1) {
@@ -218,8 +217,7 @@ public class FillTaskBean implements ITaskBean {
      */
     private void processBenefit(RequestFile benefitFile) throws FillException, DBException {
         //получаем информацию о текущем центре начисления
-        Long calculationCenterId = calculationCenterBean.getCurrentCalculationCenterId();
-        ICalculationCenterAdapter adapter = calculationCenterBean.getDefaultCalculationCenterAdapter();
+        CalculationCenterInfo calculationCenterInfo = calculationCenterBean.getInfo();
 
         List<String> allAccountNumbers = benefitBean.getAllAccountNumbers(benefitFile.getId());
         for (String accountNumber : allAccountNumbers) {
@@ -227,7 +225,7 @@ public class FillTaskBean implements ITaskBean {
             if (benefits != null && !benefits.isEmpty()) {
                 Date dat1 = benefitBean.findDat1(accountNumber, benefitFile.getId());
                 if (dat1 != null) {
-                    adapter.processBenefit(dat1, benefits, calculationCenterId);
+                    adapter.processBenefit(calculationCenterInfo, dat1, benefits);
                 } else {
                     for (Benefit benefit : benefits) {
                         benefit.setStatus(RequestStatus.PROCESSED);

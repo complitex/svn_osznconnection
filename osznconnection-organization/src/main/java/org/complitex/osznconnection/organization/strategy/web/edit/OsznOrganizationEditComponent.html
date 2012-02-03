@@ -36,12 +36,47 @@
                         <span wicket:id="parent"></span>
                     </td>
                 </tr>
-                <tr wicket:id="currentCaculationCenterContainer">
+
+                <!-- Reference to calculation center. Only for user organizations. -->
+                <tr wicket:id="calculationCenterContainer">
                     <th>
-                        <span wicket:id="currentCalculationCenterLabel"></span> :
+                        <span wicket:id="calculationCenterLabel"></span><b class="blue">*</b>:
                     </th>
                     <td>
-                        <input type="checkbox" wicket:id="currentCalculationCenter"/>
+                        <select wicket:id="calculationCenter">
+                            <option></option>
+                        </select>
+                    </td>
+                </tr>
+
+                <!-- Reference to the set of service provider types. Only for calculation centers. -->
+                <tr wicket:id="serviceProviderTypeContainer">
+                    <th style="vertical-align: top">
+                        <span wicket:id="serviceProviderTypeLabel"></span><b class="blue">*</b>:
+                    </th>
+                    <td>
+                        <table>
+                            <tbody wicket:id="serviceProviderTypeUpdateContainer">
+                                <tr wicket:id="serviceProviderTypes">
+                                    <wicket:container wicket:id="fakeContainer"/>
+                                    <td>
+                                        <select wicket:id="serviceProviderType">
+                                            <option></option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <a wicket:id="removeServiceProviderType">
+                                            <wicket:message key="removeServiceProviderType"/>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div>
+                            <a wicket:id="addServiceProviderType">
+                                <wicket:message key="addServiceProviderType"/>
+                            </a>
+                        </div>
                     </td>
                 </tr>
             </table>

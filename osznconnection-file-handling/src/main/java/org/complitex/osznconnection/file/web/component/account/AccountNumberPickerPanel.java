@@ -58,7 +58,7 @@ public class AccountNumberPickerPanel extends Panel {
                 item.add(new Label("name", valueOf(detail.getOwnerName())));
                 item.add(new Label("address", displayAddress(detail)));
                 item.add(new Label("megabankAccount", valueOf(detail.getMegabankAccountNumber())));
-                item.add(new Label("puAccountNumberInfo", valueOf(detail.getPuAccountNumberInfo())));
+                item.add(new Label("puAccountNumberInfo", valueOf(detail.getServiceProviderAccountNumberInfo())));
                 item.add(new Label("inn", valueOf(detail.getOwnerINN())));
             }
         };

@@ -2,9 +2,9 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
 <suite name="FileHandlingSuite" verbose="1" >
-    <test name="PuAccountNumberInfoParserTest">
+    <test name="ServiceProviderAccountNumberParserTest">
         <classes>
-            <class name="org.complitex.osznconnection.file.calculation.adapter.PuAccountNumberInfoParserTest"/>
+            <class name="org.complitex.osznconnection.file.service_provider.util.ServiceProviderAccountNumberParserTest"/>
         </classes>
     </test>
     <test name="BuildingNumberConverterTest">
