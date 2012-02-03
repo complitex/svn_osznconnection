@@ -7,9 +7,6 @@ import org.complitex.dictionary.service.ConfigBean;
 import org.complitex.dictionary.service.executor.ExecuteException;
 import org.complitex.dictionary.service.executor.ITaskBean;
 import org.complitex.osznconnection.file.Module;
-import org.complitex.osznconnection.file.calculation.adapter.ICalculationCenterAdapter;
-import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
-import org.complitex.osznconnection.file.calculation.service.CalculationCenterBean;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.service.ActualPaymentBean;
 import org.complitex.osznconnection.file.service.RequestFileBean;
@@ -28,6 +25,9 @@ import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import java.util.Date;
 import java.util.List;
+import org.complitex.osznconnection.file.service_provider.CalculationCenterBean;
+import org.complitex.osznconnection.file.service_provider.ServiceProviderAdapter;
+import org.complitex.osznconnection.file.service_provider.exception.DBException;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -36,22 +36,20 @@ import java.util.List;
 @Stateless
 @TransactionManagement(TransactionManagementType.BEAN)
 public class ActualPaymentFillTaskBean implements ITaskBean {
-    private static final Logger log = LoggerFactory.getLogger(ActualPaymentFillTaskBean.class);
 
+    private static final Logger log = LoggerFactory.getLogger(ActualPaymentFillTaskBean.class);
     @Resource
     private UserTransaction userTransaction;
-
-    @EJB(beanName = "ConfigBean")
+    @EJB
     protected ConfigBean configBean;
-
-    @EJB(beanName = "CalculationCenterBean")
+    @EJB
     private CalculationCenterBean calculationCenterBean;
-
     @EJB
     private ActualPaymentBean actualPaymentBean;
-
-    @EJB(beanName = "RequestFileBean")
+    @EJB
     private RequestFileBean requestFileBean;
+    @EJB
+    private ServiceProviderAdapter adapter;
 
     @Override
     public boolean execute(IExecutorObject executorObject) throws ExecuteException {
@@ -59,7 +57,7 @@ public class ActualPaymentFillTaskBean implements ITaskBean {
 
         requestFile.setStatus(requestFileBean.getRequestFileStatus(requestFile)); //обновляем статус из базы данных
 
-        if (requestFile.isProcessing()){ //проверяем что не обрабатывается в данный момент
+        if (requestFile.isProcessing()) { //проверяем что не обрабатывается в данный момент
             throw new FillException(new AlreadyProcessingException(requestFile), true, requestFile);
         }
 
@@ -102,7 +100,7 @@ public class ActualPaymentFillTaskBean implements ITaskBean {
     }
 
     @Override
-    public Class getControllerClass() {
+    public Class<?> getControllerClass() {
         return ActualPaymentFillTaskBean.class;
     }
 
@@ -111,7 +109,7 @@ public class ActualPaymentFillTaskBean implements ITaskBean {
         return Log.EVENT.EDIT;
     }
 
-    private void process(ActualPayment actualPayment, Date date, ICalculationCenterAdapter adapter) throws DBException {
+    private void process(ActualPayment actualPayment, Date date, CalculationCenterInfo calculationCenterInfo) throws DBException {
         if (RequestStatus.unboundStatuses().contains(actualPayment.getStatus())) {
             return;
         }
@@ -119,7 +117,7 @@ public class ActualPaymentFillTaskBean implements ITaskBean {
         if (log.isDebugEnabled()) {
             startTime = System.currentTimeMillis();
         }
-        adapter.processActualPayment(actualPayment, date);
+        adapter.processActualPayment(calculationCenterInfo.getServiceProviderTypeIds(), actualPayment, date);
         log.debug("Processing actualPayment (id = {}) took {} sec.", actualPayment.getId(), (System.currentTimeMillis() - startTime) / 1000);
         if (log.isDebugEnabled()) {
             startTime = System.currentTimeMillis();
@@ -130,7 +128,7 @@ public class ActualPaymentFillTaskBean implements ITaskBean {
 
     private void processActualPayment(RequestFile actualPaymentFile) throws FillException, DBException, CanceledByUserException {
         //получаем информацию о текущем центре начисления
-        ICalculationCenterAdapter adapter = calculationCenterBean.getDefaultCalculationCenterAdapter();
+        CalculationCenterInfo calculationCenterInfo = calculationCenterBean.getInfo();
 
         //извлечь из базы все id подлежащие обработке для файла actualPayment и доставать записи порциями по BATCH_SIZE штук.
         long startTime = 0;
@@ -152,14 +150,14 @@ public class ActualPaymentFillTaskBean implements ITaskBean {
             //достать из базы очередную порцию записей
             List<ActualPayment> actualPayments = actualPaymentBean.findForOperation(actualPaymentFile.getId(), batch);
             for (ActualPayment actualPayment : actualPayments) {
-                if (actualPaymentFile.isCanceled()){
+                if (actualPaymentFile.isCanceled()) {
                     throw new CanceledByUserException();
                 }
 
                 //обработать actualPayment запись
                 try {
                     userTransaction.begin();
-                    process(actualPayment, actualPaymentBean.getFirstDay(actualPayment, actualPaymentFile), adapter);
+                    process(actualPayment, actualPaymentBean.getFirstDay(actualPayment, actualPaymentFile), calculationCenterInfo);
                     userTransaction.commit();
                 } catch (Exception e) {
                     log.error("The actual payment item (id = " + actualPayment.getId() + ") was processed with error: ", e);

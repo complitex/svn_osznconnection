@@ -29,4 +29,16 @@ public class OsznOrganizationValidator extends OrganizationValidator {
             return true;
         }
     }
+
+    @Override
+    protected boolean validate(DomainObject organization, OrganizationEditComponent editComponent) {
+        boolean superValid = super.validate(organization, editComponent);
+
+        final OsznOrganizationEditComponent editComp = (OsznOrganizationEditComponent) editComponent;
+        if (editComp.isCalculationCenter() && !editComp.isServiceProviderTypeEntered()) {
+            superValid = false;
+            editComponent.error(editComponent.getString("must_have_service_provider"));
+        }
+        return superValid;
+    }
 }

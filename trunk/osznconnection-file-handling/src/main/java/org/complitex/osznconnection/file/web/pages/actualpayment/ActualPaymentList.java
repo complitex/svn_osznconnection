@@ -25,7 +25,6 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
-import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.entity.example.ActualPaymentExample;
 import org.complitex.osznconnection.file.service.*;
@@ -45,14 +44,13 @@ import org.complitex.osznconnection.file.web.component.address.AddressCorrection
 import org.complitex.osznconnection.file.web.pages.util.AddressRenderer;
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.TemplatePage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
+import org.complitex.osznconnection.file.service_provider.exception.DBException;
 
 /**
  *
@@ -61,7 +59,6 @@ import org.complitex.dictionary.web.component.datatable.DataProvider;
 @AuthorizeInstantiation(SecurityRole.AUTHORIZED)
 public final class ActualPaymentList extends TemplatePage {
 
-    private static final Logger log = LoggerFactory.getLogger(ActualPaymentList.class);
     public static final String FILE_ID = "request_file_id";
     @EJB
     private ActualPaymentBean actualPaymentBean;
@@ -295,4 +292,3 @@ public final class ActualPaymentList extends TemplatePage {
         content.add(new PagingNavigator("navigator", data, getClass().getName() + fileId, content));
     }
 }
-

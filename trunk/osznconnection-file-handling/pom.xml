@@ -22,10 +22,6 @@
     <dependencies>
         <dependency>
             <groupId>org.complitex</groupId>
-            <artifactId>complitex-template</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.complitex</groupId>
             <artifactId>complitex-admin</artifactId>
         </dependency>
         <dependency>
@@ -35,10 +31,6 @@
         <dependency>
             <groupId>org.complitex</groupId>
             <artifactId>complitex-address</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.complitex</groupId>
-            <artifactId>complitex-resources</artifactId>
         </dependency>
         <dependency>
             <groupId>org.complitex.osznconnection</groupId>
@@ -52,54 +44,9 @@
             <groupId>org.complitex.osznconnection</groupId>
             <artifactId>osznconnection-privilege</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.complitex</groupId>
-            <artifactId>complitex-dictionary</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.wicket</groupId>
-            <artifactId>wicket</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.wicket</groupId>
-            <artifactId>wicket-auth-roles</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.wicket</groupId>
-            <artifactId>wicket-ioc</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.wicket</groupId>
-            <artifactId>wicket-extensions</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.wicket</groupId>
-            <artifactId>wicket-datetime</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.odlabs.wiquery</groupId>
-            <artifactId>wiquery</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-api</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.mybatis</groupId>
-            <artifactId>mybatis</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.google.collections</groupId>
-            <artifactId>google-collections</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
+       <dependency>
+            <groupId>org.complitex.osznconnection</groupId>
+            <artifactId>osznconnection-service-provider-type</artifactId>
         </dependency>
 
         <dependency>

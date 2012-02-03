@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.complitex.osznconnection.file.service_provider.ServiceProviderAdapter">
+
+    <select id="acquireAccountDetailsByAddress" statementType="CALLABLE" parameterType="map">
+        <![CDATA[
+         {#{resultCode, mode=OUT, javaType=int, jdbcType=NUMERIC} = call COMP.Z$RUNTIME_SZ_UTL.GETACCATTRS(
+            #{pDistrName, mode=IN, javaType=string, jdbcType=VARCHAR},
+            #{pStSortName, mode=IN, javaType=string, jdbcType=VARCHAR},
+            #{pStreetName, mode=IN, javaType=string, jdbcType=VARCHAR},
+            #{pHouseNum, mode=IN, javaType=string, jdbcType=VARCHAR},
+            #{pHousePart, mode=IN, javaType=string, jdbcType=VARCHAR},
+            #{pFlatNum, mode=IN, javaType=string, jdbcType=VARCHAR},
+            #{date, mode=IN, javaType=date, jdbcType=DATE},
+            #{details, mode=OUT, jdbcType=CURSOR, 
+                typeHandler=org.complitex.osznconnection.file.service_provider.handler.AccountDetailsByAddressHandler})
+        }
+        ]]>
+    </select>
+
+    <select id="processPaymentAndBenefit" statementType="CALLABLE" parameterType="map">
+        <![CDATA[
+         {#{resultCode, mode=OUT, javaType=int, jdbcType=NUMERIC} = call COMP.Z$RUNTIME_SZ_UTL.GETCHARGEANDPARAMS(
+            #{accountNumber, mode=IN, javaType=string, jdbcType=VARCHAR},
+            #{dat1, mode=IN, javaType=date, jdbcType=DATE},
+            #{data, mode=OUT, jdbcType=CURSOR,
+                typeHandler=org.complitex.osznconnection.file.service_provider.handler.PaymentAndBenefitDataHandler})
+        }
+        ]]>
+    </select>
+
+    <sql id="getPrivs">
+        <![CDATA[
+         {#{resultCode, mode=OUT, javaType=int, jdbcType=NUMERIC} = call COMP.Z$RUNTIME_SZ_UTL.GETPRIVS(
+            #{accountNumber, mode=IN, javaType=string, jdbcType=VARCHAR},
+            #{dat1, mode=IN, javaType=date, jdbcType=DATE},
+            #{benefitData, mode=OUT, jdbcType=CURSOR,
+                typeHandler=org.complitex.osznconnection.file.service_provider.handler.BenefitDataHandler})
+        }
+        ]]>
+    </sql>
+
+    <select id="processBenefit" statementType="CALLABLE" parameterType="map">
+        <include refid="org.complitex.osznconnection.file.service_provider.ServiceProviderAdapter.getPrivs"/>
+    </select>
+
+    <select id="getBenefitData" statementType="CALLABLE" parameterType="map">
+        <include refid="org.complitex.osznconnection.file.service_provider.ServiceProviderAdapter.getPrivs"/>
+    </select>
+
+    <select id="getAttrsByAccCode" statementType="CALLABLE" parameterType="map">
+        <![CDATA[
+         {#{resultCode, mode=OUT, javaType=int, jdbcType=NUMERIC} = call COMP.Z$RUNTIME_SZ_UTL.GETATTRSBYACCCODE(
+            #{pDistrName, mode=IN, javaType=string, jdbcType=VARCHAR},
+            #{pAccCode, mode=IN, javaType=string, jdbcType=VARCHAR},
+            #{pAccCodeType, mode=IN, javaType=int, jdbcType=INTEGER},
+            #{details, mode=OUT, jdbcType=CURSOR,
+                typeHandler=org.complitex.osznconnection.file.service_provider.handler.AccountDetailsByAccCodeHandler})
+        }
+        ]]>
+    </select>
+
+    <select id="processActualPayment" statementType="CALLABLE" parameterType="map">
+        <![CDATA[
+         {#{resultCode, mode=OUT, javaType=int, jdbcType=NUMERIC} = call COMP.Z$RUNTIME_SZ_UTL.GETFACTCHARGEANDTARIF(
+            #{accountNumber, mode=IN, javaType=string, jdbcType=VARCHAR},
+            #{date, mode=IN, javaType=date, jdbcType=TIMESTAMP},
+            #{data, mode=OUT, jdbcType=CURSOR,
+                    typeHandler=org.complitex.osznconnection.file.service_provider.handler.ActualPaymentDataHandler})
+        }
+        ]]>
+    </select>
+
+</mapper>

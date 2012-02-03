@@ -16,7 +16,7 @@ public class AccountDetail implements Serializable {
     private String ownerName;
     private String ownerINN;
     private String megabankAccountNumber;
-    private String puAccountNumberInfo;
+    private String serviceProviderAccountNumberInfo;
     private String street;
     private String streetType;
     private String buildingNumber;
@@ -79,12 +79,12 @@ public class AccountDetail implements Serializable {
         this.megabankAccountNumber = megabankAccountNumber;
     }
 
-    public String getPuAccountNumberInfo() {
-        return puAccountNumberInfo;
+    public String getServiceProviderAccountNumberInfo() {
+        return serviceProviderAccountNumberInfo;
     }
 
-    public void setPuAccountNumberInfo(String puAccountNumberInfo) {
-        this.puAccountNumberInfo = puAccountNumberInfo;
+    public void setServiceProviderAccountNumberInfo(String serviceProviderAccountNumberInfo) {
+        this.serviceProviderAccountNumberInfo = serviceProviderAccountNumberInfo;
     }
 
     public String getStreet() {
@@ -106,8 +106,8 @@ public class AccountDetail implements Serializable {
     @Override
     public String toString() {
         return "{ Account : " + accountNumber + ", owner name : " + ownerName + ", owner INN : " + ownerINN
-                + ", megabankAccountNumber : " + megabankAccountNumber + ", puAccountNumberInfo : " + puAccountNumberInfo
+                + ", megabankAccountNumber : " + megabankAccountNumber + ", puAccountNumberInfo : " + serviceProviderAccountNumberInfo
                 + ", street type : " + streetType + ", street : " + street + ", building number : "
-                + buildingNumber + ", building corp : " + buildingCorp + ", apartment : " + apartment+"}";
+                + buildingNumber + ", building corp : " + buildingCorp + ", apartment : " + apartment + "}";
     }
 }

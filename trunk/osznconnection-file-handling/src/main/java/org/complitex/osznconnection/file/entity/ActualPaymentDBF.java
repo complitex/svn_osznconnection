@@ -35,43 +35,43 @@ public enum ActualPaymentDBF {
     FROG(BigDecimal.class, 5, 1),
     DEBT(BigDecimal.class, 10, 2),
     NUMB(Integer.class, 2),
-    P1(BigDecimal.class, 10, 4),            //фактическое начисление
-    N1(BigDecimal.class, 10, 4),            //фактический тариф
-    P2(BigDecimal.class, 10, 4),
-    N2(BigDecimal.class, 10, 4),
-    P3(BigDecimal.class, 10, 4),
-    N3(BigDecimal.class, 10, 4),
-    P4(BigDecimal.class, 10, 4),
-    N4(BigDecimal.class, 10, 4),
-    P5(BigDecimal.class, 10, 4),
-    N5(BigDecimal.class, 10, 4),
-    P6(BigDecimal.class, 10, 4),
-    N6(BigDecimal.class, 10, 4),
-    P7(BigDecimal.class, 10, 4),
-    N7(BigDecimal.class, 10, 4),
-    P8(BigDecimal.class, 10, 4),
-    N8(BigDecimal.class, 10, 4);
+    P1(BigDecimal.class, 10, 4),            //фактическое начисление по квартплате
+    N1(BigDecimal.class, 10, 4),            //фактический тариф по квартплате
+    P2(BigDecimal.class, 10, 4),            //фактическое начисление по отоплению
+    N2(BigDecimal.class, 10, 4),            //фактический тариф по отоплению
+    P3(BigDecimal.class, 10, 4),            //фактическое начисление по горячему водоснабжению
+    N3(BigDecimal.class, 10, 4),            //фактический тариф по горячему водоснабжению
+    P4(BigDecimal.class, 10, 4),            //фактическое начисление по холодному водоснабжению
+    N4(BigDecimal.class, 10, 4),            //фактический тариф по холодному водоснабжению
+    P5(BigDecimal.class, 10, 4),            //фактическое начисление по газу
+    N5(BigDecimal.class, 10, 4),            //фактический тариф по газу
+    P6(BigDecimal.class, 10, 4),            //фактическое начисление по электроэнергии
+    N6(BigDecimal.class, 10, 4),            //фактический тариф по электроэнергии
+    P7(BigDecimal.class, 10, 4),            //фактическое начисление за вывоз мусора
+    N7(BigDecimal.class, 10, 4),            //фактический тариф за вывоз мусора
+    P8(BigDecimal.class, 10, 4),            //фактическое начисление за водоотведение
+    N8(BigDecimal.class, 10, 4);            //фактический тариф за водоотведение
     
-    private Class type;
+    private Class<?> type;
     private int length;
     private int scale = 0;
 
-    ActualPaymentDBF(Class type, int length, int scale) {
+    ActualPaymentDBF(Class<?> type, int length, int scale) {
         this.type = type;
         this.length = length;
         this.scale = scale;
     }
 
-    ActualPaymentDBF(Class type, int length) {
+    ActualPaymentDBF(Class<?> type, int length) {
         this.type = type;
         this.length = length;
     }
 
-    ActualPaymentDBF(Class type) {
+    ActualPaymentDBF(Class<?> type) {
         this.type = type;
     }
 
-    public Class getType() {
+    public Class<?> getType() {
         return type;
     }
 

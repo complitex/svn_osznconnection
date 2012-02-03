@@ -25,7 +25,6 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
-import org.complitex.osznconnection.file.calculation.adapter.exception.DBException;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.entity.example.PaymentExample;
 import org.complitex.osznconnection.file.service.*;
@@ -50,6 +49,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
+import org.complitex.osznconnection.file.service_provider.exception.DBException;
 
 /**
  *
@@ -290,4 +290,3 @@ public final class PaymentList extends TemplatePage {
         content.add(new PagingNavigator("navigator", data, getClass().getName() + fileId, content));
     }
 }
-

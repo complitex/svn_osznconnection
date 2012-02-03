@@ -246,6 +246,48 @@
         <if test="dbfFields.N1 != null">
             `N1` = #{dbfFields.N1},
         </if>
+        <if test="dbfFields.P2 != null">
+            `P2` = #{dbfFields.P2},
+        </if>
+        <if test="dbfFields.N2 != null">
+            `N2` = #{dbfFields.N2},
+        </if>
+        <if test="dbfFields.P3 != null">
+            `P3` = #{dbfFields.P3},
+        </if>
+        <if test="dbfFields.N3 != null">
+            `N3` = #{dbfFields.N3},
+        </if>
+        <if test="dbfFields.P4 != null">
+            `P4` = #{dbfFields.P4},
+        </if>
+        <if test="dbfFields.N4 != null">
+            `N4` = #{dbfFields.N4},
+        </if>
+        <if test="dbfFields.P5 != null">
+            `P5` = #{dbfFields.P5},
+        </if>
+        <if test="dbfFields.N5 != null">
+            `N5` = #{dbfFields.N5},
+        </if>
+        <if test="dbfFields.P6 != null">
+            `P6` = #{dbfFields.P6},
+        </if>
+        <if test="dbfFields.N6 != null">
+            `N6` = #{dbfFields.N6},
+        </if>
+        <if test="dbfFields.P7 != null">
+            `P7` = #{dbfFields.P7},
+        </if>
+        <if test="dbfFields.N7 != null">
+            `N7` = #{dbfFields.N7},
+        </if>
+        <if test="dbfFields.P8 != null">
+            `P8` = #{dbfFields.P8},
+        </if>
+        <if test="dbfFields.N8 != null">
+            `N8` = #{dbfFields.N8},
+        </if>
         `status` = #{status}
         WHERE `id` = #{id}
     </update>
@@ -316,6 +358,20 @@
         `outgoing_building_number` = NULL, `outgoing_building_corp` = NULL, `outgoing_apartment` = NULL,
         `P1` = -1,
         `N1` = -1,
+        `P2` = -1,
+        `N2` = -1,
+        `P3` = -1,
+        `N3` = -1,
+        `P4` = -1,
+        `N4` = -1,
+        `P5` = -1,
+        `N5` = -1,
+        `P6` = -1,
+        `N6` = -1,
+        `P7` = -1,
+        `N7` = -1,
+        `P8` = -1,
+        `N8` = -1,
         `status` = #{status}
         WHERE `request_file_id` = #{fileId}
     </update>
@@ -324,6 +380,20 @@
         UPDATE `actual_payment` SET
         `P1` = -1,
         `N1` = -1,
+        `P2` = -1,
+        `N2` = -1,
+        `P3` = -1,
+        `N3` = -1,
+        `P4` = -1,
+        `N4` = -1,
+        `P5` = -1,
+        `N5` = -1,
+        `P6` = -1,
+        `N6` = -1,
+        `P7` = -1,
+        `N7` = -1,
+        `P8` = -1,
+        `N8` = -1,
         `status` = CASE `status`
                         <foreach collection="statuses" item="status">
                             WHEN #{status} THEN #{status}

@@ -33,26 +33,26 @@ public enum BenefitDBF {
     RESERV1(BigDecimal.class, 10, 2),  //20    RESERV1	    NUMERIC	    10	2	Резерв
     RESERV2(String.class, 10);         //21    RESERV2	    CHARACTER	10		Резерв
 
-    private Class type;
+    private Class<?> type;
     private int length;
     private int scale = 0;
 
-    BenefitDBF(Class type, int length, int scale) {
+    BenefitDBF(Class<?> type, int length, int scale) {
         this.type = type;
         this.length = length;
         this.scale = scale;
     }
 
-    BenefitDBF(Class type, int length) {
+    BenefitDBF(Class<?> type, int length) {
         this.type = type;
         this.length = length;
     }
 
-    BenefitDBF(Class type) {
+    BenefitDBF(Class<?> type) {
         this.type = type;
     }
 
-    public Class getType() {
+    public Class<?> getType() {
         return type;
     }
 
