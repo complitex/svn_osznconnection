@@ -19,6 +19,7 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -45,7 +46,7 @@ public class LoadGroupTaskBean implements ITaskBean{
     private LoadRequestFileBean loadRequestFileBean;
 
     @Override
-    public boolean execute(IExecutorObject executorObject) throws ExecuteException {
+    public boolean execute(IExecutorObject executorObject, Map commandParameters) throws ExecuteException {
         RequestFileGroup group = (RequestFileGroup) executorObject;
 
         group.setStatus(RequestFileStatus.LOADING);

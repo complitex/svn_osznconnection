@@ -15,6 +15,7 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import java.util.List;
+import java.util.Map;
 
 /**
  * User: Anatoly A. Ivanov java@inhell.ru
@@ -36,7 +37,7 @@ public class ActualPaymentLoadTaskBean implements ITaskBean {
     private SessionBean sessionBean;
 
     @Override
-    public boolean execute(IExecutorObject executorObject) throws ExecuteException {
+    public boolean execute(IExecutorObject executorObject, Map commandParameters) throws ExecuteException {
         RequestFile requestFile = (RequestFile) executorObject;
 
         requestFile.setStatus(RequestFileStatus.LOADING);

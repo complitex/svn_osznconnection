@@ -25,6 +25,7 @@ import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import org.complitex.osznconnection.file.service_provider.CalculationCenterBean;
 import org.complitex.osznconnection.file.service_provider.ServiceProviderAdapter;
 import org.complitex.osznconnection.file.service_provider.exception.DBException;
@@ -52,7 +53,7 @@ public class ActualPaymentFillTaskBean implements ITaskBean {
     private ServiceProviderAdapter adapter;
 
     @Override
-    public boolean execute(IExecutorObject executorObject) throws ExecuteException {
+    public boolean execute(IExecutorObject executorObject, Map commandParameters) throws ExecuteException {
         RequestFile requestFile = (RequestFile) executorObject;
 
         requestFile.setStatus(requestFileBean.getRequestFileStatus(requestFile)); //обновляем статус из базы данных

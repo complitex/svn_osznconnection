@@ -4,6 +4,9 @@
  */
 package org.complitex.osznconnection.file.service_provider;
 
+import org.complitex.osznconnection.file.web.pages.util.GlobalOptions;
+import org.complitex.template.web.template.TemplateSession;
+import org.apache.wicket.Session;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import com.google.common.base.Function;
@@ -178,7 +181,7 @@ public class ServiceProviderAdapter {
     public void acquirePersonAccount(Set<Long> serviceProviderTypeIds,
             RequestFile.TYPE requestFileType, AbstractRequest request, String lastName,
             String serviceProviderAccountNumber, String district, String streetType, String street, String buildingNumber,
-            String buildingCorp, String apartment, Date date) throws DBException {
+            String buildingCorp, String apartment, Date date, Boolean updatePUAccount) throws DBException {
 
         if (Strings.isEmpty(serviceProviderAccountNumber)) {
             request.setStatus(RequestStatus.ACCOUNT_NUMBER_MISMATCH);
@@ -218,7 +221,15 @@ public class ServiceProviderAdapter {
             }
         }
         if (accountDetails.size() == 1) {
-            if (!errorDetails.isEmpty()) {
+
+            // если установлена опция перезаписи номера л/с ПУ номером л/с МН и номер л/с ПУ в файле запроса равен 0
+            // и получена только одна запись из МН для данного адреса, то запись считаем связанной
+            if (updatePUAccount && 0 == Integer.valueOf(serviceProviderAccountNumber) && errorDetails.isEmpty()){
+
+                request.setAccountNumber(accountDetails.get(0).getAccountNumber());
+                request.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
+                
+            } else  if (!errorDetails.isEmpty()) {
                 log.error("acquirePersonAccount. Parsing of service provider account number was failed for following account details: {}. "
                         + "Request id: {}, request class: {}", new Object[]{errorDetails, request.getId(), request.getClass()});
 

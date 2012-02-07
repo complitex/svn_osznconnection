@@ -32,9 +32,11 @@ import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import org.complitex.osznconnection.file.service_provider.CalculationCenterBean;
 import org.complitex.osznconnection.file.service_provider.ServiceProviderAdapter;
 import org.complitex.osznconnection.file.service_provider.exception.DBException;
+import org.complitex.osznconnection.file.web.pages.util.GlobalOptions;
 
 /**
  *
@@ -61,6 +63,8 @@ public class ActualPaymentBindTaskBean implements ITaskBean {
     private RequestFileBean requestFileBean;
     @EJB
     private ServiceProviderAdapter adapter;
+    
+    private Boolean updatePuAccount;
 
     private boolean resolveAddress(ActualPayment actualPayment, CalculationCenterInfo calculationCenterInfo) {
         long startTime = 0;
@@ -94,7 +98,7 @@ public class ActualPaymentBindTaskBean implements ITaskBean {
         if (log.isDebugEnabled()) {
             startTime = System.currentTimeMillis();
         }
-        personAccountService.resolveRemoteAccount(actualPayment, date, calculationCenterInfo);
+        personAccountService.resolveRemoteAccount(actualPayment, date, calculationCenterInfo, updatePuAccount);
         if (log.isDebugEnabled()) {
             log.debug("Resolving of actualPayment (id = {}) for remote account number took {} sec.", actualPayment.getId(),
                     (System.currentTimeMillis() - startTime) / 1000);
@@ -171,7 +175,10 @@ public class ActualPaymentBindTaskBean implements ITaskBean {
     }
 
     @Override
-    public boolean execute(IExecutorObject executorObject) throws ExecuteException {
+    public boolean execute(IExecutorObject executorObject, Map commandParameters) throws ExecuteException {
+        // ищем в параметрах комманды опцию "Переписывать номер л/с ПУ номером л/с МН"
+        updatePuAccount = commandParameters.containsKey(GlobalOptions.UPDATE_PU_ACCOUNT)?(Boolean)commandParameters.get(GlobalOptions.UPDATE_PU_ACCOUNT):false;
+
         RequestFile requestFile = (RequestFile) executorObject;
 
         requestFile.setStatus(requestFileBean.getRequestFileStatus(requestFile)); //обновляем статус из базы данных

@@ -1,5 +1,7 @@
 package org.complitex.osznconnection.file.web;
 
+import org.complitex.osznconnection.file.web.pages.util.GlobalOptions;
+import org.complitex.template.web.template.TemplateSession;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import org.apache.wicket.PageParameters;
@@ -79,6 +81,7 @@ public class GroupList extends ScrollListPage {
     private final static String ITEM_GROUP_ID_PREFIX = "item";
     private RequestFileLoadPanel requestFileLoadPanel;
     private WebMarkupContainer buttonContainer;
+    private WebMarkupContainer optionContainer;
     private PagingNavigator pagingNavigator;
     private Map<Long, IModel<Boolean>> selectModels;
 
@@ -437,6 +440,26 @@ public class GroupList extends ScrollListPage {
         });
         filterForm.add(pagingNavigator);
 
+        //Контейнер чекбокса "Переписать л/с ПУ" для ajax
+        optionContainer = new WebMarkupContainer("options");
+        optionContainer.setOutputMarkupId(true);
+        filterForm.add(optionContainer);
+
+        optionContainer.add(new CheckBox("update_pu_account", new Model<Boolean>(
+                getSessionParameter(GlobalOptions.UPDATE_PU_ACCOUNT))) {
+
+            @Override
+            public void onSelectionChanged() {
+                putSessionParameter(GlobalOptions.UPDATE_PU_ACCOUNT, !getSessionParameter(GlobalOptions.UPDATE_PU_ACCOUNT));
+            }
+
+            @Override
+            protected boolean wantOnSelectionChangedNotifications() {
+                return true;
+            }
+            
+        });
+        
         //Контейнер кнопок для ajax
         buttonContainer = new WebMarkupContainer("buttons");
         buttonContainer.setOutputMarkupId(true);
@@ -457,8 +480,7 @@ public class GroupList extends ScrollListPage {
             @Override
             public void onSubmit() {
                 completedDisplayed.put(BIND_GROUP, false);
-
-                processManagerBean.bindGroup(getSelected());
+                processManagerBean.bindGroup(getSelected(), buildCommandParameters());
 
                 clearSelect();
                 addTimer(dataViewContainer, filterForm, messages);
@@ -472,7 +494,7 @@ public class GroupList extends ScrollListPage {
             public void onSubmit() {
                 completedDisplayed.put(FILL_GROUP, false);
 
-                processManagerBean.fillGroup(getSelected());
+                processManagerBean.fillGroup(getSelected(), buildCommandParameters());
 
                 clearSelect();
                 addTimer(dataViewContainer, filterForm, messages);
@@ -486,7 +508,7 @@ public class GroupList extends ScrollListPage {
             public void onSubmit() {
                 completedDisplayed.put(SAVE_GROUP, false);
 
-                processManagerBean.saveGroup(getSelected());
+                processManagerBean.saveGroup(getSelected(), buildCommandParameters());
 
                 clearSelect();
                 addTimer(dataViewContainer, filterForm, messages);
@@ -613,6 +635,20 @@ public class GroupList extends ScrollListPage {
         }
     }
 
+    private Boolean getSessionParameter(Enum key) {
+        return getTemplateSession().getPreferenceBoolean(TemplateSession.GLOBAL_PAGE, key, false);
+    }
+    
+    private void putSessionParameter( Enum key, Boolean value) {
+        getTemplateSession().putPreference(TemplateSession.GLOBAL_PAGE, key, value, false);
+    }
+
+    private Map<Enum, Object> buildCommandParameters() {
+        Map<Enum,Object> commandParameters = new HashMap<Enum,Object>();
+        commandParameters.put(GlobalOptions.UPDATE_PU_ACCOUNT,getSessionParameter(GlobalOptions.UPDATE_PU_ACCOUNT));
+        return commandParameters;
+    }
+            
     private List<Long> getSelected() {
         List<Long> ids = new ArrayList<Long>();
 

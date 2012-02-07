@@ -23,8 +23,10 @@ import javax.ejb.TransactionManagementType;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import java.util.List;
+import java.util.Map;
 import org.complitex.osznconnection.file.service_provider.CalculationCenterBean;
 import org.complitex.osznconnection.file.service_provider.exception.DBException;
+import org.complitex.osznconnection.file.web.pages.util.GlobalOptions;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -52,8 +54,13 @@ public class BindTaskBean implements ITaskBean {
     @EJB
     private RequestFileGroupBean requestFileGroupBean;
 
+    private Boolean updatePuAccount;
+
     @Override
-    public boolean execute(IExecutorObject executorObject) throws ExecuteException {
+    public boolean execute(IExecutorObject executorObject, Map commandParameters) throws ExecuteException {
+        // ищем в параметрах комманды опцию "Переписывать номер л/с ПУ номером л/с МН"
+        updatePuAccount = commandParameters.containsKey(GlobalOptions.UPDATE_PU_ACCOUNT)?(Boolean)commandParameters.get(GlobalOptions.UPDATE_PU_ACCOUNT):false;
+
         RequestFileGroup group = (RequestFileGroup) executorObject;
 
         group.setStatus(requestFileGroupBean.getRequestFileStatus(group)); //обновляем статус из базы данных
@@ -150,7 +157,7 @@ public class BindTaskBean implements ITaskBean {
      * @return Разрешен ли номер л/с
      */
     private boolean resolveRemoteAccountNumber(Payment payment, CalculationCenterInfo calculationCenterInfo) throws DBException {
-        personAccountService.resolveRemoteAccount(payment, calculationCenterInfo);
+        personAccountService.resolveRemoteAccount(payment, calculationCenterInfo, updatePuAccount);
         return payment.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED;
     }
 
