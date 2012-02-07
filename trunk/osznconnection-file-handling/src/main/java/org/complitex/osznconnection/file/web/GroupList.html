@@ -98,24 +98,39 @@
 
             <div wicket:id="paging"></div>
 
-            <div align="right" style="margin-top:10px;">
-                <table wicket:id="buttons">
-                    <tr>
-                        <td><input type="submit" class="btnMiddle" wicket:id="load" wicket:message="value:load"/></td>
-                        <td><input type="submit" class="btnMiddle" wicket:id="bind" wicket:message="value:bind"/></td>
-                        <td><input type="submit" class="btnMiddle" wicket:id="process" wicket:message="value:process"/></td>
-                        <td><input type="submit" class="btnMiddle" wicket:id="save" wicket:message="value:save"/></td>
-                        <td><input type="submit" class="btnMiddle" wicket:id="delete" wicket:message="value:delete"
-                                onclick="return confirm('Удалить выбранные файлы?');"/></td>
-                    </tr>
-                    <tr>
-                        <td><input type="submit" class="btnMiddle" wicket:id="load_cancel" wicket:message="value:cancel"/></td>
-                        <td><input type="submit" class="btnMiddle" wicket:id="bind_cancel" wicket:message="value:cancel"/></td>
-                        <td><input type="submit" class="btnMiddle" wicket:id="fill_cancel" wicket:message="value:cancel"/></td>
-                        <td><input type="submit" class="btnMiddle" wicket:id="save_cancel" wicket:message="value:cancel"/></td>
-                        <td></td>
-                    </tr>
-                </table>
+            <div style="margin-top:10px;">
+                <table width="100%"><tbody><tr>
+                    <td>
+                        <div align="left">
+                             <table wicket:id="options">
+                                <tr>
+                                    <td><input wicket:id="update_pu_account" type="checkbox"/><wicket:message key="update_pu_account"/></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                    <td>
+                        <div align="right" style="margin-top:10px;">
+                            <table wicket:id="buttons">
+                                <tr>
+                                    <td><input type="submit" class="btnMiddle" wicket:id="load" wicket:message="value:load"/></td>
+                                    <td><input type="submit" class="btnMiddle" wicket:id="bind" wicket:message="value:bind"/></td>
+                                    <td><input type="submit" class="btnMiddle" wicket:id="process" wicket:message="value:process"/></td>
+                                    <td><input type="submit" class="btnMiddle" wicket:id="save" wicket:message="value:save"/></td>
+                                    <td><input type="submit" class="btnMiddle" wicket:id="delete" wicket:message="value:delete"
+                                            onclick="return confirm('Удалить выбранные файлы?');"/></td>
+                                </tr>
+                                <tr>
+                                    <td><input type="submit" class="btnMiddle" wicket:id="load_cancel" wicket:message="value:cancel"/></td>
+                                    <td><input type="submit" class="btnMiddle" wicket:id="bind_cancel" wicket:message="value:cancel"/></td>
+                                    <td><input type="submit" class="btnMiddle" wicket:id="fill_cancel" wicket:message="value:cancel"/></td>
+                                    <td><input type="submit" class="btnMiddle" wicket:id="save_cancel" wicket:message="value:cancel"/></td>
+                                    <td></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                </tr></tbody></table>
             </div>
         </form>
     </div>

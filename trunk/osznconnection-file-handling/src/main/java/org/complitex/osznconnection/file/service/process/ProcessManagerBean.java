@@ -170,7 +170,7 @@ public class ProcessManagerBean {
 
     private void execute(ProcessType processType, Class<? extends ITaskBean> taskClass,
                          List<? extends IExecutorObject> list, IExecutorListener listener,
-                         FileHandlingConfig threadCount, FileHandlingConfig maxErrorCount){
+                         FileHandlingConfig threadCount, FileHandlingConfig maxErrorCount, Map processParameters){
         Process process = getProcess(processType);
 
         process.getQueue().addAll(list);
@@ -182,6 +182,7 @@ public class ProcessManagerBean {
             process.setMaxErrors(configBean.getInteger(maxErrorCount, true));
             process.setTask(EjbBeanLocator.getBean(taskClass));
             process.setListener(listener);
+            process.setCommandParameters(processParameters);
 
             process.getQueue().addAll(list);
 
@@ -275,17 +276,17 @@ public class ProcessManagerBean {
     }
 
     @Asynchronous
-    public void bindGroup(List<Long> ids){
-        execute(BIND_GROUP, BindTaskBean.class, getGroups(ids), null, BIND_THREAD_SIZE, BIND_MAX_ERROR_COUNT);
+    public void bindGroup(List<Long> ids, Map processParameters){
+        execute(BIND_GROUP, BindTaskBean.class, getGroups(ids), null, BIND_THREAD_SIZE, BIND_MAX_ERROR_COUNT, processParameters);
     }
 
     @Asynchronous
-    public void fillGroup(List<Long> ids){
-        execute(FILL_GROUP, FillTaskBean.class, getGroups(ids), null, FILL_THREAD_SIZE, FILL_MAX_ERROR_COUNT);
+    public void fillGroup(List<Long> ids, Map processParameters){
+        execute(FILL_GROUP, FillTaskBean.class, getGroups(ids), null, FILL_THREAD_SIZE, FILL_MAX_ERROR_COUNT, processParameters);
     }
 
     @Asynchronous
-    public void saveGroup(List<Long> ids){
+    public void saveGroup(List<Long> ids, Map processParameters){
         IExecutorListener listener = new IExecutorListener() {
             @Override
             public void onComplete(List<IExecutorObject> processed) {
@@ -299,7 +300,7 @@ public class ProcessManagerBean {
             }
         };
 
-        execute(SAVE_GROUP, SaveTaskBean.class, getGroups(ids), listener, SAVE_THREAD_SIZE, SAVE_MAX_ERROR_COUNT);
+        execute(SAVE_GROUP, SaveTaskBean.class, getGroups(ids), listener, SAVE_THREAD_SIZE, SAVE_MAX_ERROR_COUNT, processParameters);
     }
 
     @Asynchronous
@@ -307,7 +308,7 @@ public class ProcessManagerBean {
         try {
             List<RequestFile> list = LoadUtil.getActualPayments(organizationId, districtCode, monthFrom, monthTo, year);
 
-            execute(LOAD_ACTUAL_PAYMENT, ActualPaymentLoadTaskBean.class, list, null, LOAD_THREAD_SIZE, LOAD_MAX_ERROR_COUNT);
+            execute(LOAD_ACTUAL_PAYMENT, ActualPaymentLoadTaskBean.class, list, null, LOAD_THREAD_SIZE, LOAD_MAX_ERROR_COUNT, null);
         } catch (StorageNotFoundException e) {
             log.error("Ошибка процесса загрузки файлов.", e);
             logBean.error(Module.NAME, ProcessManagerBean.class, RequestFile.class, null,
@@ -316,21 +317,21 @@ public class ProcessManagerBean {
     }
 
     @Asynchronous
-    public void bindActualPayment(List<Long> ids){
+    public void bindActualPayment(List<Long> ids, Map processParameters){
         execute(BIND_ACTUAL_PAYMENT, ActualPaymentBindTaskBean.class, getActualPaymentFiles(ids), null, BIND_THREAD_SIZE,
-                BIND_MAX_ERROR_COUNT);
+                BIND_MAX_ERROR_COUNT, processParameters);
     }
 
     @Asynchronous
-    public void fillActualPayment(List<Long> ids){
+    public void fillActualPayment(List<Long> ids, Map processParameters){
         execute(FILL_ACTUAL_PAYMENT, ActualPaymentFillTaskBean.class, getActualPaymentFiles(ids), null, FILL_THREAD_SIZE,
-                FILL_MAX_ERROR_COUNT);
+                FILL_MAX_ERROR_COUNT, processParameters);
     }
 
     @Asynchronous
-    public void saveActualPayment(List<Long> ids){
+    public void saveActualPayment(List<Long> ids, Map processParameters){
         execute(SAVE_ACTUAL_PAYMENT, ActualPaymentSaveTaskBean.class, getActualPaymentFiles(ids), null, SAVE_THREAD_SIZE,
-                SAVE_MAX_ERROR_COUNT);
+                SAVE_MAX_ERROR_COUNT, processParameters);
     }
 
     @Asynchronous
@@ -338,7 +339,7 @@ public class ProcessManagerBean {
         try {
             List<RequestFile> list = LoadUtil.getTarifs(organizationId, districtCode, monthFrom, monthTo, year);
 
-            execute(LOAD_TARIF, LoadTarifTaskBean.class, list, null, LOAD_THREAD_SIZE, LOAD_MAX_ERROR_COUNT);
+            execute(LOAD_TARIF, LoadTarifTaskBean.class, list, null, LOAD_THREAD_SIZE, LOAD_MAX_ERROR_COUNT, null);
         } catch (StorageNotFoundException e) {
             log.error("Ошибка процесса загрузки файлов.", e);
             logBean.error(Module.NAME, ProcessManagerBean.class, RequestFile.class, null,

@@ -22,6 +22,10 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import org.apache.wicket.Session;
+import org.complitex.osznconnection.file.web.pages.util.GlobalOptions;
+import org.complitex.template.web.template.TemplateSession;
 
 /**
  * User: Anatoly A. Ivanov java@inhell.ru
@@ -36,10 +40,16 @@ public class ActualPaymentSaveTaskBean implements ITaskBean {
 
     @EJB(beanName = "ActualPaymentBean")
     private ActualPaymentBean actualPaymentBean;
+    
+    // опция перезаписи номера л/с поставщика услуг номером л/с модуля начислений при выгрузке файла запроса
+    private boolean updatePuAccount;
 
     @Override
-    public boolean execute(IExecutorObject executorObject) throws ExecuteException {
+    public boolean execute(IExecutorObject executorObject, Map commandParameters) throws ExecuteException {
         RequestFile requestFile = (RequestFile) executorObject;
+        
+        // получаем значение опции и параметров комманды
+        updatePuAccount = ((Boolean)commandParameters.get(GlobalOptions.UPDATE_PU_ACCOUNT)).booleanValue();
 
         requestFile.setStatus(requestFileBean.getRequestFileStatus(requestFile)); //обновляем статус из базы данных
 
@@ -167,6 +177,10 @@ public class ActualPaymentSaveTaskBean implements ITaskBean {
 
                 for (int i = 0; i < fields.length; ++i) {
                     rowData[i] = abstractRequest.getDbfFields().get(fields[i].getName());
+                    // перезаписываем номер л/с ПУ номером л/с МН при наличии установленной опции
+                    if (updatePuAccount && fields[i].getName().equals("OWN_NUM")){
+                        rowData[i] = abstractRequest.getAccountNumber();
+                    }
                 }
 
                 writer.addRecord(rowData);
