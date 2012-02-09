@@ -1,7 +1,5 @@
 package org.complitex.osznconnection.file.web;
 
-import org.complitex.osznconnection.file.web.pages.util.GlobalOptions;
-import org.complitex.template.web.template.TemplateSession;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import org.apache.wicket.PageParameters;
@@ -31,6 +29,7 @@ import org.complitex.dictionary.util.DateUtil;
 import org.complitex.dictionary.util.StringUtil;
 import org.complitex.dictionary.web.component.*;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
+import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.dictionary.web.component.paging.IPagingNavigatorListener;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
 import org.complitex.dictionary.web.component.scroll.ScrollListBehavior;
@@ -46,15 +45,16 @@ import org.complitex.osznconnection.file.web.component.LoadButton;
 import org.complitex.osznconnection.file.web.component.ReuseIfLongIdEqualStrategy;
 import org.complitex.osznconnection.file.web.pages.benefit.BenefitList;
 import org.complitex.osznconnection.file.web.pages.payment.PaymentList;
+import org.complitex.osznconnection.file.web.pages.util.GlobalOptions;
 import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
 import org.complitex.resources.WebCommonResourceInitializer;
 import org.complitex.template.web.component.toolbar.ToolbarButton;
 import org.complitex.template.web.pages.ScrollListPage;
 import org.complitex.template.web.security.SecurityRole;
+import org.complitex.template.web.template.TemplateSession;
 
 import javax.ejb.EJB;
 import java.util.*;
-import org.complitex.dictionary.web.component.datatable.DataProvider;
 
 import static org.complitex.osznconnection.file.service.process.ProcessType.*;
 
@@ -214,7 +214,7 @@ public class GroupList extends ScrollListPage {
                 }).setNullValid(true));
 
         //Модель выбранных элементов списка
-        selectModels = new HashMap<Long, IModel<Boolean>>();
+        selectModels = new LinkedHashMap<Long, IModel<Boolean>>();
 
         //Модель данных списка
         final DataProvider<RequestFileGroup> dataProvider = new DataProvider<RequestFileGroup>() {
@@ -574,7 +574,7 @@ public class GroupList extends ScrollListPage {
             }
         });
 
-        //Отменить связывание
+        //Отменить обработку
         buttonContainer.add(new Button("fill_cancel") {
 
             @Override
@@ -590,7 +590,7 @@ public class GroupList extends ScrollListPage {
             }
         });
 
-        //Отменить связывание
+        //Отменить сохранение
         buttonContainer.add(new Button("save_cancel") {
 
             @Override
