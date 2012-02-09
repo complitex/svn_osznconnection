@@ -9,7 +9,7 @@
             function selectAll(cb){
                 var items = document.getElementsByTagName('input');
                 for (i=0; i< items.length; i++){
-                    if (items[i].type == 'checkbox' && !items[i].disabled){
+                    if (items[i].type == 'checkbox' && items[i].id != null && ~items[i].id.indexOf("select") && !items[i].disabled){
                         items[i].checked = cb.checked;
                     }
                 }
@@ -94,17 +94,18 @@
 
             <div style="margin-top:10px;">
                 <table width="100%"><tbody><tr>
-                    <td>
-                        <div align="left">
+                    <td valign="top">
+                        <div align="left" style="margin-top:14px;margin-left:2px;">
                              <table wicket:id="options">
                                 <tr>
-                                    <td><input wicket:id="update_pu_account" type="checkbox"/><wicket:message key="update_pu_account"/></td>
+                                    <td><input class="select" wicket:id="update_pu_account" type="checkbox"/></td>
+                                    <td><span><wicket:message key="update_pu_account"/></span></td>
                                 </tr>
                             </table>
                         </div>
                     </td>
-                    <td>
-                        <div align="right">
+                    <td valign="top">
+                        <div align="right" style="margin-top:10px;">
                              <table wicket:id="buttons">
                                 <tr>
                                     <td><input type="submit" class="btnMiddle" wicket:id="load" wicket:message="value:load"/></td>

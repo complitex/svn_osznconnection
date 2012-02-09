@@ -446,19 +446,14 @@ public class GroupList extends ScrollListPage {
         filterForm.add(optionContainer);
 
         optionContainer.add(new CheckBox("update_pu_account", new Model<Boolean>(
-                getSessionParameter(GlobalOptions.UPDATE_PU_ACCOUNT))) {
+                getSessionParameter(GlobalOptions.UPDATE_PU_ACCOUNT)))
+            .add(new AjaxFormComponentUpdatingBehavior("onchange") {
 
-            @Override
-            public void onSelectionChanged() {
-                putSessionParameter(GlobalOptions.UPDATE_PU_ACCOUNT, !getSessionParameter(GlobalOptions.UPDATE_PU_ACCOUNT));
-            }
-
-            @Override
-            protected boolean wantOnSelectionChangedNotifications() {
-                return true;
-            }
-            
-        });
+                @Override
+                protected void onUpdate(AjaxRequestTarget target) {
+                    putSessionParameter(GlobalOptions.UPDATE_PU_ACCOUNT, !getSessionParameter(GlobalOptions.UPDATE_PU_ACCOUNT));
+                }
+        }));
         
         //Контейнер кнопок для ajax
         buttonContainer = new WebMarkupContainer("buttons");
