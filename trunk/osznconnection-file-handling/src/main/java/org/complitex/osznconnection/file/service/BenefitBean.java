@@ -292,8 +292,7 @@ public class BenefitBean extends AbstractRequestBean {
         long osznId = benefit.getOrganizationId();
         CalculationCenterInfo calculationCenterInfo = calculationCenterBean.getInfo();
         Date dat1 = findDat1(benefit.getAccountNumber(), benefit.getRequestFileId());
-        Collection<BenefitData> benefitData = adapter.getBenefitData(calculationCenterInfo.getServiceProviderTypeIds(), 
-                benefit, dat1);
+        Collection<BenefitData> benefitData = adapter.getBenefitData(calculationCenterInfo, benefit, dat1);
 
         Collection<BenefitData> notConnectedBenefitData = null;
         if (benefitData != null && !benefitData.isEmpty()) {

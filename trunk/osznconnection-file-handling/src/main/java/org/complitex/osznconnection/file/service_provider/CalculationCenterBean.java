@@ -29,10 +29,10 @@ public class CalculationCenterBean {
             throw new RuntimeException("User hasn't associated organization.");
         }
 
-        CalculationCenterInfo calculationCenterInfo = new CalculationCenterInfo();
         final long calculationCenterOrganizationId = organizationStrategy.getCalculationCenterId(mainUserOrganization);
-        calculationCenterInfo.setOrganizationId(calculationCenterOrganizationId);
-        calculationCenterInfo.setServiceProviderTypeIds(organizationStrategy.getServiceProviderTypeIds(calculationCenterOrganizationId));
+        CalculationCenterInfo calculationCenterInfo = new CalculationCenterInfo(calculationCenterOrganizationId,
+                organizationStrategy.getDataSource(calculationCenterOrganizationId),
+                organizationStrategy.getServiceProviderTypeIds(calculationCenterOrganizationId));
         return calculationCenterInfo;
     }
 }

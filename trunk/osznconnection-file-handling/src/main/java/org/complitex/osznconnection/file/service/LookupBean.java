@@ -68,7 +68,7 @@ public class LookupBean extends AbstractBean {
     @TransactionAttribute(TransactionAttributeType.NEVER)
     private List<AccountDetail> acquireAccountDetailsByAddress(AbstractRequest request, String district, String streetType, String street,
             String buildingNumber, String buildingCorp, String apartment, Date date) throws DBException {
-        return adapter.acquireAccountDetailsByAddress(calculationCenterBean.getInfo().getServiceProviderTypeIds(), request,
+        return adapter.acquireAccountDetailsByAddress(calculationCenterBean.getInfo(), request,
                 district, streetType, street, buildingNumber, buildingCorp, apartment, date);
     }
 
@@ -117,7 +117,6 @@ public class LookupBean extends AbstractBean {
     @TransactionAttribute(TransactionAttributeType.NEVER)
     public List<AccountDetail> acquireAccountDetailsByAccount(AbstractRequest request, String district, String account)
             throws DBException, UnknownAccountNumberTypeException {
-        return adapter.acquireAccountDetailsByAccount(calculationCenterBean.getInfo().getServiceProviderTypeIds(),
-                request, district, account);
+        return adapter.acquireAccountDetailsByAccount(calculationCenterBean.getInfo(), request, district, account);
     }
 }

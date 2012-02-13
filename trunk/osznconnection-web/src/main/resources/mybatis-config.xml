@@ -27,73 +27,6 @@
                 <property name="data_source" value="jdbc/osznconnectionResource"/>
             </dataSource>
         </environment>
-        
-        <!-- Service provider environments -->
-        
-        <!-- Квартплата -->
-        <environment id="service_provider_type_1">
-            <transactionManager type="MANAGED"/>
-            <dataSource type="JNDI">
-                <property name="data_source" value="jdbc/osznconnectionServiceProviderType1Resource"/>
-            </dataSource>
-        </environment>
-        
-        <!-- Отопление -->
-        <environment id="service_provider_type_2">
-            <transactionManager type="MANAGED"/>
-            <dataSource type="JNDI">
-                <property name="data_source" value="jdbc/osznconnectionServiceProviderType1Resource"/>
-            </dataSource>
-        </environment>
-        
-        <!-- Горячее водоснабжение -->
-        <environment id="service_provider_type_3">
-            <transactionManager type="MANAGED"/>
-            <dataSource type="JNDI">
-                <property name="data_source" value="jdbc/osznconnectionServiceProviderType1Resource"/>
-            </dataSource>
-        </environment>
-        
-        <!-- Холодное водоснабжение -->
-        <environment id="service_provider_type_4">
-            <transactionManager type="MANAGED"/>
-            <dataSource type="JNDI">
-                <property name="data_source" value="jdbc/osznconnectionServiceProviderType1Resource"/>
-            </dataSource>
-        </environment>
-        
-        <!-- Газоснабжение -->
-        <environment id="service_provider_type_5">
-            <transactionManager type="MANAGED"/>
-            <dataSource type="JNDI">
-                <property name="data_source" value="jdbc/osznconnectionServiceProviderType1Resource"/>
-            </dataSource>
-        </environment>
-        
-        <!-- Электроэнергия -->
-        <environment id="service_provider_type_6">
-            <transactionManager type="MANAGED"/>
-            <dataSource type="JNDI">
-                <property name="data_source" value="jdbc/osznconnectionServiceProviderType1Resource"/>
-            </dataSource>
-        </environment>
-        
-        <!-- Вывоз мусора -->
-        <environment id="service_provider_type_7">
-            <transactionManager type="MANAGED"/>
-            <dataSource type="JNDI">
-                <property name="data_source" value="jdbc/osznconnectionServiceProviderType7Resource"/>
-            </dataSource>
-        </environment>
-        
-        <!-- Водоотведение -->
-        <environment id="service_provider_type_8">
-            <transactionManager type="MANAGED"/>
-            <dataSource type="JNDI">
-                <property name="data_source" value="jdbc/osznconnectionServiceProviderType1Resource"/>
-            </dataSource>
-        </environment>
-        
     </environments>
 
     <mappers>
@@ -137,7 +70,5 @@
         <mapper resource="org/complitex/osznconnection/file/service/PersonAccountLocalBean.xml"/>
         <mapper resource="org/complitex/osznconnection/file/service/status/details/StatusDetailBean.xml"/>
         <mapper resource="org/complitex/osznconnection/file/service/warning/RequestWarningBean.xml"/>
-
-        <mapper resource="org/complitex/osznconnection/file/service_provider/ServiceProviderAdapter.xml"/>
     </mappers>
 </configuration>

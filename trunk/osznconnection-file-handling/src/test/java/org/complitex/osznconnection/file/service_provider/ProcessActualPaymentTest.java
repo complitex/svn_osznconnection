@@ -4,11 +4,11 @@
  */
 package org.complitex.osznconnection.file.service_provider;
 
-import com.google.common.collect.Sets;
+import com.google.common.collect.ImmutableSet;
 import java.util.Date;
-import java.util.Set;
 import org.complitex.osznconnection.file.entity.ActualPayment;
 import org.complitex.osznconnection.file.entity.ActualPaymentDBF;
+import org.complitex.osznconnection.file.entity.CalculationCenterInfo;
 import org.complitex.osznconnection.file.service_provider.exception.DBException;
 
 /**
@@ -18,15 +18,15 @@ import org.complitex.osznconnection.file.service_provider.exception.DBException;
 public class ProcessActualPaymentTest extends AbstractTest {
 
     public static void main(String[] args) throws Exception {
-        new ProcessActualPaymentTest().executeTest(Sets.newHashSet(1L));
+        new ProcessActualPaymentTest().executeTest();
     }
 
     @Override
-    protected void test(Set<Long> serviceProviderTypeIds, ServiceProviderAdapter adapter) throws Exception {
+    protected void test(ServiceProviderAdapter adapter) throws Exception {
         ActualPayment p = new ActualPayment();
         p.setAccountNumber("1000000000");
         try {
-            adapter.processActualPayment(serviceProviderTypeIds, p, new Date());
+            adapter.processActualPayment(new CalculationCenterInfo(2, "test", ImmutableSet.of(1L)), p, new Date());
         } catch (DBException e) {
             System.out.println("DB error.");
         }

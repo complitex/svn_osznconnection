@@ -6,20 +6,15 @@ package org.complitex.osznconnection.file.service_provider;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
-import javax.annotation.PostConstruct;
+import java.util.concurrent.ConcurrentMap;
 import javax.ejb.ConcurrencyManagement;
 import javax.ejb.ConcurrencyManagementType;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSessionManager;
-import org.complitex.dictionary.mybatis.SqlSessionFactoryBean;
-import org.complitex.osznconnection.service_provider_type.strategy.ServiceProviderTypeStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,42 +27,50 @@ import org.slf4j.LoggerFactory;
 @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 public class ServiceProviderSqlSessionFactoryBean {
 
+    public static final String CONFIGURATION_FILE_NAME = "mybatis-remote-config.xml";
     private static final Logger log = LoggerFactory.getLogger(ServiceProviderSqlSessionFactoryBean.class);
-    private static final String SERVICE_PROVIDER_TYPE_ENVIRONMENT_PREFIX = "service_provider_type_";
-    private Map<Long, SqlSessionManager> sqlSessionManagerMap;
+    private final ConcurrentMap<String, SqlSessionManager> sqlSessionManagerMap;
 
-    @PostConstruct
-    protected void init() {
-        sqlSessionManagerMap = new ConcurrentHashMap<Long, SqlSessionManager>();
+    public ServiceProviderSqlSessionFactoryBean() {
+        sqlSessionManagerMap = new ConcurrentHashMap<String, SqlSessionManager>();
+    }
 
-        final String configurationFile = getConfigurationFile();
-
-        for (long serviceProviderTypeId : ServiceProviderTypeStrategy.RESERVED_SERVICE_PROVIDER_TYPES) {
-            Reader reader = null;
-            try {
-                reader = Resources.getResourceAsReader(configurationFile);
-                sqlSessionManagerMap.put(serviceProviderTypeId,
-                        SqlSessionManager.newInstance(reader, SERVICE_PROVIDER_TYPE_ENVIRONMENT_PREFIX + serviceProviderTypeId));
-            } catch (Exception e) {
-                log.error("Environment configuration for service provider type " + serviceProviderTypeId + " not found.", e);
-            } finally {
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (IOException e) {
-                        log.error("Could not close reader.", e);
-                    }
+    protected SqlSessionManager newSqlSessionManager(String jdbcDataSource) {
+        final String configurationFile = getConfigurationDirectory() + "/" + getConfigurationFileName();
+        final Properties props = new Properties();
+        props.setProperty("remoteDataSource", jdbcDataSource);
+        Reader reader = null;
+        try {
+            reader = Resources.getResourceAsReader(configurationFile);
+            return SqlSessionManager.newInstance(reader, props);
+        } catch (Exception e) {
+            log.error("Configuration for jdbc data source " + jdbcDataSource + " couldn't be created.");
+            throw new RuntimeException(e);
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    log.error("Could not close reader.", e);
                 }
             }
         }
     }
 
-    public SqlSessionManager getSqlSessionManager(Set<Long> serviceProviderTypeId) {
-        SortedSet<Long> sorted = new TreeSet<Long>(serviceProviderTypeId);
-        return sqlSessionManagerMap.get(sorted.first());
+    public SqlSessionManager getSqlSessionManager(String jdbcDataSource) {
+        SqlSessionManager sqlSessionManager = sqlSessionManagerMap.get(jdbcDataSource);
+        if (sqlSessionManager == null) {
+            sqlSessionManager = newSqlSessionManager(jdbcDataSource);
+            sqlSessionManagerMap.putIfAbsent(jdbcDataSource, sqlSessionManager);
+        }
+        return sqlSessionManager;
     }
 
-    protected String getConfigurationFile() {
-        return SqlSessionFactoryBean.CONFIGURATION_FILE;
+    protected String getConfigurationFileName() {
+        return CONFIGURATION_FILE_NAME;
+    }
+
+    protected String getConfigurationDirectory() {
+        return getClass().getPackage().getName().replace('.', '/');
     }
 }

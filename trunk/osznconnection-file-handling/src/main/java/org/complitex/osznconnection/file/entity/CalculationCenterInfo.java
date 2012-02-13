@@ -14,21 +14,29 @@ import java.util.Set;
 public class CalculationCenterInfo implements Serializable {
 
     private long organizationId;
+    private String dataSource;
     private Set<Long> serviceProviderTypeIds;
+
+    public CalculationCenterInfo(long organizationId, String dataSource, Set<Long> serviceProviderTypeIds) {
+        this.organizationId = organizationId;
+        this.dataSource = dataSource;
+        this.serviceProviderTypeIds = serviceProviderTypeIds;
+    }
+
+    public String getDataSource() {
+        return dataSource;
+    }
 
     public long getOrganizationId() {
         return organizationId;
-    }
-
-    public void setOrganizationId(long organizationId) {
-        this.organizationId = organizationId;
     }
 
     public Set<Long> getServiceProviderTypeIds() {
         return serviceProviderTypeIds;
     }
 
-    public void setServiceProviderTypeIds(Set<Long> serviceProviderTypeIds) {
-        this.serviceProviderTypeIds = serviceProviderTypeIds;
+    @Override
+    public String toString() {
+        return "{id: " + getOrganizationId() + ", data source: " + getDataSource() + " }";
     }
 }

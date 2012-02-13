@@ -34,7 +34,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.complitex.osznconnection.file.service_provider.CalculationCenterBean;
-import org.complitex.osznconnection.file.service_provider.ServiceProviderAdapter;
 import org.complitex.osznconnection.file.service_provider.exception.DBException;
 import org.complitex.osznconnection.file.web.pages.util.GlobalOptions;
 
@@ -61,9 +60,6 @@ public class ActualPaymentBindTaskBean implements ITaskBean {
     private ActualPaymentBean actualPaymentBean;
     @EJB
     private RequestFileBean requestFileBean;
-    @EJB
-    private ServiceProviderAdapter adapter;
-    
     private Boolean updatePuAccount;
 
     private boolean resolveAddress(ActualPayment actualPayment, CalculationCenterInfo calculationCenterInfo) {
@@ -125,10 +121,8 @@ public class ActualPaymentBindTaskBean implements ITaskBean {
         }
     }
 
-    private void bindActualPaymentFile(RequestFile actualPaymentFile) throws BindException, DBException, CanceledByUserException {
-        //получаем информацию о текущем центре начисления
-        CalculationCenterInfo calculationCenterInfo = calculationCenterBean.getInfo();
-
+    private void bindActualPaymentFile(RequestFile actualPaymentFile, CalculationCenterInfo calculationCenterInfo)
+            throws BindException, DBException, CanceledByUserException {
         //извлечь из базы все id подлежащие связыванию для файла actualPayment и доставать записи порциями по BATCH_SIZE штук.
         long startTime = 0;
         if (log.isDebugEnabled()) {
@@ -177,7 +171,7 @@ public class ActualPaymentBindTaskBean implements ITaskBean {
     @Override
     public boolean execute(IExecutorObject executorObject, Map commandParameters) throws ExecuteException {
         // ищем в параметрах комманды опцию "Переписывать номер л/с ПУ номером л/с МН"
-        updatePuAccount = commandParameters.containsKey(GlobalOptions.UPDATE_PU_ACCOUNT)?(Boolean)commandParameters.get(GlobalOptions.UPDATE_PU_ACCOUNT):false;
+        updatePuAccount = commandParameters.containsKey(GlobalOptions.UPDATE_PU_ACCOUNT) ? (Boolean) commandParameters.get(GlobalOptions.UPDATE_PU_ACCOUNT) : false;
 
         RequestFile requestFile = (RequestFile) executorObject;
 
@@ -190,11 +184,14 @@ public class ActualPaymentBindTaskBean implements ITaskBean {
         requestFile.setStatus(RequestFileStatus.BINDING);
         requestFileBean.save(requestFile);
 
-        actualPaymentBean.clearBeforeBinding(requestFile.getId());
+        //получаем информацию о текущем центре начисления
+        CalculationCenterInfo calculationCenterInfo = calculationCenterBean.getInfo();
+
+        actualPaymentBean.clearBeforeBinding(requestFile.getId(), calculationCenterInfo.getServiceProviderTypeIds());
 
         //связывание файла actualPayment
         try {
-            bindActualPaymentFile(requestFile);
+            bindActualPaymentFile(requestFile, calculationCenterInfo);
         } catch (DBException e) {
             throw new RuntimeException(e);
         } catch (CanceledByUserException e) {

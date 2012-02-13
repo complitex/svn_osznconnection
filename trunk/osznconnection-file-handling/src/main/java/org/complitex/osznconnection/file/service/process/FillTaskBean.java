@@ -68,13 +68,16 @@ public class FillTaskBean implements ITaskBean {
         group.setStatus(RequestFileStatus.FILLING);
         requestFileGroupBean.save(group);
 
+        //получаем информацию о текущем центре начисления
+        CalculationCenterInfo calculationCenterInfo = calculationCenterBean.getInfo();
+
         //очищаем колонки которые заполняются во время обработки для записей в таблицах payment и benefit
-        paymentBean.clearBeforeProcessing(group.getPaymentFile().getId());
+        paymentBean.clearBeforeProcessing(group.getPaymentFile().getId(), calculationCenterInfo.getServiceProviderTypeIds());
         benefitBean.clearBeforeProcessing(group.getBenefitFile().getId());
 
         //обработка файла payment
         try {
-            processPayment(group.getPaymentFile());
+            processPayment(group.getPaymentFile(), calculationCenterInfo);
         } catch (DBException e) {
             throw new RuntimeException(e);
         }
@@ -134,7 +137,7 @@ public class FillTaskBean implements ITaskBean {
         List<Benefit> benefits = benefitBean.findByOZN(payment);
         adapter.processPaymentAndBenefit(calculationCenterInfo, payment, benefits);
 
-        paymentBean.update(payment);
+        paymentBean.update(payment, calculationCenterInfo.getServiceProviderTypeIds());
         for (Benefit benefit : benefits) {
             benefitBean.populateBenefit(benefit);
         }
@@ -145,10 +148,7 @@ public class FillTaskBean implements ITaskBean {
      * @param paymentFile Файл запроса начислений
      * @throws FillException Ошибка обработки
      */
-    private void processPayment(RequestFile paymentFile) throws FillException, DBException {
-        //получаем информацию о текущем центре начисления
-        CalculationCenterInfo calculationCenterInfo = calculationCenterBean.getInfo();
-
+    private void processPayment(RequestFile paymentFile, CalculationCenterInfo calculationCenterInfo) throws FillException, DBException {
         //извлечь из базы все id подлежащие обработке для файла payment и доставать записи порциями по BATCH_SIZE штук.
         List<Long> notResolvedPaymentIds = paymentBean.findIdsForProcessing(paymentFile.getId());
         List<Long> batch = Lists.newArrayList();

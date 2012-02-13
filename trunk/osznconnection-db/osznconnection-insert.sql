@@ -24,6 +24,10 @@ INSERT INTO `entity_attribute_value_type`(`id`, `attribute_type_id`, `attribute_
 INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (913, 1, UPPER('Типы услуг')), (913, 2, UPPER('Типы услуг'));
 INSERT INTO `entity_attribute_type`(`id`, `entity_id`, `mandatory`, `attribute_type_name_id`, `system`) VALUES (912, 900, 0, 913, 1);
 INSERT INTO `entity_attribute_value_type`(`id`, `attribute_type_id`, `attribute_value_type`) VALUES (912, 912, 'service_provider_type');
+-- Reference to jdbc data source. It is calculation center only attribute. --
+INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (914, 1, UPPER('Ресурс доступа к МН')), (914, 2, UPPER('Ресурс доступа к МН'));
+INSERT INTO `entity_attribute_type`(`id`, `entity_id`, `mandatory`, `attribute_type_name_id`, `system`) VALUES (913, 900, 1, 914, 1);
+INSERT INTO `entity_attribute_value_type`(`id`, `attribute_type_id`, `attribute_value_type`) VALUES (913, 913, UPPER('string'));
 
 -- --------------------------------
 -- Ownership
@@ -339,4 +343,4 @@ INSERT INTO `organization_attribute`(`attribute_id`, `object_id`, `attribute_typ
 (1,0,900,1,900), (1,0,901,2,901);
 
 -- Current database version
-INSERT INTO `update` (`version`) VALUE ('20120203_720_0.1.20');
+INSERT INTO `update` (`version`) VALUE ('20120213_725_0.1.21');

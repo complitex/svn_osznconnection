@@ -41,18 +41,13 @@ public class ServiceProviderTypeStrategy extends TemplateStrategy {
      * Predefined service provider types ids:
      */
     public static final long APARTMENT_FEE = 1;
-    // uncomment when these service provider types will enabled.
-    /*
     public static final long HEATING = 2;
     public static final long HOT_WATER_SUPPLY = 3;
     public static final long COLD_WATER_SUPPLY = 4;
     public static final long GAS_SUPPLY = 5;
     public static final long POWER_SUPPLY = 6;
-     */
     public static final long GARBAGE_DISPOSAL = 7;
-    /*
     public static final long DRAINAGE = 8;
-     */
     public static final Set<Long> RESERVED_SERVICE_PROVIDER_TYPES =
             Sets.newHashSet(APARTMENT_FEE, GARBAGE_DISPOSAL);
     // uncomment when these service provider types will enabled.

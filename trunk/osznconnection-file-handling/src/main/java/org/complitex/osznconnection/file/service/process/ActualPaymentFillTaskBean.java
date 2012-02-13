@@ -65,11 +65,14 @@ public class ActualPaymentFillTaskBean implements ITaskBean {
         requestFile.setStatus(RequestFileStatus.FILLING);
         requestFileBean.save(requestFile);
 
-        actualPaymentBean.clearBeforeProcessing(requestFile.getId());
+        //получаем информацию о текущем центре начисления
+        CalculationCenterInfo calculationCenterInfo = calculationCenterBean.getInfo();
+
+        actualPaymentBean.clearBeforeProcessing(requestFile.getId(), calculationCenterInfo.getServiceProviderTypeIds());
 
         //обработка файла actualPayment
         try {
-            processActualPayment(requestFile);
+            processActualPayment(requestFile, calculationCenterInfo);
         } catch (DBException e) {
             throw new RuntimeException(e);
         } catch (CanceledByUserException e) {
@@ -118,19 +121,17 @@ public class ActualPaymentFillTaskBean implements ITaskBean {
         if (log.isDebugEnabled()) {
             startTime = System.currentTimeMillis();
         }
-        adapter.processActualPayment(calculationCenterInfo.getServiceProviderTypeIds(), actualPayment, date);
+        adapter.processActualPayment(calculationCenterInfo, actualPayment, date);
         log.debug("Processing actualPayment (id = {}) took {} sec.", actualPayment.getId(), (System.currentTimeMillis() - startTime) / 1000);
         if (log.isDebugEnabled()) {
             startTime = System.currentTimeMillis();
         }
-        actualPaymentBean.update(actualPayment);
+        actualPaymentBean.update(actualPayment, calculationCenterInfo.getServiceProviderTypeIds());
         log.debug("Updating of actualPayment (id = {}) took {} sec.", actualPayment.getId(), (System.currentTimeMillis() - startTime) / 1000);
     }
 
-    private void processActualPayment(RequestFile actualPaymentFile) throws FillException, DBException, CanceledByUserException {
-        //получаем информацию о текущем центре начисления
-        CalculationCenterInfo calculationCenterInfo = calculationCenterBean.getInfo();
-
+    private void processActualPayment(RequestFile actualPaymentFile, CalculationCenterInfo calculationCenterInfo)
+            throws FillException, DBException, CanceledByUserException {
         //извлечь из базы все id подлежащие обработке для файла actualPayment и доставать записи порциями по BATCH_SIZE штук.
         long startTime = 0;
         if (log.isDebugEnabled()) {
