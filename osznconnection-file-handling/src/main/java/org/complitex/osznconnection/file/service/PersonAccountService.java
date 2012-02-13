@@ -77,7 +77,7 @@ public class PersonAccountService extends AbstractBean {
      */
     @Transactional
     public void resolveRemoteAccount(Payment payment, CalculationCenterInfo calculationCenterInfo, Boolean updatePUAccount) throws DBException {
-        adapter.acquirePersonAccount(calculationCenterInfo.getServiceProviderTypeIds(), RequestFile.TYPE.PAYMENT, payment,
+        adapter.acquirePersonAccount(calculationCenterInfo, RequestFile.TYPE.PAYMENT, payment,
                 (String) payment.getField(PaymentDBF.SUR_NAM),
                 (String) payment.getField(PaymentDBF.OWN_NUM_SR), payment.getOutgoingDistrict(), payment.getOutgoingStreetType(),
                 payment.getOutgoingStreet(), payment.getOutgoingBuildingNumber(), payment.getOutgoingBuildingCorp(),
@@ -91,7 +91,7 @@ public class PersonAccountService extends AbstractBean {
     @Transactional
     public void resolveRemoteAccount(ActualPayment actualPayment, Date date, CalculationCenterInfo calculationCenterInfo, Boolean updatePUAccount)
             throws DBException {
-        adapter.acquirePersonAccount(calculationCenterInfo.getServiceProviderTypeIds(), RequestFile.TYPE.ACTUAL_PAYMENT, actualPayment,
+        adapter.acquirePersonAccount(calculationCenterInfo, RequestFile.TYPE.ACTUAL_PAYMENT, actualPayment,
                 (String) actualPayment.getField(ActualPaymentDBF.SUR_NAM),
                 (String) actualPayment.getField(ActualPaymentDBF.OWN_NUM), actualPayment.getOutgoingDistrict(),
                 actualPayment.getOutgoingStreetType(), actualPayment.getOutgoingStreet(),

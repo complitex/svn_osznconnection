@@ -1,18 +1,20 @@
 package org.complitex.osznconnection.file.service;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import java.util.Collections;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.entity.example.PaymentExample;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.complitex.osznconnection.service_provider_type.strategy.ServiceProviderTypeStrategy;
 
 /**
  * Обработка записей файла запроса начислений
@@ -20,11 +22,22 @@ import java.util.Set;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 24.08.2010 18:57:00
  */
-@Stateless(name = "PaymentBean")
+@Stateless
 public class PaymentBean extends AbstractRequestBean {
 
-    private static final Logger log = LoggerFactory.getLogger(PaymentBean.class);
     public static final String MAPPING_NAMESPACE = PaymentBean.class.getName();
+    // service provider type id <-> set of actual payment fields that should be updated.
+    private static final Map<Long, Set<PaymentDBF>> UPDATE_FIELD_MAP =
+            ImmutableMap.<Long, Set<PaymentDBF>>builder().
+            put(ServiceProviderTypeStrategy.APARTMENT_FEE, ImmutableSet.of(PaymentDBF.CODE2_1)).
+            put(ServiceProviderTypeStrategy.HEATING, ImmutableSet.of(PaymentDBF.NORM_F_2, PaymentDBF.CODE2_2)).
+            put(ServiceProviderTypeStrategy.HOT_WATER_SUPPLY, ImmutableSet.of(PaymentDBF.NORM_F_3, PaymentDBF.CODE2_3)).
+            put(ServiceProviderTypeStrategy.COLD_WATER_SUPPLY, ImmutableSet.of(PaymentDBF.NORM_F_4, PaymentDBF.CODE2_4)).
+            put(ServiceProviderTypeStrategy.GAS_SUPPLY, ImmutableSet.of(PaymentDBF.NORM_F_5, PaymentDBF.CODE2_5)).
+            put(ServiceProviderTypeStrategy.POWER_SUPPLY, ImmutableSet.of(PaymentDBF.NORM_F_6, PaymentDBF.CODE2_6)).
+            put(ServiceProviderTypeStrategy.GARBAGE_DISPOSAL, ImmutableSet.of(PaymentDBF.NORM_F_7, PaymentDBF.CODE2_7)).
+            put(ServiceProviderTypeStrategy.DRAINAGE, ImmutableSet.of(PaymentDBF.NORM_F_8, PaymentDBF.CODE2_8)).
+            build();
 
     public enum OrderBy {
 
@@ -82,6 +95,32 @@ public class PaymentBean extends AbstractRequestBean {
     @Transactional
     public void update(Payment payment) {
         sqlSession().update(MAPPING_NAMESPACE + ".update", payment);
+    }
+
+    @Transactional
+    public void update(Payment payment, Set<Long> serviceProviderTypeIds) {
+        Map<String, Object> updateFieldMap = null;
+        if (serviceProviderTypeIds != null && !serviceProviderTypeIds.isEmpty()) {
+            updateFieldMap = Maps.newHashMap();
+            for (PaymentDBF field : getUpdateableFields(serviceProviderTypeIds)) {
+                updateFieldMap.put(field.name(), payment.getField(field));
+            }
+        }
+        payment.setUpdateFieldMap(updateFieldMap);
+        update(payment);
+    }
+
+    private Set<PaymentDBF> getUpdateableFields(Set<Long> serviceProviderTypeIds) {
+        final Set<PaymentDBF> updateableFields = Sets.newHashSet();
+
+        for (long serviceProviderTypeId : serviceProviderTypeIds) {
+            Set<PaymentDBF> fields = UPDATE_FIELD_MAP.get(serviceProviderTypeId);
+            if (fields != null) {
+                updateableFields.addAll(fields);
+            }
+        }
+
+        return Collections.unmodifiableSet(updateableFields);
     }
 
     /**
@@ -209,11 +248,17 @@ public class PaymentBean extends AbstractRequestBean {
      * @param fileId
      */
     @Transactional
-    public void clearBeforeBinding(long fileId) {
-        Map<String, Object> params = Maps.newHashMap();
-        params.put("status", RequestStatus.LOADED);
-        params.put("fileId", fileId);
-        sqlSession().update(MAPPING_NAMESPACE + ".clearBeforeBinding", params);
+    public void clearBeforeBinding(long fileId, Set<Long> serviceProviderTypeIds) {
+        Map<String, Object> updateFieldMap = null;
+        if (serviceProviderTypeIds != null && !serviceProviderTypeIds.isEmpty()) {
+            updateFieldMap = Maps.newHashMap();
+            for (PaymentDBF field : getUpdateableFields(serviceProviderTypeIds)) {
+                updateFieldMap.put(field.name(), null);
+            }
+        }
+
+        sqlSession().update(MAPPING_NAMESPACE + ".clearBeforeBinding",
+                ImmutableMap.of("status", RequestStatus.LOADED, "fileId", fileId, "updateFieldMap", updateFieldMap));
         clearWarnings(fileId, RequestFile.TYPE.PAYMENT);
     }
 
@@ -222,11 +267,17 @@ public class PaymentBean extends AbstractRequestBean {
      * @param fileId
      */
     @Transactional
-    public void clearBeforeProcessing(long fileId) {
-        Map<String, Object> params = Maps.newHashMap();
-        params.put("statuses", RequestStatus.unboundStatuses());
-        params.put("fileId", fileId);
-        sqlSession().update(MAPPING_NAMESPACE + ".clearBeforeProcessing", params);
+    public void clearBeforeProcessing(long fileId, Set<Long> serviceProviderTypeIds) {
+        Map<String, Object> updateFieldMap = null;
+        if (serviceProviderTypeIds != null && !serviceProviderTypeIds.isEmpty()) {
+            updateFieldMap = Maps.newHashMap();
+            for (PaymentDBF field : getUpdateableFields(serviceProviderTypeIds)) {
+                updateFieldMap.put(field.name(), null);
+            }
+        }
+
+        sqlSession().update(MAPPING_NAMESPACE + ".clearBeforeProcessing",
+                ImmutableMap.of("statuses", RequestStatus.unboundStatuses(), "fileId", fileId, "updateFieldMap", updateFieldMap));
         clearWarnings(fileId, RequestFile.TYPE.PAYMENT);
     }
 }

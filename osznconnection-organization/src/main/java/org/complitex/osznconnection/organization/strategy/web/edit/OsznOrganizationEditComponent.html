@@ -49,6 +49,18 @@
                     </td>
                 </tr>
 
+                <!-- Reference to jdbc data source. Only for calculation centers. -->
+                <tr wicket:id="dataSourceContainer">
+                    <th>
+                        <span wicket:id="dataSourceLabel"></span><b class="blue">*</b>:
+                    </th>
+                    <td>
+                        <select wicket:id="dataSource">
+                            <option></option>
+                        </select>
+                    </td>
+                </tr>
+
                 <!-- Reference to the set of service provider types. Only for calculation centers. -->
                 <tr wicket:id="serviceProviderTypeContainer">
                     <th style="vertical-align: top">

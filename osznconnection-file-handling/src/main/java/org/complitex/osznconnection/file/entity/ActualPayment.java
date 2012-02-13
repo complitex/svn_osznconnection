@@ -6,6 +6,7 @@ package org.complitex.osznconnection.file.entity;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Map;
 import org.complitex.osznconnection.file.service.exception.FieldNotFoundException;
 import org.complitex.osznconnection.file.service.exception.FieldWrongSizeException;
 
@@ -61,6 +62,7 @@ public class ActualPayment extends AbstractRequest {
     private String outgoingBuildingNumber;
     private String outgoingBuildingCorp;
     private String outgoingApartment;
+    private Map<String, Object> updateFieldMap;
 
     public Long getInternalBuildingId() {
         return internalBuildingId;
@@ -148,5 +150,13 @@ public class ActualPayment extends AbstractRequest {
 
     public void setOutgoingDistrict(String outgoingDistrict) {
         this.outgoingDistrict = outgoingDistrict;
+    }
+
+    public Map<String, Object> getUpdateFieldMap() {
+        return updateFieldMap;
+    }
+
+    public void setUpdateFieldMap(Map<String, Object> updateFieldMap) {
+        this.updateFieldMap = updateFieldMap;
     }
 }

@@ -7,6 +7,7 @@ import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import org.complitex.osznconnection.organization.strategy.entity.RemoteDataSource;
 
 /**
  *
@@ -25,6 +26,10 @@ public interface IOsznOrganizationStrategy extends IOrganizationStrategy {
      * Reference to the set of service provider types. It is calculation center only attribute.
      */
     long SERVICE_PROVIDER_TYPE = 912;
+    /**
+     * Reference to jdbc data source. It is calculation center only attribute.
+     */
+    long DATA_SOURCE = 913;
     /**
      * Itself organization instance id.
      */
@@ -57,4 +62,19 @@ public interface IOsznOrganizationStrategy extends IOrganizationStrategy {
      * @return Associated calculation center organization's id.
      */
     long getCalculationCenterId(DomainObject userOrganization);
+
+    /**
+     * Finds remote jdbc data sources.
+     * @param currentDataSource Current data source.
+     * @return 
+     */
+    List<RemoteDataSource> findRemoteDataSources(String currentDataSource);
+
+    /**
+     * Figures out data source of calculation center.
+     * 
+     * @param calculationCenterId Calculation center's id
+     * @return Calculation center's data source
+     */
+    String getDataSource(long calculationCenterId);
 }

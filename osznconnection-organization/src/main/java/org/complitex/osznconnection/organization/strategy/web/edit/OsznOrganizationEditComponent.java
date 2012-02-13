@@ -14,15 +14,21 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.ResourceModel;
+import org.complitex.dictionary.converter.StringConverter;
 import org.complitex.dictionary.entity.Attribute;
 import org.complitex.dictionary.entity.DomainObject;
+import org.complitex.dictionary.service.StringCultureBean;
+import org.complitex.dictionary.util.AttributeUtil;
 import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
 import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
 import org.complitex.dictionary.web.component.DomainObjectInputPanel;
+import org.complitex.dictionary.web.component.IDisableAwareChoiceRenderer;
 import org.complitex.dictionary.web.component.list.AjaxRemovableListView;
 import org.complitex.organization.strategy.web.edit.OrganizationEditComponent;
 import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
 import org.complitex.osznconnection.organization.strategy.OsznOrganizationStrategy;
+import org.complitex.osznconnection.organization.strategy.entity.RemoteDataSource;
 import org.complitex.osznconnection.organization_type.strategy.OsznOrganizationTypeStrategy;
 import org.complitex.osznconnection.service_provider_type.strategy.ServiceProviderTypeStrategy;
 
@@ -36,10 +42,14 @@ public class OsznOrganizationEditComponent extends OrganizationEditComponent {
     private IOsznOrganizationStrategy osznOrganizationStrategy;
     @EJB
     private ServiceProviderTypeStrategy serviceProviderTypeStrategy;
+    @EJB
+    private StringCultureBean stringBean;
     private WebMarkupContainer calculationCenterContainer;
     private IModel<DomainObject> calculationCenterModel;
     private WebMarkupContainer serviceProviderTypeContainer;
     private List<DomainObject> serviceProviderTypesModel;
+    private WebMarkupContainer dataSourceContainer;
+    private IModel<RemoteDataSource> dataSourceModel;
 
     public OsznOrganizationEditComponent(String id, boolean disabled) {
         super(id, disabled);
@@ -178,6 +188,49 @@ public class OsznOrganizationEditComponent extends OrganizationEditComponent {
         addServiceProviderType.setVisible(enabled);
         serviceProviderTypeContainer.add(addServiceProviderType);
         serviceProviderTypeContainer.setVisible(isCalculationCenter());
+
+        //reference to jdbc data source. Only for calculation centres.
+        dataSourceContainer = new WebMarkupContainer("dataSourceContainer");
+        dataSourceContainer.setOutputMarkupPlaceholderTag(true);
+        add(dataSourceContainer);
+        final IModel<String> dataSourceLabelModel = new ResourceModel("dataSourceLabel");
+        dataSourceContainer.add(new Label("dataSourceLabel", dataSourceLabelModel));
+        dataSourceModel = new Model<RemoteDataSource>();
+
+        final String currentDataSource = AttributeUtil.getStringValue(organization, IOsznOrganizationStrategy.DATA_SOURCE);
+        final List<RemoteDataSource> allDataSources = osznOrganizationStrategy.findRemoteDataSources(currentDataSource);
+
+        for (RemoteDataSource ds : allDataSources) {
+            if (ds.isCurrent()) {
+                dataSourceModel.setObject(ds);
+                break;
+            }
+        }
+
+        DisableAwareDropDownChoice<RemoteDataSource> dataSource =
+                new DisableAwareDropDownChoice<RemoteDataSource>("dataSource", dataSourceModel, allDataSources,
+                new IDisableAwareChoiceRenderer<RemoteDataSource>() {
+
+                    @Override
+                    public Object getDisplayValue(RemoteDataSource remoteDataSource) {
+                        return remoteDataSource.getDataSource();
+                    }
+
+                    @Override
+                    public boolean isDisabled(RemoteDataSource remoteDataSource) {
+                        return !remoteDataSource.isExist();
+                    }
+
+                    @Override
+                    public String getIdValue(RemoteDataSource remoteDataSource, int index) {
+                        return remoteDataSource.getDataSource();
+                    }
+                });
+        dataSource.setRequired(true);
+        dataSource.setLabel(dataSourceLabelModel);
+        dataSource.setEnabled(enabled);
+        dataSourceContainer.add(dataSource);
+        dataSourceContainer.setVisible(isCalculationCenter());
     }
 
     @Override
@@ -198,6 +251,14 @@ public class OsznOrganizationEditComponent extends OrganizationEditComponent {
         boolean serviceProviderTypeContainerVisibleNow = serviceProviderTypeContainer.isVisible();
         if (serviceProviderTypeContainerWasVisible ^ serviceProviderTypeContainerVisibleNow) {
             target.addComponent(serviceProviderTypeContainer);
+        }
+
+        //data source
+        boolean dataSourceContainerWasVisible = dataSourceContainer.isVisible();
+        dataSourceContainer.setVisible(isCalculationCenter());
+        boolean dataSourceContainerVisibleNow = dataSourceContainer.isVisible();
+        if (dataSourceContainerWasVisible ^ dataSourceContainerVisibleNow) {
+            target.addComponent(dataSourceContainer);
         }
     }
 
@@ -261,6 +322,7 @@ public class OsznOrganizationEditComponent extends OrganizationEditComponent {
         }
 
         if (isCalculationCenter()) {
+            //service provider types.
             organization.removeAttribute(IOsznOrganizationStrategy.SERVICE_PROVIDER_TYPE);
 
             SortedSet<Long> serviceProviderTypeIds = Sets.newTreeSet();
@@ -279,8 +341,15 @@ public class OsznOrganizationEditComponent extends OrganizationEditComponent {
                 attribute.setValueId(serviceProviderTypeId);
                 organization.addAttribute(attribute);
             }
+
+            //data source
+            String dataSource = dataSourceModel.getObject().getDataSource();
+            dataSource = dataSource != null ? dataSource.toUpperCase() : null;
+            stringBean.getSystemStringCulture(organization.getAttribute(IOsznOrganizationStrategy.DATA_SOURCE).getLocalizedValues()).
+                    setValue(new StringConverter().toString(dataSource));
         } else {
             getDomainObject().removeAttribute(IOsznOrganizationStrategy.SERVICE_PROVIDER_TYPE);
+            getDomainObject().removeAttribute(IOsznOrganizationStrategy.DATA_SOURCE);
         }
     }
 

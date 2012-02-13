@@ -4,16 +4,14 @@
  */
 package org.complitex.osznconnection.file.service_provider;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import org.apache.ibatis.session.SqlSession;
 import org.complitex.osznconnection.file.entity.Benefit;
 import org.complitex.osznconnection.file.entity.BenefitDBF;
 import org.complitex.osznconnection.file.entity.Payment;
 import org.complitex.osznconnection.file.entity.PaymentDBF;
 
 import java.util.Date;
-import java.util.Set;
 import org.complitex.osznconnection.file.entity.CalculationCenterInfo;
 import org.complitex.osznconnection.file.service_provider.exception.DBException;
 
@@ -25,12 +23,7 @@ public class ProcessPaymentTest extends AbstractTest {
 
     @Override
     protected ServiceProviderAdapter newAdapter() {
-        return new ServiceProviderAdapter() {
-
-            @Override
-            protected SqlSession sqlSession(Set<Long> serviceProviderTypeIds) {
-                return ProcessPaymentTest.this.getSqlSessionFactoryBean().getSqlSessionManager(serviceProviderTypeIds).openSession(false);
-            }
+        return new ServiceProviderTestAdapter() {
 
             @Override
             protected Long findInternalOwnership(String calculationCenterOwnership, long calculationCenterId) {
@@ -52,11 +45,11 @@ public class ProcessPaymentTest extends AbstractTest {
     }
 
     public static void main(String[] args) throws Exception {
-        new ProcessPaymentTest().executeTest(Sets.newHashSet(1L));
+        new ProcessPaymentTest().executeTest();
     }
 
     @Override
-    protected void test(Set<Long> serviceProviderTypeIds, ServiceProviderAdapter adapter) throws Exception {
+    protected void test(ServiceProviderAdapter adapter) throws Exception {
         Payment p = new Payment();
         Benefit b = new Benefit();
         b.setId(1L);
@@ -64,11 +57,8 @@ public class ProcessPaymentTest extends AbstractTest {
         p.setOrganizationId(1L);
         p.setField(PaymentDBF.DAT1, new Date());
 
-        CalculationCenterInfo calculationCenterInfo = new CalculationCenterInfo();
-        calculationCenterInfo.setOrganizationId(2L);
-        calculationCenterInfo.setServiceProviderTypeIds(serviceProviderTypeIds);
         try {
-            adapter.processPaymentAndBenefit(calculationCenterInfo, p, Lists.newArrayList(b));
+            adapter.processPaymentAndBenefit(new CalculationCenterInfo(2, "test", ImmutableSet.of(1L)), p, Lists.newArrayList(b));
         } catch (DBException e) {
             System.out.println("DB error.");
         }

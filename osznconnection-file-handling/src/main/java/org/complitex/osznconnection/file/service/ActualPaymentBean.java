@@ -4,7 +4,11 @@
  */
 package org.complitex.osznconnection.file.service;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -20,8 +24,7 @@ import org.complitex.osznconnection.file.entity.ActualPaymentDBF;
 import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.entity.RequestStatus;
 import org.complitex.osznconnection.file.entity.example.ActualPaymentExample;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.complitex.osznconnection.service_provider_type.strategy.ServiceProviderTypeStrategy;
 
 /**
  *
@@ -30,8 +33,19 @@ import org.slf4j.LoggerFactory;
 @Stateless
 public class ActualPaymentBean extends AbstractRequestBean {
 
-    private static final Logger log = LoggerFactory.getLogger(ActualPaymentBean.class);
     public static final String MAPPING_NAMESPACE = ActualPaymentBean.class.getName();
+    // service provider type id <-> set of actual payment fields that should be updated.
+    private static final Map<Long, Set<ActualPaymentDBF>> UPDATE_FIELD_MAP =
+            ImmutableMap.<Long, Set<ActualPaymentDBF>>builder().
+            put(ServiceProviderTypeStrategy.APARTMENT_FEE, ImmutableSet.of(ActualPaymentDBF.P1, ActualPaymentDBF.N1)).
+            put(ServiceProviderTypeStrategy.HEATING, ImmutableSet.of(ActualPaymentDBF.P2, ActualPaymentDBF.N2)).
+            put(ServiceProviderTypeStrategy.HOT_WATER_SUPPLY, ImmutableSet.of(ActualPaymentDBF.P3, ActualPaymentDBF.N3)).
+            put(ServiceProviderTypeStrategy.COLD_WATER_SUPPLY, ImmutableSet.of(ActualPaymentDBF.P4, ActualPaymentDBF.N4)).
+            put(ServiceProviderTypeStrategy.GAS_SUPPLY, ImmutableSet.of(ActualPaymentDBF.P5, ActualPaymentDBF.N5)).
+            put(ServiceProviderTypeStrategy.POWER_SUPPLY, ImmutableSet.of(ActualPaymentDBF.P6, ActualPaymentDBF.N6)).
+            put(ServiceProviderTypeStrategy.GARBAGE_DISPOSAL, ImmutableSet.of(ActualPaymentDBF.P7, ActualPaymentDBF.N7)).
+            put(ServiceProviderTypeStrategy.DRAINAGE, ImmutableSet.of(ActualPaymentDBF.P8, ActualPaymentDBF.N8)).
+            build();
 
     public enum OrderBy {
 
@@ -88,6 +102,32 @@ public class ActualPaymentBean extends AbstractRequestBean {
     @Transactional
     public void update(ActualPayment actualPayment) {
         sqlSession().update(MAPPING_NAMESPACE + ".update", actualPayment);
+    }
+
+    @Transactional
+    public void update(ActualPayment actualPayment, Set<Long> serviceProviderTypeIds) {
+        Map<String, Object> updateFieldMap = null;
+        if (serviceProviderTypeIds != null && !serviceProviderTypeIds.isEmpty()) {
+            updateFieldMap = Maps.newHashMap();
+            for (ActualPaymentDBF field : getUpdateableFields(serviceProviderTypeIds)) {
+                updateFieldMap.put(field.name(), actualPayment.getField(field));
+            }
+        }
+        actualPayment.setUpdateFieldMap(updateFieldMap);
+        update(actualPayment);
+    }
+
+    private Set<ActualPaymentDBF> getUpdateableFields(Set<Long> serviceProviderTypeIds) {
+        final Set<ActualPaymentDBF> updateableFields = Sets.newHashSet();
+
+        for (long serviceProviderTypeId : serviceProviderTypeIds) {
+            Set<ActualPaymentDBF> fields = UPDATE_FIELD_MAP.get(serviceProviderTypeId);
+            if (fields != null) {
+                updateableFields.addAll(fields);
+            }
+        }
+
+        return Collections.unmodifiableSet(updateableFields);
     }
 
     @Transactional
@@ -171,20 +211,32 @@ public class ActualPaymentBean extends AbstractRequestBean {
     }
 
     @Transactional
-    public void clearBeforeBinding(long fileId) {
-        Map<String, Object> params = Maps.newHashMap();
-        params.put("status", RequestStatus.LOADED);
-        params.put("fileId", fileId);
-        sqlSession().update(MAPPING_NAMESPACE + ".clearBeforeBinding", params);
+    public void clearBeforeBinding(long fileId, Set<Long> serviceProviderTypeIds) {
+        Map<String, Object> updateFieldMap = null;
+        if (serviceProviderTypeIds != null && !serviceProviderTypeIds.isEmpty()) {
+            updateFieldMap = Maps.newHashMap();
+            for (ActualPaymentDBF field : getUpdateableFields(serviceProviderTypeIds)) {
+                updateFieldMap.put(field.name(), -1);
+            }
+        }
+
+        sqlSession().update(MAPPING_NAMESPACE + ".clearBeforeBinding",
+                ImmutableMap.of("status", RequestStatus.LOADED, "fileId", fileId, "updateFieldMap", updateFieldMap));
         clearWarnings(fileId, RequestFile.TYPE.ACTUAL_PAYMENT);
     }
 
     @Transactional
-    public void clearBeforeProcessing(long fileId) {
-        Map<String, Object> params = Maps.newHashMap();
-        params.put("statuses", RequestStatus.unboundStatuses());
-        params.put("fileId", fileId);
-        sqlSession().update(MAPPING_NAMESPACE + ".clearBeforeProcessing", params);
+    public void clearBeforeProcessing(long fileId, Set<Long> serviceProviderTypeIds) {
+        Map<String, Object> updateFieldMap = null;
+        if (serviceProviderTypeIds != null && !serviceProviderTypeIds.isEmpty()) {
+            updateFieldMap = Maps.newHashMap();
+            for (ActualPaymentDBF field : getUpdateableFields(serviceProviderTypeIds)) {
+                updateFieldMap.put(field.name(), -1);
+            }
+        }
+
+        sqlSession().update(MAPPING_NAMESPACE + ".clearBeforeProcessing",
+                ImmutableMap.of("statuses", RequestStatus.unboundStatuses(), "fileId", fileId, "updateFieldMap", updateFieldMap));
         clearWarnings(fileId, RequestFile.TYPE.ACTUAL_PAYMENT);
     }
 

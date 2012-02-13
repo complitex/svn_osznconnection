@@ -5,6 +5,7 @@ import org.complitex.osznconnection.file.service.exception.FieldWrongSizeExcepti
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Map;
 
 /**
  * @author Artem
@@ -75,6 +76,7 @@ public class Payment extends AbstractRequest {
     private String outgoingBuildingNumber;
     private String outgoingBuildingCorp;
     private String outgoingApartment;
+    private Map<String, Object> updateFieldMap;
 
     public Long getInternalApartmentId() {
         return internalApartmentId;
@@ -170,5 +172,13 @@ public class Payment extends AbstractRequest {
 
     public void setOutgoingDistrict(String outgoingDistrict) {
         this.outgoingDistrict = outgoingDistrict;
+    }
+
+    public Map<String, Object> getUpdateFieldMap() {
+        return updateFieldMap;
+    }
+
+    public void setUpdateFieldMap(Map<String, Object> updateFieldMap) {
+        this.updateFieldMap = updateFieldMap;
     }
 }

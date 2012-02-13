@@ -4,7 +4,6 @@
  */
 package org.complitex.osznconnection.file.service_provider;
 
-import java.util.Set;
 import org.apache.ibatis.session.SqlSession;
 
 /**
@@ -15,39 +14,31 @@ public abstract class AbstractTest {
 
     private ServiceProviderSqlSessionFactoryBean sqlSessionFactoryBean;
 
+    protected class ServiceProviderTestAdapter extends ServiceProviderAdapter {
+
+        @Override
+        protected SqlSession sqlSession(String dataSource) {
+            return sqlSessionFactoryBean.getSqlSessionManager(dataSource).openSession(false);
+        }
+    }
+
     protected AbstractTest() {
         sqlSessionFactoryBean = new ServiceProviderSqlSessionFactoryBean() {
 
             @Override
-            protected String getConfigurationFile() {
-                return "mybatis-test.xml";
+            protected String getConfigurationFileName() {
+                return "mybatis-remote-config-test.xml";
             }
         };
-        sqlSessionFactoryBean.init();
     }
 
     protected ServiceProviderAdapter newAdapter() {
-        return new ServiceProviderAdapter() {
-
-            @Override
-            protected SqlSession sqlSession(Set<Long> serviceProviderTypeIds) {
-                return sqlSessionFactoryBean.getSqlSessionManager(serviceProviderTypeIds).openSession(false);
-            }
-
-            @Override
-            protected String displayServiceProviderTypes(Set<Long> serviceProviderTypeIds) {
-                return serviceProviderTypeIds.toString();
-            }
-        };
+        return new ServiceProviderTestAdapter();
     }
 
-    protected ServiceProviderSqlSessionFactoryBean getSqlSessionFactoryBean() {
-        return sqlSessionFactoryBean;
-    }
+    protected abstract void test(ServiceProviderAdapter adapter) throws Exception;
 
-    protected abstract void test(Set<Long> serviceProviderTypeIds, ServiceProviderAdapter adapter) throws Exception;
-
-    public void executeTest(Set<Long> serviceProviderTypeIds) throws Exception {
-        test(serviceProviderTypeIds, newAdapter());
+    public void executeTest() throws Exception {
+        test(newAdapter());
     }
 }

@@ -53,13 +53,12 @@ public class BindTaskBean implements ITaskBean {
     private CalculationCenterBean calculationCenterBean;
     @EJB
     private RequestFileGroupBean requestFileGroupBean;
-
     private Boolean updatePuAccount;
 
     @Override
     public boolean execute(IExecutorObject executorObject, Map commandParameters) throws ExecuteException {
         // ищем в параметрах комманды опцию "Переписывать номер л/с ПУ номером л/с МН"
-        updatePuAccount = commandParameters.containsKey(GlobalOptions.UPDATE_PU_ACCOUNT)?(Boolean)commandParameters.get(GlobalOptions.UPDATE_PU_ACCOUNT):false;
+        updatePuAccount = commandParameters.containsKey(GlobalOptions.UPDATE_PU_ACCOUNT) ? (Boolean) commandParameters.get(GlobalOptions.UPDATE_PU_ACCOUNT) : false;
 
         RequestFileGroup group = (RequestFileGroup) executorObject;
 
@@ -72,14 +71,17 @@ public class BindTaskBean implements ITaskBean {
         group.setStatus(RequestFileStatus.BINDING);
         requestFileGroupBean.save(group);
 
+        //получаем информацию о текущем центре начисления
+        CalculationCenterInfo calculationCenterInfo = calculationCenterBean.getInfo();
+
         //очищаем колонки которые заполняются во время связывания и обработки для записей в таблицах payment и benefit
-        paymentBean.clearBeforeBinding(group.getPaymentFile().getId());
+        paymentBean.clearBeforeBinding(group.getPaymentFile().getId(), calculationCenterInfo.getServiceProviderTypeIds());
         benefitBean.clearBeforeBinding(group.getBenefitFile().getId());
 
         //связывание файла payment
         RequestFile paymentFile = group.getPaymentFile();
         try {
-            bindPaymentFile(paymentFile);
+            bindPaymentFile(paymentFile, calculationCenterInfo);
         } catch (DBException e) {
             throw new RuntimeException(e);
         } catch (CanceledByUserException e) {
@@ -184,10 +186,8 @@ public class BindTaskBean implements ITaskBean {
      * @param paymentFile Файл запроса начислений
      * @throws BindException Ошибка связывания
      */
-    private void bindPaymentFile(RequestFile paymentFile) throws BindException, DBException, CanceledByUserException {
-        //получаем информацию о текущем центре начисления
-        CalculationCenterInfo calculationCenterInfo = calculationCenterBean.getInfo();
-
+    private void bindPaymentFile(RequestFile paymentFile, CalculationCenterInfo calculationCenterInfo)
+            throws BindException, DBException, CanceledByUserException {
         //извлечь из базы все id подлежащие связыванию для файла payment и доставать записи порциями по BATCH_SIZE штук.
         List<Long> notResolvedPaymentIds = paymentBean.findIdsForBinding(paymentFile.getId());
         List<Long> batch = Lists.newArrayList();
