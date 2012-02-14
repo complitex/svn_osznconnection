@@ -9,15 +9,12 @@ import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.CheckBoxMultipleChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
-import org.apache.wicket.markup.html.list.ListItem;
-import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.util.time.Duration;
-import org.complitex.address.entity.AddressImportFile;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.entity.IImportFile;
 import org.complitex.dictionary.entity.ImportMessage;
@@ -42,20 +39,21 @@ import static org.complitex.address.entity.AddressImportFile.*;
  */
 @AuthorizeInstantiation(SecurityRole.ADMIN_MODULE_EDIT)
 public class ImportPage extends TemplatePage {
+
     @EJB
     private ImportService importService;
-
     @EJB(name = "OsznOrganizationStrategy")
     private IOsznOrganizationStrategy organizationStrategy;
-
     private int stopTimer = 0;
+    private final IModel<List<IImportFile>> dictionaryModel;
+    private final IModel<List<IImportFile>> correctionModel;
 
     public ImportPage() {
         final WebMarkupContainer container = new WebMarkupContainer("container");
         add(container);
 
-        final IModel<List<IImportFile>> dictionaryModel = new ListModel<IImportFile>();
-        final IModel<List<IImportFile>> correctionModel = new ListModel<IImportFile>();
+        dictionaryModel = new ListModel<IImportFile>();
+        correctionModel = new ListModel<IImportFile>();
 
         container.add(new FeedbackPanel("messages"));
 
@@ -70,9 +68,9 @@ public class ImportPage extends TemplatePage {
 
         form.add(new CheckBoxMultipleChoice<IImportFile>("dictionary", dictionaryModel, dictionaryList,
                 new IChoiceRenderer<IImportFile>() {
+
                     @Override
                     public Object getDisplayValue(IImportFile object) {
-
                         return object.getFileName() + getStatus(importService.getDictionaryMessage(object));
                     }
 
@@ -95,11 +93,11 @@ public class ImportPage extends TemplatePage {
                     }
                 }, new DomainObjectDisableAwareRenderer() {
 
-                    @Override
-                    public Object getDisplayValue(DomainObject object) {
-                        return organizationStrategy.displayDomainObject(object, getLocale());
-                    }
-                });
+            @Override
+            public Object getDisplayValue(DomainObject object) {
+                return organizationStrategy.displayDomainObject(object, getLocale());
+            }
+        });
         form.add(organization);
 
         //Коррекции
@@ -109,6 +107,7 @@ public class ImportPage extends TemplatePage {
 
         form.add(new CheckBoxMultipleChoice<IImportFile>("corrections", correctionModel, correctionList,
                 new IChoiceRenderer<IImportFile>() {
+
                     @Override
                     public Object getDisplayValue(IImportFile object) {
 
@@ -122,10 +121,11 @@ public class ImportPage extends TemplatePage {
                 }));
 
         //Кнопка импортировать
-        Button process = new Button("process"){
+        Button process = new Button("process") {
+
             @Override
             public void onSubmit() {
-                if (!correctionModel.getObject().isEmpty() && organization.getDefaultModelObject() == null){
+                if (!correctionModel.getObject().isEmpty() && organization.getDefaultModelObject() == null) {
                     error(getStringOrKey("error_organization_required"));
                     return;
                 }
@@ -147,11 +147,13 @@ public class ImportPage extends TemplatePage {
 
         //Ошибки
         container.add(new Label("error", new LoadableDetachableModel<Object>() {
+
             @Override
             protected Object load() {
                 return importService.getErrorMessage();
             }
-        }){
+        }) {
+
             @Override
             public boolean isVisible() {
                 return importService.isError();
@@ -159,18 +161,23 @@ public class ImportPage extends TemplatePage {
         });
     }
 
-    private AjaxSelfUpdatingTimerBehavior newTimer(){
+    private AjaxSelfUpdatingTimerBehavior newTimer() {
         stopTimer = 0;
 
-        return new AjaxSelfUpdatingTimerBehavior(Duration.seconds(1)){
+        return new AjaxSelfUpdatingTimerBehavior(Duration.seconds(1)) {
+
             @Override
             protected void onPostProcessTarget(AjaxRequestTarget target) {
-                if (!importService.isProcessing()){
+                if (!importService.isProcessing()) {
+
+                    dictionaryModel.setObject(null);
+                    correctionModel.setObject(null);
+
                     stopTimer++;
                 }
 
-                if (stopTimer > 2){
-                    if (importService.isSuccess()){
+                if (stopTimer > 2) {
+                    if (importService.isSuccess()) {
                         info(getString("success"));
                     }
                     stop();
@@ -179,18 +186,17 @@ public class ImportPage extends TemplatePage {
         };
     }
 
-    private String getStatus(ImportMessage im){
+    private String getStatus(ImportMessage im) {
         if (im != null) {
-            if (im.getIndex() < 1 && !importService.isProcessing()){
+            if (im.getIndex() < 1 && !importService.isProcessing()) {
                 return " - " + getStringOrKey("error");
-            }else if (im.getIndex() == im.getCount()){
+            } else if (im.getIndex() == im.getCount()) {
                 return " - " + getStringFormat("complete", im.getIndex());
-            }else{
+            } else {
                 return " - " + getStringFormat("processing", im.getIndex(), im.getCount());
             }
         }
 
         return "";
     }
-
 }
