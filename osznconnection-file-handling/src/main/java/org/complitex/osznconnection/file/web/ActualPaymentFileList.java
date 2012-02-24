@@ -48,12 +48,11 @@ import org.complitex.osznconnection.file.web.pages.actualpayment.ActualPaymentLi
 import org.complitex.resources.WebCommonResourceInitializer;
 import org.complitex.template.web.component.toolbar.ToolbarButton;
 import org.complitex.template.web.security.SecurityRole;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import java.util.*;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
+import org.complitex.osznconnection.file.service.OsznSessionBean;
 import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
 import org.complitex.template.web.pages.ScrollListPage;
 
@@ -66,7 +65,6 @@ import static org.complitex.osznconnection.file.service.process.ProcessType.*;
 @AuthorizeInstantiation(SecurityRole.AUTHORIZED)
 public class ActualPaymentFileList extends ScrollListPage {
 
-    private static final Logger log = LoggerFactory.getLogger(ActualPaymentFileList.class);
     private final static String IMAGE_AJAX_LOADER = "images/ajax-loader2.gif";
     private final static String IMAGE_AJAX_WAITING = "images/ajax-waiting.gif";
     @EJB
@@ -77,23 +75,28 @@ public class ActualPaymentFileList extends ScrollListPage {
     private ProcessManagerBean processManagerBean;
     @EJB
     private LogBean logBean;
+    @EJB
+    private OsznSessionBean osznSessionBean;
     private int waitForStopTimer;
     private int timerIndex = 0;
-    private Map<ProcessType, Boolean> completedDisplayed = new HashMap<ProcessType, Boolean>();
+    private Map<ProcessType, Boolean> completedDisplayed = new EnumMap<ProcessType, Boolean>(ProcessType.class);
     private final static String ITEM_ID_PREFIX = "item";
     private RequestFileLoadPanel requestFileLoadPanel;
     private WebMarkupContainer buttonContainer;
     private WebMarkupContainer optionContainer;
     private PagingNavigator pagingNavigator;
     private Map<Long, IModel<Boolean>> selectModels;
+    private final boolean modificationsAllowed;
 
     public ActualPaymentFileList(PageParameters parameters) {
         super(parameters);
+        this.modificationsAllowed = osznSessionBean.getCurrentUserOrganizationId() != null || osznSessionBean.isAdmin();
         init(parameters.getAsLong("request_file_id"));
     }
 
     public ActualPaymentFileList() {
         super();
+        this.modificationsAllowed = osznSessionBean.getCurrentUserOrganizationId() != null || osznSessionBean.isAdmin();
         init(null);
     }
 
@@ -162,21 +165,32 @@ public class ActualPaymentFileList extends ScrollListPage {
         filterForm.add(new TextField<String>("name"));
 
         //Организация
-        IModel<List<DomainObject>> osznsModel = new LoadableDetachableModel<List<DomainObject>>() {
+        final IModel<List<DomainObject>> osznsModel = new LoadableDetachableModel<List<DomainObject>>() {
 
             @Override
             protected List<DomainObject> load() {
                 return organizationStrategy.getAllOSZNs(getLocale());
             }
         };
-        DomainObjectDisableAwareRenderer renderer = new DomainObjectDisableAwareRenderer() {
+        final DomainObjectDisableAwareRenderer organizationRenderer = new DomainObjectDisableAwareRenderer() {
 
             @Override
             public Object getDisplayValue(DomainObject object) {
                 return organizationStrategy.displayDomainObject(object, getLocale());
             }
         };
-        filterForm.add(new DisableAwareDropDownChoice<DomainObject>("organization", osznsModel, renderer).setNullValid(true));
+        filterForm.add(new DisableAwareDropDownChoice<DomainObject>("organization", osznsModel, organizationRenderer).setNullValid(true));
+
+        // Организация пользователя
+        final IModel<List<? extends DomainObject>> userOrganizationsModel = new LoadableDetachableModel<List<? extends DomainObject>>() {
+
+            @Override
+            protected List<? extends DomainObject> load() {
+                return organizationStrategy.getUserOrganizations(getLocale());
+            }
+        };
+        filterForm.add(new DisableAwareDropDownChoice<DomainObject>("userOrganization", userOrganizationsModel,
+                organizationRenderer).setNullValid(true));
 
         //Месяц
         filterForm.add(new MonthDropDownChoice("month").setNullValid(true));
@@ -320,6 +334,15 @@ public class ActualPaymentFileList extends ScrollListPage {
                 String organization = organizationStrategy.displayDomainObject(domainObject, getLocale());
                 item.add(new Label("organization", organization));
 
+                //Организация пользователя
+                final Long userOrganizationId = item.getModelObject().getUserOrganizationId();
+                String userOrganization = null;
+                if (userOrganizationId != null) {
+                    DomainObject userOrganizationObject = organizationStrategy.findById(userOrganizationId, true);
+                    userOrganization = organizationStrategy.displayDomainObject(userOrganizationObject, getLocale());
+                }
+                item.add(new Label("userOrganization", userOrganization));
+
                 item.add(new Label("month", DateUtil.displayMonth(item.getModelObject().getMonth(), getLocale())));
                 item.add(new Label("year", StringUtil.valueOf(item.getModelObject().getYear())));
 
@@ -380,6 +403,7 @@ public class ActualPaymentFileList extends ScrollListPage {
         filterForm.add(new ArrowOrderByBorder("header.loaded", "loaded", dataProvider, dataView, filterForm));
         filterForm.add(new ArrowOrderByBorder("header.name", "name", dataProvider, dataView, filterForm));
         filterForm.add(new ArrowOrderByBorder("header.organization", "organization_id", dataProvider, dataView, filterForm));
+        filterForm.add(new ArrowOrderByBorder("header.user_organization", "user_organization_id", dataProvider, dataView, filterForm));
         filterForm.add(new ArrowOrderByBorder("header.month", "month", dataProvider, dataView, filterForm));
         filterForm.add(new ArrowOrderByBorder("header.year", "year", dataProvider, dataView, filterForm));
         filterForm.add(new ArrowOrderByBorder("header.loaded_record_count", "loaded_record_count", dataProvider, dataView, filterForm));
@@ -401,21 +425,22 @@ public class ActualPaymentFileList extends ScrollListPage {
         //Контейнер чекбокса "Переписать л/с ПУ" для ajax
         optionContainer = new WebMarkupContainer("options");
         optionContainer.setOutputMarkupId(true);
+        optionContainer.setVisibilityAllowed(modificationsAllowed);
         filterForm.add(optionContainer);
 
         optionContainer.add(new CheckBox("update_pu_account", new Model<Boolean>(
-                getSessionParameter(GlobalOptions.UPDATE_PU_ACCOUNT)))
-            .add(new AjaxFormComponentUpdatingBehavior("onchange") {
+                getSessionParameter(GlobalOptions.UPDATE_PU_ACCOUNT))).add(new AjaxFormComponentUpdatingBehavior("onchange") {
 
-                @Override
-                protected void onUpdate(AjaxRequestTarget target) {
-                    putSessionParameter(GlobalOptions.UPDATE_PU_ACCOUNT, !getSessionParameter(GlobalOptions.UPDATE_PU_ACCOUNT));
-                }
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                putSessionParameter(GlobalOptions.UPDATE_PU_ACCOUNT, !getSessionParameter(GlobalOptions.UPDATE_PU_ACCOUNT));
+            }
         }));
-        
+
         //Контейнер кнопок для ajax
         buttonContainer = new WebMarkupContainer("buttons");
         buttonContainer.setOutputMarkupId(true);
+        buttonContainer.setVisibilityAllowed(modificationsAllowed);
         filterForm.add(buttonContainer);
 
         //Загрузить
@@ -569,9 +594,9 @@ public class ActualPaymentFileList extends ScrollListPage {
                 new RequestFileLoadPanel.ILoader() {
 
                     @Override
-                    public void load(Long organizationId, String districtCode, int monthFrom, int monthTo, int year) {
+                    public void load(long userOrganizationId, long osznId, String districtCode, int monthFrom, int monthTo, int year) {
                         completedDisplayed.put(LOAD_ACTUAL_PAYMENT, false);
-                        processManagerBean.loadActualPayment(organizationId, districtCode, monthFrom, monthTo, year);
+                        processManagerBean.loadActualPayment(userOrganizationId, osznId, districtCode, monthFrom, monthTo, year);
                         addTimer(dataViewContainer, filterForm, messages);
                     }
                 });
@@ -589,17 +614,17 @@ public class ActualPaymentFileList extends ScrollListPage {
     private Boolean getSessionParameter(Enum key) {
         return getTemplateSession().getPreferenceBoolean(TemplateSession.GLOBAL_PAGE, key, false);
     }
-    
-    private void putSessionParameter( Enum key, Boolean value) {
+
+    private void putSessionParameter(Enum key, Boolean value) {
         getTemplateSession().putPreference(TemplateSession.GLOBAL_PAGE, key, value, false);
     }
 
     private Map<Enum, Object> buildCommandParameters() {
-        Map<Enum,Object> commandParameters = new HashMap<Enum,Object>();
-        commandParameters.put(GlobalOptions.UPDATE_PU_ACCOUNT,getSessionParameter(GlobalOptions.UPDATE_PU_ACCOUNT));
+        Map<Enum, Object> commandParameters = new HashMap<Enum, Object>();
+        commandParameters.put(GlobalOptions.UPDATE_PU_ACCOUNT, getSessionParameter(GlobalOptions.UPDATE_PU_ACCOUNT));
         return commandParameters;
     }
-            
+
     private List<Long> getSelected() {
         List<Long> ids = new ArrayList<Long>();
 
@@ -650,7 +675,7 @@ public class ActualPaymentFileList extends ScrollListPage {
             } else if (requestFile.getStatus().equals(errorStatus)) {
                 highlightError(target, requestFile);
 
-                String message = requestFile.getErrorMessage() != null ?  ": " + requestFile.getErrorMessage() : "";
+                String message = requestFile.getErrorMessage() != null ? ": " + requestFile.getErrorMessage() : "";
                 error(getStringFormat(keyPrefix + ".error", requestFile.getFullName()) + message);
             }
         }
@@ -756,6 +781,10 @@ public class ActualPaymentFileList extends ScrollListPage {
     @Override
     protected List<ToolbarButton> getToolbarButtons(String id) {
         return Arrays.asList((ToolbarButton) new LoadButton(id) {
+            
+            {
+                setVisibilityAllowed(modificationsAllowed);
+            }
 
             @Override
             protected void onClick() {

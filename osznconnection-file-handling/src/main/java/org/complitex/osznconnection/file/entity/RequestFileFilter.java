@@ -1,16 +1,17 @@
 package org.complitex.osznconnection.file.entity;
 
-import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.service.AbstractFilter;
 
 import java.util.Date;
+import org.complitex.dictionary.entity.DomainObject;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 03.11.2010 13:26:00
  *
  */
-public class RequestFileFilter extends AbstractFilter{
+public class RequestFileFilter extends AbstractFilter {
+
     private Long id;
     private Long groupId;
     private Date loaded;
@@ -28,10 +29,11 @@ public class RequestFileFilter extends AbstractFilter{
     private Long length;
     private String checkSum;
     private DomainObject organization;
+    private DomainObject userOrganization;
     private RequestFile.TYPE type;
     private RequestFileStatus status;
-
-    private String organizations;
+    private String userOrganizationsString;
+    private String outerOrganizationsString;
 
     public Long getId() {
         return id;
@@ -167,6 +169,7 @@ public class RequestFileFilter extends AbstractFilter{
 
     public void setOrganization(DomainObject organization) {
         this.organization = organization;
+        this.organizationId = organization != null ? organization.getId() : null;
     }
 
     public RequestFile.TYPE getType() {
@@ -185,11 +188,27 @@ public class RequestFileFilter extends AbstractFilter{
         this.status = status;
     }
 
-    public String getOrganizations() {
-        return organizations;
+    public String getUserOrganizationsString() {
+        return userOrganizationsString;
     }
 
-    public void setOrganizations(String organizations) {
-        this.organizations = organizations;
+    public void setUserOrganizationsString(String userOrganizationsString) {
+        this.userOrganizationsString = userOrganizationsString;
+    }
+
+    public String getOuterOrganizationsString() {
+        return outerOrganizationsString;
+    }
+
+    public void setOuterOrganizationsString(String outerOrganizationsString) {
+        this.outerOrganizationsString = outerOrganizationsString;
+    }
+
+    public DomainObject getUserOrganization() {
+        return userOrganization;
+    }
+
+    public void setUserOrganization(DomainObject userOrganization) {
+        this.userOrganization = userOrganization;
     }
 }

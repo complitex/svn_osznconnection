@@ -48,8 +48,9 @@ public class PersonAccountService extends AbstractBean {
      * @param calculationCenterId
      */
     @Transactional
-    public void resolveLocalAccount(Payment payment, long calculationCenterId) {
-        String accountNumber = personAccountLocalBean.findLocalAccountNumber(payment, calculationCenterId);
+    public void resolveLocalAccount(Payment payment, CalculationContext calculationContext) {
+        String accountNumber = personAccountLocalBean.findLocalAccountNumber(payment, calculationContext.getCalculationCenterId(),
+                calculationContext.getUserOrganizationId());
         if (!Strings.isEmpty(accountNumber)) {
             payment.setAccountNumber(accountNumber);
             payment.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
@@ -58,8 +59,9 @@ public class PersonAccountService extends AbstractBean {
     }
 
     @Transactional
-    public void resolveLocalAccount(ActualPayment actualPayment, long calculationCenterId) {
-        String accountNumber = personAccountLocalBean.findLocalAccountNumber(actualPayment, calculationCenterId);
+    public void resolveLocalAccount(ActualPayment actualPayment, CalculationContext calculationContext) {
+        String accountNumber = personAccountLocalBean.findLocalAccountNumber(actualPayment, calculationContext.getCalculationCenterId(),
+                calculationContext.getUserOrganizationId());
         if (!Strings.isEmpty(accountNumber)) {
             actualPayment.setAccountNumber(accountNumber);
             actualPayment.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
@@ -76,29 +78,32 @@ public class PersonAccountService extends AbstractBean {
      * @param adapter
      */
     @Transactional
-    public void resolveRemoteAccount(Payment payment, CalculationCenterInfo calculationCenterInfo, Boolean updatePUAccount) throws DBException {
-        adapter.acquirePersonAccount(calculationCenterInfo, RequestFile.TYPE.PAYMENT, payment,
+    public void resolveRemoteAccount(Payment payment, CalculationContext calculationContext,
+            Boolean updatePUAccount) throws DBException {
+        adapter.acquirePersonAccount(calculationContext, RequestFile.TYPE.PAYMENT, payment,
                 (String) payment.getField(PaymentDBF.SUR_NAM),
                 (String) payment.getField(PaymentDBF.OWN_NUM_SR), payment.getOutgoingDistrict(), payment.getOutgoingStreetType(),
                 payment.getOutgoingStreet(), payment.getOutgoingBuildingNumber(), payment.getOutgoingBuildingCorp(),
                 payment.getOutgoingApartment(), (Date) payment.getField(PaymentDBF.DAT1), updatePUAccount);
         if (payment.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED) {
             benefitBean.updateAccountNumber(payment.getId(), payment.getAccountNumber());
-            personAccountLocalBean.saveOrUpdate(payment, calculationCenterInfo.getOrganizationId());
+            personAccountLocalBean.saveOrUpdate(payment, calculationContext.getCalculationCenterId(),
+                    calculationContext.getUserOrganizationId());
         }
     }
 
     @Transactional
-    public void resolveRemoteAccount(ActualPayment actualPayment, Date date, CalculationCenterInfo calculationCenterInfo, Boolean updatePUAccount)
-            throws DBException {
-        adapter.acquirePersonAccount(calculationCenterInfo, RequestFile.TYPE.ACTUAL_PAYMENT, actualPayment,
+    public void resolveRemoteAccount(ActualPayment actualPayment, Date date, CalculationContext calculationContext,
+            Boolean updatePUAccount) throws DBException {
+        adapter.acquirePersonAccount(calculationContext, RequestFile.TYPE.ACTUAL_PAYMENT, actualPayment,
                 (String) actualPayment.getField(ActualPaymentDBF.SUR_NAM),
                 (String) actualPayment.getField(ActualPaymentDBF.OWN_NUM), actualPayment.getOutgoingDistrict(),
                 actualPayment.getOutgoingStreetType(), actualPayment.getOutgoingStreet(),
                 actualPayment.getOutgoingBuildingNumber(), actualPayment.getOutgoingBuildingCorp(),
                 actualPayment.getOutgoingApartment(), date, updatePUAccount);
         if (actualPayment.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED) {
-            personAccountLocalBean.saveOrUpdate(actualPayment, calculationCenterInfo.getOrganizationId());
+            personAccountLocalBean.saveOrUpdate(actualPayment, calculationContext.getCalculationCenterId(),
+                    calculationContext.getUserOrganizationId());
         }
     }
 
@@ -108,7 +113,7 @@ public class PersonAccountService extends AbstractBean {
      * @param accountNumber
      */
     @Transactional
-    public void updateAccountNumber(Payment payment, String accountNumber) {
+    public void updateAccountNumber(Payment payment, String accountNumber, long userOrganizationId) {
         payment.setAccountNumber(accountNumber);
         payment.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
         benefitBean.updateAccountNumber(payment.getId(), accountNumber);
@@ -120,12 +125,13 @@ public class PersonAccountService extends AbstractBean {
             requestFileGroupBean.updateStatus(benefitFileId, RequestFileStatus.BOUND);
         }
 
-        CalculationCenterInfo calculationCenterInfo = calculationCenterBean.getInfo();
-        personAccountLocalBean.saveOrUpdate(payment, calculationCenterInfo.getOrganizationId());
+        final CalculationContext calculationContext = calculationCenterBean.getContext(userOrganizationId);
+        personAccountLocalBean.saveOrUpdate(payment, calculationContext.getCalculationCenterId(),
+                calculationContext.getUserOrganizationId());
     }
 
     @Transactional
-    public void updateAccountNumber(ActualPayment actualPayment, String accountNumber) {
+    public void updateAccountNumber(ActualPayment actualPayment, String accountNumber, long userOrganizationId) {
         actualPayment.setAccountNumber(accountNumber);
         actualPayment.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
         actualPaymentBean.updateAccountNumber(actualPayment);
@@ -137,7 +143,8 @@ public class PersonAccountService extends AbstractBean {
             requestFileBean.save(actualPaymentFile);
         }
 
-        CalculationCenterInfo calculationCenterInfo = calculationCenterBean.getInfo();
-        personAccountLocalBean.saveOrUpdate(actualPayment, calculationCenterInfo.getOrganizationId());
+        final CalculationContext calculationContext = calculationCenterBean.getContext(userOrganizationId);
+        personAccountLocalBean.saveOrUpdate(actualPayment, calculationContext.getCalculationCenterId(),
+                calculationContext.getUserOrganizationId());
     }
 }

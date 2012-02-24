@@ -6,7 +6,6 @@ import org.complitex.dictionary.service.IImportListener;
 import org.complitex.dictionary.service.exception.ImportFileNotFoundException;
 import org.complitex.dictionary.service.exception.ImportFileReadException;
 import org.complitex.dictionary.service.exception.ImportObjectLinkException;
-import org.complitex.osznconnection.file.entity.CorrectionImportFile;
 import org.complitex.osznconnection.privilege.strategy.PrivilegeStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,18 +16,16 @@ import java.io.IOException;
 
 import static org.complitex.osznconnection.file.entity.CorrectionImportFile.PRIVILEGE_CORRECTION;
 
-
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 02.03.11 15:47
  */
 @Stateless
-public class PrivilegeCorrectionImportService extends AbstractImportService{
-    private final static Logger log = LoggerFactory.getLogger(PrivilegeCorrectionImportService.class);
+public class PrivilegeCorrectionImportService extends AbstractImportService {
 
+    private final static Logger log = LoggerFactory.getLogger(PrivilegeCorrectionImportService.class);
     @EJB
     private PrivilegeStrategy privilegeStrategy;
-
     @EJB
     private PrivilegeCorrectionBean privilegeCorrectionBean;
 
@@ -55,11 +52,12 @@ public class PrivilegeCorrectionImportService extends AbstractImportService{
 
                 //PRIVILEGE_ID
                 Long objectId = privilegeStrategy.getObjectId(Long.parseLong(line[1].trim()));
-                if (objectId == null){
+                if (objectId == null) {
                     throw new ImportObjectLinkException(PRIVILEGE_CORRECTION.getFileName(), recordIndex, line[1].trim());
                 }
 
-                privilegeCorrectionBean.insertOwnershipCorrection(line[2].trim(), line[3].trim(), objectId, orgId, intOrgId);
+                privilegeCorrectionBean.insertOwnershipCorrection(line[2].trim(), line[3].trim(), objectId, orgId,
+                        intOrgId, null);
 
                 listener.recordProcessed(PRIVILEGE_CORRECTION, recordIndex);
             }
@@ -78,4 +76,3 @@ public class PrivilegeCorrectionImportService extends AbstractImportService{
         }
     }
 }
-

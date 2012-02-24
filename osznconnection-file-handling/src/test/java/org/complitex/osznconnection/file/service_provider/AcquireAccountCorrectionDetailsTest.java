@@ -7,7 +7,7 @@ package org.complitex.osznconnection.file.service_provider;
 import com.google.common.collect.ImmutableSet;
 import org.complitex.osznconnection.file.entity.Payment;
 import java.util.Date;
-import org.complitex.osznconnection.file.entity.CalculationCenterInfo;
+import org.complitex.osznconnection.file.entity.CalculationContext;
 import org.complitex.osznconnection.file.entity.PaymentDBF;
 import org.complitex.osznconnection.file.service_provider.exception.DBException;
 import org.complitex.osznconnection.file.service_provider.exception.UnknownAccountNumberTypeException;
@@ -31,7 +31,7 @@ public class AcquireAccountCorrectionDetailsTest extends AbstractTest {
         }
     }
 
-    private void testByAddress(CalculationCenterInfo calculationCenterInfo, ServiceProviderAdapter adapter) throws DBException {
+    private void testByAddress(CalculationContext calculationCenterInfo, ServiceProviderAdapter adapter) throws DBException {
         Payment payment = newPayment();
         System.out.println(adapter.acquireAccountDetailsByAddress(calculationCenterInfo, payment,
                 payment.getOutgoingDistrict(), payment.getOutgoingStreetType(),
@@ -39,12 +39,12 @@ public class AcquireAccountCorrectionDetailsTest extends AbstractTest {
                 payment.getOutgoingApartment(), (Date) payment.getField(PaymentDBF.DAT1)));
     }
 
-    private void testByOsznAccount(CalculationCenterInfo calculationCenterInfo, ServiceProviderAdapter adapter) throws DBException, UnknownAccountNumberTypeException {
+    private void testByOsznAccount(CalculationContext calculationCenterInfo, ServiceProviderAdapter adapter) throws DBException, UnknownAccountNumberTypeException {
         Payment payment = newPayment();
         System.out.println(adapter.acquireAccountDetailsByAccount(calculationCenterInfo, payment, payment.getOutgoingDistrict(), "1234567"));
     }
 
-    private void testByMegabankAccount(CalculationCenterInfo calculationCenterInfo, ServiceProviderAdapter adapter) throws DBException, UnknownAccountNumberTypeException {
+    private void testByMegabankAccount(CalculationContext calculationCenterInfo, ServiceProviderAdapter adapter) throws DBException, UnknownAccountNumberTypeException {
         Payment payment = newPayment();
         System.out.println(adapter.acquireAccountDetailsByAccount(calculationCenterInfo, payment, payment.getOutgoingDistrict(), "9876543"));
     }
@@ -65,6 +65,6 @@ public class AcquireAccountCorrectionDetailsTest extends AbstractTest {
 
     @Override
     protected void test(ServiceProviderAdapter adapter) throws Exception {
-        testByAddress(new CalculationCenterInfo(2, "test", ImmutableSet.of(1L)), adapter);
+        testByAddress(new CalculationContext(2, "test", ImmutableSet.of(1L), 3), adapter);
     }
 }

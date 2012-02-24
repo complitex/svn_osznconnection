@@ -14,7 +14,6 @@ import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
 import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
 import org.complitex.dictionary.web.component.MonthDropDownChoice;
 import org.complitex.dictionary.web.component.YearDropDownChoice;
-import org.complitex.osznconnection.file.service.process.ProcessManagerBean;
 import org.odlabs.wiquery.core.javascript.JsStatement;
 import org.odlabs.wiquery.ui.core.JsScopeUiEvent;
 import org.odlabs.wiquery.ui.dialog.Dialog;
@@ -22,6 +21,8 @@ import org.odlabs.wiquery.ui.dialog.Dialog;
 import javax.ejb.EJB;
 import java.io.Serializable;
 import java.util.List;
+import org.complitex.osznconnection.file.service.OsznSessionBean;
+import org.complitex.osznconnection.file.web.model.OrganizationModel;
 import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
 
 /**
@@ -29,28 +30,32 @@ import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrat
  *         Date: 10.12.10 16:52
  */
 public class RequestFileLoadPanel extends Panel {
-    @EJB(name = "ProcessManagerBean")
-    private ProcessManagerBean processManagerBean;
 
     @EJB(name = "OsznOrganizationStrategy")
     private IOsznOrganizationStrategy organizationStrategy;
-
+    @EJB
+    private OsznSessionBean osznSessionBean;
     private final Dialog dialog;
 
-    public static interface ILoader extends Serializable{
-        void load(Long organizationId, String districtCode, int monthFrom, int monthTo, int year);
+    public static interface ILoader extends Serializable {
+
+        void load(long userOrganizationId, long osznId, String districtCode, int monthFrom, int monthTo, int year);
     }
 
-    public RequestFileLoadPanel(String id, String title, final ILoader loader){
+    public RequestFileLoadPanel(String id, String title, final ILoader loader) {
         this(id, title, loader, true);
     }
 
     public RequestFileLoadPanel(String id, String title, final ILoader loader, final boolean showDatePeriod) {
         super(id);
 
-        dialog = new Dialog("dialog");
+        dialog = new Dialog("dialog") {
+
+            {
+                getOptions().putLiteral("width", "auto");
+            }
+        };
         dialog.setModal(true);
-        dialog.setWidth(420);
         dialog.setMinHeight(100);
         dialog.setOpenEvent(JsScopeUiEvent.quickScope(new JsStatement().self().chain("parents", "'.ui-dialog:first'").
                 chain("find", "'.ui-dialog-titlebar-close'").
@@ -67,16 +72,16 @@ public class RequestFileLoadPanel extends Panel {
         Form form = new Form("form");
         dialog.add(form);
 
-        //Организация
-        IModel<List<DomainObject>> osznsModel = new LoadableDetachableModel<List<DomainObject>>() {
+        //ОСЗН
+        final IModel<List<DomainObject>> osznsModel = new LoadableDetachableModel<List<DomainObject>>() {
 
             @Override
             protected List<DomainObject> load() {
                 return organizationStrategy.getAllOSZNs(getLocale());
             }
         };
-        final IModel<DomainObject> organizationModel = new Model<DomainObject>();
-        DomainObjectDisableAwareRenderer renderer = new DomainObjectDisableAwareRenderer() {
+        final IModel<DomainObject> osznModel = new Model<DomainObject>();
+        final DomainObjectDisableAwareRenderer organizationRenderer = new DomainObjectDisableAwareRenderer() {
 
             @Override
             public Object getDisplayValue(DomainObject object) {
@@ -84,10 +89,49 @@ public class RequestFileLoadPanel extends Panel {
             }
         };
 
-        DisableAwareDropDownChoice<DomainObject> organization = new DisableAwareDropDownChoice<DomainObject>("organization", organizationModel,
-                osznsModel, renderer);
-        organization.setRequired(true);
-        form.add(organization);
+        DisableAwareDropDownChoice<DomainObject> oszn = new DisableAwareDropDownChoice<DomainObject>("oszn", osznModel,
+                osznsModel, organizationRenderer);
+        oszn.setRequired(true);
+        form.add(oszn);
+
+        //user organization
+        final WebMarkupContainer userOrganizationContainer = new WebMarkupContainer("userOrganizationContainer");
+        form.add(userOrganizationContainer);
+        final IModel<List<DomainObject>> userOrganizationsModel = new LoadableDetachableModel<List<DomainObject>>() {
+
+            @Override
+            protected List<DomainObject> load() {
+                return (List<DomainObject>) organizationStrategy.getUserOrganizations(getLocale());
+            }
+        };
+        final OrganizationModel userOrganizationModel = new OrganizationModel() {
+
+            private Long userOrganizationId;
+
+            @Override
+            public Long getOrganizationId() {
+                return userOrganizationId;
+            }
+
+            @Override
+            public void setOrganizationId(Long userOrganizationId) {
+                this.userOrganizationId = userOrganizationId;
+            }
+
+            @Override
+            public List<DomainObject> getOrganizations() {
+                return userOrganizationsModel.getObject();
+            }
+        };
+        DisableAwareDropDownChoice<DomainObject> userOrganization = new DisableAwareDropDownChoice<DomainObject>(
+                "userOrganization", userOrganizationModel, userOrganizationsModel, organizationRenderer);
+        userOrganization.setRequired(true);
+        userOrganizationContainer.add(userOrganization);
+        Long currentUserOrganizationId = osznSessionBean.getCurrentUserOrganizationId();
+        if (currentUserOrganizationId != null) {
+            userOrganizationModel.setOrganizationId(currentUserOrganizationId);
+            userOrganizationContainer.setVisible(false);
+        }
 
         final DropDownChoice<Integer> year = new YearDropDownChoice("year", new Model<Integer>());
         year.setRequired(showDatePeriod);
@@ -119,9 +163,9 @@ public class RequestFileLoadPanel extends Panel {
                     return;
                 }
 
-                DomainObject oszn = organizationModel.getObject();
-                loader.load(oszn.getId(), organizationStrategy.getDistrictCode(oszn), f, t, year.getModelObject());
-//                getSession().info(getString("info.start_loading"));
+                final DomainObject oszn = osznModel.getObject();
+                loader.load(userOrganizationModel.getOrganizationId(), oszn.getId(),
+                        organizationStrategy.getDistrictCode(oszn), f, t, year.getModelObject());
 
                 dialog.setAutoOpen(false);
                 dialog.close();
@@ -143,9 +187,8 @@ public class RequestFileLoadPanel extends Panel {
         form.add(cancel);
     }
 
-    public void open(){
+    public void open() {
         dialog.setAutoOpen(true);
         dialog.setVisible(true);
     }
 }
-

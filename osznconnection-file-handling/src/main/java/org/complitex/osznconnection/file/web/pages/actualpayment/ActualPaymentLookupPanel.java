@@ -26,8 +26,8 @@ public class ActualPaymentLookupPanel extends AbstractLookupPanel<ActualPayment>
     @EJB
     private PersonAccountService personAccountService;
 
-    public ActualPaymentLookupPanel(String id, Component... toUpdate) {
-        super(id, toUpdate);
+    public ActualPaymentLookupPanel(String id, long userOrganizationId, Component... toUpdate) {
+        super(id, userOrganizationId, toUpdate);
     }
 
     @Override
@@ -48,22 +48,22 @@ public class ActualPaymentLookupPanel extends AbstractLookupPanel<ActualPayment>
     }
 
     @Override
-    protected void resolveOutgoingAddress(ActualPayment actualPayment) {
-        lookupBean.resolveOutgoingAddress(actualPayment);
+    protected void resolveOutgoingAddress(ActualPayment actualPayment, long userOrganizationId) {
+        lookupBean.resolveOutgoingAddress(actualPayment, userOrganizationId);
     }
 
     @Override
-    protected List<AccountDetail> acquireAccountDetailsByAddress(ActualPayment actualPayment) throws DBException {
-        return lookupBean.acquireAccountDetailsByAddress(actualPayment);
+    protected List<AccountDetail> acquireAccountDetailsByAddress(ActualPayment actualPayment, long userOrganizationId) throws DBException {
+        return lookupBean.acquireAccountDetailsByAddress(actualPayment, userOrganizationId);
     }
 
     @Override
-    protected void updateAccountNumber(ActualPayment actualPayment, String accountNumber) {
-        personAccountService.updateAccountNumber(actualPayment, accountNumber);
+    protected void updateAccountNumber(ActualPayment actualPayment, String accountNumber, long userOrganizationId) {
+        personAccountService.updateAccountNumber(actualPayment, accountNumber, userOrganizationId);
     }
 
     @Override
-    protected String resolveOutgoingDistrict(ActualPayment actualPayment) {
-        return lookupBean.resolveOutgoingDistrict(actualPayment);
+    protected String resolveOutgoingDistrict(ActualPayment actualPayment, long userOrganizationId) {
+        return lookupBean.resolveOutgoingDistrict(actualPayment, userOrganizationId);
     }
 }

@@ -27,8 +27,8 @@ public class PersonAccount implements Serializable {
     private Long calculationCenterId;
     private String oszn;
     private String calculationCenter;
-    private boolean admin;
-    private String organizations;
+    private String userOrganization;
+    private Long userOrganizationId;
     private String puAccountNumber;
 
     public PersonAccount() {
@@ -154,27 +154,27 @@ public class PersonAccount implements Serializable {
         this.streetType = streetType;
     }
 
-    public boolean isAdmin() {
-        return admin;
-    }
-
-    public void setAdmin(boolean admin) {
-        this.admin = admin;
-    }
-
-    public String getOrganizations() {
-        return organizations;
-    }
-
-    public void setOrganizations(String organizations) {
-        this.organizations = organizations;
-    }
-
     public String getPuAccountNumber() {
         return puAccountNumber;
     }
 
     public void setPuAccountNumber(String puAccountNumber) {
         this.puAccountNumber = puAccountNumber;
+    }
+
+    public Long getUserOrganizationId() {
+        return userOrganizationId;
+    }
+
+    public void setUserOrganizationId(Long userOrganizationId) {
+        this.userOrganizationId = userOrganizationId;
+    }
+
+    public String getUserOrganization() {
+        return userOrganization;
+    }
+
+    public void setUserOrganization(String userOrganization) {
+        this.userOrganization = userOrganization;
     }
 }

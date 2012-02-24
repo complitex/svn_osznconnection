@@ -19,6 +19,8 @@
         <result property="oszn" column="oszn"/>
         <result property="calculationCenter" column="calculation_center"/>
         <result property="puAccountNumber" column="pu_account_number"/>
+        <result property="userOrganizationId" column="user_organization_id"/>
+        <result property="userOrganization" column="user_organization"/>
     </resultMap>
 
     <sql id="findAccountsClause">
@@ -33,6 +35,7 @@
              AND TRIM(pa.`last_name`) = TRIM(#{lastName})
              AND pa.`oszn_id` = #{osznId} AND pa.`calc_center_id` = #{calculationCenterId}
              AND pa.`pu_account_number` = #{puAccountNumber}
+             AND pa.`user_organization_id` = #{userOrganizationId}
     </sql>
 
     <select id="findAccounts" parameterType="org.complitex.osznconnection.file.entity.example.PersonAccountExample"
@@ -81,20 +84,24 @@
             <if test="calculationCenterId != null">
                 AND pa.`calc_center_id` = #{calculationCenterId}
             </if>
+            <if test="userOrganizationId != null">
+                AND pa.`user_organization_id` = #{userOrganizationId}
+            </if>
             <if test="puAccountNumber != null">
                 AND pa.`pu_account_number` = #{puAccountNumber}
             </if>
              <if test="not admin">
-                AND pa.`oszn_id` in ${organizations}
+                AND pa.`oszn_id` IN ${outerOrganizationsString}
+                AND pa.`user_organization_id` IN ${userOrganizationsString}
             </if>
         </where>
     </sql>
 
     <insert id="insert" parameterType="org.complitex.osznconnection.file.entity.PersonAccount" keyProperty="id" useGeneratedKeys="true">
         INSERT INTO `person_account` (`city`, `street_type`, `street`, `building_num`, `building_corp`, `apartment`,
-                `account_number`, `first_name`, `middle_name`, `last_name`, `oszn_id`, `calc_center_id`, `pu_account_number`)
+                `account_number`, `first_name`, `middle_name`, `last_name`, `oszn_id`, `calc_center_id`, `pu_account_number`, `user_organization_id`)
         VALUES (#{city}, #{streetType}, #{street}, #{buildingNumber}, #{buildingCorp}, #{apartment},
-                #{accountNumber}, #{firstName}, #{middleName}, #{lastName}, #{osznId}, #{calculationCenterId}, #{puAccountNumber})
+                #{accountNumber}, #{firstName}, #{middleName}, #{lastName}, #{osznId}, #{calculationCenterId}, #{puAccountNumber}, #{userOrganizationId})
     </insert>
 
      <update id="updateAccountNumber" parameterType="org.complitex.osznconnection.file.entity.PersonAccount">
@@ -109,7 +116,8 @@
     <select id="find" parameterType="org.complitex.osznconnection.file.entity.example.PersonAccountExample"
                 resultMap="org.complitex.osznconnection.file.service.PersonAccountLocalBean.personAccount">
         SELECT pa.*, IFNULL(oszn_value.`value`, oszn_sys_value.`value`) oszn,
-                     IFNULL(calc_value.`value`, calc_sys_value.`value`) calculation_center
+                     IFNULL(calc_value.`value`, calc_sys_value.`value`) calculation_center,
+                     IFNULL(user_value.`value`, user_sys_value.`value`) user_organization
         FROM `person_account` pa
             JOIN `organization_attribute` oszn_a ON (oszn_a.`object_id` = pa.`oszn_id` AND oszn_a.`status` = 'ACTIVE' AND oszn_a.`attribute_type_id` = 900)
             LEFT JOIN `organization_string_culture` oszn_value ON (oszn_value.`id` = oszn_a.`value_id` AND oszn_value.`locale_id` = #{localeId})
@@ -118,21 +126,14 @@
             JOIN `organization_attribute` calc_a ON (calc_a.`object_id` = pa.`calc_center_id` AND calc_a.`status` = 'ACTIVE' AND calc_a.`attribute_type_id` = 900)
             LEFT JOIN `organization_string_culture` calc_value ON (calc_value.`id` = calc_a.`value_id` AND calc_value.`locale_id` = #{localeId})
             JOIN `organization_string_culture` calc_sys_value ON (calc_sys_value.`id` = calc_a.`value_id` AND calc_sys_value.`locale_id` = (SELECT l.`id` FROM `locales` l WHERE l.`system` = 1))
+            
+            LEFT JOIN `organization_attribute` user_a ON (user_a.`object_id` = pa.`user_organization_id` AND user_a.`status` = 'ACTIVE' AND user_a.`attribute_type_id` = 900)
+            LEFT JOIN `organization_string_culture` user_value ON (user_value.`id` = user_a.`value_id` AND user_value.`locale_id` = #{localeId})
+            JOIN `organization_string_culture` user_sys_value ON (user_sys_value.`id` = user_a.`value_id` AND user_sys_value.`locale_id` = (SELECT l.`id` FROM `locales` l WHERE l.`system` = 1))
 
         <include refid="org.complitex.osznconnection.file.service.PersonAccountLocalBean.filter"/>
         <if test="orderByClause != null">
-            ORDER BY
-            <choose>
-                <when test="orderByClause == 'oszn'">
-                    oszn_value.`value`
-                </when>
-                <when test="orderByClause == 'calculation_center'">
-                    calc_value.`value`
-                </when>
-                <otherwise>
-                    ${orderByClause}
-                </otherwise>
-            </choose>
+            ORDER BY ${orderByClause}
             <choose>
                 <when test="asc">
                     ASC

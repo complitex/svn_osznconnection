@@ -10,7 +10,7 @@ import org.complitex.osznconnection.file.entity.Benefit;
 
 import java.util.Date;
 import org.complitex.osznconnection.file.entity.BenefitDBF;
-import org.complitex.osznconnection.file.entity.CalculationCenterInfo;
+import org.complitex.osznconnection.file.entity.CalculationContext;
 import org.complitex.osznconnection.file.service_provider.exception.DBException;
 
 /**
@@ -30,7 +30,7 @@ public class ProcessBenefitTest extends AbstractTest {
             }
 
             @Override
-            protected String findOSZNPrivilegeCode(Long internalPrivilege, long osznId) {
+            protected String findOSZNPrivilegeCode(Long internalPrivilege, long osznId, long userOrganizationId) {
                 return "11";
             }
         };
@@ -48,7 +48,7 @@ public class ProcessBenefitTest extends AbstractTest {
         b.setOrganizationId(1L);
 
         try {
-            adapter.processBenefit(new CalculationCenterInfo(2, "test", ImmutableSet.of(1L)), new Date(), Lists.newArrayList(b));
+            adapter.processBenefit(new CalculationContext(2, "test", ImmutableSet.of(1L), 3), new Date(), Lists.newArrayList(b));
         } catch (DBException e) {
             System.out.println("DB error.");
         }

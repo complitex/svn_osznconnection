@@ -40,6 +40,7 @@ import org.apache.wicket.util.string.Strings;
 import org.complitex.osznconnection.file.web.model.OrganizationModel;
 import org.complitex.osznconnection.file.web.pages.correction.AbstractCorrectionList;
 import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
+import org.complitex.osznconnection.organization_type.strategy.OsznOrganizationTypeStrategy;
 
 /**
  * Абстрактная панель для редактирования коррекций.
@@ -58,6 +59,7 @@ public abstract class AbstractCorrectionEditPanel extends Panel {
     private Correction correction;
     private WebMarkupContainer form;
     private Panel correctionInputPanel;
+    private IModel<List<DomainObject>> allOuterOrganizationsModel;
 
     public AbstractCorrectionEditPanel(String id, String entity, Long correctionId) {
         super(id);
@@ -69,7 +71,7 @@ public abstract class AbstractCorrectionEditPanel extends Panel {
             correction.setEntity(entity);
 
             //Проверка доступа к данным
-            if (!osznSessionBean.isAuthorized(correction.getOrganizationId())) {
+            if (!osznSessionBean.isAuthorized(correction.getOrganizationId(), correction.getUserOrganizationId())) {
                 throw new UnauthorizedInstantiationException(this.getClass());
             }
         }
@@ -86,7 +88,9 @@ public abstract class AbstractCorrectionEditPanel extends Panel {
     }
 
     protected Correction newObjectCorrection(String entity) {
-        return new Correction(entity);
+        Correction c = new Correction(entity);
+        c.setUserOrganizationId(osznSessionBean.getCurrentUserOrganizationId());
+        return c;
     }
 
     protected Correction getModel() {
@@ -126,6 +130,31 @@ public abstract class AbstractCorrectionEditPanel extends Panel {
             error(getNullObjectErrorMessage());
             valid = false;
         }
+
+        //calculation center must have null user organization but oszn must have non null user organization.
+        if (isNew()) {
+            boolean isOszn = false;
+            //find outer organization object and determine whether it is oszn or calculation center.
+            for (DomainObject outerOrganization : allOuterOrganizationsModel.getObject()) {
+                if (outerOrganization.getId().equals(correction.getOrganizationId())) {
+                    //choosen outer organization found.
+                    isOszn = outerOrganization.getAttribute(IOsznOrganizationStrategy.ORGANIZATION_TYPE).getValueId().
+                            equals(OsznOrganizationTypeStrategy.OSZN);
+                    break;
+                }
+            }
+
+            if (isOszn && correction.getUserOrganizationId() == null) {
+                error(getString("oszn_must_have_user_organization"));
+                valid = false;
+            }
+            
+            if(!isOszn && correction.getUserOrganizationId() != null){
+                error(getString("calculation_center_must_not_have_user_organization"));
+                valid = false;
+            }
+        }
+
 
         if (valid && validateExistence()) {
             error(getString("exist"));
@@ -219,7 +248,7 @@ public abstract class AbstractCorrectionEditPanel extends Panel {
         FeedbackPanel messages = new FeedbackPanel("messages");
         add(messages);
 
-        form = new Form("form");
+        form = new Form<Void>("form");
         add(form);
 
         WebMarkupContainer codeRequiredContainer = new WebMarkupContainer("codeRequiredContainer");
@@ -234,7 +263,7 @@ public abstract class AbstractCorrectionEditPanel extends Panel {
 
         form.add(code);
 
-        final IModel<List<DomainObject>> allOuterOrganizationsModel = new LoadableDetachableModel<List<DomainObject>>() {
+        allOuterOrganizationsModel = new LoadableDetachableModel<List<DomainObject>>() {
 
             @Override
             protected List<DomainObject> load() {
@@ -242,7 +271,7 @@ public abstract class AbstractCorrectionEditPanel extends Panel {
             }
         };
 
-        IModel<DomainObject> outerOrganizationModel = new OrganizationModel() {
+        final IModel<DomainObject> outerOrganizationModel = new OrganizationModel() {
 
             @Override
             public Long getOrganizationId() {
@@ -259,7 +288,7 @@ public abstract class AbstractCorrectionEditPanel extends Panel {
                 return allOuterOrganizationsModel.getObject();
             }
         };
-        DomainObjectDisableAwareRenderer renderer = new DomainObjectDisableAwareRenderer() {
+        final DomainObjectDisableAwareRenderer organizationRenderer = new DomainObjectDisableAwareRenderer() {
 
             @Override
             public Object getDisplayValue(DomainObject object) {
@@ -267,7 +296,7 @@ public abstract class AbstractCorrectionEditPanel extends Panel {
             }
         };
         final DisableAwareDropDownChoice<DomainObject> organization = new DisableAwareDropDownChoice<DomainObject>("organization",
-                outerOrganizationModel, allOuterOrganizationsModel, renderer);
+                outerOrganizationModel, allOuterOrganizationsModel, organizationRenderer);
         if (freezeOrganization()) {
             organization.add(new AjaxFormComponentUpdatingBehavior("onchange") {
 
@@ -284,6 +313,38 @@ public abstract class AbstractCorrectionEditPanel extends Panel {
         organization.setRequired(true);
         organization.setEnabled(isNew());
         form.add(organization);
+
+        //user organization
+        final IModel<List<DomainObject>> allUserOrganizationsModel = new LoadableDetachableModel<List<DomainObject>>() {
+
+            @Override
+            protected List<DomainObject> load() {
+                return (List<DomainObject>) organizationStrategy.getUserOrganizations(getLocale());
+            }
+        };
+
+        final IModel<DomainObject> userOrganizationModel = new OrganizationModel() {
+
+            @Override
+            public Long getOrganizationId() {
+                return correction.getUserOrganizationId();
+            }
+
+            @Override
+            public void setOrganizationId(Long userOrganizationId) {
+                correction.setUserOrganizationId(userOrganizationId);
+            }
+
+            @Override
+            public List<DomainObject> getOrganizations() {
+                return allUserOrganizationsModel.getObject();
+            }
+        };
+        final DisableAwareDropDownChoice<DomainObject> userOrganization = new DisableAwareDropDownChoice<DomainObject>("userOrganization",
+                userOrganizationModel, allUserOrganizationsModel, organizationRenderer);
+        userOrganization.setNullValid(true);
+        userOrganization.setEnabled(isNew() && osznSessionBean.isAdmin());
+        form.add(userOrganization);
 
         if (isNew()) {
             correction.setInternalOrganizationId(IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID);
@@ -308,7 +369,7 @@ public abstract class AbstractCorrectionEditPanel extends Panel {
             }
         };
         DisableAwareDropDownChoice<DomainObject> internalOrganization = new DisableAwareDropDownChoice<DomainObject>("internalOrganization",
-                internalOrganizationModel, internalOrganizations, renderer);
+                internalOrganizationModel, internalOrganizations, organizationRenderer);
         internalOrganization.setEnabled(false);
         form.add(internalOrganization);
 
@@ -346,4 +407,3 @@ public abstract class AbstractCorrectionEditPanel extends Panel {
         form.add(cancel);
     }
 }
-

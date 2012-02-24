@@ -15,6 +15,7 @@ public class CorrectionExample implements Serializable {
     private String correction;
     private String internalObject;
     private Long organizationId;
+    private Long userOrganizationId;
     private Long internalOrganizationId;
     private Long objectId;
     private String code;
@@ -26,9 +27,9 @@ public class CorrectionExample implements Serializable {
     private boolean asc;
     private Long localeId;
     private Long parentId;
-
     private boolean admin;
-    private String organizations;
+    private String outerOrganizationsString;
+    private String userOrganizationsString;
 
     public boolean isAsc() {
         return asc;
@@ -150,11 +151,27 @@ public class CorrectionExample implements Serializable {
         this.admin = admin;
     }
 
-    public String getOrganizations() {
-        return organizations;
+    public String getOuterOrganizationsString() {
+        return outerOrganizationsString;
     }
 
-    public void setOrganizations(String organizations) {
-        this.organizations = organizations;
+    public void setOuterOrganizationsString(String outerOrganizationsString) {
+        this.outerOrganizationsString = outerOrganizationsString;
+    }
+
+    public String getUserOrganizationsString() {
+        return userOrganizationsString;
+    }
+
+    public void setUserOrganizationsString(String userOrganizationsString) {
+        this.userOrganizationsString = userOrganizationsString;
+    }
+
+    public Long getUserOrganizationId() {
+        return userOrganizationId;
+    }
+
+    public void setUserOrganizationId(Long userOrganizationId) {
+        this.userOrganizationId = userOrganizationId;
     }
 }

@@ -78,6 +78,12 @@ public class RequestFileGroup implements IExecutorObject{
         if (benefitFile != null) return benefitFile.getOrganizationId();
         return -1L;
     }
+    
+    public Long getUserOrganizationId(){
+        if (paymentFile != null) return paymentFile.getUserOrganizationId();
+        if (benefitFile != null) return benefitFile.getUserOrganizationId();
+        return -1L;
+    }
 
     public int getRegistry(){
         if (paymentFile != null) return paymentFile.getRegistry();

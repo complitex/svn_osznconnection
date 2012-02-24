@@ -95,14 +95,14 @@ public final class ActualPaymentList extends TemplatePage {
     }
 
     private void init() {
-        final RequestFile requestFile = requestFileBean.findById(fileId);
+        final RequestFile actualPaymentFile = requestFileBean.findById(fileId);
 
         //Проверка доступа к данным
-        if (!osznSessionBean.isAuthorized(requestFile.getOrganizationId())) {
+        if (!osznSessionBean.isAuthorized(actualPaymentFile.getOrganizationId(), actualPaymentFile.getUserOrganizationId())) {
             throw new UnauthorizedInstantiationException(this.getClass());
         }
 
-        String label = getStringFormat("label", requestFile.getDirectory(), File.separator, requestFile.getName());
+        String label = getStringFormat("label", actualPaymentFile.getDirectory(), File.separator, actualPaymentFile.getName());
 
         add(new Label("title", label));
         add(new Label("label", label));
@@ -179,32 +179,36 @@ public final class ActualPaymentList extends TemplatePage {
 
         //Панель коррекции адреса
         final AddressCorrectionPanel<ActualPayment> addressCorrectionPanel = new AddressCorrectionPanel<ActualPayment>("addressCorrectionPanel",
-                content, statusDetailPanel) {
+                actualPaymentFile.getUserOrganizationId(), content, statusDetailPanel) {
 
             @Override
             protected void correctAddress(ActualPayment actualPayment, CORRECTED_ENTITY entity, Long cityId, Long streetTypeId, Long streetId,
-                    Long buildingId) throws DublicateCorrectionException, MoreOneCorrectionException, NotFoundCorrectionException {
-                addressService.correctLocalAddress(actualPayment, entity, cityId, streetTypeId, streetId, buildingId);
+                    Long buildingId, long userOrganizationId) 
+                    throws DublicateCorrectionException, MoreOneCorrectionException, NotFoundCorrectionException {
+                addressService.correctLocalAddress(actualPayment, entity, cityId, streetTypeId, streetId, buildingId, userOrganizationId);
             }
         };
         add(addressCorrectionPanel);
 
         //Панель поиска
-        final ActualPaymentLookupPanel lookupPanel = new ActualPaymentLookupPanel("lookupPanel", content, statusDetailPanel);
+        final ActualPaymentLookupPanel lookupPanel = new ActualPaymentLookupPanel("lookupPanel", actualPaymentFile.getUserOrganizationId(),
+                content, statusDetailPanel);
         add(lookupPanel);
 
         //Коррекция личного счета
         final AccountNumberCorrectionPanel<ActualPayment> accountNumberCorrectionPanel =
-                new AccountNumberCorrectionPanel<ActualPayment>("accountNumberCorrectionPanel", content, statusDetailPanel) {
+                new AccountNumberCorrectionPanel<ActualPayment>("accountNumberCorrectionPanel", actualPaymentFile.getUserOrganizationId(),
+                content, statusDetailPanel) {
 
                     @Override
-                    protected void correctAccountNumber(ActualPayment actualPayment, String accountNumber) {
-                        personAccountService.updateAccountNumber(actualPayment, accountNumber);
+                    protected void correctAccountNumber(ActualPayment actualPayment, String accountNumber, long userOrganizationId) {
+                        personAccountService.updateAccountNumber(actualPayment, accountNumber, userOrganizationId);
                     }
 
                     @Override
-                    protected List<AccountDetail> acquireAccountDetailsByAddress(ActualPayment request) throws DBException {
-                        return lookupPanel.acquireAccountDetailsByAddress(request);
+                    protected List<AccountDetail> acquireAccountDetailsByAddress(ActualPayment request, long userOrganizationId)
+                            throws DBException {
+                        return lookupPanel.acquireAccountDetailsByAddress(request, userOrganizationId);
                     }
                 };
         add(accountNumberCorrectionPanel);

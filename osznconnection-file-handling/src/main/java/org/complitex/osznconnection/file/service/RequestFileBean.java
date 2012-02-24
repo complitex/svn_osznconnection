@@ -5,8 +5,6 @@ import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.entity.RequestFileFilter;
 import org.complitex.osznconnection.file.entity.RequestFileStatus;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -24,9 +22,8 @@ import java.util.List;
  */
 @Stateless(name = "RequestFileBean")
 public class RequestFileBean extends AbstractBean {
-    private static final Logger log = LoggerFactory.getLogger(RequestFileBean.class);
-    public static final String MAPPING_NAMESPACE = RequestFileBean.class.getName();
 
+    public static final String MAPPING_NAMESPACE = RequestFileBean.class.getName();
     @EJB
     private OsznSessionBean osznSessionBean;
 
@@ -35,32 +32,28 @@ public class RequestFileBean extends AbstractBean {
     }
 
     @SuppressWarnings({"unchecked"})
-    public List<RequestFile> getRequestFiles(RequestFileFilter filter){
-        filter.setAdmin(osznSessionBean.isAdmin());
-        filter.setOrganizations(osznSessionBean.getAllOuterOrganizationString());
-
+    public List<RequestFile> getRequestFiles(RequestFileFilter filter) {
+        osznSessionBean.prepareFilterForPermissionCheck(filter);
         return sqlSession().selectList(MAPPING_NAMESPACE + ".selectRequestFiles", filter);
     }
 
-    public int size(RequestFileFilter filter){
-        filter.setAdmin(osznSessionBean.isAdmin());
-        filter.setOrganizations(osznSessionBean.getAllOuterOrganizationString());
-
+    public int size(RequestFileFilter filter) {
+        osznSessionBean.prepareFilterForPermissionCheck(filter);
         return (Integer) sqlSession().selectOne(MAPPING_NAMESPACE + ".selectRequestFilesCount", filter);
     }
 
-    public void save(RequestFile requestFile){
-        if (requestFile.getId() == null){
+    public void save(RequestFile requestFile) {
+        if (requestFile.getId() == null) {
             sqlSession().insert(MAPPING_NAMESPACE + ".insertRequestFile", requestFile);
-        }else{
+        } else {
             sqlSession().update(MAPPING_NAMESPACE + ".updateRequestFile", requestFile);
         }
     }
 
     @Transactional
-    public void delete(RequestFile requestFile){
+    public void delete(RequestFile requestFile) {
         if (requestFile.getType() != null) {
-            switch (requestFile.getType()){
+            switch (requestFile.getType()) {
                 case BENEFIT:
                     sqlSession().delete(BenefitBean.MAPPING_NAMESPACE + ".deleteBenefits", requestFile.getId());
                     break;
@@ -80,10 +73,10 @@ public class RequestFileBean extends AbstractBean {
         sqlSession().delete(MAPPING_NAMESPACE + ".deleteRequestFile", requestFile.getId());
     }
 
-    public boolean checkLoaded(RequestFile requestFile){
+    public boolean checkLoaded(RequestFile requestFile) {
         Long id = (Long) sqlSession().selectOne(MAPPING_NAMESPACE + ".selectLoadedId", requestFile);
 
-        if (id != null){
+        if (id != null) {
             requestFile.setId(id);
             return true;
         }
@@ -93,9 +86,9 @@ public class RequestFileBean extends AbstractBean {
 
     @Transactional
     @SuppressWarnings({"unchecked"})
-    public void deleteTarif(Long organizationId){
+    public void deleteTarif(Long organizationId) {
         List<RequestFile> tarifs = sqlSession().selectList(MAPPING_NAMESPACE + ".selectTarifFiles", organizationId);
-        for (RequestFile tarif : tarifs){
+        for (RequestFile tarif : tarifs) {
             delete(tarif);
         }
     }
@@ -104,7 +97,7 @@ public class RequestFileBean extends AbstractBean {
         return (RequestFileStatus) sqlSession().selectOne(MAPPING_NAMESPACE + ".selectRequestFileStatus", requestFile);
     }
 
-    public void fixProcessingOnInit(){
+    public void fixProcessingOnInit() {
         sqlSession().update(MAPPING_NAMESPACE + ".fixLoadingOnInit");
         sqlSession().update(MAPPING_NAMESPACE + ".fixBingingOnInit");
         sqlSession().update(MAPPING_NAMESPACE + ".fixFillingOnInit");

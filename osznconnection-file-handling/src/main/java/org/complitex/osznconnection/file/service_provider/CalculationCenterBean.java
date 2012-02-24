@@ -7,8 +7,7 @@ package org.complitex.osznconnection.file.service_provider;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import org.complitex.dictionary.entity.DomainObject;
-import org.complitex.dictionary.service.SessionBean;
-import org.complitex.osznconnection.file.entity.CalculationCenterInfo;
+import org.complitex.osznconnection.file.entity.CalculationContext;
 import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
 
 /**
@@ -18,21 +17,22 @@ import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrat
 @Stateless
 public class CalculationCenterBean {
 
-    @EJB
-    private SessionBean sessionBean;
     @EJB(name = "OsznOrganizationStrategy")
     private IOsznOrganizationStrategy organizationStrategy;
 
-    public CalculationCenterInfo getInfo() {
-        DomainObject mainUserOrganization = sessionBean.getMainUserOrganization();
-        if (mainUserOrganization == null || mainUserOrganization.getId() == null) {
-            throw new RuntimeException("User hasn't associated organization.");
-        }
-
-        final long calculationCenterOrganizationId = organizationStrategy.getCalculationCenterId(mainUserOrganization);
-        CalculationCenterInfo calculationCenterInfo = new CalculationCenterInfo(calculationCenterOrganizationId,
+    private CalculationContext getCalculationContext(DomainObject userOrganization) {
+        final long calculationCenterOrganizationId = organizationStrategy.getCalculationCenterId(userOrganization);
+        CalculationContext calculationCenterInfo = new CalculationContext(calculationCenterOrganizationId,
                 organizationStrategy.getDataSource(calculationCenterOrganizationId),
-                organizationStrategy.getServiceProviderTypeIds(calculationCenterOrganizationId));
+                organizationStrategy.getServiceProviderTypeIds(calculationCenterOrganizationId), userOrganization.getId());
         return calculationCenterInfo;
+    }
+
+    public CalculationContext getContext(long userOrganizationId) {
+        DomainObject userOrganization = organizationStrategy.findById(userOrganizationId, true);
+        if (userOrganization == null || userOrganization.getId() == null || userOrganization.getId() <= 0) {
+            throw new RuntimeException("User organization was not found.");
+        }
+        return getCalculationContext(userOrganization);
     }
 }

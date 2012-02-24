@@ -13,8 +13,12 @@
         <form action="" wicket:id="form">
             <table border="0" cellspacing="0" cellpadding="0" class="tbForm">
                 <tr>
-                    <th><wicket:message key="organization"/><b class="blue">*</b>:</th>
-                    <td><select wicket:id="organization"></select></td>
+                    <th><wicket:message key="oszn"/><b class="blue">*</b>:</th>
+                    <td><select wicket:id="oszn"></select></td>
+                </tr>
+                <tr wicket:id="userOrganizationContainer">
+                    <th><wicket:message key="userOrganization"/><b class="blue">*</b>:</th>
+                    <td><select wicket:id="userOrganization"></select></td>
                 </tr>
                 <tr>
                     <th> <wicket:message key="year"/><b class="blue">*</b>:</th>

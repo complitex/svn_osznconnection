@@ -9,7 +9,8 @@ import java.util.Date;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 03.11.10 13:24
  */
-public class RequestFileGroupFilter  extends AbstractFilter {
+public class RequestFileGroupFilter extends AbstractFilter {
+
     private Long id;
     private Long groupId;
     private Date loaded;
@@ -26,10 +27,11 @@ public class RequestFileGroupFilter  extends AbstractFilter {
     private Integer bindedRecordCount;
     private Integer filledRecordCount;
     private DomainObject organization;
+    private DomainObject userOrganization;
     private RequestFile.TYPE type;
     private RequestFileStatus status;
-
-    private String organizations;
+    private String userOrganizationsString;
+    private String outerOrganizationsString;
 
     public Long getId() {
         return id;
@@ -175,11 +177,27 @@ public class RequestFileGroupFilter  extends AbstractFilter {
         this.status = status;
     }
 
-    public String getOrganizations() {
-        return organizations;
+    public String getUserOrganizationsString() {
+        return userOrganizationsString;
     }
 
-    public void setOrganizations(String organizations) {
-        this.organizations = organizations;
+    public void setUserOrganizationsString(String userOrganizationsString) {
+        this.userOrganizationsString = userOrganizationsString;
+    }
+
+    public String getOuterOrganizationsString() {
+        return outerOrganizationsString;
+    }
+
+    public void setOuterOrganizationsString(String outerOrganizationsString) {
+        this.outerOrganizationsString = outerOrganizationsString;
+    }
+
+    public DomainObject getUserOrganization() {
+        return userOrganization;
+    }
+
+    public void setUserOrganization(DomainObject userOrganization) {
+        this.userOrganization = userOrganization;
     }
 }

@@ -18,6 +18,7 @@ public class Correction implements Serializable {
     private String code;
     private Long organizationId;
     private String organization;
+    private String userOrganization;
     private Long objectId;
     private Long internalParentId;
     private Long internalOrganizationId;
@@ -25,7 +26,7 @@ public class Correction implements Serializable {
     private Long parentId;
     private Correction parent;
     private String displayObject;
-
+    private Long userOrganizationId;
     private boolean editable = true;
 
     public Correction() {
@@ -145,5 +146,21 @@ public class Correction implements Serializable {
 
     public void setEditable(boolean editable) {
         this.editable = editable;
+    }
+
+    public Long getUserOrganizationId() {
+        return userOrganizationId;
+    }
+
+    public void setUserOrganizationId(Long userOrganizationId) {
+        this.userOrganizationId = userOrganizationId;
+    }
+
+    public String getUserOrganization() {
+        return userOrganization;
+    }
+
+    public void setUserOrganization(String userOrganization) {
+        this.userOrganization = userOrganization;
     }
 }

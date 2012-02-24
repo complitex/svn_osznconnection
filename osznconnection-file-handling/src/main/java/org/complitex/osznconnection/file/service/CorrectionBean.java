@@ -40,7 +40,8 @@ public class CorrectionBean extends AbstractBean {
         CODE("organization_code"),
         ORGANIZATION("organization"),
         INTERNAL_ORGANIZATION("internalOrganization"),
-        OBJECT("object");
+        OBJECT("object"),
+        USER_ORGANIZATION("userOrganization");
         private String orderBy;
 
         private OrderBy(String orderBy) {
@@ -54,9 +55,7 @@ public class CorrectionBean extends AbstractBean {
 
     @Transactional
     public List<Correction> find(CorrectionExample example) {
-        example.setAdmin(osznSessionBean.isAdmin());
-        example.setOrganizations(osznSessionBean.getAllOuterOrganizationString());
-
+        osznSessionBean.prepareExampleForPermissionCheck(example);
         List<Correction> corrections = sqlSession().selectList(CORRECTION_BEAN_MAPPING_NAMESPACE + ".find", example);
         setUpDisplayObject(corrections, example.getEntity(), example.getLocaleId());
         return corrections;
@@ -80,8 +79,7 @@ public class CorrectionBean extends AbstractBean {
 
     @Transactional
     public int count(CorrectionExample example) {
-        example.setAdmin(osznSessionBean.isAdmin());
-        example.setOrganizations(osznSessionBean.getAllOuterOrganizationString());
+        osznSessionBean.prepareExampleForPermissionCheck(example);
         return (Integer) sqlSession().selectOne(CORRECTION_BEAN_MAPPING_NAMESPACE + ".count", example);
     }
 

@@ -27,8 +27,8 @@ public class PaymentLookupPanel extends AbstractLookupPanel<Payment> {
     @EJB
     private PersonAccountService personAccountService;
 
-    public PaymentLookupPanel(String id, Component... toUpdate) {
-        super(id, toUpdate);
+    public PaymentLookupPanel(String id, long userOrganizationId, Component... toUpdate) {
+        super(id, userOrganizationId, toUpdate);
     }
 
     @Override
@@ -48,22 +48,22 @@ public class PaymentLookupPanel extends AbstractLookupPanel<Payment> {
     }
 
     @Override
-    protected void updateAccountNumber(Payment payment, String accountNumber) {
-        personAccountService.updateAccountNumber(payment, accountNumber);
+    protected void updateAccountNumber(Payment payment, String accountNumber, long userOrganizationId) {
+        personAccountService.updateAccountNumber(payment, accountNumber, userOrganizationId);
     }
 
     @Override
-    protected void resolveOutgoingAddress(Payment payment) {
-        lookupBean.resolveOutgoingAddress(payment);
+    protected void resolveOutgoingAddress(Payment payment, long userOrganizationId) {
+        lookupBean.resolveOutgoingAddress(payment, userOrganizationId);
     }
 
     @Override
-    protected List<AccountDetail> acquireAccountDetailsByAddress(Payment payment) throws DBException {
-        return lookupBean.acquireAccountDetailsByAddress(payment);
+    protected List<AccountDetail> acquireAccountDetailsByAddress(Payment payment, long userOrganizationId) throws DBException {
+        return lookupBean.acquireAccountDetailsByAddress(payment, userOrganizationId);
     }
 
     @Override
-    protected String resolveOutgoingDistrict(Payment payment) {
-        return lookupBean.resolveOutgoingDistrict(payment);
+    protected String resolveOutgoingDistrict(Payment payment, long userOrganizationId) {
+        return lookupBean.resolveOutgoingDistrict(payment, userOrganizationId);
     }
 }

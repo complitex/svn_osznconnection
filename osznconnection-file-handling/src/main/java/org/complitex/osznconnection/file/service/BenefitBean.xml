@@ -106,7 +106,7 @@
     <delete id="deleteBenefits" parameterType="long">
         delete from `benefit` where `request_file_id` = #{id};
     </delete>
-
+    
     <sql id="filter">
         <if test="account != null">
             AND b.`OWN_NUM_SR` LIKE CONCAT('%',#{account},'%')
@@ -271,19 +271,6 @@
         AND p.`FROG` > 0
         AND bf.`id` = #{fileId} AND p.`account_number` = #{accountNumber}
     </select>
-
-    <!--<select id="isMarkEqualToBenefitCount" parameterType="hashmap" resultType="int">
-        SELECT (SELECT DISTINCT p.`MARK` FROM `payment` p
-        JOIN `request_file` pf ON p.`request_file_id` = pf.`id`
-        JOIN `benefit` b ON b.`OWN_NUM_SR` = p.`OWN_NUM_SR`
-        JOIN `request_file` bf ON bf.`id` = b.`request_file_id`
-        WHERE (bf.`organization_id` = pf.`organization_id`) AND (EXTRACT(YEAR_MONTH FROM bf.`date`) = EXTRACT(YEAR_MONTH FROM pf.`date`))
-        AND bf.`id` = #{fileId}) -
-        (SELECT COUNT(*) FROM `benefit` b
-        JOIN `request_file` bf ON bf.`id` = b.`request_file_id`
-        WHERE bf.`id` = #{fileId} AND b.`account_number` = #{accountNumber})
-        FROM DUAL
-    </select>-->
 
     <select id="allAccountNumbers" parameterType="hashmap" resultType="string">
         SELECT DISTINCT b.`account_number` FROM `benefit` b

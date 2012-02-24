@@ -127,7 +127,7 @@ public class LoadUtil {
         return requestFile;
     }
 
-    public static LoadGroupParameter getLoadParameter(Long organizationId, String districtCode, int monthFrom, int monthTo, int year)
+    public static LoadGroupParameter getLoadParameter(Long osznId, String districtCode, int monthFrom, int monthTo, int year)
             throws StorageNotFoundException {
 
         Map<String, Map<String, RequestFileGroup>> requestFileGroupsMap = new HashMap<String, Map<String, RequestFileGroup>>();
@@ -142,7 +142,7 @@ public class LoadUtil {
 
                 RequestFileGroup group = new RequestFileGroup();
 
-                group.setPaymentFile(newRequestFile(file, RequestFile.TYPE.PAYMENT, organizationId, month, year));
+                group.setPaymentFile(newRequestFile(file, RequestFile.TYPE.PAYMENT, osznId, month, year));
 
                 payments.remove(i);
                 i--;
@@ -166,7 +166,7 @@ public class LoadUtil {
                     month, year);
 
             for (File file : benefits){
-                RequestFile requestFile = newRequestFile(file, RequestFile.TYPE.BENEFIT, organizationId, month, year);
+                RequestFile requestFile = newRequestFile(file, RequestFile.TYPE.BENEFIT, osznId, month, year);
 
                 Map<String, RequestFileGroup> map = requestFileGroupsMap.get(file.getParent());
 
@@ -200,7 +200,7 @@ public class LoadUtil {
         return new LoadGroupParameter(requestFileGroups, linkError);
     }
 
-    public static List<RequestFile> getTarifs(Long organizationId, String districtCode, int monthFrom, int monthTo, int year)
+    public static List<RequestFile> getTarifs(Long osznId, String districtCode, int monthFrom, int monthTo, int year)
             throws StorageNotFoundException {
         List<File> files = getInputRequestFiles(districtCode, monthFrom, monthTo, year, TARIF_PAYMENT_FILENAME_MASK);
 
@@ -215,7 +215,7 @@ public class LoadUtil {
             requestFile.setAbsolutePath(file.getAbsolutePath());
             requestFile.setDirectory(RequestFileStorage.getInstance().getRelativeParent(file,
                     FileHandlingConfig.LOAD_INPUT_REQUEST_FILE_STORAGE_DIR));
-            requestFile.setOrganizationId(organizationId);
+            requestFile.setOrganizationId(osznId);
             requestFile.setYear(year);
             requestFile.setType(RequestFile.TYPE.TARIF);
 
@@ -225,7 +225,7 @@ public class LoadUtil {
         return tarifs;
     }
 
-     public static List<RequestFile> getActualPayments(Long organizationId, String districtCode, int monthFrom,
+     public static List<RequestFile> getActualPayments(Long osznId, String districtCode, int monthFrom,
                                                        int monthTo, int year) throws StorageNotFoundException {
          List<RequestFile> actualPayments = new ArrayList<RequestFile>();
 
@@ -241,7 +241,7 @@ public class LoadUtil {
                  requestFile.setAbsolutePath(file.getAbsolutePath());
                  requestFile.setDirectory(RequestFileStorage.getInstance().getRelativeParent(file,
                          FileHandlingConfig.LOAD_INPUT_ACTUAL_PAYMENT_FILE_STORAGE_DIR));
-                 requestFile.setOrganizationId(organizationId);
+                 requestFile.setOrganizationId(osznId);
                  requestFile.setMonth(month);
                  requestFile.setYear(year);
                  requestFile.setType(RequestFile.TYPE.ACTUAL_PAYMENT);
