@@ -6,7 +6,6 @@ import org.complitex.dictionary.service.IImportListener;
 import org.complitex.dictionary.service.exception.ImportFileNotFoundException;
 import org.complitex.dictionary.service.exception.ImportFileReadException;
 import org.complitex.dictionary.service.exception.ImportObjectLinkException;
-import org.complitex.osznconnection.file.entity.CorrectionImportFile;
 import org.complitex.osznconnection.ownership.strategy.OwnershipStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,12 +21,11 @@ import static org.complitex.osznconnection.file.entity.CorrectionImportFile.OWNE
  *         Date: 02.03.11 15:22
  */
 @Stateless
-public class OwnershipCorrectionImportService extends AbstractImportService{
-    private final static Logger log = LoggerFactory.getLogger(OwnershipCorrectionImportService.class);
+public class OwnershipCorrectionImportService extends AbstractImportService {
 
+    private final static Logger log = LoggerFactory.getLogger(OwnershipCorrectionImportService.class);
     @EJB
     private OwnershipStrategy ownershipStrategy;
-
     @EJB
     private OwnershipCorrectionBean ownershipCorrectionBean;
 
@@ -54,11 +52,12 @@ public class OwnershipCorrectionImportService extends AbstractImportService{
 
                 //OWNERSHIP_ID
                 Long objectId = ownershipStrategy.getObjectId(Long.parseLong(line[1].trim()));
-                if (objectId == null){
+                if (objectId == null) {
                     throw new ImportObjectLinkException(OWNERSHIP_CORRECTION.getFileName(), recordIndex, line[1]);
                 }
 
-                ownershipCorrectionBean.insertOwnershipCorrection(line[2].trim(), line[3].trim(), objectId, orgId, intOrgId);
+                ownershipCorrectionBean.insertOwnershipCorrection(line[2].trim(), line[3].trim(), objectId, orgId,
+                        intOrgId, null);
 
                 listener.recordProcessed(OWNERSHIP_CORRECTION, recordIndex);
             }

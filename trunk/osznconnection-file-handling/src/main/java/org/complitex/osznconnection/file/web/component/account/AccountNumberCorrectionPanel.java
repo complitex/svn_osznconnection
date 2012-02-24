@@ -38,9 +38,12 @@ public abstract class AccountNumberCorrectionPanel<T extends AbstractRequest> ex
     private final AccountNumberPickerPanel accountNumberPickerPanel;
     private final IModel<List<? extends AccountDetail>> accountDetailsModel;
     private final WebMarkupContainer infoContainer;
+    private final long userOrganizationId;
 
-    public AccountNumberCorrectionPanel(String id, final Component... toUpdate) {
+    public AccountNumberCorrectionPanel(String id, final long userOrganizationId, final Component... toUpdate) {
         super(id);
+        this.userOrganizationId = userOrganizationId;
+
         accountDetailModel = new Model<AccountDetail>();
         accountDetailsModel = Model.ofList(null);
 
@@ -78,7 +81,7 @@ public abstract class AccountNumberCorrectionPanel<T extends AbstractRequest> ex
             @Override
             public void onClick(AjaxRequestTarget target) {
                 if (validate()) {
-                    correctAccountNumber(request, accountDetailModel.getObject().getAccountNumber());
+                    correctAccountNumber(request, accountDetailModel.getObject().getAccountNumber(), userOrganizationId);
 
                     if (toUpdate != null) {
                         for (Component component : toUpdate) {
@@ -117,14 +120,14 @@ public abstract class AccountNumberCorrectionPanel<T extends AbstractRequest> ex
         return validated;
     }
 
-    protected abstract void correctAccountNumber(T request, String accountNumber);
+    protected abstract void correctAccountNumber(T request, String accountNumber, long userOrganizationId);
 
     public void open(AjaxRequestTarget target, T request) {
 
         this.request = request;
         List<? extends AccountDetail> accountDetails = null;
         try {
-            accountDetails = acquireAccountDetailsByAddress(request);
+            accountDetails = acquireAccountDetailsByAddress(request, userOrganizationId);
             if (accountDetails == null || accountDetails.isEmpty()) {
                 error(statusRenderService.displayStatus(request.getStatus(), getLocale()));
             }
@@ -138,6 +141,5 @@ public abstract class AccountNumberCorrectionPanel<T extends AbstractRequest> ex
         dialog.open(target);
     }
 
-    protected abstract List<AccountDetail> acquireAccountDetailsByAddress(T request) throws DBException;
+    protected abstract List<AccountDetail> acquireAccountDetailsByAddress(T request, long userOrganizationId) throws DBException;
 }
-

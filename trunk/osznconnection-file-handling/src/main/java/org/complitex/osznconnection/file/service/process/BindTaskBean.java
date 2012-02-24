@@ -53,12 +53,12 @@ public class BindTaskBean implements ITaskBean {
     private CalculationCenterBean calculationCenterBean;
     @EJB
     private RequestFileGroupBean requestFileGroupBean;
-    private Boolean updatePuAccount;
 
     @Override
     public boolean execute(IExecutorObject executorObject, Map commandParameters) throws ExecuteException {
         // ищем в параметрах комманды опцию "Переписывать номер л/с ПУ номером л/с МН"
-        updatePuAccount = commandParameters.containsKey(GlobalOptions.UPDATE_PU_ACCOUNT) ? (Boolean) commandParameters.get(GlobalOptions.UPDATE_PU_ACCOUNT) : false;
+        final Boolean updatePuAccount = commandParameters.containsKey(GlobalOptions.UPDATE_PU_ACCOUNT)
+                ? (Boolean) commandParameters.get(GlobalOptions.UPDATE_PU_ACCOUNT) : false;
 
         RequestFileGroup group = (RequestFileGroup) executorObject;
 
@@ -71,17 +71,17 @@ public class BindTaskBean implements ITaskBean {
         group.setStatus(RequestFileStatus.BINDING);
         requestFileGroupBean.save(group);
 
-        //получаем информацию о текущем центре начисления
-        CalculationCenterInfo calculationCenterInfo = calculationCenterBean.getInfo();
+        //получаем информацию о текущем контексте вычислений
+        CalculationContext calculationContext = calculationCenterBean.getContext(group.getUserOrganizationId());
 
         //очищаем колонки которые заполняются во время связывания и обработки для записей в таблицах payment и benefit
-        paymentBean.clearBeforeBinding(group.getPaymentFile().getId(), calculationCenterInfo.getServiceProviderTypeIds());
+        paymentBean.clearBeforeBinding(group.getPaymentFile().getId(), calculationContext.getServiceProviderTypeIds());
         benefitBean.clearBeforeBinding(group.getBenefitFile().getId());
 
         //связывание файла payment
         RequestFile paymentFile = group.getPaymentFile();
         try {
-            bindPaymentFile(paymentFile, calculationCenterInfo);
+            bindPaymentFile(paymentFile, calculationContext, updatePuAccount);
         } catch (DBException e) {
             throw new RuntimeException(e);
         } catch (CanceledByUserException e) {
@@ -137,8 +137,8 @@ public class BindTaskBean implements ITaskBean {
      * @param adapter Адаптер центра начислений
      * @return Разрешен ли адрес
      */
-    private boolean resolveAddress(Payment payment, CalculationCenterInfo calculationCenterInfo) {
-        addressService.resolveAddress(payment, calculationCenterInfo);
+    private boolean resolveAddress(Payment payment, CalculationContext calculationContext) {
+        addressService.resolveAddress(payment, calculationContext);
         return addressService.isAddressResolved(payment);
     }
 
@@ -147,8 +147,8 @@ public class BindTaskBean implements ITaskBean {
      * @param payment Запись запроса начислений
      * @return Разрешен ли номер л/с
      */
-    private boolean resolveLocalAccount(Payment payment, long calculationCenterId) {
-        personAccountService.resolveLocalAccount(payment, calculationCenterId);
+    private boolean resolveLocalAccount(Payment payment, CalculationContext calculationContext) {
+        personAccountService.resolveLocalAccount(payment, calculationContext);
         return payment.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED;
     }
 
@@ -158,8 +158,9 @@ public class BindTaskBean implements ITaskBean {
      * @param adapter Адаптер центра начислений
      * @return Разрешен ли номер л/с
      */
-    private boolean resolveRemoteAccountNumber(Payment payment, CalculationCenterInfo calculationCenterInfo) throws DBException {
-        personAccountService.resolveRemoteAccount(payment, calculationCenterInfo, updatePuAccount);
+    private boolean resolveRemoteAccountNumber(Payment payment, CalculationContext calculationContext, Boolean updatePuAccount)
+            throws DBException {
+        personAccountService.resolveRemoteAccount(payment, calculationContext, updatePuAccount);
         return payment.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED;
     }
 
@@ -170,10 +171,10 @@ public class BindTaskBean implements ITaskBean {
      * Если не успешно, то попытаться разрешить адрес по схеме "ОСЗН адрес -> локальная адресная база -> адрес центра начислений".
      * Если адрес разрешен, то пытаемся разрешить номер л/c в ЦН.
      */
-    private void bind(Payment payment, CalculationCenterInfo calculationCenterInfo) throws DBException {
-        if (!resolveLocalAccount(payment, calculationCenterInfo.getOrganizationId())) {
-            if (resolveAddress(payment, calculationCenterInfo)) {
-                resolveRemoteAccountNumber(payment, calculationCenterInfo);
+    private void bind(Payment payment, CalculationContext calculationContext, Boolean updatePuAccount) throws DBException {
+        if (!resolveLocalAccount(payment, calculationContext)) {
+            if (resolveAddress(payment, calculationContext)) {
+                resolveRemoteAccountNumber(payment, calculationContext, updatePuAccount);
             }
         }
 
@@ -186,7 +187,7 @@ public class BindTaskBean implements ITaskBean {
      * @param paymentFile Файл запроса начислений
      * @throws BindException Ошибка связывания
      */
-    private void bindPaymentFile(RequestFile paymentFile, CalculationCenterInfo calculationCenterInfo)
+    private void bindPaymentFile(RequestFile paymentFile, CalculationContext calculationContext, Boolean updatePuAccount)
             throws BindException, DBException, CanceledByUserException {
         //извлечь из базы все id подлежащие связыванию для файла payment и доставать записи порциями по BATCH_SIZE штук.
         List<Long> notResolvedPaymentIds = paymentBean.findIdsForBinding(paymentFile.getId());
@@ -211,7 +212,7 @@ public class BindTaskBean implements ITaskBean {
                 //связать payment запись
                 try {
                     userTransaction.begin();
-                    bind(payment, calculationCenterInfo);
+                    bind(payment, calculationContext, updatePuAccount);
                     userTransaction.commit();
                 } catch (Exception e) {
                     log.error("The payment item ( id = " + payment.getId() + ") was bound with error: ", e);

@@ -56,6 +56,7 @@ import org.complitex.template.web.template.TemplateSession;
 import javax.ejb.EJB;
 import java.util.*;
 
+import org.complitex.osznconnection.file.service.OsznSessionBean;
 import static org.complitex.osznconnection.file.service.process.ProcessType.*;
 
 /**
@@ -75,23 +76,28 @@ public class GroupList extends ScrollListPage {
     private ProcessManagerBean processManagerBean;
     @EJB
     private LogBean logBean;
+    @EJB
+    private OsznSessionBean osznSessionBean;
     private int waitForStopTimer;
     private int timerIndex = 0;
-    private Map<ProcessType, Boolean> completedDisplayed = new HashMap<ProcessType, Boolean>();
+    private Map<ProcessType, Boolean> completedDisplayed = new EnumMap<ProcessType, Boolean>(ProcessType.class);
     private final static String ITEM_GROUP_ID_PREFIX = "item";
     private RequestFileLoadPanel requestFileLoadPanel;
     private WebMarkupContainer buttonContainer;
     private WebMarkupContainer optionContainer;
     private PagingNavigator pagingNavigator;
     private Map<Long, IModel<Boolean>> selectModels;
+    private final boolean modificationsAllowed;
 
     public GroupList(PageParameters params) {
         super(params);
+        this.modificationsAllowed = osznSessionBean.getCurrentUserOrganizationId() != null || osznSessionBean.isAdmin();
         init(params.getAsLong("group_id"));
     }
 
     public GroupList() {
         super();
+        this.modificationsAllowed = osznSessionBean.getCurrentUserOrganizationId() != null || osznSessionBean.isAdmin();
         init(null);
     }
 
@@ -154,21 +160,32 @@ public class GroupList extends ScrollListPage {
         filterForm.add(new DatePicker<Date>("loaded"));
 
         //Организация
-        IModel<List<DomainObject>> osznsModel = new LoadableDetachableModel<List<DomainObject>>() {
+        final IModel<List<DomainObject>> osznsModel = new LoadableDetachableModel<List<DomainObject>>() {
 
             @Override
             protected List<DomainObject> load() {
                 return organizationStrategy.getAllOSZNs(getLocale());
             }
         };
-        DomainObjectDisableAwareRenderer renderer = new DomainObjectDisableAwareRenderer() {
+        final DomainObjectDisableAwareRenderer organizationRenderer = new DomainObjectDisableAwareRenderer() {
 
             @Override
             public Object getDisplayValue(DomainObject object) {
                 return organizationStrategy.displayDomainObject(object, getLocale());
             }
         };
-        filterForm.add(new DisableAwareDropDownChoice<DomainObject>("organization", osznsModel, renderer).setNullValid(true));
+        filterForm.add(new DisableAwareDropDownChoice<DomainObject>("organization", osznsModel, organizationRenderer).setNullValid(true));
+
+        // Организация пользователя
+        final IModel<List<? extends DomainObject>> userOrganizationsModel = new LoadableDetachableModel<List<? extends DomainObject>>() {
+
+            @Override
+            protected List<? extends DomainObject> load() {
+                return organizationStrategy.getUserOrganizations(getLocale());
+            }
+        };
+        filterForm.add(new DisableAwareDropDownChoice<DomainObject>("userOrganization", userOrganizationsModel,
+                organizationRenderer).setNullValid(true));
 
         //Номер реестра
         filterForm.add(new TextField<String>("registry"));
@@ -320,9 +337,18 @@ public class GroupList extends ScrollListPage {
                         DateUtil.isCurrentDay(item.getModelObject().getLoaded()) ? "HH:mm:ss" : "dd.MM.yy HH:mm:ss"));
 
                 //Организация
-                DomainObject domainObject = organizationStrategy.findById(item.getModelObject().getOrganizationId(), true);
-                String organization = organizationStrategy.displayDomainObject(domainObject, getLocale());
+                DomainObject organizationObject = organizationStrategy.findById(item.getModelObject().getOrganizationId(), true);
+                String organization = organizationStrategy.displayDomainObject(organizationObject, getLocale());
                 item.add(new Label("organization", organization));
+
+                //Организация пользователя
+                final Long userOrganizationId = item.getModelObject().getUserOrganizationId();
+                String userOrganization = null;
+                if (userOrganizationId != null) {
+                    DomainObject userOrganizationObject = organizationStrategy.findById(userOrganizationId, true);
+                    userOrganization = organizationStrategy.displayDomainObject(userOrganizationObject, getLocale());
+                }
+                item.add(new Label("userOrganization", userOrganization));
 
                 //Номер реестра (день), месяц, год
                 item.add(new Label("registry", StringUtil.valueOf(item.getModelObject().getRegistry())));
@@ -418,6 +444,7 @@ public class GroupList extends ScrollListPage {
         filterForm.add(new ArrowOrderByBorder("header.id", "id", dataProvider, dataView, filterForm));
         filterForm.add(new ArrowOrderByBorder("header.loaded", "loaded", dataProvider, dataView, filterForm));
         filterForm.add(new ArrowOrderByBorder("header.organization", "organization_id", dataProvider, dataView, filterForm));
+        filterForm.add(new ArrowOrderByBorder("header.user_organization", "user_organization_id", dataProvider, dataView, filterForm));
         filterForm.add(new ArrowOrderByBorder("header.registry", "registry", dataProvider, dataView, filterForm));
         filterForm.add(new ArrowOrderByBorder("header.month", "month", dataProvider, dataView, filterForm));
         filterForm.add(new ArrowOrderByBorder("header.year", "year", dataProvider, dataView, filterForm));
@@ -443,21 +470,22 @@ public class GroupList extends ScrollListPage {
         //Контейнер чекбокса "Переписать л/с ПУ" для ajax
         optionContainer = new WebMarkupContainer("options");
         optionContainer.setOutputMarkupId(true);
+        optionContainer.setVisibilityAllowed(modificationsAllowed);
         filterForm.add(optionContainer);
 
         optionContainer.add(new CheckBox("update_pu_account", new Model<Boolean>(
-                getSessionParameter(GlobalOptions.UPDATE_PU_ACCOUNT)))
-            .add(new AjaxFormComponentUpdatingBehavior("onchange") {
+                getSessionParameter(GlobalOptions.UPDATE_PU_ACCOUNT))).add(new AjaxFormComponentUpdatingBehavior("onchange") {
 
-                @Override
-                protected void onUpdate(AjaxRequestTarget target) {
-                    putSessionParameter(GlobalOptions.UPDATE_PU_ACCOUNT, !getSessionParameter(GlobalOptions.UPDATE_PU_ACCOUNT));
-                }
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                putSessionParameter(GlobalOptions.UPDATE_PU_ACCOUNT, !getSessionParameter(GlobalOptions.UPDATE_PU_ACCOUNT));
+            }
         }));
-        
+
         //Контейнер кнопок для ajax
         buttonContainer = new WebMarkupContainer("buttons");
         buttonContainer.setOutputMarkupId(true);
+        buttonContainer.setVisibilityAllowed(modificationsAllowed);
         filterForm.add(buttonContainer);
 
         //Загрузить
@@ -612,9 +640,9 @@ public class GroupList extends ScrollListPage {
                 new RequestFileLoadPanel.ILoader() {
 
                     @Override
-                    public void load(Long organizationId, String districtCode, int monthFrom, int monthTo, int year) {
+                    public void load(long userOrganizationId, long osznId, String districtCode, int monthFrom, int monthTo, int year) {
                         completedDisplayed.put(LOAD_GROUP, false);
-                        processManagerBean.loadGroup(organizationId, districtCode, monthFrom, monthTo, year);
+                        processManagerBean.loadGroup(userOrganizationId, osznId, districtCode, monthFrom, monthTo, year);
                         addTimer(dataViewContainer, filterForm, messages);
                     }
                 });
@@ -633,17 +661,17 @@ public class GroupList extends ScrollListPage {
     private Boolean getSessionParameter(Enum key) {
         return getTemplateSession().getPreferenceBoolean(TemplateSession.GLOBAL_PAGE, key, false);
     }
-    
-    private void putSessionParameter( Enum key, Boolean value) {
+
+    private void putSessionParameter(Enum key, Boolean value) {
         getTemplateSession().putPreference(TemplateSession.GLOBAL_PAGE, key, value, false);
     }
 
     private Map<Enum, Object> buildCommandParameters() {
-        Map<Enum,Object> commandParameters = new HashMap<Enum,Object>();
-        commandParameters.put(GlobalOptions.UPDATE_PU_ACCOUNT,getSessionParameter(GlobalOptions.UPDATE_PU_ACCOUNT));
+        Map<Enum, Object> commandParameters = new HashMap<Enum, Object>();
+        commandParameters.put(GlobalOptions.UPDATE_PU_ACCOUNT, getSessionParameter(GlobalOptions.UPDATE_PU_ACCOUNT));
         return commandParameters;
     }
-            
+
     private List<Long> getSelected() {
         List<Long> ids = new ArrayList<Long>();
 
@@ -694,7 +722,7 @@ public class GroupList extends ScrollListPage {
             } else if (group.getStatus().equals(errorStatus)) {
                 highlightError(target, group);
 
-                String message = group.getErrorMessage() != null ?  ": " + group.getErrorMessage() : "";
+                String message = group.getErrorMessage() != null ? ": " + group.getErrorMessage() : "";
                 error(getStringFormat(keyPrefix + ".error", group.getFullName()) + message);
             }
         }
@@ -804,6 +832,10 @@ public class GroupList extends ScrollListPage {
     @Override
     protected List<ToolbarButton> getToolbarButtons(String id) {
         return Arrays.asList((ToolbarButton) new LoadButton(id) {
+
+            {
+                setVisibilityAllowed(modificationsAllowed);
+            }
 
             @Override
             protected void onClick() {

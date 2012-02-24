@@ -15,9 +15,11 @@ import java.util.List;
  * Информация о файле запроса: имя, дата загрузки, организация, дата, количество записей, размер файла, статус.
  */
 public class RequestFile implements IExecutorObject {
+
     public final static String TABLE = "request_file";
 
     public static enum TYPE {
+
         BENEFIT, PAYMENT, TARIF, ACTUAL_PAYMENT
     }
 
@@ -35,7 +37,8 @@ public class RequestFile implements IExecutorObject {
     private String checkSum;
     private TYPE type;
     private RequestFileStatus status;
-
+    private Long userOrganizationId;
+    
     private Integer loadedRecordCount = 0;
     private Integer bindedRecordCount = 0;
     private Integer filledRecordCount = 0;
@@ -60,32 +63,20 @@ public class RequestFile implements IExecutorObject {
         return getFullName();
     }
 
-    public LogChangeList getLogChangeList(){
+    public LogChangeList getLogChangeList() {
         return getLogChangeList(null);
     }
 
-    public LogChangeList getLogChangeList(String collection){
+    public LogChangeList getLogChangeList(String collection) {
         LogChangeList logChangeList = new LogChangeList();
 
-        logChangeList.add(collection, "id", id)
-                .add(collection, "group_id", groupId)
-                .add(collection, "loaded", loaded)
-                .add(collection, "directory", directory)
-                .add(collection, "name", name)
-                .add(collection, "organizationId", organizationId)
-                .add(collection, "month", month)
-                .add(collection, "year", year)
-                .add(collection, "dbfRecordCount", dbfRecordCount)
-                .add(collection, "length", length)
-                .add(collection, "checkSum", checkSum)
-                .add(collection, "bindedRecordCount", bindedRecordCount)
-                .add(collection, "filledRecordCount", filledRecordCount);
+        logChangeList.add(collection, "id", id).add(collection, "group_id", groupId).add(collection, "loaded", loaded).add(collection, "directory", directory).add(collection, "name", name).add(collection, "organizationId", organizationId).add(collection, "month", month).add(collection, "year", year).add(collection, "dbfRecordCount", dbfRecordCount).add(collection, "length", length).add(collection, "checkSum", checkSum).add(collection, "bindedRecordCount", bindedRecordCount).add(collection, "filledRecordCount", filledRecordCount);
 
         return logChangeList;
     }
 
-    public String getFullName(){
-        if (name == null){
+    public String getFullName() {
+        if (name == null) {
             return null;
         }
 
@@ -253,27 +244,27 @@ public class RequestFile implements IExecutorObject {
 
     @Override
     public String toString() {
-        return "RequestFile{" +
-                "id=" + id +
-                ", groupId=" + groupId +
-                ", loaded=" + loaded +
-                ", name='" + name + '\'' +
-                ", directory='" + directory + '\'' +
-                ", organizationId=" + organizationId +
-                ", registry=" + registry +
-                ", month=" + month +
-                ", year=" + year +
-                ", dbfRecordCount=" + dbfRecordCount +
-                ", length=" + length +
-                ", checkSum='" + checkSum + '\'' +
-                ", type=" + type +
-                ", status=" + status +
-                ", loadedRecordCount=" + loadedRecordCount +
-                ", bindedRecordCount=" + bindedRecordCount +
-                ", filledRecordCount=" + filledRecordCount +
-                ", absolutePath='" + absolutePath + '\'' +
-                ", requests=" + requests +
-                '}';
+        return "RequestFile{"
+                + "id=" + id
+                + ", groupId=" + groupId
+                + ", loaded=" + loaded
+                + ", name='" + name + '\''
+                + ", directory='" + directory + '\''
+                + ", organizationId=" + organizationId
+                + ", registry=" + registry
+                + ", month=" + month
+                + ", year=" + year
+                + ", dbfRecordCount=" + dbfRecordCount
+                + ", length=" + length
+                + ", checkSum='" + checkSum + '\''
+                + ", type=" + type
+                + ", status=" + status
+                + ", loadedRecordCount=" + loadedRecordCount
+                + ", bindedRecordCount=" + bindedRecordCount
+                + ", filledRecordCount=" + filledRecordCount
+                + ", absolutePath='" + absolutePath + '\''
+                + ", requests=" + requests
+                + '}';
     }
 
     @Override
@@ -292,5 +283,13 @@ public class RequestFile implements IExecutorObject {
 
     public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
+    }
+
+    public Long getUserOrganizationId() {
+        return userOrganizationId;
+    }
+
+    public void setUserOrganizationId(Long userOrganizationId) {
+        this.userOrganizationId = userOrganizationId;
     }
 }

@@ -16,7 +16,6 @@ import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.AbstractSingleSelectChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.repeater.Item;
@@ -153,7 +152,7 @@ public abstract class AbstractCorrectionList extends ScrollListPage {
                 return organizationStrategy.getAllOuterOrganizations(getLocale());
             }
         };
-        IModel<DomainObject> outerOrganizationModel = new OrganizationModel() {
+        final IModel<DomainObject> outerOrganizationModel = new OrganizationModel() {
 
             @Override
             public Long getOrganizationId() {
@@ -170,7 +169,7 @@ public abstract class AbstractCorrectionList extends ScrollListPage {
                 return allOuterOrganizationsModel.getObject();
             }
         };
-        DomainObjectDisableAwareRenderer renderer = new DomainObjectDisableAwareRenderer() {
+        final DomainObjectDisableAwareRenderer organizationRenderer = new DomainObjectDisableAwareRenderer() {
 
             @Override
             public Object getDisplayValue(DomainObject object) {
@@ -179,7 +178,35 @@ public abstract class AbstractCorrectionList extends ScrollListPage {
         };
 
         filterForm.add(new DisableAwareDropDownChoice<DomainObject>("organizationFilter",
-                outerOrganizationModel, allOuterOrganizationsModel, renderer).setNullValid(true));
+                outerOrganizationModel, allOuterOrganizationsModel, organizationRenderer).setNullValid(true));
+
+        final IModel<List<DomainObject>> allUserOrganizationsModel = new LoadableDetachableModel<List<DomainObject>>() {
+
+            @Override
+            protected List<DomainObject> load() {
+                return (List<DomainObject>) organizationStrategy.getUserOrganizations(getLocale());
+            }
+        };
+        final IModel<DomainObject> userOrganizationModel = new OrganizationModel() {
+
+            @Override
+            public Long getOrganizationId() {
+                return example.getObject().getUserOrganizationId();
+            }
+
+            @Override
+            public void setOrganizationId(Long userOrganizationId) {
+                example.getObject().setUserOrganizationId(userOrganizationId);
+            }
+
+            @Override
+            public List<DomainObject> getOrganizations() {
+                return allUserOrganizationsModel.getObject();
+            }
+        };
+
+        filterForm.add(new DisableAwareDropDownChoice<DomainObject>("userOrganizationFilter",
+                userOrganizationModel, allUserOrganizationsModel, organizationRenderer).setNullValid(true));
 
         filterForm.add(new TextField<String>("correctionFilter", new PropertyModel<String>(example, "correction")));
         filterForm.add(new TextField<String>("codeFilter", new PropertyModel<String>(example, "code")));
@@ -204,8 +231,8 @@ public abstract class AbstractCorrectionList extends ScrollListPage {
             }
         };
 
-        filterForm.add( new DisableAwareDropDownChoice<DomainObject>("internalOrganizationFilter",
-                internalOrganizationModel, internalOrganizations, renderer).setNullValid(true));
+        filterForm.add(new DisableAwareDropDownChoice<DomainObject>("internalOrganizationFilter",
+                internalOrganizationModel, internalOrganizations, organizationRenderer).setNullValid(true));
 
         AjaxLink reset = new IndicatingAjaxLink("reset") {
 
@@ -242,6 +269,10 @@ public abstract class AbstractCorrectionList extends ScrollListPage {
                 item.add(new Label("code", code));
 
                 item.add(new Label("internalObject", displayInternalObject(correction)));
+
+                //user organization
+                item.add(new Label("userOrganization", correction.getUserOrganization()));
+
                 item.add(new Label("internalOrganization", correction.getInternalOrganization()));
 
                 ScrollBookmarkablePageLink link = new ScrollBookmarkablePageLink<WebPage>("edit", getEditPage(),
@@ -257,6 +288,7 @@ public abstract class AbstractCorrectionList extends ScrollListPage {
         filterForm.add(new ArrowOrderByBorder("correctionHeader", CorrectionBean.OrderBy.CORRECTION.getOrderBy(), dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("codeHeader", CorrectionBean.OrderBy.CODE.getOrderBy(), dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("internalObjectHeader", CorrectionBean.OrderBy.OBJECT.getOrderBy(), dataProvider, data, content));
+        filterForm.add(new ArrowOrderByBorder("userOrganizationHeader", CorrectionBean.OrderBy.USER_ORGANIZATION.getOrderBy(), dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("internalOrganizationHeader", CorrectionBean.OrderBy.INTERNAL_ORGANIZATION.getOrderBy(), dataProvider,
                 data, content));
 
@@ -274,4 +306,3 @@ public abstract class AbstractCorrectionList extends ScrollListPage {
         });
     }
 }
-

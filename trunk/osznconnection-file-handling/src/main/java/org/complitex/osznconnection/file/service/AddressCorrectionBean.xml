@@ -32,7 +32,10 @@
     </select>
 
     <select id="findCityCorrections" resultMap="cityCorrection" parameterType="org.complitex.osznconnection.file.entity.example.CorrectionExample">
-        select * from `city_correction` c where c.`organization_id` = #{organizationId} and c.`correction` like concat('%', #{correction},'%')
+        select * from `city_correction` c where 
+            c.`organization_id` = #{organizationId} 
+            and c.`user_organization_id` in ${userOrganizationsString}
+            and c.`correction` like concat('%', #{correction},'%')
             order by c.`correction`
             limit #{start}, #{size}
     </select>
@@ -46,14 +49,17 @@
     </select>
 
     <select id="findStreetCorrections" resultMap="streetCorrection" parameterType="org.complitex.osznconnection.file.entity.example.CorrectionExample">
-        select * from `street_correction` c where c.`organization_id` = #{organizationId} and c.`parent_id` = #{parentId} and
+        select * from `street_correction` c where c.`organization_id` = #{organizationId} 
+            and c.`user_organization_id` in ${userOrganizationsString} 
+            and c.`parent_id` = #{parentId} and
             c.`correction` like concat('%', #{correction},'%')
             order by c.`correction`
             limit #{start}, #{size}
     </select>
 
-    <select id="findStreetTypeCorrections" resultMap="correction" parameterType="long">
+    <select id="findStreetTypeCorrections" resultMap="correction" parameterType="map">
         select * from `street_type_correction` c where c.`organization_id` = #{organizationId}
+            and c.`user_organization_id` in ${userOrganizationsString} 
             order by c.`correction`
     </select>
 
@@ -70,6 +76,7 @@
         SELECT * FROM `${entityTable}_correction`
         <where>
             `organization_id` = #{organizationId} AND TRIM(`correction`) = TRIM(#{correction})
+            AND `user_organization_id` = #{userOrganizationId}
             <if test="parentId != null">
                 AND `parent_id` = #{parentId}
             </if>
@@ -80,11 +87,13 @@
         SELECT * FROM `building_correction`
         WHERE `organization_id` = #{organizationId} AND TRIM(`correction`) = TRIM(#{correction})
                 AND TRIM(`correction_corp`) = TRIM(#{correctionCorp}) AND `parent_id` = #{parentId}
+                AND `user_organization_id` = #{userOrganizationId}
     </select>
 
     <select id="findStreetLocalCorrections" parameterType="map" resultMap="streetCorrection">
         SELECT * FROM `street_correction`
         WHERE `organization_id` = #{organizationId}
+        AND `user_organization_id` = #{userOrganizationId}
         AND `parent_id` = #{parentId}
         AND TRIM(`correction`) = TRIM(#{correction})
         AND `street_type_correction_id` = #{streetTypeCorrectionId}
@@ -92,27 +101,28 @@
 
     <select id="findLocalCorrectionStreetObjectIds" parameterType="map" resultType="long">
         SELECT DISTINCT `object_id` FROM `street_correction`
-        WHERE `organization_id` = #{organizationId} AND `parent_id` = #{parentId} AND TRIM(`correction`) = TRIM(#{street})
+        WHERE `organization_id` = #{organizationId} AND `user_organization_id` = #{userOrganizationId} 
+        AND `parent_id` = #{parentId} AND TRIM(`correction`) = TRIM(#{street})
     </select>
 
     <select id="findStreetLocalCorrectionsByStreetId" parameterType="map" resultMap="streetCorrection">
         SELECT * FROM `street_correction`
-        WHERE `organization_id` = #{organizationId} AND `parent_id` = #{parentId} AND TRIM(`correction`) = TRIM(#{street})
-        AND `object_id` = #{streetId}
+        WHERE `organization_id` = #{organizationId} AND `user_organization_id` = #{userOrganizationId} 
+        AND `parent_id` = #{parentId} AND TRIM(`correction`) = TRIM(#{street}) AND `object_id` = #{streetId}
     </select>
 
     <insert id="insertStreet" parameterType="org.complitex.osznconnection.file.entity.StreetCorrection" keyProperty="id" useGeneratedKeys="true">
         INSERT INTO `street_correction`(`organization_id`, `parent_id`, `correction`, `object_id`,
-            `organization_code`, `internal_organization_id`, `street_type_correction_id`)
+            `organization_code`, `internal_organization_id`, `street_type_correction_id`, `user_organization_id`)
          VALUES (#{organizationId}, #{parentId}, #{correction}, #{objectId}, #{code},
-            #{internalOrganizationId}, #{streetTypeCorrectionId})
+            #{internalOrganizationId}, #{streetTypeCorrectionId}, #{userOrganizationId})
     </insert>
 
     <insert id="insertBuilding" parameterType="org.complitex.osznconnection.file.entity.BuildingCorrection" keyProperty="id" useGeneratedKeys="true">
         INSERT INTO `building_correction`(`organization_id`, `parent_id`, `correction`, `correction_corp`, `object_id`,
-            `organization_code`, `internal_organization_id`)
+            `organization_code`, `internal_organization_id`, `user_organization_id`)
          VALUES (#{organizationId}, #{parentId}, #{correction}, #{correctionCorp}, #{objectId}, #{code},
-            #{internalOrganizationId})
+            #{internalOrganizationId}, #{userOrganizationId})
     </insert>
 
     <select id="findAddressRemoteCorrections" resultMap="org.complitex.osznconnection.file.service.CorrectionBean.correction"
@@ -247,13 +257,15 @@
 
     <update id="updateBuilding" parameterType="org.complitex.osznconnection.file.entity.BuildingCorrection">
         UPDATE `building_correction` SET `organization_id` = #{organizationId}, `correction` = #{correction}, `correction_corp` = #{correctionCorp},
-        `object_id` = #{objectId}, `organization_code` = #{code}, `internal_organization_id` = #{internalOrganizationId}
+        `object_id` = #{objectId}, `organization_code` = #{code}, `internal_organization_id` = #{internalOrganizationId},
+        `user_organization_id` = #{userOrganizationId}
         WHERE `id` = #{id}
     </update>
 
     <update id="updateStreet" parameterType="org.complitex.osznconnection.file.entity.StreetCorrection">
         UPDATE `street_correction` SET `organization_id` = #{organizationId}, `correction` = #{correction}, `object_id` = #{objectId},
-        `organization_code` = #{code}, `internal_organization_id` = #{internalOrganizationId}, `street_type_correction_id` = #{streetTypeCorrectionId}
+        `organization_code` = #{code}, `internal_organization_id` = #{internalOrganizationId}, `street_type_correction_id` = #{streetTypeCorrectionId},
+        `user_organization_id` = #{userOrganizationId}
         WHERE `id` = #{id}
     </update>
 
@@ -312,11 +324,15 @@
             <if test="organizationId != null">
                 and c.`organization_id` = #{organizationId}
             </if>
+            <if test="userOrganizationId != null">
+                and c.`user_organization_id` = #{userOrganizationId}
+            </if>
             <if test="internalOrganizationId != null">
                 and c.`internal_organization_id` = #{internalOrganizationId}
             </if>
             <if test="not admin">
-                and c.`organization_id` in ${organizations}
+                and (c.`organization_id` in ${outerOrganizationsString})
+                and (c.`user_organization_id` is null or c.`user_organization_id` in ${userOrganizationsString})
             </if>
         </where>
     </sql>
@@ -330,7 +346,12 @@
         left join `organization_attribute` oa_i on (oa_i.`object_id` = c.`internal_organization_id`
             and oa_i.`status` = 'ACTIVE' and oa_i.`attribute_type_id` = 900)
         left join `organization_string_culture` osc_i on (osc_i.`id` = oa_i.`value_id` and osc_i.`locale_id` = #{localeId})
-        LEFT JOIN `organization_string_culture` osc_i_sys ON (osc_i_sys.`id` = oa.`value_id` and osc_i_sys.`locale_id` = (SELECT l.`id` FROM `locales` l WHERE l.`system` = 1))
+        LEFT JOIN `organization_string_culture` osc_i_sys ON (osc_i_sys.`id` = oa_i.`value_id` and osc_i_sys.`locale_id` = (SELECT l.`id` FROM `locales` l WHERE l.`system` = 1))
+        
+        left join `organization_attribute` uoa on (uoa.`object_id` = c.`user_organization_id`
+            and uoa.`status` = 'ACTIVE' and uoa.`attribute_type_id` = 900)
+        left join `organization_string_culture` uosc on (uosc.`id` = uoa.`value_id` and uosc.`locale_id` = #{localeId})
+        LEFT JOIN `organization_string_culture` uosc_sys ON (uosc_sys.`id` = uoa.`value_id` and uosc_sys.`locale_id` = (SELECT l.`id` FROM `locales` l WHERE l.`system` = 1))
 
         <if test="orderByClause == 'object' or internalObject != null">
             left join `building` b on (b.`object_id` = c.`object_id`)
@@ -355,7 +376,8 @@
 
     <select id="findBuildings" parameterType="org.complitex.osznconnection.file.entity.example.BuildingCorrectionExample"
             resultMap="buildingCorrection">
-        SELECT DISTINCT c.`id`, c.*, IFNULL(osc.`value`, osc_sys.`value`) organization, IFNULL(osc_i.`value`, osc_i_sys.`value`) internalOrganization
+        SELECT DISTINCT c.`id`, c.*, IFNULL(osc.`value`, osc_sys.`value`) organization, IFNULL(osc_i.`value`, osc_i_sys.`value`) internalOrganization,
+        IFNULL(uosc.`value`, uosc_sys.`value`) userOrganization
 
         FROM `building_correction` c
 
@@ -398,6 +420,7 @@
         `object_id` = #{objectId} AND
         `parent_id` = #{parentId} AND `internal_organization_id` = #{internalOrganizationId}
         AND TRIM(`correction`) = TRIM(#{correction}) AND `organization_id` = #{organizationId}
+        
         AND
         <choose>
             <when test="correctionCorp != null">
@@ -405,6 +428,16 @@
             </when>
             <otherwise>
                 `correction_corp` = ''
+            </otherwise>
+        </choose>
+        
+        AND `user_organization_id`
+        <choose>
+            <when test="userOrganizationId != null">
+                = #{userOrganizationId}
+            </when>
+            <otherwise>
+                IS NULL
             </otherwise>
         </choose>
     </select>
@@ -418,6 +451,16 @@
         `parent_id` = #{parentId} AND `internal_organization_id` = #{internalOrganizationId}
         AND TRIM(`correction`) = TRIM(#{correction}) AND `organization_id` = #{organizationId}
         AND `street_type_correction_id` = #{streetTypeCorrectionId}
+        
+        AND `user_organization_id`
+        <choose>
+            <when test="userOrganizationId != null">
+                = #{userOrganizationId}
+            </when>
+            <otherwise>
+                IS NULL
+            </otherwise>
+        </choose>
     </select>
 
     <select id="checkAddressExistence" resultType="int" parameterType="org.complitex.osznconnection.file.entity.Correction">
@@ -427,6 +470,7 @@
         </if>
         `object_id` = #{objectId}
         AND `internal_organization_id` = #{internalOrganizationId}
+        
         AND
         <choose>
             <when test="parentId != null">
@@ -437,6 +481,16 @@
             </otherwise>
         </choose>
         AND TRIM(`correction`) = TRIM(#{correction}) AND `organization_id` = #{organizationId}
+        
+        AND `user_organization_id`
+        <choose>
+            <when test="userOrganizationId != null">
+                = #{userOrganizationId}
+            </when>
+            <otherwise>
+                IS NULL
+            </otherwise>
+        </choose>
     </select>
 
 </mapper>

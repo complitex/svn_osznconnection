@@ -60,14 +60,13 @@ public class ActualPaymentBindTaskBean implements ITaskBean {
     private ActualPaymentBean actualPaymentBean;
     @EJB
     private RequestFileBean requestFileBean;
-    private Boolean updatePuAccount;
 
-    private boolean resolveAddress(ActualPayment actualPayment, CalculationCenterInfo calculationCenterInfo) {
+    private boolean resolveAddress(ActualPayment actualPayment, CalculationContext calculationContext) {
         long startTime = 0;
         if (log.isDebugEnabled()) {
             startTime = System.currentTimeMillis();
         }
-        addressService.resolveAddress(actualPayment, calculationCenterInfo);
+        addressService.resolveAddress(actualPayment, calculationContext);
         if (log.isDebugEnabled()) {
             log.debug("Resolving of actualPayment address (id = {}) took {} sec.", actualPayment.getId(),
                     (System.currentTimeMillis() - startTime) / 1000);
@@ -75,12 +74,12 @@ public class ActualPaymentBindTaskBean implements ITaskBean {
         return addressService.isAddressResolved(actualPayment);
     }
 
-    private boolean resolveLocalAccount(ActualPayment actualPayment, long calculationCenterId) {
+    private boolean resolveLocalAccount(ActualPayment actualPayment, CalculationContext calculationContext) {
         long startTime = 0;
         if (log.isDebugEnabled()) {
             startTime = System.currentTimeMillis();
         }
-        personAccountService.resolveLocalAccount(actualPayment, calculationCenterId);
+        personAccountService.resolveLocalAccount(actualPayment, calculationContext);
         if (log.isDebugEnabled()) {
             log.debug("Resolving of actualPayment (id = {}) for local account took {} sec.", actualPayment.getId(),
                     (System.currentTimeMillis() - startTime) / 1000);
@@ -88,13 +87,13 @@ public class ActualPaymentBindTaskBean implements ITaskBean {
         return actualPayment.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED;
     }
 
-    private boolean resolveRemoteAccountNumber(ActualPayment actualPayment, Date date, CalculationCenterInfo calculationCenterInfo)
-            throws DBException {
+    private boolean resolveRemoteAccountNumber(ActualPayment actualPayment, Date date,
+            CalculationContext calculationContext, Boolean updatePuAccount) throws DBException {
         long startTime = 0;
         if (log.isDebugEnabled()) {
             startTime = System.currentTimeMillis();
         }
-        personAccountService.resolveRemoteAccount(actualPayment, date, calculationCenterInfo, updatePuAccount);
+        personAccountService.resolveRemoteAccount(actualPayment, date, calculationContext, updatePuAccount);
         if (log.isDebugEnabled()) {
             log.debug("Resolving of actualPayment (id = {}) for remote account number took {} sec.", actualPayment.getId(),
                     (System.currentTimeMillis() - startTime) / 1000);
@@ -102,10 +101,11 @@ public class ActualPaymentBindTaskBean implements ITaskBean {
         return actualPayment.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED;
     }
 
-    private void bind(ActualPayment actualPayment, Date date, CalculationCenterInfo calculationCenterInfo) throws DBException {
-        if (!resolveLocalAccount(actualPayment, calculationCenterInfo.getOrganizationId())) {
-            if (resolveAddress(actualPayment, calculationCenterInfo)) {
-                resolveRemoteAccountNumber(actualPayment, date, calculationCenterInfo);
+    private void bind(ActualPayment actualPayment, Date date, CalculationContext calculationContext, Boolean updatePuAccount)
+            throws DBException {
+        if (!resolveLocalAccount(actualPayment, calculationContext)) {
+            if (resolveAddress(actualPayment, calculationContext)) {
+                resolveRemoteAccountNumber(actualPayment, date, calculationContext, updatePuAccount);
             }
         }
 
@@ -121,8 +121,8 @@ public class ActualPaymentBindTaskBean implements ITaskBean {
         }
     }
 
-    private void bindActualPaymentFile(RequestFile actualPaymentFile, CalculationCenterInfo calculationCenterInfo)
-            throws BindException, DBException, CanceledByUserException {
+    private void bindActualPaymentFile(RequestFile actualPaymentFile, CalculationContext calculationContext,
+            Boolean updatePuAccount) throws BindException, DBException, CanceledByUserException {
         //извлечь из базы все id подлежащие связыванию для файла actualPayment и доставать записи порциями по BATCH_SIZE штук.
         long startTime = 0;
         if (log.isDebugEnabled()) {
@@ -153,7 +153,8 @@ public class ActualPaymentBindTaskBean implements ITaskBean {
                 //связать actualPayment запись
                 try {
                     userTransaction.begin();
-                    bind(actualPayment, actualPaymentBean.getFirstDay(actualPayment, actualPaymentFile), calculationCenterInfo);
+                    bind(actualPayment, actualPaymentBean.getFirstDay(actualPayment, actualPaymentFile),
+                            calculationContext, updatePuAccount);
                     userTransaction.commit();
                 } catch (Exception e) {
                     log.error("The actual payment item ( id = " + actualPayment.getId() + ") was bound with error: ", e);
@@ -171,7 +172,8 @@ public class ActualPaymentBindTaskBean implements ITaskBean {
     @Override
     public boolean execute(IExecutorObject executorObject, Map commandParameters) throws ExecuteException {
         // ищем в параметрах комманды опцию "Переписывать номер л/с ПУ номером л/с МН"
-        updatePuAccount = commandParameters.containsKey(GlobalOptions.UPDATE_PU_ACCOUNT) ? (Boolean) commandParameters.get(GlobalOptions.UPDATE_PU_ACCOUNT) : false;
+        final Boolean updatePuAccount = commandParameters.containsKey(GlobalOptions.UPDATE_PU_ACCOUNT)
+                ? (Boolean) commandParameters.get(GlobalOptions.UPDATE_PU_ACCOUNT) : false;
 
         RequestFile requestFile = (RequestFile) executorObject;
 
@@ -184,14 +186,14 @@ public class ActualPaymentBindTaskBean implements ITaskBean {
         requestFile.setStatus(RequestFileStatus.BINDING);
         requestFileBean.save(requestFile);
 
-        //получаем информацию о текущем центре начисления
-        CalculationCenterInfo calculationCenterInfo = calculationCenterBean.getInfo();
+        //получаем информацию о текущем контексте вычислений 
+        final CalculationContext calculationContext = calculationCenterBean.getContext(requestFile.getUserOrganizationId());
 
-        actualPaymentBean.clearBeforeBinding(requestFile.getId(), calculationCenterInfo.getServiceProviderTypeIds());
+        actualPaymentBean.clearBeforeBinding(requestFile.getId(), calculationContext.getServiceProviderTypeIds());
 
         //связывание файла actualPayment
         try {
-            bindActualPaymentFile(requestFile, calculationCenterInfo);
+            bindActualPaymentFile(requestFile, calculationContext, updatePuAccount);
         } catch (DBException e) {
             throw new RuntimeException(e);
         } catch (CanceledByUserException e) {

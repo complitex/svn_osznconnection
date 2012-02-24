@@ -17,6 +17,9 @@ public class PersonAccountExample extends PersonAccount {
     private String orderByClause;
     private boolean asc;
     private Long localeId;
+    private boolean admin;
+    private String outerOrganizationsString;
+    private String userOrganizationsString;
 
     public boolean isAsc() {
         return asc;
@@ -56,5 +59,29 @@ public class PersonAccountExample extends PersonAccount {
 
     public void setStart(int start) {
         this.start = start;
+    }
+
+    public boolean isAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
+    }
+
+    public String getOuterOrganizationsString() {
+        return outerOrganizationsString;
+    }
+
+    public void setOuterOrganizationsString(String outerOrganizationsString) {
+        this.outerOrganizationsString = outerOrganizationsString;
+    }
+
+    public String getUserOrganizationsString() {
+        return userOrganizationsString;
+    }
+
+    public void setUserOrganizationsString(String userOrganizationsString) {
+        this.userOrganizationsString = userOrganizationsString;
     }
 }

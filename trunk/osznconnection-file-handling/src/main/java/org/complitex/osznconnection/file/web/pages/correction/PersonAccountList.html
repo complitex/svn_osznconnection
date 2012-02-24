@@ -27,6 +27,7 @@
                                 <th wicket:id="accountNumberHeader"><wicket:message key="account_number"/></th>
                                 <th wicket:id="osznHeader"><wicket:message key="oszn"/></th>
                                 <th wicket:id="calculationCenterHeader"><wicket:message key="calculationCenter"/></th>
+                                <th wicket:id="userOrganizationHeader"><wicket:message key="userOrganization"/></th>
                                 <th>
                                     <input wicket:id="reset" type="button" wicket:message="value:reset" class="btnSmall"/>
                                 </th>
@@ -53,6 +54,11 @@
                                     </select>
                                 </td>
                                 <td class="filter-td">
+                                    <select wicket:id="userOrganizationFilter">
+                                        <option></option>
+                                    </select>
+                                </td>
+                                <td class="filter-td">
                                     <input wicket:id="submit" type="submit" wicket:message="value:find" class="btnSmall default"/>
                                 </td>
                             </tr>
@@ -71,6 +77,7 @@
                                 <td><span wicket:id="accountNumber"></span></td>
                                 <td><span wicket:id="oszn"></span></td>
                                 <td><span wicket:id="calculationCenter"></span></td>
+                                <td><span wicket:id="userOrganization"></span></td>
                                 <td>
                                     <a wicket:id="edit">
                                         <wicket:message key="edit"/>

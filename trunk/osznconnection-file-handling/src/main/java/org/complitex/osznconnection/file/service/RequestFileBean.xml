@@ -8,6 +8,7 @@
         <result column="name" property="name"/>
         <result column="directory" property="directory"/>
         <result column="organization_id" property="organizationId"/>
+        <result column="user_organization_id" property="userOrganizationId"/>
         <result column="registry" property="registry"/>
         <result column="month" property="month"/>
         <result column="year" property="year"/>
@@ -28,10 +29,10 @@
             keyProperty="id" useGeneratedKeys="true">
         insert into `request_file`
             (`group_id`, `organization_id`, `name`, `directory`, `registry`, `month`, `year`, `dbf_record_count`, `length`, `check_sum`,
-            `type`, `loaded`, `status`)
+            `type`, `loaded`, `status`, `user_organization_id`)
         values
             (#{groupId}, #{organizationId}, #{name}, #{directory}, #{registry}, #{month}, #{year}, #{dbfRecordCount}, #{length}, #{checkSum},
-                #{type}, #{loaded}, #{status});
+                #{type}, #{loaded}, #{status}, #{userOrganizationId});
     </insert>
 
     <update id="updateRequestFile" parameterType="org.complitex.osznconnection.file.entity.RequestFile">
@@ -50,6 +51,13 @@
     <select id="findById" parameterType="long" resultMap="requestFileResultMap">
         SELECT * FROM `request_file` WHERE `id` = #{id}
     </select>
+    
+    <sql id="permissionFilter">
+        <if test="not admin">
+            AND (`user_organization_id` IN ${userOrganizationsString})
+            AND (`organization_id` IN ${outerOrganizationsString})
+        </if>
+    </sql>
 
     <sql id="requestFilesFilterWhere">
         <where>
@@ -57,15 +65,15 @@
             <if test="groupId != null">`group_id` = #{groupId}</if>
             <if test="loaded != null">and YEAR(`loaded`) = YEAR(#{loaded}) and DAY(`loaded`) = DAY(#{loaded})</if>
             <if test="name != null">and `name` like CONCAT('%',#{name},'%')</if>
-            <if test="organization != null">and `organization_id` = #{organization.id}</if>
             <if test="organizationId != null">and `organization_id` = #{organizationId}</if>
+            <if test="userOrganization != null">and `user_organization_id` = #{userOrganization.id}</if>
             <if test="registry != null">and `registry` = #{registry}</if>
             <if test="year != null">and `year` = #{year}</if>
             <if test="month != null">and `month` = #{month}</if>
             <if test="dbfRecordCount != null">and `dbf_record_count` like CONCAT('%',#{dbfRecordCount},'%')</if>
             <if test="type != null">and `type` = #{type}</if>
             <if test="status != null">and `status` = #{status}</if>
-            <if test="not admin">and `organization_id` in ${organizations}</if>
+            <include refid="org.complitex.osznconnection.file.service.RequestFileBean.permissionFilter"/>
         </where>
 
         <trim prefix="HAVING" prefixOverrides="and">

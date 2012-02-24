@@ -59,7 +59,7 @@ public final class PersonAccountEdit extends FormTemplatePage {
         personAccount = personAccountLocalBean.findById(this.correctionId);
 
         //Проверка доступа к данным
-        if (!osznSessionBean.isAuthorized(personAccount.getOsznId())) {
+        if (!osznSessionBean.isAuthorized(personAccount.getOsznId(), personAccount.getUserOrganizationId())) {
             throw new UnauthorizedInstantiationException(this.getClass());
         }
 
@@ -146,7 +146,7 @@ public final class PersonAccountEdit extends FormTemplatePage {
             }
         };
 
-        IModel<DomainObject> osznModel = new OrganizationModel() {
+        final IModel<DomainObject> osznModel = new OrganizationModel() {
 
             @Override
             public Long getOrganizationId() {
@@ -163,14 +163,15 @@ public final class PersonAccountEdit extends FormTemplatePage {
                 return allOsznsModel.getObject();
             }
         };
-        DomainObjectDisableAwareRenderer renderer = new DomainObjectDisableAwareRenderer() {
+        final DomainObjectDisableAwareRenderer organizationRenderer = new DomainObjectDisableAwareRenderer() {
 
             @Override
             public Object getDisplayValue(DomainObject object) {
                 return organizationStrategy.displayDomainObject(object, getLocale());
             }
         };
-        DisableAwareDropDownChoice<DomainObject> oszn = new DisableAwareDropDownChoice<DomainObject>("oszn", osznModel, allOsznsModel, renderer);
+        DisableAwareDropDownChoice<DomainObject> oszn = new DisableAwareDropDownChoice<DomainObject>("oszn", osznModel,
+                allOsznsModel, organizationRenderer);
         oszn.setRequired(true);
         oszn.setEnabled(false);
         form.add(oszn);
@@ -182,7 +183,7 @@ public final class PersonAccountEdit extends FormTemplatePage {
                 return organizationStrategy.getAllCalculationCentres(getLocale());
             }
         };
-        IModel<DomainObject> calculationCenterModel = new OrganizationModel() {
+        final IModel<DomainObject> calculationCenterModel = new OrganizationModel() {
 
             @Override
             public Long getOrganizationId() {
@@ -200,10 +201,42 @@ public final class PersonAccountEdit extends FormTemplatePage {
             }
         };
         DisableAwareDropDownChoice<DomainObject> calculationCenter = new DisableAwareDropDownChoice<DomainObject>("calculationCenter",
-                calculationCenterModel, allCalculationCentresModel, renderer);
+                calculationCenterModel, allCalculationCentresModel, organizationRenderer);
         calculationCenter.setRequired(true);
         calculationCenter.setEnabled(false);
         form.add(calculationCenter);
+
+        //user organization
+        final IModel<List<DomainObject>> allUserOrganizationsModel = new LoadableDetachableModel<List<DomainObject>>() {
+
+            @Override
+            protected List<DomainObject> load() {
+                return (List<DomainObject>) organizationStrategy.getUserOrganizations(getLocale());
+            }
+        };
+
+        final IModel<DomainObject> userOrganizationModel = new OrganizationModel() {
+
+            @Override
+            public Long getOrganizationId() {
+                return model.getObject().getUserOrganizationId();
+            }
+
+            @Override
+            public void setOrganizationId(Long userOrganizationId) {
+                model.getObject().setUserOrganizationId(userOrganizationId);
+            }
+
+            @Override
+            public List<DomainObject> getOrganizations() {
+                return allUserOrganizationsModel.getObject();
+            }
+        };
+        final DisableAwareDropDownChoice<DomainObject> userOrganization = new DisableAwareDropDownChoice<DomainObject>("userOrganization",
+                userOrganizationModel, allUserOrganizationsModel, organizationRenderer);
+        userOrganization.setRequired(true);
+        userOrganization.setEnabled(false);
+        form.add(userOrganization);
 
         //save-cancel functional
         AjaxButton submit = new AjaxButton("submit", form) {
@@ -246,4 +279,3 @@ public final class PersonAccountEdit extends FormTemplatePage {
         return toolbar;
     }
 }
-

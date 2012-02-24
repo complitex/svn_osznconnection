@@ -4,14 +4,13 @@
  */
 package org.complitex.osznconnection.file.service;
 
+import com.google.common.collect.ImmutableMap;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.osznconnection.file.entity.Correction;
-import org.complitex.osznconnection.file.entity.example.CorrectionExample;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.ejb.Stateless;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Класс для работы с коррекциями форм власти
@@ -20,22 +19,18 @@ import java.util.List;
 @Stateless
 public class OwnershipCorrectionBean extends CorrectionBean {
 
-    private static final Logger log = LoggerFactory.getLogger(OwnershipCorrectionBean.class);
     private static final String MAPPING_NAMESPACE = OwnershipCorrectionBean.class.getName();
 
     /**
      * Найти id внутреннего объекта системы(форму власти) в таблице коррекций форм власти по коррекции(correction) и организации(organizationId)
      * @param correction
-     * @param organizationId
+     * @param calculationCenterId
      * @return
      */
-    @SuppressWarnings({"unchecked"})
     @Transactional
-    public Long findInternalOwnership(String correction, long organizationId) {
-        CorrectionExample example = new CorrectionExample();
-        example.setCorrection(correction);
-        example.setOrganizationId(organizationId);
-        List<Long> ids = sqlSession().selectList(MAPPING_NAMESPACE + ".findInternalOwnership", example);
+    public Long findInternalOwnership(String correction, long calculationCenterId) {
+        Map<String, Object> params = ImmutableMap.<String, Object>of("correction", correction, "organizationId", calculationCenterId);
+        List<Long> ids = sqlSession().selectList(MAPPING_NAMESPACE + ".findInternalOwnership", params);
         if (ids != null && !ids.isEmpty()) {
             return ids.get(0);
         }
@@ -45,24 +40,22 @@ public class OwnershipCorrectionBean extends CorrectionBean {
     /**
      * Найти код коррекции в таблице коррекций форм власти по id внутреннего объекта системы(формы власти) и организации.
      * @param objectId
-     * @param organizationId
+     * @param osznId
      * @return
      */
-    @SuppressWarnings({"unchecked"})
     @Transactional
-    public String findOwnershipCode(long objectId, long organizationId) {
-        CorrectionExample example = new CorrectionExample();
-        example.setObjectId(objectId);
-        example.setOrganizationId(organizationId);
-        List<String> codes = sqlSession().selectList(MAPPING_NAMESPACE + ".findOwnershipCode", example);
+    public String findOwnershipCode(long objectId, long osznId, long userOrganizationId) {
+        Map<String, Long> params = ImmutableMap.of("objectId", objectId, "organizationId", osznId,
+                "userOrganizationId", userOrganizationId);
+        List<String> codes = sqlSession().selectList(MAPPING_NAMESPACE + ".findOwnershipCode", params);
         if (codes != null && !codes.isEmpty()) {
             return codes.get(0);
         }
         return null;
     }
 
-    public Correction createOwnershipCorrection(String code, String ownership, long ownershipObjectId,
-                                                long organizationId, long internalOrganizationId) {
+    private Correction createOwnershipCorrection(String code, String ownership, long ownershipObjectId,
+            long organizationId, long internalOrganizationId, long userOrganizationId) {
         Correction correction = new Correction("ownership");
         correction.setParentId(null);
         correction.setCode(code);
@@ -70,11 +63,13 @@ public class OwnershipCorrectionBean extends CorrectionBean {
         correction.setOrganizationId(organizationId);
         correction.setInternalOrganizationId(internalOrganizationId);
         correction.setObjectId(ownershipObjectId);
+        correction.setUserOrganizationId(userOrganizationId);
         return correction;
     }
 
     public void insertOwnershipCorrection(String code, String ownership, long ownershipObjectId, long organizationId,
-                                          long internalOrganizationId) {
-        insert(createOwnershipCorrection(code, ownership, ownershipObjectId, organizationId, internalOrganizationId));
+            long internalOrganizationId, Long userOrganizationId) {
+        insert(createOwnershipCorrection(code, ownership, ownershipObjectId, organizationId, internalOrganizationId,
+                userOrganizationId));
     }
 }

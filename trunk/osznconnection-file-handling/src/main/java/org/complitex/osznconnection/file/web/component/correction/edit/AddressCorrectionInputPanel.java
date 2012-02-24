@@ -4,9 +4,7 @@
  */
 package org.complitex.osznconnection.file.web.component.correction.edit;
 
-import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteSettings;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.*;
@@ -57,7 +55,6 @@ public class AddressCorrectionInputPanel extends Panel {
     }
 
     private static final int AUTO_COMPLETE_SIZE = 10;
-    private static final AutoCompleteSettings settings = new AutoCompleteSettings();
 
     public AddressCorrectionInputPanel(String id, final Correction correction) {
         super(id);
@@ -65,9 +62,7 @@ public class AddressCorrectionInputPanel extends Panel {
         final boolean isDistrict = "district".equals(correction.getEntity());
         final boolean isStreet = "street".equals(correction.getEntity());
         final boolean isBuilding = "building".equals(correction.getEntity());
-
-        final List<Component> correctionFields = new ArrayList<Component>();
-
+        
         add(new Label("cityLabel", new AbstractReadOnlyModel<String>() {
 
             @Override

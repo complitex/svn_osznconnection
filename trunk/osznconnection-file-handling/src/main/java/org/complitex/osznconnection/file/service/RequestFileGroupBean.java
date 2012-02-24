@@ -17,59 +17,54 @@ import org.complitex.osznconnection.file.entity.RequestFileStatus;
  *         Date: 29.09.2010 14:32:05
  */
 @Stateless(name = "RequestFileGroupBean")
-public class RequestFileGroupBean extends AbstractBean{
+public class RequestFileGroupBean extends AbstractBean {
+
     public static final String MAPPING_NAMESPACE = RequestFileGroupBean.class.getName();
-
-    @EJB(beanName = "RequestFileBean")
+    @EJB
     private RequestFileBean requestFileBean;
-
     @EJB
     private OsznSessionBean osznSessionBean;
 
     @SuppressWarnings({"unchecked"})
-    public List<RequestFileGroup> getRequestFileGroups(RequestFileGroupFilter filter){
-        filter.setAdmin(osznSessionBean.isAdmin());
-        filter.setOrganizations(osznSessionBean.getAllOuterOrganizationString());
-
+    public List<RequestFileGroup> getRequestFileGroups(RequestFileGroupFilter filter) {
+        osznSessionBean.prepareFilterForPermissionCheck(filter);
         return sqlSession().selectList(MAPPING_NAMESPACE + ".selectRequestFilesGroups", filter);
     }
 
-    public int getRequestFileGroupsCount(RequestFileGroupFilter filter){
-        filter.setAdmin(osznSessionBean.isAdmin());
-        filter.setOrganizations(osznSessionBean.getAllOuterOrganizationString());
-
-        return (Integer)sqlSession().selectOne(MAPPING_NAMESPACE + ".selectRequestFilesGroupsCount", filter);
+    public int getRequestFileGroupsCount(RequestFileGroupFilter filter) {
+        osznSessionBean.prepareFilterForPermissionCheck(filter);
+        return (Integer) sqlSession().selectOne(MAPPING_NAMESPACE + ".selectRequestFilesGroupsCount", filter);
     }
 
-    public RequestFileGroup getRequestFileGroup(Long id){
+    public RequestFileGroup getRequestFileGroup(Long id) {
         return (RequestFileGroup) sqlSession().selectOne(MAPPING_NAMESPACE + ".selectRequestFilesGroup", id);
     }
 
     public void delete(RequestFileGroup requestFileGroup) {
-        if (requestFileGroup.getBenefitFile() != null){
+        if (requestFileGroup.getBenefitFile() != null) {
             requestFileBean.delete(requestFileGroup.getBenefitFile());
         }
 
-        if (requestFileGroup.getPaymentFile() != null){
+        if (requestFileGroup.getPaymentFile() != null) {
             requestFileBean.delete(requestFileGroup.getPaymentFile());
         }
 
         sqlSession().delete(MAPPING_NAMESPACE + ".deleteRequestFileGroup", requestFileGroup.getId());
     }
 
-    public void clear(RequestFileGroup requestFileGroup){
+    public void clear(RequestFileGroup requestFileGroup) {
         sqlSession().delete(MAPPING_NAMESPACE + ".deleteRequestFileGroup", requestFileGroup.getId());
     }
 
-    public void save(RequestFileGroup group){
-        if (group.getId() == null){
+    public void save(RequestFileGroup group) {
+        if (group.getId() == null) {
             sqlSession().insert(MAPPING_NAMESPACE + ".insertRequestFileGroup", group);
-        }else {
+        } else {
             sqlSession().update(MAPPING_NAMESPACE + ".updateRequestFileGroup", group);
         }
     }
 
-    public void clearEmptyGroup(){
+    public void clearEmptyGroup() {
         sqlSession().delete(MAPPING_NAMESPACE + ".clearEmptyGroup");
     }
 
@@ -94,11 +89,11 @@ public class RequestFileGroupBean extends AbstractBean{
         return (Long) sqlSession().selectOne(MAPPING_NAMESPACE + ".getBenefitFileId", paymentFileId);
     }
 
-    public RequestFileStatus getRequestFileStatus(RequestFileGroup group){
+    public RequestFileStatus getRequestFileStatus(RequestFileGroup group) {
         return (RequestFileStatus) sqlSession().selectOne(MAPPING_NAMESPACE + ".selectGroupStatus", group.getId());
     }
 
-    public void fixProcessingOnInit(){
+    public void fixProcessingOnInit() {
         sqlSession().update(MAPPING_NAMESPACE + ".fixLoadingOnInit");
         sqlSession().update(MAPPING_NAMESPACE + ".fixBingingOnInit");
         sqlSession().update(MAPPING_NAMESPACE + ".fixFillingOnInit");

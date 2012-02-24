@@ -132,7 +132,7 @@ public class PersonAccountList extends ScrollListPage {
                 return organizationStrategy.getAllOSZNs(getLocale());
             }
         };
-        IModel<DomainObject> osznModel = new OrganizationModel() {
+        final IModel<DomainObject> osznModel = new OrganizationModel() {
 
             @Override
             public Long getOrganizationId() {
@@ -149,7 +149,7 @@ public class PersonAccountList extends ScrollListPage {
                 return osznsModel.getObject();
             }
         };
-        DomainObjectDisableAwareRenderer renderer = new DomainObjectDisableAwareRenderer() {
+        final DomainObjectDisableAwareRenderer organizationRenderer = new DomainObjectDisableAwareRenderer() {
 
             @Override
             public Object getDisplayValue(DomainObject object) {
@@ -157,7 +157,7 @@ public class PersonAccountList extends ScrollListPage {
             }
         };
         filterForm.add(new DisableAwareDropDownChoice<DomainObject>("osznFilter",
-                osznModel, osznsModel, renderer).setNullValid(true));
+                osznModel, osznsModel, organizationRenderer).setNullValid(true));
 
         final IModel<List<DomainObject>> calculationCentresModel = new LoadableDetachableModel<List<DomainObject>>() {
 
@@ -166,7 +166,7 @@ public class PersonAccountList extends ScrollListPage {
                 return organizationStrategy.getAllCalculationCentres(getLocale());
             }
         };
-        IModel<DomainObject> calculationCenterModel = new OrganizationModel() {
+        final IModel<DomainObject> calculationCenterModel = new OrganizationModel() {
 
             @Override
             public Long getOrganizationId() {
@@ -184,8 +184,36 @@ public class PersonAccountList extends ScrollListPage {
             }
         };
         DisableAwareDropDownChoice<DomainObject> calculationCenterFilter = new DisableAwareDropDownChoice<DomainObject>("calculationCenterFilter",
-                calculationCenterModel, calculationCentresModel, renderer);
+                calculationCenterModel, calculationCentresModel, organizationRenderer);
         filterForm.add(calculationCenterFilter);
+
+        final IModel<List<DomainObject>> allUserOrganizationsModel = new LoadableDetachableModel<List<DomainObject>>() {
+
+            @Override
+            protected List<DomainObject> load() {
+                return (List<DomainObject>) organizationStrategy.getUserOrganizations(getLocale());
+            }
+        };
+        final IModel<DomainObject> userOrganizationModel = new OrganizationModel() {
+
+            @Override
+            public Long getOrganizationId() {
+                return example.getObject().getUserOrganizationId();
+            }
+
+            @Override
+            public void setOrganizationId(Long userOrganizationId) {
+                example.getObject().setUserOrganizationId(userOrganizationId);
+            }
+
+            @Override
+            public List<DomainObject> getOrganizations() {
+                return allUserOrganizationsModel.getObject();
+            }
+        };
+
+        filterForm.add(new DisableAwareDropDownChoice<DomainObject>("userOrganizationFilter",
+                userOrganizationModel, allUserOrganizationsModel, organizationRenderer).setNullValid(true));
 
         AjaxLink reset = new AjaxLink("reset") {
 
@@ -224,7 +252,11 @@ public class PersonAccountList extends ScrollListPage {
                 item.add(new Label("accountNumber", personAccount.getAccountNumber()));
                 item.add(new Label("oszn", personAccount.getOszn()));
                 item.add(new Label("calculationCenter", personAccount.getCalculationCenter()));
-                item.add(new ScrollBookmarkablePageLink("edit", PersonAccountEdit.class,
+
+                //user organization
+                item.add(new Label("userOrganization", personAccount.getUserOrganization()));
+
+                item.add(new ScrollBookmarkablePageLink<PersonAccountEdit>("edit", PersonAccountEdit.class,
                         new PageParameters(ImmutableMap.of(PersonAccountEdit.CORRECTION_ID, personAccount.getId())),
                         String.valueOf(personAccount.getId())));
             }
@@ -248,8 +280,9 @@ public class PersonAccountList extends ScrollListPage {
         filterForm.add(new ArrowOrderByBorder("osznHeader", PersonAccountLocalBean.OrderBy.OSZN.getOrderBy(), dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("calculationCenterHeader", PersonAccountLocalBean.OrderBy.CALCULATION_CENTER.getOrderBy(),
                 dataProvider, data, content));
+        filterForm.add(new ArrowOrderByBorder("userOrganizationHeader", PersonAccountLocalBean.OrderBy.USER_ORGANIZATION.getOrderBy(),
+                dataProvider, data, content));
 
         content.add(new PagingNavigator("navigator", data, getClass().getName(), content));
     }
 }
-

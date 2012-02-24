@@ -1,9 +1,7 @@
 package org.complitex.osznconnection.file.service;
 
 import au.com.bytecode.opencsv.CSVReader;
-import org.complitex.address.entity.AddressImportFile;
 import org.complitex.address.strategy.building.BuildingStrategy;
-import org.complitex.address.strategy.building_address.BuildingAddressStrategy;
 import org.complitex.address.strategy.city.CityStrategy;
 import org.complitex.address.strategy.district.DistrictStrategy;
 import org.complitex.address.strategy.street.StreetStrategy;
@@ -26,31 +24,22 @@ import static org.complitex.address.entity.AddressImportFile.*;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 25.02.11 16:08
  */
-
 @Stateless
-public class AddressCorrectionImportService extends AbstractImportService{
-    private final static Logger log = LoggerFactory.getLogger(AddressCorrectionImportService.class);
+public class AddressCorrectionImportService extends AbstractImportService {
 
+    private final static Logger log = LoggerFactory.getLogger(AddressCorrectionImportService.class);
     @EJB
     private AddressCorrectionBean addressCorrectionBean;
-
     @EJB
     private CityStrategy cityStrategy;
-
     @EJB
     private DistrictStrategy districtStrategy;
-
     @EJB
     private StreetTypeStrategy streetTypeStrategy;
-
     @EJB
     private StreetStrategy streetStrategy;
-
     @EJB
     private BuildingStrategy buildingStrategy;
-
-    @EJB
-    private BuildingAddressStrategy buildingAddressStrategy;
 
     public void process(long organizationId, long internalOrganizationId, IImportListener listener)
             throws ImportFileNotFoundException, ImportObjectLinkException, ImportFileReadException {
@@ -82,11 +71,11 @@ public class AddressCorrectionImportService extends AbstractImportService{
 
                 //CITY_ID
                 Long objectId = cityStrategy.getObjectId(Long.parseLong(line[0].trim()));
-                if (objectId == null){
+                if (objectId == null) {
                     throw new ImportObjectLinkException(CITY.getFileName(), recordIndex, line[0]);
                 }
 
-                addressCorrectionBean.insertCityCorrection(line[3].trim(), objectId, orgId, intOrgId);
+                addressCorrectionBean.insertCityCorrection(line[3].trim(), objectId, orgId, intOrgId, null);
 
                 listener.recordProcessed(CITY, recordIndex);
             }
@@ -131,18 +120,19 @@ public class AddressCorrectionImportService extends AbstractImportService{
                 }
 
                 //CITY_ID
-                Long cityId =  cityStrategy.getObjectId(Long.parseLong(line[1].trim()));
+                Long cityId = cityStrategy.getObjectId(Long.parseLong(line[1].trim()));
                 if (cityId == null) {
                     throw new ImportObjectLinkException(DISTRICT.getFileName(), recordIndex, line[1]);
                 }
 
                 //City Correction
                 Long cityCorrectionId = addressCorrectionBean.getCityCorrectionId(cityId, orgId, intOrgId);
-                if (cityCorrectionId == null){
+                if (cityCorrectionId == null) {
                     throw new ImportObjectLinkException(DISTRICT.getFileName(), recordIndex, line[1]);
                 }
 
-                addressCorrectionBean.insertDistrictCorrection(line[3].trim(), cityCorrectionId, districtId, orgId, intOrgId);
+                addressCorrectionBean.insertDistrictCorrection(line[3].trim(), cityCorrectionId, districtId, orgId,
+                        intOrgId, null);
 
                 listener.recordProcessed(DISTRICT, recordIndex);
             }
@@ -177,16 +167,16 @@ public class AddressCorrectionImportService extends AbstractImportService{
         try {
             String[] line;
 
-            while ((line = reader.readNext()) != null){
+            while ((line = reader.readNext()) != null) {
                 recordIndex++;
 
                 //STREET_TYPE_ID
                 Long streetTypeId = streetTypeStrategy.getObjectId(Long.parseLong(line[0].trim()));
-                if (streetTypeId == null){
+                if (streetTypeId == null) {
                     throw new ImportObjectLinkException(STREET_TYPE.getFileName(), recordIndex, line[0]);
                 }
 
-                addressCorrectionBean.insertStreetTypeCorrection(line[2].trim(), streetTypeId, orgId, intOrgId);
+                addressCorrectionBean.insertStreetTypeCorrection(line[2].trim(), streetTypeId, orgId, intOrgId, null);
 
                 listener.recordProcessed(STREET_TYPE, recordIndex);
             }
@@ -194,7 +184,7 @@ public class AddressCorrectionImportService extends AbstractImportService{
             listener.completeImport(STREET_TYPE, recordIndex);
         } catch (IOException e) {
             throw new ImportFileReadException(e, STREET_TYPE.getFileName(), recordIndex);
-        } catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             throw new ImportFileReadException(e, STREET_TYPE.getFileName(), recordIndex);
         } finally {
             try {
@@ -235,7 +225,7 @@ public class AddressCorrectionImportService extends AbstractImportService{
 
                 //City Correction
                 Long cityCorrectionId = addressCorrectionBean.getCityCorrectionId(cityId, orgId, intOrgId);
-                if (cityCorrectionId == null){
+                if (cityCorrectionId == null) {
                     throw new ImportObjectLinkException(STREET.getFileName(), recordIndex, line[1]);
                 }
 
@@ -249,7 +239,7 @@ public class AddressCorrectionImportService extends AbstractImportService{
                 Long streetTypeCorrectionId = addressCorrectionBean.getStreetTypeCorrectionId(streetTypeId, orgId, intOrgId);
 
                 addressCorrectionBean.insertStreetCorrection(line[3].trim(), null, streetTypeCorrectionId,
-                        cityCorrectionId, streetId, orgId, intOrgId);
+                        cityCorrectionId, streetId, orgId, intOrgId, null);
 
                 listener.recordProcessed(STREET, recordIndex);
             }
@@ -302,7 +292,7 @@ public class AddressCorrectionImportService extends AbstractImportService{
                 }
 
                 addressCorrectionBean.insertBuildingCorrection(line[3].trim(), line[4].trim(), streetCorrectionId,
-                        buildingId, orgId, intOrgId);
+                        buildingId, orgId, intOrgId, null);
 
                 listener.recordProcessed(BUILDING, recordIndex);
             }

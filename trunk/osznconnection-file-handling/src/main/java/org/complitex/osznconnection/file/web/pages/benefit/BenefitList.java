@@ -90,7 +90,7 @@ public final class BenefitList extends TemplatePage {
         RequestFile requestFile = requestFileBean.findById(fileId);
 
         //Проверка доступа к данным
-        if (!osznSessionBean.isAuthorized(requestFile.getOrganizationId())) {
+        if (!osznSessionBean.isAuthorized(requestFile.getOrganizationId(), requestFile.getUserOrganizationId())) {
             throw new UnauthorizedInstantiationException(this.getClass());
         }
 

@@ -2,7 +2,6 @@ package org.complitex.osznconnection.file.service.process;
 
 import org.complitex.dictionary.entity.IExecutorObject;
 import org.complitex.dictionary.entity.Log;
-import org.complitex.dictionary.service.SessionBean;
 import org.complitex.dictionary.service.executor.ExecuteException;
 import org.complitex.dictionary.service.executor.ITaskBean;
 import org.complitex.osznconnection.file.Module;
@@ -24,17 +23,15 @@ import java.util.Map;
 @Stateless(name = "ActualPaymentLoadTaskBean")
 @TransactionManagement(TransactionManagementType.BEAN)
 public class ActualPaymentLoadTaskBean implements ITaskBean {
-    @EJB(beanName = "RequestFileBean")
+    @EJB
     private RequestFileBean requestFileBean;
 
-    @EJB(beanName = "LoadRequestFileBean")
+    @EJB
     private LoadRequestFileBean loadRequestFileBean;
 
-    @EJB(beanName = "ActualPaymentBean")
+    @EJB
     private ActualPaymentBean actualPaymentBean;
 
-    @EJB
-    private SessionBean sessionBean;
 
     @Override
     public boolean execute(IExecutorObject executorObject, Map commandParameters) throws ExecuteException {

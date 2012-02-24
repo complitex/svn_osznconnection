@@ -52,15 +52,15 @@ public class AddressService extends AbstractBean {
     @EJB
     private ServiceProviderAdapter adapter;
 
-    private void resolveLocalAddress(ActualPayment actualPayment) {
+    private void resolveLocalAddress(ActualPayment actualPayment, long userOrganizationId) {
         //осзн id
-        long organizationId = actualPayment.getOrganizationId();
+        long osznId = actualPayment.getOrganizationId();
 
         //Связывание города
         String city = (String) actualPayment.getField(ActualPaymentDBF.N_NAME);
         Long cityId = null;
         Correction cityCorrection = null;
-        List<Correction> cityCorrections = addressCorrectionBean.findCityLocalCorrections(city, organizationId);
+        List<Correction> cityCorrections = addressCorrectionBean.findCityLocalCorrections(city, osznId, userOrganizationId);
         if (cityCorrections.size() == 1) {
             cityCorrection = cityCorrections.get(0);
             cityId = cityCorrection.getObjectId();
@@ -71,8 +71,8 @@ public class AddressService extends AbstractBean {
             List<Long> cityIds = addressCorrectionBean.findInternalCityIds(city);
             if (cityIds.size() == 1) {
                 cityId = cityIds.get(0);
-                cityCorrection = addressCorrectionBean.createCityCorrection(city, cityId, organizationId,
-                        IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID);
+                cityCorrection = addressCorrectionBean.createCityCorrection(city, cityId, osznId,
+                        IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
                 addressCorrectionBean.insert(cityCorrection);
             } else if (cityIds.size() > 1) {
                 actualPayment.setStatus(RequestStatus.MORE_ONE_LOCAL_CITY);
@@ -91,7 +91,8 @@ public class AddressService extends AbstractBean {
         String streetType = (String) actualPayment.getField(ActualPaymentDBF.VUL_CAT);
         Long streetTypeId = null;
         Correction streetTypeCorrection = null;
-        List<Correction> streetTypeCorrections = addressCorrectionBean.findStreetTypeLocalCorrections(streetType, organizationId);
+        List<Correction> streetTypeCorrections =
+                addressCorrectionBean.findStreetTypeLocalCorrections(streetType, osznId, userOrganizationId);
         if (streetTypeCorrections.size() == 1) {
             streetTypeCorrection = streetTypeCorrections.get(0);
             streetTypeId = streetTypeCorrection.getObjectId();
@@ -102,8 +103,8 @@ public class AddressService extends AbstractBean {
             List<Long> streetTypeIds = addressCorrectionBean.findInternalStreetTypeIds(streetType);
             if (streetTypeIds.size() == 1) {
                 streetTypeId = streetTypeIds.get(0);
-                streetTypeCorrection = addressCorrectionBean.createStreetTypeCorrection(streetType, streetTypeId, organizationId,
-                        IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID);
+                streetTypeCorrection = addressCorrectionBean.createStreetTypeCorrection(streetType, streetTypeId, osznId,
+                        IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
                 addressCorrectionBean.insert(streetTypeCorrection);
             } else if (streetTypeIds.size() > 1) {
                 actualPayment.setStatus(RequestStatus.MORE_ONE_LOCAL_STREET_TYPE);
@@ -123,8 +124,8 @@ public class AddressService extends AbstractBean {
         String streetCode = (String) actualPayment.getField(ActualPaymentDBF.VUL_CODE);
         Long streetId = null;
         StreetCorrection streetCorrection = null;
-        List<StreetCorrection> streetCorrections = addressCorrectionBean.findStreetLocalCorrections(cityCorrection.getId(), streetTypeCorrection.getId(),
-                street, organizationId);
+        List<StreetCorrection> streetCorrections = addressCorrectionBean.findStreetLocalCorrections(
+                cityCorrection.getId(), streetTypeCorrection.getId(), street, osznId, userOrganizationId);
         if (streetCorrections.size() == 1) {
             streetCorrection = streetCorrections.get(0);
             streetId = streetCorrection.getObjectId();
@@ -136,7 +137,8 @@ public class AddressService extends AbstractBean {
             if (streetIds.size() == 1) {
                 streetId = streetIds.get(0);
                 streetCorrection = addressCorrectionBean.createStreetCorrection(street, streetCode, streetTypeCorrection.getId(),
-                        cityCorrection.getId(), streetId, organizationId, IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID);
+                        cityCorrection.getId(), streetId, osznId, IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID,
+                        userOrganizationId);
                 addressCorrectionBean.insertStreet(streetCorrection);
             } else if (streetIds.size() > 1) {
                 actualPayment.setStatus(RequestStatus.MORE_ONE_LOCAL_STREET);
@@ -159,8 +161,8 @@ public class AddressService extends AbstractBean {
         String buildingCorp = (String) actualPayment.getField(ActualPaymentDBF.CORP_NUM);
         Long buildingId = null;
         BuildingCorrection buildingCorrection = null;
-        List<BuildingCorrection> buildingCorrections = addressCorrectionBean.findBuildingLocalCorrections(streetCorrection.getId(), buildingNumber,
-                buildingCorp, organizationId);
+        List<BuildingCorrection> buildingCorrections = addressCorrectionBean.findBuildingLocalCorrections(
+                streetCorrection.getId(), buildingNumber, buildingCorp, osznId, userOrganizationId);
         if (buildingCorrections.size() == 1) {
             buildingCorrection = buildingCorrections.get(0);
             buildingId = buildingCorrection.getObjectId();
@@ -171,8 +173,9 @@ public class AddressService extends AbstractBean {
             List<Long> buildingIds = addressCorrectionBean.findInternalBuildingIds(buildingNumber, buildingCorp, streetId, cityId);
             if (buildingIds.size() == 1) {
                 buildingId = buildingIds.get(0);
-                buildingCorrection = addressCorrectionBean.createBuildingCorrection(buildingNumber, buildingCorp, streetCorrection.getId(), buildingId,
-                        organizationId, IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID);
+                buildingCorrection = addressCorrectionBean.createBuildingCorrection(buildingNumber, buildingCorp,
+                        streetCorrection.getId(), buildingId, osznId, IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID,
+                        userOrganizationId);
                 addressCorrectionBean.insertBuilding(buildingCorrection);
             } else if (buildingIds.size() > 1) {
                 actualPayment.setStatus(RequestStatus.MORE_ONE_LOCAL_BUILDING);
@@ -219,12 +222,10 @@ public class AddressService extends AbstractBean {
      *      RequestStatus.isAddressCorrectableForPayment().
      *
      * Это алгоритм применяется и к поиску домов и с незначительными поправками к поиску улиц.
-     *
-     * @param actualPayment
      */
-    private void resolveLocalAddress(Payment payment) {
+    private void resolveLocalAddress(Payment payment, long userOrganizationId) {
         //осзн id
-        long organizationId = payment.getOrganizationId();
+        long osznId = payment.getOrganizationId();
 
         IStrategy buildingStrategy = strategyFactory.getStrategy("building");
         IStrategy streetTypeStrategy = strategyFactory.getStrategy("street_type");
@@ -233,7 +234,7 @@ public class AddressService extends AbstractBean {
         String city = (String) payment.getField(PaymentDBF.N_NAME);
         Long cityId = null;
         Correction cityCorrection = null;
-        List<Correction> cityCorrections = addressCorrectionBean.findCityLocalCorrections(city, organizationId);
+        List<Correction> cityCorrections = addressCorrectionBean.findCityLocalCorrections(city, osznId, userOrganizationId);
         if (cityCorrections.size() == 1) {
             cityCorrection = cityCorrections.get(0);
             cityId = cityCorrection.getObjectId();
@@ -244,8 +245,8 @@ public class AddressService extends AbstractBean {
             List<Long> cityIds = addressCorrectionBean.findInternalCityIds(city);
             if (cityIds.size() == 1) {
                 cityId = cityIds.get(0);
-                cityCorrection = addressCorrectionBean.createCityCorrection(city, cityId, organizationId,
-                        IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID);
+                cityCorrection = addressCorrectionBean.createCityCorrection(city, cityId, osznId,
+                        IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
                 addressCorrectionBean.insert(cityCorrection);
             } else if (cityIds.size() > 1) {
                 payment.setStatus(RequestStatus.MORE_ONE_LOCAL_CITY);
@@ -268,7 +269,8 @@ public class AddressService extends AbstractBean {
         Long streetId = null;
         StreetCorrection streetCorrection = null;
         //сначала ищем по коррекции, чтобы найти внутреннее название улицы
-        List<Long> streetObjectIds = addressCorrectionBean.findLocalCorrectionStreetObjectIds(cityCorrection.getId(), street, organizationId);
+        List<Long> streetObjectIds = addressCorrectionBean.findLocalCorrectionStreetObjectIds(cityCorrection.getId(),
+                street, osznId, userOrganizationId);
         if (streetObjectIds.size() >= 1) { // в коррекциях нашли соответсвия на один или более внутренних объектов улиц
             //сформируем множество названий
             Set<String> streetNames = Sets.newHashSet();
@@ -291,7 +293,7 @@ public class AddressService extends AbstractBean {
                     payment.setInternalStreetTypeId(streetTypeObjectId);
                     payment.setInternalCityId(streetObject.getParentId());
                     List<StreetCorrection> streetCorrections = addressCorrectionBean.findStreetLocalCorrectionsByStreetId(
-                            streetId, cityCorrection.getId(), street, organizationId);
+                            streetId, cityCorrection.getId(), street, osznId, userOrganizationId);
                     if (streetCorrections.size() >= 1) {
                         streetCorrection = streetCorrections.get(0);
                     } else {
@@ -300,7 +302,7 @@ public class AddressService extends AbstractBean {
                     //перейти к обработке дома
                 } else if (streetIds.size() > 1) { // нашли больше одной улицы
                     //пытаемся найти по району
-                    streetIds = addressCorrectionBean.findInternalStreetIdsByDistrict(cityId, street, organizationId);
+                    streetIds = addressCorrectionBean.findInternalStreetIdsByDistrict(cityId, street, osznId);
                     if (streetIds.size() == 1) { //нашли ровно одну улицу по району
                         streetId = streetIds.get(0);
                         DomainObject streetObject = streetStrategy.findById(streetId, true);
@@ -309,7 +311,7 @@ public class AddressService extends AbstractBean {
                         payment.setInternalStreetTypeId(streetTypeObjectId);
                         payment.setInternalCityId(streetObject.getParentId());
                         List<StreetCorrection> streetCorrections = addressCorrectionBean.findStreetLocalCorrectionsByStreetId(
-                                streetId, cityCorrection.getId(), street, organizationId);
+                                streetId, cityCorrection.getId(), street, osznId, userOrganizationId);
                         if (streetCorrections.size() >= 1) {
                             streetCorrection = streetCorrections.get(0);
                         } else {
@@ -318,12 +320,14 @@ public class AddressService extends AbstractBean {
                         //перейти к обработке дома
                     } else {
                         // пытаемся искать дополнительно по номеру и корпусу дома
-                        streetIds = addressCorrectionBean.findInternalStreetIdsByNameAndBuilding(cityId, streetName, buildingNumber, buildingCorp);
+                        streetIds = addressCorrectionBean.findInternalStreetIdsByNameAndBuilding(cityId, streetName,
+                                buildingNumber, buildingCorp);
                         if (streetIds.size() == 1) { //нашли ровно одну улицу с заданным номером и корпусом дома
                             streetId = streetIds.get(0);
 
                             //проставить дом для payment и выйти
-                            List<Long> buildingIds = addressCorrectionBean.findInternalBuildingIds(buildingNumber, buildingCorp, streetId, cityId);
+                            List<Long> buildingIds = addressCorrectionBean.findInternalBuildingIds(buildingNumber,
+                                    buildingCorp, streetId, cityId);
                             if (buildingIds.size() == 1) {
                                 Long buildingId = buildingIds.get(0);
                                 payment.setInternalBuildingId(buildingId);
@@ -368,21 +372,22 @@ public class AddressService extends AbstractBean {
                 //нужно создать коррекцию для дома
 
                 //create street type correction at first
-                Correction streetTypeCorrection = findOrCreateStreetTypeCorrection(payment, streetType, streetTypeObjectId, organizationId);
+                Correction streetTypeCorrection = findOrCreateStreetTypeCorrection(payment, streetType, streetTypeObjectId,
+                        osznId, userOrganizationId);
                 if (streetTypeCorrection == null) {
                     return;
                 }
 
                 //create street correction
                 streetCorrection = findOrCreateStreetCorrection(payment, cityCorrection.getId(), streetTypeCorrection.getId(),
-                        street, streetId, organizationId);
+                        street, streetId, osznId, userOrganizationId);
                 if (streetCorrection == null) {
                     return;
                 }
                 // перейти к обработке дома
             } else if (streetIds.size() > 1) { // нашли более одной улицы
                 //пытаемся найти по району
-                streetIds = addressCorrectionBean.findInternalStreetIdsByDistrict(cityId, street, organizationId);
+                streetIds = addressCorrectionBean.findInternalStreetIdsByDistrict(cityId, street, osznId);
                 if (streetIds.size() == 1) { //нашли ровно одну улицу по району
                     streetId = streetIds.get(0);
 
@@ -398,14 +403,15 @@ public class AddressService extends AbstractBean {
                     //нужно создать коррекцию для дома
 
                     //create street type correction at first
-                    Correction streetTypeCorrection = findOrCreateStreetTypeCorrection(payment, streetType, streetTypeObjectId, organizationId);
+                    Correction streetTypeCorrection = findOrCreateStreetTypeCorrection(payment, streetType,
+                            streetTypeObjectId, osznId, userOrganizationId);
                     if (streetTypeCorrection == null) {
                         return;
                     }
 
                     //create street correction
                     streetCorrection = findOrCreateStreetCorrection(payment, cityCorrection.getId(), streetTypeCorrection.getId(),
-                            street, streetId, organizationId);
+                            street, streetId, osznId, userOrganizationId);
                     if (streetCorrection == null) {
                         return;
                     }
@@ -450,8 +456,8 @@ public class AddressService extends AbstractBean {
         //Связывание дома
         Long buildingId = null;
         BuildingCorrection buildingCorrection = null;
-        List<BuildingCorrection> buildingCorrections = addressCorrectionBean.findBuildingLocalCorrections(streetCorrection.getId(), buildingNumber,
-                buildingCorp, organizationId);
+        List<BuildingCorrection> buildingCorrections = addressCorrectionBean.findBuildingLocalCorrections(
+                streetCorrection.getId(), buildingNumber, buildingCorp, osznId, userOrganizationId);
         if (buildingCorrections.size() == 1) {
             buildingCorrection = buildingCorrections.get(0);
             buildingId = buildingCorrection.getObjectId();
@@ -462,8 +468,9 @@ public class AddressService extends AbstractBean {
             List<Long> buildingIds = addressCorrectionBean.findInternalBuildingIds(buildingNumber, buildingCorp, streetId, cityId);
             if (buildingIds.size() == 1) {
                 buildingId = buildingIds.get(0);
-                buildingCorrection = addressCorrectionBean.createBuildingCorrection(buildingNumber, buildingCorp, streetCorrection.getId(), buildingId,
-                        organizationId, IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID);
+                buildingCorrection = addressCorrectionBean.createBuildingCorrection(buildingNumber, buildingCorp,
+                        streetCorrection.getId(), buildingId, osznId, IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID,
+                        userOrganizationId);
                 addressCorrectionBean.insertBuilding(buildingCorrection);
             } else if (buildingIds.size() > 1) {
                 payment.setStatus(RequestStatus.MORE_ONE_LOCAL_BUILDING);
@@ -490,9 +497,11 @@ public class AddressService extends AbstractBean {
     }
 
     @Transactional
-    private Correction findOrCreateStreetTypeCorrection(AbstractRequest request, String streetType, long streetTypeObjectId, long organizationId) {
+    private Correction findOrCreateStreetTypeCorrection(AbstractRequest request, String streetType, long streetTypeObjectId,
+            long osznId, long userOrganizationId) {
         Correction streetTypeCorrection = null;
-        List<Correction> streetTypeCorrections = addressCorrectionBean.findStreetTypeLocalCorrections(streetType, organizationId);
+        List<Correction> streetTypeCorrections = addressCorrectionBean.findStreetTypeLocalCorrections(streetType,
+                osznId, userOrganizationId);
         if (streetTypeCorrections.size() == 1) {
             streetTypeCorrection = streetTypeCorrections.get(0);
             return streetTypeCorrection;
@@ -500,8 +509,8 @@ public class AddressService extends AbstractBean {
             request.setStatus(RequestStatus.MORE_ONE_LOCAL_STREET_TYPE_CORRECTION);
             return null;
         } else {
-            streetTypeCorrection = addressCorrectionBean.createStreetTypeCorrection(streetType, streetTypeObjectId, organizationId,
-                    IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID);
+            streetTypeCorrection = addressCorrectionBean.createStreetTypeCorrection(streetType, streetTypeObjectId,
+                    osznId, IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
             addressCorrectionBean.insert(streetTypeCorrection);
             return streetTypeCorrection;
         }
@@ -509,10 +518,10 @@ public class AddressService extends AbstractBean {
 
     @Transactional
     private StreetCorrection findOrCreateStreetCorrection(AbstractRequest request, long cityCorrectionId, long streetTypeCorrectionId,
-            String street, long streetObjectId, long organizationId) {
+            String street, long streetObjectId, long osznId, long userOrganizationId) {
         StreetCorrection streetCorrection = null;
         List<StreetCorrection> streetCorrections = addressCorrectionBean.findStreetLocalCorrections(cityCorrectionId,
-                streetTypeCorrectionId, street, organizationId);
+                streetTypeCorrectionId, street, osznId, userOrganizationId);
         if (streetCorrections.size() == 1) {
             streetCorrection = streetCorrections.get(0);
             if (streetObjectId != streetCorrection.getObjectId()) {
@@ -525,7 +534,7 @@ public class AddressService extends AbstractBean {
             return null;
         } else {
             streetCorrection = addressCorrectionBean.createStreetCorrection(street, null, streetTypeCorrectionId, cityCorrectionId,
-                    streetObjectId, organizationId, IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID);
+                    streetObjectId, osznId, IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
             addressCorrectionBean.insertStreet(streetCorrection);
             return streetCorrection;
         }
@@ -544,8 +553,8 @@ public class AddressService extends AbstractBean {
      * @param actualPayment
      */
     @Transactional
-    public void resolveOutgoingAddress(Payment payment, CalculationCenterInfo calculationCenterInfo) {
-        List<Correction> cityCorrections = addressCorrectionBean.findCityRemoteCorrections(calculationCenterInfo.getOrganizationId(),
+    public void resolveOutgoingAddress(Payment payment, CalculationContext calculationContext) {
+        List<Correction> cityCorrections = addressCorrectionBean.findCityRemoteCorrections(calculationContext.getCalculationCenterId(),
                 payment.getInternalCityId());
         if (cityCorrections.size() == 1) {
             Correction cityCorrection = cityCorrections.get(0);
@@ -559,7 +568,7 @@ public class AddressService extends AbstractBean {
         }
 
         //поиск района
-        resolveOutgoingDistrict(payment, calculationCenterInfo);
+        resolveOutgoingDistrict(payment, calculationContext);
         if (payment.getStatus().equals(RequestStatus.MORE_ONE_REMOTE_DISTRICT_CORRECTION)
                 || payment.getStatus().equals(RequestStatus.DISTRICT_UNRESOLVED)) {
             return;
@@ -567,12 +576,12 @@ public class AddressService extends AbstractBean {
 
         //поиск улицы
         StreetCorrection streetCorrection = null;
-        List<StreetCorrection> streetCorrections = addressCorrectionBean.findStreetRemoteCorrections(calculationCenterInfo.getOrganizationId(),
+        List<StreetCorrection> streetCorrections = addressCorrectionBean.findStreetRemoteCorrections(calculationContext.getCalculationCenterId(),
                 payment.getInternalStreetId());
         if (streetCorrections.size() == 1) {
             streetCorrection = streetCorrections.get(0);
         } else if (streetCorrections.size() > 1) {
-            streetCorrections = addressCorrectionBean.findStreetRemoteCorrectionsByBuilding(calculationCenterInfo.getOrganizationId(),
+            streetCorrections = addressCorrectionBean.findStreetRemoteCorrectionsByBuilding(calculationContext.getCalculationCenterId(),
                     payment.getInternalStreetId(), payment.getInternalBuildingId());
             if (streetCorrections.size() == 1) {
                 streetCorrection = streetCorrections.get(0);
@@ -595,7 +604,7 @@ public class AddressService extends AbstractBean {
         }
 
         //поиск дома
-        List<BuildingCorrection> buildingCorrections = addressCorrectionBean.findBuildingRemoteCorrections(calculationCenterInfo.getOrganizationId(),
+        List<BuildingCorrection> buildingCorrections = addressCorrectionBean.findBuildingRemoteCorrections(calculationContext.getCalculationCenterId(),
                 payment.getInternalBuildingId());
         if (buildingCorrections.size() == 1) {
             BuildingCorrection buildingCorrection = buildingCorrections.get(0);
@@ -615,8 +624,8 @@ public class AddressService extends AbstractBean {
     }
 
     @Transactional
-    public void resolveOutgoingDistrict(Payment payment, CalculationCenterInfo calculationCenterInfo) {
-        List<Correction> districtCorrections = addressCorrectionBean.findDistrictRemoteCorrections(calculationCenterInfo.getOrganizationId(),
+    public void resolveOutgoingDistrict(Payment payment, CalculationContext calculationContext) {
+        List<Correction> districtCorrections = addressCorrectionBean.findDistrictRemoteCorrections(calculationContext.getCalculationCenterId(),
                 payment.getOrganizationId());
         if (districtCorrections.size() == 1) {
             Correction districtCorrection = districtCorrections.get(0);
@@ -629,8 +638,8 @@ public class AddressService extends AbstractBean {
     }
 
     @Transactional
-    public void resolveOutgoingAddress(ActualPayment actualPayment, CalculationCenterInfo calculationCenterInfo) {
-        List<Correction> cityCorrections = addressCorrectionBean.findCityRemoteCorrections(calculationCenterInfo.getOrganizationId(),
+    public void resolveOutgoingAddress(ActualPayment actualPayment, CalculationContext calculationContext) {
+        List<Correction> cityCorrections = addressCorrectionBean.findCityRemoteCorrections(calculationContext.getCalculationCenterId(),
                 actualPayment.getInternalCityId());
         if (cityCorrections.size() == 1) {
             Correction cityCorrection = cityCorrections.get(0);
@@ -644,7 +653,7 @@ public class AddressService extends AbstractBean {
         }
 
         //поиск района
-        resolveOutgoingDistrict(actualPayment, calculationCenterInfo);
+        resolveOutgoingDistrict(actualPayment, calculationContext);
         if (actualPayment.getStatus().equals(RequestStatus.MORE_ONE_REMOTE_DISTRICT_CORRECTION)
                 || actualPayment.getStatus().equals(RequestStatus.DISTRICT_UNRESOLVED)) {
             return;
@@ -652,12 +661,12 @@ public class AddressService extends AbstractBean {
 
         //поиск улицы
         StreetCorrection streetCorrection = null;
-        List<StreetCorrection> streetCorrections = addressCorrectionBean.findStreetRemoteCorrections(calculationCenterInfo.getOrganizationId(),
+        List<StreetCorrection> streetCorrections = addressCorrectionBean.findStreetRemoteCorrections(calculationContext.getCalculationCenterId(),
                 actualPayment.getInternalStreetId());
         if (streetCorrections.size() == 1) {
             streetCorrection = streetCorrections.get(0);
         } else if (streetCorrections.size() > 1) {
-            streetCorrections = addressCorrectionBean.findStreetRemoteCorrectionsByBuilding(calculationCenterInfo.getOrganizationId(),
+            streetCorrections = addressCorrectionBean.findStreetRemoteCorrectionsByBuilding(calculationContext.getCalculationCenterId(),
                     actualPayment.getInternalStreetId(), actualPayment.getInternalBuildingId());
             if (streetCorrections.size() == 1) {
                 streetCorrection = streetCorrections.get(0);
@@ -680,7 +689,7 @@ public class AddressService extends AbstractBean {
         }
 
         //поиск дома
-        List<BuildingCorrection> buildingCorrections = addressCorrectionBean.findBuildingRemoteCorrections(calculationCenterInfo.getOrganizationId(),
+        List<BuildingCorrection> buildingCorrections = addressCorrectionBean.findBuildingRemoteCorrections(calculationContext.getCalculationCenterId(),
                 actualPayment.getInternalBuildingId());
         if (buildingCorrections.size() == 1) {
             BuildingCorrection buildingCorrection = buildingCorrections.get(0);
@@ -700,8 +709,8 @@ public class AddressService extends AbstractBean {
     }
 
     @Transactional
-    public void resolveOutgoingDistrict(ActualPayment actualPayment, CalculationCenterInfo calculationCenterInfo) {
-        List<Correction> districtCorrections = addressCorrectionBean.findDistrictRemoteCorrections(calculationCenterInfo.getOrganizationId(),
+    public void resolveOutgoingDistrict(ActualPayment actualPayment, CalculationContext calculationContext) {
+        List<Correction> districtCorrections = addressCorrectionBean.findDistrictRemoteCorrections(calculationContext.getCalculationCenterId(),
                 actualPayment.getOrganizationId());
         if (districtCorrections.size() == 1) {
             Correction districtCorrection = districtCorrections.get(0);
@@ -730,22 +739,22 @@ public class AddressService extends AbstractBean {
      * @param calculationCenterId
      */
     @Transactional
-    public void resolveAddress(Payment payment, CalculationCenterInfo calculationCenterInfo) {
+    public void resolveAddress(Payment payment, CalculationContext calculationContext) {
         //разрешить адрес локально
-        resolveLocalAddress(payment);
+        resolveLocalAddress(payment, calculationContext.getUserOrganizationId());
         //если адрес локально разрешен, разрешить адрес для ЦН.
         if (payment.getStatus().isAddressResolvedLocally()) {
-            resolveOutgoingAddress(payment, calculationCenterInfo);
+            resolveOutgoingAddress(payment, calculationContext);
         }
     }
 
     @Transactional
-    public void resolveAddress(ActualPayment actualPayment, CalculationCenterInfo calculationCenterInfo) {
+    public void resolveAddress(ActualPayment actualPayment, CalculationContext calculationContext) {
         //разрешить адрес локально
-        resolveLocalAddress(actualPayment);
+        resolveLocalAddress(actualPayment, calculationContext.getUserOrganizationId());
         //если адрес локально разрешен, разрешить адрес для ЦН.
         if (actualPayment.getStatus().isAddressResolvedLocally()) {
-            resolveOutgoingAddress(actualPayment, calculationCenterInfo);
+            resolveOutgoingAddress(actualPayment, calculationContext);
         }
     }
 
@@ -765,10 +774,11 @@ public class AddressService extends AbstractBean {
      * @param buildingId Откорректированный дом
      */
     @Transactional
-    public void correctLocalAddress(Payment payment, CORRECTED_ENTITY entity, Long cityId, Long streetTypeId, Long streetId, Long buildingId)
+    public void correctLocalAddress(Payment payment, CORRECTED_ENTITY entity, Long cityId, Long streetTypeId,
+            Long streetId, Long buildingId, long userOrganizationId)
             throws DublicateCorrectionException, MoreOneCorrectionException, NotFoundCorrectionException {
-        long organizationId = payment.getOrganizationId();
-        long requestFileId = payment.getRequestFileId();
+        final long osznId = payment.getOrganizationId();
+        final long requestFileId = payment.getRequestFileId();
 
         String city = (String) payment.getField(PaymentDBF.N_NAME);
         String street = (String) payment.getField(PaymentDBF.VUL_NAME);
@@ -777,12 +787,12 @@ public class AddressService extends AbstractBean {
 
         switch (entity) {
             case CITY: {
-                List<Correction> cityCorrections = addressCorrectionBean.findCityLocalCorrections(city, organizationId);
+                List<Correction> cityCorrections = addressCorrectionBean.findCityLocalCorrections(city, osznId, userOrganizationId);
                 if (cityCorrections.size() > 0) {
                     throw new DublicateCorrectionException();
                 } else {
-                    Correction cityCorrection = addressCorrectionBean.createCityCorrection(city, cityId, organizationId,
-                            IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID);
+                    Correction cityCorrection = addressCorrectionBean.createCityCorrection(city, cityId, osznId,
+                            IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
 //                    if (addressCorrectionBean.checkAddressExistence(cityCorrection)) {
 //                        throw new DublicateCorrectionException();
 //                    }
@@ -796,7 +806,7 @@ public class AddressService extends AbstractBean {
                 throw new IllegalArgumentException("Street type couldn't corrected for payment.");
             }
             case STREET: {
-                List<Correction> cityCorrections = addressCorrectionBean.findCityLocalCorrections(city, organizationId);
+                List<Correction> cityCorrections = addressCorrectionBean.findCityLocalCorrections(city, osznId, userOrganizationId);
                 if (cityCorrections.size() == 1) {
                     Correction cityCorrection = cityCorrections.get(0);
 
@@ -805,25 +815,26 @@ public class AddressService extends AbstractBean {
                     DomainObject streetTypeObject = streetTypeStrategy.findById(streetTypeId, true);
                     String streetType = streetTypeStrategy.displayDomainObject(streetTypeObject, localeBean.getSystemLocale());
                     Correction streetTypeCorrection = null;
-                    List<Correction> streetTypeCorrections = addressCorrectionBean.findStreetTypeLocalCorrections(streetType, organizationId);
+                    List<Correction> streetTypeCorrections = addressCorrectionBean.findStreetTypeLocalCorrections(streetType,
+                            osznId, userOrganizationId);
                     if (streetTypeCorrections.size() == 1) {
                         streetTypeCorrection = streetTypeCorrections.get(0);
                     } else if (streetTypeCorrections.size() > 1) {
                         throw new MoreOneCorrectionException("street_type");
                     } else {
-                        streetTypeCorrection = addressCorrectionBean.createStreetTypeCorrection(streetType, streetTypeId, organizationId,
-                                IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID);
+                        streetTypeCorrection = addressCorrectionBean.createStreetTypeCorrection(streetType, streetTypeId, osznId,
+                                IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
                         addressCorrectionBean.insert(streetTypeCorrection);
                     }
 
                     List<StreetCorrection> streetCorrections = addressCorrectionBean.findStreetLocalCorrections(cityCorrection.getId(),
-                            streetTypeCorrection.getId(), street, organizationId);
+                            streetTypeCorrection.getId(), street, osznId, userOrganizationId);
                     if (streetCorrections.size() > 0) {
                         throw new DublicateCorrectionException();
                     } else {
                         StreetCorrection streetCorrection = addressCorrectionBean.createStreetCorrection(street, null,
-                                streetTypeCorrection.getId(), cityCorrection.getId(), streetId, organizationId,
-                                IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID);
+                                streetTypeCorrection.getId(), cityCorrection.getId(), streetId, osznId,
+                                IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
 //                            if (addressCorrectionBean.checkStreetExistence(streetCorrection)) {
 //                                throw new DublicateCorrectionException();
 //                            }
@@ -838,7 +849,7 @@ public class AddressService extends AbstractBean {
             }
             break;
             case BUILDING: {
-                List<Correction> cityCorrections = addressCorrectionBean.findCityLocalCorrections(city, organizationId);
+                List<Correction> cityCorrections = addressCorrectionBean.findCityLocalCorrections(city, osznId, userOrganizationId);
                 if (cityCorrections.size() == 1) {
                     Correction cityCorrection = cityCorrections.get(0);
 
@@ -846,22 +857,24 @@ public class AddressService extends AbstractBean {
                     IStrategy streetTypeStrategy = strategyFactory.getStrategy("street_type");
                     DomainObject streetTypeObject = streetTypeStrategy.findById(streetTypeObjectId, true);
                     String streetType = streetTypeStrategy.displayDomainObject(streetTypeObject, localeBean.getSystemLocale());
-                    List<Correction> streetTypeCorrections = addressCorrectionBean.findStreetTypeLocalCorrections(streetType, organizationId);
+                    List<Correction> streetTypeCorrections = addressCorrectionBean.findStreetTypeLocalCorrections(streetType,
+                            osznId, userOrganizationId);
                     if (streetTypeCorrections.size() == 1) {
                         Correction streetTypeCorrection = streetTypeCorrections.get(0);
 
-                        List<StreetCorrection> streetCorrections = addressCorrectionBean.findStreetLocalCorrections(cityCorrection.getId(),
-                                streetTypeCorrection.getId(), street, organizationId);
+                        List<StreetCorrection> streetCorrections = addressCorrectionBean.findStreetLocalCorrections(
+                                cityCorrection.getId(), streetTypeCorrection.getId(), street, osznId, userOrganizationId);
                         if (streetCorrections.size() == 1) {
                             StreetCorrection streetCorrection = streetCorrections.get(0);
 
-                            List<BuildingCorrection> buildingCorrections = addressCorrectionBean.findBuildingLocalCorrections(streetId,
-                                    buildingNumber, buildingCorp, organizationId);
+                            List<BuildingCorrection> buildingCorrections = addressCorrectionBean.findBuildingLocalCorrections(
+                                    streetId, buildingNumber, buildingCorp, osznId, userOrganizationId);
                             if (buildingCorrections.size() > 0) {
                                 throw new DublicateCorrectionException();
                             } else {
-                                BuildingCorrection buildingCorrection = addressCorrectionBean.createBuildingCorrection(buildingNumber, buildingCorp,
-                                        streetCorrection.getId(), buildingId, organizationId, IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID);
+                                BuildingCorrection buildingCorrection = addressCorrectionBean.createBuildingCorrection(
+                                        buildingNumber, buildingCorp, streetCorrection.getId(), buildingId, osznId,
+                                        IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
 //                                if (addressCorrectionBean.checkBuildingExistence(buildingCorrection)) {
 //                                    throw new DublicateCorrectionException();
 //                                }
@@ -890,10 +903,11 @@ public class AddressService extends AbstractBean {
     }
 
     @Transactional
-    public void correctLocalAddress(ActualPayment actualPayment, CORRECTED_ENTITY entity, Long cityId, Long streetTypeId, Long streetId, Long buildingId)
+    public void correctLocalAddress(ActualPayment actualPayment, CORRECTED_ENTITY entity, Long cityId, Long streetTypeId,
+            Long streetId, Long buildingId, long userOrganizationId)
             throws DublicateCorrectionException, MoreOneCorrectionException, NotFoundCorrectionException {
-        long organizationId = actualPayment.getOrganizationId();
-        long requestFileId = actualPayment.getRequestFileId();
+        final long osznId = actualPayment.getOrganizationId();
+        final long requestFileId = actualPayment.getRequestFileId();
 
         String city = (String) actualPayment.getField(ActualPaymentDBF.N_NAME);
         String streetType = (String) actualPayment.getField(ActualPaymentDBF.VUL_CAT);
@@ -904,12 +918,12 @@ public class AddressService extends AbstractBean {
 
         switch (entity) {
             case CITY: {
-                List<Correction> cityCorrections = addressCorrectionBean.findCityLocalCorrections(city, organizationId);
+                List<Correction> cityCorrections = addressCorrectionBean.findCityLocalCorrections(city, osznId, userOrganizationId);
                 if (cityCorrections.size() > 0) {
                     throw new DublicateCorrectionException();
                 } else {
-                    Correction cityCorrection = addressCorrectionBean.createCityCorrection(city, cityId, organizationId,
-                            IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID);
+                    Correction cityCorrection = addressCorrectionBean.createCityCorrection(city, cityId, osznId,
+                            IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
 //                    if (addressCorrectionBean.checkAddressExistence(cityCorrection)) {
 //                        throw new DublicateCorrectionException();
 //                    }
@@ -919,12 +933,13 @@ public class AddressService extends AbstractBean {
             }
             break;
             case STREET_TYPE: {
-                List<Correction> streetTypeCorrections = addressCorrectionBean.findStreetTypeLocalCorrections(streetType, organizationId);
+                List<Correction> streetTypeCorrections = addressCorrectionBean.findStreetTypeLocalCorrections(streetType,
+                        osznId, userOrganizationId);
                 if (streetTypeCorrections.size() > 0) {
                     throw new DublicateCorrectionException();
                 } else {
-                    Correction streetTypeCorrection = addressCorrectionBean.createStreetTypeCorrection(streetType, streetTypeId, organizationId,
-                            IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID);
+                    Correction streetTypeCorrection = addressCorrectionBean.createStreetTypeCorrection(streetType,
+                            streetTypeId, osznId, IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
 //                    if (addressCorrectionBean.checkAddressExistence(streetTypeCorrection)) {
 //                        throw new DublicateCorrectionException();
 //                    }
@@ -934,22 +949,23 @@ public class AddressService extends AbstractBean {
             }
             break;
             case STREET: {
-                List<Correction> cityCorrections = addressCorrectionBean.findCityLocalCorrections(city, organizationId);
+                List<Correction> cityCorrections = addressCorrectionBean.findCityLocalCorrections(city, osznId, userOrganizationId);
                 if (cityCorrections.size() == 1) {
                     Correction cityCorrection = cityCorrections.get(0);
 
-                    List<Correction> streetTypeCorrections = addressCorrectionBean.findStreetTypeLocalCorrections(streetType, organizationId);
+                    List<Correction> streetTypeCorrections = addressCorrectionBean.findStreetTypeLocalCorrections(streetType,
+                            osznId, userOrganizationId);
                     if (streetTypeCorrections.size() == 1) {
                         Correction streetTypeCorrection = streetTypeCorrections.get(0);
 
-                        List<StreetCorrection> streetCorrections = addressCorrectionBean.findStreetLocalCorrections(cityCorrection.getId(),
-                                streetTypeCorrection.getId(), street, organizationId);
+                        List<StreetCorrection> streetCorrections = addressCorrectionBean.findStreetLocalCorrections(
+                                cityCorrection.getId(), streetTypeCorrection.getId(), street, osznId, userOrganizationId);
                         if (streetCorrections.size() > 0) {
                             throw new DublicateCorrectionException();
                         } else {
                             StreetCorrection streetCorrection = addressCorrectionBean.createStreetCorrection(street, streetCode,
-                                    streetTypeCorrection.getId(), cityCorrection.getId(), streetId, organizationId,
-                                    IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID);
+                                    streetTypeCorrection.getId(), cityCorrection.getId(), streetId, osznId,
+                                    IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
 //                            if (addressCorrectionBean.checkStreetExistence(streetCorrection)) {
 //                                throw new DublicateCorrectionException();
 //                            }
@@ -969,26 +985,28 @@ public class AddressService extends AbstractBean {
             }
             break;
             case BUILDING: {
-                List<Correction> cityCorrections = addressCorrectionBean.findCityLocalCorrections(city, organizationId);
+                List<Correction> cityCorrections = addressCorrectionBean.findCityLocalCorrections(city, osznId, userOrganizationId);
                 if (cityCorrections.size() == 1) {
                     Correction cityCorrection = cityCorrections.get(0);
 
-                    List<Correction> streetTypeCorrections = addressCorrectionBean.findStreetTypeLocalCorrections(streetType, organizationId);
+                    List<Correction> streetTypeCorrections = addressCorrectionBean.findStreetTypeLocalCorrections(streetType,
+                            osznId, userOrganizationId);
                     if (streetTypeCorrections.size() == 1) {
                         Correction streetTypeCorrection = streetTypeCorrections.get(0);
 
                         List<StreetCorrection> streetCorrections = addressCorrectionBean.findStreetLocalCorrections(cityCorrection.getId(),
-                                streetTypeCorrection.getId(), street, organizationId);
+                                streetTypeCorrection.getId(), street, osznId, userOrganizationId);
                         if (streetCorrections.size() == 1) {
                             StreetCorrection streetCorrection = streetCorrections.get(0);
 
                             List<BuildingCorrection> buildingCorrections = addressCorrectionBean.findBuildingLocalCorrections(streetId,
-                                    buildingNumber, buildingCorp, organizationId);
+                                    buildingNumber, buildingCorp, osznId, userOrganizationId);
                             if (buildingCorrections.size() > 0) {
                                 throw new DublicateCorrectionException();
                             } else {
-                                BuildingCorrection buildingCorrection = addressCorrectionBean.createBuildingCorrection(buildingNumber, buildingCorp,
-                                        streetCorrection.getId(), buildingId, organizationId, IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID);
+                                BuildingCorrection buildingCorrection = addressCorrectionBean.createBuildingCorrection(
+                                        buildingNumber, buildingCorp, streetCorrection.getId(), buildingId, osznId,
+                                        IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
 //                                if (addressCorrectionBean.checkBuildingExistence(buildingCorrection)) {
 //                                    throw new DublicateCorrectionException();
 //                                }

@@ -84,7 +84,7 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
     private T request;
     private IModel<DomainObject> streetTypeModel;
 
-    public AddressCorrectionPanel(String id, final Component... toUpdate) {
+    public AddressCorrectionPanel(String id, final long userOrganizationId, final Component... toUpdate) {
         super(id);
 
         //Диалог
@@ -160,9 +160,10 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
                         if (correctedEntity != CORRECTED_ENTITY.STREET_TYPE) {
                             correctAddress(request, correctedEntity, getObjectId(componentState.get("city")),
                                     getStreetTypeId(componentState.get("street")), getObjectId(componentState.get("street")),
-                                    getObjectId(componentState.get("building")));
+                                    getObjectId(componentState.get("building")), userOrganizationId);
                         } else {
-                            correctAddress(request, correctedEntity, null, getObjectId(streetTypeModel.getObject()), null, null);
+                            correctAddress(request, correctedEntity, null, getObjectId(streetTypeModel.getObject()), 
+                                    null, null, userOrganizationId);
                         }
 
                         if (toUpdate != null) {
@@ -212,7 +213,8 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
         return streetObject == null ? null : StreetStrategy.getStreetType(streetObject);
     }
 
-    protected abstract void correctAddress(T request, CORRECTED_ENTITY entity, Long cityId, Long streetTypeId, Long streetId, Long buildingId)
+    protected abstract void correctAddress(T request, CORRECTED_ENTITY entity, Long cityId, Long streetTypeId, 
+            Long streetId, Long buildingId, long userOrganizationId)
             throws DublicateCorrectionException, MoreOneCorrectionException, NotFoundCorrectionException;
 
     protected boolean validate(SearchComponentState componentState) {

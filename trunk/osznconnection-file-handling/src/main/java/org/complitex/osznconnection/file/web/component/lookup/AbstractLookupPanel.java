@@ -71,9 +71,11 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
     private T initialRequest;
     private IModel<String> accountNumberModel;
     private int lastAccordionActive;
+    private final long userOrganizationId;
 
-    public AbstractLookupPanel(String id, Component... toUpdate) {
+    public AbstractLookupPanel(String id, long userOrganizationId, Component... toUpdate) {
         super(id);
+        this.userOrganizationId = userOrganizationId;
         init(toUpdate);
     }
 
@@ -127,7 +129,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
                 if (isInternalAddressCorrect(request)) {
                     boolean outgoingAddressResolved = false;
                     try {
-                        resolveOutgoingAddress(request);
+                        resolveOutgoingAddress(request, userOrganizationId);
                         outgoingAddressResolved = true;
                     } catch (Exception e) {
                         error(getString("db_error"));
@@ -136,7 +138,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
                     if (outgoingAddressResolved) {
                         if (request.getStatus() == RequestStatus.ACCOUNT_NUMBER_NOT_FOUND) {
                             try {
-                                List<AccountDetail> accountDetails = acquireAccountDetailsByAddress(request);
+                                List<AccountDetail> accountDetails = acquireAccountDetailsByAddress(request, userOrganizationId);
                                 if (accountDetails == null || accountDetails.isEmpty()) {
                                     error(statusRenderService.displayStatus(request.getStatus(), getLocale()));
                                 } else {
@@ -195,7 +197,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
                 if (!isEmpty(accountNumberModel.getObject())) {
                     String outgoingDistrict = null;
                     try {
-                        outgoingDistrict = resolveOutgoingDistrict(request);
+                        outgoingDistrict = resolveOutgoingDistrict(request, userOrganizationId);
                     } catch (Exception e) {
                         log.error("", e);
                         error(getString("db_error"));
@@ -203,7 +205,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
                     if (!isEmpty(outgoingDistrict)) {
                         try {
                             List<AccountDetail> accountDetails = acquireAccountDetailsByAccount(request, outgoingDistrict,
-                                    accountNumberModel.getObject());
+                                    accountNumberModel.getObject(), userOrganizationId);
                             if (accountDetails == null || accountDetails.isEmpty()) {
                                 error(statusRenderService.displayStatus(request.getStatus(), getLocale()));
                             } else {
@@ -251,7 +253,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
                 if (accountDetailModel.getObject() != null
                         && !isEmpty(accountDetailModel.getObject().getAccountNumber())) {
                     try {
-                        updateAccountNumber(initialRequest, accountDetailModel.getObject().getAccountNumber());
+                        updateAccountNumber(initialRequest, accountDetailModel.getObject().getAccountNumber(), userOrganizationId);
                         for (Component component : toUpdate) {
                             target.addComponent(component);
                         }
@@ -339,16 +341,16 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
         dialog.open(target);
     }
 
-    protected final List<AccountDetail> acquireAccountDetailsByAccount(T request, String district, String account)
-            throws DBException, UnknownAccountNumberTypeException {
-        return lookupBean.acquireAccountDetailsByAccount(request, district, account);
+    protected final List<AccountDetail> acquireAccountDetailsByAccount(T request, String district, String account,
+            long userOrganizationId) throws DBException, UnknownAccountNumberTypeException {
+        return lookupBean.acquireAccountDetailsByAccount(request, district, account, userOrganizationId);
     }
 
-    protected abstract void resolveOutgoingAddress(T request);
+    protected abstract void resolveOutgoingAddress(T request, long userOrganizationId);
 
-    protected abstract List<AccountDetail> acquireAccountDetailsByAddress(T request) throws DBException;
+    protected abstract List<AccountDetail> acquireAccountDetailsByAddress(T request, long userOrganizationId) throws DBException;
 
-    protected abstract void updateAccountNumber(T request, String accountNumber);
+    protected abstract void updateAccountNumber(T request, String accountNumber, long userOrganizationId);
 
-    protected abstract String resolveOutgoingDistrict(T request);
+    protected abstract String resolveOutgoingDistrict(T request, long userOrganizationId);
 }

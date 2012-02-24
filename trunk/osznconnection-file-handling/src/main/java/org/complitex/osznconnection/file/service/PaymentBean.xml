@@ -170,7 +170,7 @@
     <delete id="deletePayments" parameterType="long">
         delete from `payment` where `request_file_id` = #{id};
     </delete>
-
+    
     <sql id="filter">
         <if test="account != null">
             AND p.`OWN_NUM_SR` LIKE CONCAT('%',#{account},'%')
@@ -219,11 +219,12 @@
         FROM (
             SELECT p.`id`, p.`status`, p.`request_file_id`, p.`OWN_NUM_SR`, p.`F_NAM`, p.`M_NAM`, p.`SUR_NAM`,
                 p.`N_NAME`, p.`VUL_NAME`, p.`BLD_NUM`, p.`CORP_NUM`, p.`FLAT`, p.`DAT1`,
-                (SELECT f.`organization_id` FROM `request_file` f WHERE f.`id` = p.`request_file_id`) organization_id,
+                f.`organization_id`,
                 p.`internal_city_id`, p.`internal_street_id`, p.`internal_street_type_id`, p.`internal_building_id`, p.`internal_apartment_id`,
                 p.`outgoing_city`, p.`outgoing_district`, p.`outgoing_street`, p.`outgoing_street_type`, p.`outgoing_building_number`, p.`outgoing_building_corp`,
                 p.`outgoing_apartment`
             FROM `payment` p
+            JOIN `request_file` f ON p.`request_file_id` = f.`id`
                 WHERE p.`request_file_id` = #{requestFileId}
                 <include refid="org.complitex.osznconnection.file.service.PaymentBean.filter"/>
                 <if test="orderByClause != null">

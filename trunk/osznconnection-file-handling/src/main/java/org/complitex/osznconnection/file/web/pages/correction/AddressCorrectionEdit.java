@@ -41,6 +41,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import org.complitex.osznconnection.file.service.OsznSessionBean;
 
 /**
  * Страница для редактирования коррекций адресов.
@@ -59,7 +60,7 @@ public class AddressCorrectionEdit extends FormTemplatePage {
         private Correction correction;
         private String entity;
 
-        public Callback(Correction correction, String entity) {
+        private Callback(Correction correction, String entity) {
             this.correction = correction;
             this.entity = entity;
         }
@@ -83,7 +84,7 @@ public class AddressCorrectionEdit extends FormTemplatePage {
         @EJB
         private AddressCorrectionBean addressCorrectionBean;
 
-        public AddressCorrectionEditPanel(String id, String entity, Long correctionId) {
+        private AddressCorrectionEditPanel(String id, String entity, Long correctionId) {
             super(id, entity, correctionId);
         }
 
@@ -142,7 +143,7 @@ public class AddressCorrectionEdit extends FormTemplatePage {
         @EJB
         private AddressCorrectionBean addressCorrectionBean;
 
-        public CityCorrectionEditPanel(String id, Long correctionId) {
+        private CityCorrectionEditPanel(String id, Long correctionId) {
             super(id, "city", correctionId);
         }
 
@@ -175,7 +176,7 @@ public class AddressCorrectionEdit extends FormTemplatePage {
         @EJB
         private AddressCorrectionBean addressCorrectionBean;
 
-        public DistrictCorrectionEditPanel(String id, Long correctionId) {
+        private DistrictCorrectionEditPanel(String id, Long correctionId) {
             super(id, "district", correctionId);
         }
 
@@ -241,8 +242,10 @@ public class AddressCorrectionEdit extends FormTemplatePage {
 
         @EJB
         private AddressCorrectionBean addressCorrectionBean;
+        @EJB
+        private OsznSessionBean osznSessionBean;
 
-        public StreetCorrectionEditPanel(String id, Long correctionId) {
+        private StreetCorrectionEditPanel(String id, Long correctionId) {
             super(id, "street", correctionId);
         }
 
@@ -253,7 +256,9 @@ public class AddressCorrectionEdit extends FormTemplatePage {
 
         @Override
         protected StreetCorrection newObjectCorrection(String entity) {
-            return new StreetCorrection();
+            StreetCorrection c = new StreetCorrection();
+            c.setUserOrganizationId(osznSessionBean.getCurrentUserOrganizationId());
+            return c;
         }
 
         @Override
@@ -346,8 +351,10 @@ public class AddressCorrectionEdit extends FormTemplatePage {
 
         @EJB
         private AddressCorrectionBean addressCorrectionBean;
+        @EJB
+        private OsznSessionBean osznSessionBean;
 
-        public BuildingCorrectionEditPanel(String id, Long correctionId) {
+        private BuildingCorrectionEditPanel(String id, Long correctionId) {
             super(id, "building", correctionId);
         }
 
@@ -363,7 +370,9 @@ public class AddressCorrectionEdit extends FormTemplatePage {
 
         @Override
         protected BuildingCorrection newObjectCorrection(String entity) {
-            return new BuildingCorrection();
+            BuildingCorrection c = new BuildingCorrection();
+            c.setUserOrganizationId(osznSessionBean.getCurrentUserOrganizationId());
+            return c;
         }
 
         @Override
@@ -474,4 +483,3 @@ public class AddressCorrectionEdit extends FormTemplatePage {
         return toolbar;
     }
 }
-

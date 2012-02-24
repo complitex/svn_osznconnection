@@ -65,7 +65,7 @@
             w.`id` warning_id, w.`request_id` warning_reqiest_id, w.`request_file_type` warning_request_file_type, w.`status` warning_status,
             p.`request_warning_id` param_request_warning_id, p.`order` param_order, p.`type` param_type, p.`value` param_value
         FROM `actual_payment` pay
-            LEFT JOIN `request_warning` w ON (w.`request_id` = pay.`id` AND w.`request_file_type` = 'PAYMENT')
+            LEFT JOIN `request_warning` w ON (w.`request_id` = pay.`id` AND w.`request_file_type` = 'ACTUAL_PAYMENT')
             LEFT JOIN `request_warning_parameter` p ON w.`id` = p.`request_warning_id`
         WHERE pay.`request_file_id` = #{id}
     </select>
@@ -128,7 +128,7 @@
     </insert>
 
     <update id="updateActualPayment" parameterType="org.complitex.osznconnection.file.entity.ActualPayment">
-        update `payment`
+        update `actual_payment`
         <set>
             `request_file_id` = #{requestFileId}, `account_number` = #{accountNumber},
             `internal_city_id` = #{internalCityId},
@@ -146,7 +146,7 @@
         where
         `id` = #{id}
     </update>
-
+    
     <sql id="filter">
         <if test="ownNum != null">
             AND ap.`OWN_NUM` LIKE CONCAT('%',#{ownNum},'%')
@@ -182,7 +182,7 @@
         </if>
     </sql>
 
-    <select id="count" resultType="int" parameterType="org.complitex.osznconnection.file.entity.example.PaymentExample">
+    <select id="count" resultType="int" parameterType="org.complitex.osznconnection.file.entity.example.ActualPaymentExample">
         SELECT COUNT(*) FROM `actual_payment` ap WHERE ap.`request_file_id` = #{requestFileId}
         <include refid="org.complitex.osznconnection.file.service.ActualPaymentBean.filter"/>
     </select>
@@ -226,7 +226,7 @@
                     limit #{start},#{size}
                 </if>
         ) s
-        LEFT JOIN `request_warning` w ON (w.`request_id` = s.`id` AND w.`request_file_type` = 'PAYMENT')
+        LEFT JOIN `request_warning` w ON (w.`request_id` = s.`id` AND w.`request_file_type` = 'ACTUAL_PAYMENT')
         LEFT JOIN `request_warning_parameter` p ON w.`id` = p.`request_warning_id`
     </select>
 

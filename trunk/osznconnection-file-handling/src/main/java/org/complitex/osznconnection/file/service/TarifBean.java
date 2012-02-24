@@ -45,14 +45,15 @@ public class TarifBean extends AbstractBean {
     /**
      * Получить значение поля T11_CODE2 из таблицы тарифов по коду тарифа в ЦН и ОСЗН.
      * @param T11_CS_UNI Код тарифа, который пришел из ЦН.
-     * @param organizationId ОСЗН
+     * @param osznId ОСЗН
      * @return
      */
     @Transactional
-    public Integer getCode2(Double T11_CS_UNI, long organizationId) {
+    public Integer getCode2(Double T11_CS_UNI, long osznId, long userOrganizationId) {
         Map<String, Object> params = Maps.newHashMap();
         params.put("T11_CS_UNI", T11_CS_UNI);
-        params.put("organizationId", organizationId);
+        params.put("osznId", osznId);
+        params.put("userOrganizationId", userOrganizationId);
         return (Integer) sqlSession().selectOne(MAPPING_NAMESPACE + ".getCode2", params);
     }
 }

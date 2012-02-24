@@ -12,7 +12,7 @@ import org.complitex.osznconnection.file.entity.Payment;
 import org.complitex.osznconnection.file.entity.PaymentDBF;
 
 import java.util.Date;
-import org.complitex.osznconnection.file.entity.CalculationCenterInfo;
+import org.complitex.osznconnection.file.entity.CalculationContext;
 import org.complitex.osznconnection.file.service_provider.exception.DBException;
 
 /**
@@ -32,12 +32,12 @@ public class ProcessPaymentTest extends AbstractTest {
             }
 
             @Override
-            protected String findOSZNOwnershipCode(Long internalOwnership, long osznId) {
+            protected String findOSZNOwnershipCode(Long internalOwnership, long osznId, long userOrganizationId) {
                 return "12";
             }
 
             @Override
-            protected Integer getTarifCode(Double T11_CS_UNI, long organizationId) {
+            protected Integer getTarifCode(Double T11_CS_UNI, long organizationId, long userOrganizationId) {
                 System.out.println("T11_CS_UNI : " + T11_CS_UNI);
                 return 0;
             }
@@ -58,7 +58,7 @@ public class ProcessPaymentTest extends AbstractTest {
         p.setField(PaymentDBF.DAT1, new Date());
 
         try {
-            adapter.processPaymentAndBenefit(new CalculationCenterInfo(2, "test", ImmutableSet.of(1L)), p, Lists.newArrayList(b));
+            adapter.processPaymentAndBenefit(new CalculationContext(2, "test", ImmutableSet.of(1L), 3), p, Lists.newArrayList(b));
         } catch (DBException e) {
             System.out.println("DB error.");
         }

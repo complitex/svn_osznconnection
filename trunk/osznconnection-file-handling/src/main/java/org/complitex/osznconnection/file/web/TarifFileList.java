@@ -51,6 +51,7 @@ import org.complitex.resources.WebCommonResourceInitializer;
 import javax.ejb.EJB;
 import java.util.*;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
+import org.complitex.osznconnection.file.service.OsznSessionBean;
 import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
 
 import static org.complitex.osznconnection.file.service.process.ProcessType.LOAD_TARIF;
@@ -71,18 +72,25 @@ public class TarifFileList extends TemplatePage {
     private ProcessManagerBean processManagerBean;
     @EJB
     private LogBean logBean;
+    @EJB
+    private OsznSessionBean osznSessionBean;
     private int waitForStopTimer;
     private boolean completedDisplayed = false;
     private final static String ITEM_ID_PREFIX = "item";
     private RequestFileLoadPanel requestFileLoadPanel;
+    private final boolean modificationsAllowed;
 
     public TarifFileList(PageParameters parameters) {
         super();
+        this.modificationsAllowed = osznSessionBean.isAdmin()
+                || (osznSessionBean.getCurrentUserOrganizationId() != null && osznSessionBean.isSuperUser());
         init(parameters.getAsLong("request_file_id"));
     }
 
     public TarifFileList() {
         super();
+        this.modificationsAllowed = osznSessionBean.isAdmin()
+                || (osznSessionBean.getCurrentUserOrganizationId() != null && osznSessionBean.isSuperUser());
         init(null);
     }
 
@@ -137,21 +145,32 @@ public class TarifFileList extends TemplatePage {
         filterForm.add(new TextField<String>("name"));
 
         //Организация
-        IModel<List<DomainObject>> osznsModel = new LoadableDetachableModel<List<DomainObject>>() {
+        final IModel<List<DomainObject>> osznsModel = new LoadableDetachableModel<List<DomainObject>>() {
 
             @Override
             protected List<DomainObject> load() {
                 return organizationStrategy.getAllOSZNs(getLocale());
             }
         };
-        DomainObjectDisableAwareRenderer renderer = new DomainObjectDisableAwareRenderer() {
+        final DomainObjectDisableAwareRenderer organizationRenderer = new DomainObjectDisableAwareRenderer() {
 
             @Override
             public Object getDisplayValue(DomainObject object) {
                 return organizationStrategy.displayDomainObject(object, getLocale());
             }
         };
-        filterForm.add(new DisableAwareDropDownChoice<DomainObject>("organization", osznsModel, renderer).setNullValid(true));
+        filterForm.add(new DisableAwareDropDownChoice<DomainObject>("organization", osznsModel, organizationRenderer).setNullValid(true));
+
+        // Организация пользователя
+        final IModel<List<? extends DomainObject>> userOrganizationsModel = new LoadableDetachableModel<List<? extends DomainObject>>() {
+
+            @Override
+            protected List<? extends DomainObject> load() {
+                return organizationStrategy.getUserOrganizations(getLocale());
+            }
+        };
+        filterForm.add(new DisableAwareDropDownChoice<DomainObject>("userOrganization", userOrganizationsModel,
+                organizationRenderer).setNullValid(true));
 
         //Месяц
         filterForm.add(new MonthDropDownChoice("month").setNullValid(true));
@@ -236,6 +255,15 @@ public class TarifFileList extends TemplatePage {
                 String organization = organizationStrategy.displayDomainObject(domainObject, getLocale());
                 item.add(new Label("organization", organization));
 
+                //Организация пользователя
+                final Long userOrganizationId = item.getModelObject().getUserOrganizationId();
+                String userOrganization = null;
+                if (userOrganizationId != null) {
+                    DomainObject userOrganizationObject = organizationStrategy.findById(userOrganizationId, true);
+                    userOrganization = organizationStrategy.displayDomainObject(userOrganizationObject, getLocale());
+                }
+                item.add(new Label("userOrganization", userOrganization));
+
                 item.add(new Label("month", DateUtil.displayMonth(rf.getMonth(), getLocale())));
                 item.add(new Label("year", StringUtil.valueOf(rf.getYear())));
                 item.add(new Label("dbf_record_count", StringUtil.valueOf(rf.getDbfRecordCount())));
@@ -281,6 +309,7 @@ public class TarifFileList extends TemplatePage {
         filterForm.add(new ArrowOrderByBorder("header.loaded", "loaded", dataProvider, dataView, filterForm));
         filterForm.add(new ArrowOrderByBorder("header.name", "name", dataProvider, dataView, filterForm));
         filterForm.add(new ArrowOrderByBorder("header.organization", "organization_id", dataProvider, dataView, filterForm));
+        filterForm.add(new ArrowOrderByBorder("header.user_organization", "user_organization_id", dataProvider, dataView, filterForm));
         filterForm.add(new ArrowOrderByBorder("header.month", "month", dataProvider, dataView, filterForm));
         filterForm.add(new ArrowOrderByBorder("header.year", "year", dataProvider, dataView, filterForm));
         filterForm.add(new ArrowOrderByBorder("header.dbf_record_count", "dbf_record_count", dataProvider, dataView, filterForm));
@@ -290,7 +319,7 @@ public class TarifFileList extends TemplatePage {
         filterForm.add(new PagingNavigator("paging", dataView, getClass().getName(), filterForm));
 
         //Удалить
-        Button delete = new Button("delete") {
+        final Button delete = new Button("delete") {
 
             @Override
             public void onSubmit() {
@@ -321,6 +350,7 @@ public class TarifFileList extends TemplatePage {
                 return !isProcessing();
             }
         };
+        delete.setVisibilityAllowed(modificationsAllowed);
         filterForm.add(delete);
 
         //Диалог загрузки
@@ -329,9 +359,9 @@ public class TarifFileList extends TemplatePage {
                 new RequestFileLoadPanel.ILoader() {
 
                     @Override
-                    public void load(Long organizationId, String districtCode, int monthFrom, int monthTo, int year) {
+                    public void load(long userOrganizationId, long osznId, String districtCode, int monthFrom, int monthTo, int year) {
                         completedDisplayed = false;
-                        processManagerBean.loadTarif(organizationId, districtCode, monthFrom, monthTo, year);
+                        processManagerBean.loadTarif(userOrganizationId, osznId, districtCode, monthFrom, monthTo, year);
                         addTimer(dataViewContainer, filterForm, messages);
                     }
                 }, false);
@@ -449,6 +479,10 @@ public class TarifFileList extends TemplatePage {
     @Override
     protected List<ToolbarButton> getToolbarButtons(String id) {
         return Arrays.asList((ToolbarButton) new LoadButton(id) {
+
+            {
+                setVisibilityAllowed(modificationsAllowed);
+            }
 
             @Override
             protected void onClick() {

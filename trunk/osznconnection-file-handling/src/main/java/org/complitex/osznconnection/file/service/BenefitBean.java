@@ -19,8 +19,6 @@ import org.complitex.osznconnection.file.entity.BenefitData;
 import org.complitex.osznconnection.file.service_provider.CalculationCenterBean;
 import org.complitex.osznconnection.file.service_provider.ServiceProviderAdapter;
 import org.complitex.osznconnection.file.service_provider.exception.DBException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Обработка записей файла запроса возмещения по льготам 
@@ -31,7 +29,6 @@ import org.slf4j.LoggerFactory;
 @Stateless(name = "BenefitBean")
 public class BenefitBean extends AbstractRequestBean {
 
-    private static final Logger log = LoggerFactory.getLogger(BenefitBean.class);
     public static final String MAPPING_NAMESPACE = BenefitBean.class.getName();
     @EJB
     private PaymentBean paymentBean;
@@ -41,6 +38,8 @@ public class BenefitBean extends AbstractRequestBean {
     private PrivilegeCorrectionBean privilegeCorrectionBean;
     @EJB
     private RequestFileGroupBean requestFileGroupBean;
+    @EJB
+    private RequestFileBean requestFileBean;
     @EJB
     private ServiceProviderAdapter adapter;
 
@@ -73,6 +72,11 @@ public class BenefitBean extends AbstractRequestBean {
         return (Integer) sqlSession().selectOne(MAPPING_NAMESPACE + ".count", example);
     }
 
+    @Transactional
+    public List<Benefit> find(BenefitExample example) {
+        return sqlSession().selectList(MAPPING_NAMESPACE + ".find", example);
+    }
+
     /**
      * Возвращает кол-во несвязанных записей в файле.
      * @param fileId
@@ -89,12 +93,6 @@ public class BenefitBean extends AbstractRequestBean {
     @Transactional
     public boolean isBenefitFileBound(long fileId) {
         return unboundCount(fileId) == 0;
-    }
-
-    @Transactional
-    public List<Benefit> find(BenefitExample example) {
-        List<Benefit> benefits = sqlSession().selectList(MAPPING_NAMESPACE + ".find", example);
-        return benefits;
     }
 
     @Transactional
@@ -237,13 +235,6 @@ public class BenefitBean extends AbstractRequestBean {
         return sqlSession().selectList(MAPPING_NAMESPACE + ".findByAccountNumber", params);
     }
 
-//    @Transactional
-//    public boolean isMarkEqualToBenefitCount(String accountNumber, long fileId) {
-//        Map<String, Object> params = Maps.newHashMap();
-//        params.put("fileId", fileId);
-//        params.put("accountNumber", accountNumber);
-//        return (Integer) sqlSession().selectOne(MAPPING_NAMESPACE + ".isMarkEqualToBenefitCount", params) == 0;
-//    }
     @Transactional
     public void update(Benefit benefit) {
         sqlSession().update(MAPPING_NAMESPACE + ".update", benefit);
@@ -289,10 +280,12 @@ public class BenefitBean extends AbstractRequestBean {
     }
 
     public Collection<BenefitData> getBenefitData(Benefit benefit) throws DBException {
-        long osznId = benefit.getOrganizationId();
-        CalculationCenterInfo calculationCenterInfo = calculationCenterBean.getInfo();
-        Date dat1 = findDat1(benefit.getAccountNumber(), benefit.getRequestFileId());
-        Collection<BenefitData> benefitData = adapter.getBenefitData(calculationCenterInfo, benefit, dat1);
+        final long osznId = benefit.getOrganizationId();
+        final RequestFile benefitRequestFile = requestFileBean.findById(benefit.getRequestFileId());
+        final CalculationContext calculationContext = calculationCenterBean.getContext(benefitRequestFile.getUserOrganizationId());
+        final Date dat1 = findDat1(benefit.getAccountNumber(), benefitRequestFile.getId());
+
+        Collection<BenefitData> benefitData = adapter.getBenefitData(calculationContext, benefit, dat1);
 
         Collection<BenefitData> notConnectedBenefitData = null;
         if (benefitData != null && !benefitData.isEmpty()) {
@@ -319,13 +312,14 @@ public class BenefitBean extends AbstractRequestBean {
                 if (suitable) {
                     String osznBenefitCode = null;
                     Long internalPrivilege = privilegeCorrectionBean.findInternalPrivilege(benefitDataItem.getCode(),
-                            calculationCenterInfo.getOrganizationId());
+                            calculationContext.getCalculationCenterId());
                     if (internalPrivilege != null) {
-                        osznBenefitCode = privilegeCorrectionBean.findPrivilegeCode(internalPrivilege, osznId);
+                        osznBenefitCode = privilegeCorrectionBean.findPrivilegeCode(internalPrivilege, osznId,
+                                calculationContext.getUserOrganizationId());
                     }
                     benefitDataItem.setPrivilegeObjectId(internalPrivilege);
                     benefitDataItem.setOsznPrivilegeCode(osznBenefitCode);
-                    benefitDataItem.setCalcCenterId(calculationCenterInfo.getOrganizationId());
+                    benefitDataItem.setCalcCenterId(calculationContext.getCalculationCenterId());
                     notConnectedBenefitData.add(benefitDataItem);
                 }
             }

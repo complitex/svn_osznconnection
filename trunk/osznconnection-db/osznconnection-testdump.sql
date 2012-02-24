@@ -19,11 +19,11 @@ insert into organization_attribute(attribute_id, object_id, attribute_type_id, v
 -- Files
 insert into request_file_group(id) values (1);
 --insert into request_file_group(id) values (2);
-insert into `request_file`(id, group_id, organization_id, `name`, `directory`, `registry`, `month`, `year`, `loaded`, `type`) values
-(1,1,1,'A_123405.dbf', 'AB', 1, 10, 2010, CURRENT_TIMESTAMP, 'PAYMENT'),
-(2,1,1,'AF123405.dbf', 'AB', 1, 10, 2010, CURRENT_TIMESTAMP, 'BENEFIT'),
-(3,null,1,'TARIF12.dbf', 'AB', 1, 10, 2010, CURRENT_TIMESTAMP, 'TARIF'),
-(4,null,1,'B1170710.dbf', 'AB', 1, 10, 2010, '2011-01-12', 'ACTUAL_PAYMENT');
+insert into `request_file`(id, group_id, organization_id, `name`, `directory`, `registry`, `month`, `year`, `loaded`, `type`, `user_organization_id`) values
+(1,1,1,'A_123405.dbf', 'AB', 1, 10, 2010, CURRENT_TIMESTAMP, 'PAYMENT', 3),
+(2,1,1,'AF123405.dbf', 'AB', 1, 10, 2010, CURRENT_TIMESTAMP, 'BENEFIT', 3),
+(3,null,1,'TARIF12.dbf', 'AB', 1, 10, 2010, CURRENT_TIMESTAMP, 'TARIF', 3),
+(4,null,1,'B1170710.dbf', 'AB', 1, 10, 2010, '2011-01-12', 'ACTUAL_PAYMENT', 4);
 
 -- (4,2,1,'A_123406.dbf', 'AB', 1, 10, 2010, CURRENT_TIMESTAMP, 'PAYMENT'),
 -- (5,2,1,'AF123406.dbf', 'CE', 1, 10, 2010, CURRENT_TIMESTAMP, 'BENEFIT');
@@ -94,16 +94,16 @@ insert into district_correction(organization_id, correction, object_id, internal
 
 
 -- Ownership corrections
-insert into ownership_correction(organization_id, correction, object_id, organization_code, internal_organization_id) values
-(1,UPPER('мiсцевих Рад'),1,'1',0), (2,UPPER('ГОС'),1,'1',0),
-(1,UPPER('кооперативна'),2,'1',0), (2,UPPER('КООП'),2,'2',0),
-(1,UPPER('приватна'),5,'5',0), (2,UPPER('ВЫК'),5,'5',0),
-(1,UPPER('приватизована'),6,'6',0), (2,UPPER('ЧАС'),6,'6',0);
+insert into ownership_correction(organization_id, correction, object_id, organization_code, internal_organization_id, user_organization_id) values
+(1,UPPER('мiсцевих Рад'),1,'1',0,3), (2,UPPER('ГОС'),1,'1',0,null),
+(1,UPPER('кооперативна'),2,'1',0,3), (2,UPPER('КООП'),2,'2',0,null),
+(1,UPPER('приватна'),5,'5',0,3), (2,UPPER('ВЫК'),5,'5',0,null),
+(1,UPPER('приватизована'),6,'6',0,3), (2,UPPER('ЧАС'),6,'6',0,null);
 
 -- Privileges corrections
-insert into privilege_correction(organization_id, correction, object_id, organization_code, internal_organization_id) values
-(2,'ПЕНСИОНЕР ПО ВОЗРАСТУ',15,'34',0),
-(1,'ПЕНСИОНЕР ПО ВОЗРАСТУ',15,'1000',0);
+insert into privilege_correction(organization_id, correction, object_id, organization_code, internal_organization_id, user_organization_id) values
+(2,'ПЕНСИОНЕР ПО ВОЗРАСТУ',15,'34',0,null),
+(1,'ПЕНСИОНЕР ПО ВОЗРАСТУ',15,'1000',0,3);
 
 -- Tarif
 insert into tarif(`T11_CS_UNI`, `T11_CODE2`, `request_file_id`, `T11_CODE1`) values (0,123,3,1);
@@ -111,3 +111,34 @@ insert into tarif(`T11_CS_UNI`, `T11_CODE2`, `request_file_id`, `T11_CODE1`) val
 -- config test
 --insert into config(`name`, `value`) values ('SAVE_OUTPUT_FILE_STORAGE_DIR', 'D:\\Artem\\Projects\\org.complitex\\storage\\out');
 --insert into config(`name`, `value`) values ('ADDRESS_IMPORT_FILE_STORAGE_DIR', 'D:\\Artem\\Projects\\org.complitex\\storage\\import');
+
+-- test users
+-- User '1'
+insert into `first_name` (`id`, `name`) values('3','1');
+insert into `last_name` (`id`, `name`) values('3','1');
+insert into `middle_name` (`id`, `name`) values('3','1');
+
+insert into `user_info` (`object_id`) values(3);
+insert into `user_info_attribute` (`attribute_id`, `object_id`, `attribute_type_id`, `value_id`, `value_type_id`) values('1','3','1000','3','1000');
+insert into `user_info_attribute` (`attribute_id`, `object_id`, `attribute_type_id`, `value_id`, `value_type_id`) values('1','3','1001','3','1001');
+insert into `user_info_attribute` (`attribute_id`, `object_id`, `attribute_type_id`, `value_id`, `value_type_id`) values('1','3','1002','3','1002');
+
+insert into `user` (`id`, `login`, `password`, `user_info_object_id`) values('3','1','c4ca4238a0b923820dcc509a6f75849b','3');
+insert into `user_organization` (`id`, `user_id`, `organization_object_id`, `main`) values('1','3','3','1');
+insert into `usergroup` (`id`, `login`, `group_name`) values('4','1','EMPLOYEES');
+
+-- User '2'
+insert into `first_name` (`id`, `name`) values('4','2');
+insert into `last_name` (`id`, `name`) values('4','2');
+insert into `middle_name` (`id`, `name`) values('4','2');
+
+insert into `user_info` (`object_id`) values(4);
+insert into `user_info_attribute` (`attribute_id`, `object_id`, `attribute_type_id`, `value_id`, `value_type_id`) values('1','4','1000','4','1000');
+insert into `user_info_attribute` (`attribute_id`, `object_id`, `attribute_type_id`, `value_id`, `value_type_id`) values('1','4','1001','4','1001');
+insert into `user_info_attribute` (`attribute_id`, `object_id`, `attribute_type_id`, `value_id`, `value_type_id`) values('1','4','1002','4','1002');
+
+insert into `user` (`id`, `login`, `password`, `user_info_object_id`) values('4','2','c81e728d9d4c2f636f067f89cc14862c','4');
+insert into `user_organization` (`id`, `user_id`, `organization_object_id`, `main`) values('2','4','4','1');
+insert into `usergroup` (`id`, `login`, `group_name`) values('5','2','EMPLOYEES');
+
+update `sequence` set `sequence_value` = 5 where `sequence_name` = 'user_info'; 
