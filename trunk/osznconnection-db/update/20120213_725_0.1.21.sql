@@ -7,6 +7,8 @@ INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (914, 1, UPPER('
 INSERT INTO `entity_attribute_type`(`id`, `entity_id`, `mandatory`, `attribute_type_name_id`, `system`) VALUES (913, 900, 1, 914, 1);
 INSERT INTO `entity_attribute_value_type`(`id`, `attribute_type_id`, `attribute_value_type`) VALUES (913, 913, UPPER('string'));
 
+SET GLOBAL log_bin_trust_function_creators = 1;
+
 DELIMITER /
 CREATE FUNCTION `insertString_20120213_0.1.21`(p_locale_id BIGINT(20), p_value VARCHAR(1000)) RETURNS BIGINT(20)
 BEGIN
@@ -66,5 +68,4 @@ DROP FUNCTION `insertString_20120213_0.1.21`;
 
 INSERT INTO `update` (`version`) VALUE ('20120213_725_0.1.21');
 
-
-
+SET GLOBAL log_bin_trust_function_creators = 0;
