@@ -1,5 +1,7 @@
 -- 1. Adds visibility of request files and corrections by user organizations.
 
+SET GLOBAL log_bin_trust_function_creators = 1;
+
 DELIMITER /
 CREATE PROCEDURE `update_0.1.22`()
 BEGIN
@@ -153,3 +155,5 @@ DELIMITER ;
 
 CALL `update_0.1.22`();
 DROP PROCEDURE `update_0.1.22`;
+
+SET GLOBAL log_bin_trust_function_creators = 0;
