@@ -27,6 +27,9 @@
         <role-name>AUTHORIZED</role-name>
     </security-role>
     <security-role>
+        <role-name>INFO_PANEL_ALLOWED</role-name>
+    </security-role>
+    <security-role>
         <role-name>ADMIN_MODULE_EDIT</role-name>
     </security-role>
     <security-role>
