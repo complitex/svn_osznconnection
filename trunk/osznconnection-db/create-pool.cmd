@@ -7,7 +7,7 @@ ECHO Local database and Realm
 ECHO ---------------------------------------------------
 ECHO.
 ECHO Register the JDBC connection pool
-call %GLASSFISH_ASADMIN% create-jdbc-connection-pool --driverclassname com.mysql.jdbc.Driver --restype java.sql.Driver --property url=jdbc\:mysql\://localhost\:3306/osznconnection:user=osznconnection:password=osznconnection osznconnectionPool
+call %GLASSFISH_ASADMIN% create-jdbc-connection-pool --driverclassname com.mysql.jdbc.Driver --restype java.sql.Driver --property url=jdbc\:mysql\://localhost\:3306/osznconnection:user=osznconnection:password=osznconnection:characterResultSets=utf8:characterEncoding=utf8:useUnicode=true osznconnectionPool
 
 ECHO.
 ECHO Create a JDBC resource with the specified JNDI name
@@ -23,7 +23,7 @@ ECHO Remote database
 ECHO ---------------------------------------------------
 ECHO.
 ECHO Register the JDBC connection pool
-call %GLASSFISH_ASADMIN% create-jdbc-connection-pool --driverclassname oracle.jdbc.OracleDriver --restype java.sql.Driver --property url=jdbc\:oracle\:thin\:@192.168.1.102\:1521\:cnhar:user=comp:password=comp osznconnectionRemotePool
+call %GLASSFISH_ASADMIN% create-jdbc-connection-pool --driverclassname oracle.jdbc.OracleDriver --restype java.sql.Driver --property url=jdbc\:oracle\:thin\:@192.168.1.102\:1521\:cnhar:user=comp:password=comp:characterResultSets=utf8:characterEncoding=utf8:useUnicode=true osznconnectionRemotePool
 
 ECHO.
 ECHO Create a JDBC resource with the specified JNDI name
