@@ -6,25 +6,19 @@ DELIMITER /
 CREATE PROCEDURE `update_0.1.22`()
 BEGIN
     DECLARE l_count BIGINT(20);
-    DECLARE l_error_message VARCHAR(100);
     DECLARE l_user_org_id BIGINT(20);
     
-    -- at first check whether there is exactly one user organization. if no then abort execution.
+    -- at first check whether there is more one user organization. if no then abort execution.
     SELECT COUNT(*) INTO l_count FROM `organization_attribute` o WHERE o.`status` = 'ACTIVE' 
 		AND o.`attribute_type_id` = 905 AND o.`value_id` = 1;
     
-    IF l_count != 1 THEN
-	IF l_count = 0 THEN 
-	    SET l_error_message = 'There is no one user organization.';
-	ELSE
-	    SET l_error_message = 'There is more one user organization.';
-	END IF;
-	SELECT l_error_message FROM DUAL;
+    IF l_count < 1 THEN
+        SELECT 'There is no one user organization.' FROM DUAL;
     ELSE 
 	-- update body
 	
 	-- find user organization id.
-	SELECT o.`object_id` INTO l_user_org_id FROM `organization_attribute` o WHERE o.`status` = 'ACTIVE' 
+	SELECT MIN(o.`object_id`) INTO l_user_org_id FROM `organization_attribute` o WHERE o.`status` = 'ACTIVE' 
 		AND o.`attribute_type_id` = 905 AND o.`value_id` = 1;
 	
 	-- change `request_file` structure.
