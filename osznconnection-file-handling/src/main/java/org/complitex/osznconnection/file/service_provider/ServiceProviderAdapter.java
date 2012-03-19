@@ -491,44 +491,110 @@ public class ServiceProviderAdapter {
         payment.setField(PaymentDBF.MARK, data.getUserCount());
         payment.setField(PaymentDBF.NORM_F_1, data.getReducedArea());
 
+        /*
+         * Если модуль начислений предоставляет более одной услуги, то возможна ситуация, когда 
+         * по одной услуге тариф обработан успешно, т.е. метод handleTarif(...) вернул true, а по другой 
+         * услуге тариф обработан с ошибкой. В этом случае обработка тарифов для оставшихся услуг не происходит,
+         * ошибка логируется и программа переходит к обработке benefits записей, соответствующих заданному payment.
+         */
+        //статус успешности обработки тарифов.
+        boolean tarifHandled = true;
+        //тариф МН, при обработке которого возникла ошибка.
+        Double errorTarif = null;
+
         //apartment fee
-        if (calculationContext.getServiceProviderTypeIds().contains(ServiceProviderTypeStrategy.APARTMENT_FEE)) {
-            handleTarif(calculationContext, payment, PaymentDBF.CODE2_1, data.getApartmentFeeTarif());
+        if (tarifHandled
+                && calculationContext.getServiceProviderTypeIds().contains(ServiceProviderTypeStrategy.APARTMENT_FEE)) {
+            if (!handleTarif(calculationContext, payment, PaymentDBF.CODE2_1, data.getApartmentFeeTarif())) {
+                tarifHandled = false;
+                errorTarif = data.getApartmentFeeTarif();
+            }
         }
         //heating
-        if (calculationContext.getServiceProviderTypeIds().contains(ServiceProviderTypeStrategy.HEATING)) {
+        if (tarifHandled
+                && calculationContext.getServiceProviderTypeIds().contains(ServiceProviderTypeStrategy.HEATING)) {
             payment.setField(PaymentDBF.NORM_F_2, data.getHeatingArea());
-            handleTarif(calculationContext, payment, PaymentDBF.CODE2_2, data.getHeatingTarif());
+            if (!handleTarif(calculationContext, payment, PaymentDBF.CODE2_2, data.getHeatingTarif())) {
+                tarifHandled = false;
+                errorTarif = data.getHeatingTarif();
+            }
         }
         //hot water
-        if (calculationContext.getServiceProviderTypeIds().contains(ServiceProviderTypeStrategy.HOT_WATER_SUPPLY)) {
+        if (tarifHandled
+                && calculationContext.getServiceProviderTypeIds().contains(ServiceProviderTypeStrategy.HOT_WATER_SUPPLY)) {
             payment.setField(PaymentDBF.NORM_F_3, data.getChargeHotWater());
-            handleTarif(calculationContext, payment, PaymentDBF.CODE2_3, data.getHotWaterTarif());
+            if (!handleTarif(calculationContext, payment, PaymentDBF.CODE2_3, data.getHotWaterTarif())) {
+                tarifHandled = false;
+                errorTarif = data.getHotWaterTarif();
+            }
         }
         //cold water
-        if (calculationContext.getServiceProviderTypeIds().contains(ServiceProviderTypeStrategy.COLD_WATER_SUPPLY)) {
+        if (tarifHandled
+                && calculationContext.getServiceProviderTypeIds().contains(ServiceProviderTypeStrategy.COLD_WATER_SUPPLY)) {
             payment.setField(PaymentDBF.NORM_F_4, data.getChargeColdWater());
-            handleTarif(calculationContext, payment, PaymentDBF.CODE2_4, data.getColdWaterTarif());
+            if (!handleTarif(calculationContext, payment, PaymentDBF.CODE2_4, data.getColdWaterTarif())) {
+                tarifHandled = false;
+                errorTarif = data.getColdWaterTarif();
+            }
         }
         //gas
-        if (calculationContext.getServiceProviderTypeIds().contains(ServiceProviderTypeStrategy.GAS_SUPPLY)) {
+        if (tarifHandled
+                && calculationContext.getServiceProviderTypeIds().contains(ServiceProviderTypeStrategy.GAS_SUPPLY)) {
             payment.setField(PaymentDBF.NORM_F_5, data.getChargeGas());
-            handleTarif(calculationContext, payment, PaymentDBF.CODE2_5, data.getGasTarif());
+            if (!handleTarif(calculationContext, payment, PaymentDBF.CODE2_5, data.getGasTarif())) {
+                tarifHandled = false;
+                errorTarif = data.getGasTarif();
+            }
         }
         //power
-        if (calculationContext.getServiceProviderTypeIds().contains(ServiceProviderTypeStrategy.POWER_SUPPLY)) {
+        if (tarifHandled
+                && calculationContext.getServiceProviderTypeIds().contains(ServiceProviderTypeStrategy.POWER_SUPPLY)) {
             payment.setField(PaymentDBF.NORM_F_6, data.getChargePower());
-            handleTarif(calculationContext, payment, PaymentDBF.CODE2_6, data.getPowerTarif());
+            if (!handleTarif(calculationContext, payment, PaymentDBF.CODE2_6, data.getPowerTarif())) {
+                tarifHandled = false;
+                errorTarif = data.getPowerTarif();
+            }
         }
         //garbage disposal
-        if (calculationContext.getServiceProviderTypeIds().contains(ServiceProviderTypeStrategy.GARBAGE_DISPOSAL)) {
+        if (tarifHandled
+                && calculationContext.getServiceProviderTypeIds().contains(ServiceProviderTypeStrategy.GARBAGE_DISPOSAL)) {
             payment.setField(PaymentDBF.NORM_F_7, data.getChargeGarbageDisposal());
-            handleTarif(calculationContext, payment, PaymentDBF.CODE2_7, data.getGarbageDisposalTarif());
+            if (!handleTarif(calculationContext, payment, PaymentDBF.CODE2_7, data.getGarbageDisposalTarif())) {
+                tarifHandled = false;
+                errorTarif = data.getGarbageDisposalTarif();
+            }
         }
         //drainage
-        if (calculationContext.getServiceProviderTypeIds().contains(ServiceProviderTypeStrategy.DRAINAGE)) {
+        if (tarifHandled
+                && calculationContext.getServiceProviderTypeIds().contains(ServiceProviderTypeStrategy.DRAINAGE)) {
             payment.setField(PaymentDBF.NORM_F_8, data.getChargeDrainage());
-            handleTarif(calculationContext, payment, PaymentDBF.CODE2_8, data.getDrainageTarif());
+            if (!handleTarif(calculationContext, payment, PaymentDBF.CODE2_8, data.getDrainageTarif())) {
+                tarifHandled = false;
+                errorTarif = data.getDrainageTarif();
+            }
+        }
+
+        /*
+         * Логирование ошибки обработки тарифа.
+         */
+        if (!tarifHandled) {
+            payment.setStatus(RequestStatus.TARIF_CODE2_1_NOT_FOUND);
+
+            log.error("Couldn't find tarif code by calculation center's tarif: '{}', "
+                    + "calculation center id: {} and user organization id: {}",
+                    new Object[]{
+                        errorTarif,
+                        calculationContext.getCalculationCenterId(),
+                        calculationContext.getUserOrganizationId()
+                    });
+
+            RequestWarning warning = new RequestWarning(payment.getId(), RequestFile.TYPE.PAYMENT, RequestWarningStatus.TARIF_NOT_FOUND);
+            warning.addParameter(new RequestWarningParameter(0, errorTarif));
+            warning.addParameter(new RequestWarningParameter(1, "organization", calculationContext.getCalculationCenterId()));
+            warningBean.save(warning);
+
+            logBean.error(Module.NAME, getClass(), Payment.class, payment.getId(), EVENT.EDIT,
+                    webWarningRenderer.display(warning, localeBean.getSystemLocale()));
         }
 
         //benefits
@@ -602,24 +668,14 @@ public class ServiceProviderAdapter {
         }
     }
 
-    protected void handleTarif(CalculationContext calculationContext, Payment payment, PaymentDBF field, Double rawTarif) {
+    protected boolean handleTarif(CalculationContext calculationContext, Payment payment, PaymentDBF field, Double rawTarif) {
         Integer tarifCode = getTarifCode(rawTarif, payment.getOrganizationId(), calculationContext.getUserOrganizationId());
         if (tarifCode == null) {
-            payment.setStatus(RequestStatus.TARIF_CODE2_1_NOT_FOUND);
-
-            log.error("Couldn't find tarif code by calculation center's tarif: '{}', calculation center id: {} and user organization id: {}",
-                    new Object[]{rawTarif, calculationContext.getCalculationCenterId(), calculationContext.getUserOrganizationId()});
-
-            RequestWarning warning = new RequestWarning(payment.getId(), RequestFile.TYPE.PAYMENT, RequestWarningStatus.TARIF_NOT_FOUND);
-            warning.addParameter(new RequestWarningParameter(0, rawTarif));
-            warning.addParameter(new RequestWarningParameter(1, "organization", calculationContext.getCalculationCenterId()));
-            warningBean.save(warning);
-
-            logBean.error(Module.NAME, getClass(), Payment.class, payment.getId(), EVENT.EDIT,
-                    webWarningRenderer.display(warning, localeBean.getSystemLocale()));
+            return false;
         } else {
             payment.setField(field, tarifCode);
             payment.setStatus(RequestStatus.PROCESSED);
+            return true;
         }
     }
 
@@ -642,7 +698,7 @@ public class ServiceProviderAdapter {
         return tarifBean.getCode2(T11_CS_UNI, osznId, userOrganizationId);
     }
 
-    public Collection<BenefitData> getBenefitData(CalculationContext calculationCenterInfo, Benefit benefit, Date dat1)
+    public Collection<BenefitData> getBenefitData(CalculationContext calculationContext, Benefit benefit, Date dat1)
             throws DBException {
         Map<String, Object> params = newHashMap();
         params.put("accountNumber", benefit.getAccountNumber());
@@ -653,11 +709,11 @@ public class ServiceProviderAdapter {
             startTime = System.currentTimeMillis();
         }
         try {
-            sqlSession(calculationCenterInfo.getDataSource()).selectOne(MAPPING_NAMESPACE + ".getBenefitData", params);
+            sqlSession(calculationContext.getDataSource()).selectOne(MAPPING_NAMESPACE + ".getBenefitData", params);
         } catch (Exception e) {
             throw new DBException(e);
         } finally {
-            log.info("getBenefitData. Calculation center: {}, parameters : {}", calculationCenterInfo, params);
+            log.info("getBenefitData. Calculation center: {}, parameters : {}", calculationContext, params);
             if (log.isDebugEnabled()) {
                 log.debug("getBenefitData. Time of operation: {} sec.", (System.currentTimeMillis() - startTime) / 1000);
             }
@@ -666,21 +722,21 @@ public class ServiceProviderAdapter {
         Integer resultCode = (Integer) params.get("resultCode");
         if (resultCode == null) {
             log.error("getBenefitData. Result code is null. Benefit id: {}, dat1: {}, calculation center: {}",
-                    new Object[]{benefit.getId(), dat1, calculationCenterInfo});
+                    new Object[]{benefit.getId(), dat1, calculationContext});
             logBean.error(Module.NAME, getClass(), Benefit.class, benefit.getId(), EVENT.GETTING_DATA,
                     ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_unexpected", localeBean.getSystemLocale(),
-                    "GETPRIVS", "null", calculationCenterInfo));
+                    "GETPRIVS", "null", calculationContext));
             benefit.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
         } else {
             switch (resultCode) {
                 case 1:
                     List<BenefitData> benefitData = (List<BenefitData>) params.get("benefitData");
                     if (benefitData != null && !benefitData.isEmpty()) {
-                        if (checkOrderFam(calculationCenterInfo, "getBenefitData", benefitData, newArrayList(benefit), dat1)
-                                && checkBenefitCode(calculationCenterInfo, "getBenefitData", benefitData, newArrayList(benefit), dat1)) {
+                        if (checkOrderFam(calculationContext, "getBenefitData", benefitData, newArrayList(benefit), dat1)
+                                && checkBenefitCode(calculationContext, "getBenefitData", benefitData, newArrayList(benefit), dat1)) {
                             Collection<BenefitData> emptyList = getEmptyBenefitData(benefitData);
                             if (emptyList != null && !emptyList.isEmpty()) {
-                                logEmptyBenefitData(calculationCenterInfo, "getBenefitData", newArrayList(benefit), dat1);
+                                logEmptyBenefitData(calculationContext, "getBenefitData", newArrayList(benefit), dat1);
                             }
 
                             Collection<BenefitData> finalBenefitData = getBenefitDataWithMinPriv("getBenefitData", benefitData);
@@ -690,10 +746,10 @@ public class ServiceProviderAdapter {
                     } else {
                         log.error("getBenefitData. Result code is 1 but benefit data is null or empty. Benefit id: {}, dat1: {}, "
                                 + "calculation center: {}",
-                                new Object[]{benefit.getId(), dat1, calculationCenterInfo});
+                                new Object[]{benefit.getId(), dat1, calculationContext});
                         logBean.error(Module.NAME, getClass(), Benefit.class, benefit.getId(), EVENT.GETTING_DATA,
                                 ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_inconsistent", localeBean.getSystemLocale(),
-                                "GETPRIVS", calculationCenterInfo));
+                                "GETPRIVS", calculationContext));
                         benefit.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
                     }
                     break;
@@ -702,10 +758,10 @@ public class ServiceProviderAdapter {
                     break;
                 default:
                     log.error("getBenefitData. Unexpected result code: {}. Benefit id: {}, dat1: {}, calculation center: {}",
-                            new Object[]{resultCode, benefit.getId(), dat1, calculationCenterInfo});
+                            new Object[]{resultCode, benefit.getId(), dat1, calculationContext});
                     logBean.error(Module.NAME, getClass(), Benefit.class, benefit.getId(), EVENT.GETTING_DATA,
                             ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_unexpected", localeBean.getSystemLocale(),
-                            "GETPRIVS", resultCode, calculationCenterInfo));
+                            "GETPRIVS", resultCode, calculationContext));
                     benefit.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
             }
         }
@@ -770,18 +826,18 @@ public class ServiceProviderAdapter {
         }
     }
 
-    protected boolean checkOrderFam(CalculationContext calculationCenterInfo, String method, List<BenefitData> benefitData,
+    protected boolean checkOrderFam(CalculationContext calculationContext, String method, List<BenefitData> benefitData,
             List<Benefit> benefits, Date dat1) {
         String accountNumber = benefits.get(0).getAccountNumber();
         for (BenefitData data : benefitData) {
             if (Strings.isEmpty(data.getOrderFamily())) {
                 log.error(method + ". Order fam is null. Account number: {}, dat1: {}, calculation center: {}",
-                        new Object[]{accountNumber, dat1, calculationCenterInfo});
+                        new Object[]{accountNumber, dat1, calculationContext});
                 for (Benefit benefit : benefits) {
                     benefit.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
                     logBean.error(Module.NAME, getClass(), Benefit.class, benefit.getId(), EVENT.GETTING_DATA,
                             ResourceUtil.getFormatString(RESOURCE_BUNDLE, "benefit_order_fam_null", localeBean.getSystemLocale(),
-                            "GETPRIVS", accountNumber, dat1, calculationCenterInfo));
+                            "GETPRIVS", accountNumber, dat1, calculationContext));
                 }
                 return false;
             }
@@ -794,12 +850,12 @@ public class ServiceProviderAdapter {
             if (dublicate != null) {
                 log.error(method + ". Order fam is not unique. At least two benefit data have the same order fam. First: {}, second {}. "
                         + "Account number: {}, dat1: {}, calculation center: {}",
-                        new Object[]{data, dublicate, accountNumber, dat1, calculationCenterInfo});
+                        new Object[]{data, dublicate, accountNumber, dat1, calculationContext});
                 for (Benefit benefit : benefits) {
                     benefit.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
                     logBean.error(Module.NAME, getClass(), Benefit.class, benefit.getId(), EVENT.GETTING_DATA,
                             ResourceUtil.getFormatString(RESOURCE_BUNDLE, "benefit_order_fam_not_unique", localeBean.getSystemLocale(),
-                            "GETPRIVS", accountNumber, dat1, calculationCenterInfo));
+                            "GETPRIVS", accountNumber, dat1, calculationContext));
                 }
                 return false;
             } else {
@@ -809,18 +865,18 @@ public class ServiceProviderAdapter {
         return true;
     }
 
-    protected boolean checkBenefitCode(CalculationContext calculationCenterInfo, String method, List<BenefitData> benefitData,
+    protected boolean checkBenefitCode(CalculationContext calculationContext, String method, List<BenefitData> benefitData,
             List<Benefit> benefits, Date dat1) {
         String accountNumber = benefits.get(0).getAccountNumber();
         for (BenefitData data : benefitData) {
             if (Strings.isEmpty(data.getCode())) {
                 log.error(method + ". BenefitData's code is null. Account number: {}, dat1: {}, calculation center: {}",
-                        new Object[]{accountNumber, dat1, calculationCenterInfo});
+                        new Object[]{accountNumber, dat1, calculationContext});
                 for (Benefit benefit : benefits) {
                     benefit.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
                     logBean.error(Module.NAME, getClass(), Benefit.class, benefit.getId(), EVENT.GETTING_DATA,
                             ResourceUtil.getFormatString(RESOURCE_BUNDLE, "benefit_code_null", localeBean.getSystemLocale(),
-                            "GETPRIVS", accountNumber, dat1, calculationCenterInfo));
+                            "GETPRIVS", accountNumber, dat1, calculationContext));
                 }
                 return false;
             }

@@ -4,8 +4,8 @@
  */
 package org.complitex.osznconnection.service_provider_type.strategy;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -49,10 +49,10 @@ public class ServiceProviderTypeStrategy extends TemplateStrategy {
     public static final long GARBAGE_DISPOSAL = 7;
     public static final long DRAINAGE = 8;
     public static final Set<Long> RESERVED_SERVICE_PROVIDER_TYPES =
-            Sets.newHashSet(APARTMENT_FEE, GARBAGE_DISPOSAL);
+            ImmutableSet.of(APARTMENT_FEE, GARBAGE_DISPOSAL);
     // uncomment when these service provider types will enabled.
             /* HEATING, HOT_WATER_SUPPLY, COLD_WATER_SUPPLY, GAS_SUPPLY, POWER_SUPPLY, DRAINAGE);*/
-    private static Map<Long, DomainObject> reservedServiceProviderTypeMap = new ConcurrentHashMap<Long, DomainObject>();
+    private static final Map<Long, DomainObject> reservedServiceProviderTypeMap = new ConcurrentHashMap<Long, DomainObject>();
 
     @PostConstruct
     private void init() {

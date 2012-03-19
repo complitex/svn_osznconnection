@@ -824,6 +824,22 @@ CREATE TABLE `service_provider_type_string_culture` (
   CONSTRAINT `fk_service_provider_type_string_culture__locales` FOREIGN KEY (`locale_id`) REFERENCES `locales` (`id`)
 ) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Локализация атрибутов типа поставщика услуг';
 
+-- ------------------------------
+-- Service association
+-- ------------------------------
+DROP TABLE IF EXISTS `service_association`;
+
+CREATE TABLE `service_association` (
+  `pk_id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Суррогатный ключ',
+  `service_provider_type_id` BIGINT(20) NOT NULL COMMENT 'ID объекта типа поставщика услуги',
+  `calculation_center_id` BIGINT(20) NOT NULL COMMENT 'ID модуля начислений',
+  PRIMARY KEY  (`pk_id`),
+  KEY `key_service_provider_type_id` (`service_provider_type_id`),
+  KEY `key_calculation_center_id` (`calculation_center_id`),
+  CONSTRAINT `fk_service_association__service_provider_type` FOREIGN KEY (`service_provider_type_id`) REFERENCES `service_provider_type` (`object_id`),
+  CONSTRAINT `fk_service_association__calculation_center` FOREIGN KEY (`calculation_center_id`) REFERENCES `organization` (`object_id`)
+) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Пары ассоциаций: тип услуги - модуль начислений';
+
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;

@@ -6,8 +6,8 @@ import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 import org.complitex.osznconnection.organization.strategy.entity.RemoteDataSource;
+import org.complitex.osznconnection.organization.strategy.entity.ServiceAssociationList;
 
 /**
  *
@@ -18,18 +18,14 @@ public interface IOsznOrganizationStrategy extends IOrganizationStrategy {
     /**
      * Attribute type ids
      */
-    /** 
-     * Reference to calculation center. It is user organization only attribute.
-     */
-    long CALCULATION_CENTER = 911;
-    /**
-     * Reference to the set of service provider types. It is calculation center only attribute.
-     */
-    long SERVICE_PROVIDER_TYPE = 912;
     /**
      * Reference to jdbc data source. It is calculation center only attribute.
      */
     long DATA_SOURCE = 913;
+    /**
+     * References to associations between service provider types and calculation centres. It is user organization only attribute.
+     */
+    long SERVICE_ASSOCIATIONS = 914;
     /**
      * Itself organization instance id.
      */
@@ -48,20 +44,13 @@ public interface IOsznOrganizationStrategy extends IOrganizationStrategy {
     DomainObject getItselfOrganization();
 
     /**
-     * Figures out service provider type object's ids that associated with given calculation center organization.
+     * Figures out list of service associations. Each service association is link between service provider type and 
+     * caluclation center.
      * 
-     * @param calculationCenterOrganizationId Calculation center organization's id
-     * @return Associated service provider type object's ids.
+     * @param userOrganization User organization.
+     * @return 
      */
-    Set<Long> getServiceProviderTypeIds(long calculationCenterOrganizationId);
-
-    /**
-     * Figures out calculation center organization's id that associated with given user organization.
-     * 
-     * @param userOrganization User organization
-     * @return Associated calculation center organization's id.
-     */
-    long getCalculationCenterId(DomainObject userOrganization);
+    ServiceAssociationList getServiceAssociations(DomainObject userOrganization);
 
     /**
      * Finds remote jdbc data sources.

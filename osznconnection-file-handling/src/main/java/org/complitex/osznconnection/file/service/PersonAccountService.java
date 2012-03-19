@@ -125,7 +125,7 @@ public class PersonAccountService extends AbstractBean {
             requestFileGroupBean.updateStatus(benefitFileId, RequestFileStatus.BOUND);
         }
 
-        final CalculationContext calculationContext = calculationCenterBean.getContext(userOrganizationId);
+        final CalculationContext calculationContext = calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId);
         personAccountLocalBean.saveOrUpdate(payment, calculationContext.getCalculationCenterId(),
                 calculationContext.getUserOrganizationId());
     }
@@ -143,7 +143,7 @@ public class PersonAccountService extends AbstractBean {
             requestFileBean.save(actualPaymentFile);
         }
 
-        final CalculationContext calculationContext = calculationCenterBean.getContext(userOrganizationId);
+        final CalculationContext calculationContext = calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId);
         personAccountLocalBean.saveOrUpdate(actualPayment, calculationContext.getCalculationCenterId(),
                 calculationContext.getUserOrganizationId());
     }

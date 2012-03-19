@@ -5,7 +5,9 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Set;
 import org.apache.wicket.PageParameters;
 import org.complitex.dictionary.entity.DomainObject;
@@ -36,6 +38,9 @@ import org.complitex.dictionary.entity.description.EntityAttributeType;
 import org.complitex.dictionary.service.StringCultureBean;
 import org.complitex.dictionary.util.AttributeUtil;
 import org.complitex.dictionary.util.ResourceUtil;
+import org.complitex.osznconnection.organization.strategy.entity.OsznOrganization;
+import org.complitex.osznconnection.organization.strategy.entity.ServiceAssociation;
+import org.complitex.osznconnection.organization.strategy.entity.ServiceAssociationList;
 import org.complitex.osznconnection.organization_type.strategy.OsznOrganizationTypeStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +55,7 @@ public class OsznOrganizationStrategy extends OrganizationStrategy implements IO
     private static final Logger log = LoggerFactory.getLogger(OsznOrganizationStrategy.class);
     public static final String OSZN_ORGANIZATION_STRATEGY_NAME = OsznOrganizationStrategy.class.getSimpleName();
     private static final String RESOURCE_BUNDLE = OsznOrganizationStrategy.class.getName();
+    private static final String MAPPING_NAMESPACE = OsznOrganizationStrategy.class.getPackage().getName() + ".OsznOrganization";
     @EJB
     private LocaleBean localeBean;
     @EJB
@@ -168,6 +174,90 @@ public class OsznOrganizationStrategy extends OrganizationStrategy implements IO
 
     @Transactional
     @Override
+    public OsznOrganization findById(long id, boolean runAsAdmin) {
+        DomainObject object = super.findById(id, runAsAdmin);
+        if (object == null) {
+            return null;
+        }
+        ServiceAssociationList serviceAssociationList = new ServiceAssociationList();
+        if (isUserOrganization(object)) {
+            serviceAssociationList = loadServiceAssociations(object);
+        }
+        return new OsznOrganization(object, serviceAssociationList);
+    }
+
+    @Override
+    public OsznOrganization newInstance() {
+        return new OsznOrganization(super.newInstance(), new ServiceAssociationList());
+    }
+
+    @Override
+    public OsznOrganization findHistoryObject(long objectId, Date date) {
+        DomainObject object = super.findHistoryObject(objectId, date);
+        if (object == null) {
+            return null;
+        }
+        ServiceAssociationList serviceAssociationList = new ServiceAssociationList();
+        if (isUserOrganization(object)) {
+            serviceAssociationList = loadServiceAssociations(object);
+        }
+        return new OsznOrganization(object, serviceAssociationList);
+    }
+
+    @Transactional
+    @Override
+    public void insert(DomainObject object, Date insertDate) {
+        OsznOrganization osznOrganization = (OsznOrganization) object;
+        if (!osznOrganization.getServiceAssociationList().isEmpty()
+                && !osznOrganization.getServiceAssociationList().hasNulls()) {
+            addServiceAssociationAttributes(osznOrganization);
+        }
+
+        super.insert(object, insertDate);
+    }
+
+    @Transactional
+    private void addServiceAssociationAttributes(OsznOrganization osznOrganization) {
+        osznOrganization.removeAttribute(SERVICE_ASSOCIATIONS);
+
+        long i = 1;
+        for (ServiceAssociation serviceAssociation : osznOrganization.getServiceAssociationList()) {
+            saveServiceAssociation(serviceAssociation);
+
+            Attribute a = new Attribute();
+            a.setAttributeTypeId(SERVICE_ASSOCIATIONS);
+            a.setValueId(serviceAssociation.getId());
+            a.setValueTypeId(SERVICE_ASSOCIATIONS);
+            a.setAttributeId(i++);
+            osznOrganization.addAttribute(a);
+        }
+    }
+
+    @Transactional
+    @Override
+    public void update(DomainObject oldObject, DomainObject newObject, Date updateDate) {
+        OsznOrganization newOrganization = (OsznOrganization) newObject;
+        OsznOrganization oldOrganization = (OsznOrganization) oldObject;
+
+        if (!newOrganization.getServiceAssociationList().isEmpty()
+                && !newOrganization.getServiceAssociationList().hasNulls()) {
+            if (!newOrganization.getServiceAssociationList().equals(oldOrganization.getServiceAssociationList())) {
+                addServiceAssociationAttributes(newOrganization);
+            }
+        } else {
+            newOrganization.removeAttribute(SERVICE_ASSOCIATIONS);
+        }
+
+        super.update(oldObject, newObject, updateDate);
+    }
+
+    @Transactional
+    private void saveServiceAssociation(ServiceAssociation serviceAssociation) {
+        sqlSession().insert(MAPPING_NAMESPACE + ".insertServiceAssociation", serviceAssociation);
+    }
+
+    @Transactional
+    @Override
     protected void deleteChecks(long objectId, Locale locale) throws DeleteException {
         if (ITSELF_ORGANIZATION_OBJECT_ID == objectId) {
             throw new DeleteException(ResourceUtil.getString(RESOURCE_BUNDLE, "delete_reserved_instance_error", locale));
@@ -175,20 +265,22 @@ public class OsznOrganizationStrategy extends OrganizationStrategy implements IO
         super.deleteChecks(objectId, locale);
     }
 
+    @Transactional
     @Override
-    public Set<Long> getServiceProviderTypeIds(long calculationCenterOrganizationId) {
-        DomainObject calculationCenter = findById(calculationCenterOrganizationId, true);
+    public void delete(long objectId, Locale locale) throws DeleteException {
+        deleteChecks(objectId, locale);
 
-        Set<Long> serviceProviderTypeIds = Sets.newHashSet();
-        for (Attribute spta : calculationCenter.getAttributes(SERVICE_PROVIDER_TYPE)) {
-            serviceProviderTypeIds.add(spta.getValueId());
-        }
-        return serviceProviderTypeIds;
+        sqlSession().delete(MAPPING_NAMESPACE + ".deleteServiceAssociations",
+                ImmutableMap.of("objectId", objectId, "organizationServiceAssociationsAT", SERVICE_ASSOCIATIONS));
+
+        deleteStrings(objectId);
+        deleteAttribute(objectId);
+        deleteObject(objectId, locale);
     }
 
     @Override
-    public long getCalculationCenterId(DomainObject userOrganization) {
-        return userOrganization.getAttribute(CALCULATION_CENTER).getValueId();
+    public ServiceAssociationList getServiceAssociations(DomainObject userOrganization) {
+        return loadServiceAssociations(userOrganization);
     }
 
     @Override
@@ -253,5 +345,31 @@ public class OsznOrganizationStrategy extends OrganizationStrategy implements IO
         DomainObject calculationCenter = findById(calculationCenterId, true);
         final String dataSource = AttributeUtil.getStringValue(calculationCenter, DATA_SOURCE);
         return dataSource != null ? dataSource.toLowerCase() : null;
+    }
+
+    private ServiceAssociationList loadServiceAssociations(DomainObject userOrganization) {
+        if (!isUserOrganization(userOrganization)) {
+            throw new IllegalArgumentException("DomainObject is not user organization. Organization id: " + userOrganization.getId());
+        }
+
+        List<Attribute> serviceAssociationAttributes = userOrganization.getAttributes(SERVICE_ASSOCIATIONS);
+        Set<Long> serviceAssociationIds = Sets.newHashSet();
+        for (Attribute serviceAssociation : serviceAssociationAttributes) {
+            serviceAssociationIds.add(serviceAssociation.getValueId());
+        }
+
+        @SuppressWarnings("unchecked")
+        final List<ServiceAssociation> serviceAssociations = sqlSession().selectList(
+                MAPPING_NAMESPACE + ".getServiceAssociations", ImmutableMap.of("ids", serviceAssociationIds));
+
+        Collections.sort(serviceAssociations, new Comparator<ServiceAssociation>() {
+
+            @Override
+            public int compare(ServiceAssociation o1, ServiceAssociation o2) {
+                return o1.getId().compareTo(o2.getId());
+            }
+        });
+
+        return new ServiceAssociationList(serviceAssociations);
     }
 }
