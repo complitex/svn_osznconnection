@@ -15,15 +15,12 @@ INSERT INTO `organization_type_attribute`(`attribute_id`, `object_id`, `attribut
 -- --------------------------------
 -- Organization
 -- --------------------------------
--- Reference to calculation center. It is user organization only attribute. --
-INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (912, 1, UPPER('Модуль начислений')), (912, 2, UPPER('Модуль начислений'));
-INSERT INTO `entity_attribute_type`(`id`, `entity_id`, `mandatory`, `attribute_type_name_id`, `system`) VALUES (911, 900, 0, 912, 1);
-INSERT INTO `entity_attribute_value_type`(`id`, `attribute_type_id`, `attribute_value_type`) VALUES (911, 911, 'organization');
 
--- Reference to the set of service provider types. It is calculation center only attribute. --
-INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (913, 1, UPPER('Типы услуг')), (913, 2, UPPER('Типы услуг'));
-INSERT INTO `entity_attribute_type`(`id`, `entity_id`, `mandatory`, `attribute_type_name_id`, `system`) VALUES (912, 900, 0, 913, 1);
-INSERT INTO `entity_attribute_value_type`(`id`, `attribute_type_id`, `attribute_value_type`) VALUES (912, 912, 'service_provider_type');
+-- Reference to `service_association` helper table. It is user organization only attribute. --
+INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (915, 1, UPPER('Ассоцияции тип услуги - модуль начислений')), (915, 2, UPPER('Ассоцияции тип услуги - модуль начислений'));
+INSERT INTO `entity_attribute_type`(`id`, `entity_id`, `mandatory`, `attribute_type_name_id`, `system`) VALUES (914, 900, 1, 915, 1);
+INSERT INTO `entity_attribute_value_type`(`id`, `attribute_type_id`, `attribute_value_type`) VALUES (914, 914, 'service_association');
+
 -- Reference to jdbc data source. It is calculation center only attribute. --
 INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (914, 1, UPPER('Ресурс доступа к МН')), (914, 2, UPPER('Ресурс доступа к МН'));
 INSERT INTO `entity_attribute_type`(`id`, `entity_id`, `mandatory`, `attribute_type_name_id`, `system`) VALUES (913, 900, 1, 914, 1);
@@ -343,4 +340,4 @@ INSERT INTO `organization_attribute`(`attribute_id`, `object_id`, `attribute_typ
 (1,0,900,1,900), (1,0,901,2,901);
 
 -- Current database version
-INSERT INTO `update` (`version`) VALUE ('20120224_727_0.1.22');
+INSERT INTO `update` (`version`) VALUE ('20120319_733_0.1.23');

@@ -37,18 +37,6 @@
                     </td>
                 </tr>
 
-                <!-- Reference to calculation center. Only for user organizations. -->
-                <tr wicket:id="calculationCenterContainer">
-                    <th>
-                        <span wicket:id="calculationCenterLabel"></span><b class="blue">*</b>:
-                    </th>
-                    <td>
-                        <select wicket:id="calculationCenter">
-                            <option></option>
-                        </select>
-                    </td>
-                </tr>
-
                 <!-- Reference to jdbc data source. Only for calculation centers. -->
                 <tr wicket:id="dataSourceContainer">
                     <th>
@@ -61,32 +49,45 @@
                     </td>
                 </tr>
 
-                <!-- Reference to the set of service provider types. Only for calculation centers. -->
-                <tr wicket:id="serviceProviderTypeContainer">
-                    <th style="vertical-align: top">
-                        <span wicket:id="serviceProviderTypeLabel"></span><b class="blue">*</b>:
+                <!-- Reference to `service_association` helper table. It is user organization only attribute. -->
+                <tr wicket:id="serviceAssociationsContainer">
+                    <th style="vertical-align: top; padding-top: 20px;">
+                        <wicket:message key="serviceAssociationsLabel"/><b class="blue">*</b>:
                     </th>
-                    <td>
+                    <td style="padding-top: 20px;">
                         <table>
-                            <tbody wicket:id="serviceProviderTypeUpdateContainer">
-                                <tr wicket:id="serviceProviderTypes">
+                            <thead>
+                                <tr>
+                                    <td align="center">
+                                        <wicket:message key="serviceProviderTypeHeader"/>
+                                    </td>
+                                    <td align="center">
+                                        <wicket:message key="calculationCenterHeader"/>
+                                    </td>
+                                </tr>
+                            </thead>
+                            <tbody wicket:id="serviceAssociationsUpdateContainer">
+                                <tr wicket:id="serviceAssociations">
                                     <wicket:container wicket:id="fakeContainer"/>
                                     <td>
                                         <select wicket:id="serviceProviderType">
-                                            <option></option>
                                         </select>
                                     </td>
                                     <td>
-                                        <a wicket:id="removeServiceProviderType">
-                                            <wicket:message key="removeServiceProviderType"/>
+                                        <select wicket:id="calculationCenter">
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <a wicket:id="removeServiceAssociation">
+                                            <wicket:message key="removeServiceAssociation"/>
                                         </a>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                         <div>
-                            <a wicket:id="addServiceProviderType">
-                                <wicket:message key="addServiceProviderType"/>
+                            <a wicket:id="addServiceAssociation">
+                                <wicket:message key="addServiceAssociation"/>
                             </a>
                         </div>
                     </td>

@@ -187,7 +187,7 @@ public class ActualPaymentBindTaskBean implements ITaskBean {
         requestFileBean.save(requestFile);
 
         //получаем информацию о текущем контексте вычислений 
-        final CalculationContext calculationContext = calculationCenterBean.getContext(requestFile.getUserOrganizationId());
+        final CalculationContext calculationContext = calculationCenterBean.getContextWithAnyCalculationCenter(requestFile.getUserOrganizationId());
 
         actualPaymentBean.clearBeforeBinding(requestFile.getId(), calculationContext.getServiceProviderTypeIds());
 

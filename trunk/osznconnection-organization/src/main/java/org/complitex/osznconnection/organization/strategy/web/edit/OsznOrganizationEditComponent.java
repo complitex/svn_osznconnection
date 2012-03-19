@@ -3,7 +3,7 @@ package org.complitex.osznconnection.organization.strategy.web.edit;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import java.util.List;
-import java.util.SortedSet;
+import java.util.Set;
 import javax.ejb.EJB;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
@@ -12,23 +12,25 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.complitex.dictionary.converter.StringConverter;
-import org.complitex.dictionary.entity.Attribute;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.service.StringCultureBean;
 import org.complitex.dictionary.util.AttributeUtil;
 import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
 import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
-import org.complitex.dictionary.web.component.DomainObjectInputPanel;
 import org.complitex.dictionary.web.component.IDisableAwareChoiceRenderer;
 import org.complitex.dictionary.web.component.list.AjaxRemovableListView;
 import org.complitex.organization.strategy.web.edit.OrganizationEditComponent;
 import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
 import org.complitex.osznconnection.organization.strategy.OsznOrganizationStrategy;
+import org.complitex.osznconnection.organization.strategy.entity.OsznOrganization;
 import org.complitex.osznconnection.organization.strategy.entity.RemoteDataSource;
+import org.complitex.osznconnection.organization.strategy.entity.ServiceAssociation;
+import org.complitex.osznconnection.organization.strategy.entity.ServiceAssociationList;
 import org.complitex.osznconnection.organization_type.strategy.OsznOrganizationTypeStrategy;
 import org.complitex.osznconnection.service_provider_type.strategy.ServiceProviderTypeStrategy;
 
@@ -44,10 +46,7 @@ public class OsznOrganizationEditComponent extends OrganizationEditComponent {
     private ServiceProviderTypeStrategy serviceProviderTypeStrategy;
     @EJB
     private StringCultureBean stringBean;
-    private WebMarkupContainer calculationCenterContainer;
-    private IModel<DomainObject> calculationCenterModel;
-    private WebMarkupContainer serviceProviderTypeContainer;
-    private List<DomainObject> serviceProviderTypesModel;
+    private WebMarkupContainer serviceAssociationsContainer;
     private WebMarkupContainer dataSourceContainer;
     private IModel<RemoteDataSource> dataSourceModel;
 
@@ -56,55 +55,26 @@ public class OsznOrganizationEditComponent extends OrganizationEditComponent {
     }
 
     @Override
+    protected OsznOrganization getDomainObject() {
+        return (OsznOrganization) super.getDomainObject();
+    }
+
+    @Override
     protected void init() {
         super.init();
 
         final boolean enabled = enabled();
 
-        final DomainObject organization = getDomainObject();
+        final OsznOrganization organization = getDomainObject();
 
-        //reference to calculation center. Only for user organizations.
-        calculationCenterContainer = new WebMarkupContainer("calculationCenterContainer");
-        calculationCenterContainer.setOutputMarkupPlaceholderTag(true);
-        add(calculationCenterContainer);
-        final IModel<String> calculationCenterLabelModel = DomainObjectInputPanel.labelModel(osznOrganizationStrategy.getEntity().
-                getAttributeType(IOsznOrganizationStrategy.CALCULATION_CENTER).getAttributeNames(), getLocale());
-        calculationCenterContainer.add(new Label("calculationCenterLabel", calculationCenterLabelModel));
-
-        final List<DomainObject> allCalculationCentres = osznOrganizationStrategy.getAllCalculationCentres(getLocale());
-        calculationCenterModel = new Model<DomainObject>();
-
-        DisableAwareDropDownChoice<DomainObject> calculationCenter =
-                new DisableAwareDropDownChoice<DomainObject>("calculationCenter", calculationCenterModel,
-                allCalculationCentres, new DomainObjectDisableAwareRenderer() {
-
-            @Override
-            public Object getDisplayValue(DomainObject object) {
-                return osznOrganizationStrategy.displayDomainObject(object, getLocale());
-            }
-        });
-        calculationCenter.setRequired(true);
-        calculationCenter.setLabel(calculationCenterLabelModel);
-        calculationCenter.setEnabled(enabled);
-        calculationCenterContainer.add(calculationCenter);
-
-        final Attribute calculationCenterAttribute = organization.getAttribute(IOsznOrganizationStrategy.CALCULATION_CENTER);
-        if (calculationCenterAttribute != null && calculationCenterAttribute.getValueId() != null) {
-            for (DomainObject center : allCalculationCentres) {
-                if (center.getId().equals(calculationCenterAttribute.getValueId())) {
-                    calculationCenterModel.setObject(center);
-                }
-            }
+        //reference to `service_association` helper table. It is user organization only attribute.
+        final ServiceAssociationList serviceAssociationList = organization.getServiceAssociationList();
+        if (isNew()) {
+            serviceAssociationList.addNew();
         }
-        calculationCenterContainer.setVisible(isUserOrganization());
-
-        //reference to the set of service provider types. Only for calculation centres.
-        serviceProviderTypeContainer = new WebMarkupContainer("serviceProviderTypeContainer");
-        serviceProviderTypeContainer.setOutputMarkupPlaceholderTag(true);
-        add(serviceProviderTypeContainer);
-        final IModel<String> serviceProviderTypeLabelModel = DomainObjectInputPanel.labelModel(osznOrganizationStrategy.getEntity().
-                getAttributeType(IOsznOrganizationStrategy.SERVICE_PROVIDER_TYPE).getAttributeNames(), getLocale());
-        serviceProviderTypeContainer.add(new Label("serviceProviderTypeLabel", serviceProviderTypeLabelModel));
+        serviceAssociationsContainer = new WebMarkupContainer("serviceAssociationsContainer");
+        serviceAssociationsContainer.setOutputMarkupPlaceholderTag(true);
+        add(serviceAssociationsContainer);
 
         final List<DomainObject> allServiceProviderTypes = serviceProviderTypeStrategy.getAll(getLocale());
         final DomainObjectDisableAwareRenderer serviceProviderTypeRenderer = new DomainObjectDisableAwareRenderer() {
@@ -115,79 +85,157 @@ public class OsznOrganizationEditComponent extends OrganizationEditComponent {
             }
         };
 
-        serviceProviderTypesModel = Lists.newArrayList();
-        final List<Attribute> serviceProviderTypeAttributes =
-                organization.getAttributes(IOsznOrganizationStrategy.SERVICE_PROVIDER_TYPE);
-
-        for (Attribute a : serviceProviderTypeAttributes) {
-            if (a.getValueId() != null) {
-                for (DomainObject spt : allServiceProviderTypes) {
-                    if (a.getValueId().equals(spt.getId())) {
-                        serviceProviderTypesModel.add(spt);
-                    }
-                }
-            }
-        }
-        if (serviceProviderTypesModel.isEmpty()) {
-            serviceProviderTypesModel.add(null);
-        }
-
-        final WebMarkupContainer serviceProviderTypeUpdateContainer = new WebMarkupContainer("serviceProviderTypeUpdateContainer");
-        serviceProviderTypeUpdateContainer.setOutputMarkupId(true);
-        serviceProviderTypeContainer.add(serviceProviderTypeUpdateContainer);
-
-        ListView<DomainObject> serviceProviderTypes = new AjaxRemovableListView<DomainObject>("serviceProviderTypes",
-                serviceProviderTypesModel) {
+        final List<DomainObject> allCalculationCentres = osznOrganizationStrategy.getAllCalculationCentres(getLocale());
+        final DomainObjectDisableAwareRenderer calculationCenterRenderer = new DomainObjectDisableAwareRenderer() {
 
             @Override
-            protected void populateItem(ListItem<DomainObject> item) {
+            public Object getDisplayValue(DomainObject object) {
+                return osznOrganizationStrategy.displayDomainObject(object, getLocale());
+            }
+        };
+
+        final WebMarkupContainer serviceAssociationsUpdateContainer = new WebMarkupContainer("serviceAssociationsUpdateContainer");
+        serviceAssociationsUpdateContainer.setOutputMarkupId(true);
+        serviceAssociationsContainer.add(serviceAssociationsUpdateContainer);
+
+        ListView<ServiceAssociation> serviceAssociations = new AjaxRemovableListView<ServiceAssociation>("serviceAssociations",
+                serviceAssociationList) {
+
+            @Override
+            protected void populateItem(ListItem<ServiceAssociation> item) {
                 final WebMarkupContainer fakeContainer = new WebMarkupContainer("fakeContainer");
                 item.add(fakeContainer);
 
+                final ServiceAssociation serviceAssociation = item.getModelObject();
+
+                //service provider type
                 IModel<DomainObject> serviceProviderTypeModel = new Model<DomainObject>() {
 
                     @Override
                     public DomainObject getObject() {
-                        int index = getCurrentIndex(fakeContainer);
-                        return serviceProviderTypesModel.get(index);
+                        Long serviceProviderTypeId = serviceAssociation.getServiceProviderTypeId();
+                        if (serviceProviderTypeId != null) {
+                            for (DomainObject o : allServiceProviderTypes) {
+                                if (serviceProviderTypeId.equals(o.getId())) {
+                                    return o;
+                                }
+                            }
+                        }
+                        return null;
                     }
 
                     @Override
                     public void setObject(DomainObject serviceProviderType) {
-                        int index = getCurrentIndex(fakeContainer);
-                        serviceProviderTypesModel.set(index, serviceProviderType);
+                        serviceAssociation.setServiceProviderTypeId(serviceProviderType != null
+                                ? serviceProviderType.getId() : null);
                     }
                 };
-                serviceProviderTypeModel.setObject(item.getModelObject());
+                //initialize model:
+                Long serviceProviderTypeId = serviceAssociation.getServiceProviderTypeId();
+                if (serviceProviderTypeId != null) {
+                    for (DomainObject o : allServiceProviderTypes) {
+                        if (serviceProviderTypeId.equals(o.getId())) {
+                            serviceProviderTypeModel.setObject(o);
+                        }
+                    }
+                }
+
+                IModel<List<DomainObject>> selectServiceProviderTypeModel = new AbstractReadOnlyModel<List<DomainObject>>() {
+
+                    @Override
+                    public List<DomainObject> getObject() {
+                        List<DomainObject> selectList = Lists.newArrayList();
+
+                        Long serviceProviderTypeId = serviceAssociation.getServiceProviderTypeId();
+                        for (DomainObject spt : allServiceProviderTypes) {
+                            if (!serviceAssociationList.containsServiceProviderType(spt.getId())
+                                    || spt.getId().equals(serviceProviderTypeId)) {
+                                selectList.add(spt);
+                            }
+                        }
+                        return selectList;
+                    }
+                };
 
                 DisableAwareDropDownChoice<DomainObject> serviceProviderType =
                         new DisableAwareDropDownChoice<DomainObject>("serviceProviderType", serviceProviderTypeModel,
-                        allServiceProviderTypes, serviceProviderTypeRenderer);
+                        selectServiceProviderTypeModel, serviceProviderTypeRenderer);
                 serviceProviderType.setEnabled(enabled);
                 serviceProviderType.add(new AjaxFormComponentUpdatingBehavior("onchange") {
 
                     @Override
                     protected void onUpdate(AjaxRequestTarget target) {
+                        target.addComponent(serviceAssociationsUpdateContainer);
                     }
                 });
                 item.add(serviceProviderType);
 
-                addRemoveLink("removeServiceProviderType", item, null, serviceProviderTypeUpdateContainer).setVisible(enabled);
+                //calculation center
+                IModel<DomainObject> calculationCenterModel = new Model<DomainObject>() {
+
+                    @Override
+                    public DomainObject getObject() {
+                        Long calculationCenterId = serviceAssociation.getCalculationCenterId();
+                        if (calculationCenterId != null) {
+                            for (DomainObject o : allCalculationCentres) {
+                                if (calculationCenterId.equals(o.getId())) {
+                                    return o;
+                                }
+                            }
+                        }
+                        return null;
+                    }
+
+                    @Override
+                    public void setObject(DomainObject calculationCenter) {
+                        serviceAssociation.setCalculationCenterId(calculationCenter != null
+                                ? calculationCenter.getId() : null);
+                    }
+                };
+                //initialize model:
+                Long calculationCenterId = serviceAssociation.getCalculationCenterId();
+                if (calculationCenterId != null) {
+                    for (DomainObject o : allCalculationCentres) {
+                        if (calculationCenterId.equals(o.getId())) {
+                            calculationCenterModel.setObject(o);
+                        }
+                    }
+                }
+
+                final DisableAwareDropDownChoice<DomainObject> calculationCenter =
+                        new DisableAwareDropDownChoice<DomainObject>("calculationCenter", calculationCenterModel,
+                        allCalculationCentres, calculationCenterRenderer);
+                calculationCenter.setEnabled(enabled);
+                calculationCenter.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+
+                    @Override
+                    protected void onUpdate(AjaxRequestTarget target) {
+                        target.addComponent(calculationCenter);
+                    }
+                });
+                item.add(calculationCenter);
+
+                //remove link
+                addRemoveLink("removeServiceAssociation", item, null, serviceAssociationsUpdateContainer).setVisible(enabled);
+            }
+
+            @Override
+            protected boolean approveRemoval(ListItem<ServiceAssociation> item) {
+                return serviceAssociationList.size() > 1;
             }
         };
-        serviceProviderTypeUpdateContainer.add(serviceProviderTypes);
-        AjaxLink<Void> addServiceProviderType = new AjaxLink<Void>("addServiceProviderType") {
+        serviceAssociationsUpdateContainer.add(serviceAssociations);
+        AjaxLink<Void> addServiceAssociation = new AjaxLink<Void>("addServiceAssociation") {
 
             @Override
             public void onClick(AjaxRequestTarget target) {
-                DomainObject newServiceProviderType = null;
-                serviceProviderTypesModel.add(newServiceProviderType);
-                target.addComponent(serviceProviderTypeUpdateContainer);
+                serviceAssociationList.addNew();
+                target.addComponent(serviceAssociationsUpdateContainer);
             }
         };
-        addServiceProviderType.setVisible(enabled);
-        serviceProviderTypeContainer.add(addServiceProviderType);
-        serviceProviderTypeContainer.setVisible(isCalculationCenter());
+        addServiceAssociation.setVisible(enabled);
+        serviceAssociationsContainer.add(addServiceAssociation);
+        serviceAssociationsContainer.setVisible(isUserOrganization());
 
         //reference to jdbc data source. Only for calculation centres.
         dataSourceContainer = new WebMarkupContainer("dataSourceContainer");
@@ -237,20 +285,12 @@ public class OsznOrganizationEditComponent extends OrganizationEditComponent {
     protected void onOrganizationTypeChanged(AjaxRequestTarget target) {
         super.onOrganizationTypeChanged(target);
 
-        //calculation center container
-        boolean calculationCenterContainerWasVisible = calculationCenterContainer.isVisible();
-        calculationCenterContainer.setVisible(isUserOrganization());
-        boolean calculationCenterContainerVisibleNow = calculationCenterContainer.isVisible();
-        if (calculationCenterContainerWasVisible ^ calculationCenterContainerVisibleNow) {
-            target.addComponent(calculationCenterContainer);
-        }
-
-        //service provider type container
-        boolean serviceProviderTypeContainerWasVisible = serviceProviderTypeContainer.isVisible();
-        serviceProviderTypeContainer.setVisible(isCalculationCenter());
-        boolean serviceProviderTypeContainerVisibleNow = serviceProviderTypeContainer.isVisible();
-        if (serviceProviderTypeContainerWasVisible ^ serviceProviderTypeContainerVisibleNow) {
-            target.addComponent(serviceProviderTypeContainer);
+        //service association
+        boolean serviceAssociationContainerWasVisible = serviceAssociationsContainer.isVisible();
+        serviceAssociationsContainer.setVisible(isUserOrganization());
+        boolean serviceAssociationContainerVisibleNow = serviceAssociationsContainer.isVisible();
+        if (serviceAssociationContainerWasVisible ^ serviceAssociationContainerVisibleNow) {
+            target.addComponent(serviceAssociationsContainer);
         }
 
         //data source
@@ -281,6 +321,11 @@ public class OsznOrganizationEditComponent extends OrganizationEditComponent {
     }
 
     @Override
+    public boolean isUserOrganization() {
+        return super.isUserOrganization();
+    }
+
+    @Override
     protected boolean isDistrictRequired() {
         return isOszn();
     }
@@ -290,22 +335,30 @@ public class OsznOrganizationEditComponent extends OrganizationEditComponent {
         return super.isDistrictVisible() || isOszn();
     }
 
-    public boolean isServiceProviderTypeEntered() {
-        if (!isCalculationCenter()) {
-            return false;
-        }
+    public boolean isServiceAssociationListEmpty() {
+        return getDomainObject().getServiceAssociationList().isEmpty();
+    }
 
-        if (serviceProviderTypesModel.isEmpty()) {
-            return false;
-        }
+    public boolean isServiceAssociationListHasNulls() {
+        return getDomainObject().getServiceAssociationList().hasNulls();
+    }
 
-        for (DomainObject serviceProviderType : serviceProviderTypesModel) {
-            if (serviceProviderType != null && serviceProviderType.getId() != null && serviceProviderType.getId() > 0) {
-                return true;
+    public Set<String> getDuplicateServiceProviderTypes() {
+        Set<Long> duplicates = getDomainObject().getServiceAssociationList().getDuplicateServiceProviderTypeIds();
+        if (duplicates != null) {
+            Set<String> result = Sets.newHashSet();
+            final List<DomainObject> allServiceProviderTypes = serviceProviderTypeStrategy.getAll(getLocale());
+            for (long serviceProviderTypeId : duplicates) {
+                for (DomainObject spt : allServiceProviderTypes) {
+                    if (spt.getId().equals(serviceProviderTypeId)) {
+                        result.add(serviceProviderTypeStrategy.displayDomainObject(spt, getLocale()));
+                        break;
+                    }
+                }
             }
+            return result;
         }
-
-        return false;
+        return null;
     }
 
     @Override
@@ -314,41 +367,17 @@ public class OsznOrganizationEditComponent extends OrganizationEditComponent {
 
         final DomainObject organization = getDomainObject();
 
-        if (isUserOrganization()) {
-            organization.getAttribute(IOsznOrganizationStrategy.CALCULATION_CENTER).
-                    setValueId(calculationCenterModel.getObject().getId());
-        } else {
-            organization.removeAttribute(IOsznOrganizationStrategy.CALCULATION_CENTER);
+        if (!isUserOrganization()) {
+            organization.removeAttribute(IOsznOrganizationStrategy.SERVICE_ASSOCIATIONS);
         }
 
         if (isCalculationCenter()) {
-            //service provider types.
-            organization.removeAttribute(IOsznOrganizationStrategy.SERVICE_PROVIDER_TYPE);
-
-            SortedSet<Long> serviceProviderTypeIds = Sets.newTreeSet();
-            for (DomainObject serviceProviderType : serviceProviderTypesModel) {
-                if (serviceProviderType != null && serviceProviderType.getId() != null && serviceProviderType.getId() > 0) {
-                    serviceProviderTypeIds.add(serviceProviderType.getId());
-                }
-            }
-
-            long attributeId = 1;
-            for (long serviceProviderTypeId : serviceProviderTypeIds) {
-                Attribute attribute = new Attribute();
-                attribute.setAttributeId(attributeId++);
-                attribute.setAttributeTypeId(IOsznOrganizationStrategy.SERVICE_PROVIDER_TYPE);
-                attribute.setValueTypeId(IOsznOrganizationStrategy.SERVICE_PROVIDER_TYPE);
-                attribute.setValueId(serviceProviderTypeId);
-                organization.addAttribute(attribute);
-            }
-
             //data source
             String dataSource = dataSourceModel.getObject().getDataSource();
             dataSource = dataSource != null ? dataSource.toUpperCase() : null;
             stringBean.getSystemStringCulture(organization.getAttribute(IOsznOrganizationStrategy.DATA_SOURCE).getLocalizedValues()).
                     setValue(new StringConverter().toString(dataSource));
         } else {
-            getDomainObject().removeAttribute(IOsznOrganizationStrategy.SERVICE_PROVIDER_TYPE);
             getDomainObject().removeAttribute(IOsznOrganizationStrategy.DATA_SOURCE);
         }
     }

@@ -49,12 +49,12 @@ public class LookupBean extends AbstractBean {
      */
     @Transactional
     public void resolveOutgoingAddress(Payment payment, long userOrganizationId) {
-        addressService.resolveOutgoingAddress(payment, calculationCenterBean.getContext(userOrganizationId));
+        addressService.resolveOutgoingAddress(payment, calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId));
     }
 
     @Transactional
     public void resolveOutgoingAddress(ActualPayment actualPayment, long userOrganizationId) {
-        addressService.resolveOutgoingAddress(actualPayment, calculationCenterBean.getContext(userOrganizationId));
+        addressService.resolveOutgoingAddress(actualPayment, calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId));
     }
 
     /**
@@ -68,7 +68,7 @@ public class LookupBean extends AbstractBean {
     @TransactionAttribute(TransactionAttributeType.NEVER)
     private List<AccountDetail> acquireAccountDetailsByAddress(AbstractRequest request, String district, String streetType, String street,
             String buildingNumber, String buildingCorp, String apartment, Date date, long userOrganizationId) throws DBException {
-        return adapter.acquireAccountDetailsByAddress(calculationCenterBean.getContext(userOrganizationId), request,
+        return adapter.acquireAccountDetailsByAddress(calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId), request,
                 district, streetType, street, buildingNumber, buildingCorp, apartment, date);
     }
 
@@ -92,7 +92,7 @@ public class LookupBean extends AbstractBean {
     @Transactional
     public String resolveOutgoingDistrict(Payment payment, long userOrganizationId) {
         payment.setStatus(RequestStatus.LOADED);
-        addressService.resolveOutgoingDistrict(payment, calculationCenterBean.getContext(userOrganizationId));
+        addressService.resolveOutgoingDistrict(payment, calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId));
         if (!(payment.getStatus() == RequestStatus.DISTRICT_UNRESOLVED
                 || payment.getStatus() == RequestStatus.MORE_ONE_REMOTE_DISTRICT_CORRECTION)) {
             return payment.getOutgoingDistrict();
@@ -104,7 +104,7 @@ public class LookupBean extends AbstractBean {
     @Transactional
     public String resolveOutgoingDistrict(ActualPayment actualPayment, long userOrganizationId) {
         actualPayment.setStatus(RequestStatus.LOADED);
-        addressService.resolveOutgoingDistrict(actualPayment, calculationCenterBean.getContext(userOrganizationId));
+        addressService.resolveOutgoingDistrict(actualPayment, calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId));
         if (!(actualPayment.getStatus() == RequestStatus.DISTRICT_UNRESOLVED
                 || actualPayment.getStatus() == RequestStatus.MORE_ONE_REMOTE_DISTRICT_CORRECTION)) {
             return actualPayment.getOutgoingDistrict();
@@ -117,6 +117,7 @@ public class LookupBean extends AbstractBean {
     @TransactionAttribute(TransactionAttributeType.NEVER)
     public List<AccountDetail> acquireAccountDetailsByAccount(AbstractRequest request, String district, String account, 
         long userOrganizationId) throws DBException, UnknownAccountNumberTypeException {
-        return adapter.acquireAccountDetailsByAccount(calculationCenterBean.getContext(userOrganizationId), request, district, account);
+        return adapter.acquireAccountDetailsByAccount(calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId), 
+                request, district, account);
     }
 }

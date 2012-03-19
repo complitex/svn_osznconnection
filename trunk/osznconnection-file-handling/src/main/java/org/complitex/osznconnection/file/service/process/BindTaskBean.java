@@ -72,7 +72,7 @@ public class BindTaskBean implements ITaskBean {
         requestFileGroupBean.save(group);
 
         //получаем информацию о текущем контексте вычислений
-        CalculationContext calculationContext = calculationCenterBean.getContext(group.getUserOrganizationId());
+        CalculationContext calculationContext = calculationCenterBean.getContextWithAnyCalculationCenter(group.getUserOrganizationId());
 
         //очищаем колонки которые заполняются во время связывания и обработки для записей в таблицах payment и benefit
         paymentBean.clearBeforeBinding(group.getPaymentFile().getId(), calculationContext.getServiceProviderTypeIds());

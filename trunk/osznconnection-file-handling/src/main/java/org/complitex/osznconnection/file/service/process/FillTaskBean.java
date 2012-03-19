@@ -1,6 +1,9 @@
 package org.complitex.osznconnection.file.service.process;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import java.util.Collection;
 import org.complitex.dictionary.entity.IExecutorObject;
 import org.complitex.dictionary.entity.Log;
 import org.complitex.dictionary.service.ConfigBean;
@@ -27,6 +30,7 @@ import javax.transaction.UserTransaction;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.complitex.osznconnection.file.service_provider.CalculationCenterBean;
 import org.complitex.osznconnection.file.service_provider.ServiceProviderAdapter;
 import org.complitex.osznconnection.file.service_provider.exception.DBException;
@@ -55,6 +59,14 @@ public class FillTaskBean implements ITaskBean {
     @EJB
     private ServiceProviderAdapter adapter;
 
+    private Set<Long> getServiceProviderTypeIds(Collection<CalculationContext> calculationContexts) {
+        final Set<Long> serviceProviderTypeIds = Sets.newHashSet();
+        for (CalculationContext context : calculationContexts) {
+            serviceProviderTypeIds.addAll(context.getServiceProviderTypeIds());
+        }
+        return ImmutableSet.copyOf(serviceProviderTypeIds);
+    }
+
     @Override
     public boolean execute(IExecutorObject executorObject, Map commandParameters) throws ExecuteException {
         RequestFileGroup group = (RequestFileGroup) executorObject;
@@ -69,15 +81,15 @@ public class FillTaskBean implements ITaskBean {
         requestFileGroupBean.save(group);
 
         //получаем информацию о текущем контексте вычислений
-        CalculationContext calculationContext = calculationCenterBean.getContext(group.getUserOrganizationId());
+        final Collection<CalculationContext> calculationContexts = calculationCenterBean.getContexts(group.getUserOrganizationId());
 
         //очищаем колонки которые заполняются во время обработки для записей в таблицах payment и benefit
-        paymentBean.clearBeforeProcessing(group.getPaymentFile().getId(), calculationContext.getServiceProviderTypeIds());
+        paymentBean.clearBeforeProcessing(group.getPaymentFile().getId(), getServiceProviderTypeIds(calculationContexts));
         benefitBean.clearBeforeProcessing(group.getBenefitFile().getId());
 
         //обработка файла payment
         try {
-            processPayment(group.getPaymentFile(), calculationContext);
+            processPayment(group.getPaymentFile(), calculationContexts);
         } catch (DBException e) {
             throw new RuntimeException(e);
         }
@@ -129,15 +141,25 @@ public class FillTaskBean implements ITaskBean {
      *
      * @param payment Запись запроса начислений
      */
-    private void process(Payment payment, CalculationContext calculationContext) throws DBException {
+    private void process(Payment payment, Collection<CalculationContext> calculationContexts) throws DBException {
         if (RequestStatus.unboundStatuses().contains(payment.getStatus())) {
             return;
         }
 
-        List<Benefit> benefits = benefitBean.findByOZN(payment);
-        adapter.processPaymentAndBenefit(calculationContext, payment, benefits);
+        final List<Benefit> benefits = benefitBean.findByOZN(payment);
 
-        paymentBean.update(payment, calculationContext.getServiceProviderTypeIds());
+        for (CalculationContext calculationContext : calculationContexts) {
+            adapter.processPaymentAndBenefit(calculationContext, payment, benefits);
+
+            /* если payment обработан некорректно текущим модулем начислений, то прерываем обработку данной записи
+             * оставшимися модулями.
+             */
+            if (payment.getStatus() != RequestStatus.PROCESSED) {
+                break;
+            }
+        }
+
+        paymentBean.update(payment, getServiceProviderTypeIds(calculationContexts));
         for (Benefit benefit : benefits) {
             benefitBean.populateBenefit(benefit);
         }
@@ -148,7 +170,7 @@ public class FillTaskBean implements ITaskBean {
      * @param paymentFile Файл запроса начислений
      * @throws FillException Ошибка обработки
      */
-    private void processPayment(RequestFile paymentFile, CalculationContext calculationContext) throws FillException, DBException {
+    private void processPayment(RequestFile paymentFile, Collection<CalculationContext> calculationContexts) throws FillException, DBException {
         //извлечь из базы все id подлежащие обработке для файла payment и доставать записи порциями по BATCH_SIZE штук.
         List<Long> notResolvedPaymentIds = paymentBean.findIdsForProcessing(paymentFile.getId());
         List<Long> batch = Lists.newArrayList();
@@ -171,7 +193,7 @@ public class FillTaskBean implements ITaskBean {
                 //обработать payment запись
                 try {
                     userTransaction.begin();
-                    process(payment, calculationContext);
+                    process(payment, calculationContexts);
                     userTransaction.commit();
                 } catch (DBException e) {
                     try {
@@ -218,7 +240,8 @@ public class FillTaskBean implements ITaskBean {
      */
     private void processBenefit(RequestFile benefitFile) throws FillException, DBException {
         //получаем информацию о текущем контексте вычислений
-        CalculationContext calculationContext = calculationCenterBean.getContext(benefitFile.getUserOrganizationId());
+        CalculationContext calculationContext =
+                calculationCenterBean.getContextWithAnyCalculationCenter(benefitFile.getUserOrganizationId());
 
         List<String> allAccountNumbers = benefitBean.getAllAccountNumbers(benefitFile.getId());
         for (String accountNumber : allAccountNumbers) {
