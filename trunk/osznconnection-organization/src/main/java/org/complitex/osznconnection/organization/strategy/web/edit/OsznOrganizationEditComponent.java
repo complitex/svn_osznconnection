@@ -374,7 +374,6 @@ public class OsznOrganizationEditComponent extends OrganizationEditComponent {
         if (isCalculationCenter()) {
             //data source
             String dataSource = dataSourceModel.getObject().getDataSource();
-            dataSource = dataSource != null ? dataSource.toUpperCase() : null;
             stringBean.getSystemStringCulture(organization.getAttribute(IOsznOrganizationStrategy.DATA_SOURCE).getLocalizedValues()).
                     setValue(new StringConverter().toString(dataSource));
         } else {

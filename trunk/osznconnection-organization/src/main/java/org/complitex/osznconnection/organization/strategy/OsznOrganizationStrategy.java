@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.Set;
 import org.apache.wicket.PageParameters;
 import org.complitex.dictionary.entity.DomainObject;
+import org.complitex.dictionary.entity.StringCulture;
 import org.complitex.dictionary.entity.example.DomainObjectExample;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.LocaleBean;
@@ -318,7 +319,7 @@ public class OsznOrganizationStrategy extends OrganizationStrategy implements IO
 
                             if (jndiObject instanceof DataSource) {
                                 boolean current = false;
-                                if (fullDataSource.equalsIgnoreCase(currentDataSource)) {
+                                if (fullDataSource.equals(currentDataSource)) {
                                     currentDataSourceEnabled = true;
                                     current = true;
                                 }
@@ -343,8 +344,15 @@ public class OsznOrganizationStrategy extends OrganizationStrategy implements IO
     @Override
     public String getDataSource(long calculationCenterId) {
         DomainObject calculationCenter = findById(calculationCenterId, true);
-        final String dataSource = AttributeUtil.getStringValue(calculationCenter, DATA_SOURCE);
-        return dataSource != null ? dataSource.toLowerCase() : null;
+        return AttributeUtil.getStringValue(calculationCenter, DATA_SOURCE);
+    }
+
+    @Transactional
+    @Override
+    protected Long insertStrings(long attributeTypeId, List<StringCulture> strings) {
+        // if it's data source attribute then data source value should be as is and not upper cased.
+        return attributeTypeId == DATA_SOURCE ? stringBean.insertStrings(strings, getEntityTable(), false)
+                : super.insertStrings(attributeTypeId, strings);
     }
 
     private ServiceAssociationList loadServiceAssociations(DomainObject userOrganization) {
