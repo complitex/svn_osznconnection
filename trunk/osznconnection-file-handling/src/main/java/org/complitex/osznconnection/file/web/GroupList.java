@@ -205,15 +205,6 @@ public class GroupList extends ScrollListPage {
         //Имя файла льгот
         filterForm.add(new TextField<String>("benefitName"));
 
-        //Загружено записей
-        filterForm.add(new TextField<Integer>("loadedRecordCount", Integer.class));
-
-        //Связано записей
-        filterForm.add(new TextField<Integer>("bindedRecordCount", Integer.class));
-
-        //Обработано записей
-        filterForm.add(new TextField<Integer>("filledRecordCount", Integer.class));
-
         //Статус
         filterForm.add(new DropDownChoice<RequestFileStatus>("status",
                 Arrays.asList(RequestFileStatus.values()),
@@ -451,9 +442,6 @@ public class GroupList extends ScrollListPage {
         filterForm.add(new ArrowOrderByBorder("header.directory", "directory", dataProvider, dataView, filterForm));
         filterForm.add(new ArrowOrderByBorder("header.paymentName", "paymentName", dataProvider, dataView, filterForm));
         filterForm.add(new ArrowOrderByBorder("header.benefitName", "benefitName", dataProvider, dataView, filterForm));
-        filterForm.add(new ArrowOrderByBorder("header.loaded_record_count", "loaded_record_count", dataProvider, dataView, filterForm));
-        filterForm.add(new ArrowOrderByBorder("header.binded_record_count", "binded_record_count", dataProvider, dataView, filterForm));
-        filterForm.add(new ArrowOrderByBorder("header.filled_record_count", "filled_record_count", dataProvider, dataView, filterForm));
         filterForm.add(new ArrowOrderByBorder("header.status", "status", dataProvider, dataView, filterForm));
 
         //Постраничная навигация
@@ -808,7 +796,7 @@ public class GroupList extends ScrollListPage {
 
     private AjaxSelfUpdatingTimerBehavior newTimer(final Form<?> filterForm, final AjaxFeedbackPanel messages) {
         waitForStopTimer = 0;
-        return new AjaxSelfUpdatingTimerBehavior(Duration.seconds(1)) {
+        return new AjaxSelfUpdatingTimerBehavior(Duration.seconds(7)) {
 
             @Override
             protected void onPostProcessTarget(AjaxRequestTarget target) {
@@ -821,7 +809,6 @@ public class GroupList extends ScrollListPage {
                     //update feedback messages panel
                     target.addComponent(messages);
                     target.addComponent(buttonContainer);
-                    target.addComponent(pagingNavigator);
                 }
 
                 timerIndex++;

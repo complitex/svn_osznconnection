@@ -38,9 +38,9 @@
                     <th class="center" wicket:id="header.user_organization"><wicket:message key="user_organization"/></th>
                     <th class="center" wicket:id="header.month"><wicket:message key="month"/></th>
                     <th class="center" wicket:id="header.year"><wicket:message key="year"/></th>
-                    <th class="center" wicket:id="header.loaded_record_count"><wicket:message key="loaded_record_count"/></th>
-                    <th class="center" wicket:id="header.binded_record_count"><wicket:message key="binded_record_count"/></th>
-                    <th class="center" wicket:id="header.filled_record_count"><wicket:message key="filled_record_count"/></th>
+                    <th class="center"><wicket:message key="loaded_record_count"/></th>
+                    <th class="center"><wicket:message key="binded_record_count"/></th>
+                    <th class="center"><wicket:message key="filled_record_count"/></th>
                     <th class="center" wicket:id="header.status"><wicket:message key="status"/></th>
                     <th class="center">
                         <input class="btnSmall"  wicket:id="filter_reset" type="button" wicket:message="value:reset"/>
@@ -59,9 +59,9 @@
                     <th class="center"><select wicket:id="userOrganization"></select></th>
                     <th class="center"><select wicket:id="month"></select></th>
                     <th class="center"><select wicket:id="year"></select></th>
-                    <th class="center"><input type="text" wicket:id="loadedRecordCount"/></th>
-                    <th class="center"><input type="text" wicket:id="bindedRecordCount"/></th>
-                    <th class="center"><input type="text" wicket:id="filledRecordCount"/></th>
+                    <th class="center"></th>
+                    <th class="center"></th>
+                    <th class="center"></th>
                     <th class="center"><select wicket:id="status"></select></th>
                     <th class="center">
                         <input class="btnSmall default" type="submit" wicket:message="value:filter" tabindex="0" />
@@ -86,9 +86,6 @@
                     <td><span wicket:id="binded_record_count"></span></td>
                     <td><span wicket:id="filled_record_count"></span></td>
                     <td colspan="2"><span wicket:id="status" style="white-space:nowrap"></span></td>
-                    <!--<td>
-                        <span wicket:id="action_list"></span>
-                    </td>-->
                 </tr>
                 </tbody>
             </table>

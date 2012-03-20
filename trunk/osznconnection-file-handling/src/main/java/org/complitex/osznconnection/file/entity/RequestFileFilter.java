@@ -23,9 +23,6 @@ public class RequestFileFilter extends AbstractFilter {
     private String paymentName;
     private String benefitName;
     private Integer dbfRecordCount;
-    private Integer loadedRecordCount;
-    private Integer bindedRecordCount;
-    private Integer filledRecordCount;
     private Long length;
     private String checkSum;
     private DomainObject organization;
@@ -121,30 +118,6 @@ public class RequestFileFilter extends AbstractFilter {
 
     public void setDbfRecordCount(Integer dbfRecordCount) {
         this.dbfRecordCount = dbfRecordCount;
-    }
-
-    public Integer getLoadedRecordCount() {
-        return loadedRecordCount;
-    }
-
-    public void setLoadedRecordCount(Integer loadedRecordCount) {
-        this.loadedRecordCount = loadedRecordCount;
-    }
-
-    public Integer getBindedRecordCount() {
-        return bindedRecordCount;
-    }
-
-    public void setBindedRecordCount(Integer bindedRecordCount) {
-        this.bindedRecordCount = bindedRecordCount;
-    }
-
-    public Integer getFilledRecordCount() {
-        return filledRecordCount;
-    }
-
-    public void setFilledRecordCount(Integer filledRecordCount) {
-        this.filledRecordCount = filledRecordCount;
     }
 
     public Long getLength() {
