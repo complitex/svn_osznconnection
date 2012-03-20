@@ -178,12 +178,6 @@ public class TarifFileList extends TemplatePage {
         //Год
         filterForm.add(new YearDropDownChoice("year").setNullValid(true));
 
-        //Всего записей
-        filterForm.add(new TextField<Integer>("dbfRecordCount", new Model<Integer>(), Integer.class));
-
-        //Загружено записей
-        filterForm.add(new TextField<Integer>("loadedRecordCount", new Model<Integer>(), Integer.class));
-
         //Модель выбранных элементов списка
         final Map<RequestFile, IModel<Boolean>> selectModels = new HashMap<RequestFile, IModel<Boolean>>();
 
@@ -312,8 +306,6 @@ public class TarifFileList extends TemplatePage {
         filterForm.add(new ArrowOrderByBorder("header.user_organization", "user_organization_id", dataProvider, dataView, filterForm));
         filterForm.add(new ArrowOrderByBorder("header.month", "month", dataProvider, dataView, filterForm));
         filterForm.add(new ArrowOrderByBorder("header.year", "year", dataProvider, dataView, filterForm));
-        filterForm.add(new ArrowOrderByBorder("header.dbf_record_count", "dbf_record_count", dataProvider, dataView, filterForm));
-        filterForm.add(new ArrowOrderByBorder("header.loaded_record_count", "loaded_record_count", dataProvider, dataView, filterForm));
 
         //Постраничная навигация
         filterForm.add(new PagingNavigator("paging", dataView, getClass().getName(), filterForm));
@@ -441,7 +433,7 @@ public class TarifFileList extends TemplatePage {
 
     private AjaxSelfUpdatingTimerBehavior newTimer(final Form<?> filterForm, final AjaxFeedbackPanel messages) {
         waitForStopTimer = 0;
-        return new AjaxSelfUpdatingTimerBehavior(Duration.seconds(1)) {
+        return new AjaxSelfUpdatingTimerBehavior(Duration.seconds(4)) {
 
             @Override
             protected void onPostProcessTarget(AjaxRequestTarget target) {

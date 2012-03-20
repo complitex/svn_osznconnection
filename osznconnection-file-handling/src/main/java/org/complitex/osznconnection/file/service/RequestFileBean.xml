@@ -75,66 +75,48 @@
             <if test="status != null">and `status` = #{status}</if>
             <include refid="org.complitex.osznconnection.file.service.RequestFileBean.permissionFilter"/>
         </where>
-
-        <trim prefix="HAVING" prefixOverrides="and">
-            <if test="loadedRecordCount != null">and loaded_record_count like CONCAT('%',#{loadedRecordCount},'%')</if>
-            <if test="bindedRecordCount != null">and binded_record_count like CONCAT('%',#{bindedRecordCount},'%')</if>
-            <if test="filledRecordCount != null">and filled_record_count like CONCAT('%',#{filledRecordCount},'%')</if>
-        </trim>
     </sql>
 
     <select id="selectRequestFiles" parameterType="org.complitex.osznconnection.file.entity.RequestFileFilter"
             resultMap="requestFileResultMap">
         select
             *,
-            (select (select count(*) from `payment` where `request_file_id` = rf.`id`)
-            + (select count(*) from `benefit` where `request_file_id` = rf.`id`)
-            + (select count(*) from `tarif` where `request_file_id` = rf.`id`)
-            + (select count(*) from `actual_payment` where `request_file_id` = rf.`id`))
+            (select (select count(1) from `payment` where `request_file_id` = rf.`id`)
+            + (select count(1) from `benefit` where `request_file_id` = rf.`id`)
+            + (select count(1) from `tarif` where `request_file_id` = rf.`id`)
+            + (select count(1) from `actual_payment` where `request_file_id` = rf.`id`))
                 as loaded_record_count,
-            (select count(*) from `actual_payment` where `request_file_id` = rf.`id` and `account_number` is not null)
+            (select count(1) from `actual_payment` where `request_file_id` = rf.`id` and `account_number` is not null)
                 as binded_record_count,
-            (select count(*) from `actual_payment` where `request_file_id` = rf.`id` and `status` = 215)
+            (select count(1) from `actual_payment` where `request_file_id` = rf.`id` and `status` = 215)
                 as filled_record_count
             from
             `request_file` rf
-        <include refid="requestFilesFilterWhere"/>
-        <if test="sortProperty != null">
-            <choose>
-                <when test="sortProperty == 'name'">
-                    order by `directory` <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>,
-                        `name` <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
-                </when>
-                <otherwise>
-                    order by `${sortProperty}` <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
-                </otherwise>
-            </choose>
-
-        </if>
+            <include refid="requestFilesFilterWhere"/>
+            <if test="sortProperty != null">
+                <choose>
+                    <when test="sortProperty == 'name'">
+                        order by `directory` <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>,
+                            `name` <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
+                    </when>
+                    <otherwise>
+                        order by `${sortProperty}` <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
+                    </otherwise>
+                </choose>
+            </if>
         limit #{first}, #{count}
     </select>
 
     <select id="selectRequestFilesCount" parameterType="org.complitex.osznconnection.file.entity.RequestFileFilter"
             resultType="int">
-        select count(*) from
-            (select *,
-                (select (select count(*) from `payment` where `request_file_id` = rf.`id`)
-                + (select count(*) from `tarif` where `request_file_id` = rf.`id`)
-                + (select count(*) from `actual_payment` where `request_file_id` = rf.`id`))
-                    as loaded_record_count,
-                (select count(*) from `actual_payment` where `request_file_id` = rf.`id` and `account_number` is not null)
-                    as binded_record_count,
-                (select count(*) from `actual_payment` where `request_file_id` = rf.`id` and `status` = 215)
-                    as filled_record_count
-            from
-                `request_file` rf
-                <include refid="requestFilesFilterWhere"/>) as q
+        select count(1) from `request_file` rf
+                <include refid="requestFilesFilterWhere"/>
     </select>
 
     <select id="selectIsLoaded" parameterType="org.complitex.osznconnection.file.entity.RequestFile"
             resultType="boolean">
         select
-            count(*) > 0
+            count(1) > 0
         from
             `request_file`
         where
@@ -144,10 +126,7 @@
 
     <select id="selectLoadedId" parameterType="org.complitex.osznconnection.file.entity.RequestFile"
             resultType="long">
-        select
-            id
-        from
-            `request_file`
+        select id from `request_file`
         where
             `name` = #{name} and `organization_id` = #{organizationId} 
                 and `registry` = #{registry} and `month` = #{month} and `year` = #{year}
