@@ -159,7 +159,7 @@
     </delete>
 
     <select id="checkExistence" resultType="int" parameterType="org.complitex.osznconnection.file.entity.Correction">
-        SELECT COUNT(*) FROM `${entity}_correction` WHERE
+        SELECT COUNT(1) FROM `${entity}_correction` WHERE
         <if test="id != null">
             `id` != #{id} AND
         </if>

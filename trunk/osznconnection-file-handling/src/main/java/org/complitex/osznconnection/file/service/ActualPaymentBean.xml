@@ -183,7 +183,7 @@
     </sql>
 
     <select id="count" resultType="int" parameterType="org.complitex.osznconnection.file.entity.example.ActualPaymentExample">
-        SELECT COUNT(*) FROM `actual_payment` ap WHERE ap.`request_file_id` = #{requestFileId}
+        SELECT COUNT(1) FROM `actual_payment` ap WHERE ap.`request_file_id` = #{requestFileId}
         <include refid="org.complitex.osznconnection.file.service.ActualPaymentBean.filter"/>
     </select>
 
@@ -250,7 +250,7 @@
     </update>
 
     <select id="countByFile" resultType="int" parameterType="map">
-        SELECT COUNT(*) FROM `actual_payment` ap
+        SELECT COUNT(1) FROM `actual_payment` ap
         WHERE ap.`request_file_id` = #{requestFileId} AND ap.`status` IN
         <foreach collection="statuses" item="status" open="(" close=")" separator=",">
             #{status}

@@ -413,7 +413,7 @@
     </select>
 
     <select id="checkBuildingExistence" resultType="int" parameterType="org.complitex.osznconnection.file.entity.BuildingCorrection">
-        SELECT COUNT(*) FROM `building_correction` WHERE 
+        SELECT COUNT(1) FROM `building_correction` WHERE 
         <if test="id != null">
             `id` != #{id} AND
         </if>
@@ -443,7 +443,7 @@
     </select>
 
     <select id="checkStreetExistence" resultType="int" parameterType="org.complitex.osznconnection.file.entity.StreetCorrection">
-        SELECT COUNT(*) FROM `street_correction` WHERE 
+        SELECT COUNT(1) FROM `street_correction` WHERE 
         <if test="id != null">
             `id` != #{id} AND
         </if>
@@ -464,7 +464,7 @@
     </select>
 
     <select id="checkAddressExistence" resultType="int" parameterType="org.complitex.osznconnection.file.entity.Correction">
-        SELECT COUNT(*) FROM `${entity}_correction` WHERE
+        SELECT COUNT(1) FROM `${entity}_correction` WHERE
         <if test="id != null">
             `id` != #{id} AND
         </if>
