@@ -33,7 +33,6 @@ public class PrivilegeStrategy extends TemplateStrategy {
      */
     public static final long NAME = 1200;
     public static final long CODE = 1201;
-
     @EJB
     private StringCultureBean stringBean;
 
@@ -77,5 +76,13 @@ public class PrivilegeStrategy extends TemplateStrategy {
     @Override
     public String[] getEditRoles() {
         return new String[]{SecurityRole.PRIVILEGE_MODULE_EDIT};
+    }
+
+    @Override
+    protected void extendOrderBy(DomainObjectExample example) {
+        if (example.getOrderByAttributeTypeId() != null
+                && example.getOrderByAttributeTypeId().equals(CODE)) {
+            example.setOrderByNumber(true);
+        }
     }
 }

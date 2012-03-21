@@ -110,6 +110,9 @@
                     </if>
                     c.`correction`
                 </when>
+                <when test="orderByClause == 'organization_code'">
+                    LPAD(c.`organization_code`,15,' ')
+                </when>
                 <otherwise>
                     ${orderByClause}
                 </otherwise>
