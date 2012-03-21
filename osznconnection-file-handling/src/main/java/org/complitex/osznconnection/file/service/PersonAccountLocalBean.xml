@@ -151,7 +151,7 @@
     </select>
 
     <select id="count" resultType="int" parameterType="org.complitex.osznconnection.file.entity.example.PersonAccountExample">
-        SELECT COUNT(*) FROM `person_account` pa
+        SELECT COUNT(1) FROM `person_account` pa
         <include refid="org.complitex.osznconnection.file.service.PersonAccountLocalBean.filter"/>
     </select>
 

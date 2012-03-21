@@ -148,7 +148,7 @@
 
     <select id="selectRequestFilesGroupsCount" parameterType="org.complitex.osznconnection.file.entity.RequestFileFilter"
             resultType="int">
-        select count(*)
+        select count(1)
         from
             (select
                 g.`id`,

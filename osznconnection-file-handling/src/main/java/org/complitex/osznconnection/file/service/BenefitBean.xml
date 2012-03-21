@@ -205,7 +205,7 @@
     </select>
 
     <select id="countByFile" resultType="int" parameterType="hashmap">
-        SELECT COUNT(*) FROM `benefit` b
+        SELECT COUNT(1) FROM `benefit` b
         WHERE b.`request_file_id` = #{requestFileId} AND b.`status` IN
         <foreach collection="statuses" item="status" open="(" close=")" separator=",">
             #{status}
