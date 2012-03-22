@@ -15,7 +15,7 @@ import org.complitex.osznconnection.organization.strategy.entity.ServiceAssociat
  */
 public interface IOsznOrganizationStrategy extends IOrganizationStrategy {
 
-    /**
+    /*
      * Attribute type ids
      */
     /**
@@ -31,15 +31,41 @@ public interface IOsznOrganizationStrategy extends IOrganizationStrategy {
      */
     long ITSELF_ORGANIZATION_OBJECT_ID = 0;
 
+    /**
+     * Figures out all outer (OSZNs and calculation centers) organizations visible to current user 
+     * and returns them sorted by organization's name in given {@code locale}.
+     * 
+     * @param locale Locale. It is used in sorting of organizations by name.
+     * @return All outer organizations visible to user.
+     */
     @Transactional
     List<DomainObject> getAllOuterOrganizations(Locale locale);
 
+    /**
+     * Figures out all OSZN organizations visible to current user 
+     * and returns them sorted by organization's name in given {@code locale}.
+     * 
+     * @param locale Locale. It is used in sorting of organizations by name.
+     * @return All OSZN organizations.
+     */
     @Transactional
     List<DomainObject> getAllOSZNs(Locale locale);
 
+    /**
+     * Figures out all calculation center organizations visible to current user 
+     * and returns them sorted by organization's name in given {@code locale}.
+     * 
+     * @param locale Locale. It is used in sorting of organizations by name.
+     * @return All calculation center organizations.
+     */
     @Transactional
     List<DomainObject> getAllCalculationCentres(Locale locale);
 
+    /**
+     * Returns organization that represents osznconnection programm module, i.e. "itself".
+     * 
+     * @return "Itself" organization.
+     */
     @Transactional
     DomainObject getItselfOrganization();
 
@@ -48,14 +74,14 @@ public interface IOsznOrganizationStrategy extends IOrganizationStrategy {
      * caluclation center.
      * 
      * @param userOrganization User organization.
-     * @return 
+     * @return Service associations list.
      */
     ServiceAssociationList getServiceAssociations(DomainObject userOrganization);
 
     /**
      * Finds remote jdbc data sources.
      * @param currentDataSource Current data source.
-     * @return 
+     * @return Remote jdbc data sources.
      */
     List<RemoteDataSource> findRemoteDataSources(String currentDataSource);
 

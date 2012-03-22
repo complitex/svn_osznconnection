@@ -5,8 +5,8 @@ insert into organization_string_culture(id, locale_id, value) values
 (5, 1, UPPER('Модуль начислений №1')), (5, 2, UPPER('Модуль начислений №1')), (6, 1, UPPER('2')),
 (7, 1, 'jdbc/osznconnection_remote_resource');
 insert into organization_attribute(attribute_id, object_id, attribute_type_id, value_id, value_type_id) values
-(1,1,900,3,900), (1,1,901,4,901), (1,1,902,3,902), (1,1,905,2,905),
-(1,2,900,5,900), (1,2,901,6,901), (1,2,905,3,905), (1,2,913,7,913);
+(1,1,900,3,900), (1,1,901,4,901), (1,1,902,3,902), (1,1,904,2,904),
+(1,2,900,5,900), (1,2,901,6,901), (1,2,904,3,904), (1,2,913,7,913);
 
 -- User organizations
 insert into service_association (pk_id, service_provider_type_id, calculation_center_id) values (1,1,2), (2,1,2);
@@ -14,8 +14,8 @@ insert into organization(object_id) values (3), (4);
 insert into organization_string_culture(id, locale_id, value) values (8, 1, UPPER('КП "ЖИЛКОМСЕРВИС"')),(9, 1, UPPER('12345')),
 (10,1,UPPER('ЛЕНИНСКИЙ ФИЛИАЛ КП "ЖИЛКОМСЕРВИС"')),(11, 1, UPPER('123456'));
 insert into organization_attribute(attribute_id, object_id, attribute_type_id, value_id, value_type_id) values
-(1,3,900,8,900), (1,3,901,9,901), (1,3,905,1,905), (1,3,914,1,914),
-(1,4,900,10,900), (1,4,901,11,901), (1,4,903,3,903), (1,4,905,1,905), (1,4,914,2,914);
+(1,3,900,8,900), (1,3,901,9,901), (1,3,904,1,904), (1,3,914,1,914),
+(1,4,900,10,900), (1,4,901,11,901), (1,4,903,3,903), (1,4,904,1,904), (1,4,914,2,914);
 
 -- Files
 insert into request_file_group(id) values (1);
