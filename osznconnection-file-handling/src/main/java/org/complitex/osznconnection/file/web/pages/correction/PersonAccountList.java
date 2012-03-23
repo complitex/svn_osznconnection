@@ -85,17 +85,12 @@ public class PersonAccountList extends ScrollListPage {
         final Form filterForm = new Form("filterForm");
         content.add(filterForm);
 
-        example = new Model<PersonAccountExample>((PersonAccountExample) getFilterObject(newExample()));
+        example = new Model<PersonAccountExample>(newExample());
 
         final DataProvider<PersonAccount> dataProvider = new DataProvider<PersonAccount>() {
 
             @Override
             protected Iterable<? extends PersonAccount> getData(int first, int count) {
-                //save preferences to session
-                setFilterObject(example.getObject());
-                setSortOrder(getSort().isAscending());
-                setSortProperty(getSort().getProperty());
-
                 example.getObject().setAsc(getSort().isAscending());
                 if (!Strings.isEmpty(getSort().getProperty())) {
                     example.getObject().setOrderByClause(getSort().getProperty());
@@ -112,7 +107,7 @@ public class PersonAccountList extends ScrollListPage {
                 return personAccountLocalBean.count(example.getObject());
             }
         };
-        dataProvider.setSort(getSortProperty(""), getSortOrder(true));
+        dataProvider.setSort("", true);
 
         filterForm.add(new TextField<String>("puAccountNumberFilter", new PropertyModel<String>(example, "puAccountNumber")));
         filterForm.add(new TextField<String>("firstNameFilter", new PropertyModel<String>(example, "firstName")));
@@ -283,6 +278,6 @@ public class PersonAccountList extends ScrollListPage {
         filterForm.add(new ArrowOrderByBorder("userOrganizationHeader", PersonAccountLocalBean.OrderBy.USER_ORGANIZATION.getOrderBy(),
                 dataProvider, data, content));
 
-        content.add(new PagingNavigator("navigator", data, getClass().getName(), content));
+        content.add(new PagingNavigator("navigator", data, getPreferencesPage(), content));
     }
 }

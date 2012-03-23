@@ -104,14 +104,8 @@ public class TarifFileList extends TemplatePage {
         add(messages);
 
         //Фильтр модель
-        RequestFileFilter filterObject = (RequestFileFilter) getFilterObject(null);
-        if (filterObject == null) {
-            filterObject = new RequestFileFilter();
-            filterObject.setType(RequestFile.TYPE.TARIF);
-
-            setFilterObject(filterObject);
-        }
-
+        final RequestFileFilter filterObject = new RequestFileFilter();
+        filterObject.setType(RequestFile.TYPE.TARIF);
         filterObject.setId(requestFileId);
 
         final IModel<RequestFileFilter> filterModel = new CompoundPropertyModel<RequestFileFilter>(filterObject);
@@ -126,11 +120,9 @@ public class TarifFileList extends TemplatePage {
             public void onClick() {
                 filterForm.clearInput();
 
-                RequestFileFilter groupFilterObject = new RequestFileFilter();
-                groupFilterObject.setType(RequestFile.TYPE.TARIF);
-
-                setFilterObject(groupFilterObject);
-                filterModel.setObject(groupFilterObject);
+                RequestFileFilter filterObject = new RequestFileFilter();
+                filterObject.setType(RequestFile.TYPE.TARIF);
+                filterModel.setObject(filterObject);
             }
         };
         filterForm.add(filter_reset);
@@ -188,12 +180,7 @@ public class TarifFileList extends TemplatePage {
             protected Iterable<? extends RequestFile> getData(int first, int count) {
                 RequestFileFilter filter = filterModel.getObject();
 
-                //save preferences to session
-                setFilterObject(filter);
-                setSortOrder(getSort().isAscending());
-                setSortProperty(getSort().getProperty());
-
-                //prepare groupFilter object
+                //prepare filter object
                 filter.setFirst(first);
                 filter.setCount(count);
                 filter.setSortProperty(getSort().getProperty());
@@ -214,7 +201,7 @@ public class TarifFileList extends TemplatePage {
                 return requestFileBean.size(filterModel.getObject());
             }
         };
-        dataProvider.setSort(getSortProperty("loaded"), getSortOrder(false));
+        dataProvider.setSort("loaded", false);
 
         //Контейнер для ajax
         final WebMarkupContainer dataViewContainer = new WebMarkupContainer("request_files_container");
@@ -308,7 +295,7 @@ public class TarifFileList extends TemplatePage {
         filterForm.add(new ArrowOrderByBorder("header.year", "year", dataProvider, dataView, filterForm));
 
         //Постраничная навигация
-        filterForm.add(new PagingNavigator("paging", dataView, getClass().getName(), filterForm));
+        filterForm.add(new PagingNavigator("paging", dataView, getPreferencesPage(), filterForm));
 
         //Удалить
         final Button delete = new Button("delete") {
