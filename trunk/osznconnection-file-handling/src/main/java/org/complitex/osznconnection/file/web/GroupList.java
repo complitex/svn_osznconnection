@@ -111,12 +111,7 @@ public class GroupList extends ScrollListPage {
         add(messages);
 
         //Фильтр модель
-        RequestFileGroupFilter groupFilterObject = (RequestFileGroupFilter) getFilterObject(null);
-        if (groupFilterObject == null) {
-            groupFilterObject = new RequestFileGroupFilter();
-            setFilterObject(groupFilterObject);
-        }
-
+        final RequestFileGroupFilter groupFilterObject = new RequestFileGroupFilter();
         groupFilterObject.setId(filterGroupId);
 
         final IModel<RequestFileGroupFilter> filterModel = new CompoundPropertyModel<RequestFileGroupFilter>(groupFilterObject);
@@ -132,8 +127,6 @@ public class GroupList extends ScrollListPage {
                 filterForm.clearInput();
 
                 RequestFileGroupFilter groupFilterObject = new RequestFileGroupFilter();
-
-                setFilterObject(groupFilterObject);
                 filterModel.setObject(groupFilterObject);
             }
         };
@@ -231,11 +224,6 @@ public class GroupList extends ScrollListPage {
             protected Iterable<? extends RequestFileGroup> getData(int first, int count) {
                 RequestFileGroupFilter groupFilter = filterModel.getObject();
 
-                //save preferences to session
-                setFilterObject(groupFilter);
-                setSortOrder(getSort().isAscending());
-                setSortProperty(getSort().getProperty());
-
                 //prepare groupFilter object
                 groupFilter.setFirst(first);
                 groupFilter.setCount(count);
@@ -258,7 +246,7 @@ public class GroupList extends ScrollListPage {
                 return requestFileGroupBean.getRequestFileGroupsCount(filterModel.getObject());
             }
         };
-        dataProvider.setSort(getSortProperty("id"), getSortOrder(false));
+        dataProvider.setSort("loaded", false);
 
         //Контейнер для ajax
         final WebMarkupContainer dataViewContainer = new WebMarkupContainer("request_files_groups_container");
@@ -445,7 +433,7 @@ public class GroupList extends ScrollListPage {
         filterForm.add(new ArrowOrderByBorder("header.status", "status", dataProvider, dataView, filterForm));
 
         //Постраничная навигация
-        pagingNavigator = new PagingNavigator("paging", dataView, getClass().getName(), filterForm);
+        pagingNavigator = new PagingNavigator("paging", dataView, getPreferencesPage(), filterForm);
         pagingNavigator.addListener(new IPagingNavigatorListener() { //clear select checkbox model on page change
 
             @Override

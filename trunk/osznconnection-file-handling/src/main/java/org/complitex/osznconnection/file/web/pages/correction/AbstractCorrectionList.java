@@ -64,7 +64,6 @@ public abstract class AbstractCorrectionList extends ScrollListPage {
 
     public AbstractCorrectionList(String entity) {
         this.entity = entity;
-        setPreferencesPage(getClass().getName() + "#" + entity);
         init();
     }
 
@@ -115,18 +114,13 @@ public abstract class AbstractCorrectionList extends ScrollListPage {
         final Form filterForm = new Form("filterForm");
         content.add(filterForm);
 
-        example = new Model<CorrectionExample>((CorrectionExample) getFilterObject(newExample()));
+        example = new Model<CorrectionExample>(newExample());
 
         final DataProvider<Correction> dataProvider = new DataProvider<Correction>() {
 
             @Override
             protected Iterable<? extends Correction> getData(int first, int count) {
-                CorrectionExample exampleObject = example.getObject();
-                //save preferences to session
-                setFilterObject(example.getObject());
-                setSortOrder(getSort().isAscending());
-                setSortProperty(getSort().getProperty());
-
+                final CorrectionExample exampleObject = example.getObject();
                 exampleObject.setAsc(getSort().isAscending());
                 if (!Strings.isEmpty(getSort().getProperty())) {
                     exampleObject.setOrderByClause(getSort().getProperty());
@@ -143,7 +137,7 @@ public abstract class AbstractCorrectionList extends ScrollListPage {
                 return count(example.getObject());
             }
         };
-        dataProvider.setSort(getSortProperty(""), getSortOrder(true));
+        dataProvider.setSort("", true);
 
         final IModel<List<DomainObject>> allOuterOrganizationsModel = new LoadableDetachableModel<List<DomainObject>>() {
 
@@ -292,7 +286,7 @@ public abstract class AbstractCorrectionList extends ScrollListPage {
         filterForm.add(new ArrowOrderByBorder("internalOrganizationHeader", CorrectionBean.OrderBy.INTERNAL_ORGANIZATION.getOrderBy(), dataProvider,
                 data, content));
 
-        content.add(new PagingNavigator("navigator", data, getClass().getName() + "#" + entity, content));
+        content.add(new PagingNavigator("navigator", data, getPreferencesPage() + "#" + entity, content));
     }
 
     @Override

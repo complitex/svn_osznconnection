@@ -233,7 +233,7 @@ public final class BenefitList extends TemplatePage {
         back.setDefaultFormProcessing(false);
         filterForm.add(back);
 
-        content.add(new PagingNavigator("navigator", data, getClass().getName(), content));
+        content.add(new PagingNavigator("navigator", data, getPreferencesPage(), content));
     }
 }
 

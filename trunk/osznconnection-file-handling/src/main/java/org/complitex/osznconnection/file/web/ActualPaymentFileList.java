@@ -110,14 +110,8 @@ public class ActualPaymentFileList extends ScrollListPage {
         add(messages);
 
         //Фильтр модель
-        RequestFileFilter filterObject = (RequestFileFilter) getFilterObject(null);
-        if (filterObject == null) {
-            filterObject = new RequestFileFilter();
-            filterObject.setType(RequestFile.TYPE.ACTUAL_PAYMENT);
-
-            setFilterObject(filterObject);
-        }
-
+        final RequestFileFilter filterObject = new RequestFileFilter();
+        filterObject.setType(RequestFile.TYPE.ACTUAL_PAYMENT);
         filterObject.setId(filterRequestFileId);
 
         final IModel<RequestFileFilter> filterModel = new CompoundPropertyModel<RequestFileFilter>(filterObject);
@@ -134,8 +128,6 @@ public class ActualPaymentFileList extends ScrollListPage {
 
                 RequestFileFilter groupFilterObject = new RequestFileFilter();
                 groupFilterObject.setType(RequestFile.TYPE.ACTUAL_PAYMENT);
-
-                setFilterObject(groupFilterObject);
                 filterModel.setObject(groupFilterObject);
             }
         };
@@ -224,11 +216,6 @@ public class ActualPaymentFileList extends ScrollListPage {
             protected Iterable<? extends RequestFile> getData(int first, int count) {
                 RequestFileFilter filter = filterModel.getObject();
 
-                //save preferences to session
-                setFilterObject(filter);
-                setSortOrder(getSort().isAscending());
-                setSortProperty(getSort().getProperty());
-
                 //prepare groupFilter object
                 filter.setFirst(first);
                 filter.setCount(count);
@@ -251,7 +238,7 @@ public class ActualPaymentFileList extends ScrollListPage {
                 return requestFileBean.size(filterModel.getObject());
             }
         };
-        dataProvider.setSort(getSortProperty("id"), getSortOrder(false));
+        dataProvider.setSort("loaded", false);
 
         //Контейнер для ajax
         final WebMarkupContainer dataViewContainer = new WebMarkupContainer("request_files_container");
@@ -400,7 +387,7 @@ public class ActualPaymentFileList extends ScrollListPage {
         filterForm.add(new ArrowOrderByBorder("header.status", "status", dataProvider, dataView, filterForm));
 
         //Постраничная навигация
-        pagingNavigator = new PagingNavigator("paging", dataView, getClass().getName(), filterForm);
+        pagingNavigator = new PagingNavigator("paging", dataView, getPreferencesPage(), filterForm);
         pagingNavigator.addListener(new IPagingNavigatorListener() { //clear select checkbox model on page change
 
             @Override
