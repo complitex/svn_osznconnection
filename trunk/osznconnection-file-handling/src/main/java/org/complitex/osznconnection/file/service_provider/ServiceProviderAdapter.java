@@ -177,8 +177,9 @@ public class ServiceProviderAdapter {
             String buildingCorp, String apartment, Date date, Boolean updatePUAccount) throws DBException {
 
         if (Strings.isEmpty(serviceProviderAccountNumber)) {
-            request.setStatus(RequestStatus.ACCOUNT_NUMBER_MISMATCH);
-            return;
+//            request.setStatus(RequestStatus.ACCOUNT_NUMBER_MISMATCH);
+//            return;
+            serviceProviderAccountNumber="0";
         }
         serviceProviderAccountNumber = serviceProviderAccountNumber.trim();
 
