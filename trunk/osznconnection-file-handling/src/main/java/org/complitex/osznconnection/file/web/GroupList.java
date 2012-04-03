@@ -31,6 +31,8 @@ import java.util.*;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.ResourceModel;
 import org.complitex.template.web.pages.ScrollListPage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -274,17 +276,23 @@ public class GroupList extends ScrollListPage {
         }
 
         @Override
-        protected void logSuccessfulDeletion(RequestFileGroup object) {
-            logBean.info(Module.NAME, GroupList.class, RequestFileGroup.class, null, object.getId(),
-                    Log.EVENT.REMOVE, object.getLogChangeList(), "Файлы удалены успешно. Имя объекта: {0}",
-                    object.getLogObjectName());
+        protected void logSuccessfulDeletion(RequestFileGroup group) {
+            logger().info("Request file group (ID : {}, full name: '{}') has been deleted.", group.getId(), getFullName(group));
+            logBean.info(Module.NAME, GroupList.class, RequestFileGroup.class, null, group.getId(),
+                    Log.EVENT.REMOVE, group.getLogChangeList(), "Файлы удалены успешно. Имя объекта: {0}",
+                    group.getLogObjectName());
         }
 
         @Override
-        protected void logFailDeletion(RequestFileGroup object, Exception e) {
-            logBean.error(Module.NAME, GroupList.class, RequestFileGroup.class, null, object.getId(),
-                    Log.EVENT.REMOVE, object.getLogChangeList(), "Ошибка удаления. Имя объекта: {0}",
-                    object.getLogObjectName());
+        protected void logFailDeletion(RequestFileGroup group, Exception e) {
+            logger().error("Cannot delete request file group (ID : " + group.getId() + ", full name: '" + getFullName(group) + "').", e);
+            logBean.error(Module.NAME, GroupList.class, RequestFileGroup.class, null, group.getId(),
+                    Log.EVENT.REMOVE, group.getLogChangeList(), "Ошибка удаления. Имя объекта: {0}",
+                    group.getLogObjectName());
+        }
+
+        private Logger logger() {
+            return LoggerFactory.getLogger(getWebPage().getClass());
         }
 
         @Override

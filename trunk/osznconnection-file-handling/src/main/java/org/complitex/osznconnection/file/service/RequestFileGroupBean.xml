@@ -95,19 +95,10 @@
             <if test="registry != null">and p.`registry` = #{registry}</if>
             <if test="year != null">and p.`year` = #{year}</if>
             <if test="month != null">and p.`month` = #{month}</if>
-            <if test="dbfRecordCount != null">and p.`dbf_record_count` like CONCAT('%',#{dbfRecordCount},'%')</if>
             <if test="status != null">and g.`status` = #{status}</if>
             
             <include refid="org.complitex.osznconnection.file.service.RequestFileGroupBean.permissionFilter"/>
         </where>
-
-        GROUP BY g.`id`
-
-        <trim prefix="HAVING" prefixOverrides="and">
-            <if test="loadedRecordCount != null">and loaded_record_count like CONCAT('%',#{loadedRecordCount},'%')</if>
-            <if test="bindedRecordCount != null">and binded_record_count like CONCAT('%',#{bindedRecordCount},'%')</if>
-            <if test="filledRecordCount != null">and filled_record_count like CONCAT('%',#{filledRecordCount},'%')</if>
-        </trim>
     </sql>
 
     <select id="selectRequestFilesGroups" parameterType="org.complitex.osznconnection.file.entity.RequestFileGroupFilter"
@@ -133,9 +124,6 @@
                 <when test="sortProperty == 'status'">order by `status`</when>
                 <when test="sortProperty == 'paymentName'">order by p.`name`</when>
                 <when test="sortProperty == 'benefitName'">order by b.`name`</when>
-                <when test="sortProperty == 'loaded_record_count'">order by loaded_record_count</when>
-                <when test="sortProperty == 'binded_record_count'">order by binded_record_count</when>
-                <when test="sortProperty == 'filled_record_count'">order by filled_record_count</when>
                 <otherwise>order by p.`${sortProperty}`</otherwise>
             </choose>
             <choose>
@@ -150,13 +138,9 @@
             resultType="int">
         select count(1)
         from
-            (select
-                g.`id`,
-                count(`payment`.`id`) as loaded_record_count,
-                count(`payment`.`account_number`)  as binded_record_count,
-                count(IF(`payment`.`status` = 215, 1, NULL)) as filled_record_count
-            <include refid="requestFileGroupFilterFrom"/>
-            <include refid="requestFileGroupFilterWhere"/>) as q
+            (select g.`id`
+                <include refid="requestFileGroupFilterFrom"/>
+                <include refid="requestFileGroupFilterWhere"/>) as q
     </select>
 
     <select id="selectRequestFilesGroup" parameterType="long" resultMap="requestFileGroupResultMap">
