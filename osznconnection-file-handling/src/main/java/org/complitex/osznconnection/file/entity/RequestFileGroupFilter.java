@@ -22,10 +22,6 @@ public class RequestFileGroupFilter extends AbstractFilter {
     private String directory;
     private String paymentName;
     private String benefitName;
-    private Integer dbfRecordCount;
-    private Integer loadedRecordCount;
-    private Integer bindedRecordCount;
-    private Integer filledRecordCount;
     private DomainObject organization;
     private DomainObject userOrganization;
     private RequestFile.TYPE type;
@@ -119,38 +115,6 @@ public class RequestFileGroupFilter extends AbstractFilter {
 
     public void setBenefitName(String benefitName) {
         this.benefitName = benefitName;
-    }
-
-    public Integer getDbfRecordCount() {
-        return dbfRecordCount;
-    }
-
-    public void setDbfRecordCount(Integer dbfRecordCount) {
-        this.dbfRecordCount = dbfRecordCount;
-    }
-
-    public Integer getLoadedRecordCount() {
-        return loadedRecordCount;
-    }
-
-    public void setLoadedRecordCount(Integer loadedRecordCount) {
-        this.loadedRecordCount = loadedRecordCount;
-    }
-
-    public Integer getBindedRecordCount() {
-        return bindedRecordCount;
-    }
-
-    public void setBindedRecordCount(Integer bindedRecordCount) {
-        this.bindedRecordCount = bindedRecordCount;
-    }
-
-    public Integer getFilledRecordCount() {
-        return filledRecordCount;
-    }
-
-    public void setFilledRecordCount(Integer filledRecordCount) {
-        this.filledRecordCount = filledRecordCount;
     }
 
     public DomainObject getOrganization() {
