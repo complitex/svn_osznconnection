@@ -36,6 +36,8 @@ public class PersonAccountService extends AbstractBean {
     @EJB
     private ActualPaymentBean actualPaymentBean;
     @EJB
+    private SubsidyBean subsidyBean;
+    @EJB
     private RequestFileBean requestFileBean;
     @EJB
     private ServiceProviderAdapter adapter;
@@ -65,6 +67,16 @@ public class PersonAccountService extends AbstractBean {
         if (!Strings.isEmpty(accountNumber)) {
             actualPayment.setAccountNumber(accountNumber);
             actualPayment.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
+        }
+    }
+
+    @Transactional
+    public void resolveLocalAccount(Subsidy subsidy, CalculationContext calculationContext) {
+        String accountNumber = personAccountLocalBean.findLocalAccountNumber(subsidy, calculationContext.getCalculationCenterId(),
+                calculationContext.getUserOrganizationId());
+        if (!Strings.isEmpty(accountNumber)) {
+            subsidy.setAccountNumber(accountNumber);
+            subsidy.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
         }
     }
 
@@ -107,6 +119,20 @@ public class PersonAccountService extends AbstractBean {
         }
     }
 
+    @Transactional
+    public void resolveRemoteAccount(Subsidy subsidy, Date date, CalculationContext calculationContext,
+            Boolean updatePUAccount) throws DBException {
+        adapter.acquirePersonAccount(calculationContext, RequestFile.TYPE.SUBSIDY, subsidy,
+                subsidy.getLastName(), (String) subsidy.getField(SubsidyDBF.RASH),
+                subsidy.getOutgoingDistrict(), subsidy.getOutgoingStreetType(), subsidy.getOutgoingStreet(),
+                subsidy.getOutgoingBuildingNumber(), subsidy.getOutgoingBuildingCorp(),
+                subsidy.getOutgoingApartment(), date, updatePUAccount);
+        if (subsidy.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED) {
+            personAccountLocalBean.saveOrUpdate(subsidy, calculationContext.getCalculationCenterId(),
+                    calculationContext.getUserOrganizationId());
+        }
+    }
+
     /**
      * Корректировать account number из UI в случае когда в ЦН больше одного человека соотвествуют номеру л/c.
      * @param actualPayment
@@ -145,6 +171,24 @@ public class PersonAccountService extends AbstractBean {
 
         final CalculationContext calculationContext = calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId);
         personAccountLocalBean.saveOrUpdate(actualPayment, calculationContext.getCalculationCenterId(),
+                calculationContext.getUserOrganizationId());
+    }
+
+    @Transactional
+    public void updateAccountNumber(Subsidy subsidy, String accountNumber, long userOrganizationId) {
+        subsidy.setAccountNumber(accountNumber);
+        subsidy.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
+        subsidyBean.updateAccountNumber(subsidy);
+
+        long subsidyFileId = subsidy.getRequestFileId();
+        RequestFile subsidyFile = requestFileBean.findById(subsidyFileId);
+        if (subsidyBean.isSubsidyFileBound(subsidyFileId)) {
+            subsidyFile.setStatus(RequestFileStatus.BOUND);
+            requestFileBean.save(subsidyFile);
+        }
+
+        final CalculationContext calculationContext = calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId);
+        personAccountLocalBean.saveOrUpdate(subsidy, calculationContext.getCalculationCenterId(),
                 calculationContext.getUserOrganizationId());
     }
 }

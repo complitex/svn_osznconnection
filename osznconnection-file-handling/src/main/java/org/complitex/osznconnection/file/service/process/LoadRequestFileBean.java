@@ -26,20 +26,25 @@ import java.util.List;
 @Stateless(name = "LoadRequestFileBean")
 @TransactionManagement(TransactionManagementType.BEAN)
 public class LoadRequestFileBean {
-    public interface ILoadRequestFile{
-        public Enum[] getFieldNames();
-        public AbstractRequest newObject();
-        public void save(List<AbstractRequest> batch);
-    }
 
+    public static abstract class AbstractLoadRequestFile {
+        
+        public abstract Enum[] getFieldNames();
+
+        public abstract AbstractRequest newObject();
+
+        public abstract void save(List<AbstractRequest> batch);
+
+        public void postProcess(AbstractRequest request) {
+        }
+    }
     @EJB(beanName = "ConfigBean")
     private ConfigBean configBean;
-
     @EJB(beanName = "RequestFileBean")
     private RequestFileBean requestFileBean;
 
     @SuppressWarnings({"EjbProhibitedPackageUsageInspection", "ConstantConditions"})
-    public boolean load(RequestFile requestFile, ILoadRequestFile loadRequestFile) throws ExecuteException {
+    public boolean load(RequestFile requestFile, AbstractLoadRequestFile loadRequestFile) throws ExecuteException {
         String currentFieldName = "0";
         int index = -1;
         int batchSize = configBean.getInteger(FileHandlingConfig.LOAD_BATCH_SIZE, true);
@@ -57,15 +62,15 @@ public class LoadRequestFileBean {
 
             List<String> fieldIndex = new ArrayList<String>();
 
-            for(int i = 0; i < reader.getFieldCount(); i++) {
+            for (int i = 0; i < reader.getFieldCount(); i++) {
                 DBFField field = reader.getField(i);
 
                 fieldIndex.add(field.getName());
             }
 
             //проверка наличия всех полей в файле
-            for (Enum field : loadRequestFile.getFieldNames()){
-                if (!fieldIndex.contains(field.name())){
+            for (Enum field : loadRequestFile.getFieldNames()) {
+                if (!fieldIndex.contains(field.name())) {
                     throw new FieldNotFoundException(field.name());
                 }
             }
@@ -74,8 +79,8 @@ public class LoadRequestFileBean {
 
             List<AbstractRequest> batch = new ArrayList<AbstractRequest>();
 
-            while((rowObjects = reader.nextRecord()) != null) {
-                if (requestFile.isCanceled()){
+            while ((rowObjects = reader.nextRecord()) != null) {
+                if (requestFile.isCanceled()) {
                     throw new CanceledByUserException();
                 }
 
@@ -84,11 +89,11 @@ public class LoadRequestFileBean {
                 AbstractRequest request = loadRequestFile.newObject();
 
                 //Заполнение колонок записи
-                for (int i=0; i < rowObjects.length; ++i) {
+                for (int i = 0; i < rowObjects.length; ++i) {
                     Object value = rowObjects[i];
 
-                    if (value != null && value instanceof String){
-                        value = ((String)value).trim(); //string trim
+                    if (value != null && value instanceof String) {
+                        value = ((String) value).trim(); //string trim
                     }
 
                     DBFField field = reader.getField(i);
@@ -96,17 +101,20 @@ public class LoadRequestFileBean {
                     currentFieldName = field.getName();
                     request.setField(currentFieldName, value, getType(field.getDataType(), field.getDecimalCount()));
                 }
+                
+                //post processing after filling all fields of request
+                loadRequestFile.postProcess(request);
 
                 //обработка первой строки
-                if (index == 0){
+                if (index == 0) {
                     //установка номера реестра
                     Integer registry = (Integer) request.getDbfFields().get(PaymentDBF.REE_NUM.name());
-                    if (registry != null){
+                    if (registry != null) {
                         requestFile.setRegistry(registry);
                     }
 
                     //проверка загружен ли файл
-                    if (requestFileBean.checkLoaded(requestFile)){
+                    if (requestFileBean.checkLoaded(requestFile)) {
                         return false;
                     }
 
@@ -125,7 +133,7 @@ public class LoadRequestFileBean {
                 batch.add(request);
 
                 //Сохранение
-                if (batch.size() > batchSize){
+                if (batch.size() > batchSize) {
                     try {
                         loadRequestFile.save(batch);
                     } catch (Exception e) {
@@ -136,12 +144,12 @@ public class LoadRequestFileBean {
             }
 
             //пропуск загрузки если файл пустой
-            if (index < 0){
+            if (index < 0) {
                 throw new EmptyFileException();
             }
 
             try {
-                if (!batch.isEmpty()){
+                if (!batch.isEmpty()) {
                     loadRequestFile.save(batch);
                 }
             } catch (Exception e) {
@@ -151,19 +159,23 @@ public class LoadRequestFileBean {
             //Загрузка завершена
             requestFile.setLoadedRecordCount(index + 1);
             requestFileBean.save(requestFile);
-        }catch (Exception e) {
+        } catch (Exception e) {
             throw new LoadException(e, requestFile, index + 1, currentFieldName);
         }
 
         return true;
     }
 
-     private Class getType(byte dataType, int scale){
-        switch (dataType){
-            case DBFField.FIELD_TYPE_C: return String.class;
-            case DBFField.FIELD_TYPE_N: return scale == 0 ? Integer.class : BigDecimal.class;
-            case DBFField.FIELD_TYPE_D: return Date.class;
-            default: throw new IllegalArgumentException();
+    private Class getType(byte dataType, int scale) {
+        switch (dataType) {
+            case DBFField.FIELD_TYPE_C:
+                return String.class;
+            case DBFField.FIELD_TYPE_N:
+                return scale == 0 ? Integer.class : BigDecimal.class;
+            case DBFField.FIELD_TYPE_D:
+                return Date.class;
+            default:
+                throw new IllegalArgumentException();
         }
     }
 }

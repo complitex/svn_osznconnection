@@ -275,9 +275,7 @@
     </select>
 
     <select id="findIdsForOperation" parameterType="long" resultType="long">
-        SELECT ap.`id` FROM `actual_payment` ap
-        JOIN `request_file` f ON ap.`request_file_id` = f.`id`
-        WHERE ap.`request_file_id` = #{requestFileId}
+        SELECT ap.`id` FROM `actual_payment` ap WHERE ap.`request_file_id` = #{requestFileId}
     </select>
 
     <update id="markCorrected" parameterType="map">

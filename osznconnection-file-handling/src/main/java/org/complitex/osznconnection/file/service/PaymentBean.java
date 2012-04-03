@@ -63,12 +63,18 @@ public class PaymentBean extends AbstractRequestBean {
     }
 
     @Transactional
+    public void delete(long requestFileId) {
+        sqlSession().delete(MAPPING_NAMESPACE + ".deletePayments", requestFileId);
+    }
+
+    @Transactional
     public int count(PaymentExample example) {
         return (Integer) sqlSession().selectOne(MAPPING_NAMESPACE + ".count", example);
     }
 
     @Transactional
     public List<Payment> find(PaymentExample example) {
+        @SuppressWarnings("unchecked")
         List<Payment> payments = sqlSession().selectList(MAPPING_NAMESPACE + ".find", example);
         return payments;
     }
@@ -82,8 +88,9 @@ public class PaymentBean extends AbstractRequestBean {
         sqlSession().insert(MAPPING_NAMESPACE + ".insertPaymentList", abstractRequests);
     }
 
-    public List<AbstractRequest> getPayments(RequestFile requestFile) {
-        List<AbstractRequest> payments = sqlSession().selectList(MAPPING_NAMESPACE + ".selectPayments", requestFile.getId());
+    public List<AbstractRequest> getPayments(long requestFileId) {
+        @SuppressWarnings("unchecked")
+        List<AbstractRequest> payments = sqlSession().selectList(MAPPING_NAMESPACE + ".selectPayments", requestFileId);
         return payments;
     }
 
@@ -130,6 +137,7 @@ public class PaymentBean extends AbstractRequestBean {
      * @return
      */
     @Transactional
+    @SuppressWarnings("unchecked")
     public List<Payment> findForOperation(long fileId, List<Long> ids) {
         Map<String, Object> params = Maps.newHashMap();
         params.put("requestFileId", fileId);
@@ -143,6 +151,7 @@ public class PaymentBean extends AbstractRequestBean {
      * @return
      */
     @Transactional
+    @SuppressWarnings("unchecked")
     private List<Long> findIdsForOperation(long fileId) {
         return sqlSession().selectList(MAPPING_NAMESPACE + ".findIdsForOperation", fileId);
     }

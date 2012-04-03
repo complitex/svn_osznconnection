@@ -39,7 +39,7 @@ public class ActualPaymentLoadTaskBean implements ITaskBean {
 
         requestFile.setStatus(RequestFileStatus.LOADING);
 
-        boolean noSkip = loadRequestFileBean.load(requestFile, new LoadRequestFileBean.ILoadRequestFile() {
+        boolean noSkip = loadRequestFileBean.load(requestFile, new LoadRequestFileBean.AbstractLoadRequestFile() {
 
             @Override
             public Enum[] getFieldNames() {
@@ -72,7 +72,6 @@ public class ActualPaymentLoadTaskBean implements ITaskBean {
     @Override
     public void onError(IExecutorObject executorObject) {
         RequestFile requestFile = (RequestFile) executorObject;
-
         requestFileBean.delete(requestFile);
     }
 
@@ -82,7 +81,7 @@ public class ActualPaymentLoadTaskBean implements ITaskBean {
     }
 
     @Override
-    public Class getControllerClass() {
+    public Class<?> getControllerClass() {
         return ActualPaymentLoadTaskBean.class;
     }
 

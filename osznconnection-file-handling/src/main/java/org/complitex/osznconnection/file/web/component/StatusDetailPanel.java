@@ -38,6 +38,7 @@ public abstract class StatusDetailPanel<T extends AbstractRequestExample> extend
         super(id);
         setOutputMarkupId(true);
 
+        @SuppressWarnings("unchecked")
         final Class<T> exampleClass = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 
         WebMarkupContainer container = new WebMarkupContainer("container");

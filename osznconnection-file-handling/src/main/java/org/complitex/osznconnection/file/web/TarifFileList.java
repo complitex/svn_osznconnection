@@ -50,6 +50,7 @@ import org.complitex.resources.WebCommonResourceInitializer;
 
 import javax.ejb.EJB;
 import java.util.*;
+import org.apache.wicket.model.ResourceModel;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.osznconnection.file.service.OsznSessionBean;
 import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
@@ -334,7 +335,7 @@ public class TarifFileList extends TemplatePage {
 
         //Диалог загрузки
         requestFileLoadPanel = new RequestFileLoadPanel("load_panel",
-                getString("load_panel_title"),
+                new ResourceModel("load_panel_title"),
                 new RequestFileLoadPanel.ILoader() {
 
                     @Override

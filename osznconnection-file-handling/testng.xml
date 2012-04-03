@@ -12,4 +12,9 @@
             <class name="org.complitex.osznconnection.file.service.BuildingNumberConverterTest"/>
         </classes>
     </test>
+    <test name="SubsidyNameParserTest">
+        <classes>
+            <class name="org.complitex.osznconnection.file.service.util.SubsidyNameParserTest"/>
+        </classes>
+    </test>
 </suite>

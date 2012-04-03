@@ -20,6 +20,8 @@ import org.complitex.osznconnection.file.entity.ActualPayment;
 import org.complitex.osznconnection.file.entity.PaymentDBF;
 import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.entity.RequestStatus;
+import org.complitex.osznconnection.file.entity.Subsidy;
+import org.complitex.osznconnection.file.entity.SubsidyDBF;
 import org.complitex.osznconnection.file.service_provider.CalculationCenterBean;
 import org.complitex.osznconnection.file.service_provider.ServiceProviderAdapter;
 import org.complitex.osznconnection.file.service_provider.exception.DBException;
@@ -57,6 +59,11 @@ public class LookupBean extends AbstractBean {
         addressService.resolveOutgoingAddress(actualPayment, calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId));
     }
 
+    @Transactional
+    public void resolveOutgoingAddress(Subsidy subsidy, long userOrganizationId) {
+        addressService.resolveOutgoingAddress(subsidy, calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId));
+    }
+
     /**
      * Получить детальную информацию о клиентах ЦН.
      * Вся работа по поиску делегируется адаптеру взаимодействия с ЦН.
@@ -90,6 +97,14 @@ public class LookupBean extends AbstractBean {
     }
 
     @Transactional
+    @TransactionAttribute(TransactionAttributeType.NEVER)
+    public List<AccountDetail> acquireAccountDetailsByAddress(Subsidy subsidy, long userOrganizationId) throws DBException {
+        return acquireAccountDetailsByAddress(subsidy, subsidy.getOutgoingDistrict(), subsidy.getOutgoingStreetType(),
+                subsidy.getOutgoingStreet(), subsidy.getOutgoingBuildingNumber(), subsidy.getOutgoingBuildingCorp(),
+                subsidy.getOutgoingApartment(), (Date) subsidy.getField(SubsidyDBF.DAT1), userOrganizationId);
+    }
+
+    @Transactional
     public String resolveOutgoingDistrict(Payment payment, long userOrganizationId) {
         payment.setStatus(RequestStatus.LOADED);
         addressService.resolveOutgoingDistrict(payment, calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId));
@@ -114,10 +129,22 @@ public class LookupBean extends AbstractBean {
     }
 
     @Transactional
+    public String resolveOutgoingDistrict(Subsidy subsidy, long userOrganizationId) {
+        subsidy.setStatus(RequestStatus.LOADED);
+        addressService.resolveOutgoingDistrict(subsidy, calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId));
+        if (!(subsidy.getStatus() == RequestStatus.DISTRICT_UNRESOLVED
+                || subsidy.getStatus() == RequestStatus.MORE_ONE_REMOTE_DISTRICT_CORRECTION)) {
+            return subsidy.getOutgoingDistrict();
+        } else {
+            return null;
+        }
+    }
+
+    @Transactional
     @TransactionAttribute(TransactionAttributeType.NEVER)
-    public List<AccountDetail> acquireAccountDetailsByAccount(AbstractRequest request, String district, String account, 
-        long userOrganizationId) throws DBException, UnknownAccountNumberTypeException {
-        return adapter.acquireAccountDetailsByAccount(calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId), 
+    public List<AccountDetail> acquireAccountDetailsByAccount(AbstractRequest request, String district, String account,
+            long userOrganizationId) throws DBException, UnknownAccountNumberTypeException {
+        return adapter.acquireAccountDetailsByAccount(calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId),
                 request, district, account);
     }
 }

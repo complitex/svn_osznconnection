@@ -12,11 +12,17 @@ public enum FileHandlingConfig implements IConfig{
 
     LOAD_INPUT_ACTUAL_PAYMENT_FILE_STORAGE_DIR("c:\\storage\\actual_in", "storage"),
     SAVE_OUTPUT_ACTUAL_PAYMENT_FILE_STORAGE_DIR("c:\\storage\\actual_out", "storage"),
+    
+    LOAD_INPUT_SUBSIDY_FILE_STORAGE_DIR("c:\\storage\\subsidy_in", "storage"),
+    SAVE_OUTPUT_SUBSIDY_FILE_STORAGE_DIR("c:\\storage\\subsidy_out", "storage"),
 
     PAYMENT_FILENAME_PREFIX("A_", "mask"),
     BENEFIT_FILENAME_PREFIX("AF", "mask"),
     PAYMENT_BENEFIT_FILENAME_SUFFIX("\\d{4}{MM}\\.DBF", "mask"),
+    
     ACTUAL_PAYMENT_FILENAME_MASK(".*{MM}{YY}\\.DBF", "mask"),
+    SUBSIDY_FILENAME_MASK("J.*{MM}\\.DBF", "mask"),
+    
     TARIF_PAYMENT_FILENAME_MASK("TARIF12\\.DBF", "mask"),
 
     LOAD_THREAD_SIZE("2", "thread"),

@@ -2,7 +2,6 @@ package org.complitex.osznconnection.file.service.process;
 
 import org.complitex.dictionary.entity.IExecutorObject;
 import org.complitex.dictionary.entity.Log;
-import org.complitex.dictionary.service.SessionBean;
 import org.complitex.dictionary.service.executor.ExecuteException;
 import org.complitex.dictionary.service.executor.ITaskBean;
 import org.complitex.osznconnection.file.Module;
@@ -57,7 +56,7 @@ public class LoadGroupTaskBean implements ITaskBean{
         group.getPaymentFile().setGroupId(group.getId());
 
         //load payment
-        boolean noSkip = loadRequestFileBean.load(group.getPaymentFile(), new LoadRequestFileBean.ILoadRequestFile() {
+        boolean noSkip = loadRequestFileBean.load(group.getPaymentFile(), new LoadRequestFileBean.AbstractLoadRequestFile() {
 
             @Override
             public Enum[] getFieldNames() {
@@ -77,7 +76,7 @@ public class LoadGroupTaskBean implements ITaskBean{
 
         // load benefit
         if (noSkip){
-            boolean notLoaded = loadRequestFileBean.load(group.getBenefitFile(), new LoadRequestFileBean.ILoadRequestFile() {
+            boolean notLoaded = loadRequestFileBean.load(group.getBenefitFile(), new LoadRequestFileBean.AbstractLoadRequestFile() {
 
                 @Override
                 public Enum[] getFieldNames() {
@@ -125,7 +124,7 @@ public class LoadGroupTaskBean implements ITaskBean{
     }
 
     @Override
-    public Class getControllerClass() {
+    public Class<?> getControllerClass() {
         return LoadGroupTaskBean.class;
     }
 

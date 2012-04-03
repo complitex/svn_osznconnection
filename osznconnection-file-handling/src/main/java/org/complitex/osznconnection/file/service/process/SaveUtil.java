@@ -22,7 +22,9 @@ import java.util.*;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 06.12.10 14:59
  */
-public class SaveUtil {
+public final class SaveUtil {
+    
+    private SaveUtil(){}
 
     private final static Logger log = LoggerFactory.getLogger(SaveUtil.class);
     private final static String FILE_ENCODING = "cp1251";
@@ -118,7 +120,6 @@ public class SaveUtil {
 
     private static String getString(String key) {
         String s = ResourceUtil.getString(StatusRenderService.class.getName(), key, SYSTEM);
-
         return s != null ? s : key;
     }
 }

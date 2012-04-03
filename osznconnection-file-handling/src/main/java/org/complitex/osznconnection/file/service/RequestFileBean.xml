@@ -84,11 +84,14 @@
             (select (select count(1) from `payment` where `request_file_id` = rf.`id`)
             + (select count(1) from `benefit` where `request_file_id` = rf.`id`)
             + (select count(1) from `tarif` where `request_file_id` = rf.`id`)
-            + (select count(1) from `actual_payment` where `request_file_id` = rf.`id`))
+            + (select count(1) from `actual_payment` where `request_file_id` = rf.`id`)
+            + (select count(1) from `subsidy` where `request_file_id` = rf.`id`))
                 as loaded_record_count,
-            (select count(1) from `actual_payment` where `request_file_id` = rf.`id` and `account_number` is not null)
+            (select (select count(1) from `actual_payment` where `request_file_id` = rf.`id` and `account_number` is not null)
+                + (select count(1) from `subsidy` where `request_file_id` = rf.`id` and `account_number` is not null))
                 as binded_record_count,
-            (select count(1) from `actual_payment` where `request_file_id` = rf.`id` and `status` = 215)
+            (select (select count(1) from `actual_payment` where `request_file_id` = rf.`id` and `status` = 215)
+                + (select count(1) from `subsidy` where `request_file_id` = rf.`id` and `status` = 215))
                 as filled_record_count
             from
             `request_file` rf

@@ -82,7 +82,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
     private void init(final Component... toUpdate) {
         dialog = new Dialog("dialog");
         dialog.setModal(true);
-        dialog.setWidth(650);
+        dialog.setWidth(680);
         dialog.setOpenEvent(JsScopeUiEvent.quickScope(new JsStatement().self().chain("parents", "'.ui-dialog:first'").
                 chain("find", "'.ui-dialog-titlebar-close'").
                 chain("hide").render()));
@@ -246,7 +246,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
         dialog.add(accountNumberPickerPanel);
 
         // save/cancel
-        dialog.add(new AjaxLink("save") {
+        dialog.add(new AjaxLink<Void>("save") {
 
             @Override
             public void onClick(AjaxRequestTarget target) {
@@ -270,7 +270,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
             }
         });
 
-        dialog.add(new AjaxLink("cancel") {
+        dialog.add(new AjaxLink<Void>("cancel") {
 
             @Override
             public void onClick(AjaxRequestTarget target) {

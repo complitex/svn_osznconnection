@@ -71,11 +71,17 @@ public class ActualPaymentBean extends AbstractRequestBean {
     }
 
     @Transactional
+    public void delete(long requestFileId) {
+        sqlSession().delete(MAPPING_NAMESPACE + ".deleteActualPayments", requestFileId);
+    }
+
+    @Transactional
     public int count(ActualPaymentExample example) {
         return (Integer) sqlSession().selectOne(MAPPING_NAMESPACE + ".count", example);
     }
 
     @Transactional
+    @SuppressWarnings("unchecked")
     public List<ActualPayment> find(ActualPaymentExample example) {
         return sqlSession().selectList(MAPPING_NAMESPACE + ".find", example);
     }
@@ -89,8 +95,10 @@ public class ActualPaymentBean extends AbstractRequestBean {
         sqlSession().insert(MAPPING_NAMESPACE + ".insertActualPaymentList", abstractRequests);
     }
 
-    public List<AbstractRequest> getActualPayments(RequestFile requestFile) {
-        List<AbstractRequest> payments = sqlSession().selectList(MAPPING_NAMESPACE + ".selectActualPayments", requestFile.getId());
+    public List<AbstractRequest> getActualPayments(long requestFileId) {
+        @SuppressWarnings("unchecked")
+        List<AbstractRequest> payments = sqlSession().selectList(MAPPING_NAMESPACE + ".selectActualPayments",
+                requestFileId);
         return payments;
     }
 
@@ -131,6 +139,7 @@ public class ActualPaymentBean extends AbstractRequestBean {
     }
 
     @Transactional
+    @SuppressWarnings("unchecked")
     public List<ActualPayment> findForOperation(long fileId, List<Long> ids) {
         Map<String, Object> params = Maps.newHashMap();
         params.put("requestFileId", fileId);
@@ -139,6 +148,7 @@ public class ActualPaymentBean extends AbstractRequestBean {
     }
 
     @Transactional
+    @SuppressWarnings("unchecked")
     private List<Long> findIdsForOperation(long fileId) {
         return sqlSession().selectList(MAPPING_NAMESPACE + ".findIdsForOperation", fileId);
     }
