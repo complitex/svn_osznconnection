@@ -46,7 +46,7 @@ public class LoadTarifTaskBean implements ITaskBean{
         //delete previous tarif
         requestFileBean.deleteTarif(requestFile.getOrganizationId());
 
-        loadRequestFileBean.load(requestFile, new LoadRequestFileBean.ILoadRequestFile(){
+        loadRequestFileBean.load(requestFile, new LoadRequestFileBean.AbstractLoadRequestFile(){
 
             @Override
             public Enum[] getFieldNames() {

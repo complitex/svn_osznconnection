@@ -23,7 +23,12 @@ import static org.complitex.osznconnection.file.entity.FileHandlingConfig.*;
  *         Date: 01.11.10 12:57
  */
 public class LoadUtil {
+
+    private LoadUtil() {
+    }
+
     public static class LoadGroupParameter {
+
         List<RequestFileGroup> requestFileGroups;
         List<RequestFile> linkError;
 
@@ -41,30 +46,29 @@ public class LoadUtil {
         }
     }
 
-    public static String getConfigString(IConfig config){
+    public static String getConfigString(IConfig config) {
         return EjbBeanLocator.getBean(ConfigBean.class).getString(config, true);
     }
 
-    private static String getPattern(String mask, int month, int year){
-        return mask.replace("{MM}", (month <= 9 ? "0" + month : "" + month))
-                .replace("{YY}", String.valueOf(year).substring(2, 4))
-                .replace("{YYYY}", "" + year);
+    private static String getPattern(String mask, int month, int year) {
+        return mask.replace("{MM}", (month <= 9 ? "0" + month : "" + month)).replace("{YY}",
+                String.valueOf(year).substring(2, 4)).replace("{YYYY}", "" + year);
     }
 
-    private static boolean isMatches(IConfig config, String name, int month, int year){
+    private static boolean isMatches(IConfig config, String name, int month, int year) {
         return Pattern.compile(getPattern(getConfigString(config), month, year),
                 Pattern.CASE_INSENSITIVE).matcher(name).matches();
 
     }
 
-    private static boolean isMatches(IConfig prefix, IConfig suffix, String name, int month, int year){
+    private static boolean isMatches(IConfig prefix, IConfig suffix, String name, int month, int year) {
         return Pattern.compile(getConfigString(prefix) + getPattern(getConfigString(suffix), month, year),
                 Pattern.CASE_INSENSITIVE).matcher(name).matches();
 
     }
 
     private static List<File> getInputRequestFiles(final String districtDir, final int monthFrom, final int monthTo,
-                                                   final int year, final IConfig... filenameMasks) throws StorageNotFoundException {
+            final int year, final IConfig... filenameMasks) throws StorageNotFoundException {
         return RequestFileStorage.getInstance().getInputRequestFiles(districtDir, new FileFilter() {
 
             @Override
@@ -74,8 +78,8 @@ public class LoadUtil {
                 }
 
                 for (int m = monthFrom; m <= monthTo; ++m) {
-                    for (IConfig c : filenameMasks){
-                        if (isMatches(c, file.getName(), m, year)){
+                    for (IConfig c : filenameMasks) {
+                        if (isMatches(c, file.getName(), m, year)) {
                             return true;
                         }
                     }
@@ -87,7 +91,7 @@ public class LoadUtil {
     }
 
     private static List<File> getInputRequestFiles(final IConfig prefix, final IConfig suffix, final String districtDir,
-                                                   final int month, final int year) throws StorageNotFoundException {
+            final int month, final int year) throws StorageNotFoundException {
         return RequestFileStorage.getInstance().getInputRequestFiles(districtDir, new FileFilter() {
 
             @Override
@@ -98,7 +102,7 @@ public class LoadUtil {
     }
 
     private static List<File> getInputActualPaymentFiles(final IConfig mask, final String districtDir,
-                                                         final int month, final int year) throws StorageNotFoundException {
+            final int month, final int year) throws StorageNotFoundException {
         return RequestFileStorage.getInstance().getInputActualPaymentFiles(districtDir, new FileFilter() {
 
             @Override
@@ -108,11 +112,22 @@ public class LoadUtil {
         });
     }
 
-    private static String getSuffix(String name, IConfig prefix){
+    private static List<File> getInputSubsidyFiles(final IConfig mask, final String districtDir,
+            final int month, final int year) throws StorageNotFoundException {
+        return RequestFileStorage.getInstance().getInputSubsidyFiles(districtDir, new FileFilter() {
+
+            @Override
+            public boolean accept(File file) {
+                return file.isDirectory() || isMatches(mask, file.getName(), month, year);
+            }
+        });
+    }
+
+    private static String getSuffix(String name, IConfig prefix) {
         return name.substring(getConfigString(prefix).length()).toLowerCase();
     }
 
-    private static RequestFile newRequestFile(File file, RequestFile.TYPE type, Long organizationId, int month, int year){
+    private static RequestFile newRequestFile(File file, RequestFile.TYPE type, Long organizationId, int month, int year) {
         RequestFile requestFile = new RequestFile();
 
         requestFile.setName(file.getName());
@@ -137,7 +152,7 @@ public class LoadUtil {
             List<File> payments = getInputRequestFiles(PAYMENT_FILENAME_PREFIX, PAYMENT_BENEFIT_FILENAME_SUFFIX, districtCode,
                     month, year);
 
-            for (int i=0; i < payments.size(); ++i){
+            for (int i = 0; i < payments.size(); ++i) {
                 File file = payments.get(i);
 
                 RequestFileGroup group = new RequestFileGroup();
@@ -149,7 +164,7 @@ public class LoadUtil {
 
                 Map<String, RequestFileGroup> map = requestFileGroupsMap.get(file.getParent());
 
-                if (map == null){
+                if (map == null) {
                     map = new HashMap<String, RequestFileGroup>();
                     requestFileGroupsMap.put(file.getParent(), map);
                 }
@@ -165,15 +180,15 @@ public class LoadUtil {
             List<File> benefits = getInputRequestFiles(BENEFIT_FILENAME_PREFIX, PAYMENT_BENEFIT_FILENAME_SUFFIX, districtCode,
                     month, year);
 
-            for (File file : benefits){
+            for (File file : benefits) {
                 RequestFile requestFile = newRequestFile(file, RequestFile.TYPE.BENEFIT, osznId, month, year);
 
                 Map<String, RequestFileGroup> map = requestFileGroupsMap.get(file.getParent());
 
-                if (map != null){
+                if (map != null) {
                     RequestFileGroup group = map.get(getSuffix(file.getName(), BENEFIT_FILENAME_PREFIX));
 
-                    if (group != null){
+                    if (group != null) {
                         group.setBenefitFile(requestFile);
                         continue;
                     }
@@ -185,11 +200,11 @@ public class LoadUtil {
 
         List<RequestFileGroup> requestFileGroups = new ArrayList<RequestFileGroup>();
 
-        for (Map<String, RequestFileGroup> map : requestFileGroupsMap.values()){
-            for (RequestFileGroup group : map.values()){
-                if (group.getBenefitFile() != null){
+        for (Map<String, RequestFileGroup> map : requestFileGroupsMap.values()) {
+            for (RequestFileGroup group : map.values()) {
+                if (group.getBenefitFile() != null) {
                     requestFileGroups.add(group);
-                }else{
+                } else {
                     RequestFile payment = group.getPaymentFile();
 
                     linkError.add(payment);
@@ -225,31 +240,57 @@ public class LoadUtil {
         return tarifs;
     }
 
-     public static List<RequestFile> getActualPayments(Long osznId, String districtCode, int monthFrom,
-                                                       int monthTo, int year) throws StorageNotFoundException {
-         List<RequestFile> actualPayments = new ArrayList<RequestFile>();
+    public static List<RequestFile> getActualPayments(Long osznId, String districtCode, int monthFrom,
+            int monthTo, int year) throws StorageNotFoundException {
+        List<RequestFile> actualPayments = new ArrayList<RequestFile>();
 
-         for (int month = monthFrom; month <= monthTo; ++month) {
-             List<File> files = getInputActualPaymentFiles(ACTUAL_PAYMENT_FILENAME_MASK, districtCode, month, year);
+        for (int month = monthFrom; month <= monthTo; ++month) {
+            List<File> files = getInputActualPaymentFiles(ACTUAL_PAYMENT_FILENAME_MASK, districtCode, month, year);
 
-             for (File file : files) {
-                 //fill fields
-                 RequestFile requestFile = new RequestFile();
+            for (File file : files) {
+                //fill fields
+                RequestFile requestFile = new RequestFile();
 
-                 requestFile.setName(file.getName());
-                 requestFile.setLength(file.length());
-                 requestFile.setAbsolutePath(file.getAbsolutePath());
-                 requestFile.setDirectory(RequestFileStorage.getInstance().getRelativeParent(file,
-                         FileHandlingConfig.LOAD_INPUT_ACTUAL_PAYMENT_FILE_STORAGE_DIR));
-                 requestFile.setOrganizationId(osznId);
-                 requestFile.setMonth(month);
-                 requestFile.setYear(year);
-                 requestFile.setType(RequestFile.TYPE.ACTUAL_PAYMENT);
+                requestFile.setName(file.getName());
+                requestFile.setLength(file.length());
+                requestFile.setAbsolutePath(file.getAbsolutePath());
+                requestFile.setDirectory(RequestFileStorage.getInstance().getRelativeParent(file,
+                        FileHandlingConfig.LOAD_INPUT_ACTUAL_PAYMENT_FILE_STORAGE_DIR));
+                requestFile.setOrganizationId(osznId);
+                requestFile.setMonth(month);
+                requestFile.setYear(year);
+                requestFile.setType(RequestFile.TYPE.ACTUAL_PAYMENT);
 
-                 actualPayments.add(requestFile);
-             }
-         }
+                actualPayments.add(requestFile);
+            }
+        }
+        return actualPayments;
+    }
 
-         return actualPayments;
+    public static List<RequestFile> getSubsidies(Long osznId, String districtCode, int monthFrom,
+            int monthTo, int year) throws StorageNotFoundException {
+        List<RequestFile> subsidies = new ArrayList<RequestFile>();
+
+        for (int month = monthFrom; month <= monthTo; ++month) {
+            List<File> files = getInputSubsidyFiles(SUBSIDY_FILENAME_MASK, districtCode, month, year);
+
+            for (File file : files) {
+                //fill fields
+                RequestFile requestFile = new RequestFile();
+
+                requestFile.setName(file.getName());
+                requestFile.setLength(file.length());
+                requestFile.setAbsolutePath(file.getAbsolutePath());
+                requestFile.setDirectory(RequestFileStorage.getInstance().getRelativeParent(file,
+                        FileHandlingConfig.LOAD_INPUT_SUBSIDY_FILE_STORAGE_DIR));
+                requestFile.setOrganizationId(osznId);
+                requestFile.setMonth(month);
+                requestFile.setYear(year);
+                requestFile.setType(RequestFile.TYPE.SUBSIDY);
+
+                subsidies.add(requestFile);
+            }
+        }
+        return subsidies;
     }
 }

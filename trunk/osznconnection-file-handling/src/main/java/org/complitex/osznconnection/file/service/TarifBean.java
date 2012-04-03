@@ -4,7 +4,6 @@ import com.google.common.collect.Maps;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.osznconnection.file.entity.AbstractRequest;
-import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.entity.Tarif;
 
 import javax.ejb.Stateless;
@@ -38,8 +37,8 @@ public class TarifBean extends AbstractBean {
     }
 
     @Transactional
-    public void delete(RequestFile requestFile) {
-        sqlSession().delete(MAPPING_NAMESPACE + ".deleteTarifs", requestFile.getId());
+    public void delete(long requestFileId) {
+        sqlSession().delete(MAPPING_NAMESPACE + ".deleteTarifs", requestFileId);
     }
 
     /**

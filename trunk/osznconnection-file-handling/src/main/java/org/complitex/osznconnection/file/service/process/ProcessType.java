@@ -14,6 +14,11 @@ public enum ProcessType {
     BIND_ACTUAL_PAYMENT,
     FILL_ACTUAL_PAYMENT,
     SAVE_ACTUAL_PAYMENT,
+    
+    LOAD_SUBSIDY,
+    BIND_SUBSIDY,
+    FILL_SUBSIDY,
+    SAVE_SUBSIDY,
 
     LOAD_TARIF
 }

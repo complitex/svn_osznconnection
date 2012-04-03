@@ -26,6 +26,16 @@ public class RequestFileBean extends AbstractBean {
     public static final String MAPPING_NAMESPACE = RequestFileBean.class.getName();
     @EJB
     private OsznSessionBean osznSessionBean;
+    @EJB
+    private TarifBean tarifBean;
+    @EJB
+    private PaymentBean paymentBean;
+    @EJB
+    private BenefitBean benefitBean;
+    @EJB
+    private ActualPaymentBean actualPaymentBean;
+    @EJB
+    private SubsidyBean subsidyBean;
 
     public RequestFile findById(long fileId) {
         return (RequestFile) sqlSession().selectOne(MAPPING_NAMESPACE + ".findById", fileId);
@@ -55,18 +65,20 @@ public class RequestFileBean extends AbstractBean {
         if (requestFile.getType() != null) {
             switch (requestFile.getType()) {
                 case BENEFIT:
-                    sqlSession().delete(BenefitBean.MAPPING_NAMESPACE + ".deleteBenefits", requestFile.getId());
+                    benefitBean.delete(requestFile.getId());
                     break;
                 case PAYMENT:
-                    sqlSession().delete(PaymentBean.MAPPING_NAMESPACE + ".deletePayments", requestFile.getId());
+                    paymentBean.delete(requestFile.getId());
                     break;
                 case TARIF:
-                    sqlSession().delete(TarifBean.MAPPING_NAMESPACE + ".deleteTarifs", requestFile.getId());
+                    tarifBean.delete(requestFile.getId());
                     break;
                 case ACTUAL_PAYMENT:
-                    sqlSession().delete(ActualPaymentBean.MAPPING_NAMESPACE + ".deleteActualPayments", requestFile.getId());
+                    actualPaymentBean.delete(requestFile.getId());
                     break;
-
+                case SUBSIDY:
+                    subsidyBean.delete(requestFile.getId());
+                    break;
             }
         }
 

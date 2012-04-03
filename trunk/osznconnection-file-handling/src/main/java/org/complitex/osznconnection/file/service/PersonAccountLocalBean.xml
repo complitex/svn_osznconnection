@@ -37,6 +37,22 @@
              AND pa.`pu_account_number` = #{puAccountNumber}
              AND pa.`user_organization_id` = #{userOrganizationId}
     </sql>
+    
+    <sql id="findAccountsLikeNameClause">
+        SELECT pa.* FROM `person_account` pa WHERE
+             TRIM(pa.`city`) = TRIM(#{city})
+             AND TRIM(pa.`street`) = TRIM(#{street})
+             AND TRIM(pa.`building_num`) = TRIM(#{buildingNumber})
+             AND TRIM(pa.`building_corp`) = TRIM(#{buildingCorp})
+             AND TRIM(pa.`apartment`) = TRIM(#{apartment})
+             AND TRIM(pa.`last_name`) = TRIM(#{lastName})
+             AND TRIM(pa.`first_name`) LIKE CONCAT(TRIM(#{firstName}), '%')
+             AND TRIM(pa.`middle_name`) LIKE CONCAT(TRIM(#{middleName}), '%')
+             
+             AND pa.`oszn_id` = #{osznId} AND pa.`calc_center_id` = #{calculationCenterId}
+             AND pa.`pu_account_number` = #{puAccountNumber}
+             AND pa.`user_organization_id` = #{userOrganizationId}
+    </sql>
 
     <select id="findAccounts" parameterType="org.complitex.osznconnection.file.entity.example.PersonAccountExample"
                 resultMap="org.complitex.osznconnection.file.service.PersonAccountLocalBean.personAccount">
@@ -46,6 +62,17 @@
     <select id="findAccountsBlocking" parameterType="org.complitex.osznconnection.file.entity.example.PersonAccountExample"
                 resultMap="org.complitex.osznconnection.file.service.PersonAccountLocalBean.personAccount">
         <include refid="org.complitex.osznconnection.file.service.PersonAccountLocalBean.findAccountsClause"/>
+        FOR UPDATE
+    </select>
+    
+    <select id="findAccountsLikeName" parameterType="org.complitex.osznconnection.file.entity.example.PersonAccountExample"
+                resultMap="org.complitex.osznconnection.file.service.PersonAccountLocalBean.personAccount">
+        <include refid="org.complitex.osznconnection.file.service.PersonAccountLocalBean.findAccountsLikeNameClause"/>
+    </select>
+
+    <select id="findAccountsLikeNameBlocking" parameterType="org.complitex.osznconnection.file.entity.example.PersonAccountExample"
+                resultMap="org.complitex.osznconnection.file.service.PersonAccountLocalBean.personAccount">
+        <include refid="org.complitex.osznconnection.file.service.PersonAccountLocalBean.findAccountsLikeNameClause"/>
         FOR UPDATE
     </select>
 

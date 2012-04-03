@@ -15,15 +15,23 @@ public class StatusDetailBean extends AbstractBean {
 
     public static final String MAPPING_NAMESPACE = StatusDetailBean.class.getName();
 
+    @SuppressWarnings("unchecked")
     public List<StatusDetailInfo> getPaymentStatusDetails(long requestFileId) {
         return sqlSession().selectList(MAPPING_NAMESPACE + ".getPaymentStatusDetailInfo", requestFileId);
     }
 
+    @SuppressWarnings("unchecked")
     public List<StatusDetailInfo> getBenefitStatusDetails(long requestFileId) {
         return sqlSession().selectList(MAPPING_NAMESPACE + ".getBenefitStatusDetailInfo", requestFileId);
     }
 
+    @SuppressWarnings("unchecked")
     public List<StatusDetailInfo> getActualPaymentStatusDetails(long requestFileId) {
         return sqlSession().selectList(MAPPING_NAMESPACE + ".getActualPaymentStatusDetailInfo", requestFileId);
+    }
+    
+    @SuppressWarnings("unchecked")
+    public List<StatusDetailInfo> getSubsidyStatusDetails(long requestFileId){
+        return sqlSession().selectList(MAPPING_NAMESPACE + ".getSubsidyStatusDetailInfo", requestFileId);
     }
 }

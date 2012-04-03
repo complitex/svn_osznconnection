@@ -68,6 +68,21 @@ public class RequestFileStorage {
 
         return files;
     }
+    
+    public List<File> getInputSubsidyFiles(String child, FileFilter filter) throws StorageNotFoundException {
+        List<File> files = new ArrayList<File>();
+
+        File dir = new File(EjbBeanLocator.getBean(ConfigBean.class)
+                .getString(FileHandlingConfig.LOAD_INPUT_SUBSIDY_FILE_STORAGE_DIR, true), child);
+
+        if (!dir.exists()) {
+            throw new StorageNotFoundException(dir.getAbsolutePath());
+        }
+
+        addFiles(files, dir, filter);
+
+        return files;
+    }
 
     private void addFiles(List<File> list, File dir, FileFilter filter) {
         for (File file : dir.listFiles(filter)) {

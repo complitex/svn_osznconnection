@@ -21,6 +21,8 @@ import org.complitex.osznconnection.file.entity.ActualPayment;
 import org.complitex.osznconnection.file.entity.ActualPaymentDBF;
 import org.complitex.osznconnection.file.entity.Payment;
 import org.complitex.osznconnection.file.entity.PaymentDBF;
+import org.complitex.osznconnection.file.entity.Subsidy;
+import org.complitex.osznconnection.file.entity.SubsidyDBF;
 import org.complitex.osznconnection.file.entity.example.PersonAccountExample;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,12 +38,14 @@ public class PersonAccountLocalBean extends AbstractBean {
     private static final String MAPPING_NAMESPACE = PersonAccountLocalBean.class.getName();
     private static final String INCONSISTENT_STATE_ERROR_MESSAGE =
             "More one person have the same full name and address but different account numbers.";
+    private static final String INCONSISTENT_STATE_ERROR_MESSAGE2 = "More one person have the same last name, "
+            + ", address and the same beginning of first and middle names but different account numbers.";
 
     public static enum OrderBy {
 
         FIRST_NAME("first_name"), MIDDLE_NAME("middle_name"), LAST_NAME("last_name"), CITY("city"), STREET("street"),
         BUILDING_NUMBER("building_num"), BUILDING_CORP("building_corp"), APARTMENT("apartment"),
-        ACCOUNT_NUMBER("account_number"), OSZN("oszn"), CALCULATION_CENTER("calculation_center"), 
+        ACCOUNT_NUMBER("account_number"), OSZN("oszn"), CALCULATION_CENTER("calculation_center"),
         USER_ORGANIZATION("user_organization"), PU_ACCOUNT_NUMBER("pu_account_number");
         private String orderBy;
 
@@ -56,9 +60,9 @@ public class PersonAccountLocalBean extends AbstractBean {
     @EJB
     private OsznSessionBean osznSessionBean;
 
-    private List<PersonAccount> findAccounts(String firstName, String middleName, String lastName, String city,
+    private PersonAccountExample newExample(String firstName, String middleName, String lastName, String city,
             String street, String buildingNumber, String buildingCorp, String apartment, long osznId, long calculationCenterId,
-            String puAccountNumber, Long userOrganizationId, boolean blocking, SqlSession session) {
+            String puAccountNumber, Long userOrganizationId) {
         PersonAccountExample example = new PersonAccountExample();
         example.setFirstName(firstName);
         example.setMiddleName(middleName);
@@ -72,10 +76,32 @@ public class PersonAccountLocalBean extends AbstractBean {
         example.setCalculationCenterId(calculationCenterId);
         example.setPuAccountNumber(puAccountNumber);
         example.setUserOrganizationId(userOrganizationId);
+        return example;
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<PersonAccount> findAccounts(String firstName, String middleName, String lastName, String city,
+            String street, String buildingNumber, String buildingCorp, String apartment, long osznId, long calculationCenterId,
+            String puAccountNumber, Long userOrganizationId, boolean blocking, SqlSession session) {
+        PersonAccountExample example = newExample(firstName, middleName, lastName, city, street, buildingNumber,
+                buildingCorp, apartment, osznId, calculationCenterId, puAccountNumber, userOrganizationId);
         if (blocking) {
             return session.selectList(MAPPING_NAMESPACE + ".findAccountsBlocking", example);
         } else {
             return session.selectList(MAPPING_NAMESPACE + ".findAccounts", example);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<PersonAccount> findAccountsLikeName(String firstName, String middleName, String lastName, String city,
+            String street, String buildingNumber, String buildingCorp, String apartment, long osznId, long calculationCenterId,
+            String puAccountNumber, Long userOrganizationId, boolean blocking, SqlSession session) {
+        PersonAccountExample example = newExample(firstName, middleName, lastName, city, street, buildingNumber,
+                buildingCorp, apartment, osznId, calculationCenterId, puAccountNumber, userOrganizationId);
+        if (blocking) {
+            return session.selectList(MAPPING_NAMESPACE + ".findAccountsLikeNameBlocking", example);
+        } else {
+            return session.selectList(MAPPING_NAMESPACE + ".findAccountsLikeName", example);
         }
     }
 
@@ -146,6 +172,36 @@ public class PersonAccountLocalBean extends AbstractBean {
         }
     }
 
+    @Transactional
+    public String findLocalAccountNumber(Subsidy subsidy, long calculationCenterId, long userOrganizationId) {
+        List<PersonAccount> accounts = findAccountsLikeName(subsidy.getFirstName(),
+                subsidy.getMiddleName(), subsidy.getLastName(),
+                (String) subsidy.getField(SubsidyDBF.NP_NAME), (String) subsidy.getField(SubsidyDBF.NAME_V),
+                (String) subsidy.getField(SubsidyDBF.BLD), (String) subsidy.getField(SubsidyDBF.CORP),
+                (String) subsidy.getField(SubsidyDBF.FLAT), subsidy.getOrganizationId(), calculationCenterId,
+                (String) subsidy.getField(SubsidyDBF.RASH), userOrganizationId, false, sqlSession());
+        final String currentStreetType = (String) subsidy.getField(SubsidyDBF.CAT_V);
+        if (accounts.isEmpty()) {
+            return null;
+        } else if (accounts.size() == 1) {
+            PersonAccount account = accounts.get(0);
+            if (!Strings.isEmpty(account.getStreetType())) {
+                return account.getStreetType().equals(currentStreetType) ? account.getAccountNumber() : null;
+            } else {
+                account.setStreetType(currentStreetType);
+                updateAccountNumberAndStreetType(account, sqlSession());
+                return account.getAccountNumber();
+            }
+        } else {
+            String accountNumber = haveTheSameAccountNumber(accounts);
+            if (accountNumber != null) {
+                return accountNumber;
+            } else {
+                throw new IllegalStateException(INCONSISTENT_STATE_ERROR_MESSAGE2);
+            }
+        }
+    }
+
     private static interface TransactionCallback {
 
         void doInTransaction(SqlSession session);
@@ -197,8 +253,8 @@ public class PersonAccountLocalBean extends AbstractBean {
         }
     }
 
-    private PersonAccount newPersonAccount(Payment payment, String accountNumber, long calculationCenterId, 
-                long userOrganizationId) {
+    private PersonAccount newPersonAccount(Payment payment, String accountNumber, long calculationCenterId,
+            long userOrganizationId) {
         PersonAccount personAccount = new PersonAccount();
         personAccount.setFirstName((String) payment.getField(PaymentDBF.F_NAM));
         personAccount.setMiddleName((String) payment.getField(PaymentDBF.M_NAM));
@@ -251,7 +307,7 @@ public class PersonAccountLocalBean extends AbstractBean {
         });
     }
 
-    private PersonAccount newPersonAccount(ActualPayment actualPayment, String accountNumber, long calculationCenterId, 
+    private PersonAccount newPersonAccount(ActualPayment actualPayment, String accountNumber, long calculationCenterId,
             long userOrganizationId) {
         PersonAccount personAccount = new PersonAccount();
         personAccount.setFirstName((String) actualPayment.getField(ActualPaymentDBF.F_NAM));
@@ -323,6 +379,78 @@ public class PersonAccountLocalBean extends AbstractBean {
         });
     }
 
+    private PersonAccount newPersonAccount(Subsidy subsidy, String accountNumber, long calculationCenterId,
+            long userOrganizationId) {
+        PersonAccount personAccount = new PersonAccount();
+        personAccount.setFirstName(subsidy.getFirstName());
+        personAccount.setMiddleName(subsidy.getMiddleName());
+        personAccount.setLastName(subsidy.getLastName());
+        personAccount.setCity((String) subsidy.getField(SubsidyDBF.NP_NAME));
+        personAccount.setStreet((String) subsidy.getField(SubsidyDBF.NAME_V));
+        personAccount.setBuildingNumber((String) subsidy.getField(SubsidyDBF.BLD));
+        personAccount.setBuildingCorp((String) subsidy.getField(SubsidyDBF.CORP));
+        personAccount.setApartment((String) subsidy.getField(SubsidyDBF.FLAT));
+        personAccount.setStreetType((String) subsidy.getField(SubsidyDBF.CAT_V));
+        personAccount.setOsznId(subsidy.getOrganizationId());
+        personAccount.setCalculationCenterId(calculationCenterId);
+        personAccount.setPuAccountNumber((String) subsidy.getField(SubsidyDBF.RASH));
+        personAccount.setAccountNumber(accountNumber);
+        personAccount.setUserOrganizationId(userOrganizationId);
+        return personAccount;
+    }
+
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public void saveOrUpdate(final Subsidy subsidy, final long calculationCenterId, final long userOrganizationId) {
+        handleTransaction(new TransactionCallback() {
+
+            @Override
+            public void doInTransaction(SqlSession session) {
+                String newAccountNumber = subsidy.getAccountNumber();
+                PersonAccount newPersonAccount = newPersonAccount(subsidy, newAccountNumber, calculationCenterId, userOrganizationId);
+                List<PersonAccount> accounts = findAccountsLikeName(subsidy.getFirstName(),
+                        subsidy.getMiddleName(), subsidy.getLastName(),
+                        (String) subsidy.getField(SubsidyDBF.NP_NAME), (String) subsidy.getField(SubsidyDBF.NAME_V),
+                        (String) subsidy.getField(SubsidyDBF.BLD), (String) subsidy.getField(SubsidyDBF.CORP),
+                        (String) subsidy.getField(SubsidyDBF.FLAT), subsidy.getOrganizationId(), calculationCenterId,
+                        (String) subsidy.getField(SubsidyDBF.RASH), userOrganizationId, false, sqlSession());
+                final String currentStreetType = (String) subsidy.getField(SubsidyDBF.CAT_V);
+                if (accounts.isEmpty()) {
+                    insert(newPersonAccount, session);
+                } else if (accounts.size() == 1) {
+                    PersonAccount account = accounts.get(0);
+                    if (!Strings.isEmpty(account.getStreetType())) {
+                        if (currentStreetType.equals(account.getStreetType())) {
+                            account.setAccountNumber(newAccountNumber);
+                            updateAccountNumber(account, session);
+                        } else {
+                            if (account.getAccountNumber().equals(newAccountNumber)) {
+                                insert(newPersonAccount, session);
+                            } else {
+                                account.setAccountNumber(newAccountNumber);
+                                account.setStreetType(currentStreetType);
+                                updateAccountNumberAndStreetType(account, session);
+                            }
+                        }
+                    } else {
+                        account.setAccountNumber(newAccountNumber);
+                        account.setStreetType(currentStreetType);
+                        updateAccountNumberAndStreetType(account, session);
+                    }
+                } else {
+                    String accountNumber = haveTheSameAccountNumber(accounts);
+                    if (accountNumber != null) {
+                        for (PersonAccount account : accounts) {
+                            account.setAccountNumber(newAccountNumber);
+                            updateAccountNumber(account, session);
+                        }
+                    } else {
+                        throw new IllegalStateException(INCONSISTENT_STATE_ERROR_MESSAGE2);
+                    }
+                }
+            }
+        });
+    }
+
     @Transactional
     public int count(PersonAccountExample example) {
         osznSessionBean.prepareExampleForPermissionCheck(example);
@@ -363,9 +491,9 @@ public class PersonAccountLocalBean extends AbstractBean {
         List<PersonAccount> accounts = findAccounts(personAccount.getFirstName(), personAccount.getMiddleName(),
                 personAccount.getLastName(), personAccount.getCity(), personAccount.getStreet(), personAccount.getBuildingNumber(),
                 personAccount.getBuildingCorp(), personAccount.getApartment(), personAccount.getOsznId(),
-                personAccount.getCalculationCenterId(), personAccount.getPuAccountNumber(), personAccount.getUserOrganizationId(), 
+                personAccount.getCalculationCenterId(), personAccount.getPuAccountNumber(), personAccount.getUserOrganizationId(),
                 false, sqlSession());
-        
+
         if (accounts.size() > 1) {
             String accountNumber = haveTheSameAccountNumber(accounts);
             if (accountNumber != null) {

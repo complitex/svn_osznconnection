@@ -47,9 +47,9 @@
             </classpath>
 
             <transaction src="../../complitex/complitex-db/complitex-testdump.sql"/>
-            <transaction src="../../complitex/complitex-db/complitex-sequence.sql"/>
-
             <transaction src="osznconnection-testdump.sql"/>
+            
+            <transaction src="../../complitex/complitex-db/complitex-sequence.sql"/>
             <transaction src="osznconnection-sequence.sql"/>
         </sql>
     </target>

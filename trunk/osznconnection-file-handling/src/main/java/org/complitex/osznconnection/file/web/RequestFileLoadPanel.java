@@ -42,11 +42,11 @@ public class RequestFileLoadPanel extends Panel {
         void load(long userOrganizationId, long osznId, String districtCode, int monthFrom, int monthTo, int year);
     }
 
-    public RequestFileLoadPanel(String id, String title, final ILoader loader) {
+    public RequestFileLoadPanel(String id, IModel<String> title, final ILoader loader) {
         this(id, title, loader, true);
     }
 
-    public RequestFileLoadPanel(String id, String title, final ILoader loader, final boolean showDatePeriod) {
+    public RequestFileLoadPanel(String id, IModel<String> title, final ILoader loader, final boolean showDatePeriod) {
         super(id);
 
         dialog = new Dialog("dialog") {

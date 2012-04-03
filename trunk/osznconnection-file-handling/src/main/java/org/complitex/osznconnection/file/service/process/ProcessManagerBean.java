@@ -265,7 +265,20 @@ public class ProcessManagerBean {
                 requestFiles.add(requestFile);
             }
         }
+        return requestFiles;
+    }
 
+    private List<RequestFile> getSubsidyFiles(List<Long> ids) {
+        List<RequestFile> requestFiles = new ArrayList<RequestFile>();
+
+        for (Long id : ids) {
+            RequestFile requestFile = requestFileBean.findById(id);
+
+            if (requestFile != null && !requestFile.isProcessing() && !isGlobalWaiting(BIND_SUBSIDY, requestFile)
+                    && !isGlobalWaiting(FILL_SUBSIDY, requestFile) && !isGlobalWaiting(SAVE_SUBSIDY, requestFile)) {
+                requestFiles.add(requestFile);
+            }
+        }
         return requestFiles;
     }
 
@@ -316,6 +329,23 @@ public class ProcessManagerBean {
     }
 
     @Asynchronous
+    public void loadSubsidy(long userOrganizationId, long osznId, String districtCode, int monthFrom, int monthTo, int year) {
+        try {
+            List<RequestFile> list = LoadUtil.getSubsidies(osznId, districtCode, monthFrom, monthTo, year);
+
+            for (RequestFile file : list) {
+                file.setUserOrganizationId(userOrganizationId);
+            }
+
+            execute(LOAD_SUBSIDY, SubsidyLoadTaskBean.class, list, null, LOAD_THREAD_SIZE, LOAD_MAX_ERROR_COUNT, null);
+        } catch (StorageNotFoundException e) {
+            log.error("Ошибка процесса загрузки файлов.", e);
+            logBean.error(Module.NAME, ProcessManagerBean.class, RequestFile.class, null,
+                    Log.EVENT.CREATE, "Ошибка процесса загрузки файлов. Причина: {0}", e.getMessage());
+        }
+    }
+
+    @Asynchronous
     public void bindActualPayment(List<Long> ids, Map processParameters) {
         execute(BIND_ACTUAL_PAYMENT, ActualPaymentBindTaskBean.class, getActualPaymentFiles(ids), null, BIND_THREAD_SIZE,
                 BIND_MAX_ERROR_COUNT, processParameters);
@@ -331,6 +361,18 @@ public class ProcessManagerBean {
     public void saveActualPayment(List<Long> ids, Map processParameters) {
         execute(SAVE_ACTUAL_PAYMENT, ActualPaymentSaveTaskBean.class, getActualPaymentFiles(ids), null, SAVE_THREAD_SIZE,
                 SAVE_MAX_ERROR_COUNT, processParameters);
+    }
+
+    @Asynchronous
+    public void saveSubsidy(List<Long> ids, Map processParameters) {
+        execute(SAVE_SUBSIDY, SubsidySaveTaskBean.class, getSubsidyFiles(ids), null, SAVE_THREAD_SIZE,
+                SAVE_MAX_ERROR_COUNT, processParameters);
+    }
+
+    @Asynchronous
+    public void bindSubsidy(List<Long> ids, Map processParameters) {
+        execute(BIND_SUBSIDY, SubsidyBindTaskBean.class, getSubsidyFiles(ids), null, BIND_THREAD_SIZE,
+                BIND_MAX_ERROR_COUNT, processParameters);
     }
 
     @Asynchronous

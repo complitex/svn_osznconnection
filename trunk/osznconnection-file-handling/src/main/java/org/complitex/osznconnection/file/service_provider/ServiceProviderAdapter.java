@@ -43,6 +43,8 @@ import org.complitex.osznconnection.file.entity.RequestStatus;
 import org.complitex.osznconnection.file.entity.RequestWarning;
 import org.complitex.osznconnection.file.entity.RequestWarningParameter;
 import org.complitex.osznconnection.file.entity.RequestWarningStatus;
+import org.complitex.osznconnection.file.entity.Subsidy;
+import org.complitex.osznconnection.file.entity.SubsidyDBF;
 import org.complitex.osznconnection.file.service.OwnershipCorrectionBean;
 import org.complitex.osznconnection.file.service.PrivilegeCorrectionBean;
 import org.complitex.osznconnection.file.service.TarifBean;
@@ -156,6 +158,38 @@ public class ServiceProviderAdapter {
         actualPayment.setOutgoingApartment(removeWhiteSpaces(flat));
     }
 
+    public void prepareCity(Subsidy subsidy, String city, String cityCode) {
+        subsidy.setOutgoingCity(city);
+    }
+
+    public void prepareDistrict(Subsidy subsidy, String district, String districtCode) {
+        subsidy.setOutgoingDistrict(district);
+    }
+
+    public void prepareStreet(Subsidy subsidy, String street, String streetCode) {
+        subsidy.setOutgoingStreet(street);
+    }
+
+    public void prepareStreetType(Subsidy subsidy, String streetType, String streetTypeCode) {
+        subsidy.setOutgoingStreetType(streetType);
+    }
+
+    public void prepareBuilding(Subsidy subsidy, String buildingNumber, String buildingCorp, String buildingCode) {
+        subsidy.setOutgoingBuildingNumber(buildingNumber);
+        subsidy.setOutgoingBuildingCorp(buildingCorp);
+    }
+
+    /**
+     * Для квартиры номер проставляется напрямую из ОСЗН адреса, с обрезанием начальных и конечных пробелов.
+     * @param subsidy
+     * @param apartment
+     * @param apartmentCode
+     */
+    public void prepareApartment(Subsidy subsidy, String apartment, String apartmentCode) {
+        String flat = (String) subsidy.getField(SubsidyDBF.FLAT);
+        subsidy.setOutgoingApartment(removeWhiteSpaces(flat));
+    }
+
     /**
      * Получить номер личного счета в ЦН.
      * 
@@ -179,7 +213,7 @@ public class ServiceProviderAdapter {
         if (Strings.isEmpty(serviceProviderAccountNumber)) {
 //            request.setStatus(RequestStatus.ACCOUNT_NUMBER_MISMATCH);
 //            return;
-            serviceProviderAccountNumber="0";
+            serviceProviderAccountNumber = "0";
         }
         serviceProviderAccountNumber = serviceProviderAccountNumber.trim();
 

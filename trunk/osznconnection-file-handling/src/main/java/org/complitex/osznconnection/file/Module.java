@@ -1,12 +1,9 @@
 package org.complitex.osznconnection.file;
 
 import org.complitex.dictionary.service.ConfigBean;
-import org.complitex.dictionary.service.LogManager;
 import org.complitex.osznconnection.file.entity.FileHandlingConfig;
-import org.complitex.osznconnection.file.entity.RequestFileGroup;
 import org.complitex.osznconnection.file.service.RequestFileBean;
 import org.complitex.osznconnection.file.service.RequestFileGroupBean;
-import org.complitex.osznconnection.file.web.GroupList;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -20,23 +17,17 @@ import javax.ejb.Startup;
 @Singleton(name = "FileHandlingModule")
 @Startup
 public class Module {
-    public static final String NAME = "org.complitex.osznconnection.file";
 
+    public static final String NAME = "org.complitex.osznconnection.file";
     @EJB
     private ConfigBean configBean;
-
     @EJB
     private RequestFileBean requestFileBean;
-
     @EJB
     private RequestFileGroupBean requestFileGroupBean;
 
     @PostConstruct
     public void init() {
-        //todo tarif and request file
-        //LogManager.get().registerLink(RequestFile.class.getName(), TarifFileList.class, null, "request_file_id");
-        LogManager.get().registerLink(RequestFileGroup.class.getName(), GroupList.class, null, "group_id");
-
         //init config
         configBean.init(FileHandlingConfig.class.getName(), FileHandlingConfig.values());
 

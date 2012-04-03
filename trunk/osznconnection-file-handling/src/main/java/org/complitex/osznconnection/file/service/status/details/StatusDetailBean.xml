@@ -246,4 +246,84 @@
             </otherwise>
         </choose>
     </select>
+    
+    <!-- subsidy status detail objects -->
+    <resultMap id="subsidyStatusDetailInfo" type="org.complitex.osznconnection.file.entity.StatusDetailInfo" extends="statusDetailInfo">
+        <collection property="statusDetails" column="status=status,id=request_file_id"
+                    ofType="org.complitex.osznconnection.file.entity.StatusDetail"
+                    select="getSubsidyStatusDetails"/>
+    </resultMap>
+
+    <resultMap id="subsidyStatusDetail" type="org.complitex.osznconnection.file.entity.StatusDetail" extends="statusDetail">
+        <association property="details" javaType="map">
+            <result column="FIO" property="fio"/>
+            <result column="first_name" property="firstName"/>
+            <result column="middle_name" property="middleName"/>
+            <result column="last_name" property="lastName"/>
+            <result column="NP_NAME" property="city"/>
+            <result column="NAME_V" property="street"/>
+            <result column="CAT_V" property="streetType"/>
+            <result column="BLD" property="building"/>
+            <result column="CORP" property="buildingCorp"/>
+            <result column="FLAT" property="apartment"/>
+        </association>
+    </resultMap>
+
+    <select id="getSubsidyStatusDetailInfo" parameterType="long" resultMap="subsidyStatusDetailInfo">
+        SELECT COUNT(1) `count`, `status`, `request_file_id` FROM `subsidy` WHERE `request_file_id` = #{id}
+        GROUP BY `status`
+        ORDER BY `count` DESC
+    </select>
+
+    <select id="getSubsidyStatusDetails" parameterType="map" resultMap="subsidyStatusDetail">
+        <choose>
+            <!--account number -->
+            <when test="status == 212 or status == 213">
+                SELECT `FIO` `id`, COUNT(1) `count`, `first_name`, `middle_name`, `last_name`, `FIO` FROM `subsidy`
+                WHERE `request_file_id` = #{id} AND `status` = #{status}
+                GROUP BY 1
+            </when>
+
+            <!--city-->
+            <when test="status == 200 or status == 205 or status == 221">
+                SELECT `NP_NAME` `id`, COUNT(1) `count`, `NP_NAME` FROM `subsidy`
+                WHERE `request_file_id` = #{id} AND `status` = #{status}
+                GROUP BY 1
+            </when>
+
+            <!--street-->
+            <when test="status == 201 or status == 237 or status == 208 or status == 207 or status == 223 or status == 224">
+                SELECT CONCAT(`NP_NAME`, `CAT_V`, `NAME_V`) `id`, COUNT(1) `count`, `NP_NAME`, `CAT_V`, `NAME_V` FROM `subsidy`
+                WHERE `request_file_id` = #{id} AND `status` = #{status}
+                GROUP BY 1
+            </when>
+
+            <!--building-->
+            <when test="status == 202 or status == 209 or status == 225">
+                SELECT CONCAT(`NP_NAME`, `CAT_V`, `NAME_V`, `BLD`) `id`, COUNT(1) `count`, `NP_NAME`, `CAT_V`, `NAME_V`, `BLD`
+                FROM `subsidy`
+                WHERE `request_file_id` = #{id} AND `status` = #{status}
+                GROUP BY 1
+            </when>
+
+            <!--building corp-->
+            <when test="status == 226">
+                SELECT CONCAT(`NP_NAME`, `CAT_V`, `NAME_V`, `BLD`, `CORP`) `id`, COUNT(1) `count`, `NP_NAME`, `CAT_V`, `NAME_V`,
+                `BLD`, `CORP` FROM `subsidy`
+                WHERE `request_file_id` = #{id} AND `status` = #{status}
+                GROUP BY 1
+            </when>
+
+            <!-- apartment -->
+            <when test="status == 227">
+                SELECT CONCAT(`NP_NAME`, `CAT_V`, `NAME_V`, `BLD`, `CORP`, `FLAT`) `id`, COUNT(1) `count`, `NP_NAME`, `CAT_V`, `NAME_V`,
+                `BLD`, `CORP`, `FLAT` FROM `subsidy`
+                WHERE `request_file_id` = #{id} AND `status` = #{status}
+                GROUP BY 1
+            </when>
+            <otherwise>
+                SELECT 1 FROM DUAL where 1=0;
+            </otherwise>
+        </choose>
+    </select>
 </mapper>

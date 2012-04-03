@@ -68,11 +68,17 @@ public class BenefitBean extends AbstractRequestBean {
     }
 
     @Transactional
+    public void delete(long requestFileId) {
+        sqlSession().delete(MAPPING_NAMESPACE + ".deleteBenefits", requestFileId);
+    }
+
+    @Transactional
     public int count(BenefitExample example) {
         return (Integer) sqlSession().selectOne(MAPPING_NAMESPACE + ".count", example);
     }
 
     @Transactional
+    @SuppressWarnings("unchecked")
     public List<Benefit> find(BenefitExample example) {
         return sqlSession().selectList(MAPPING_NAMESPACE + ".find", example);
     }
@@ -105,8 +111,8 @@ public class BenefitBean extends AbstractRequestBean {
     }
 
     @SuppressWarnings({"unchecked"})
-    public List<AbstractRequest> getBenefits(RequestFile requestFile) {
-        List<AbstractRequest> benefits = sqlSession().selectList(MAPPING_NAMESPACE + ".selectBenefits", requestFile.getId());
+    public List<AbstractRequest> getBenefits(long requestFileId) {
+        List<AbstractRequest> benefits = sqlSession().selectList(MAPPING_NAMESPACE + ".selectBenefits", requestFileId);
         return benefits;
     }
 
@@ -217,6 +223,7 @@ public class BenefitBean extends AbstractRequestBean {
      * @return
      */
     @Transactional
+    @SuppressWarnings("unchecked")
     public List<String> getAllAccountNumbers(long fileId) {
         return sqlSession().selectList(MAPPING_NAMESPACE + ".allAccountNumbers", fileId);
     }
@@ -228,6 +235,7 @@ public class BenefitBean extends AbstractRequestBean {
      * @return
      */
     @Transactional
+    @SuppressWarnings("unchecked")
     public List<Benefit> findByAccountNumber(String accountNumber, long fileId) {
         Map<String, Object> params = Maps.newHashMap();
         params.put("fileId", fileId);
@@ -249,6 +257,7 @@ public class BenefitBean extends AbstractRequestBean {
         sqlSession().update(MAPPING_NAMESPACE + ".updateStatusByAccountNumber", params);
     }
 
+    @SuppressWarnings("unchecked")
     public List<Benefit> findByOZN(Payment payment) {
         return sqlSession().selectList(MAPPING_NAMESPACE + ".findByOZN", payment);
     }
