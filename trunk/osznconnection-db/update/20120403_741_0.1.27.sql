@@ -107,4 +107,4 @@ CREATE TABLE `subsidy` (
     CONSTRAINT `fk_subsidy__building` FOREIGN KEY (`internal_building_id`) REFERENCES `building` (`object_id`)
 ) ENGINE=INNODB DEFAULT  CHARSET=utf8 COMMENT 'Файлы субсидий';
 
-INSERT INTO `update` (`version`) VALUE ('201203403_741_0.1.27');
+INSERT INTO `update` (`version`) VALUE ('20120403_741_0.1.27');
