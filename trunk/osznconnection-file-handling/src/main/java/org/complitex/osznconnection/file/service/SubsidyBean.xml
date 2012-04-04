@@ -268,19 +268,19 @@
             WHERE
                 `request_file_id` = #{fileId}
                 <if test="city != null">
-                    AND TO_CYRILLIC(`N_NAME`) = TO_CYRILLIC(#{city})
+                    AND TO_CYRILLIC(`NP_NAME`) = TO_CYRILLIC(#{city})
                 </if>
                 <if test="streetCode != null">
-                    AND `VUL_CODE` = #{streetCode}
+                    AND `VULCOD` = #{streetCode}
                 </if>
                 <if test="streetType != null">
-                    AND TO_CYRILLIC(`VUL_CAT`) = TO_CYRILLIC(#{streetType})
+                    AND TO_CYRILLIC(`CAT_V`) = TO_CYRILLIC(#{streetType})
                 </if>
                 <if test="buildingNumber != null">
-                    AND TO_CYRILLIC(`BLD_NUM`) = TO_CYRILLIC(#{buildingNumber})
+                    AND TO_CYRILLIC(`BLD`) = TO_CYRILLIC(#{buildingNumber})
                 </if>
                 <if test="buildingCorp != null">
-                    AND TO_CYRILLIC(`CORP_NUM`) = TO_CYRILLIC(#{buildingCorp})
+                    AND TO_CYRILLIC(`CORP`) = TO_CYRILLIC(#{buildingCorp})
                 </if>
     </update>
     
