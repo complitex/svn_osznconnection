@@ -76,44 +76,70 @@
             <include refid="org.complitex.osznconnection.file.service.RequestFileBean.permissionFilter"/>
         </where>
     </sql>
-
-    <select id="selectRequestFiles" parameterType="org.complitex.osznconnection.file.entity.RequestFileFilter"
+    
+    <select id="selectTarifFiles" parameterType="org.complitex.osznconnection.file.entity.RequestFileFilter"
             resultMap="requestFileResultMap">
-        select
-            *,
-            (select (select count(1) from `payment` where `request_file_id` = rf.`id`)
-            + (select count(1) from `benefit` where `request_file_id` = rf.`id`)
-            + (select count(1) from `tarif` where `request_file_id` = rf.`id`)
-            + (select count(1) from `actual_payment` where `request_file_id` = rf.`id`)
-            + (select count(1) from `subsidy` where `request_file_id` = rf.`id`))
+        SELECT *,
+            (SELECT COUNT(1) FROM `tarif` WHERE `request_file_id` = rf.`id`) as loaded_record_count
+        <include refid="org.complitex.osznconnection.file.service.RequestFileBean.fromFilterSort"/>
+    </select>
+    
+    <select id="selectSubsidyFiles" parameterType="org.complitex.osznconnection.file.entity.RequestFileFilter"
+            resultMap="requestFileResultMap">
+        SELECT *,
+            (SELECT COUNT(1) FROM `subsidy` WHERE `request_file_id` = rf.`id`)
                 as loaded_record_count,
-            (select (select count(1) from `actual_payment` where `request_file_id` = rf.`id` and `account_number` is not null)
-                + (select count(1) from `subsidy` where `request_file_id` = rf.`id` and `account_number` is not null))
+            (SELECT COUNT(1) FROM `subsidy` WHERE `request_file_id` = rf.`id` AND `account_number` IS NOT NULL)
                 as binded_record_count,
-            (select (select count(1) from `actual_payment` where `request_file_id` = rf.`id` and `status` = 215)
-                + (select count(1) from `subsidy` where `request_file_id` = rf.`id` and `status` = 215))
+            (SELECT COUNT(1) FROM `subsidy` WHERE `request_file_id` = rf.`id` AND `status` = 215)
                 as filled_record_count
-            from
-            `request_file` rf
+        <include refid="org.complitex.osznconnection.file.service.RequestFileBean.fromFilterSort"/>
+    </select>
+    
+    <select id="selectActualPaymentFiles" parameterType="org.complitex.osznconnection.file.entity.RequestFileFilter"
+            resultMap="requestFileResultMap">
+        SELECT *,
+            (SELECT COUNT(1) FROM `actual_payment` WHERE `request_file_id` = rf.`id`)
+                as loaded_record_count,
+            (SELECT COUNT(1) FROM `actual_payment` WHERE `request_file_id` = rf.`id` AND `account_number` IS NOT NULL)
+                as binded_record_count,
+            (SELECT COUNT(1) FROM `actual_payment` WHERE `request_file_id` = rf.`id` AND `status` = 215)
+                as filled_record_count
+        <include refid="org.complitex.osznconnection.file.service.RequestFileBean.fromFilterSort"/>
+    </select>
+    
+    <sql id="fromFilterSort">
+        FROM `request_file` rf
             <include refid="requestFilesFilterWhere"/>
             <if test="sortProperty != null">
                 <choose>
                     <when test="sortProperty == 'name'">
-                        order by `directory` <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>,
-                            `name` <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
+                        ORDER BY `directory` 
+                            <choose>
+                                <when test="ascending">ASC</when>
+                                <otherwise>DESC</otherwise>
+                            </choose>,
+                            `name` 
+                            <choose>
+                                <when test="ascending">ASC</when>
+                                <otherwise>DESC</otherwise>
+                            </choose>
                     </when>
                     <otherwise>
-                        order by `${sortProperty}` <choose><when test="ascending">asc</when><otherwise>desc</otherwise></choose>
+                        ORDER BY `${sortProperty}` 
+                        <choose>
+                            <when test="ascending">ASC</when>
+                            <otherwise>DESC</otherwise>
+                        </choose>
                     </otherwise>
                 </choose>
             </if>
-        limit #{first}, #{count}
-    </select>
+        LIMIT #{first}, #{count}
+    </sql>
 
     <select id="selectRequestFilesCount" parameterType="org.complitex.osznconnection.file.entity.RequestFileFilter"
             resultType="int">
-        select count(1) from `request_file` rf
-                <include refid="requestFilesFilterWhere"/>
+        SELECT COUNT(1) FROM `request_file` rf <include refid="requestFilesFilterWhere"/>
     </select>
 
     <select id="selectIsLoaded" parameterType="org.complitex.osznconnection.file.entity.RequestFile"
@@ -136,7 +162,7 @@
         limit 1
     </select>
 
-    <select id="selectTarifFiles" parameterType="long" resultMap="requestFileResultMap">
+    <select id="findTarifFiles" parameterType="long" resultMap="requestFileResultMap">
         select * from `request_file` where organization_id = #{organizationId} and `type` = 'TARIF'
     </select>
 

@@ -44,7 +44,31 @@ public class RequestFileBean extends AbstractBean {
     @SuppressWarnings({"unchecked"})
     public List<RequestFile> getRequestFiles(RequestFileFilter filter) {
         osznSessionBean.prepareFilterForPermissionCheck(filter);
-        return sqlSession().selectList(MAPPING_NAMESPACE + ".selectRequestFiles", filter);
+
+        switch (filter.getType()) {
+            case ACTUAL_PAYMENT:
+                return getActualPaymentFiles(filter);
+            case SUBSIDY:
+                return getSubsidyFiles(filter);
+            case TARIF:
+                return getTarifFiles(filter);
+        }
+        throw new IllegalStateException("Unexpected request file type detected: '" + filter.getType() + "'.");
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<RequestFile> getActualPaymentFiles(RequestFileFilter filter) {
+        return sqlSession().selectList(MAPPING_NAMESPACE + ".selectActualPaymentFiles", filter);
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<RequestFile> getSubsidyFiles(RequestFileFilter filter) {
+        return sqlSession().selectList(MAPPING_NAMESPACE + ".selectSubsidyFiles", filter);
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<RequestFile> getTarifFiles(RequestFileFilter filter) {
+        return sqlSession().selectList(MAPPING_NAMESPACE + ".selectTarifFiles", filter);
     }
 
     public int size(RequestFileFilter filter) {
@@ -81,7 +105,6 @@ public class RequestFileBean extends AbstractBean {
                     break;
             }
         }
-
         sqlSession().delete(MAPPING_NAMESPACE + ".deleteRequestFile", requestFile.getId());
     }
 
@@ -99,7 +122,7 @@ public class RequestFileBean extends AbstractBean {
     @Transactional
     @SuppressWarnings({"unchecked"})
     public void deleteTarif(Long organizationId) {
-        List<RequestFile> tarifs = sqlSession().selectList(MAPPING_NAMESPACE + ".selectTarifFiles", organizationId);
+        List<RequestFile> tarifs = sqlSession().selectList(MAPPING_NAMESPACE + ".findTarifFiles", organizationId);
         for (RequestFile tarif : tarifs) {
             delete(tarif);
         }
