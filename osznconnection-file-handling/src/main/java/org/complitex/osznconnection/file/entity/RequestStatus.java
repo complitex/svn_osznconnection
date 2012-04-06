@@ -54,7 +54,7 @@ public enum RequestStatus implements IEnumCode {
     MORE_ONE_ACCOUNTS(213),
 
     /**
-     * Номер л/с ПУ не соответсствует номеру л/с ЖЭКа из центра начислений.
+     * Номер л/с ПУ не соответствует номеру л/с ЖЭКа из центра начислений.
      */
     ACCOUNT_NUMBER_MISMATCH(241),
 
@@ -114,6 +114,10 @@ public enum RequestStatus implements IEnumCode {
 
     public boolean isAddressCorrectable() {
         return ADDRESS_CORRECTABLE_STATUSES.contains(this);
+    }
+    
+    public boolean isImmediatelySearchByAddress(){
+        return this == RequestStatus.ACCOUNT_NUMBER_MISMATCH || this == RequestStatus.MORE_ONE_ACCOUNTS;
     }
 
     private static final Set<RequestStatus> UNBOUND_STATUSES = Sets.immutableEnumSet(ImmutableList.of(ACCOUNT_NUMBER_NOT_FOUND,

@@ -38,7 +38,6 @@ import org.complitex.osznconnection.file.service.warning.WebWarningRenderer;
 import org.complitex.osznconnection.file.web.ActualPaymentFileList;
 import org.complitex.osznconnection.file.web.component.StatusDetailPanel;
 import org.complitex.osznconnection.file.web.component.StatusRenderer;
-import org.complitex.osznconnection.file.web.component.account.AccountNumberCorrectionPanel;
 import org.complitex.osznconnection.file.web.component.address.AddressCorrectionPanel;
 import org.complitex.osznconnection.file.web.component.address.AddressCorrectionPanel.CORRECTED_ENTITY;
 import org.complitex.osznconnection.file.web.pages.util.AddressRenderer;
@@ -50,7 +49,6 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
-import org.complitex.osznconnection.file.service_provider.exception.DBException;
 
 /**
  *
@@ -111,7 +109,7 @@ public final class ActualPaymentList extends TemplatePage {
         content.setOutputMarkupId(true);
         add(content);
 
-        final Form filterForm = new Form("filterForm");
+        final Form<Void> filterForm = new Form<Void>("filterForm");
         content.add(filterForm);
         example = new Model<ActualPaymentExample>(newExample());
 
@@ -158,7 +156,7 @@ public final class ActualPaymentList extends TemplatePage {
         filterForm.add(new DropDownChoice<RequestStatus>("statusFilter", new PropertyModel<RequestStatus>(example, "status"),
                 Arrays.asList(RequestStatus.values()), new StatusRenderer()).setNullValid(true));
 
-        AjaxLink reset = new AjaxLink("reset") {
+        AjaxLink<Void> reset = new AjaxLink<Void>("reset") {
 
             @Override
             public void onClick(AjaxRequestTarget target) {
@@ -183,7 +181,7 @@ public final class ActualPaymentList extends TemplatePage {
 
             @Override
             protected void correctAddress(ActualPayment actualPayment, CORRECTED_ENTITY entity, Long cityId, Long streetTypeId, Long streetId,
-                    Long buildingId, long userOrganizationId) 
+                    Long buildingId, long userOrganizationId)
                     throws DublicateCorrectionException, MoreOneCorrectionException, NotFoundCorrectionException {
                 addressService.correctLocalAddress(actualPayment, entity, cityId, streetTypeId, streetId, buildingId, userOrganizationId);
             }
@@ -194,24 +192,6 @@ public final class ActualPaymentList extends TemplatePage {
         final ActualPaymentLookupPanel lookupPanel = new ActualPaymentLookupPanel("lookupPanel", actualPaymentFile.getUserOrganizationId(),
                 content, statusDetailPanel);
         add(lookupPanel);
-
-        //Коррекция личного счета
-        final AccountNumberCorrectionPanel<ActualPayment> accountNumberCorrectionPanel =
-                new AccountNumberCorrectionPanel<ActualPayment>("accountNumberCorrectionPanel", actualPaymentFile.getUserOrganizationId(),
-                content, statusDetailPanel) {
-
-                    @Override
-                    protected void correctAccountNumber(ActualPayment actualPayment, String accountNumber, long userOrganizationId) {
-                        personAccountService.updateAccountNumber(actualPayment, accountNumber, userOrganizationId);
-                    }
-
-                    @Override
-                    protected List<AccountDetail> acquireAccountDetailsByAddress(ActualPayment request, long userOrganizationId)
-                            throws DBException {
-                        return lookupPanel.acquireAccountDetailsByAddress(request, userOrganizationId);
-                    }
-                };
-        add(accountNumberCorrectionPanel);
 
         DataView<ActualPayment> data = new DataView<ActualPayment>("data", dataProvider, 1) {
 
@@ -248,22 +228,13 @@ public final class ActualPaymentList extends TemplatePage {
                 addressCorrectionLink.setVisible(actualPayment.getStatus().isAddressCorrectable());
                 item.add(addressCorrectionLink);
 
-                AjaxLink accountCorrectionLink = new IndicatingAjaxLink("accountCorrectionLink") {
-
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        accountNumberCorrectionPanel.open(target, actualPayment);
-                    }
-                };
-                accountCorrectionLink.setVisible(actualPayment.getStatus() == RequestStatus.MORE_ONE_ACCOUNTS);
-                item.add(accountCorrectionLink);
-
                 AjaxLink lookup = new IndicatingAjaxLink("lookup") {
 
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         lookupPanel.open(target, actualPayment, actualPayment.getInternalCityId(), actualPayment.getInternalStreetId(),
-                                actualPayment.getInternalBuildingId(), (String) actualPayment.getField(ActualPaymentDBF.FLAT));
+                                actualPayment.getInternalBuildingId(), (String) actualPayment.getField(ActualPaymentDBF.FLAT),
+                                actualPayment.getStatus().isImmediatelySearchByAddress());
                     }
                 };
                 item.add(lookup);
