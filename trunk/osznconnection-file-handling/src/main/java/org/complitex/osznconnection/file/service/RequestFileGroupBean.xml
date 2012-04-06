@@ -70,7 +70,6 @@
         from `request_file_group` g
             left join `request_file` p on g.`id` = p.`group_id` and p.`type` = 'PAYMENT'
             left join `request_file` b on g.`id` = b.`group_id` and b.`type` = 'BENEFIT'
-            left join `payment` on `payment`.`request_file_id` = p.`id`
     </sql>
     
     <sql id="permissionFilter">
@@ -114,9 +113,9 @@
             p.organization_id as p_organization_id, p.`user_organization_id` as p_user_organization_id,
             p.registry as p_registry, p.month as p_month, p.year as p_year, p.dbf_record_count as p_dbf_record_count,
             p.length as p_length, p.check_sum as p_check_sum, p.type as p_type,
-            count(`payment`.`id`) as loaded_record_count,
-            count(`payment`.`account_number`) as binded_record_count,
-            count(IF(`payment`.`status` = 215, 1, NULL)) as filled_record_count
+            (SELECT COUNT(1) FROM `payment` WHERE `request_file_id` = p.`id`) AS loaded_record_count,
+            (SELECT COUNT(1) FROM `payment` WHERE `request_file_id` = p.`id` AND `account_number` IS NOT NULL) AS binded_record_count,
+            (SELECT COUNT(1) FROM `payment` WHERE `request_file_id` = p.`id` AND `status` = 215) AS filled_record_count
         <include refid="requestFileGroupFilterFrom"/>
         <include refid="requestFileGroupFilterWhere"/>
         <if test="sortProperty != null">
@@ -136,11 +135,9 @@
 
     <select id="selectRequestFilesGroupsCount" parameterType="org.complitex.osznconnection.file.entity.RequestFileFilter"
             resultType="int">
-        select count(1)
-        from
-            (select g.`id`
+        SELECT COUNT(DISTINCT g.`id`)
                 <include refid="requestFileGroupFilterFrom"/>
-                <include refid="requestFileGroupFilterWhere"/>) as q
+                <include refid="requestFileGroupFilterWhere"/>
     </select>
 
     <select id="selectRequestFilesGroup" parameterType="long" resultMap="requestFileGroupResultMap">
@@ -155,9 +152,9 @@
             p.organization_id as p_organization_id, p.`user_organization_id` as p_user_organization_id,
             p.registry as p_registry, p.month as p_month, p.year as p_year, p.dbf_record_count as p_dbf_record_count,
             p.length as p_length, p.check_sum as p_check_sum, p.type as p_type,
-            count(`payment`.`id`) as loaded_record_count,
-            count(`payment`.`account_number`) as binded_record_count,
-            count(IF(`payment`.`status` = 215, 1, NULL)) as filled_record_count
+            (SELECT COUNT(1) FROM `payment` WHERE `request_file_id` = p.`id`) AS loaded_record_count,
+            (SELECT COUNT(1) FROM `payment` WHERE `request_file_id` = p.`id` AND `account_number` IS NOT NULL) AS binded_record_count,
+            (SELECT COUNT(1) FROM `payment` WHERE `request_file_id` = p.`id` AND `status` = 215) AS filled_record_count
         <include refid="requestFileGroupFilterFrom"/>
         where g.id = #{id}
     </select>
