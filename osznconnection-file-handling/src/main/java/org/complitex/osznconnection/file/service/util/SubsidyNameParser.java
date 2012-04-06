@@ -90,9 +90,6 @@ public final class SubsidyNameParser {
         // наконец все что осталось - фамилия
         lastName = fio;
 
-        if (Strings.isEmpty(firstName) || Strings.isEmpty(lastName) || Strings.isEmpty(middleName)) {
-            throw new RuntimeException(errorMessage);
-        }
         return new SubsidyName(firstName.trim(), middleName.trim(), lastName.trim());
     }
 }

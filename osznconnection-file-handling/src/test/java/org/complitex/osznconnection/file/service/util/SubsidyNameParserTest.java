@@ -36,6 +36,11 @@ public class SubsidyNameParserTest {
         assertEquals(n.getLastName(), "Петров - Сидоров");
         assertEquals(n.getFirstName(), "Петр");
         assertEquals(n.getMiddleName(), "П");
+        
+        n = SubsidyNameParser.parse("123", "Аджикадилова З...");
+        assertEquals(n.getLastName(), "Аджикадилова");
+        assertEquals(n.getFirstName(), "З.");
+        assertEquals(n.getMiddleName(), "");
     }
 
     @Test(expectedExceptions = RuntimeException.class)

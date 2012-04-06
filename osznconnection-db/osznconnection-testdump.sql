@@ -58,7 +58,7 @@ values
 -- Subsidies
 insert into `subsidy`(`RASH`, `first_name`, `middle_name`, `last_name`, `FIO`, `NP_NAME`, `CAT_V`, `NAME_V`, `VULCOD`, `BLD`, `CORP`, `FLAT`, `DAT1`, `request_file_id`)
 values
-    ('107374638','М', 'М', 'Матвей', 'Матвеев М.М.', 'Харьков', 'УЛ', 'ФРАНТИШЕКА КРАЛА', 123, '25А','','19', '2010-09-09', 5);
+    ('107374638','М', '', 'Матвей', 'Матвеев M...', 'Харьков', 'УЛ', 'ФРАНТИШЕКА КРАЛА', 123, '25А','','19', '2010-09-09', 5);
 
 
 --insert into `person_account` (`first_name`, `middle_name`, `last_name`, `city`, `street`, `street_type`, `building_num`, `building_corp`, `apartment`, `account_number`, `own_num_sr`, `oszn_id`, `calc_center_id`) values('Матвей','Матвеевич','Матвеев','Харьков','ФРАНТИШЕКА КРАЛА','UNKNOWN','25А','','19','1000001108','4','1','2');
