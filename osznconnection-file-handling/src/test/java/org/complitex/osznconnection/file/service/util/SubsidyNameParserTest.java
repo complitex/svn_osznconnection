@@ -22,6 +22,11 @@ public class SubsidyNameParserTest {
         assertEquals(n.getFirstName(), "В");
         assertEquals(n.getMiddleName(), "В");
 
+        n = SubsidyNameParser.parse("123", "Петров В");
+        assertEquals(n.getLastName(), "Петров");
+        assertEquals(n.getFirstName(), "В");
+        assertEquals(n.getMiddleName(), "");
+
         n = SubsidyNameParser.parse("123", " Петров  Петр      Петрович ");
         assertEquals(n.getLastName(), "Петров");
         assertEquals(n.getFirstName(), "Петр");
@@ -36,10 +41,25 @@ public class SubsidyNameParserTest {
         assertEquals(n.getLastName(), "Петров - Сидоров");
         assertEquals(n.getFirstName(), "Петр");
         assertEquals(n.getMiddleName(), "П");
-        
+
         n = SubsidyNameParser.parse("123", "Аджикадилова З...");
         assertEquals(n.getLastName(), "Аджикадилова");
-        assertEquals(n.getFirstName(), "З.");
+        assertEquals(n.getFirstName(), "З");
+        assertEquals(n.getMiddleName(), "");
+
+        n = SubsidyNameParser.parse("123", "Аджикадилова     Д.....З.....");
+        assertEquals(n.getLastName(), "Аджикадилова");
+        assertEquals(n.getFirstName(), "Д");
+        assertEquals(n.getMiddleName(), "З");
+
+        n = SubsidyNameParser.parse("123", "Аджикадилова ...");
+        assertEquals(n.getLastName(), "Аджикадилова");
+        assertEquals(n.getFirstName(), "");
+        assertEquals(n.getMiddleName(), "");
+
+        n = SubsidyNameParser.parse("123", "Аджикадилова...");
+        assertEquals(n.getLastName(), "Аджикадилова");
+        assertEquals(n.getFirstName(), "");
         assertEquals(n.getMiddleName(), "");
     }
 
@@ -50,11 +70,11 @@ public class SubsidyNameParserTest {
 
     @Test(expectedExceptions = RuntimeException.class)
     public void parseTest3() {
-        SubsidyNameParser.parse("123", "Петров П");
+        SubsidyNameParser.parse("123", "");
     }
 
     @Test(expectedExceptions = RuntimeException.class)
     public void parseTest4() {
-        SubsidyNameParser.parse("123", "  П.П.");
+        SubsidyNameParser.parse("123", ".П.П.");
     }
 }
