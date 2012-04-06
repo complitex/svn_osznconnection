@@ -38,7 +38,6 @@ import org.complitex.osznconnection.file.service.warning.WebWarningRenderer;
 import org.complitex.osznconnection.file.web.GroupList;
 import org.complitex.osznconnection.file.web.component.StatusDetailPanel;
 import org.complitex.osznconnection.file.web.component.StatusRenderer;
-import org.complitex.osznconnection.file.web.component.account.AccountNumberCorrectionPanel;
 import org.complitex.osznconnection.file.web.component.address.AddressCorrectionPanel;
 import org.complitex.osznconnection.file.web.component.address.AddressCorrectionPanel.CORRECTED_ENTITY;
 import org.complitex.template.web.security.SecurityRole;
@@ -49,7 +48,6 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
-import org.complitex.osznconnection.file.service_provider.exception.DBException;
 
 /**
  *
@@ -110,7 +108,7 @@ public final class PaymentList extends TemplatePage {
         content.setOutputMarkupId(true);
         add(content);
 
-        final Form filterForm = new Form("filterForm");
+        final Form<Void> filterForm = new Form<Void>("filterForm");
         content.add(filterForm);
         example = new Model<PaymentExample>(newExample());
 
@@ -157,7 +155,7 @@ public final class PaymentList extends TemplatePage {
         filterForm.add(new DropDownChoice<RequestStatus>("statusFilter", new PropertyModel<RequestStatus>(example, "status"),
                 Arrays.asList(RequestStatus.values()), new StatusRenderer()).setNullValid(true));
 
-        AjaxLink reset = new AjaxLink("reset") {
+        AjaxLink<Void> reset = new AjaxLink<Void>("reset") {
 
             @Override
             public void onClick(AjaxRequestTarget target) {
@@ -194,23 +192,6 @@ public final class PaymentList extends TemplatePage {
                 content, statusDetailPanel);
         add(lookupPanel);
 
-        //Коррекция личного счета
-        final AccountNumberCorrectionPanel<Payment> accountNumberCorrectionPanel =
-                new AccountNumberCorrectionPanel<Payment>("accountNumberCorrectionPanel", paymentFile.getUserOrganizationId(),
-                content, statusDetailPanel) {
-
-                    @Override
-                    protected void correctAccountNumber(Payment payment, String accountNumber, long userOrganizationId) {
-                        personAccountService.updateAccountNumber(payment, accountNumber, userOrganizationId);
-                    }
-
-                    @Override
-                    protected List<AccountDetail> acquireAccountDetailsByAddress(Payment request, long userOrganizationId) throws DBException {
-                        return lookupPanel.acquireAccountDetailsByAddress(request, userOrganizationId);
-                    }
-                };
-        add(accountNumberCorrectionPanel);
-
         DataView<Payment> data = new DataView<Payment>("data", dataProvider, 1) {
 
             @Override
@@ -244,22 +225,13 @@ public final class PaymentList extends TemplatePage {
                 addressCorrectionLink.setVisible(payment.getStatus().isAddressCorrectable());
                 item.add(addressCorrectionLink);
 
-                AjaxLink accountCorrectionLink = new IndicatingAjaxLink("accountCorrectionLink") {
-
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        accountNumberCorrectionPanel.open(target, payment);
-                    }
-                };
-                accountCorrectionLink.setVisible(payment.getStatus() == RequestStatus.MORE_ONE_ACCOUNTS);
-                item.add(accountCorrectionLink);
-
                 AjaxLink lookup = new IndicatingAjaxLink("lookup") {
 
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         lookupPanel.open(target, payment, payment.getInternalCityId(), payment.getInternalStreetId(),
-                                payment.getInternalBuildingId(), (String) payment.getField(PaymentDBF.FLAT));
+                                payment.getInternalBuildingId(), (String) payment.getField(PaymentDBF.FLAT),
+                                payment.getStatus().isImmediatelySearchByAddress());
                     }
                 };
                 item.add(lookup);

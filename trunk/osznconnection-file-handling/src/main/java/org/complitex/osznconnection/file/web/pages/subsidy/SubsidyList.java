@@ -30,7 +30,6 @@ import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
-import org.complitex.osznconnection.file.entity.AccountDetail;
 import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.entity.RequestStatus;
 import org.complitex.osznconnection.file.entity.StatusDetailInfo;
@@ -50,11 +49,9 @@ import org.complitex.osznconnection.file.service.status.details.StatusDetailBean
 import org.complitex.osznconnection.file.service.status.details.SubsidyExampleConfigurator;
 import org.complitex.osznconnection.file.service.status.details.SubsidyStatusDetailRenderer;
 import org.complitex.osznconnection.file.service.warning.WebWarningRenderer;
-import org.complitex.osznconnection.file.service_provider.exception.DBException;
 import org.complitex.osznconnection.file.web.SubsidyFileList;
 import org.complitex.osznconnection.file.web.component.StatusDetailPanel;
 import org.complitex.osznconnection.file.web.component.StatusRenderer;
-import org.complitex.osznconnection.file.web.component.account.AccountNumberCorrectionPanel;
 import org.complitex.osznconnection.file.web.component.address.AddressCorrectionPanel;
 import org.complitex.osznconnection.file.web.component.address.AddressCorrectionPanel.CORRECTED_ENTITY;
 import org.complitex.osznconnection.file.web.pages.util.AddressRenderer;
@@ -204,24 +201,6 @@ public final class SubsidyList extends TemplatePage {
                 content, statusDetailPanel);
         add(lookupPanel);
 
-        //Коррекция личного счета
-        final AccountNumberCorrectionPanel<Subsidy> accountNumberCorrectionPanel =
-                new AccountNumberCorrectionPanel<Subsidy>("accountNumberCorrectionPanel", subsidyFile.getUserOrganizationId(),
-                content, statusDetailPanel) {
-
-                    @Override
-                    protected void correctAccountNumber(Subsidy subsidy, String accountNumber, long userOrganizationId) {
-                        personAccountService.updateAccountNumber(subsidy, accountNumber, userOrganizationId);
-                    }
-
-                    @Override
-                    protected List<AccountDetail> acquireAccountDetailsByAddress(Subsidy request, long userOrganizationId)
-                            throws DBException {
-                        return lookupPanel.acquireAccountDetailsByAddress(request, userOrganizationId);
-                    }
-                };
-        add(accountNumberCorrectionPanel);
-
         DataView<Subsidy> data = new DataView<Subsidy>("data", dataProvider, 1) {
 
             @Override
@@ -257,22 +236,13 @@ public final class SubsidyList extends TemplatePage {
                 addressCorrectionLink.setVisible(subsidy.getStatus().isAddressCorrectable());
                 item.add(addressCorrectionLink);
 
-                AjaxLink accountCorrectionLink = new IndicatingAjaxLink("accountCorrectionLink") {
-
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        accountNumberCorrectionPanel.open(target, subsidy);
-                    }
-                };
-                accountCorrectionLink.setVisible(subsidy.getStatus() == RequestStatus.MORE_ONE_ACCOUNTS);
-                item.add(accountCorrectionLink);
-
                 AjaxLink lookup = new IndicatingAjaxLink("lookup") {
 
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         lookupPanel.open(target, subsidy, subsidy.getInternalCityId(), subsidy.getInternalStreetId(),
-                                subsidy.getInternalBuildingId(), (String) subsidy.getField(SubsidyDBF.FLAT));
+                                subsidy.getInternalBuildingId(), (String) subsidy.getField(SubsidyDBF.FLAT),
+                                subsidy.getStatus().isImmediatelySearchByAddress());
                     }
                 };
                 item.add(lookup);

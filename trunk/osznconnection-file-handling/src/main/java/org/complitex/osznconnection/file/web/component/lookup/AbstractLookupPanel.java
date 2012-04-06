@@ -315,7 +315,8 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
 
     protected abstract boolean isInternalAddressCorrect(T request);
 
-    public void open(AjaxRequestTarget target, T request, Long cityId, Long streetId, Long buildingId, String apartment) {
+    public void open(AjaxRequestTarget target, T request, Long cityId, Long streetId, Long buildingId, String apartment,
+            boolean immediatelySearchByAddress) {
         this.request = CloneUtil.cloneObject(request);
         this.initialRequest = request;
 
@@ -334,6 +335,10 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
         accountNumberModel.setObject(null);
 
         //set active accordion item
+        if (immediatelySearchByAddress) {
+            lastAccordionActive = 0;
+            target.appendJavascript("(function(){ $('#lookupByAddress .lookupByAddressButton').click(); })()");
+        }
         accordion.setActive(new AccordionActive(lastAccordionActive));
 
         target.addComponent(accordion);
