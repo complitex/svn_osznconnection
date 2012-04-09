@@ -33,8 +33,10 @@
 
     <select id="findCityCorrections" resultMap="cityCorrection" parameterType="org.complitex.osznconnection.file.entity.example.CorrectionExample">
         select * from `city_correction` c where 
-            c.`organization_id` = #{organizationId} 
-            and c.`user_organization_id` in ${userOrganizationsString}
+            c.`organization_id` = #{organizationId}
+            <if test="userOrganizationsString != null">
+                and c.`user_organization_id` in ${userOrganizationsString}
+            </if>
             and c.`correction` like concat('%', #{correction},'%')
             order by c.`correction`
             limit #{start}, #{size}
@@ -50,7 +52,9 @@
 
     <select id="findStreetCorrections" resultMap="streetCorrection" parameterType="org.complitex.osznconnection.file.entity.example.CorrectionExample">
         select * from `street_correction` c where c.`organization_id` = #{organizationId} 
-            and c.`user_organization_id` in ${userOrganizationsString} 
+            <if test="userOrganizationsString != null">
+                and c.`user_organization_id` in ${userOrganizationsString}
+            </if>
             and c.`parent_id` = #{parentId} and
             c.`correction` like concat('%', #{correction},'%')
             order by c.`correction`
@@ -59,7 +63,9 @@
 
     <select id="findStreetTypeCorrections" resultMap="correction" parameterType="map">
         select * from `street_type_correction` c where c.`organization_id` = #{organizationId}
-            and c.`user_organization_id` in ${userOrganizationsString} 
+            <if test="userOrganizationsString != null">
+                and c.`user_organization_id` in ${userOrganizationsString}
+            </if>
             order by c.`correction`
     </select>
 

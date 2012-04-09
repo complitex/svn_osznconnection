@@ -116,6 +116,13 @@ public class OsznSessionBean {
             filter.setUserOrganizationsString(getCurrentUserOrganizationsString());
         }
     }
+    
+    public String getMainUserOrganizationForSearchCorrections(){
+        if(sessionBean.isAdmin()){
+            return null;
+        }
+        return getMainUserOrganizationString();
+    }
 
     private String getCurrentUserOrganizationsString() {
         return getUserOrganizationsString(getUserOrganizationIdsVisibleToCurrentUser());
