@@ -187,4 +187,9 @@ public class SubsidyBean extends AbstractRequestBean {
         List<AbstractRequest> subsidies = sqlSession().selectList(MAPPING_NAMESPACE + ".selectSubsidies", requestFileId);
         return subsidies;
     }
+
+    @SuppressWarnings("unchecked")
+    public List<Subsidy> findWithTheSameRash(long fileId, String rash) {
+        return sqlSession().selectList(MAPPING_NAMESPACE + ".findWithTheSameRash", ImmutableMap.of("fileId", fileId, "rash", rash));
+    }
 }

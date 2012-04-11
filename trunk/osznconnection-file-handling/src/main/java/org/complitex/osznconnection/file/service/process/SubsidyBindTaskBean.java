@@ -5,6 +5,7 @@
 package org.complitex.osznconnection.file.service.process;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.complitex.dictionary.entity.IExecutorObject;
 import org.complitex.dictionary.entity.Log;
 import org.complitex.dictionary.entity.Log.EVENT;
@@ -32,6 +33,7 @@ import javax.transaction.UserTransaction;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.complitex.osznconnection.file.service.SubsidyBean;
 import org.complitex.osznconnection.file.service_provider.CalculationCenterBean;
 import org.complitex.osznconnection.file.service_provider.exception.DBException;
@@ -87,13 +89,13 @@ public class SubsidyBindTaskBean implements ITaskBean {
         return subsidy.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED;
     }
 
-    private boolean resolveRemoteAccountNumber(Subsidy subsidy, Date date,
+    private boolean resolveRemoteAccountNumber(Subsidy subsidy, 
             CalculationContext calculationContext, Boolean updatePuAccount) throws DBException {
         long startTime = 0;
         if (log.isDebugEnabled()) {
             startTime = System.currentTimeMillis();
         }
-        personAccountService.resolveRemoteAccount(subsidy, date, calculationContext, updatePuAccount);
+        personAccountService.resolveRemoteAccount(subsidy, calculationContext, updatePuAccount);
         if (log.isDebugEnabled()) {
             log.debug("Resolving of subsidy (id = {}) for remote account number took {} sec.", subsidy.getId(),
                     (System.currentTimeMillis() - startTime) / 1000);
@@ -101,11 +103,11 @@ public class SubsidyBindTaskBean implements ITaskBean {
         return subsidy.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED;
     }
 
-    private void bind(Subsidy subsidy, Date date, CalculationContext calculationContext, Boolean updatePuAccount)
+    private void bind(Subsidy subsidy, CalculationContext calculationContext, Boolean updatePuAccount)
             throws DBException {
         if (!resolveLocalAccount(subsidy, calculationContext)) {
             if (resolveAddress(subsidy, calculationContext)) {
-                resolveRemoteAccountNumber(subsidy, date, calculationContext, updatePuAccount);
+                resolveRemoteAccountNumber(subsidy, calculationContext, updatePuAccount);
             }
         }
 
@@ -153,8 +155,7 @@ public class SubsidyBindTaskBean implements ITaskBean {
                 //связать subsidy запись
                 try {
                     userTransaction.begin();
-                    bind(subsidy, (Date) subsidy.getField(SubsidyDBF.DAT1),
-                            calculationContext, updatePuAccount);
+                    bind(subsidy, calculationContext, updatePuAccount);
                     userTransaction.commit();
                 } catch (Exception e) {
                     log.error("The subsidy item ( id = " + subsidy.getId() + ") was bound with error: ", e);
