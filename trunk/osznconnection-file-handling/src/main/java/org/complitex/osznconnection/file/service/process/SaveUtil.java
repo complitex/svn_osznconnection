@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import org.complitex.osznconnection.file.entity.FileHandlingConfig;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -68,7 +69,8 @@ public final class SaveUtil {
             Date now = DateUtil.getCurrentDate();
             String name = RESULT_FILE_NAME + "_" + sdfFile.format(now) + "." + RESULT_FILE_EXT;
 
-            File file = RequestFileStorage.getInstance().createOutputRequestFile(name, directory);
+            File file = RequestFileStorage.getInstance().
+                    createOutputRequestFileDirectory(FileHandlingConfig.SAVE_OUTPUT_REQUEST_FILE_STORAGE_DIR, name, directory);
 
             Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), FILE_ENCODING));
 

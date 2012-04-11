@@ -1,6 +1,7 @@
 package org.complitex.osznconnection.file.service.process;
 
 import com.linuxense.javadbf.DBFField;
+import org.complitex.dictionary.entity.IConfig;
 import org.complitex.dictionary.entity.IExecutorObject;
 import org.complitex.dictionary.service.executor.ExecuteException;
 import org.complitex.dictionary.service.executor.ITaskBean;
@@ -115,5 +116,10 @@ public class SaveTaskBean extends AbstractSaveTaskBean implements ITaskBean {
     @Override
     protected String getPuAccountFieldName() {
         return PaymentDBF.OWN_NUM_SR.name();
+    }
+
+    @Override
+    protected IConfig getConfigDirectory() {
+        return FileHandlingConfig.SAVE_OUTPUT_REQUEST_FILE_STORAGE_DIR;
     }
 }
