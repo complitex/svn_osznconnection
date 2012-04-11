@@ -4,13 +4,12 @@ import org.complitex.dictionary.service.ConfigBean;
 import org.complitex.dictionary.util.EjbBeanLocator;
 import org.complitex.osznconnection.file.entity.FileHandlingConfig;
 import org.complitex.osznconnection.file.service.exception.StorageNotFoundException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.List;
+import org.complitex.dictionary.entity.IConfig;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -21,11 +20,9 @@ import java.util.List;
  */
 public class RequestFileStorage {
 
-    private static final Logger log = LoggerFactory.getLogger(RequestFileStorage.class);
-
     private static RequestFileStorage instance;
 
-    public static RequestFileStorage getInstance() {
+    public static synchronized RequestFileStorage getInstance() {
         if (instance == null) {
             instance = new RequestFileStorage();
         }
@@ -94,9 +91,8 @@ public class RequestFileStorage {
         }
     }
 
-    public void checkOutputRequestFileStorageExists() throws StorageNotFoundException {
-        File parent = new File(EjbBeanLocator.getBean(ConfigBean.class)
-                .getString(FileHandlingConfig.SAVE_OUTPUT_REQUEST_FILE_STORAGE_DIR, true));
+    public void checkOutputRequestFileStorageExists(IConfig configDir) throws StorageNotFoundException {
+        File parent = new File(EjbBeanLocator.getBean(ConfigBean.class).getString(configDir, true));
 
         //Желательно чтобы директория для исходящих файлов запроса уже была создана
         if (!parent.exists()) {
@@ -104,37 +100,11 @@ public class RequestFileStorage {
         }
     }
 
-    public void checkOutputActualPaymentFileStorageExists() throws StorageNotFoundException {
-        File parent = new File(EjbBeanLocator.getBean(ConfigBean.class)
-                .getString(FileHandlingConfig.SAVE_OUTPUT_ACTUAL_PAYMENT_FILE_STORAGE_DIR, true));
-
-        //Желательно чтобы директория для исходящих файлов запроса уже была создана
-        if (!parent.exists()) {
-            throw new StorageNotFoundException(parent.getAbsolutePath());
-        }
-    }
-
-    @SuppressWarnings({"ResultOfMethodCallIgnored"})
-    public File createOutputRequestFile(String name, String child) throws StorageNotFoundException {
-        checkOutputRequestFileStorageExists();
+    public File createOutputRequestFileDirectory(IConfig configDir, String name, String child) throws StorageNotFoundException {
+        checkOutputRequestFileStorageExists(configDir);
 
         //Создаем директорию с именем кода района если что
-        File dir = new File(EjbBeanLocator.getBean(ConfigBean.class)
-                .getString(FileHandlingConfig.SAVE_OUTPUT_REQUEST_FILE_STORAGE_DIR, false), child);
-        if (!dir.exists()) {
-            dir.mkdir();
-        }
-
-        return new File(dir, name);
-    }
-
-    @SuppressWarnings({"ResultOfMethodCallIgnored"})
-    public File createOutputActualPaymentFile(String name, String child) throws StorageNotFoundException {
-        checkOutputActualPaymentFileStorageExists();
-
-        //Создаем директорию с именем кода района если что
-        File dir = new File(EjbBeanLocator.getBean(ConfigBean.class)
-                .getString(FileHandlingConfig.SAVE_OUTPUT_ACTUAL_PAYMENT_FILE_STORAGE_DIR, false), child);
+        File dir = new File(EjbBeanLocator.getBean(ConfigBean.class).getString(configDir, false), child);
         if (!dir.exists()) {
             dir.mkdir();
         }

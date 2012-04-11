@@ -22,6 +22,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import org.complitex.dictionary.entity.IConfig;
 import org.complitex.osznconnection.file.web.pages.util.GlobalOptions;
 
 /**
@@ -101,13 +102,15 @@ public abstract class AbstractSaveTaskBean {
 
     protected abstract DBFField[] getDbfField(RequestFile.TYPE type);
 
+    protected abstract IConfig getConfigDirectory();
+
     protected void save(RequestFile requestFile, boolean updatePuAccount) throws SaveException {
         DBFWriter writer = null;
 
         try {
             //устанавливаем абсолютный путь для сохранения файла запроса
-            File file = RequestFileStorage.getInstance().createOutputActualPaymentFile(requestFile.getName(),
-                    requestFile.getDirectory());
+            File file = RequestFileStorage.getInstance().createOutputRequestFileDirectory(getConfigDirectory(),
+                    requestFile.getName(), requestFile.getDirectory());
             requestFile.setAbsolutePath(file.getAbsolutePath());
 
             //Удаляем файл есть такой есть
