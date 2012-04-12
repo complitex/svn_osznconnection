@@ -293,7 +293,7 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
         correctedEntity = CORRECTED_ENTITY.BUILDING;
     }
 
-    private void closeDialog(AjaxRequestTarget target) {
+    protected void closeDialog(AjaxRequestTarget target) {
         container.setVisible(false);
         target.addComponent(container);
         dialog.close(target);

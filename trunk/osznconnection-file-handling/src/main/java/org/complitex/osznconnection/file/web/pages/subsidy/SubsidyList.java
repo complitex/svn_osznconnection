@@ -38,7 +38,6 @@ import org.complitex.osznconnection.file.entity.SubsidyDBF;
 import org.complitex.osznconnection.file.entity.example.SubsidyExample;
 import org.complitex.osznconnection.file.service.AddressService;
 import org.complitex.osznconnection.file.service.OsznSessionBean;
-import org.complitex.osznconnection.file.service.PersonAccountService;
 import org.complitex.osznconnection.file.service.RequestFileBean;
 import org.complitex.osznconnection.file.service.StatusRenderService;
 import org.complitex.osznconnection.file.service.SubsidyBean;
@@ -50,6 +49,7 @@ import org.complitex.osznconnection.file.service.status.details.SubsidyExampleCo
 import org.complitex.osznconnection.file.service.status.details.SubsidyStatusDetailRenderer;
 import org.complitex.osznconnection.file.service.warning.WebWarningRenderer;
 import org.complitex.osznconnection.file.web.SubsidyFileList;
+import org.complitex.osznconnection.file.web.component.DataRowHoverBehavior;
 import org.complitex.osznconnection.file.web.component.StatusDetailPanel;
 import org.complitex.osznconnection.file.web.component.StatusRenderer;
 import org.complitex.osznconnection.file.web.component.address.AddressCorrectionPanel;
@@ -79,8 +79,6 @@ public final class SubsidyList extends TemplatePage {
     @EJB
     private AddressService addressService;
     @EJB
-    private PersonAccountService personAccountService;
-    @EJB
     private OsznSessionBean osznSessionBean;
     private IModel<SubsidyExample> example;
     private long fileId;
@@ -107,6 +105,9 @@ public final class SubsidyList extends TemplatePage {
         if (!osznSessionBean.isAuthorized(subsidyFile.getOrganizationId(), subsidyFile.getUserOrganizationId())) {
             throw new UnauthorizedInstantiationException(this.getClass());
         }
+
+        final DataRowHoverBehavior dataRowHoverBehavior = new DataRowHoverBehavior();
+        add(dataRowHoverBehavior);
 
         String label = getStringFormat("label", subsidyFile.getDirectory(), File.separator, subsidyFile.getName());
 
@@ -193,12 +194,25 @@ public final class SubsidyList extends TemplatePage {
                     throws DublicateCorrectionException, MoreOneCorrectionException, NotFoundCorrectionException {
                 addressService.correctLocalAddress(subsidy, entity, cityId, streetTypeId, streetId, buildingId, userOrganizationId);
             }
+
+            @Override
+            protected void closeDialog(AjaxRequestTarget target) {
+                super.closeDialog(target);
+                dataRowHoverBehavior.deactivateDataRow(target);
+            }
         };
         add(addressCorrectionPanel);
 
         //Панель поиска
         final SubsidyLookupPanel lookupPanel = new SubsidyLookupPanel("lookupPanel", subsidyFile.getUserOrganizationId(),
-                content, statusDetailPanel);
+                content, statusDetailPanel) {
+
+            @Override
+            protected void closeDialog(AjaxRequestTarget target) {
+                super.closeDialog(target);
+                dataRowHoverBehavior.deactivateDataRow(target);
+            }
+        };
         add(lookupPanel);
 
         DataView<Subsidy> data = new DataView<Subsidy>("data", dataProvider, 1) {

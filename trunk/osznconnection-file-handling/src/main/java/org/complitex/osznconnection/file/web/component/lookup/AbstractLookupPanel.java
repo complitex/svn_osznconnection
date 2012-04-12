@@ -279,7 +279,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
         });
     }
 
-    protected final void closeDialog(AjaxRequestTarget target) {
+    protected void closeDialog(AjaxRequestTarget target) {
         addressSearchComponent.setVisible(false);
         target.addComponent(addressSearchComponent);
         dialog.close(target);

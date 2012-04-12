@@ -48,6 +48,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
+import org.complitex.osznconnection.file.web.component.DataRowHoverBehavior;
 
 /**
  *
@@ -69,8 +70,6 @@ public final class PaymentList extends TemplatePage {
     private StatusDetailBean statusDetailBean;
     @EJB
     private AddressService addressService;
-    @EJB
-    private PersonAccountService personAccountService;
     @EJB
     private OsznSessionBean osznSessionBean;
     private IModel<PaymentExample> example;
@@ -98,6 +97,9 @@ public final class PaymentList extends TemplatePage {
         if (!osznSessionBean.isAuthorized(paymentFile.getOrganizationId(), paymentFile.getUserOrganizationId())) {
             throw new UnauthorizedInstantiationException(this.getClass());
         }
+
+        final DataRowHoverBehavior dataRowHoverBehavior = new DataRowHoverBehavior();
+        add(dataRowHoverBehavior);
 
         String label = getStringFormat("label", paymentFile.getDirectory(), File.separator, paymentFile.getName());
 
@@ -184,12 +186,25 @@ public final class PaymentList extends TemplatePage {
                     throws DublicateCorrectionException, MoreOneCorrectionException, NotFoundCorrectionException {
                 addressService.correctLocalAddress(payment, entity, cityId, streetTypeId, streetId, buildingId, userOrganizationId);
             }
+
+            @Override
+            protected void closeDialog(AjaxRequestTarget target) {
+                super.closeDialog(target);
+                dataRowHoverBehavior.deactivateDataRow(target);
+            }
         };
         add(addressCorrectionPanel);
 
         //Панель поиска
         final PaymentLookupPanel lookupPanel = new PaymentLookupPanel("lookupPanel", paymentFile.getUserOrganizationId(),
-                content, statusDetailPanel);
+                content, statusDetailPanel) {
+
+            @Override
+            protected void closeDialog(AjaxRequestTarget target) {
+                super.closeDialog(target);
+                dataRowHoverBehavior.deactivateDataRow(target);
+            }
+        };
         add(lookupPanel);
 
         DataView<Payment> data = new DataView<Payment>("data", dataProvider, 1) {
