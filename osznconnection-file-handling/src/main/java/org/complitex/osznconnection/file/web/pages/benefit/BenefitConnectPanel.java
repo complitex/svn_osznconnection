@@ -301,7 +301,7 @@ public class BenefitConnectPanel extends Panel {
         return valid;
     }
 
-    private void closeDialog(AjaxRequestTarget target) {
+    protected void closeDialog(AjaxRequestTarget target) {
         container.setVisible(false);
         benefit = null;
         target.addComponent(container);

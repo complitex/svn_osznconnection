@@ -47,6 +47,7 @@ import javax.ejb.EJB;
 import java.util.Arrays;
 import java.util.List;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
+import org.complitex.osznconnection.file.web.component.DataRowHoverBehavior;
 
 /**
  *
@@ -93,6 +94,9 @@ public final class BenefitList extends TemplatePage {
         if (!osznSessionBean.isAuthorized(requestFile.getOrganizationId(), requestFile.getUserOrganizationId())) {
             throw new UnauthorizedInstantiationException(this.getClass());
         }
+
+        final DataRowHoverBehavior dataRowHoverBehavior = new DataRowHoverBehavior();
+        add(dataRowHoverBehavior);
 
         String fileName = requestFile.getName();
         String directory = requestFile.getDirectory();
@@ -170,7 +174,15 @@ public final class BenefitList extends TemplatePage {
         };
         filterForm.add(submit);
 
-        final BenefitConnectPanel benefitConnectPanel = new BenefitConnectPanel("benefitConnectPanel", content, statusDetailPanel);
+        final BenefitConnectPanel benefitConnectPanel = new BenefitConnectPanel("benefitConnectPanel",
+                content, statusDetailPanel) {
+
+            @Override
+            protected void closeDialog(AjaxRequestTarget target) {
+                super.closeDialog(target);
+                dataRowHoverBehavior.deactivateDataRow(target);
+            }
+        };
         add(benefitConnectPanel);
 
         DataView<Benefit> data = new DataView<Benefit>("data", dataProvider, 1) {
@@ -236,4 +248,3 @@ public final class BenefitList extends TemplatePage {
         content.add(new PagingNavigator("navigator", data, getPreferencesPage(), content));
     }
 }
-
