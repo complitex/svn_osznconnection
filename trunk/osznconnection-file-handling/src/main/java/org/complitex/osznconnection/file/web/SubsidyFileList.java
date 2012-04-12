@@ -40,6 +40,11 @@ public final class SubsidyFileList extends ScrollListPage {
         add(fileListPanel = new AbstractFileListPanel("fileListPanel") {
 
             @Override
+            protected String getPreferencePage() {
+                return SubsidyFileList.class.getName();
+            }
+
+            @Override
             protected TYPE getRequestFileType() {
                 return RequestFile.TYPE.SUBSIDY;
             }

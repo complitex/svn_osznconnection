@@ -58,6 +58,7 @@ import org.apache.wicket.extensions.markup.html.repeater.data.sort.ISortStateLoc
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.ResourceModel;
 import org.complitex.dictionary.entity.IExecutorObject;
+import org.complitex.dictionary.entity.PreferenceKey;
 import org.complitex.dictionary.service.AbstractFilter;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.osznconnection.file.service.OsznSessionBean;
@@ -141,6 +142,8 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
         return (ParameterizedType) t;
     }
 
+    protected abstract String getPreferencePage();
+
     protected void initFilter(F filter) {
     }
 
@@ -199,17 +202,6 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
         if (!isPostBack) {
             isPostBack = true;
 
-            //Постраничная навигация
-            PagingNavigator pagingNavigator = new PagingNavigator("paging", dataView, getWebPage().getClass().getName(), filterForm);
-            pagingNavigator.addListener(new IPagingNavigatorListener() { //clear select checkbox model on page change
-
-                @Override
-                public void onChangePage() {
-                    clearSelect();
-                }
-            });
-            filterForm.add(pagingNavigator);
-
             //Дополнительные колонки
 
             //дополнительные фильтры
@@ -225,7 +217,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
             //Отобразить сообщения
             showMessages();
         }
-        
+
         super.onBeforeRender();
     }
 
@@ -238,8 +230,12 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
         messages.setOutputMarkupId(true);
         add(messages);
 
+        //Preference page
+        final String preferencePage = getPreferencePage();
+
         //Фильтр модель
-        final F filter = newFilter();
+        @SuppressWarnings("unchecked")
+        F filter = (F) getSession().getPreferenceObject(preferencePage, PreferenceKey.FILTER_OBJECT, newFilter());
         final IModel<F> filterModel = new CompoundPropertyModel<F>(filter);
 
         //Фильтр форма
@@ -338,7 +334,10 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
 
             @Override
             protected Iterable<M> getData(int first, int count) {
-                F filter = filterModel.getObject();
+                final F filter = filterModel.getObject();
+
+                //store preference
+                getSession().putPreferenceObject(preferencePage, PreferenceKey.FILTER_OBJECT, filter);
 
                 //prepare filter object
                 filter.setFirst(first);
@@ -501,6 +500,17 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
         //Reuse Strategy
         dataView.setItemReuseStrategy(new ReuseIfLongIdEqualStrategy());
 
+        //Постраничная навигация
+        PagingNavigator pagingNavigator = new PagingNavigator("paging", dataView, preferencePage, filterForm);
+        pagingNavigator.addListener(new IPagingNavigatorListener() { //clear select checkbox model on page change
+
+            @Override
+            public void onChangePage() {
+                clearSelect();
+            }
+        });
+        filterForm.add(pagingNavigator);
+
         //Сортировка
         filterForm.add(new ArrowOrderByBorder("header.id", "id", dataProvider, dataView, filterForm));
         filterForm.add(new ArrowOrderByBorder("header.loaded", "loaded", dataProvider, dataView, filterForm));
@@ -509,7 +519,6 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
         filterForm.add(new ArrowOrderByBorder("header.month", "month", dataProvider, dataView, filterForm));
         filterForm.add(new ArrowOrderByBorder("header.year", "year", dataProvider, dataView, filterForm));
         filterForm.add(new ArrowOrderByBorder("header.status", "status", dataProvider, dataView, filterForm));
-
 
         //Контейнер чекбокса "Переписать л/с ПУ" для ajax
         optionContainer = new WebMarkupContainer("options");

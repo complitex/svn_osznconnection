@@ -64,6 +64,7 @@ public abstract class AbstractCorrectionList extends ScrollListPage {
 
     public AbstractCorrectionList(String entity) {
         this.entity = entity;
+        setPreferencesPage(getClass().getName() + "#" + entity);
         init();
     }
 
@@ -114,13 +115,17 @@ public abstract class AbstractCorrectionList extends ScrollListPage {
         final Form filterForm = new Form("filterForm");
         content.add(filterForm);
 
-        example = new Model<CorrectionExample>(newExample());
+        example = new Model<CorrectionExample>((CorrectionExample) getFilterObject(newExample()));
 
         final DataProvider<Correction> dataProvider = new DataProvider<Correction>() {
 
             @Override
             protected Iterable<? extends Correction> getData(int first, int count) {
                 final CorrectionExample exampleObject = example.getObject();
+
+                //store preference
+                setFilterObject(exampleObject);
+
                 exampleObject.setAsc(getSort().isAscending());
                 if (!Strings.isEmpty(getSort().getProperty())) {
                     exampleObject.setOrderByClause(getSort().getProperty());
