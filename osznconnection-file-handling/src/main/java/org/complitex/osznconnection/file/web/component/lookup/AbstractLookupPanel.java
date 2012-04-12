@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
 import javax.ejb.EJB;
 import java.util.List;
 
+import org.apache.wicket.util.string.Strings;
 import static org.apache.wicket.util.string.Strings.isEmpty;
 
 /**
@@ -316,7 +317,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
     protected abstract boolean isInternalAddressCorrect(T request);
 
     public void open(AjaxRequestTarget target, T request, Long cityId, Long streetId, Long buildingId, String apartment,
-            boolean immediatelySearchByAddress) {
+            String serviceProviderAccountNumber, boolean immediatelySearchByAddress) {
         this.request = CloneUtil.cloneObject(request);
         this.initialRequest = request;
 
@@ -332,7 +333,11 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
         addressSearchComponent.setVisible(true);
 
         //lookup by account number
-        accountNumberModel.setObject(null);
+        if (!Strings.isEmpty(serviceProviderAccountNumber) && !"0".equals(serviceProviderAccountNumber)) {
+            accountNumberModel.setObject(serviceProviderAccountNumber);
+        } else {
+            accountNumberModel.setObject(null);
+        }
 
         //set active accordion item
         if (immediatelySearchByAddress) {

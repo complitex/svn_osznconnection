@@ -249,6 +249,7 @@ public final class ActualPaymentList extends TemplatePage {
                     public void onClick(AjaxRequestTarget target) {
                         lookupPanel.open(target, actualPayment, actualPayment.getInternalCityId(), actualPayment.getInternalStreetId(),
                                 actualPayment.getInternalBuildingId(), (String) actualPayment.getField(ActualPaymentDBF.FLAT),
+                                (String) actualPayment.getField(ActualPaymentDBF.OWN_NUM),
                                 actualPayment.getStatus().isImmediatelySearchByAddress());
                     }
                 };

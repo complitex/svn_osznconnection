@@ -256,6 +256,7 @@ public final class SubsidyList extends TemplatePage {
                     public void onClick(AjaxRequestTarget target) {
                         lookupPanel.open(target, subsidy, subsidy.getInternalCityId(), subsidy.getInternalStreetId(),
                                 subsidy.getInternalBuildingId(), (String) subsidy.getField(SubsidyDBF.FLAT),
+                                (String) subsidy.getField(SubsidyDBF.RASH),
                                 subsidy.getStatus().isImmediatelySearchByAddress());
                     }
                 };
