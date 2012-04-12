@@ -95,6 +95,13 @@ public class TarifFileList extends TemplatePage {
         init(null);
     }
 
+    private RequestFileFilter newFilter(Long requestFileId) {
+        final RequestFileFilter filter = new RequestFileFilter();
+        filter.setType(RequestFile.TYPE.TARIF);
+        filter.setId(requestFileId);
+        return filter;
+    }
+
     private void init(Long requestFileId) {
         add(JavascriptPackageResource.getHeaderContribution(WebCommonResourceInitializer.HIGHLIGHT_JS));
 
@@ -105,11 +112,8 @@ public class TarifFileList extends TemplatePage {
         add(messages);
 
         //Фильтр модель
-        final RequestFileFilter filterObject = new RequestFileFilter();
-        filterObject.setType(RequestFile.TYPE.TARIF);
-        filterObject.setId(requestFileId);
-
-        final IModel<RequestFileFilter> filterModel = new CompoundPropertyModel<RequestFileFilter>(filterObject);
+        final RequestFileFilter filter = (RequestFileFilter) getFilterObject(newFilter(requestFileId));
+        final IModel<RequestFileFilter> filterModel = new CompoundPropertyModel<RequestFileFilter>(filter);
 
         //Фильтр форма
         final Form<RequestFileFilter> filterForm = new Form<RequestFileFilter>("filter_form", filterModel);
@@ -121,8 +125,7 @@ public class TarifFileList extends TemplatePage {
             public void onClick() {
                 filterForm.clearInput();
 
-                RequestFileFilter filterObject = new RequestFileFilter();
-                filterObject.setType(RequestFile.TYPE.TARIF);
+                RequestFileFilter filterObject = newFilter(null);
                 filterModel.setObject(filterObject);
             }
         };
@@ -179,7 +182,10 @@ public class TarifFileList extends TemplatePage {
 
             @Override
             protected Iterable<? extends RequestFile> getData(int first, int count) {
-                RequestFileFilter filter = filterModel.getObject();
+                final RequestFileFilter filter = filterModel.getObject();
+
+                //store preference
+                setFilterObject(filter);
 
                 //prepare filter object
                 filter.setFirst(first);

@@ -85,20 +85,25 @@ public class PersonAccountList extends ScrollListPage {
         final Form filterForm = new Form("filterForm");
         content.add(filterForm);
 
-        example = new Model<PersonAccountExample>(newExample());
+        example = new Model<PersonAccountExample>((PersonAccountExample) getFilterObject(newExample()));
 
         final DataProvider<PersonAccount> dataProvider = new DataProvider<PersonAccount>() {
 
             @Override
             protected Iterable<? extends PersonAccount> getData(int first, int count) {
-                example.getObject().setAsc(getSort().isAscending());
+                final PersonAccountExample exampleObject = example.getObject();
+
+                //store preference
+                setFilterObject(exampleObject);
+
+                exampleObject.setAsc(getSort().isAscending());
                 if (!Strings.isEmpty(getSort().getProperty())) {
-                    example.getObject().setOrderByClause(getSort().getProperty());
+                    exampleObject.setOrderByClause(getSort().getProperty());
                 }
-                example.getObject().setStart(first);
-                example.getObject().setSize(count);
-                example.getObject().setLocaleId(localeBean.convert(getLocale()).getId());
-                return personAccountLocalBean.find(example.getObject());
+                exampleObject.setStart(first);
+                exampleObject.setSize(count);
+                exampleObject.setLocaleId(localeBean.convert(getLocale()).getId());
+                return personAccountLocalBean.find(exampleObject);
             }
 
             @Override

@@ -161,6 +161,11 @@ public class GroupList extends ScrollListPage {
         }
 
         @Override
+        protected String getPreferencePage() {
+            return GroupList.class.getName();
+        }
+
+        @Override
         protected ProcessType getLoadProcessType() {
             return ProcessType.LOAD_GROUP;
         }
