@@ -25,7 +25,7 @@ public class ActualPayment extends AbstractRequest {
     }
 
     @Override
-    protected RequestFile.TYPE getRequestFileType() {
+    public RequestFile.TYPE getRequestFileType() {
         return RequestFile.TYPE.ACTUAL_PAYMENT;
     }
     private Long internalCityId;

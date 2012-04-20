@@ -51,7 +51,7 @@ public abstract class AbstractRequest implements Serializable {
                     + "Request file type: " + getRequestFileType().name() + ", request id: '" + getId()
                     + "', field name: '" + fieldName
                     + "', string value of field: '" + stringValue
-                    + "', expected java type a field value to be converter to: " + expectedType, e);
+                    + "', expected java type a field value to be converted to: " + expectedType+".", e);
         }
     }
 
@@ -65,7 +65,7 @@ public abstract class AbstractRequest implements Serializable {
         return requestFileDescriptionBean.getFileDescription(getRequestFileType());
     }
 
-    protected abstract RequestFile.TYPE getRequestFileType();
+    public abstract RequestFile.TYPE getRequestFileType();
 
     public Long getId() {
         return id;

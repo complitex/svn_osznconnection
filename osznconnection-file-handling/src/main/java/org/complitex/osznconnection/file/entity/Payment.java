@@ -37,7 +37,7 @@ public class Payment extends AbstractRequest {
     }
 
     @Override
-    protected RequestFile.TYPE getRequestFileType() {
+    public RequestFile.TYPE getRequestFileType() {
         return RequestFile.TYPE.PAYMENT;
     }
     private Long internalCityId;

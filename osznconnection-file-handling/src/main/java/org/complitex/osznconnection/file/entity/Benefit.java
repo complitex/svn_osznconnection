@@ -35,7 +35,7 @@ public class Benefit extends AbstractRequest {
     }
 
     @Override
-    protected RequestFile.TYPE getRequestFileType() {
+    public RequestFile.TYPE getRequestFileType() {
         return RequestFile.TYPE.BENEFIT;
     }
     private String city;

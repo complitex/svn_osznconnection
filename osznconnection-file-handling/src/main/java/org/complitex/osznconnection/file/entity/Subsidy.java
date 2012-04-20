@@ -25,7 +25,7 @@ public class Subsidy extends AbstractRequest {
     }
 
     @Override
-    protected RequestFile.TYPE getRequestFileType() {
+    public RequestFile.TYPE getRequestFileType() {
         return RequestFile.TYPE.SUBSIDY;
     }
     private Long internalCityId;

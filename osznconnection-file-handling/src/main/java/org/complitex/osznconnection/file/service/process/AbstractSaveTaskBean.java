@@ -30,6 +30,8 @@ import org.complitex.osznconnection.file.service.file_description.RequestFileFie
 import org.complitex.osznconnection.file.service.file_description.convert.ConversionException;
 import org.complitex.osznconnection.file.service.file_description.convert.DBFFieldTypeConverter;
 import org.complitex.osznconnection.file.web.pages.util.GlobalOptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -37,6 +39,7 @@ import org.complitex.osznconnection.file.web.pages.util.GlobalOptions;
  */
 public abstract class AbstractSaveTaskBean {
 
+    private final Logger log = LoggerFactory.getLogger(getClass());
     @EJB
     private RequestFileBean requestFileBean;
     @EJB
@@ -149,20 +152,28 @@ public abstract class AbstractSaveTaskBean {
 
                 for (int i = 0; i < fields.length; ++i) {
                     final String fieldName = fields[i].getName();
-                    String stringValue = request.getDbfFields().get(fieldName);
+                    final String stringValue = request.getDbfFields().get(fieldName);
+
+                    final RequestFileFieldDescription fieldDescription = description.getField(fieldName);
+                    if (fieldDescription == null) {
+                        log.error("Couldn't find field description. Request file type: {}, request id: '{}', field name: '{}'.",
+                                new Object[]{request.getRequestFileType().name(), request.getId(), fieldName});
+                        throw new SaveException(new FieldNotFoundException(fieldName), requestFile);
+                    }
+                    final Class<?> expectedType = fieldDescription.getFieldType();
 
                     try {
-                        final RequestFileFieldDescription fieldDescription = description.getField(fieldName);
-                        if (fieldDescription == null) {
-                            throw new SaveException(new FieldNotFoundException(fieldName), requestFile);
-                        }
-                        rowData[i] = description.getTypeConverter().toObject(stringValue, fieldDescription.getFieldType());
+                        rowData[i] = description.getTypeConverter().toObject(stringValue, expectedType);
                     } catch (ConversionException e) {
+                        log.error("Couldn't perform type conversion. Request file type: {}, request id: '{}', field name: '{}', "
+                                + "string value of field: '{}', expected java type a field value to be converted to: {}.",
+                                new Object[]{request.getRequestFileType().name(), request.getId(), fieldName,
+                                    stringValue, expectedType});
                         throw new SaveException(e, requestFile);
                     }
 
                     // перезаписываем номер л/с ПУ номером л/с МН при наличии установленной опции
-                    if (updatePuAccount && fields[i].getName().equals(getPuAccountFieldName())) {
+                    if (updatePuAccount && fieldName.equals(getPuAccountFieldName())) {
                         rowData[i] = request.getAccountNumber();
                     }
                 }
