@@ -27,39 +27,27 @@ insert into `request_file`(id, group_id, organization_id, `name`, `directory`, `
 (5,null,1,'J000001.dbf', 'AB', 1, 10, 2010, '2011-01-12', 'SUBSIDY', 4);
 
 -- Benefit
-insert into benefit(OWN_NUM, OWN_NUM_SR, OZN, F_NAM, M_NAM, SUR_NAM, request_file_id, IND_COD, PSP_NUM)
+insert into `benefit`(`OWN_NUM`, `OWN_NUM_SR`, `OZN`, `F_NAM`, `M_NAM`, `SUR_NAM`, `request_file_id`, `IND_COD`, `PSP_NUM`)
 values
--- (1, 1, 1, 'Иван', 'Иванович', 'Иванов',2),
--- (2, 1, 0, 'Иван2', 'Иванович2', 'Иванов2',2, '0000000', null),
---(3, 3, 0, 'Петр0','Петрович0','Петров0',2, '11111111', null),
- ('32', '0000457', 1, 'Петр','Петрович','Петров',2, '2142426432', null);
--- (5, 4, 0, 'Петр0','Петрович0','Петров0',5, '11111111', null);
+ ('32', '0000457', '1', 'Петр','Петрович','Петров', 2, '2142426432', null);
 
 -- Payments
-insert into payment(OWN_NUM, OWN_NUM_SR, F_NAM, M_NAM, SUR_NAM, N_NAME, VUL_NAME, BLD_NUM, CORP_NUM, FLAT, DAT1, request_file_id)
+insert into `payment`(`OWN_NUM`, `OWN_NUM_SR`, `F_NAM`, `M_NAM`, `SUR_NAM`, `N_NAME`, `VUL_NAME`, `BLD_NUM`, `CORP_NUM`, `FLAT`, `DAT1`, `request_file_id`)
 values
--- (6, 1,'Иван', 'Иванович', 'Иванов', 'Новосибирск', 'Терешковой1', '18','1', '10', '2010-09-08',1),
--- (7, 2,'Сидор', 'Сидорович', 'Сидоров', 'Новосибирск', 'ул. Терешковой', 'д. 11','', 'кв. 11', '2010-09-08',1),
--- (8, 3,'Петр', 'Петрович', 'Петров', 'Харьков', 'Косиора', '154A','', '1', '2010-09-08',1),
--- (9, 3,'Петр1', 'Петрович1', 'Петров1', 'Харьков', 'Kоcиорa', '154A','', '1', '2010-09-08',1),
--- (10, 3,'Матвей1', 'Матвеевич1', 'Матвеев1', 'Харьков', 'ФРАНТИШЕКА КРАЛА', '25А','', '40', '2010-09-09',1),
---('32', '0000123','Матвей2', 'Матвеевич2', 'Матвеев2', 'Харьков', 'ФРАНТИШЕКА КРАЛА', '25А','', '19', '2010-09-09',1),
-('32', '0000457','Матвей', 'Матвеевич', 'Матвеев', 'Харьков', 'ФРАНТИШЕКА КРАЛА', '25А','', '19', '2011-05-01',1);
---('13', '0000458','Матвей2', 'Матвеевич2', 'Матвеев2', 'Харьков', 'ФРАНТИШЕКА КРАЛА', '25А','', '40', '2010-09-09',1);
--- (13, 5,'Матвей22', 'Матвеевич22', 'Матвеев22', 'Харьков', 'ФРАНТИШЕКА КРАЛА', '  2 6А','  ', '19', '2010-09-09',1);
--- (14, 4,'Матвей', 'Матвеевич', 'Матвеев', 'Новосибирск', 'Терешковой', '25','  ', '19', '2010-09-09',1);
+('32', '0000457','Матвей', 'Матвеевич', 'Матвеев', 'Харьков', 'ФРАНТИШЕКА КРАЛА', '25А','', '19', '01.05.2011',1);
+--('32', '0000458','Матвей2', 'Матвеевич2', 'Матвеев2', 'Харьков', 'ФРАНТИШЕКА КРАЛА', '25А','', '40', '2010-09-09',1);
 
 -- Actual payments
-insert into actual_payment(OWN_NUM, F_NAM, M_NAM, SUR_NAM, N_NAME, VUL_CAT, VUL_NAME, VUL_CODE, BLD_NUM, CORP_NUM, FLAT, DAT_BEG, request_file_id)
+insert into `actual_payment`(`OWN_NUM`, `F_NAM`, `M_NAM`, `SUR_NAM`, `N_NAME`, `VUL_CAT`, `VUL_NAME`, `VUL_CODE`, `BLD_NUM`, `CORP_NUM`, `FLAT`, `DAT_BEG`, `request_file_id`)
 values
-    ('107374638','Матвей', 'Матвеевич', 'Матвеев', 'Харьков', 'УЛ', 'ФРАНТИШЕКА КРАЛА', 123, '2\5-/А','', '19', '2010-09-09', 4);
---    ('123','Матвей1', 'Матвеевич1', 'Матвеев1', 'Харьков', 'УЛ.', 'ФРАНТИШЕКА КРАЛА', 123, '25А','', '19', '2009-01-01', 4);
+    ('107374638','Матвей', 'Матвеевич', 'Матвеев', 'Харьков', 'УЛ', 'ФРАНТИШЕКА КРАЛА', '123', '2\5-/А','', '19', '09.09.2010', 4);
+--    ('123','Матвей1', 'Матвеевич1', 'Матвеев1', 'Харьков', 'УЛ.', 'ФРАНТИШЕКА КРАЛА', '123', '25А','', '19', '2009-01-01', 4);
 
 -- Subsidies
 insert into `subsidy`(`RASH`, `first_name`, `middle_name`, `last_name`, `FIO`, `NP_NAME`, `CAT_V`, `NAME_V`, `VULCOD`, `BLD`, `CORP`, `FLAT`, `DAT1`, `request_file_id`)
 values
-    ('107374638','М', '', 'Матвеев', 'Матвеев M...', 'Харьков', 'УЛ', 'ФРАНТИШЕКА КРАЛА', 123, '25А','','19', '2010-09-09', 5),
-    ('107374638','М2', '', 'Матвеев2', 'Матвеев2 M2..', 'Харьков1', 'УЛ', 'ФРАНТИШЕКА КРАЛА', 123, '25А','','19', '2010-09-09', 5);
+    ('107374638','М', '', 'Матвеев', 'Матвеев M...', 'Харьков', 'УЛ', 'ФРАНТИШЕКА КРАЛА', '123', '25А','','19', '09.09.2010', 5),
+    ('107374638','М2', '', 'Матвеев2', 'Матвеев2 M2..', 'Харьков1', 'УЛ', 'ФРАНТИШЕКА КРАЛА', '123', '25А','','19', '09.09.2010', 5);
 
 
 --insert into `person_account` (`first_name`, `middle_name`, `last_name`, `city`, `street`, `street_type`, `building_num`, `building_corp`, `apartment`, `account_number`, `own_num_sr`, `oszn_id`, `calc_center_id`) values('Матвей','Матвеевич','Матвеев','Харьков','ФРАНТИШЕКА КРАЛА','UNKNOWN','25А','','19','1000001108','4','1','2');
@@ -107,18 +95,19 @@ insert into ownership_correction(organization_id, correction, object_id, organiz
 -- Privileges corrections
 insert into privilege_correction(organization_id, correction, object_id, organization_code, internal_organization_id, user_organization_id) values
 (2,'ПЕНСИОНЕР ПО ВОЗРАСТУ',15,'34',0,null),
-(1,'ПЕНСИОНЕР ПО ВОЗРАСТУ',15,'1000',0,3);
+(1,'ПЕНСИОНЕР ПО ВОЗРАСТУ',15,'100',0,3);
 
 -- Tarif
-insert into tarif(`T11_CS_UNI`, `T11_CODE2`, `request_file_id`, `T11_CODE1`) values (0,123,3,1);
+insert into tarif(`T11_CS_UNI`, `T11_CODE2`, `request_file_id`, `T11_CODE1`) values ('0','123',3,'1');
 
 -- config test
 --insert into config(`name`, `value`) values ('SAVE_OUTPUT_FILE_STORAGE_DIR', 'D:\\Artem\\Projects\\org.complitex\\storage\\out');
 --insert into config(`name`, `value`) values ('ADDRESS_IMPORT_FILE_STORAGE_DIR', 'D:\\Artem\\Projects\\org.complitex\\storage\\import');
---insert into `config`(`name`, `value`) values ('LOAD_INPUT_SUBSIDY_FILE_STORAGE_DIR', 'D:\\Artem\\Projects\\org.complitex\\oszn-docs\\subs');
---insert into `config`(`name`, `value`) values ('SAVE_OUTPUT_REQUEST_FILE_STORAGE_DIR', 'D:\\Artem\\Projects\\org.complitex\\storage\\out');
---insert into `config`(`name`, `value`) values ('SAVE_OUTPUT_ACTUAL_PAYMENT_FILE_STORAGE_DIR', 'D:\\Artem\\Projects\\org.complitex\\storage\\out\\actual');
---insert into `config`(`name`, `value`) values ('SAVE_OUTPUT_SUBSIDY_FILE_STORAGE_DIR', 'D:\\Artem\\Projects\\org.complitex\\storage\\out\\subsidy');
+insert into `config`(`name`, `value`) values ('LOAD_INPUT_ACTUAL_PAYMENT_FILE_STORAGE_DIR', 'D:\\Artem\\Projects\\org.complitex\\oszn-docs\\actual_payments');
+insert into `config`(`name`, `value`) values ('LOAD_INPUT_SUBSIDY_FILE_STORAGE_DIR', 'D:\\Artem\\Projects\\org.complitex\\oszn-docs\\subs');
+insert into `config`(`name`, `value`) values ('SAVE_OUTPUT_REQUEST_FILE_STORAGE_DIR', 'D:\\Artem\\Projects\\org.complitex\\storage\\out\\group');
+insert into `config`(`name`, `value`) values ('SAVE_OUTPUT_ACTUAL_PAYMENT_FILE_STORAGE_DIR', 'D:\\Artem\\Projects\\org.complitex\\storage\\out\\actual');
+insert into `config`(`name`, `value`) values ('SAVE_OUTPUT_SUBSIDY_FILE_STORAGE_DIR', 'D:\\Artem\\Projects\\org.complitex\\storage\\out\\subsidy');
 
 -- test users
 -- User '1'

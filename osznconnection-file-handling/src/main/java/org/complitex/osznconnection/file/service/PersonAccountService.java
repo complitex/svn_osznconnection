@@ -94,8 +94,8 @@ public class PersonAccountService extends AbstractBean {
     public void resolveRemoteAccount(Payment payment, CalculationContext calculationContext,
             Boolean updatePUAccount) throws DBException {
         adapter.acquirePersonAccount(calculationContext, RequestFile.TYPE.PAYMENT, payment,
-                (String) payment.getField(PaymentDBF.SUR_NAM),
-                (String) payment.getField(PaymentDBF.OWN_NUM_SR), payment.getOutgoingDistrict(), payment.getOutgoingStreetType(),
+                payment.getStringField(PaymentDBF.SUR_NAM),
+                payment.getStringField(PaymentDBF.OWN_NUM_SR), payment.getOutgoingDistrict(), payment.getOutgoingStreetType(),
                 payment.getOutgoingStreet(), payment.getOutgoingBuildingNumber(), payment.getOutgoingBuildingCorp(),
                 payment.getOutgoingApartment(), (Date) payment.getField(PaymentDBF.DAT1), updatePUAccount);
         if (payment.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED) {
@@ -109,8 +109,8 @@ public class PersonAccountService extends AbstractBean {
     public void resolveRemoteAccount(ActualPayment actualPayment, Date date, CalculationContext calculationContext,
             Boolean updatePUAccount) throws DBException {
         adapter.acquirePersonAccount(calculationContext, RequestFile.TYPE.ACTUAL_PAYMENT, actualPayment,
-                (String) actualPayment.getField(ActualPaymentDBF.SUR_NAM),
-                (String) actualPayment.getField(ActualPaymentDBF.OWN_NUM), actualPayment.getOutgoingDistrict(),
+                actualPayment.getStringField(ActualPaymentDBF.SUR_NAM),
+                actualPayment.getStringField(ActualPaymentDBF.OWN_NUM), actualPayment.getOutgoingDistrict(),
                 actualPayment.getOutgoingStreetType(), actualPayment.getOutgoingStreet(),
                 actualPayment.getOutgoingBuildingNumber(), actualPayment.getOutgoingBuildingCorp(),
                 actualPayment.getOutgoingApartment(), date, updatePUAccount);
@@ -124,7 +124,7 @@ public class PersonAccountService extends AbstractBean {
     public void resolveRemoteAccount(Subsidy subsidy, CalculationContext calculationContext,
             Boolean updatePUAccount) throws DBException {
         adapter.acquirePersonAccount(calculationContext, RequestFile.TYPE.SUBSIDY, subsidy,
-                subsidy.getLastName(), (String) subsidy.getField(SubsidyDBF.RASH),
+                subsidy.getLastName(), subsidy.getStringField(SubsidyDBF.RASH),
                 subsidy.getOutgoingDistrict(), subsidy.getOutgoingStreetType(), subsidy.getOutgoingStreet(),
                 subsidy.getOutgoingBuildingNumber(), subsidy.getOutgoingBuildingCorp(),
                 subsidy.getOutgoingApartment(), (Date) subsidy.getField(SubsidyDBF.DAT1), updatePUAccount);
@@ -137,7 +137,7 @@ public class PersonAccountService extends AbstractBean {
     @Transactional
     private void createLocalAccountsForSubsidyWithTheSameRash(Subsidy subsidy, long calculationCenterId, long userOrganizationId) {
         List<Subsidy> subsWithSameRash = subsidyBean.findWithTheSameRash(subsidy.getRequestFileId(),
-                (String) subsidy.getField(SubsidyDBF.RASH));
+                subsidy.getStringField(SubsidyDBF.RASH));
         if (subsWithSameRash != null && !subsWithSameRash.isEmpty()) {
             for (Subsidy s : subsWithSameRash) {
                 s.setAccountNumber(subsidy.getAccountNumber());

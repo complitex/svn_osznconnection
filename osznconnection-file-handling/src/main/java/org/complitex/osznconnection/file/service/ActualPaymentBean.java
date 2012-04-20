@@ -114,11 +114,11 @@ public class ActualPaymentBean extends AbstractRequestBean {
 
     @Transactional
     public void update(ActualPayment actualPayment, Set<Long> serviceProviderTypeIds) {
-        Map<String, Object> updateFieldMap = null;
+        Map<String, String> updateFieldMap = null;
         if (serviceProviderTypeIds != null && !serviceProviderTypeIds.isEmpty()) {
             updateFieldMap = Maps.newHashMap();
             for (ActualPaymentDBF field : getUpdateableFields(serviceProviderTypeIds)) {
-                updateFieldMap.put(field.name(), actualPayment.getField(field));
+                updateFieldMap.put(field.name(), actualPayment.getStringField(field));
             }
         }
         actualPayment.setUpdateFieldMap(updateFieldMap);
@@ -222,11 +222,11 @@ public class ActualPaymentBean extends AbstractRequestBean {
 
     @Transactional
     public void clearBeforeBinding(long fileId, Set<Long> serviceProviderTypeIds) {
-        Map<String, Object> updateFieldMap = null;
+        Map<String, String> updateFieldMap = null;
         if (serviceProviderTypeIds != null && !serviceProviderTypeIds.isEmpty()) {
             updateFieldMap = Maps.newHashMap();
             for (ActualPaymentDBF field : getUpdateableFields(serviceProviderTypeIds)) {
-                updateFieldMap.put(field.name(), -1);
+                updateFieldMap.put(field.name(), "-1");
             }
         }
 
@@ -237,11 +237,11 @@ public class ActualPaymentBean extends AbstractRequestBean {
 
     @Transactional
     public void clearBeforeProcessing(long fileId, Set<Long> serviceProviderTypeIds) {
-        Map<String, Object> updateFieldMap = null;
+        Map<String, String> updateFieldMap = null;
         if (serviceProviderTypeIds != null && !serviceProviderTypeIds.isEmpty()) {
             updateFieldMap = Maps.newHashMap();
             for (ActualPaymentDBF field : getUpdateableFields(serviceProviderTypeIds)) {
-                updateFieldMap.put(field.name(), -1);
+                updateFieldMap.put(field.name(), "-1");
             }
         }
 
@@ -251,7 +251,7 @@ public class ActualPaymentBean extends AbstractRequestBean {
     }
 
     public Date getFirstDay(ActualPayment actualPayment, RequestFile actualPaymentFile) {
-        Date beginDate = (Date) actualPayment.getField(ActualPaymentDBF.DAT_BEG);
+        Date beginDate = actualPayment.getField(ActualPaymentDBF.DAT_BEG);
         if (beginDate != null) {
             return beginDate;
         } else {

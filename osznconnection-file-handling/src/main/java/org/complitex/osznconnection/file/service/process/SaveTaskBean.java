@@ -1,6 +1,5 @@
 package org.complitex.osznconnection.file.service.process;
 
-import com.linuxense.javadbf.DBFField;
 import org.complitex.dictionary.entity.IConfig;
 import org.complitex.dictionary.entity.IExecutorObject;
 import org.complitex.dictionary.service.executor.ExecuteException;
@@ -69,36 +68,6 @@ public class SaveTaskBean extends AbstractSaveTaskBean implements ITaskBean {
     @Override
     public Class<?> getControllerClass() {
         return SaveTaskBean.class;
-    }
-
-    @Override
-    protected DBFField[] getDbfField(RequestFile.TYPE type) {
-        DBFField[] dbfFields;
-
-        switch (type) {
-            case BENEFIT:
-                BenefitDBF[] benefitDBFs = BenefitDBF.values();
-                dbfFields = new DBFField[benefitDBFs.length];
-
-                for (int i = 0; i < benefitDBFs.length; ++i) {
-                    BenefitDBF benefitDBF = benefitDBFs[i];
-                    dbfFields[i] = newDBFField(benefitDBF.name(), benefitDBF.getType(),
-                            benefitDBF.getLength(), benefitDBF.getScale());
-                }
-                return dbfFields;
-            case PAYMENT:
-                PaymentDBF[] paymentDBFs = PaymentDBF.values();
-                dbfFields = new DBFField[paymentDBFs.length];
-
-                for (int i = 0; i < paymentDBFs.length; ++i) {
-                    PaymentDBF paymentDBF = paymentDBFs[i];
-                    dbfFields[i] = newDBFField(paymentDBF.name(), paymentDBF.getType(),
-                            paymentDBF.getLength(), paymentDBF.getScale());
-                }
-                return dbfFields;
-            default:
-                throw new IllegalArgumentException(type.name());
-        }
     }
 
     @Override

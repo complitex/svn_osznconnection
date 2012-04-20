@@ -6,6 +6,7 @@ package org.complitex.osznconnection.file.service_provider;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+import java.math.BigDecimal;
 import org.complitex.osznconnection.file.entity.Benefit;
 import org.complitex.osznconnection.file.entity.BenefitDBF;
 import org.complitex.osznconnection.file.entity.Payment;
@@ -37,9 +38,9 @@ public class ProcessPaymentTest extends AbstractTest {
             }
 
             @Override
-            protected Integer getTarifCode(Double T11_CS_UNI, long organizationId, long userOrganizationId) {
+            protected String getTarifCode(BigDecimal T11_CS_UNI, long organizationId, long userOrganizationId) {
                 System.out.println("T11_CS_UNI : " + T11_CS_UNI);
-                return 0;
+                return "0";
             }
         };
     }

@@ -8,6 +8,7 @@ import org.complitex.template.web.template.ITemplateLink;
 
 import java.util.List;
 import java.util.Locale;
+import org.complitex.osznconnection.file.web.file_description.RequestFileDescriptionPage;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -29,7 +30,6 @@ public class AdminTemplateMenu extends org.complitex.admin.web.AdminTemplateMenu
                 return getString(ImportPage.class, locale, "title");
             }
 
-            @SuppressWarnings({"unchecked"})
             @Override
             public Class<? extends Page> getPage() {
                 return ImportPage.class;
@@ -37,12 +37,35 @@ public class AdminTemplateMenu extends org.complitex.admin.web.AdminTemplateMenu
 
             @Override
             public PageParameters getParameters() {
-                return PageParameters.NULL;
+                return new PageParameters();
             }
 
             @Override
             public String getTagId() {
                 return "ImportPage";
+            }
+        });
+
+        links.add(new ITemplateLink() {
+
+            @Override
+            public String getLabel(Locale locale) {
+                return getString(RequestFileDescriptionPage.class, locale, "menu_title");
+            }
+
+            @Override
+            public Class<? extends Page> getPage() {
+                return RequestFileDescriptionPage.class;
+            }
+
+            @Override
+            public PageParameters getParameters() {
+                return new PageParameters();
+            }
+
+            @Override
+            public String getTagId() {
+                return "RequestFileDescriptionPage";
             }
         });
 

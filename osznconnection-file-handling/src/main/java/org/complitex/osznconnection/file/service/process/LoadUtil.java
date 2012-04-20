@@ -127,7 +127,8 @@ public class LoadUtil {
         return name.substring(getConfigString(prefix).length()).toLowerCase();
     }
 
-    private static RequestFile newRequestFile(File file, RequestFile.TYPE type, Long organizationId, int month, int year) {
+    private static RequestFile newPaymentBenefitRequestFile(File file, RequestFile.TYPE type,
+            Long organizationId, int month, int year) {
         RequestFile requestFile = new RequestFile();
 
         requestFile.setName(file.getName());
@@ -157,7 +158,7 @@ public class LoadUtil {
 
                 RequestFileGroup group = new RequestFileGroup();
 
-                group.setPaymentFile(newRequestFile(file, RequestFile.TYPE.PAYMENT, osznId, month, year));
+                group.setPaymentFile(newPaymentBenefitRequestFile(file, RequestFile.TYPE.PAYMENT, osznId, month, year));
 
                 payments.remove(i);
                 i--;
@@ -181,7 +182,7 @@ public class LoadUtil {
                     month, year);
 
             for (File file : benefits) {
-                RequestFile requestFile = newRequestFile(file, RequestFile.TYPE.BENEFIT, osznId, month, year);
+                RequestFile requestFile = newPaymentBenefitRequestFile(file, RequestFile.TYPE.BENEFIT, osznId, month, year);
 
                 Map<String, RequestFileGroup> map = requestFileGroupsMap.get(file.getParent());
 

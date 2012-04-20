@@ -17,7 +17,14 @@ import java.io.FileInputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import org.complitex.osznconnection.file.service.file_description.RequestFileDescription;
+import org.complitex.osznconnection.file.service.file_description.RequestFileDescriptionBean;
+import org.complitex.osznconnection.file.service.file_description.RequestFileFieldDescription;
+import org.complitex.osznconnection.file.service.file_description.convert.DBFFieldTypeConverter;
+import org.complitex.osznconnection.file.service.file_description.convert.RequestFileTypeConverter;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -28,22 +35,23 @@ import java.util.List;
 public class LoadRequestFileBean {
 
     public static abstract class AbstractLoadRequestFile {
-        
+
         public abstract Enum[] getFieldNames();
 
         public abstract AbstractRequest newObject();
 
         public abstract void save(List<AbstractRequest> batch);
 
-        public void postProcess(AbstractRequest request) {
+        public void postProcess(int rowNumber, AbstractRequest request) {
         }
     }
-    @EJB(beanName = "ConfigBean")
+    @EJB
     private ConfigBean configBean;
-    @EJB(beanName = "RequestFileBean")
+    @EJB
     private RequestFileBean requestFileBean;
+    @EJB
+    private RequestFileDescriptionBean requestFileDescriptionBean;
 
-    @SuppressWarnings({"EjbProhibitedPackageUsageInspection", "ConstantConditions"})
     public boolean load(RequestFile requestFile, AbstractLoadRequestFile loadRequestFile) throws ExecuteException {
         String currentFieldName = "0";
         int index = -1;
@@ -60,18 +68,26 @@ public class LoadRequestFileBean {
             requestFile.setDbfRecordCount(reader.getRecordCount());
             requestFile.setLoaded(DateUtil.getCurrentDate());
 
-            List<String> fieldIndex = new ArrayList<String>();
+            final RequestFileDescription description = requestFileDescriptionBean.getFileDescription(requestFile.getType());
 
-            for (int i = 0; i < reader.getFieldCount(); i++) {
-                DBFField field = reader.getField(i);
-
-                fieldIndex.add(field.getName());
+            //проверка наличия всех полей в файле.
+            {
+                final Set<String> realFieldNames = new HashSet<String>();
+                for (int i = 0; i < reader.getFieldCount(); i++) {
+                    realFieldNames.add(reader.getField(i).getName());
+                }
+                for (Enum<?> expectedField : loadRequestFile.getFieldNames()) {
+                    final String expectedFieldName = expectedField.name();
+                    if (!realFieldNames.contains(expectedFieldName)) {
+                        throw new FieldNotFoundException(expectedFieldName);
+                    }
+                }
             }
 
-            //проверка наличия всех полей в файле
-            for (Enum field : loadRequestFile.getFieldNames()) {
-                if (!fieldIndex.contains(field.name())) {
-                    throw new FieldNotFoundException(field.name());
+            //проверка всех полей в файле, их типов, длины и масштаба.
+            {
+                for (int i = 0; i < reader.getFieldCount(); i++) {
+                    checkField(description, reader.getField(i));
                 }
             }
 
@@ -92,27 +108,21 @@ public class LoadRequestFileBean {
                 for (int i = 0; i < rowObjects.length; ++i) {
                     Object value = rowObjects[i];
 
+                    //обрезать начальные и конечные пробелы, если это строка.
                     if (value != null && value instanceof String) {
-                        value = ((String) value).trim(); //string trim
+                        value = ((String) value).trim();
                     }
 
                     DBFField field = reader.getField(i);
-
                     currentFieldName = field.getName();
-                    request.setField(currentFieldName, value, getType(field.getDataType(), field.getDecimalCount()));
+                    setField(currentFieldName, description.getTypeConverter(), request, value);
                 }
-                
+
                 //post processing after filling all fields of request
-                loadRequestFile.postProcess(request);
+                loadRequestFile.postProcess(index, request);
 
                 //обработка первой строки
                 if (index == 0) {
-                    //установка номера реестра
-                    Integer registry = (Integer) request.getDbfFields().get(PaymentDBF.REE_NUM.name());
-                    if (registry != null) {
-                        requestFile.setRegistry(registry);
-                    }
-
                     //проверка загружен ли файл
                     if (requestFileBean.checkLoaded(requestFile)) {
                         return false;
@@ -166,16 +176,50 @@ public class LoadRequestFileBean {
         return true;
     }
 
-    private Class getType(byte dataType, int scale) {
-        switch (dataType) {
-            case DBFField.FIELD_TYPE_C:
-                return String.class;
-            case DBFField.FIELD_TYPE_N:
-                return scale == 0 ? Integer.class : BigDecimal.class;
-            case DBFField.FIELD_TYPE_D:
-                return Date.class;
-            default:
-                throw new IllegalArgumentException();
+    private void checkField(RequestFileDescription description, DBFField dBFField)
+            throws FieldNotFoundException, FieldWrongTypeException, FieldWrongSizeException {
+
+        //проверить имя поля.
+        final String fieldName = dBFField.getName();
+        final RequestFileFieldDescription fieldDescription = description.getField(fieldName);
+        if (fieldDescription == null) {
+            throw new FieldNotFoundException(fieldName);
         }
+
+        //проверить тип поля.
+        final Class<?> realFieldType = DBFFieldTypeConverter.toJavaType(dBFField);
+        final Class<?> expectedFieldType = fieldDescription.getFieldType();
+        if (!expectedFieldType.equals(realFieldType)) {
+            throw new FieldWrongTypeException(fieldName, realFieldType, expectedFieldType);
+        }
+
+        //проверить длину поля.
+        if (expectedFieldType == Date.class) {
+            //для значений типа Date проверять не надо.
+        } else {
+            final int realFieldLength = dBFField.getFieldLength();
+            final int expectedFieldLength = fieldDescription.getLength();
+            if (realFieldLength > expectedFieldLength) {
+                throw new FieldWrongSizeException(fieldName);
+            }
+        }
+
+        //для чисел нужно проверить масштаб.
+        if (expectedFieldType == Integer.class || expectedFieldType == BigDecimal.class) {
+            final int realFieldScale = dBFField.getDecimalCount();
+            Integer expectedFieldScale = fieldDescription.getScale();
+            if (expectedFieldScale == null) {
+                expectedFieldScale = 0;
+            }
+
+            if (realFieldScale > expectedFieldScale) {
+                throw new FieldWrongSizeException(fieldName);
+            }
+        }
+    }
+
+    private void setField(String fieldName, RequestFileTypeConverter typeConverter, AbstractRequest request, Object value) {
+        String stringValue = typeConverter.toString(value);
+        request.getDbfFields().put(fieldName, stringValue);
     }
 }

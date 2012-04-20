@@ -128,11 +128,11 @@ public class SubsidyBean extends AbstractRequestBean {
 
     @Transactional
     public void clearBeforeBinding(long fileId, Set<Long> serviceProviderTypeIds) {
-        Map<String, Object> updateFieldMap = null;
+        Map<String, String> updateFieldMap = null;
         if (serviceProviderTypeIds != null && !serviceProviderTypeIds.isEmpty()) {
             updateFieldMap = Maps.newHashMap();
             for (SubsidyDBF field : getUpdateableFields(serviceProviderTypeIds)) {
-                updateFieldMap.put(field.name(), -1);
+                updateFieldMap.put(field.name(), "-1");
             }
         }
 

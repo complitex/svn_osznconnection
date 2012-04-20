@@ -214,16 +214,16 @@ public final class ActualPaymentList extends TemplatePage {
             protected void populateItem(Item<ActualPayment> item) {
                 final ActualPayment actualPayment = item.getModelObject();
 
-                item.add(new Label("ownNum", (String) actualPayment.getField(ActualPaymentDBF.OWN_NUM)));
-                item.add(new Label("firstName", (String) actualPayment.getField(ActualPaymentDBF.F_NAM)));
-                item.add(new Label("middleName", (String) actualPayment.getField(ActualPaymentDBF.M_NAM)));
-                item.add(new Label("lastName", (String) actualPayment.getField(ActualPaymentDBF.SUR_NAM)));
-                item.add(new Label("city", (String) actualPayment.getField(ActualPaymentDBF.N_NAME)));
-                item.add(new Label("street", AddressRenderer.displayStreet((String) actualPayment.getField(ActualPaymentDBF.VUL_CAT),
-                        (String) actualPayment.getField(ActualPaymentDBF.VUL_NAME), getLocale())));
-                item.add(new Label("building", (String) actualPayment.getField(ActualPaymentDBF.BLD_NUM)));
-                item.add(new Label("corp", (String) actualPayment.getField(ActualPaymentDBF.CORP_NUM)));
-                item.add(new Label("apartment", (String) actualPayment.getField(ActualPaymentDBF.FLAT)));
+                item.add(new Label("ownNum", actualPayment.getStringField(ActualPaymentDBF.OWN_NUM)));
+                item.add(new Label("firstName", actualPayment.getStringField(ActualPaymentDBF.F_NAM)));
+                item.add(new Label("middleName", actualPayment.getStringField(ActualPaymentDBF.M_NAM)));
+                item.add(new Label("lastName", actualPayment.getStringField(ActualPaymentDBF.SUR_NAM)));
+                item.add(new Label("city", actualPayment.getStringField(ActualPaymentDBF.N_NAME)));
+                item.add(new Label("street", AddressRenderer.displayStreet(actualPayment.getStringField(ActualPaymentDBF.VUL_CAT),
+                        actualPayment.getStringField(ActualPaymentDBF.VUL_NAME), getLocale())));
+                item.add(new Label("building", actualPayment.getStringField(ActualPaymentDBF.BLD_NUM)));
+                item.add(new Label("corp", actualPayment.getStringField(ActualPaymentDBF.CORP_NUM)));
+                item.add(new Label("apartment", actualPayment.getStringField(ActualPaymentDBF.FLAT)));
                 item.add(new Label("status", statusRenderService.displayStatus(actualPayment.getStatus(), getLocale())));
                 item.add(new Label("statusDetails", webWarningRenderer.display(actualPayment.getWarnings(), getLocale())));
 
@@ -231,11 +231,11 @@ public final class ActualPaymentList extends TemplatePage {
 
                     @Override
                     public void onClick(AjaxRequestTarget target) {
-                        addressCorrectionPanel.open(target, actualPayment, (String) actualPayment.getField(ActualPaymentDBF.F_NAM),
-                                (String) actualPayment.getField(ActualPaymentDBF.M_NAM), (String) actualPayment.getField(ActualPaymentDBF.SUR_NAM),
-                                (String) actualPayment.getField(ActualPaymentDBF.N_NAME), (String) actualPayment.getField(ActualPaymentDBF.VUL_CAT),
-                                (String) actualPayment.getField(ActualPaymentDBF.VUL_NAME), (String) actualPayment.getField(ActualPaymentDBF.BLD_NUM),
-                                (String) actualPayment.getField(ActualPaymentDBF.CORP_NUM), (String) actualPayment.getField(ActualPaymentDBF.FLAT),
+                        addressCorrectionPanel.open(target, actualPayment, actualPayment.getStringField(ActualPaymentDBF.F_NAM),
+                                actualPayment.getStringField(ActualPaymentDBF.M_NAM), actualPayment.getStringField(ActualPaymentDBF.SUR_NAM),
+                                actualPayment.getStringField(ActualPaymentDBF.N_NAME), actualPayment.getStringField(ActualPaymentDBF.VUL_CAT),
+                                actualPayment.getStringField(ActualPaymentDBF.VUL_NAME), actualPayment.getStringField(ActualPaymentDBF.BLD_NUM),
+                                actualPayment.getStringField(ActualPaymentDBF.CORP_NUM), actualPayment.getStringField(ActualPaymentDBF.FLAT),
                                 actualPayment.getInternalCityId(), actualPayment.getInternalStreetTypeId(), actualPayment.getInternalStreetId(),
                                 actualPayment.getInternalBuildingId());
                     }
@@ -248,8 +248,8 @@ public final class ActualPaymentList extends TemplatePage {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         lookupPanel.open(target, actualPayment, actualPayment.getInternalCityId(), actualPayment.getInternalStreetId(),
-                                actualPayment.getInternalBuildingId(), (String) actualPayment.getField(ActualPaymentDBF.FLAT),
-                                (String) actualPayment.getField(ActualPaymentDBF.OWN_NUM),
+                                actualPayment.getInternalBuildingId(), actualPayment.getStringField(ActualPaymentDBF.FLAT),
+                                actualPayment.getStringField(ActualPaymentDBF.OWN_NUM),
                                 actualPayment.getStatus().isImmediatelySearchByAddress());
                     }
                 };

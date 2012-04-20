@@ -1,6 +1,7 @@
 package org.complitex.osznconnection.file.service;
 
 import com.google.common.collect.Maps;
+import java.math.BigDecimal;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.osznconnection.file.entity.AbstractRequest;
@@ -11,6 +12,10 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import java.util.List;
 import java.util.Map;
+import javax.ejb.EJB;
+import org.complitex.osznconnection.file.entity.RequestFile;
+import org.complitex.osznconnection.file.service.file_description.RequestFileDescription;
+import org.complitex.osznconnection.file.service.file_description.RequestFileDescriptionBean;
 
 /**
  * Класс для работы с тарифами.
@@ -22,6 +27,8 @@ import java.util.Map;
 public class TarifBean extends AbstractBean {
 
     public static final String MAPPING_NAMESPACE = TarifBean.class.getName();
+    @EJB
+    private RequestFileDescriptionBean requestFileDescriptionBean;
 
     @Transactional
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
@@ -48,11 +55,12 @@ public class TarifBean extends AbstractBean {
      * @return
      */
     @Transactional
-    public Integer getCode2(Double T11_CS_UNI, long osznId, long userOrganizationId) {
+    public String getCode2(BigDecimal T11_CS_UNI, long osznId, long userOrganizationId) {
+        final RequestFileDescription tarifDescription = requestFileDescriptionBean.getFileDescription(RequestFile.TYPE.TARIF);
         Map<String, Object> params = Maps.newHashMap();
-        params.put("T11_CS_UNI", T11_CS_UNI);
+        params.put("T11_CS_UNI", tarifDescription.getTypeConverter().toString(T11_CS_UNI));
         params.put("osznId", osznId);
         params.put("userOrganizationId", userOrganizationId);
-        return (Integer) sqlSession().selectOne(MAPPING_NAMESPACE + ".getCode2", params);
+        return (String) sqlSession().selectOne(MAPPING_NAMESPACE + ".getCode2", params);
     }
 }

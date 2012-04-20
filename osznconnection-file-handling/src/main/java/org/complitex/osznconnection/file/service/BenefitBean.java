@@ -202,22 +202,6 @@ public class BenefitBean extends AbstractRequestBean {
     }
 
     /**
-     * Получает дату из поля DAT1 в записи payment, у которой account number = accountNumber и
-     * кроме того поле FROG больше 0(только benefit записи соответствующие таким payment записям нужно обрабатывать).
-     * См. ProccessingRequestBean.processBenefit().
-     * @param accountNumber
-     * @param fileId
-     * @return
-     */
-    @Transactional
-    public Date findDat1(String accountNumber, long fileId) {
-        Map<String, Object> params = Maps.newHashMap();
-        params.put("fileId", fileId);
-        params.put("accountNumber", accountNumber);
-        return (Date) sqlSession().selectOne(MAPPING_NAMESPACE + ".findDat1", params);
-    }
-
-    /**
      * Получает все не null account numbers в файле.
      * @param fileId
      * @return
@@ -293,7 +277,7 @@ public class BenefitBean extends AbstractRequestBean {
         final RequestFile benefitRequestFile = requestFileBean.findById(benefit.getRequestFileId());
         final CalculationContext calculationContext =
                 calculationCenterBean.getContextWithAnyCalculationCenter(benefitRequestFile.getUserOrganizationId());
-        final Date dat1 = findDat1(benefit.getAccountNumber(), benefitRequestFile.getId());
+        final Date dat1 = paymentBean.findDat1(benefit.getAccountNumber(), benefitRequestFile.getId());
 
         Collection<BenefitData> benefitData = adapter.getBenefitData(calculationContext, benefit, dat1);
 
@@ -313,7 +297,7 @@ public class BenefitBean extends AbstractRequestBean {
                 }
 
                 for (Benefit benefitItem : benefits) {
-                    Integer benefitItemOrderFam = (Integer) benefitItem.getField(BenefitDBF.ORD_FAM);
+                    Integer benefitItemOrderFam = benefitItem.getField(BenefitDBF.ORD_FAM);
                     if (benefitItemOrderFam != null && benefitItemOrderFam.equals(benefitOrderFamAsInt)) {
                         suitable = false;
                     }

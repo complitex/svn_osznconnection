@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.entity.IConfig;
 
 /**
@@ -91,7 +92,7 @@ public class RequestFileStorage {
         }
     }
 
-    public void checkOutputRequestFileStorageExists(IConfig configDir) throws StorageNotFoundException {
+    private void checkOutputRequestFileStorageExists(IConfig configDir) throws StorageNotFoundException {
         File parent = new File(EjbBeanLocator.getBean(ConfigBean.class).getString(configDir, true));
 
         //Желательно чтобы директория для исходящих файлов запроса уже была создана
@@ -111,7 +112,7 @@ public class RequestFileStorage {
 
         return new File(dir, name);
     }
-
+    
     @SuppressWarnings({"ResultOfMethodCallIgnored"})
     public File createFile(String path, boolean replace) {
         File file = new File(path);

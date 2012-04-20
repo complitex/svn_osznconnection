@@ -4,11 +4,7 @@
  */
 package org.complitex.osznconnection.file.entity;
 
-import java.math.BigDecimal;
-import java.util.Date;
 import java.util.Map;
-import org.complitex.osznconnection.file.service.exception.FieldNotFoundException;
-import org.complitex.osznconnection.file.service.exception.FieldWrongSizeException;
 
 /**
  *
@@ -16,40 +12,21 @@ import org.complitex.osznconnection.file.service.exception.FieldWrongSizeExcepti
  */
 public class ActualPayment extends AbstractRequest {
 
-    public Object getField(ActualPaymentDBF actualPaymentDBF) {
+    public <T> T getField(ActualPaymentDBF actualPaymentDBF) {
+        return getField(actualPaymentDBF.name());
+    }
+
+    public String getStringField(ActualPaymentDBF actualPaymentDBF) {
         return dbfFields.get(actualPaymentDBF.name());
     }
 
     public void setField(ActualPaymentDBF actualPaymentDBF, Object object) {
-        dbfFields.put(actualPaymentDBF.name(), object);
+        setField(actualPaymentDBF.name(), object);
     }
 
     @Override
-    protected Class getFieldType(String name) throws FieldNotFoundException {
-        try {
-            return ActualPaymentDBF.valueOf(name).getType();
-        } catch (IllegalArgumentException e) {
-            throw new FieldNotFoundException(name);
-        }
-    }
-
-    @Override
-    protected void checkSize(String name, Object value) throws FieldWrongSizeException {
-        if (value == null || value instanceof Date) {
-            return;
-        }
-
-        ActualPaymentDBF actualPaymentDBF = ActualPaymentDBF.valueOf(name);
-
-        if (value instanceof BigDecimal) {
-            if (((BigDecimal) value).scale() > actualPaymentDBF.getScale()) {
-                throw new FieldWrongSizeException(value.toString());
-            }
-        }
-
-        if (value.toString().length() > actualPaymentDBF.getLength()) {
-            throw new FieldWrongSizeException(value.toString());
-        }
+    protected RequestFile.TYPE getRequestFileType() {
+        return RequestFile.TYPE.ACTUAL_PAYMENT;
     }
     private Long internalCityId;
     private Long internalStreetId;
@@ -62,7 +39,7 @@ public class ActualPayment extends AbstractRequest {
     private String outgoingBuildingNumber;
     private String outgoingBuildingCorp;
     private String outgoingApartment;
-    private Map<String, Object> updateFieldMap;
+    private Map<String, String> updateFieldMap;
 
     public Long getInternalBuildingId() {
         return internalBuildingId;
@@ -152,11 +129,11 @@ public class ActualPayment extends AbstractRequest {
         this.outgoingDistrict = outgoingDistrict;
     }
 
-    public Map<String, Object> getUpdateFieldMap() {
+    public Map<String, String> getUpdateFieldMap() {
         return updateFieldMap;
     }
 
-    public void setUpdateFieldMap(Map<String, Object> updateFieldMap) {
+    public void setUpdateFieldMap(Map<String, String> updateFieldMap) {
         this.updateFieldMap = updateFieldMap;
     }
 }

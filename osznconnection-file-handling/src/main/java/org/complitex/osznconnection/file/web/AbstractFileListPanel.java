@@ -25,6 +25,7 @@ import org.complitex.dictionary.entity.Log;
 import org.complitex.osznconnection.file.Module;
 import org.complitex.osznconnection.file.entity.RequestFileStatus;
 import org.complitex.osznconnection.file.service.RequestFileBean;
+import org.complitex.osznconnection.file.service.file_description.RequestFileDescriptionBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +39,8 @@ public abstract class AbstractFileListPanel extends AbstractProcessableListPanel
     private RequestFileBean requestFileBean;
     @EJB
     private LogBean logBean;
+    @EJB
+    private RequestFileDescriptionBean requestFileDescriptionBean;
 
     public AbstractFileListPanel(String id) {
         super(id);
@@ -62,6 +65,11 @@ public abstract class AbstractFileListPanel extends AbstractProcessableListPanel
                         new PageParameters("request_file_id=" + item.getModelObject().getId()));
             }
         });
+    }
+
+    @Override
+    protected boolean hasFieldDescription() {
+        return requestFileDescriptionBean.getFileDescription(getRequestFileType()) != null;
     }
 
     @Override

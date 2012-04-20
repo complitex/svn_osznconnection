@@ -4,11 +4,7 @@
  */
 package org.complitex.osznconnection.file.entity;
 
-import java.math.BigDecimal;
-import java.util.Date;
 import java.util.Map;
-import org.complitex.osznconnection.file.service.exception.FieldNotFoundException;
-import org.complitex.osznconnection.file.service.exception.FieldWrongSizeException;
 
 /**
  *
@@ -16,40 +12,21 @@ import org.complitex.osznconnection.file.service.exception.FieldWrongSizeExcepti
  */
 public class Subsidy extends AbstractRequest {
 
-    public Object getField(SubsidyDBF subsidyDBF) {
+    public <T> T getField(SubsidyDBF subsidyDBF) {
+        return getField(subsidyDBF.name());
+    }
+
+    public String getStringField(SubsidyDBF subsidyDBF) {
         return dbfFields.get(subsidyDBF.name());
     }
 
     public void setField(SubsidyDBF subsidyDBF, Object object) {
-        dbfFields.put(subsidyDBF.name(), object);
+        setField(subsidyDBF.name(), object);
     }
 
     @Override
-    protected Class getFieldType(String name) throws FieldNotFoundException {
-        try {
-            return SubsidyDBF.valueOf(name).getType();
-        } catch (IllegalArgumentException e) {
-            throw new FieldNotFoundException(name);
-        }
-    }
-
-    @Override
-    protected void checkSize(String name, Object value) throws FieldWrongSizeException {
-        if (value == null || value instanceof Date) {
-            return;
-        }
-
-        SubsidyDBF subsidyDBF = SubsidyDBF.valueOf(name);
-
-        if (value instanceof BigDecimal) {
-            if (((BigDecimal) value).scale() > subsidyDBF.getScale()) {
-                throw new FieldWrongSizeException(value.toString());
-            }
-        }
-
-        if (value.toString().length() > subsidyDBF.getLength()) {
-            throw new FieldWrongSizeException(value.toString());
-        }
+    protected RequestFile.TYPE getRequestFileType() {
+        return RequestFile.TYPE.SUBSIDY;
     }
     private Long internalCityId;
     private Long internalStreetId;
@@ -62,7 +39,7 @@ public class Subsidy extends AbstractRequest {
     private String outgoingBuildingNumber;
     private String outgoingBuildingCorp;
     private String outgoingApartment;
-    private Map<String, Object> updateFieldMap;
+    private Map<String, String> updateFieldMap;
     private String lastName;
     private String firstName;
     private String middleName;
@@ -155,11 +132,11 @@ public class Subsidy extends AbstractRequest {
         this.outgoingDistrict = outgoingDistrict;
     }
 
-    public Map<String, Object> getUpdateFieldMap() {
+    public Map<String, String> getUpdateFieldMap() {
         return updateFieldMap;
     }
 
-    public void setUpdateFieldMap(Map<String, Object> updateFieldMap) {
+    public void setUpdateFieldMap(Map<String, String> updateFieldMap) {
         this.updateFieldMap = updateFieldMap;
     }
 
