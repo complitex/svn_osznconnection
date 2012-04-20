@@ -59,7 +59,7 @@ public class AddressService extends AbstractBean {
         long osznId = actualPayment.getOrganizationId();
 
         //Связывание города
-        String city = (String) actualPayment.getField(ActualPaymentDBF.N_NAME);
+        String city = actualPayment.getStringField(ActualPaymentDBF.N_NAME);
         Long cityId = null;
         Correction cityCorrection = null;
         List<Correction> cityCorrections = addressCorrectionBean.findCityLocalCorrections(city, osznId, userOrganizationId);
@@ -90,7 +90,7 @@ public class AddressService extends AbstractBean {
         }
 
         //связывание типа улицы
-        String streetType = (String) actualPayment.getField(ActualPaymentDBF.VUL_CAT);
+        String streetType = actualPayment.getStringField(ActualPaymentDBF.VUL_CAT);
         Long streetTypeId = null;
         Correction streetTypeCorrection = null;
         List<Correction> streetTypeCorrections =
@@ -122,8 +122,8 @@ public class AddressService extends AbstractBean {
         }
 
         //Связывание улицы
-        String street = (String) actualPayment.getField(ActualPaymentDBF.VUL_NAME);
-        String streetCode = (String) actualPayment.getField(ActualPaymentDBF.VUL_CODE);
+        String street = actualPayment.getStringField(ActualPaymentDBF.VUL_NAME);
+        String streetCode = actualPayment.getStringField(ActualPaymentDBF.VUL_CODE);
         Long streetId = null;
         StreetCorrection streetCorrection = null;
         List<StreetCorrection> streetCorrections = addressCorrectionBean.findStreetLocalCorrections(
@@ -159,8 +159,8 @@ public class AddressService extends AbstractBean {
         }
 
         //Связывание дома
-        String buildingNumber = (String) actualPayment.getField(ActualPaymentDBF.BLD_NUM);
-        String buildingCorp = (String) actualPayment.getField(ActualPaymentDBF.CORP_NUM);
+        String buildingNumber = actualPayment.getStringField(ActualPaymentDBF.BLD_NUM);
+        String buildingCorp = actualPayment.getStringField(ActualPaymentDBF.CORP_NUM);
         Long buildingId = null;
         BuildingCorrection buildingCorrection = null;
         List<BuildingCorrection> buildingCorrections = addressCorrectionBean.findBuildingLocalCorrections(
@@ -209,7 +209,7 @@ public class AddressService extends AbstractBean {
         long osznId = subsidy.getOrganizationId();
 
         //Связывание города
-        String city = (String) subsidy.getField(SubsidyDBF.NP_NAME);
+        String city = subsidy.getStringField(SubsidyDBF.NP_NAME);
         Long cityId = null;
         Correction cityCorrection = null;
         List<Correction> cityCorrections = addressCorrectionBean.findCityLocalCorrections(city, osznId, userOrganizationId);
@@ -240,7 +240,7 @@ public class AddressService extends AbstractBean {
         }
 
         //связывание типа улицы
-        String streetType = (String) subsidy.getField(SubsidyDBF.CAT_V);
+        String streetType = subsidy.getStringField(SubsidyDBF.CAT_V);
         Long streetTypeId = null;
         Correction streetTypeCorrection = null;
         List<Correction> streetTypeCorrections =
@@ -272,8 +272,8 @@ public class AddressService extends AbstractBean {
         }
 
         //Связывание улицы
-        String street = (String) subsidy.getField(SubsidyDBF.NAME_V);
-        String streetCode = (String) subsidy.getField(SubsidyDBF.VULCOD);
+        String street = subsidy.getStringField(SubsidyDBF.NAME_V);
+        String streetCode = subsidy.getStringField(SubsidyDBF.VULCOD);
         Long streetId = null;
         StreetCorrection streetCorrection = null;
         List<StreetCorrection> streetCorrections = addressCorrectionBean.findStreetLocalCorrections(
@@ -309,8 +309,8 @@ public class AddressService extends AbstractBean {
         }
 
         //Связывание дома
-        String buildingNumber = (String) subsidy.getField(SubsidyDBF.BLD);
-        String buildingCorp = (String) subsidy.getField(SubsidyDBF.CORP);
+        String buildingNumber = subsidy.getStringField(SubsidyDBF.BLD);
+        String buildingCorp = subsidy.getStringField(SubsidyDBF.CORP);
         Long buildingId = null;
         BuildingCorrection buildingCorrection = null;
         List<BuildingCorrection> buildingCorrections = addressCorrectionBean.findBuildingLocalCorrections(
@@ -383,7 +383,7 @@ public class AddressService extends AbstractBean {
         IStrategy streetTypeStrategy = strategyFactory.getStrategy("street_type");
 
         //Связывание города
-        String city = (String) payment.getField(PaymentDBF.N_NAME);
+        String city = payment.getStringField(PaymentDBF.N_NAME);
         Long cityId = null;
         Correction cityCorrection = null;
         List<Correction> cityCorrections = addressCorrectionBean.findCityLocalCorrections(city, osznId, userOrganizationId);
@@ -414,9 +414,9 @@ public class AddressService extends AbstractBean {
         }
 
         //Связывание улицы
-        String street = (String) payment.getField(PaymentDBF.VUL_NAME);
-        String buildingNumber = (String) payment.getField(PaymentDBF.BLD_NUM);
-        String buildingCorp = (String) payment.getField(PaymentDBF.CORP_NUM);
+        String street = payment.getStringField(PaymentDBF.VUL_NAME);
+        String buildingNumber = payment.getStringField(PaymentDBF.BLD_NUM);
+        String buildingCorp = payment.getStringField(PaymentDBF.CORP_NUM);
 
         Long streetId = null;
         StreetCorrection streetCorrection = null;
@@ -1027,10 +1027,10 @@ public class AddressService extends AbstractBean {
         final long osznId = payment.getOrganizationId();
         final long requestFileId = payment.getRequestFileId();
 
-        String city = (String) payment.getField(PaymentDBF.N_NAME);
-        String street = (String) payment.getField(PaymentDBF.VUL_NAME);
-        String buildingNumber = (String) payment.getField(PaymentDBF.BLD_NUM);
-        String buildingCorp = (String) payment.getField(PaymentDBF.CORP_NUM);
+        String city = payment.getStringField(PaymentDBF.N_NAME);
+        String street = payment.getStringField(PaymentDBF.VUL_NAME);
+        String buildingNumber = payment.getStringField(PaymentDBF.BLD_NUM);
+        String buildingCorp = payment.getStringField(PaymentDBF.CORP_NUM);
 
         switch (entity) {
             case CITY: {
@@ -1156,12 +1156,12 @@ public class AddressService extends AbstractBean {
         final long osznId = actualPayment.getOrganizationId();
         final long requestFileId = actualPayment.getRequestFileId();
 
-        String city = (String) actualPayment.getField(ActualPaymentDBF.N_NAME);
-        String streetType = (String) actualPayment.getField(ActualPaymentDBF.VUL_CAT);
-        String streetCode = (String) actualPayment.getField(ActualPaymentDBF.VUL_CODE);
-        String street = (String) actualPayment.getField(ActualPaymentDBF.VUL_NAME);
-        String buildingNumber = (String) actualPayment.getField(ActualPaymentDBF.BLD_NUM);
-        String buildingCorp = (String) actualPayment.getField(ActualPaymentDBF.CORP_NUM);
+        String city = actualPayment.getStringField(ActualPaymentDBF.N_NAME);
+        String streetType = actualPayment.getStringField(ActualPaymentDBF.VUL_CAT);
+        String streetCode = actualPayment.getStringField(ActualPaymentDBF.VUL_CODE);
+        String street = actualPayment.getStringField(ActualPaymentDBF.VUL_NAME);
+        String buildingNumber = actualPayment.getStringField(ActualPaymentDBF.BLD_NUM);
+        String buildingCorp = actualPayment.getStringField(ActualPaymentDBF.CORP_NUM);
 
         switch (entity) {
             case CITY: {
@@ -1275,12 +1275,12 @@ public class AddressService extends AbstractBean {
         final long osznId = subsidy.getOrganizationId();
         final long requestFileId = subsidy.getRequestFileId();
 
-        String city = (String) subsidy.getField(SubsidyDBF.NP_NAME);
-        String streetType = (String) subsidy.getField(SubsidyDBF.CAT_V);
-        String streetCode = (String) subsidy.getField(SubsidyDBF.VULCOD);
-        String street = (String) subsidy.getField(SubsidyDBF.NAME_V);
-        String buildingNumber = (String) subsidy.getField(SubsidyDBF.BLD);
-        String buildingCorp = (String) subsidy.getField(SubsidyDBF.CORP);
+        String city = subsidy.getStringField(SubsidyDBF.NP_NAME);
+        String streetType = subsidy.getStringField(SubsidyDBF.CAT_V);
+        String streetCode = subsidy.getStringField(SubsidyDBF.VULCOD);
+        String street = subsidy.getStringField(SubsidyDBF.NAME_V);
+        String buildingNumber = subsidy.getStringField(SubsidyDBF.BLD);
+        String buildingCorp = subsidy.getStringField(SubsidyDBF.CORP);
 
         switch (entity) {
             case CITY: {

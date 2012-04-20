@@ -126,7 +126,9 @@ public class BenefitConnectPanel extends Panel {
 
             @Override
             public String getObject() {
-                return benefit.getField(BenefitDBF.SUR_NAM) + " " + benefit.getField(BenefitDBF.F_NAM) + " " + benefit.getField(BenefitDBF.M_NAM);
+                return benefit.getStringField(BenefitDBF.SUR_NAM) + " "
+                        + benefit.getStringField(BenefitDBF.F_NAM) + " "
+                        + benefit.getStringField(BenefitDBF.M_NAM);
             }
         }));
 
@@ -151,7 +153,7 @@ public class BenefitConnectPanel extends Panel {
 
             @Override
             public String getObject() {
-                return StringUtil.valueOf((String) benefit.getField(BenefitDBF.IND_COD));
+                return StringUtil.valueOf(benefit.getStringField(BenefitDBF.IND_COD));
             }
         }));
 
@@ -159,8 +161,8 @@ public class BenefitConnectPanel extends Panel {
 
             @Override
             public String getObject() {
-                return StringUtil.valueOf((String) benefit.getField(BenefitDBF.PSP_SER))
-                        + StringUtil.valueOf((String) benefit.getField(BenefitDBF.PSP_NUM));
+                return StringUtil.valueOf(benefit.getStringField(BenefitDBF.PSP_SER))
+                        + StringUtil.valueOf(benefit.getStringField(BenefitDBF.PSP_NUM));
             }
         }));
 

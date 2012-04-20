@@ -204,7 +204,7 @@
         LEFT JOIN `request_warning_parameter` p ON w.`id` = p.`request_warning_id`
     </select>
 
-    <select id="countByFile" resultType="int" parameterType="hashmap">
+    <select id="countByFile" resultType="int" parameterType="map">
         SELECT COUNT(1) FROM `benefit` b
         WHERE b.`request_file_id` = #{requestFileId} AND b.`status` IN
         <foreach collection="statuses" item="status" open="(" close=")" separator=",">
@@ -212,7 +212,7 @@
         </foreach>
     </select>
 
-    <update id="updateBindingStatus" parameterType="hashmap">
+    <update id="updateBindingStatus" parameterType="map">
         UPDATE `benefit` b SET b.`status` =
         CASE IFNULL(
             (SELECT DISTINCT p.`status` FROM `payment` p, `request_file` bf, `request_file` pf
@@ -243,7 +243,7 @@
         SET b.`status` = 204
     </update>
 
-    <update id="updateAccountNumber" parameterType="hashmap">
+    <update id="updateAccountNumber" parameterType="map">
         UPDATE `benefit` b SET b.`account_number` = #{accountNumber}, b.`status` = #{status}
         <include refid="org.complitex.osznconnection.file.service.BenefitBean.updateByOWN_NUM_SR"/>
     </update>
@@ -259,26 +259,16 @@
             FROM `benefit` b
             JOIN `request_file` bf ON b.`request_file_id` = bf.`id`
             JOIN `request_file` pf ON (pf.`id` = #{requestFileId} AND pf.`type` = 'PAYMENT' AND pf.`group_id` = bf.`group_id`)
-            WHERE b.`account_number` = #{accountNumber} AND b.`OZN` = 1
+            WHERE b.`account_number` = #{accountNumber} AND b.`OZN` = '1'
     </select>
 
-    <select id="findDat1" parameterType="hashmap" resultType="date">
-        SELECT DISTINCT p.`DAT1` FROM `payment` p
-        JOIN `request_file` pf ON p.`request_file_id` = pf.`id`
-        JOIN `benefit` b ON b.`OWN_NUM_SR` = p.`OWN_NUM_SR`
-        JOIN `request_file` bf ON bf.`id` = b.`request_file_id`
-        WHERE bf.`group_id` = pf.`group_id`
-        AND p.`FROG` > 0
-        AND bf.`id` = #{fileId} AND p.`account_number` = #{accountNumber}
-    </select>
-
-    <select id="allAccountNumbers" parameterType="hashmap" resultType="string">
+    <select id="allAccountNumbers" parameterType="map" resultType="string">
         SELECT DISTINCT b.`account_number` FROM `benefit` b
         WHERE b.`request_file_id` = #{fileId}
         AND b.`account_number` IS NOT NULL
     </select>
 
-    <select id="findByAccountNumber" parameterType="hashmap" resultMap="benefitResultMap">
+    <select id="findByAccountNumber" parameterType="map" resultMap="benefitResultMap">
         SELECT b.`id`, b.`status`, b.`account_number`, bf.`organization_id` organization_id,
         b.`request_file_id`,
         b.`IND_COD`,

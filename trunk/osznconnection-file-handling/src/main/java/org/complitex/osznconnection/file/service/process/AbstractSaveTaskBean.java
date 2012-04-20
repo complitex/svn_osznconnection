@@ -4,6 +4,7 @@
  */
 package org.complitex.osznconnection.file.service.process;
 
+import com.google.common.collect.Lists;
 import com.linuxense.javadbf.DBFField;
 import com.linuxense.javadbf.DBFWriter;
 import org.complitex.dictionary.entity.IExecutorObject;
@@ -18,11 +19,16 @@ import org.complitex.osznconnection.file.service.exception.SaveException;
 import org.complitex.osznconnection.file.service.exception.SqlSessionException;
 import javax.ejb.EJB;
 import java.io.File;
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.complitex.dictionary.entity.IConfig;
+import org.complitex.osznconnection.file.service.exception.FieldNotFoundException;
+import org.complitex.osznconnection.file.service.file_description.RequestFileDescription;
+import org.complitex.osznconnection.file.service.file_description.RequestFileDescriptionBean;
+import org.complitex.osznconnection.file.service.file_description.RequestFileFieldDescription;
+import org.complitex.osznconnection.file.service.file_description.convert.ConversionException;
+import org.complitex.osznconnection.file.service.file_description.convert.DBFFieldTypeConverter;
 import org.complitex.osznconnection.file.web.pages.util.GlobalOptions;
 
 /**
@@ -33,6 +39,8 @@ public abstract class AbstractSaveTaskBean {
 
     @EJB
     private RequestFileBean requestFileBean;
+    @EJB
+    private RequestFileDescriptionBean requestFileDescriptionBean;
 
     public boolean execute(IExecutorObject executorObject, Map commandParameters) throws ExecuteException {
         RequestFile requestFile = (RequestFile) executorObject;
@@ -73,24 +81,15 @@ public abstract class AbstractSaveTaskBean {
         return Log.EVENT.VIEW;
     }
 
-    private byte getDataType(Class<?> type) {
-        if (type.equals(String.class)) {
-            return DBFField.FIELD_TYPE_C;
-        } else if (type.equals(Integer.class) || type.equals(BigDecimal.class)) {
-            return DBFField.FIELD_TYPE_N;
-        } else if (type.equals(Date.class)) {
-            return DBFField.FIELD_TYPE_D;
-        }
-
-        throw new IllegalArgumentException(type.toString());
-    }
-
-    protected DBFField newDBFField(String name, Class<?> type, int length, int scale) {
+    private DBFField newDBFField(String name, Class<?> javaType, int length, Integer scale) {
         DBFField field = new DBFField();
         field.setName(name);
-        field.setDataType(getDataType(type));
-        if (!type.equals(Date.class)) {
+        field.setDataType(DBFFieldTypeConverter.toDBFType(name, javaType));
+        if (javaType != Date.class) {
             field.setFieldLength(length);
+            if (scale == null) {
+                scale = 0;
+            }
             field.setDecimalCount(scale);
         }
         return field;
@@ -100,11 +99,20 @@ public abstract class AbstractSaveTaskBean {
 
     protected abstract String getPuAccountFieldName();
 
-    protected abstract DBFField[] getDbfField(RequestFile.TYPE type);
-
     protected abstract IConfig getConfigDirectory();
 
-    protected void save(RequestFile requestFile, boolean updatePuAccount) throws SaveException {
+    private DBFField[] newDBFFields(RequestFileDescription description) {
+        List<DBFField> dbfFields = Lists.newArrayList();
+
+        for (RequestFileFieldDescription field : description.getFields()) {
+            dbfFields.add(newDBFField(field.getName(), field.getFieldType(), field.getLength(), field.getScale()));
+        }
+        return dbfFields.toArray(new DBFField[dbfFields.size()]);
+    }
+
+    protected final void save(RequestFile requestFile, boolean updatePuAccount) throws SaveException {
+        final RequestFileDescription description = requestFileDescriptionBean.getFileDescription(requestFile.getType());
+
         DBFWriter writer = null;
 
         try {
@@ -113,14 +121,14 @@ public abstract class AbstractSaveTaskBean {
                     requestFile.getName(), requestFile.getDirectory());
             requestFile.setAbsolutePath(file.getAbsolutePath());
 
-            //Удаляем файл есть такой есть
+            //Удаляем файл если такой есть
             RequestFileStorage.getInstance().delete(requestFile.getAbsolutePath());
 
             writer = new DBFWriter(RequestFileStorage.getInstance().createFile(requestFile.getAbsolutePath(), true));
             writer.setCharactersetName("cp866");
 
             //Создание полей
-            DBFField[] fields = getDbfField(requestFile.getType());
+            DBFField[] fields = newDBFFields(description);
             writer.setFields(fields);
 
             //Сохранение строк
@@ -132,7 +140,7 @@ public abstract class AbstractSaveTaskBean {
                 throw new SqlSessionException(e);
             }
 
-            for (AbstractRequest abstractRequest : rows) {
+            for (AbstractRequest request : rows) {
                 if (requestFile.isCanceled()) {
                     throw new CanceledByUserException();
                 }
@@ -140,10 +148,22 @@ public abstract class AbstractSaveTaskBean {
                 Object[] rowData = new Object[fields.length];
 
                 for (int i = 0; i < fields.length; ++i) {
-                    rowData[i] = abstractRequest.getDbfFields().get(fields[i].getName());
+                    final String fieldName = fields[i].getName();
+                    String stringValue = request.getDbfFields().get(fieldName);
+
+                    try {
+                        final RequestFileFieldDescription fieldDescription = description.getField(fieldName);
+                        if (fieldDescription == null) {
+                            throw new SaveException(new FieldNotFoundException(fieldName), requestFile);
+                        }
+                        rowData[i] = description.getTypeConverter().toObject(stringValue, fieldDescription.getFieldType());
+                    } catch (ConversionException e) {
+                        throw new SaveException(e, requestFile);
+                    }
+
                     // перезаписываем номер л/с ПУ номером л/с МН при наличии установленной опции
                     if (updatePuAccount && fields[i].getName().equals(getPuAccountFieldName())) {
-                        rowData[i] = abstractRequest.getAccountNumber();
+                        rowData[i] = request.getAccountNumber();
                     }
                 }
 

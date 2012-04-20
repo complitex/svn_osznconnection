@@ -22,21 +22,21 @@ public class PaymentAndBenefitData implements Serializable {
     private BigDecimal reducedArea;
     private Integer roomCount;
     private String ownership;
-    private Double apartmentFeeTarif;
-    private Double heatingTarif;
-    private Double hotWaterTarif;
-    private Double coldWaterTarif;
-    private Double gasTarif;
-    private Double powerTarif;
-    private Double garbageDisposalTarif;
-    private Double drainageTarif;
-    private Double heatingArea;
-    private Double chargeHotWater;
-    private Double chargeColdWater;
-    private Double chargeGas;
-    private Double chargePower;
-    private Double chargeGarbageDisposal;
-    private Double chargeDrainage;
+    private BigDecimal apartmentFeeTarif;
+    private BigDecimal heatingTarif;
+    private BigDecimal hotWaterTarif;
+    private BigDecimal coldWaterTarif;
+    private BigDecimal gasTarif;
+    private BigDecimal powerTarif;
+    private BigDecimal garbageDisposalTarif;
+    private BigDecimal drainageTarif;
+    private BigDecimal heatingArea;
+    private BigDecimal chargeHotWater;
+    private BigDecimal chargeColdWater;
+    private BigDecimal chargeGas;
+    private BigDecimal chargePower;
+    private BigDecimal chargeGarbageDisposal;
+    private BigDecimal chargeDrainage;
 
     public Integer getLodgerCount() {
         return lodgerCount;
@@ -110,123 +110,123 @@ public class PaymentAndBenefitData implements Serializable {
         this.apartmentFeeCharge = apartmentFeeCharge;
     }
 
-    public Double getApartmentFeeTarif() {
+    public BigDecimal getApartmentFeeTarif() {
         return apartmentFeeTarif;
     }
 
-    public void setApartmentFeeTarif(Double apartmentFeeTarif) {
+    public void setApartmentFeeTarif(BigDecimal apartmentFeeTarif) {
         this.apartmentFeeTarif = apartmentFeeTarif;
     }
 
-    public Double getChargeColdWater() {
+    public BigDecimal getChargeColdWater() {
         return chargeColdWater;
     }
 
-    public void setChargeColdWater(Double chargeColdWater) {
+    public void setChargeColdWater(BigDecimal chargeColdWater) {
         this.chargeColdWater = chargeColdWater;
     }
 
-    public Double getChargeDrainage() {
+    public BigDecimal getChargeDrainage() {
         return chargeDrainage;
     }
 
-    public void setChargeDrainage(Double chargeDrainage) {
+    public void setChargeDrainage(BigDecimal chargeDrainage) {
         this.chargeDrainage = chargeDrainage;
     }
 
-    public Double getChargeGarbageDisposal() {
+    public BigDecimal getChargeGarbageDisposal() {
         return chargeGarbageDisposal;
     }
 
-    public void setChargeGarbageDisposal(Double chargeGarbageDisposal) {
+    public void setChargeGarbageDisposal(BigDecimal chargeGarbageDisposal) {
         this.chargeGarbageDisposal = chargeGarbageDisposal;
     }
 
-    public Double getChargeGas() {
+    public BigDecimal getChargeGas() {
         return chargeGas;
     }
 
-    public void setChargeGas(Double chargeGas) {
+    public void setChargeGas(BigDecimal chargeGas) {
         this.chargeGas = chargeGas;
     }
 
-    public Double getChargeHotWater() {
+    public BigDecimal getChargeHotWater() {
         return chargeHotWater;
     }
 
-    public void setChargeHotWater(Double chargeHotWater) {
+    public void setChargeHotWater(BigDecimal chargeHotWater) {
         this.chargeHotWater = chargeHotWater;
     }
 
-    public Double getChargePower() {
+    public BigDecimal getChargePower() {
         return chargePower;
     }
 
-    public void setChargePower(Double chargePower) {
+    public void setChargePower(BigDecimal chargePower) {
         this.chargePower = chargePower;
     }
 
-    public Double getColdWaterTarif() {
+    public BigDecimal getColdWaterTarif() {
         return coldWaterTarif;
     }
 
-    public void setColdWaterTarif(Double coldWaterTarif) {
+    public void setColdWaterTarif(BigDecimal coldWaterTarif) {
         this.coldWaterTarif = coldWaterTarif;
     }
 
-    public Double getDrainageTarif() {
+    public BigDecimal getDrainageTarif() {
         return drainageTarif;
     }
 
-    public void setDrainageTarif(Double drainageTarif) {
+    public void setDrainageTarif(BigDecimal drainageTarif) {
         this.drainageTarif = drainageTarif;
     }
 
-    public Double getGarbageDisposalTarif() {
+    public BigDecimal getGarbageDisposalTarif() {
         return garbageDisposalTarif;
     }
 
-    public void setGarbageDisposalTarif(Double garbageDisposalTarif) {
+    public void setGarbageDisposalTarif(BigDecimal garbageDisposalTarif) {
         this.garbageDisposalTarif = garbageDisposalTarif;
     }
 
-    public Double getGasTarif() {
+    public BigDecimal getGasTarif() {
         return gasTarif;
     }
 
-    public void setGasTarif(Double gasTarif) {
+    public void setGasTarif(BigDecimal gasTarif) {
         this.gasTarif = gasTarif;
     }
 
-    public Double getHeatingArea() {
+    public BigDecimal getHeatingArea() {
         return heatingArea;
     }
 
-    public void setHeatingArea(Double heatingArea) {
+    public void setHeatingArea(BigDecimal heatingArea) {
         this.heatingArea = heatingArea;
     }
 
-    public Double getHeatingTarif() {
+    public BigDecimal getHeatingTarif() {
         return heatingTarif;
     }
 
-    public void setHeatingTarif(Double heatingTarif) {
+    public void setHeatingTarif(BigDecimal heatingTarif) {
         this.heatingTarif = heatingTarif;
     }
 
-    public Double getHotWaterTarif() {
+    public BigDecimal getHotWaterTarif() {
         return hotWaterTarif;
     }
 
-    public void setHotWaterTarif(Double hotWaterTarif) {
+    public void setHotWaterTarif(BigDecimal hotWaterTarif) {
         this.hotWaterTarif = hotWaterTarif;
     }
 
-    public Double getPowerTarif() {
+    public BigDecimal getPowerTarif() {
         return powerTarif;
     }
 
-    public void setPowerTarif(Double powerTarif) {
+    public void setPowerTarif(BigDecimal powerTarif) {
         this.powerTarif = powerTarif;
     }
 

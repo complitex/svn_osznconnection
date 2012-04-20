@@ -30,6 +30,7 @@ import javax.ejb.EJB;
 import java.util.*;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.ResourceModel;
+import org.complitex.osznconnection.file.service.file_description.RequestFileDescriptionBean;
 import org.complitex.template.web.pages.ScrollListPage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +48,8 @@ public class GroupList extends ScrollListPage {
     private ProcessManagerBean processManagerBean;
     @EJB
     private LogBean logBean;
+    @EJB
+    private RequestFileDescriptionBean requestFileDescriptionBean;
 
     private class GroupListPanel extends AbstractProcessableListPanel<RequestFileGroup, RequestFileGroupFilter> {
 
@@ -158,6 +161,12 @@ public class GroupList extends ScrollListPage {
                     };
                 }
             });
+        }
+
+        @Override
+        protected boolean hasFieldDescription() {
+            return requestFileDescriptionBean.getFileDescription(RequestFile.TYPE.PAYMENT) != null
+                    && requestFileDescriptionBean.getFileDescription(RequestFile.TYPE.BENEFIT) != null;
         }
 
         @Override

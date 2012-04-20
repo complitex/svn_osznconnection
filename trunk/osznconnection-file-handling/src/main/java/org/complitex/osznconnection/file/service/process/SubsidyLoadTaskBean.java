@@ -51,7 +51,7 @@ public class SubsidyLoadTaskBean implements ITaskBean {
             }
 
             @Override
-            public void postProcess(AbstractRequest request) {
+            public void postProcess(int rowNumber, AbstractRequest request) {
                 final Subsidy subsidy = (Subsidy) request;
                 parseFio(subsidy);
             }
@@ -70,8 +70,8 @@ public class SubsidyLoadTaskBean implements ITaskBean {
     }
 
     private void parseFio(Subsidy subsidy) {
-        final String rash = (String) subsidy.getField(SubsidyDBF.RASH);
-        final String fio = (String) subsidy.getField(SubsidyDBF.FIO);
+        final String rash = subsidy.getStringField(SubsidyDBF.RASH);
+        final String fio = subsidy.getStringField(SubsidyDBF.FIO);
         SubsidyNameParser.SubsidyName name = SubsidyNameParser.parse(rash, fio);
         subsidy.setFirstName(name.getFirstName());
         subsidy.setMiddleName(name.getMiddleName());

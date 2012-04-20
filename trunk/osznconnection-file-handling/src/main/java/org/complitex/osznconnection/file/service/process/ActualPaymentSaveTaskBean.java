@@ -4,6 +4,7 @@ import com.linuxense.javadbf.DBFField;
 import org.complitex.dictionary.entity.IConfig;
 import org.complitex.dictionary.service.executor.ITaskBean;
 import org.complitex.osznconnection.file.entity.*;
+import org.complitex.osznconnection.file.entity.RequestFile.TYPE;
 import org.complitex.osznconnection.file.service.*;
 
 import javax.ejb.EJB;
@@ -23,18 +24,6 @@ public class ActualPaymentSaveTaskBean extends AbstractSaveTaskBean implements I
     @Override
     public Class<?> getControllerClass() {
         return ActualPaymentSaveTaskBean.class;
-    }
-
-    @Override
-    protected DBFField[] getDbfField(RequestFile.TYPE type) {
-        ActualPaymentDBF[] actualPaymentDBFs = ActualPaymentDBF.values();
-        DBFField[] dbfFields = new DBFField[actualPaymentDBFs.length];
-
-        for (int i = 0; i < actualPaymentDBFs.length; ++i) {
-            ActualPaymentDBF dbf = actualPaymentDBFs[i];
-            dbfFields[i] = newDBFField(dbf.name(), dbf.getType(), dbf.getLength(), dbf.getScale());
-        }
-        return dbfFields;
     }
 
     @Override

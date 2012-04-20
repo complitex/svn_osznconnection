@@ -247,7 +247,7 @@ public class FillTaskBean implements ITaskBean {
         for (String accountNumber : allAccountNumbers) {
             List<Benefit> benefits = benefitBean.findByAccountNumber(accountNumber, benefitFile.getId());
             if (benefits != null && !benefits.isEmpty()) {
-                Date dat1 = benefitBean.findDat1(accountNumber, benefitFile.getId());
+                Date dat1 = paymentBean.findDat1(accountNumber, benefitFile.getId());
                 if (dat1 != null) {
                     adapter.processBenefit(calculationContext, dat1, benefits);
                 } else {

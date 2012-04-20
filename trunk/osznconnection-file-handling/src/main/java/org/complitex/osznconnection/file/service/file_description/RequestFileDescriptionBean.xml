@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.complitex.osznconnection.file.service.file_description.RequestFileDescriptionBean">
+
+    <resultMap id="requestFileDescriptionResultMap" type="org.complitex.osznconnection.file.service.file_description.RequestFileDescription">
+        <constructor>
+            <arg column="request_file_type" javaType="string"/>
+            <arg column="date_pattern" javaType="string"/>
+        </constructor>
+        <id column="id" property="id"/>
+        
+        <collection property="fields" ofType="org.complitex.osznconnection.file.service.file_description.RequestFileFieldDescription">
+            <constructor>
+                <arg column="field_name" javaType="string"/>
+                <arg column="field_type" javaType="string"/>
+                <arg column="field_length" javaType="_int"/>
+                <arg column="field_scale" javaType="int"/>
+            </constructor>
+            <id column="field_id" property="id"/>
+            <result column="field_file_description_id" property="requestFileDescriptionId"/>
+        </collection>
+    </resultMap>
+    
+    <select id="find" parameterType="string"
+        resultMap="org.complitex.osznconnection.file.service.file_description.RequestFileDescriptionBean.requestFileDescriptionResultMap">
+        SELECT d.*, 
+               f.`id` field_id, f.`name` field_name, f.`type` field_type, f.`length` field_length, f.`scale` field_scale,
+               f.`request_file_description_id` field_file_description_id
+           FROM `request_file_description` d
+           JOIN `request_file_field_description` f ON d.`id` = f.`request_file_description_id`
+           WHERE d.`request_file_type` = #{requestFileType}
+    </select>
+    
+    <insert id="insertFileDescription" parameterType="org.complitex.osznconnection.file.service.file_description.RequestFileDescription"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO `request_file_description` (`request_file_type`, `date_pattern`) VALUES (#{fileType}, #{datePattern})
+    </insert>
+    
+    <insert id="insertFileFieldDescription" parameterType="org.complitex.osznconnection.file.service.file_description.RequestFileFieldDescription"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO `request_file_field_description` (`name`, `type`, `length`, `scale`, `request_file_description_id`) 
+            VALUES (#{name}, #{type}, #{length}, #{scale}, #{requestFileDescriptionId})
+    </insert>
+    
+    <delete id="deleteFileFieldDescription" parameterType="string">
+        DELETE FROM `request_file_field_description`
+    </delete>
+    
+    <delete id="deleteFileDescription" parameterType="string">
+        DELETE FROM `request_file_description`
+    </delete>
+
+</mapper>

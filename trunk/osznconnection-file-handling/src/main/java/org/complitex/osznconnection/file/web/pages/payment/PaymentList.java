@@ -213,15 +213,15 @@ public final class PaymentList extends TemplatePage {
             protected void populateItem(Item<Payment> item) {
                 final Payment payment = item.getModelObject();
 
-                item.add(new Label("account", (String) payment.getField(PaymentDBF.OWN_NUM_SR)));
-                item.add(new Label("firstName", (String) payment.getField(PaymentDBF.F_NAM)));
-                item.add(new Label("middleName", (String) payment.getField(PaymentDBF.M_NAM)));
-                item.add(new Label("lastName", (String) payment.getField(PaymentDBF.SUR_NAM)));
-                item.add(new Label("city", (String) payment.getField(PaymentDBF.N_NAME)));
-                item.add(new Label("street", (String) payment.getField(PaymentDBF.VUL_NAME)));
-                item.add(new Label("building", (String) payment.getField(PaymentDBF.BLD_NUM)));
-                item.add(new Label("corp", (String) payment.getField(PaymentDBF.CORP_NUM)));
-                item.add(new Label("apartment", (String) payment.getField(PaymentDBF.FLAT)));
+                item.add(new Label("account", payment.getStringField(PaymentDBF.OWN_NUM_SR)));
+                item.add(new Label("firstName", payment.getStringField(PaymentDBF.F_NAM)));
+                item.add(new Label("middleName", payment.getStringField(PaymentDBF.M_NAM)));
+                item.add(new Label("lastName", payment.getStringField(PaymentDBF.SUR_NAM)));
+                item.add(new Label("city", payment.getStringField(PaymentDBF.N_NAME)));
+                item.add(new Label("street", payment.getStringField(PaymentDBF.VUL_NAME)));
+                item.add(new Label("building", payment.getStringField(PaymentDBF.BLD_NUM)));
+                item.add(new Label("corp", payment.getStringField(PaymentDBF.CORP_NUM)));
+                item.add(new Label("apartment", payment.getStringField(PaymentDBF.FLAT)));
                 item.add(new Label("status", statusRenderService.displayStatus(payment.getStatus(), getLocale())));
                 item.add(new Label("statusDetails", webWarningRenderer.display(payment.getWarnings(), getLocale())));
 
@@ -229,11 +229,11 @@ public final class PaymentList extends TemplatePage {
 
                     @Override
                     public void onClick(AjaxRequestTarget target) {
-                        addressCorrectionPanel.open(target, payment, (String) payment.getField(PaymentDBF.F_NAM),
-                                (String) payment.getField(PaymentDBF.M_NAM), (String) payment.getField(PaymentDBF.SUR_NAM),
-                                (String) payment.getField(PaymentDBF.N_NAME), (String) payment.getField(PaymentDBF.VUL_NAME),
-                                (String) payment.getField(PaymentDBF.BLD_NUM), (String) payment.getField(PaymentDBF.CORP_NUM),
-                                (String) payment.getField(PaymentDBF.FLAT), payment.getInternalCityId(),
+                        addressCorrectionPanel.open(target, payment, payment.getStringField(PaymentDBF.F_NAM),
+                                payment.getStringField(PaymentDBF.M_NAM), payment.getStringField(PaymentDBF.SUR_NAM),
+                                payment.getStringField(PaymentDBF.N_NAME), payment.getStringField(PaymentDBF.VUL_NAME),
+                                payment.getStringField(PaymentDBF.BLD_NUM), payment.getStringField(PaymentDBF.CORP_NUM),
+                                payment.getStringField(PaymentDBF.FLAT), payment.getInternalCityId(),
                                 payment.getInternalStreetId(), payment.getInternalBuildingId());
                     }
                 };
@@ -245,8 +245,8 @@ public final class PaymentList extends TemplatePage {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         lookupPanel.open(target, payment, payment.getInternalCityId(), payment.getInternalStreetId(),
-                                payment.getInternalBuildingId(), (String) payment.getField(PaymentDBF.FLAT),
-                                (String) payment.getField(PaymentDBF.OWN_NUM_SR),
+                                payment.getInternalBuildingId(), payment.getStringField(PaymentDBF.FLAT),
+                                payment.getStringField(PaymentDBF.OWN_NUM_SR),
                                 payment.getStatus().isImmediatelySearchByAddress());
                     }
                 };

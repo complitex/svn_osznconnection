@@ -54,7 +54,7 @@
         delete from `tarif` where `request_file_id` = #{id};
     </delete>
 
-    <select id="getCode2" parameterType="map" resultType="int">
+    <select id="getCode2" parameterType="map" resultType="string">
         SELECT DISTINCT t.`T11_CODE2` 
                 FROM `tarif` t 
                 JOIN `request_file` f ON (f.`id` = t.`request_file_id` AND f.`type` = 'TARIF')

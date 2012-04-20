@@ -94,7 +94,8 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
     private WebMarkupContainer buttonContainer;
     private WebMarkupContainer optionContainer;
     private Map<Long, IModel<Boolean>> selectModels;
-    private final boolean modificationsAllowed;
+    private boolean modificationsAllowed;
+    private boolean hasFieldDescription;
     private Form<F> filterForm;
     private DataView<M> dataView;
     private DataProvider<M> dataProvider;
@@ -103,9 +104,10 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
 
     public AbstractProcessableListPanel(String id) {
         super(id);
-        this.modificationsAllowed = osznSessionBean.getCurrentUserOrganizationId() != null || osznSessionBean.isAdmin();
         init();
     }
+
+    protected abstract boolean hasFieldDescription();
 
     protected abstract ProcessType getLoadProcessType();
 
@@ -216,6 +218,11 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
 
             //Отобразить сообщения
             showMessages();
+
+            //Если описания структуры для файлов запросов не загружены в базу, сообщить об этом пользователю.
+            if (!hasFieldDescription) {
+                error(getString("file_description_missing"));
+            }
         }
 
         super.onBeforeRender();
@@ -225,6 +232,13 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
         add(JavascriptPackageResource.getHeaderContribution(WebCommonResourceInitializer.HIGHLIGHT_JS));
         add(JavascriptPackageResource.getHeaderContribution(AbstractProcessableListPanel.class,
                 AbstractProcessableListPanel.class.getSimpleName() + ".js"));
+
+        this.hasFieldDescription = hasFieldDescription();
+        this.modificationsAllowed =
+                //- только пользователи, принадлежащие организации или администраторы могут обрабатывать файлы.
+                (osznSessionBean.getCurrentUserOrganizationId() != null || osznSessionBean.isAdmin())
+                && //можно обрабатывать файлы, только если в базу загружены описания структур для файлов запросов.
+                hasFieldDescription;
 
         final AjaxFeedbackPanel messages = new AjaxFeedbackPanel("messages");
         messages.setOutputMarkupId(true);

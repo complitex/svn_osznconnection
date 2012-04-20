@@ -2,7 +2,6 @@ package org.complitex.osznconnection.file.service.process;
 
 import org.complitex.dictionary.entity.IExecutorObject;
 import org.complitex.dictionary.entity.Log;
-import org.complitex.dictionary.service.SessionBean;
 import org.complitex.dictionary.service.executor.ExecuteException;
 import org.complitex.dictionary.service.executor.ITaskBean;
 import org.complitex.osznconnection.file.Module;
@@ -26,18 +25,14 @@ import java.util.Map;
  */
 @Stateless(name = "LoadTarifTaskBean")
 @TransactionManagement(TransactionManagementType.BEAN)
-public class LoadTarifTaskBean implements ITaskBean{
-    @EJB(beanName = "RequestFileBean")
-    private RequestFileBean requestFileBean;
-
-    @EJB(beanName = "LoadRequestFileBean")
-    private LoadRequestFileBean loadRequestFileBean;
-
-    @EJB(beanName = "TarifBean")
-    private TarifBean tarifBean;
+public class LoadTarifTaskBean implements ITaskBean {
 
     @EJB
-    private SessionBean sessionBean;
+    private RequestFileBean requestFileBean;
+    @EJB
+    private LoadRequestFileBean loadRequestFileBean;
+    @EJB
+    private TarifBean tarifBean;
 
     @Override
     public boolean execute(IExecutorObject executorObject, Map commandParameters) throws ExecuteException {
@@ -46,7 +41,7 @@ public class LoadTarifTaskBean implements ITaskBean{
         //delete previous tarif
         requestFileBean.deleteTarif(requestFile.getOrganizationId());
 
-        loadRequestFileBean.load(requestFile, new LoadRequestFileBean.AbstractLoadRequestFile(){
+        loadRequestFileBean.load(requestFile, new LoadRequestFileBean.AbstractLoadRequestFile() {
 
             @Override
             public Enum[] getFieldNames() {
@@ -80,7 +75,7 @@ public class LoadTarifTaskBean implements ITaskBean{
     }
 
     @Override
-    public Class getControllerClass() {
+    public Class<?> getControllerClass() {
         return LoadTarifTaskBean.class;
     }
 

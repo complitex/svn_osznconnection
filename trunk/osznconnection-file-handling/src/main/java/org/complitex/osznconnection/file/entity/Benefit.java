@@ -1,11 +1,5 @@
 package org.complitex.osznconnection.file.entity;
 
-import org.complitex.osznconnection.file.service.exception.FieldNotFoundException;
-import org.complitex.osznconnection.file.service.exception.FieldWrongSizeException;
-
-import java.math.BigDecimal;
-import java.util.Date;
-
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 24.08.2010 18:22:55
@@ -23,7 +17,11 @@ public class Benefit extends AbstractRequest {
      * @param benefitDBF константа поля
      * @return значение поля
      */
-    public Object getField(BenefitDBF benefitDBF) {
+    public <T> T getField(BenefitDBF benefitDBF) {
+        return getField(benefitDBF.name());
+    }
+
+    public String getStringField(BenefitDBF benefitDBF) {
         return dbfFields.get(benefitDBF.name());
     }
 
@@ -33,37 +31,13 @@ public class Benefit extends AbstractRequest {
      * @param object значение
      */
     public void setField(BenefitDBF benefitDBF, Object object) {
-        dbfFields.put(benefitDBF.name(), object);
+        setField(benefitDBF.name(), object);
     }
 
     @Override
-    protected Class getFieldType(String name) throws FieldNotFoundException {
-        try {
-            return BenefitDBF.valueOf(name).getType();
-        } catch (IllegalArgumentException e) {
-            throw new FieldNotFoundException(name);
-        }
+    protected RequestFile.TYPE getRequestFileType() {
+        return RequestFile.TYPE.BENEFIT;
     }
-
-    @Override
-    protected void checkSize(String name, Object value) throws FieldWrongSizeException {
-        if (value == null || value instanceof Date) {
-            return;
-        }
-
-        BenefitDBF benefitDBF = BenefitDBF.valueOf(name);
-
-        if (value instanceof BigDecimal) {
-            if (((BigDecimal) value).scale() > benefitDBF.getScale()) {
-                throw new FieldWrongSizeException(value.toString());
-            }
-        }
-
-        if (value.toString().length() > benefitDBF.getLength()) {
-            throw new FieldWrongSizeException(value.toString());
-        }
-    }
-
     private String city;
     private String street;
     private String buildingNumber;
@@ -111,6 +85,6 @@ public class Benefit extends AbstractRequest {
     }
 
     public boolean hasPriv() {
-        return getField(BenefitDBF.PRIV_CAT) != null;
+        return getStringField(BenefitDBF.PRIV_CAT) != null;
     }
 }

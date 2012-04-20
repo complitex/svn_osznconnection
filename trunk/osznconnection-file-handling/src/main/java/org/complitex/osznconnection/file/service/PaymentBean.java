@@ -4,7 +4,9 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import java.math.BigDecimal;
 import java.util.Collections;
+import java.util.Date;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.entity.example.PaymentExample;
@@ -106,11 +108,11 @@ public class PaymentBean extends AbstractRequestBean {
 
     @Transactional
     public void update(Payment payment, Set<Long> serviceProviderTypeIds) {
-        Map<String, Object> updateFieldMap = null;
+        Map<String, String> updateFieldMap = null;
         if (serviceProviderTypeIds != null && !serviceProviderTypeIds.isEmpty()) {
             updateFieldMap = Maps.newHashMap();
             for (PaymentDBF field : getUpdateableFields(serviceProviderTypeIds)) {
-                updateFieldMap.put(field.name(), payment.getField(field));
+                updateFieldMap.put(field.name(), payment.getStringField(field));
             }
         }
         payment.setUpdateFieldMap(updateFieldMap);
@@ -258,7 +260,7 @@ public class PaymentBean extends AbstractRequestBean {
      */
     @Transactional
     public void clearBeforeBinding(long fileId, Set<Long> serviceProviderTypeIds) {
-        Map<String, Object> updateFieldMap = null;
+        Map<String, String> updateFieldMap = null;
         if (serviceProviderTypeIds != null && !serviceProviderTypeIds.isEmpty()) {
             updateFieldMap = Maps.newHashMap();
             for (PaymentDBF field : getUpdateableFields(serviceProviderTypeIds)) {
@@ -277,7 +279,7 @@ public class PaymentBean extends AbstractRequestBean {
      */
     @Transactional
     public void clearBeforeProcessing(long fileId, Set<Long> serviceProviderTypeIds) {
-        Map<String, Object> updateFieldMap = null;
+        Map<String, String> updateFieldMap = null;
         if (serviceProviderTypeIds != null && !serviceProviderTypeIds.isEmpty()) {
             updateFieldMap = Maps.newHashMap();
             for (PaymentDBF field : getUpdateableFields(serviceProviderTypeIds)) {
@@ -288,5 +290,43 @@ public class PaymentBean extends AbstractRequestBean {
         sqlSession().update(MAPPING_NAMESPACE + ".clearBeforeProcessing",
                 ImmutableMap.of("statuses", RequestStatus.unboundStatuses(), "fileId", fileId, "updateFieldMap", updateFieldMap));
         clearWarnings(fileId, RequestFile.TYPE.PAYMENT);
+    }
+
+    /**
+     * Получает дату из поля DAT1 в записи payment, у которой account number = accountNumber и
+     * кроме того поле FROG больше 0(только benefit записи соответствующие таким payment записям нужно обрабатывать).
+     * @param accountNumber
+     * @param benefitFileId
+     * @return
+     */
+    @Transactional
+    public Date findDat1(String accountNumber, long benefitFileId) {
+        @SuppressWarnings("unchecked")
+        List<Payment> payments = sqlSession().selectList(MAPPING_NAMESPACE + ".findDat1",
+                ImmutableMap.of("accountNumber", accountNumber, "benefitFileId", benefitFileId));
+
+        final Set<Date> dat1Set = Sets.newHashSet();
+        for (Payment p : payments) {
+            Object frog = p.getField(PaymentDBF.FROG);
+            if (frog != null) {
+                if (frog instanceof Integer && (Integer) frog > 0) {
+                    dat1Set.add((Date) p.getField(PaymentDBF.DAT1));
+                } else if (frog instanceof BigDecimal && ((BigDecimal) frog).compareTo(BigDecimal.ZERO) > 0) {
+                    dat1Set.add((Date) p.getField(PaymentDBF.DAT1));
+                } else {
+                    throw new IllegalStateException("Value of payment's field `FROG` is not numeric value. "
+                            + "Payment id: " + p.getId() + ", value of field `FROG`: '" + frog.toString()
+                            + "', type of field `FROG`: " + frog.getClass()
+                            + ", payment account number: '" + accountNumber
+                            + "', benefit file id: '" + benefitFileId + "'.");
+                }
+            }
+        }
+
+        if (dat1Set.size() == 1) {
+            return dat1Set.iterator().next();
+        } else {
+            throw new IllegalStateException("Found more one payment's dat1 values.");
+        }
     }
 }

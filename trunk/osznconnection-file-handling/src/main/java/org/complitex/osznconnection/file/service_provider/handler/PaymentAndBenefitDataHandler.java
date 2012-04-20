@@ -49,21 +49,21 @@ public class PaymentAndBenefitDataHandler implements TypeHandler {
                 paymentAndBenefitData.setReducedArea(rs.getBigDecimal("ts"));
                 paymentAndBenefitData.setRoomCount(rs.getInt("rc"));
                 paymentAndBenefitData.setOwnership(rs.getString("own"));
-                paymentAndBenefitData.setApartmentFeeTarif(rs.getDouble("b_tarif"));
-                paymentAndBenefitData.setHeatingTarif(rs.getDouble("b_tarif_ot"));
-                paymentAndBenefitData.setHotWaterTarif(rs.getDouble("b_tarif_gv"));
-                paymentAndBenefitData.setColdWaterTarif(rs.getDouble("b_tarif_hv"));
-                paymentAndBenefitData.setGasTarif(rs.getDouble("b_tarif_gas"));
-                paymentAndBenefitData.setPowerTarif(rs.getDouble("b_tarif_en"));
-                paymentAndBenefitData.setGarbageDisposalTarif(rs.getDouble("b_tarif_tr"));
-                paymentAndBenefitData.setDrainageTarif(rs.getDouble("b_tarif_gvo"));
-                paymentAndBenefitData.setHeatingArea(rs.getDouble("hs"));
-                paymentAndBenefitData.setChargeHotWater(rs.getDouble("charge_gv"));
-                paymentAndBenefitData.setChargeColdWater(rs.getDouble("charge_hv"));
-                paymentAndBenefitData.setChargeGas(rs.getDouble("charge_gas"));
-                paymentAndBenefitData.setChargePower(rs.getDouble("charge_en"));
-                paymentAndBenefitData.setChargeGarbageDisposal(rs.getDouble("charge_tr"));
-                paymentAndBenefitData.setChargeDrainage(rs.getDouble("charge_gvo"));
+                paymentAndBenefitData.setApartmentFeeTarif(rs.getBigDecimal("b_tarif"));
+                paymentAndBenefitData.setHeatingTarif(rs.getBigDecimal("b_tarif_ot"));
+                paymentAndBenefitData.setHotWaterTarif(rs.getBigDecimal("b_tarif_gv"));
+                paymentAndBenefitData.setColdWaterTarif(rs.getBigDecimal("b_tarif_hv"));
+                paymentAndBenefitData.setGasTarif(rs.getBigDecimal("b_tarif_gas"));
+                paymentAndBenefitData.setPowerTarif(rs.getBigDecimal("b_tarif_en"));
+                paymentAndBenefitData.setGarbageDisposalTarif(rs.getBigDecimal("b_tarif_tr"));
+                paymentAndBenefitData.setDrainageTarif(rs.getBigDecimal("b_tarif_gvo"));
+                paymentAndBenefitData.setHeatingArea(rs.getBigDecimal("hs"));
+                paymentAndBenefitData.setChargeHotWater(rs.getBigDecimal("charge_gv"));
+                paymentAndBenefitData.setChargeColdWater(rs.getBigDecimal("charge_hv"));
+                paymentAndBenefitData.setChargeGas(rs.getBigDecimal("charge_gas"));
+                paymentAndBenefitData.setChargePower(rs.getBigDecimal("charge_en"));
+                paymentAndBenefitData.setChargeGarbageDisposal(rs.getBigDecimal("charge_tr"));
+                paymentAndBenefitData.setChargeDrainage(rs.getBigDecimal("charge_gvo"));
                 paymentAndBenefitDatas.add(paymentAndBenefitData);
             }
         } catch (SQLException e) {

@@ -73,5 +73,7 @@
         <mapper resource="org/complitex/osznconnection/file/service/PersonAccountLocalBean.xml"/>
         <mapper resource="org/complitex/osznconnection/file/service/status/details/StatusDetailBean.xml"/>
         <mapper resource="org/complitex/osznconnection/file/service/warning/RequestWarningBean.xml"/>
+        
+        <mapper resource="org/complitex/osznconnection/file/service/file_description/RequestFileDescriptionBean.xml"/>
     </mappers>
 </configuration>

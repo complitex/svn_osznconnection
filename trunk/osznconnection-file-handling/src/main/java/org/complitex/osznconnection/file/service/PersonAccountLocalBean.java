@@ -121,12 +121,12 @@ public class PersonAccountLocalBean extends AbstractBean {
 
     @Transactional
     public String findLocalAccountNumber(Payment payment, long calculationCenterId, long userOrganizationId) {
-        List<PersonAccount> accounts = findAccounts((String) payment.getField(PaymentDBF.F_NAM),
-                (String) payment.getField(PaymentDBF.M_NAM), (String) payment.getField(PaymentDBF.SUR_NAM),
-                (String) payment.getField(PaymentDBF.N_NAME), (String) payment.getField(PaymentDBF.VUL_NAME),
-                (String) payment.getField(PaymentDBF.BLD_NUM), (String) payment.getField(PaymentDBF.CORP_NUM),
-                (String) payment.getField(PaymentDBF.FLAT), payment.getOrganizationId(), calculationCenterId,
-                (String) payment.getField(PaymentDBF.OWN_NUM_SR), userOrganizationId, false, sqlSession());
+        List<PersonAccount> accounts = findAccounts(payment.getStringField(PaymentDBF.F_NAM),
+                payment.getStringField(PaymentDBF.M_NAM), payment.getStringField(PaymentDBF.SUR_NAM),
+                payment.getStringField(PaymentDBF.N_NAME), payment.getStringField(PaymentDBF.VUL_NAME),
+                payment.getStringField(PaymentDBF.BLD_NUM), payment.getStringField(PaymentDBF.CORP_NUM),
+                payment.getStringField(PaymentDBF.FLAT), payment.getOrganizationId(), calculationCenterId,
+                payment.getStringField(PaymentDBF.OWN_NUM_SR), userOrganizationId, false, sqlSession());
         if (accounts.isEmpty()) {
             return null;
         } else if (accounts.size() == 1) {
@@ -144,13 +144,14 @@ public class PersonAccountLocalBean extends AbstractBean {
 
     @Transactional
     public String findLocalAccountNumber(ActualPayment actualPayment, long calculationCenterId, long userOrganizationId) {
-        List<PersonAccount> accounts = findAccounts((String) actualPayment.getField(ActualPaymentDBF.F_NAM),
-                (String) actualPayment.getField(ActualPaymentDBF.M_NAM), (String) actualPayment.getField(ActualPaymentDBF.SUR_NAM),
-                (String) actualPayment.getField(ActualPaymentDBF.N_NAME), (String) actualPayment.getField(ActualPaymentDBF.VUL_NAME),
-                (String) actualPayment.getField(ActualPaymentDBF.BLD_NUM), (String) actualPayment.getField(ActualPaymentDBF.CORP_NUM),
-                (String) actualPayment.getField(ActualPaymentDBF.FLAT), actualPayment.getOrganizationId(), calculationCenterId,
-                (String) actualPayment.getField(ActualPaymentDBF.OWN_NUM), userOrganizationId, false, sqlSession());
-        final String currentStreetType = (String) actualPayment.getField(ActualPaymentDBF.VUL_CAT);
+        List<PersonAccount> accounts = findAccounts(actualPayment.getStringField(ActualPaymentDBF.F_NAM),
+                actualPayment.getStringField(ActualPaymentDBF.M_NAM), actualPayment.getStringField(ActualPaymentDBF.SUR_NAM),
+                actualPayment.getStringField(ActualPaymentDBF.N_NAME), actualPayment.getStringField(ActualPaymentDBF.VUL_NAME),
+                actualPayment.getStringField(ActualPaymentDBF.BLD_NUM), actualPayment.getStringField(ActualPaymentDBF.CORP_NUM),
+                actualPayment.getStringField(ActualPaymentDBF.FLAT),
+                actualPayment.getOrganizationId(), calculationCenterId, actualPayment.getStringField(ActualPaymentDBF.OWN_NUM),
+                userOrganizationId, false, sqlSession());
+        final String currentStreetType = actualPayment.getStringField(ActualPaymentDBF.VUL_CAT);
         if (accounts.isEmpty()) {
             return null;
         } else if (accounts.size() == 1) {
@@ -176,11 +177,11 @@ public class PersonAccountLocalBean extends AbstractBean {
     public String findLocalAccountNumber(Subsidy subsidy, long calculationCenterId, long userOrganizationId) {
         List<PersonAccount> accounts = findAccountsLikeName(subsidy.getFirstName(),
                 subsidy.getMiddleName(), subsidy.getLastName(),
-                (String) subsidy.getField(SubsidyDBF.NP_NAME), (String) subsidy.getField(SubsidyDBF.NAME_V),
-                (String) subsidy.getField(SubsidyDBF.BLD), (String) subsidy.getField(SubsidyDBF.CORP),
-                (String) subsidy.getField(SubsidyDBF.FLAT), subsidy.getOrganizationId(), calculationCenterId,
-                (String) subsidy.getField(SubsidyDBF.RASH), userOrganizationId, false, sqlSession());
-        final String currentStreetType = (String) subsidy.getField(SubsidyDBF.CAT_V);
+                subsidy.getStringField(SubsidyDBF.NP_NAME), subsidy.getStringField(SubsidyDBF.NAME_V),
+                subsidy.getStringField(SubsidyDBF.BLD), subsidy.getStringField(SubsidyDBF.CORP),
+                subsidy.getStringField(SubsidyDBF.FLAT), subsidy.getOrganizationId(), calculationCenterId,
+                subsidy.getStringField(SubsidyDBF.RASH), userOrganizationId, false, sqlSession());
+        final String currentStreetType = subsidy.getStringField(SubsidyDBF.CAT_V);
         if (accounts.isEmpty()) {
             return null;
         } else if (accounts.size() == 1) {
@@ -238,7 +239,7 @@ public class PersonAccountLocalBean extends AbstractBean {
 
             if (sqlException != null && MySqlErrors.isDublicateError(sqlException)) {
                 //the same person account entry has already been inserted in parallel.
-                //TODO: doing nothing. Maybe some action should be taken.
+                //doing nothing. Maybe some action should be taken.
             } else {
                 throw new RuntimeException(e);
             }
@@ -256,17 +257,17 @@ public class PersonAccountLocalBean extends AbstractBean {
     private PersonAccount newPersonAccount(Payment payment, String accountNumber, long calculationCenterId,
             long userOrganizationId) {
         PersonAccount personAccount = new PersonAccount();
-        personAccount.setFirstName((String) payment.getField(PaymentDBF.F_NAM));
-        personAccount.setMiddleName((String) payment.getField(PaymentDBF.M_NAM));
-        personAccount.setLastName((String) payment.getField(PaymentDBF.SUR_NAM));
-        personAccount.setCity((String) payment.getField(PaymentDBF.N_NAME));
-        personAccount.setStreet((String) payment.getField(PaymentDBF.VUL_NAME));
-        personAccount.setBuildingNumber((String) payment.getField(PaymentDBF.BLD_NUM));
-        personAccount.setBuildingCorp((String) payment.getField(PaymentDBF.CORP_NUM));
-        personAccount.setApartment((String) payment.getField(PaymentDBF.FLAT));
+        personAccount.setFirstName(payment.getStringField(PaymentDBF.F_NAM));
+        personAccount.setMiddleName(payment.getStringField(PaymentDBF.M_NAM));
+        personAccount.setLastName(payment.getStringField(PaymentDBF.SUR_NAM));
+        personAccount.setCity(payment.getStringField(PaymentDBF.N_NAME));
+        personAccount.setStreet(payment.getStringField(PaymentDBF.VUL_NAME));
+        personAccount.setBuildingNumber(payment.getStringField(PaymentDBF.BLD_NUM));
+        personAccount.setBuildingCorp(payment.getStringField(PaymentDBF.CORP_NUM));
+        personAccount.setApartment(payment.getStringField(PaymentDBF.FLAT));
         personAccount.setOsznId(payment.getOrganizationId());
         personAccount.setCalculationCenterId(calculationCenterId);
-        personAccount.setPuAccountNumber((String) payment.getField(PaymentDBF.OWN_NUM_SR));
+        personAccount.setPuAccountNumber(payment.getStringField(PaymentDBF.OWN_NUM_SR));
         personAccount.setAccountNumber(accountNumber);
         personAccount.setUserOrganizationId(userOrganizationId);
         return personAccount;
@@ -280,12 +281,12 @@ public class PersonAccountLocalBean extends AbstractBean {
             public void doInTransaction(SqlSession session) {
                 String newAccountNumber = payment.getAccountNumber();
                 PersonAccount newPersonAccount = newPersonAccount(payment, newAccountNumber, calculationCenterId, userOrganizationId);
-                List<PersonAccount> accounts = findAccounts((String) payment.getField(PaymentDBF.F_NAM),
-                        (String) payment.getField(PaymentDBF.M_NAM), (String) payment.getField(PaymentDBF.SUR_NAM),
-                        (String) payment.getField(PaymentDBF.N_NAME), (String) payment.getField(PaymentDBF.VUL_NAME),
-                        (String) payment.getField(PaymentDBF.BLD_NUM), (String) payment.getField(PaymentDBF.CORP_NUM),
-                        (String) payment.getField(PaymentDBF.FLAT), payment.getOrganizationId(), calculationCenterId,
-                        (String) payment.getField(PaymentDBF.OWN_NUM_SR), userOrganizationId, false, sqlSession());
+                List<PersonAccount> accounts = findAccounts(payment.getStringField(PaymentDBF.F_NAM),
+                        payment.getStringField(PaymentDBF.M_NAM), payment.getStringField(PaymentDBF.SUR_NAM),
+                        payment.getStringField(PaymentDBF.N_NAME), payment.getStringField(PaymentDBF.VUL_NAME),
+                        payment.getStringField(PaymentDBF.BLD_NUM), payment.getStringField(PaymentDBF.CORP_NUM),
+                        payment.getStringField(PaymentDBF.FLAT), payment.getOrganizationId(), calculationCenterId,
+                        payment.getStringField(PaymentDBF.OWN_NUM_SR), userOrganizationId, false, sqlSession());
                 if (accounts.isEmpty()) {
                     insert(newPersonAccount, session);
                 } else if (accounts.size() == 1) {
@@ -310,18 +311,18 @@ public class PersonAccountLocalBean extends AbstractBean {
     private PersonAccount newPersonAccount(ActualPayment actualPayment, String accountNumber, long calculationCenterId,
             long userOrganizationId) {
         PersonAccount personAccount = new PersonAccount();
-        personAccount.setFirstName((String) actualPayment.getField(ActualPaymentDBF.F_NAM));
-        personAccount.setMiddleName((String) actualPayment.getField(ActualPaymentDBF.M_NAM));
-        personAccount.setLastName((String) actualPayment.getField(ActualPaymentDBF.SUR_NAM));
-        personAccount.setCity((String) actualPayment.getField(ActualPaymentDBF.N_NAME));
-        personAccount.setStreet((String) actualPayment.getField(ActualPaymentDBF.VUL_NAME));
-        personAccount.setBuildingNumber((String) actualPayment.getField(ActualPaymentDBF.BLD_NUM));
-        personAccount.setBuildingCorp((String) actualPayment.getField(ActualPaymentDBF.CORP_NUM));
-        personAccount.setApartment((String) actualPayment.getField(ActualPaymentDBF.FLAT));
-        personAccount.setStreetType((String) actualPayment.getField(ActualPaymentDBF.VUL_CAT));
+        personAccount.setFirstName(actualPayment.getStringField(ActualPaymentDBF.F_NAM));
+        personAccount.setMiddleName(actualPayment.getStringField(ActualPaymentDBF.M_NAM));
+        personAccount.setLastName(actualPayment.getStringField(ActualPaymentDBF.SUR_NAM));
+        personAccount.setCity(actualPayment.getStringField(ActualPaymentDBF.N_NAME));
+        personAccount.setStreet(actualPayment.getStringField(ActualPaymentDBF.VUL_NAME));
+        personAccount.setBuildingNumber(actualPayment.getStringField(ActualPaymentDBF.BLD_NUM));
+        personAccount.setBuildingCorp(actualPayment.getStringField(ActualPaymentDBF.CORP_NUM));
+        personAccount.setApartment(actualPayment.getStringField(ActualPaymentDBF.FLAT));
+        personAccount.setStreetType(actualPayment.getStringField(ActualPaymentDBF.VUL_CAT));
         personAccount.setOsznId(actualPayment.getOrganizationId());
         personAccount.setCalculationCenterId(calculationCenterId);
-        personAccount.setPuAccountNumber((String) actualPayment.getField(ActualPaymentDBF.OWN_NUM));
+        personAccount.setPuAccountNumber(actualPayment.getStringField(ActualPaymentDBF.OWN_NUM));
         personAccount.setAccountNumber(accountNumber);
         personAccount.setUserOrganizationId(userOrganizationId);
         return personAccount;
@@ -335,13 +336,13 @@ public class PersonAccountLocalBean extends AbstractBean {
             public void doInTransaction(SqlSession session) {
                 String newAccountNumber = actualPayment.getAccountNumber();
                 PersonAccount newPersonAccount = newPersonAccount(actualPayment, newAccountNumber, calculationCenterId, userOrganizationId);
-                List<PersonAccount> accounts = findAccounts((String) actualPayment.getField(ActualPaymentDBF.F_NAM),
-                        (String) actualPayment.getField(ActualPaymentDBF.M_NAM), (String) actualPayment.getField(ActualPaymentDBF.SUR_NAM),
-                        (String) actualPayment.getField(ActualPaymentDBF.N_NAME), (String) actualPayment.getField(ActualPaymentDBF.VUL_NAME),
-                        (String) actualPayment.getField(ActualPaymentDBF.BLD_NUM), (String) actualPayment.getField(ActualPaymentDBF.CORP_NUM),
-                        (String) actualPayment.getField(ActualPaymentDBF.FLAT), actualPayment.getOrganizationId(), calculationCenterId,
-                        (String) actualPayment.getField(ActualPaymentDBF.OWN_NUM), userOrganizationId, false, sqlSession());
-                final String currentStreetType = (String) actualPayment.getField(ActualPaymentDBF.VUL_CAT);
+                List<PersonAccount> accounts = findAccounts(actualPayment.getStringField(ActualPaymentDBF.F_NAM),
+                        actualPayment.getStringField(ActualPaymentDBF.M_NAM), actualPayment.getStringField(ActualPaymentDBF.SUR_NAM),
+                        actualPayment.getStringField(ActualPaymentDBF.N_NAME), actualPayment.getStringField(ActualPaymentDBF.VUL_NAME),
+                        actualPayment.getStringField(ActualPaymentDBF.BLD_NUM), actualPayment.getStringField(ActualPaymentDBF.CORP_NUM),
+                        actualPayment.getStringField(ActualPaymentDBF.FLAT), actualPayment.getOrganizationId(), calculationCenterId,
+                        actualPayment.getStringField(ActualPaymentDBF.OWN_NUM), userOrganizationId, false, sqlSession());
+                final String currentStreetType = actualPayment.getStringField(ActualPaymentDBF.VUL_CAT);
                 if (accounts.isEmpty()) {
                     insert(newPersonAccount, session);
                 } else if (accounts.size() == 1) {
@@ -385,15 +386,15 @@ public class PersonAccountLocalBean extends AbstractBean {
         personAccount.setFirstName(subsidy.getFirstName());
         personAccount.setMiddleName(subsidy.getMiddleName());
         personAccount.setLastName(subsidy.getLastName());
-        personAccount.setCity((String) subsidy.getField(SubsidyDBF.NP_NAME));
-        personAccount.setStreet((String) subsidy.getField(SubsidyDBF.NAME_V));
-        personAccount.setBuildingNumber((String) subsidy.getField(SubsidyDBF.BLD));
-        personAccount.setBuildingCorp((String) subsidy.getField(SubsidyDBF.CORP));
-        personAccount.setApartment((String) subsidy.getField(SubsidyDBF.FLAT));
-        personAccount.setStreetType((String) subsidy.getField(SubsidyDBF.CAT_V));
+        personAccount.setCity(subsidy.getStringField(SubsidyDBF.NP_NAME));
+        personAccount.setStreet(subsidy.getStringField(SubsidyDBF.NAME_V));
+        personAccount.setBuildingNumber(subsidy.getStringField(SubsidyDBF.BLD));
+        personAccount.setBuildingCorp(subsidy.getStringField(SubsidyDBF.CORP));
+        personAccount.setApartment(subsidy.getStringField(SubsidyDBF.FLAT));
+        personAccount.setStreetType(subsidy.getStringField(SubsidyDBF.CAT_V));
         personAccount.setOsznId(subsidy.getOrganizationId());
         personAccount.setCalculationCenterId(calculationCenterId);
-        personAccount.setPuAccountNumber((String) subsidy.getField(SubsidyDBF.RASH));
+        personAccount.setPuAccountNumber(subsidy.getStringField(SubsidyDBF.RASH));
         personAccount.setAccountNumber(accountNumber);
         personAccount.setUserOrganizationId(userOrganizationId);
         return personAccount;
@@ -409,11 +410,11 @@ public class PersonAccountLocalBean extends AbstractBean {
                 PersonAccount newPersonAccount = newPersonAccount(subsidy, newAccountNumber, calculationCenterId, userOrganizationId);
                 List<PersonAccount> accounts = findAccountsLikeName(subsidy.getFirstName(),
                         subsidy.getMiddleName(), subsidy.getLastName(),
-                        (String) subsidy.getField(SubsidyDBF.NP_NAME), (String) subsidy.getField(SubsidyDBF.NAME_V),
-                        (String) subsidy.getField(SubsidyDBF.BLD), (String) subsidy.getField(SubsidyDBF.CORP),
-                        (String) subsidy.getField(SubsidyDBF.FLAT), subsidy.getOrganizationId(), calculationCenterId,
-                        (String) subsidy.getField(SubsidyDBF.RASH), userOrganizationId, false, sqlSession());
-                final String currentStreetType = (String) subsidy.getField(SubsidyDBF.CAT_V);
+                        subsidy.getStringField(SubsidyDBF.NP_NAME), subsidy.getStringField(SubsidyDBF.NAME_V),
+                        subsidy.getStringField(SubsidyDBF.BLD), subsidy.getStringField(SubsidyDBF.CORP),
+                        subsidy.getStringField(SubsidyDBF.FLAT), subsidy.getOrganizationId(), calculationCenterId,
+                        subsidy.getStringField(SubsidyDBF.RASH), userOrganizationId, false, sqlSession());
+                final String currentStreetType = subsidy.getStringField(SubsidyDBF.CAT_V);
                 if (accounts.isEmpty()) {
                     insert(newPersonAccount, session);
                 } else if (accounts.size() == 1) {

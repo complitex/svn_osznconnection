@@ -191,16 +191,16 @@ public final class BenefitList extends TemplatePage {
             protected void populateItem(Item<Benefit> item) {
                 final Benefit benefit = item.getModelObject();
 
-                item.add(new Label("account", (String) benefit.getField(BenefitDBF.OWN_NUM_SR)));
-                item.add(new Label("firstName", (String) benefit.getField(BenefitDBF.F_NAM)));
-                item.add(new Label("middleName", (String) benefit.getField(BenefitDBF.M_NAM)));
-                item.add(new Label("lastName", (String) benefit.getField(BenefitDBF.SUR_NAM)));
+                item.add(new Label("account", benefit.getStringField(BenefitDBF.OWN_NUM_SR)));
+                item.add(new Label("firstName", benefit.getStringField(BenefitDBF.F_NAM)));
+                item.add(new Label("middleName", benefit.getStringField(BenefitDBF.M_NAM)));
+                item.add(new Label("lastName", benefit.getStringField(BenefitDBF.SUR_NAM)));
                 item.add(new Label("city", benefit.getCity()));
                 item.add(new Label("street", benefit.getStreet()));
                 item.add(new Label("building", benefit.getBuildingNumber()));
                 item.add(new Label("corp", benefit.getBuildingCorp()));
                 item.add(new Label("apartment", benefit.getApartment()));
-                item.add(new Label("priv", StringUtil.valueOf((Integer) benefit.getField(BenefitDBF.PRIV_CAT))));
+                item.add(new Label("priv", StringUtil.valueOf(benefit.getStringField(BenefitDBF.PRIV_CAT))));
                 item.add(new Label("status", statusRenderService.displayStatus(benefit.getStatus(), getLocale())));
                 item.add(new Label("statusDetails", webWarningRenderer.display(benefit.getWarnings(), getLocale())));
 

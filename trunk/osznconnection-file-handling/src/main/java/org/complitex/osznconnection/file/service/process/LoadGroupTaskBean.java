@@ -10,8 +10,6 @@ import org.complitex.osznconnection.file.service.BenefitBean;
 import org.complitex.osznconnection.file.service.PaymentBean;
 import org.complitex.osznconnection.file.service.RequestFileBean;
 import org.complitex.osznconnection.file.service.RequestFileGroupBean;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -26,22 +24,17 @@ import java.util.Map;
  */
 @Stateless(name = "LoadGroupTaskBean")
 @TransactionManagement(TransactionManagementType.BEAN)
-public class LoadGroupTaskBean implements ITaskBean{
-    private static final Logger log = LoggerFactory.getLogger(LoadGroupTaskBean.class);
+public class LoadGroupTaskBean implements ITaskBean {
 
-    @EJB(beanName = "PaymentBean")
+    @EJB
     protected PaymentBean paymentBean;
-
-    @EJB(beanName = "BenefitBean")
+    @EJB
     protected BenefitBean benefitBean;
-
-    @EJB(beanName = "RequestFileBean")
+    @EJB
     protected RequestFileBean requestFileBean;
-
-    @EJB(beanName = "RequestFileGroupBean")
+    @EJB
     private RequestFileGroupBean requestFileGroupBean;
-
-    @EJB(beanName = "LoadRequestFileBean")
+    @EJB
     private LoadRequestFileBean loadRequestFileBean;
 
     @Override
@@ -53,10 +46,11 @@ public class LoadGroupTaskBean implements ITaskBean{
         requestFileGroupBean.save(group);
 
         group.getBenefitFile().setGroupId(group.getId());
-        group.getPaymentFile().setGroupId(group.getId());
+        final RequestFile paymentFile = group.getPaymentFile();
+        paymentFile.setGroupId(group.getId());
 
         //load payment
-        boolean noSkip = loadRequestFileBean.load(group.getPaymentFile(), new LoadRequestFileBean.AbstractLoadRequestFile() {
+        boolean noSkip = loadRequestFileBean.load(paymentFile, new LoadRequestFileBean.AbstractLoadRequestFile() {
 
             @Override
             public Enum[] getFieldNames() {
@@ -72,10 +66,22 @@ public class LoadGroupTaskBean implements ITaskBean{
             public void save(List<AbstractRequest> batch) {
                 paymentBean.insert(batch);
             }
+
+            @Override
+            public void postProcess(int rowNumber, AbstractRequest request) {
+                //установка номера реестра
+                if (rowNumber == 0) {
+                    Payment payment = (Payment) request;
+                    Integer registry = payment.getField(PaymentDBF.REE_NUM);
+                    if (registry != null) {
+                        paymentFile.setRegistry(registry);
+                    }
+                }
+            }
         });
 
         // load benefit
-        if (noSkip){
+        if (noSkip) {
             boolean notLoaded = loadRequestFileBean.load(group.getBenefitFile(), new LoadRequestFileBean.AbstractLoadRequestFile() {
 
                 @Override
@@ -94,7 +100,7 @@ public class LoadGroupTaskBean implements ITaskBean{
                 }
             });
 
-            if (!notLoaded){
+            if (!notLoaded) {
                 throw new ExecuteException("Файл начислений {0} уже загружен.", group.getBenefitFile().getFullName());
             }
         } else {

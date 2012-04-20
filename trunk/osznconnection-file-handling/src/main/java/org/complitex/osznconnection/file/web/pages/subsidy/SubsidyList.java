@@ -221,16 +221,16 @@ public final class SubsidyList extends TemplatePage {
             protected void populateItem(Item<Subsidy> item) {
                 final Subsidy subsidy = item.getModelObject();
 
-                item.add(new Label("rash", (String) subsidy.getField(SubsidyDBF.RASH)));
+                item.add(new Label("rash", subsidy.getStringField(SubsidyDBF.RASH)));
                 item.add(new Label("firstName", subsidy.getFirstName()));
                 item.add(new Label("middleName", subsidy.getMiddleName()));
                 item.add(new Label("lastName", subsidy.getLastName()));
-                item.add(new Label("city", (String) subsidy.getField(SubsidyDBF.NP_NAME)));
-                item.add(new Label("street", AddressRenderer.displayStreet((String) subsidy.getField(SubsidyDBF.CAT_V),
-                        (String) subsidy.getField(SubsidyDBF.NAME_V), getLocale())));
-                item.add(new Label("building", (String) subsidy.getField(SubsidyDBF.BLD)));
-                item.add(new Label("corp", (String) subsidy.getField(SubsidyDBF.CORP)));
-                item.add(new Label("apartment", (String) subsidy.getField(SubsidyDBF.FLAT)));
+                item.add(new Label("city", subsidy.getStringField(SubsidyDBF.NP_NAME)));
+                item.add(new Label("street", AddressRenderer.displayStreet(subsidy.getStringField(SubsidyDBF.CAT_V),
+                        subsidy.getStringField(SubsidyDBF.NAME_V), getLocale())));
+                item.add(new Label("building", subsidy.getStringField(SubsidyDBF.BLD)));
+                item.add(new Label("corp", subsidy.getStringField(SubsidyDBF.CORP)));
+                item.add(new Label("apartment", subsidy.getStringField(SubsidyDBF.FLAT)));
                 item.add(new Label("status", statusRenderService.displayStatus(subsidy.getStatus(), getLocale())));
                 item.add(new Label("statusDetails", webWarningRenderer.display(subsidy.getWarnings(), getLocale())));
 
@@ -240,9 +240,9 @@ public final class SubsidyList extends TemplatePage {
                     public void onClick(AjaxRequestTarget target) {
                         addressCorrectionPanel.open(target, subsidy, subsidy.getFirstName(),
                                 subsidy.getMiddleName(), subsidy.getLastName(),
-                                (String) subsidy.getField(SubsidyDBF.NP_NAME), (String) subsidy.getField(SubsidyDBF.CAT_V),
-                                (String) subsidy.getField(SubsidyDBF.NAME_V), (String) subsidy.getField(SubsidyDBF.BLD),
-                                (String) subsidy.getField(SubsidyDBF.CORP), (String) subsidy.getField(SubsidyDBF.FLAT),
+                                subsidy.getStringField(SubsidyDBF.NP_NAME), subsidy.getStringField(SubsidyDBF.CAT_V),
+                                subsidy.getStringField(SubsidyDBF.NAME_V), subsidy.getStringField(SubsidyDBF.BLD),
+                                subsidy.getStringField(SubsidyDBF.CORP), subsidy.getStringField(SubsidyDBF.FLAT),
                                 subsidy.getInternalCityId(), subsidy.getInternalStreetTypeId(), subsidy.getInternalStreetId(),
                                 subsidy.getInternalBuildingId());
                     }
@@ -255,8 +255,8 @@ public final class SubsidyList extends TemplatePage {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         lookupPanel.open(target, subsidy, subsidy.getInternalCityId(), subsidy.getInternalStreetId(),
-                                subsidy.getInternalBuildingId(), (String) subsidy.getField(SubsidyDBF.FLAT),
-                                (String) subsidy.getField(SubsidyDBF.RASH),
+                                subsidy.getInternalBuildingId(), subsidy.getStringField(SubsidyDBF.FLAT),
+                                subsidy.getStringField(SubsidyDBF.RASH),
                                 subsidy.getStatus().isImmediatelySearchByAddress());
                     }
                 };

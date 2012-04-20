@@ -9,6 +9,7 @@ import javax.ejb.TransactionManagementType;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Collections;
@@ -122,7 +123,7 @@ public class ServiceProviderAdapter {
      * @param apartmentCode
      */
     public void prepareApartment(Payment payment, String apartment, String apartmentCode) {
-        String flat = (String) payment.getField(PaymentDBF.FLAT);
+        String flat = payment.getStringField(PaymentDBF.FLAT);
         payment.setOutgoingApartment(removeWhiteSpaces(flat));
     }
 
@@ -154,7 +155,7 @@ public class ServiceProviderAdapter {
      * @param apartmentCode
      */
     public void prepareApartment(ActualPayment actualPayment, String apartment, String apartmentCode) {
-        String flat = (String) actualPayment.getField(ActualPaymentDBF.FLAT);
+        String flat = actualPayment.getStringField(ActualPaymentDBF.FLAT);
         actualPayment.setOutgoingApartment(removeWhiteSpaces(flat));
     }
 
@@ -186,7 +187,7 @@ public class ServiceProviderAdapter {
      * @param apartmentCode
      */
     public void prepareApartment(Subsidy subsidy, String apartment, String apartmentCode) {
-        String flat = (String) subsidy.getField(SubsidyDBF.FLAT);
+        String flat = subsidy.getStringField(SubsidyDBF.FLAT);
         subsidy.setOutgoingApartment(removeWhiteSpaces(flat));
     }
 
@@ -535,7 +536,7 @@ public class ServiceProviderAdapter {
         //статус успешности обработки тарифов.
         boolean tarifHandled = true;
         //тариф МН, при обработке которого возникла ошибка.
-        Double errorTarif = null;
+        BigDecimal errorTarif = null;
 
         //apartment fee
         if (tarifHandled
@@ -691,20 +692,20 @@ public class ServiceProviderAdapter {
 
                     if (ownershipCodeAsInt != null) {
                         for (Benefit benefit : benefits) {
-                            benefit.setField(BenefitDBF.OWN_FRM, osznOwnershipCode);
+                            benefit.setField(BenefitDBF.OWN_FRM, ownershipCodeAsInt);
                         }
                     }
                 }
             }
             for (Benefit benefit : benefits) {
-                benefit.setField(BenefitDBF.CM_AREA, payment.getField(PaymentDBF.NORM_F_1));
+                benefit.setField(BenefitDBF.CM_AREA, payment.getStringField(PaymentDBF.NORM_F_1));
                 benefit.setField(BenefitDBF.HOSTEL, data.getRoomCount());
             }
         }
     }
 
-    protected boolean handleTarif(CalculationContext calculationContext, Payment payment, PaymentDBF field, Double rawTarif) {
-        Integer tarifCode = getTarifCode(rawTarif, payment.getOrganizationId(), calculationContext.getUserOrganizationId());
+    protected boolean handleTarif(CalculationContext calculationContext, Payment payment, PaymentDBF field, BigDecimal rawTarif) {
+        String tarifCode = getTarifCode(rawTarif, payment.getOrganizationId(), calculationContext.getUserOrganizationId());
         if (tarifCode == null) {
             return false;
         } else {
@@ -729,7 +730,7 @@ public class ServiceProviderAdapter {
      * @param T11_CS_UNI
      * @return
      */
-    protected Integer getTarifCode(Double T11_CS_UNI, long osznId, long userOrganizationId) {
+    protected String getTarifCode(BigDecimal T11_CS_UNI, long osznId, long userOrganizationId) {
         return tarifBean.getCode2(T11_CS_UNI, osznId, userOrganizationId);
     }
 
@@ -1212,6 +1213,7 @@ public class ServiceProviderAdapter {
                                     webWarningRenderer.display(warning, localeBean.getSystemLocale()));
                         }
                     }
+                    
                     Integer ordFamAsInt = null;
                     try {
                         ordFamAsInt = Integer.valueOf(data.getOrderFamily());
@@ -1274,7 +1276,7 @@ public class ServiceProviderAdapter {
 
             @Override
             public boolean apply(Benefit benefit) {
-                return passportNumber.equals(benefit.getField(BenefitDBF.PSP_NUM));
+                return passportNumber.equals(benefit.getStringField(BenefitDBF.PSP_NUM));
             }
         }));
     }
@@ -1284,7 +1286,7 @@ public class ServiceProviderAdapter {
 
             @Override
             public boolean apply(Benefit benefit) {
-                return inn.equals(benefit.getField(BenefitDBF.IND_COD));
+                return inn.equals(benefit.getStringField(BenefitDBF.IND_COD));
             }
         }));
     }

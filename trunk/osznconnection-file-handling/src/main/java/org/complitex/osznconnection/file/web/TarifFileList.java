@@ -53,6 +53,7 @@ import java.util.*;
 import org.apache.wicket.model.ResourceModel;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.osznconnection.file.service.OsznSessionBean;
+import org.complitex.osznconnection.file.service.file_description.RequestFileDescriptionBean;
 import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
 
 import static org.complitex.osznconnection.file.service.process.ProcessType.LOAD_TARIF;
@@ -75,24 +76,27 @@ public class TarifFileList extends TemplatePage {
     private LogBean logBean;
     @EJB
     private OsznSessionBean osznSessionBean;
+    @EJB
+    private RequestFileDescriptionBean requestFileDescriptionBean;
     private int waitForStopTimer;
     private boolean completedDisplayed = false;
     private final static String ITEM_ID_PREFIX = "item";
     private RequestFileLoadPanel requestFileLoadPanel;
-    private final boolean modificationsAllowed;
+    private boolean modificationsAllowed;
+    private boolean hasFieldDescription;
 
     public TarifFileList(PageParameters parameters) {
         super();
-        this.modificationsAllowed = osznSessionBean.isAdmin()
-                || (osznSessionBean.getCurrentUserOrganizationId() != null && osznSessionBean.isSuperUser());
         init(parameters.getAsLong("request_file_id"));
     }
 
     public TarifFileList() {
         super();
-        this.modificationsAllowed = osznSessionBean.isAdmin()
-                || (osznSessionBean.getCurrentUserOrganizationId() != null && osznSessionBean.isSuperUser());
         init(null);
+    }
+
+    private boolean hasFieldDescription() {
+        return requestFileDescriptionBean.getFileDescription(RequestFile.TYPE.TARIF) != null;
     }
 
     private RequestFileFilter newFilter(Long requestFileId) {
@@ -104,6 +108,13 @@ public class TarifFileList extends TemplatePage {
 
     private void init(Long requestFileId) {
         add(JavascriptPackageResource.getHeaderContribution(WebCommonResourceInitializer.HIGHLIGHT_JS));
+
+        this.hasFieldDescription = hasFieldDescription();
+        this.modificationsAllowed =
+                //- только пользователи, принадлежащие организации или администраторы могут обрабатывать файлы.
+                (osznSessionBean.getCurrentUserOrganizationId() != null || osznSessionBean.isAdmin())
+                && //можно обрабатывать файлы, только если в базу загружены описания структур для файлов запросов.
+                hasFieldDescription;
 
         add(new Label("title", getString("title")));
 
@@ -353,6 +364,11 @@ public class TarifFileList extends TemplatePage {
                 }, false);
 
         add(requestFileLoadPanel);
+
+        //Если описания структуры для файлов запросов не загружены в базу, сообщить об этом пользователю.
+        if (!hasFieldDescription) {
+            error(getString("file_description_missing"));
+        }
     }
 
     private boolean isProcessing() {

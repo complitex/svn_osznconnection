@@ -1,14 +1,16 @@
 package org.complitex.osznconnection.file.entity;
 
 import com.google.common.collect.Lists;
-import org.complitex.osznconnection.file.service.exception.FieldNotFoundException;
-import org.complitex.osznconnection.file.service.exception.FieldWrongSizeException;
-import org.complitex.osznconnection.file.service.exception.FieldWrongTypeException;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.complitex.dictionary.util.EjbBeanLocator;
+import org.complitex.osznconnection.file.service.file_description.RequestFileDescription;
+import org.complitex.osznconnection.file.service.file_description.RequestFileDescriptionBean;
+import org.complitex.osznconnection.file.service.file_description.RequestFileFieldDescription;
+import org.complitex.osznconnection.file.service.file_description.convert.ConversionException;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -29,46 +31,41 @@ public abstract class AbstractRequest implements Serializable {
     private RequestStatus status;
     private String accountNumber;
     private List<RequestWarning> warnings = Lists.newArrayList();
-    protected Map<String, Object> dbfFields = new HashMap<String, Object>();
+    protected Map<String, String> dbfFields = new HashMap<String, String>();
 
-    /**
-     * Проверяет допустимость имени поля и возвращает тип поля.
-     * @param name Имя поля
-     * @return Тип поля
-     * @throws FieldNotFoundException Недопустимое значение имени поля
-     */
-    protected abstract Class getFieldType(String name) throws FieldNotFoundException;
-
-    /**
-     * Проверяет допустимый размер поля
-     * @param name Имя поля
-     * @param value Значение поля
-     * @throws FieldWrongSizeException Недопустимый размер поля
-     */
-    protected abstract void checkSize(String name, Object value) throws FieldWrongSizeException;
-
-    /**
-     * Установка поля с проверкой допустимого значения типа и имени.
-     * @param name Имя поля
-     * @param value Значения поля
-     * @param type Тип поля
-     * @throws FieldNotFoundException Недопустимое значение имени поля
-     * @throws FieldWrongTypeException Недопустимый тип поля
-     * @throws FieldWrongSizeException Недопустимый размер поля 
-     */
-    public final void setField(String name, Object value, Class type) throws FieldNotFoundException, FieldWrongTypeException, FieldWrongSizeException {
-        checkSize(name, value);
-
+    @SuppressWarnings({"unchecked"})
+    protected <T> T getField(String fieldName) {
+        final String stringValue = dbfFields.get(fieldName);
+        final RequestFileDescription description = getDescription();
+        final RequestFileFieldDescription fieldDescription = description.getField(fieldName);
+        if (fieldDescription == null) {
+            throw new IllegalStateException("Couldn't find field description. "
+                    + "Request file type: " + getRequestFileType().name() + ", request id: '" + getId()
+                    + "', field name: '" + fieldName + "'.");
+        }
+        final Class<?> expectedType = fieldDescription.getFieldType();
         try {
-            if (!getFieldType(name).equals(type)) {
-                throw new FieldWrongTypeException(name, type, getFieldType(name));
-            }
-
-            dbfFields.put(name, value);
-        } catch (IllegalArgumentException e) {
-            throw new FieldNotFoundException(name);
+            return (T) description.getTypeConverter().toObject(stringValue, expectedType);
+        } catch (ConversionException e) {
+            throw new IllegalStateException("Couldn't perform type conversion. "
+                    + "Request file type: " + getRequestFileType().name() + ", request id: '" + getId()
+                    + "', field name: '" + fieldName
+                    + "', string value of field: '" + stringValue
+                    + "', expected java type a field value to be converter to: " + expectedType, e);
         }
     }
+
+    protected void setField(String fieldName, Object object) {
+        final RequestFileDescription description = getDescription();
+        dbfFields.put(fieldName, description.getTypeConverter().toString(object));
+    }
+
+    protected RequestFileDescription getDescription() {
+        RequestFileDescriptionBean requestFileDescriptionBean = EjbBeanLocator.getBean(RequestFileDescriptionBean.class);
+        return requestFileDescriptionBean.getFileDescription(getRequestFileType());
+    }
+
+    protected abstract RequestFile.TYPE getRequestFileType();
 
     public Long getId() {
         return id;
@@ -110,11 +107,11 @@ public abstract class AbstractRequest implements Serializable {
         this.accountNumber = accountNumber;
     }
 
-    public Map<String, Object> getDbfFields() {
+    public Map<String, String> getDbfFields() {
         return dbfFields;
     }
 
-    public void setDbfFields(Map<String, Object> dbfFields) {
+    public void setDbfFields(Map<String, String> dbfFields) {
         this.dbfFields = dbfFields;
     }
 
