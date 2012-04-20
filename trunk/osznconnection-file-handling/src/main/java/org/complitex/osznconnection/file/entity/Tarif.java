@@ -12,7 +12,7 @@ package org.complitex.osznconnection.file.entity;
 public class Tarif extends AbstractRequest {
 
     @Override
-    protected RequestFile.TYPE getRequestFileType() {
+    public RequestFile.TYPE getRequestFileType() {
         return RequestFile.TYPE.TARIF;
     }
 }
