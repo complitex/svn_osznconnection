@@ -6,8 +6,10 @@ package org.complitex.osznconnection.file.web.file_description;
 
 import java.util.List;
 import javax.ejb.EJB;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
@@ -35,16 +37,24 @@ public final class RequestFileDescriptionPage extends TemplatePage {
     public RequestFileDescriptionPage() {
         add(new Label("title", new ResourceModel("title")));
 
+        final WebMarkupContainer container = new WebMarkupContainer("container");
+        container.setOutputMarkupId(true);
+        add(container);
+
         final FeedbackPanel messages = new FeedbackPanel("messages");
-        add(messages);
+        container.add(messages);
 
         final FileUploadField chooseFile = new FileUploadField("chooseFile");
         chooseFile.setRequired(true);
 
-        Form<Void> form = new Form<Void>("form") {
+        Form<Void> form = new Form<Void>("form");
+        container.add(form);
+
+        form.add(chooseFile);
+        form.add(new IndicatingAjaxButton("loadFile", form) {
 
             @Override
-            protected void onSubmit() {
+            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 final FileUpload fileUpload = chooseFile.getFileUpload();
 
                 final String fileName = fileUpload.getClientFileName();
@@ -73,11 +83,14 @@ public final class RequestFileDescriptionPage extends TemplatePage {
                         error(getString("db_error"));
                     }
                 }
+                target.addComponent(container);
             }
-        };
-        add(form);
 
-        form.add(chooseFile);
-        form.add(new Button("loadFile"));
+            @Override
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
+                super.onError(target, form);
+                target.addComponent(container);
+            }
+        });
     }
 }

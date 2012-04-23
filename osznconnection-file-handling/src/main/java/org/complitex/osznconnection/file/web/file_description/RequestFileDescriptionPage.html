@@ -10,17 +10,19 @@
         <wicket:extend>
             <h1><wicket:message key="title"/></h1>
 
-            <div wicket:id="messages"></div>
+            <div wicket:id="container">
+                <div wicket:id="messages"></div>
 
-            <form wicket:id="form">
-                <div>
-                    <label>
-                        <wicket:message key="fileDescriptionLabel"/><b class="blue">*</b>:
-                    </label>
-                    <input type="file" wicket:id="chooseFile" wicket:message="value:choose"/>
-                </div>
-                <input class="btnBig" type="submit" wicket:id="loadFile" wicket:message="value:load" style="margin-top: 10px;"/>
-            </form>
+                <form wicket:id="form">
+                    <div>
+                        <label>
+                            <wicket:message key="fileDescriptionLabel"/><b class="blue">*</b>:
+                        </label>
+                        <input type="file" wicket:id="chooseFile" wicket:message="value:choose"/>
+                    </div>
+                    <input type="button" class="btnBig" wicket:id="loadFile" wicket:message="value:load" style="margin-top: 10px;"/>
+                </form>
+            </div>
         </wicket:extend>
     </body>
 </html>
