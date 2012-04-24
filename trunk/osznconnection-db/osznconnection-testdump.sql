@@ -103,6 +103,8 @@ insert into tarif(`T11_CS_UNI`, `T11_CODE2`, `request_file_id`, `T11_CODE1`) val
 -- config test
 --insert into config(`name`, `value`) values ('SAVE_OUTPUT_FILE_STORAGE_DIR', 'D:\\Artem\\Projects\\org.complitex\\storage\\out');
 --insert into config(`name`, `value`) values ('ADDRESS_IMPORT_FILE_STORAGE_DIR', 'D:\\Artem\\Projects\\org.complitex\\storage\\import');
+
+insert into `config`(`name`, `value`) values ('LOAD_INPUT_REQUEST_FILE_STORAGE_DIR', 'D:\\Artem\\Projects\\org.complitex\\oszn-docs\\payments');
 insert into `config`(`name`, `value`) values ('LOAD_INPUT_ACTUAL_PAYMENT_FILE_STORAGE_DIR', 'D:\\Artem\\Projects\\org.complitex\\oszn-docs\\actual_payments');
 insert into `config`(`name`, `value`) values ('LOAD_INPUT_SUBSIDY_FILE_STORAGE_DIR', 'D:\\Artem\\Projects\\org.complitex\\oszn-docs\\subs');
 insert into `config`(`name`, `value`) values ('SAVE_OUTPUT_REQUEST_FILE_STORAGE_DIR', 'D:\\Artem\\Projects\\org.complitex\\storage\\out\\group');

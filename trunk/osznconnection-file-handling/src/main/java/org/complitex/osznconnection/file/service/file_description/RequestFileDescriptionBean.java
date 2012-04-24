@@ -17,6 +17,7 @@ import java.util.Map;
 import javax.ejb.ConcurrencyManagement;
 import javax.ejb.ConcurrencyManagementType;
 import javax.ejb.Singleton;
+import javax.ejb.Stateless;
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -47,14 +48,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author Artem
  */
-@Singleton
+@Stateless
 @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 public class RequestFileDescriptionBean extends AbstractBean {
 
     private static final Logger log = LoggerFactory.getLogger(RequestFileDescriptionBean.class);
     private static final String MAPPING_NAMESPACE = RequestFileDescriptionBean.class.getName();
     private static final String RESOURCE_BUNDLE = RequestFileDescriptionBean.class.getName();
-    private final Map<RequestFile.TYPE, RequestFileDescription> cache = Collections.synchronizedMap(
+    private final static Map<RequestFile.TYPE, RequestFileDescription> cache = Collections.synchronizedMap(
             new EnumMap<RequestFile.TYPE, RequestFileDescription>(RequestFile.TYPE.class));
     private final static Map<RequestFile.TYPE, Class<? extends Enum<?>>> REQUEST_FILE_TYPE_MAP =
             ImmutableMap.of(
@@ -95,7 +96,6 @@ public class RequestFileDescriptionBean extends AbstractBean {
         }
     }
 
-    @Transactional
     public RequestFileDescription getFileDescription(RequestFile.TYPE requestFileType) {
         synchronized (cache) {
             RequestFileDescription fileDescription = cache.get(requestFileType);
