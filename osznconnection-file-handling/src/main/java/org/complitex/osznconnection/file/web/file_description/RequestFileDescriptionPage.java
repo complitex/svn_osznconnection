@@ -7,8 +7,8 @@ package org.complitex.osznconnection.file.web.file_description;
 import java.util.List;
 import javax.ejb.EJB;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
+import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
@@ -54,7 +54,7 @@ public final class RequestFileDescriptionPage extends TemplatePage {
         container.add(form);
 
         form.add(chooseFile);
-        form.add(new AjaxButton("loadFile", form) {
+        form.add(new IndicatingAjaxButton("loadFile", form) {
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
