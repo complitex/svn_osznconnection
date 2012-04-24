@@ -45,7 +45,8 @@ public class LoadGroupTaskBean implements ITaskBean {
 
         requestFileGroupBean.save(group);
 
-        group.getBenefitFile().setGroupId(group.getId());
+        final RequestFile benefitFile = group.getBenefitFile();
+        benefitFile.setGroupId(group.getId());
         final RequestFile paymentFile = group.getPaymentFile();
         paymentFile.setGroupId(group.getId());
 
@@ -97,6 +98,18 @@ public class LoadGroupTaskBean implements ITaskBean {
                 @Override
                 public void save(List<AbstractRequest> batch) {
                     benefitBean.insert(batch);
+                }
+
+                @Override
+                public void postProcess(int rowNumber, AbstractRequest request) {
+                    //установка номера реестра
+                    if (rowNumber == 0) {
+                        Benefit benefit = (Benefit) request;
+                        Integer registry = benefit.getField(BenefitDBF.REE_NUM);
+                        if (registry != null) {
+                            benefitFile.setRegistry(registry);
+                        }
+                    }
                 }
             });
 

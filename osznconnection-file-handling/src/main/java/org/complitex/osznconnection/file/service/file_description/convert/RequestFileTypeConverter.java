@@ -16,10 +16,10 @@ import java.util.Date;
  */
 public final class RequestFileTypeConverter {
 
-    private final DateFormat dateFormat;
+    private final String datePattern;
 
     public RequestFileTypeConverter(String datePattern) {
-        this.dateFormat = new SimpleDateFormat(datePattern);
+        this.datePattern = datePattern;
     }
 
     public String toString(Object value) {
@@ -36,6 +36,7 @@ public final class RequestFileTypeConverter {
             return ((BigDecimal) value).toPlainString();
         }
         if (value instanceof Date) {
+            final DateFormat dateFormat = new SimpleDateFormat(datePattern);
             return dateFormat.format((Date) value);
         }
         throw new IllegalStateException("Couldn't transform object value to string. Value type: " + value.getClass());
@@ -57,6 +58,7 @@ public final class RequestFileTypeConverter {
                 return (T) new BigDecimal(value);
             }
             if (type == Date.class) {
+                final DateFormat dateFormat = new SimpleDateFormat(datePattern);
                 return (T) dateFormat.parse(value);
             }
             throw new IllegalStateException("Couldn't transform string to object value. Type: " + type);

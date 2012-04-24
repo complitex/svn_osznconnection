@@ -7,7 +7,8 @@ package org.complitex.osznconnection.file.web.file_description;
 import java.util.List;
 import javax.ejb.EJB;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
+import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
@@ -20,6 +21,7 @@ import org.complitex.osznconnection.file.service.file_description.RequestFileDes
 import org.complitex.osznconnection.file.service.file_description.RequestFileDescriptionBean;
 import org.complitex.osznconnection.file.service.file_description.RequestFileDescriptionValidateException;
 import org.complitex.osznconnection.file.service.file_description.RequestFileDescriptionValidateException.ValidationError;
+import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.TemplatePage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +30,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Artem
  */
+@AuthorizeInstantiation(SecurityRole.ADMIN_MODULE_EDIT)
 public final class RequestFileDescriptionPage extends TemplatePage {
 
     private static final Logger log = LoggerFactory.getLogger(RequestFileDescriptionPage.class);
@@ -51,7 +54,7 @@ public final class RequestFileDescriptionPage extends TemplatePage {
         container.add(form);
 
         form.add(chooseFile);
-        form.add(new IndicatingAjaxButton("loadFile", form) {
+        form.add(new AjaxButton("loadFile", form) {
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
