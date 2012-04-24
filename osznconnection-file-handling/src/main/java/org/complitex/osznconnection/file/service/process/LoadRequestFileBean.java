@@ -70,29 +70,8 @@ public class LoadRequestFileBean {
 
             final RequestFileDescription description = requestFileDescriptionBean.getFileDescription(requestFile.getType());
 
-            //проверка наличия всех полей в файле.
-            {
-                final Set<String> realFieldNames = new HashSet<String>();
-                for (int i = 0; i < reader.getFieldCount(); i++) {
-                    realFieldNames.add(reader.getField(i).getName());
-                }
-                for (Enum<?> expectedField : loadRequestFile.getFieldNames()) {
-                    final String expectedFieldName = expectedField.name();
-                    if (!realFieldNames.contains(expectedFieldName)) {
-                        throw new FieldNotFoundException(expectedFieldName);
-                    }
-                }
-            }
-
-            //проверка всех полей в файле, их типов, длины и масштаба.
-            {
-                for (int i = 0; i < reader.getFieldCount(); i++) {
-                    checkField(description, reader.getField(i));
-                }
-            }
-
+            //обработка строк файла.
             Object[] rowObjects;
-
             List<AbstractRequest> batch = new ArrayList<AbstractRequest>();
 
             while ((rowObjects = reader.nextRecord()) != null) {
@@ -101,6 +80,30 @@ public class LoadRequestFileBean {
                 }
 
                 index++;
+
+                //если в файле есть хотя бы одна строка, то нужно проверить соответствие описаний полей файла.
+                if (index == 0) {
+                    //проверка наличия всех полей в файле.
+                    {
+                        final Set<String> realFieldNames = new HashSet<String>();
+                        for (int i = 0; i < reader.getFieldCount(); i++) {
+                            realFieldNames.add(reader.getField(i).getName());
+                        }
+                        for (Enum<?> expectedField : loadRequestFile.getFieldNames()) {
+                            final String expectedFieldName = expectedField.name();
+                            if (!realFieldNames.contains(expectedFieldName)) {
+                                throw new FieldNotFoundException(expectedFieldName);
+                            }
+                        }
+                    }
+
+                    //проверка всех полей в файле, их типов, длины и масштаба.
+                    {
+                        for (int i = 0; i < reader.getFieldCount(); i++) {
+                            checkField(description, reader.getField(i));
+                        }
+                    }
+                }
 
                 AbstractRequest request = loadRequestFile.newObject();
 
