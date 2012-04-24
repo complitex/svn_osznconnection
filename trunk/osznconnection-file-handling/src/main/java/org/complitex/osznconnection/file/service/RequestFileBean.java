@@ -86,7 +86,7 @@ public class RequestFileBean extends AbstractBean {
 
     @Transactional
     public void delete(RequestFile requestFile) {
-        if (requestFile.getType() != null) {
+        if (requestFile.getType() != null && requestFile.getId() != null) {
             switch (requestFile.getType()) {
                 case BENEFIT:
                     benefitBean.delete(requestFile.getId());
