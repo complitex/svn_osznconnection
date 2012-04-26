@@ -88,9 +88,13 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
         super(id);
 
         //Диалог
-        dialog = new Dialog("dialog");
+        dialog = new Dialog("dialog") {
+
+            {
+                getOptions().putLiteral("width", "auto");
+            }
+        };
         dialog.setModal(true);
-        dialog.setWidth(650);
         dialog.setOpenEvent(JsScopeUiEvent.quickScope(new JsStatement().self().chain("parents", "'.ui-dialog:first'").
                 chain("find", "'.ui-dialog-titlebar-close'").
                 chain("hide").render()));
@@ -162,7 +166,7 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
                                     getStreetTypeId(componentState.get("street")), getObjectId(componentState.get("street")),
                                     getObjectId(componentState.get("building")), userOrganizationId);
                         } else {
-                            correctAddress(request, correctedEntity, null, getObjectId(streetTypeModel.getObject()), 
+                            correctAddress(request, correctedEntity, null, getObjectId(streetTypeModel.getObject()),
                                     null, null, userOrganizationId);
                         }
 
@@ -213,7 +217,7 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
         return streetObject == null ? null : StreetStrategy.getStreetType(streetObject);
     }
 
-    protected abstract void correctAddress(T request, CORRECTED_ENTITY entity, Long cityId, Long streetTypeId, 
+    protected abstract void correctAddress(T request, CORRECTED_ENTITY entity, Long cityId, Long streetTypeId,
             Long streetId, Long buildingId, long userOrganizationId)
             throws DublicateCorrectionException, MoreOneCorrectionException, NotFoundCorrectionException;
 

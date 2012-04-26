@@ -54,7 +54,7 @@ public class PrivilegeCorrectionBean extends CorrectionBean {
         return null;
     }
 
-    private Correction createOwnershipCorrection(String code, String privilege, long ownershipObjectId,
+    private Correction createPrivilegeCorrection(String code, String privilege, long ownershipObjectId,
             long organizationId, long internalOrganizationId, long userOrganizationId) {
         Correction correction = new Correction("privilege");
         correction.setParentId(null);
@@ -67,9 +67,10 @@ public class PrivilegeCorrectionBean extends CorrectionBean {
         return correction;
     }
 
-    public void insertOwnershipCorrection(String code, String privilege, long ownershipObjectId, long organizationId,
+    @Transactional
+    public void insertPrivilegeCorrection(String code, String privilege, long ownershipObjectId, long organizationId,
             long internalOrganizationId, Long userOrganizationId) {
-        insert(createOwnershipCorrection(code, privilege, ownershipObjectId, organizationId, internalOrganizationId,
+        insert(createPrivilegeCorrection(code, privilege, ownershipObjectId, organizationId, internalOrganizationId,
                 userOrganizationId));
     }
 }
