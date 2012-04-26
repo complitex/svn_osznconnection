@@ -81,7 +81,7 @@
              resultMap="org.complitex.osznconnection.file.service.CorrectionBean.correction">
         SELECT * FROM `${entityTable}_correction`
         <where>
-            `organization_id` = #{organizationId} AND TRIM(`correction`) = TRIM(#{correction})
+            `organization_id` = #{organizationId} AND `correction` = #{correction}
             AND `user_organization_id` = #{userOrganizationId}
             <if test="parentId != null">
                 AND `parent_id` = #{parentId}
@@ -91,8 +91,8 @@
 
     <select id="findBuildingLocalCorrections" parameterType="map" resultMap="buildingCorrection">
         SELECT * FROM `building_correction`
-        WHERE `organization_id` = #{organizationId} AND TRIM(`correction`) = TRIM(#{correction})
-                AND TRIM(`correction_corp`) = TRIM(#{correctionCorp}) AND `parent_id` = #{parentId}
+        WHERE `organization_id` = #{organizationId} AND `correction` = #{correction}
+                AND `correction_corp` = #{correctionCorp} AND `parent_id` = #{parentId}
                 AND `user_organization_id` = #{userOrganizationId}
     </select>
 
@@ -101,20 +101,20 @@
         WHERE `organization_id` = #{organizationId}
         AND `user_organization_id` = #{userOrganizationId}
         AND `parent_id` = #{parentId}
-        AND TRIM(`correction`) = TRIM(#{correction})
+        AND `correction` = #{correction}
         AND `street_type_correction_id` = #{streetTypeCorrectionId}
     </select>
 
     <select id="findLocalCorrectionStreetObjectIds" parameterType="map" resultType="long">
         SELECT DISTINCT `object_id` FROM `street_correction`
         WHERE `organization_id` = #{organizationId} AND `user_organization_id` = #{userOrganizationId} 
-        AND `parent_id` = #{parentId} AND TRIM(`correction`) = TRIM(#{street})
+        AND `parent_id` = #{parentId} AND `correction` = #{street}
     </select>
 
     <select id="findStreetLocalCorrectionsByStreetId" parameterType="map" resultMap="streetCorrection">
         SELECT * FROM `street_correction`
         WHERE `organization_id` = #{organizationId} AND `user_organization_id` = #{userOrganizationId} 
-        AND `parent_id` = #{parentId} AND TRIM(`correction`) = TRIM(#{street}) AND `object_id` = #{streetId}
+        AND `parent_id` = #{parentId} AND `correction` = #{street} AND `object_id` = #{streetId}
     </select>
 
     <insert id="insertStreet" parameterType="org.complitex.osznconnection.file.entity.StreetCorrection" keyProperty="id" useGeneratedKeys="true">
@@ -170,8 +170,9 @@
 
     <select id="findInternalObjectIds" parameterType="map" resultType="long">
         SELECT DISTINCT e.`object_id` FROM `${entity}` e
-            JOIN `${entity}_attribute` attr ON (attr.`status` = 'ACTIVE' AND e.`object_id` = attr.`object_id` AND attr.`attribute_type_id` = #{attributeTypeId})
-            JOIN `${entity}_string_culture` sc ON (sc.`id` = attr.`value_id` AND sc.`value` = TRIM(#{correction}))
+            JOIN `${entity}_attribute` attr ON (attr.`status` = 'ACTIVE' AND e.`object_id` = attr.`object_id` 
+                        AND attr.`attribute_type_id` = #{attributeTypeId})
+            JOIN `${entity}_string_culture` sc ON (sc.`id` = attr.`value_id` AND sc.`value` = #{correction})
         WHERE e.`status` = 'ACTIVE'
     </select>
 
@@ -187,7 +188,7 @@
             </if>
         WHERE s.`status` = 'ACTIVE'
             AND s.`parent_id` = #{parentId}
-            AND name.`value` = TRIM(#{correction})
+            AND name.`value` = #{correction}
             <if test="streetTypeId != null">
                 AND a_type.`value_id` = #{streetTypeId}
             </if>
@@ -199,7 +200,7 @@
             JOIN `street_attribute` street_attr_name ON (street_attr_name.`status` = 'ACTIVE' AND s.`object_id` = street_attr_name.`object_id`
                 AND street_attr_name.`attribute_type_id` = 300)
             JOIN `street_string_culture` street_name ON (street_name.`id` = street_attr_name.`value_id` AND
-                    street_name.`value` = TRIM(#{street}))
+                    street_name.`value` = #{street})
             JOIN `building_address` addr ON (addr.`status` = 'ACTIVE' AND addr.`parent_id` = s.`object_id` AND addr.`parent_entity_id` = 300)
             JOIN `building_address_attribute` num_attr ON (num_attr.`status` = 'ACTIVE' AND num_attr.`object_id` = addr.`object_id` AND num_attr.`attribute_type_id` = 1500)
             JOIN `building_address_string_culture` num ON (num.`id` = num_attr.`value_id` AND num.`value` = #{number})
@@ -223,7 +224,7 @@
             JOIN `street_attribute` street_attr_name ON (street_attr_name.`status` = 'ACTIVE' AND s.`object_id` = street_attr_name.`object_id`
                 AND street_attr_name.`attribute_type_id` = 300)
             JOIN `street_string_culture` street_name ON (street_name.`id` = street_attr_name.`value_id` AND
-                    street_name.`value` = TRIM(#{street}))
+                    street_name.`value` = #{street})
         WHERE s.`status` = 'ACTIVE' AND s.`parent_id` = #{cityId} AND s.`parent_entity_id` = 400
         AND EXISTS(
             SELECT 1 FROM `building_address` addr
@@ -425,12 +426,12 @@
         </if>
         `object_id` = #{objectId} AND
         `parent_id` = #{parentId} AND `internal_organization_id` = #{internalOrganizationId}
-        AND TRIM(`correction`) = TRIM(#{correction}) AND `organization_id` = #{organizationId}
+        AND `correction` = #{correction} AND `organization_id` = #{organizationId}
         
         AND
         <choose>
             <when test="correctionCorp != null">
-                TRIM(`correction_corp`) = TRIM(#{correctionCorp})
+                `correction_corp` = #{correctionCorp}
             </when>
             <otherwise>
                 `correction_corp` = ''
@@ -455,7 +456,7 @@
         </if>
         `object_id` = #{objectId} AND
         `parent_id` = #{parentId} AND `internal_organization_id` = #{internalOrganizationId}
-        AND TRIM(`correction`) = TRIM(#{correction}) AND `organization_id` = #{organizationId}
+        AND `correction` = #{correction} AND `organization_id` = #{organizationId}
         AND `street_type_correction_id` = #{streetTypeCorrectionId}
         
         AND `user_organization_id`
@@ -486,7 +487,7 @@
                 `parent_id` IS NULL
             </otherwise>
         </choose>
-        AND TRIM(`correction`) = TRIM(#{correction}) AND `organization_id` = #{organizationId}
+        AND `correction` = #{correction} AND `organization_id` = #{organizationId}
         
         AND `user_organization_id`
         <choose>

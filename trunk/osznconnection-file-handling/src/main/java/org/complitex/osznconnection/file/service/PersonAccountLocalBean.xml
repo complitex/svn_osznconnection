@@ -25,14 +25,14 @@
 
     <sql id="findAccountsClause">
         SELECT pa.* FROM `person_account` pa WHERE
-             TRIM(pa.`city`) = TRIM(#{city})
-             AND TRIM(pa.`street`) = TRIM(#{street})
-             AND TRIM(pa.`building_num`) = TRIM(#{buildingNumber})
-             AND TRIM(pa.`building_corp`) = TRIM(#{buildingCorp})
-             AND TRIM(pa.`apartment`) = TRIM(#{apartment})
-             AND TRIM(pa.`first_name`) = TRIM(#{firstName})
-             AND TRIM(pa.`middle_name`) = TRIM(#{middleName})
-             AND TRIM(pa.`last_name`) = TRIM(#{lastName})
+             pa.`city` = #{city}
+             AND pa.`street` = #{street}
+             AND pa.`building_num` = #{buildingNumber}
+             AND pa.`building_corp` = #{buildingCorp}
+             AND pa.`apartment` = #{apartment}
+             AND pa.`first_name` = #{firstName}
+             AND pa.`middle_name` = #{middleName}
+             AND pa.`last_name` = #{lastName}
              AND pa.`oszn_id` = #{osznId} AND pa.`calc_center_id` = #{calculationCenterId}
              AND pa.`pu_account_number` = #{puAccountNumber}
              AND pa.`user_organization_id` = #{userOrganizationId}
@@ -40,14 +40,14 @@
     
     <sql id="findAccountsLikeNameClause">
         SELECT pa.* FROM `person_account` pa WHERE
-             TRIM(pa.`city`) = TRIM(#{city})
-             AND TRIM(pa.`street`) = TRIM(#{street})
-             AND TRIM(pa.`building_num`) = TRIM(#{buildingNumber})
-             AND TRIM(pa.`building_corp`) = TRIM(#{buildingCorp})
-             AND TRIM(pa.`apartment`) = TRIM(#{apartment})
-             AND TRIM(pa.`last_name`) = TRIM(#{lastName})
-             AND TRIM(pa.`first_name`) LIKE CONCAT(TRIM(#{firstName}), '%')
-             AND TRIM(pa.`middle_name`) LIKE CONCAT(TRIM(#{middleName}), '%')
+             pa.`city` = #{city}
+             AND pa.`street` = #{street}
+             AND pa.`building_num` = #{buildingNumber}
+             AND pa.`building_corp` = #{buildingCorp}
+             AND pa.`apartment` = #{apartment}
+             AND pa.`last_name` = #{lastName}
+             AND pa.`first_name` LIKE CONCAT(#{firstName}, '%')
+             AND pa.`middle_name` LIKE CONCAT(#{middleName}, '%')
              
              AND pa.`oszn_id` = #{osznId} AND pa.`calc_center_id` = #{calculationCenterId}
              AND pa.`pu_account_number` = #{puAccountNumber}
@@ -126,9 +126,11 @@
 
     <insert id="insert" parameterType="org.complitex.osznconnection.file.entity.PersonAccount" keyProperty="id" useGeneratedKeys="true">
         INSERT INTO `person_account` (`city`, `street_type`, `street`, `building_num`, `building_corp`, `apartment`,
-                `account_number`, `first_name`, `middle_name`, `last_name`, `oszn_id`, `calc_center_id`, `pu_account_number`, `user_organization_id`)
-        VALUES (#{city}, #{streetType}, #{street}, #{buildingNumber}, #{buildingCorp}, #{apartment},
-                #{accountNumber}, #{firstName}, #{middleName}, #{lastName}, #{osznId}, #{calculationCenterId}, #{puAccountNumber}, #{userOrganizationId})
+                `account_number`, `first_name`, `middle_name`, `last_name`, `oszn_id`, `calc_center_id`, 
+                `pu_account_number`, `user_organization_id`)
+        VALUES (UPPER(#{city}), UPPER(#{streetType}), UPPER(#{street}), UPPER(#{buildingNumber}), UPPER(#{buildingCorp}), 
+                UPPER(#{apartment}), #{accountNumber}, UPPER(#{firstName}), UPPER(#{middleName}), UPPER(#{lastName}), 
+                #{osznId}, #{calculationCenterId}, #{puAccountNumber}, #{userOrganizationId})
     </insert>
 
      <update id="updateAccountNumber" parameterType="org.complitex.osznconnection.file.entity.PersonAccount">
@@ -136,7 +138,7 @@
                 WHERE `id` = #{id}
      </update>
      <update id="updateAccountNumberAndStreetType" parameterType="org.complitex.osznconnection.file.entity.PersonAccount">
-         UPDATE `person_account` SET `account_number` = #{accountNumber}, `street_type` = #{streetType}
+         UPDATE `person_account` SET `account_number` = #{accountNumber}, `street_type` = UPPER(#{streetType})
                 WHERE `id` = #{id}
      </update>
 

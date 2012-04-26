@@ -56,7 +56,7 @@ public class PrivilegeCorrectionImportService extends AbstractImportService {
                     throw new ImportObjectLinkException(PRIVILEGE_CORRECTION.getFileName(), recordIndex, line[1].trim());
                 }
 
-                privilegeCorrectionBean.insertOwnershipCorrection(line[2].trim(), line[3].trim(), objectId, orgId,
+                privilegeCorrectionBean.insertPrivilegeCorrection(line[2].trim(), line[3].trim(), objectId, orgId,
                         intOrgId, null);
 
                 listener.recordProcessed(PRIVILEGE_CORRECTION, recordIndex);
