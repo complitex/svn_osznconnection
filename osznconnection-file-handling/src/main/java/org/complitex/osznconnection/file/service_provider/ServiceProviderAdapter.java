@@ -10,7 +10,6 @@ import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -1392,7 +1391,7 @@ public class ServiceProviderAdapter {
             throws DBException {
         Map<String, Object> params = newHashMap();
         params.put("accountNumber", actualPayment.getAccountNumber());
-        params.put("date", new Timestamp(date.getTime()));
+        params.put("date", date);
 
         long startTime = 0;
         if (log.isDebugEnabled()) {

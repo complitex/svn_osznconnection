@@ -64,7 +64,7 @@
         <![CDATA[
          {#{resultCode, mode=OUT, javaType=int, jdbcType=NUMERIC} = call COMP.Z$RUNTIME_SZ_UTL.GETFACTCHARGEANDTARIF(
             #{accountNumber, mode=IN, javaType=string, jdbcType=VARCHAR},
-            #{date, mode=IN, javaType=date, jdbcType=TIMESTAMP},
+            #{date, mode=IN, javaType=date, jdbcType=DATE},
             #{data, mode=OUT, jdbcType=CURSOR,
                     typeHandler=org.complitex.osznconnection.file.service_provider.handler.ActualPaymentDataHandler})
         }
