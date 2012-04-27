@@ -84,4 +84,49 @@ public class PersonAccountExample extends PersonAccount {
     public void setUserOrganizationsString(String userOrganizationsString) {
         this.userOrganizationsString = userOrganizationsString;
     }
+
+    @Override
+    public String getApartment() {
+        return super.getApartment().toUpperCase();
+    }
+
+    @Override
+    public String getBuildingCorp() {
+        return super.getBuildingCorp().toUpperCase();
+    }
+
+    @Override
+    public String getBuildingNumber() {
+        return super.getBuildingNumber().toUpperCase();
+    }
+
+    @Override
+    public String getCity() {
+        return super.getCity().toUpperCase();
+    }
+
+    @Override
+    public String getFirstName() {
+        return super.getFirstName().toUpperCase();
+    }
+
+    @Override
+    public String getLastName() {
+        return super.getLastName().toUpperCase();
+    }
+
+    @Override
+    public String getMiddleName() {
+        return super.getMiddleName().toUpperCase();
+    }
+
+    @Override
+    public String getStreet() {
+        return super.getStreet().toUpperCase();
+    }
+
+    @Override
+    public String getStreetType() {
+        return super.getStreetType().toUpperCase();
+    }
 }
