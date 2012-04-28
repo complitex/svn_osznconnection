@@ -151,7 +151,7 @@ public class PersonAccountLocalBean extends AbstractBean {
                 actualPayment.getStringField(ActualPaymentDBF.FLAT),
                 actualPayment.getOrganizationId(), calculationCenterId, actualPayment.getStringField(ActualPaymentDBF.OWN_NUM),
                 userOrganizationId, false, sqlSession());
-        final String currentStreetType = actualPayment.getStringField(ActualPaymentDBF.VUL_CAT);
+        final String currentStreetType = actualPayment.getStringField(ActualPaymentDBF.VUL_CAT).toUpperCase();
         if (accounts.isEmpty()) {
             return null;
         } else if (accounts.size() == 1) {
@@ -181,7 +181,7 @@ public class PersonAccountLocalBean extends AbstractBean {
                 subsidy.getStringField(SubsidyDBF.BLD), subsidy.getStringField(SubsidyDBF.CORP),
                 subsidy.getStringField(SubsidyDBF.FLAT), subsidy.getOrganizationId(), calculationCenterId,
                 subsidy.getStringField(SubsidyDBF.RASH), userOrganizationId, false, sqlSession());
-        final String currentStreetType = subsidy.getStringField(SubsidyDBF.CAT_V);
+        final String currentStreetType = subsidy.getStringField(SubsidyDBF.CAT_V).toUpperCase();
         if (accounts.isEmpty()) {
             return null;
         } else if (accounts.size() == 1) {
