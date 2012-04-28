@@ -87,46 +87,46 @@ public class PersonAccountExample extends PersonAccount {
 
     @Override
     public String getApartment() {
-        return super.getApartment().toUpperCase();
+        return (super.getApartment() != null )?super.getApartment().toUpperCase():null;
     }
 
     @Override
     public String getBuildingCorp() {
-        return super.getBuildingCorp().toUpperCase();
+        return (super.getBuildingCorp() != null )?super.getBuildingCorp().toUpperCase():null;
     }
 
     @Override
     public String getBuildingNumber() {
-        return super.getBuildingNumber().toUpperCase();
+        return (super.getBuildingNumber() != null )?super.getBuildingNumber().toUpperCase():null;
     }
 
     @Override
     public String getCity() {
-        return super.getCity().toUpperCase();
+        return (super.getCity() != null )?super.getCity().toUpperCase():null;
     }
 
     @Override
     public String getFirstName() {
-        return super.getFirstName().toUpperCase();
+        return (super.getFirstName() != null )?super.getFirstName().toUpperCase():null;
     }
 
     @Override
     public String getLastName() {
-        return super.getLastName().toUpperCase();
+        return (super.getLastName() != null )?super.getLastName().toUpperCase():null;
     }
 
     @Override
     public String getMiddleName() {
-        return super.getMiddleName().toUpperCase();
+        return (super.getMiddleName() != null )?super.getMiddleName().toUpperCase():null;
     }
 
     @Override
     public String getStreet() {
-        return super.getStreet().toUpperCase();
+        return (super.getStreet() != null )?super.getStreet().toUpperCase():null;
     }
 
     @Override
     public String getStreetType() {
-        return super.getStreetType().toUpperCase();
+        return (super.getStreetType() != null )?super.getStreetType().toUpperCase():null;
     }
 }
