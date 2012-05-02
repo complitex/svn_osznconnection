@@ -5,7 +5,6 @@
 package org.complitex.osznconnection.file.service;
 
 import java.util.Date;
-import java.util.List;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.AbstractBean;
@@ -142,20 +141,8 @@ public class PersonAccountService extends AbstractBean {
                 subsidy.getOutgoingBuildingNumber(), subsidy.getOutgoingBuildingCorp(),
                 subsidy.getOutgoingApartment(), (Date) subsidy.getField(SubsidyDBF.DAT1), updatePUAccount);
         if (subsidy.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED) {
-            createLocalAccountsForSubsidyWithTheSameRash(subsidy, calculationContext.getCalculationCenterId(),
+            personAccountLocalBean.saveOrUpdate(subsidy, calculationContext.getCalculationCenterId(),
                     calculationContext.getUserOrganizationId());
-        }
-    }
-
-    @Transactional
-    private void createLocalAccountsForSubsidyWithTheSameRash(Subsidy subsidy, long calculationCenterId, long userOrganizationId) {
-        List<Subsidy> subsWithSameRash = subsidyBean.findWithTheSameRash(subsidy.getRequestFileId(),
-                subsidy.getStringField(SubsidyDBF.RASH));
-        if (subsWithSameRash != null && !subsWithSameRash.isEmpty()) {
-            for (Subsidy s : subsWithSameRash) {
-                s.setAccountNumber(subsidy.getAccountNumber());
-                personAccountLocalBean.saveOrUpdate(s, calculationCenterId, userOrganizationId);
-            }
         }
     }
 
@@ -204,17 +191,17 @@ public class PersonAccountService extends AbstractBean {
     public void updateAccountNumber(Subsidy subsidy, String accountNumber, long userOrganizationId) {
         subsidy.setAccountNumber(accountNumber);
         subsidy.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
+        subsidyBean.updateAccountNumberForSimilarSubs(subsidy);
 
-        final CalculationContext calculationContext = calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId);
-        createLocalAccountsForSubsidyWithTheSameRash(subsidy, calculationContext.getCalculationCenterId(),
-                calculationContext.getUserOrganizationId());
-
-        subsidyBean.updateAccountNumber(subsidy);
         long subsidyFileId = subsidy.getRequestFileId();
         RequestFile subsidyFile = requestFileBean.findById(subsidyFileId);
         if (subsidyBean.isSubsidyFileBound(subsidyFileId)) {
             subsidyFile.setStatus(RequestFileStatus.BOUND);
             requestFileBean.save(subsidyFile);
         }
+
+        final CalculationContext calculationContext = calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId);
+        personAccountLocalBean.saveOrUpdate(subsidy, calculationContext.getCalculationCenterId(),
+                calculationContext.getUserOrganizationId());
     }
 }
