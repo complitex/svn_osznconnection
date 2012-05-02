@@ -80,8 +80,8 @@ public class SubsidyBean extends AbstractRequestBean {
     }
 
     @Transactional
-    public void updateAccountNumber(Subsidy subsidy) {
-        sqlSession().update(MAPPING_NAMESPACE + ".updateAccountNumber", subsidy);
+    public void updateAccountNumberForSimilarSubs(Subsidy subsidy) {
+        sqlSession().update(MAPPING_NAMESPACE + ".updateAccountNumberForSimislarSubs", subsidy);
     }
 
     @Transactional
@@ -182,9 +182,5 @@ public class SubsidyBean extends AbstractRequestBean {
     public List<AbstractRequest> getSubsidies(long requestFileId) {
         List<AbstractRequest> subsidies = sqlSession().selectList(MAPPING_NAMESPACE + ".selectSubsidies", requestFileId);
         return subsidies;
-    }
-
-    public List<Subsidy> findWithTheSameRash(long fileId, String rash) {
-        return sqlSession().selectList(MAPPING_NAMESPACE + ".findWithTheSameRash", ImmutableMap.of("fileId", fileId, "rash", rash));
     }
 }
