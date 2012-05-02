@@ -42,15 +42,29 @@ public class ProcessBenefitTest extends AbstractTest {
 
     @Override
     protected void test(ServiceProviderAdapter adapter) throws Exception {
-        Benefit b = new Benefit();
+        Benefit b = new Benefit() {
+
+            @Override
+            protected void setField(String fieldName, Object object) {
+                dbfFields.put(fieldName, object != null ? object.toString() : null);
+            }
+
+            @Override
+            public <T> T getField(BenefitDBF benefitDBF) {
+                if (benefitDBF == BenefitDBF.IND_COD) {
+                    return (T) "2142426432";
+                }
+                throw new IllegalStateException();
+            }
+        };
         b.setAccountNumber("1000000000");
-        b.setField(BenefitDBF.IND_COD, "2142426432");
         b.setOrganizationId(1L);
 
         try {
             adapter.processBenefit(new CalculationContext(2, "test", ImmutableSet.of(1L), 3), new Date(), Lists.newArrayList(b));
         } catch (DBException e) {
             System.out.println("DB error.");
+            throw new RuntimeException(e);
         }
         System.out.println("Status : " + b.getStatus());
     }

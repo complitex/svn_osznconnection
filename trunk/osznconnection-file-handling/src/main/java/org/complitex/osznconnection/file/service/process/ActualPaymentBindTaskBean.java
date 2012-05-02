@@ -64,46 +64,49 @@ public class ActualPaymentBindTaskBean implements ITaskBean {
     private boolean resolveAddress(ActualPayment actualPayment, CalculationContext calculationContext) {
         long startTime = 0;
         if (log.isDebugEnabled()) {
-            startTime = System.currentTimeMillis();
+            startTime = System.nanoTime();
         }
         addressService.resolveAddress(actualPayment, calculationContext);
         if (log.isDebugEnabled()) {
             log.debug("Resolving of actualPayment address (id = {}) took {} sec.", actualPayment.getId(),
-                    (System.currentTimeMillis() - startTime) / 1000);
+                    (System.nanoTime() - startTime) / 1000000000F);
         }
         return addressService.isAddressResolved(actualPayment);
     }
 
-    private boolean resolveLocalAccount(ActualPayment actualPayment, CalculationContext calculationContext) {
+    private void resolveLocalAccount(ActualPayment actualPayment, CalculationContext calculationContext) {
         long startTime = 0;
         if (log.isDebugEnabled()) {
-            startTime = System.currentTimeMillis();
+            startTime = System.nanoTime();
         }
         personAccountService.resolveLocalAccount(actualPayment, calculationContext);
         if (log.isDebugEnabled()) {
             log.debug("Resolving of actualPayment (id = {}) for local account took {} sec.", actualPayment.getId(),
-                    (System.currentTimeMillis() - startTime) / 1000);
+                    (System.nanoTime() - startTime) / 1000000000F);
         }
-        return actualPayment.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED;
     }
 
     private boolean resolveRemoteAccountNumber(ActualPayment actualPayment, Date date,
             CalculationContext calculationContext, Boolean updatePuAccount) throws DBException {
         long startTime = 0;
         if (log.isDebugEnabled()) {
-            startTime = System.currentTimeMillis();
+            startTime = System.nanoTime();
         }
         personAccountService.resolveRemoteAccount(actualPayment, date, calculationContext, updatePuAccount);
         if (log.isDebugEnabled()) {
             log.debug("Resolving of actualPayment (id = {}) for remote account number took {} sec.", actualPayment.getId(),
-                    (System.currentTimeMillis() - startTime) / 1000);
+                    (System.nanoTime() - startTime) / 1000000000F);
         }
         return actualPayment.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED;
     }
 
     private void bind(ActualPayment actualPayment, Date date, CalculationContext calculationContext, Boolean updatePuAccount)
             throws DBException {
-        if (!resolveLocalAccount(actualPayment, calculationContext)) {
+        //resolve local account.
+        resolveLocalAccount(actualPayment, calculationContext);
+
+        if (actualPayment.getStatus() != RequestStatus.ACCOUNT_NUMBER_RESOLVED
+                && actualPayment.getStatus() != RequestStatus.MORE_ONE_ACCOUNTS_LOCALLY) {
             if (resolveAddress(actualPayment, calculationContext)) {
                 resolveRemoteAccountNumber(actualPayment, date, calculationContext, updatePuAccount);
             }
@@ -112,12 +115,12 @@ public class ActualPaymentBindTaskBean implements ITaskBean {
         // обновляем actualPayment запись
         long startTime = 0;
         if (log.isDebugEnabled()) {
-            startTime = System.currentTimeMillis();
+            startTime = System.nanoTime();
         }
         actualPaymentBean.update(actualPayment);
         if (log.isDebugEnabled()) {
             log.debug("Updating of actualPayment (id = {}) took {} sec.", actualPayment.getId(),
-                    (System.currentTimeMillis() - startTime) / 1000);
+                    (System.nanoTime() - startTime) / 1000000000F);
         }
     }
 
@@ -126,11 +129,11 @@ public class ActualPaymentBindTaskBean implements ITaskBean {
         //извлечь из базы все id подлежащие связыванию для файла actualPayment и доставать записи порциями по BATCH_SIZE штук.
         long startTime = 0;
         if (log.isDebugEnabled()) {
-            startTime = System.currentTimeMillis();
+            startTime = System.nanoTime();
         }
         List<Long> notResolvedPaymentIds = actualPaymentBean.findIdsForBinding(actualPaymentFile.getId());
         if (log.isDebugEnabled()) {
-            log.debug("Finding of actualPayment ids for binding took {} sec.", (System.currentTimeMillis() - startTime) / 1000);
+            log.debug("Finding of actualPayment ids for binding took {} sec.", (System.nanoTime() - startTime) / 1000000000F);
         }
         List<Long> batch = Lists.newArrayList();
 

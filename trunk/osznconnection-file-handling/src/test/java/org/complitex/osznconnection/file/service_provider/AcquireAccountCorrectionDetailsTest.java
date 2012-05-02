@@ -23,7 +23,7 @@ public class AcquireAccountCorrectionDetailsTest extends AbstractTest {
             new AcquireAccountCorrectionDetailsTest().executeTest();
         } catch (DBException e) {
             System.out.println("DB error.");
-            e.printStackTrace();
+            throw new RuntimeException(e);
         } catch (UnknownAccountNumberTypeException e) {
             System.out.println("Unknown account number type exception.");
         } catch (Exception e) {
@@ -50,7 +50,19 @@ public class AcquireAccountCorrectionDetailsTest extends AbstractTest {
     }
 
     private static Payment newPayment() {
-        Payment p = new Payment();
+        Payment p = new Payment() {
+
+            @Override
+            public <T> T getField(PaymentDBF paymentDBF) {
+                if (paymentDBF == PaymentDBF.DAT1) {
+                    return (T) new Date();
+                } else if (paymentDBF == PaymentDBF.OWN_NUM_SR) {
+                    return (T) "1234567";
+                } else {
+                    throw new IllegalStateException();
+                }
+            }
+        };
         p.setId(1L);
         p.setOutgoingDistrict("ЦЕНТРАЛЬНЫЙ");
         p.setOutgoingStreet("ФРАНТИШЕКА КРАЛА");
@@ -58,8 +70,6 @@ public class AcquireAccountCorrectionDetailsTest extends AbstractTest {
         p.setOutgoingBuildingNumber("25А");
         p.setOutgoingBuildingCorp("");
         p.setOutgoingApartment("19");
-        p.setField(PaymentDBF.DAT1, new Date());
-        p.setField(PaymentDBF.OWN_NUM_SR, "1234567");
         return p;
     }
 

@@ -51,25 +51,45 @@ public class ProcessPaymentTest extends AbstractTest {
 
     @Override
     protected void test(ServiceProviderAdapter adapter) throws Exception {
-        Payment p = new Payment();
-        Benefit b = new Benefit();
+        Payment p = new Payment() {
+
+            @Override
+            public <T> T getField(PaymentDBF paymentDBF) {
+                if (paymentDBF == PaymentDBF.DAT1) {
+                    return (T) new Date();
+                }
+                throw new IllegalStateException();
+            }
+
+            @Override
+            protected void setField(String fieldName, Object object) {
+                dbfFields.put(fieldName, object != null ? object.toString() : null);
+            }
+        };
+        Benefit b = new Benefit() {
+
+            @Override
+            protected void setField(String fieldName, Object object) {
+                dbfFields.put(fieldName, object != null ? object.toString() : null);
+            }
+        };
         b.setId(1L);
         p.setAccountNumber("1000001108");
         p.setOrganizationId(1L);
-        p.setField(PaymentDBF.DAT1, new Date());
 
         try {
             adapter.processPaymentAndBenefit(new CalculationContext(2, "test", ImmutableSet.of(1L), 3), p, Lists.newArrayList(b));
         } catch (DBException e) {
             System.out.println("DB error.");
+            throw new RuntimeException(e);
         }
-        System.out.println("Status : " + p.getStatus() + ", FROG : " + p.getField(PaymentDBF.FROG) + ", FL_PAY : " + p.getField(PaymentDBF.FL_PAY)
-                + ", NM_PAY : " + p.getField(PaymentDBF.NM_PAY) + ", DEBT : " + p.getField(PaymentDBF.DEBT) + ", NUMB : " + p.getField(PaymentDBF.NUMB)
-                + ", MARK : " + p.getField(PaymentDBF.MARK) + ", HOSTEL : " + b.getField(BenefitDBF.HOSTEL)
-                + ", OWN_FRM : " + b.getField(BenefitDBF.OWN_FRM)
-                + ", NORM_F_1 : " + p.getField(PaymentDBF.NORM_F_1)
-                + ", NORM_F_2 : " + p.getField(PaymentDBF.NORM_F_2)
-                + ", CODE2_1 : " + p.getField(PaymentDBF.CODE2_1)
-                + ", CODE2_2 : " + p.getField(PaymentDBF.CODE2_2));
+        System.out.println("Status : " + p.getStatus() + ", FROG : " + p.getStringField(PaymentDBF.FROG) + ", FL_PAY : " + p.getStringField(PaymentDBF.FL_PAY)
+                + ", NM_PAY : " + p.getStringField(PaymentDBF.NM_PAY) + ", DEBT : " + p.getStringField(PaymentDBF.DEBT) + ", NUMB : " + p.getStringField(PaymentDBF.NUMB)
+                + ", MARK : " + p.getStringField(PaymentDBF.MARK) + ", HOSTEL : " + b.getStringField(BenefitDBF.HOSTEL)
+                + ", OWN_FRM : " + b.getStringField(BenefitDBF.OWN_FRM)
+                + ", NORM_F_1 : " + p.getStringField(PaymentDBF.NORM_F_1)
+                + ", NORM_F_2 : " + p.getStringField(PaymentDBF.NORM_F_2)
+                + ", CODE2_1 : " + p.getStringField(PaymentDBF.CODE2_1)
+                + ", CODE2_2 : " + p.getStringField(PaymentDBF.CODE2_2));
     }
 }

@@ -23,15 +23,22 @@ public class ProcessActualPaymentTest extends AbstractTest {
 
     @Override
     protected void test(ServiceProviderAdapter adapter) throws Exception {
-        ActualPayment p = new ActualPayment();
+        ActualPayment p = new ActualPayment() {
+
+            @Override
+            protected void setField(String fieldName, Object object) {
+                dbfFields.put(fieldName, object != null ? object.toString() : null);
+            }
+        };
         p.setAccountNumber("1000000000");
         try {
             adapter.processActualPayment(new CalculationContext(2, "test", ImmutableSet.of(1L), 3), p, new Date());
         } catch (DBException e) {
             System.out.println("DB error.");
+            throw new RuntimeException(e);
         }
         System.out.println("Status : " + p.getStatus()
-                + ", P1 : " + p.getField(ActualPaymentDBF.P1) + ", N1 : " + p.getField(ActualPaymentDBF.N1)
-                + ", P2 : " + p.getField(ActualPaymentDBF.P2) + ", N2 : " + p.getField(ActualPaymentDBF.N2));
+                + ", P1 : " + p.getStringField(ActualPaymentDBF.P1) + ", N1 : " + p.getStringField(ActualPaymentDBF.N1)
+                + ", P2 : " + p.getStringField(ActualPaymentDBF.P2) + ", N2 : " + p.getStringField(ActualPaymentDBF.N2));
     }
 }

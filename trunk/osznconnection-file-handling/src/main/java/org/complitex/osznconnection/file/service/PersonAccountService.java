@@ -13,6 +13,7 @@ import org.complitex.osznconnection.file.entity.*;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import org.complitex.osznconnection.file.service.PersonAccountLocalBean.MoreOneAccountException;
 import org.complitex.osznconnection.file.service_provider.CalculationCenterBean;
 import org.complitex.osznconnection.file.service_provider.ServiceProviderAdapter;
 import org.complitex.osznconnection.file.service_provider.exception.DBException;
@@ -52,32 +53,44 @@ public class PersonAccountService extends AbstractBean {
      */
     @Transactional
     public void resolveLocalAccount(Payment payment, CalculationContext calculationContext) {
-        String accountNumber = personAccountLocalBean.findLocalAccountNumber(payment, calculationContext.getCalculationCenterId(),
-                calculationContext.getUserOrganizationId());
-        if (!Strings.isEmpty(accountNumber)) {
-            payment.setAccountNumber(accountNumber);
-            payment.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
-            benefitBean.updateAccountNumber(payment.getId(), accountNumber);
+        try {
+            String accountNumber = personAccountLocalBean.findLocalAccountNumber(payment, calculationContext.getCalculationCenterId(),
+                    calculationContext.getUserOrganizationId());
+            if (!Strings.isEmpty(accountNumber)) {
+                payment.setAccountNumber(accountNumber);
+                payment.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
+                benefitBean.updateAccountNumber(payment.getId(), accountNumber);
+            }
+        } catch (MoreOneAccountException e) {
+            payment.setStatus(RequestStatus.MORE_ONE_ACCOUNTS_LOCALLY);
         }
     }
 
     @Transactional
     public void resolveLocalAccount(ActualPayment actualPayment, CalculationContext calculationContext) {
-        String accountNumber = personAccountLocalBean.findLocalAccountNumber(actualPayment, calculationContext.getCalculationCenterId(),
-                calculationContext.getUserOrganizationId());
-        if (!Strings.isEmpty(accountNumber)) {
-            actualPayment.setAccountNumber(accountNumber);
-            actualPayment.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
+        try {
+            String accountNumber = personAccountLocalBean.findLocalAccountNumber(actualPayment, calculationContext.getCalculationCenterId(),
+                    calculationContext.getUserOrganizationId());
+            if (!Strings.isEmpty(accountNumber)) {
+                actualPayment.setAccountNumber(accountNumber);
+                actualPayment.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
+            }
+        } catch (MoreOneAccountException e) {
+            actualPayment.setStatus(RequestStatus.MORE_ONE_ACCOUNTS_LOCALLY);
         }
     }
 
     @Transactional
     public void resolveLocalAccount(Subsidy subsidy, CalculationContext calculationContext) {
-        String accountNumber = personAccountLocalBean.findLocalAccountNumber(subsidy, calculationContext.getCalculationCenterId(),
-                calculationContext.getUserOrganizationId());
-        if (!Strings.isEmpty(accountNumber)) {
-            subsidy.setAccountNumber(accountNumber);
-            subsidy.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
+        try {
+            String accountNumber = personAccountLocalBean.findLocalAccountNumber(subsidy, calculationContext.getCalculationCenterId(),
+                    calculationContext.getUserOrganizationId());
+            if (!Strings.isEmpty(accountNumber)) {
+                subsidy.setAccountNumber(accountNumber);
+                subsidy.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
+            }
+        } catch (MoreOneAccountException e) {
+            subsidy.setStatus(RequestStatus.MORE_ONE_ACCOUNTS_LOCALLY);
         }
     }
 

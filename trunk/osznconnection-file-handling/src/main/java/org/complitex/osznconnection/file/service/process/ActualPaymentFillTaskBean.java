@@ -133,17 +133,18 @@ public class ActualPaymentFillTaskBean implements ITaskBean {
         for (CalculationContext calculationContext : calculationContexts) {
             long startTime = 0;
             if (log.isDebugEnabled()) {
-                startTime = System.currentTimeMillis();
+                startTime = System.nanoTime();
             }
             adapter.processActualPayment(calculationContext, actualPayment, date);
             log.debug("Processing actualPayment (id = {}, calculation center id: {}) took {} sec.",
                     new Object[]{
                         actualPayment.getId(),
                         calculationContext.getCalculationCenterId(),
-                        (System.currentTimeMillis() - startTime) / 1000
+                        (System.nanoTime() - startTime) / 1000000000F
                     });
 
-            /* если actualPayment обработан некорректно текущим модулем начислений, то прерываем обработку данной записи
+            /* 
+             * если actualPayment обработан некорректно текущим модулем начислений, то прерываем обработку данной записи
              * оставшимися модулями.
              */
             if (actualPayment.getStatus() != RequestStatus.PROCESSED) {
@@ -153,10 +154,10 @@ public class ActualPaymentFillTaskBean implements ITaskBean {
 
         long startTime = 0;
         if (log.isDebugEnabled()) {
-            startTime = System.currentTimeMillis();
+            startTime = System.nanoTime();
         }
         actualPaymentBean.update(actualPayment, getServiceProviderTypeIds(calculationContexts));
-        log.debug("Updating of actualPayment (id = {}) took {} sec.", actualPayment.getId(), (System.currentTimeMillis() - startTime) / 1000);
+        log.debug("Updating of actualPayment (id = {}) took {} sec.", actualPayment.getId(), (System.nanoTime() - startTime) / 1000000000F);
     }
 
     private void processActualPayment(RequestFile actualPaymentFile, Collection<CalculationContext> calculationContexts)
@@ -164,10 +165,10 @@ public class ActualPaymentFillTaskBean implements ITaskBean {
         //извлечь из базы все id подлежащие обработке для файла actualPayment и доставать записи порциями по BATCH_SIZE штук.
         long startTime = 0;
         if (log.isDebugEnabled()) {
-            startTime = System.currentTimeMillis();
+            startTime = System.nanoTime();
         }
         List<Long> notResolvedPaymentIds = actualPaymentBean.findIdsForProcessing(actualPaymentFile.getId());
-        log.debug("Finding of actualPayment ids for processing took {} sec.", (System.currentTimeMillis() - startTime) / 1000);
+        log.debug("Finding of actualPayment ids for processing took {} sec.", (System.nanoTime() - startTime) / 1000000000F);
         List<Long> batch = Lists.newArrayList();
 
         int batchSize = configBean.getInteger(FileHandlingConfig.FILL_BATCH_SIZE, true);
