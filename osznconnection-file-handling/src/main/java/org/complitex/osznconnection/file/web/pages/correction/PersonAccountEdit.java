@@ -76,23 +76,6 @@ public final class PersonAccountEdit extends FormTemplatePage {
         }
     }
 
-    private boolean validate() {
-        boolean valid = false;
-        try {
-            valid = personAccountLocalBean.validate(personAccount);
-            if (!valid) {
-                error(getString("more_one_person_error"));
-            }
-        } catch (IllegalStateException e) {
-            log.error("", e);
-            error(getString("inconsistent_error"));
-        } catch (Exception e) {
-            error(getString("db_error"));
-            log.error("", e);
-        }
-        return valid;
-    }
-
     private void delete() {
         try {
             personAccountLocalBean.delete(personAccount);
@@ -243,11 +226,7 @@ public final class PersonAccountEdit extends FormTemplatePage {
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                if (PersonAccountEdit.this.validate()) {
-                    saveOrUpdate();
-                } else {
-                    target.addComponent(messages);
-                }
+                saveOrUpdate();
             }
 
             @Override

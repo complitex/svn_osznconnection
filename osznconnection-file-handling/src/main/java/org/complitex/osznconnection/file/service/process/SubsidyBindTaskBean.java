@@ -5,7 +5,6 @@
 package org.complitex.osznconnection.file.service.process;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import org.complitex.dictionary.entity.IExecutorObject;
 import org.complitex.dictionary.entity.Log;
 import org.complitex.dictionary.entity.Log.EVENT;
@@ -30,10 +29,8 @@ import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import org.complitex.osznconnection.file.service.SubsidyBean;
 import org.complitex.osznconnection.file.service_provider.CalculationCenterBean;
 import org.complitex.osznconnection.file.service_provider.exception.DBException;
@@ -66,46 +63,49 @@ public class SubsidyBindTaskBean implements ITaskBean {
     private boolean resolveAddress(Subsidy subsidy, CalculationContext calculationContext) {
         long startTime = 0;
         if (log.isDebugEnabled()) {
-            startTime = System.currentTimeMillis();
+            startTime = System.nanoTime();
         }
         addressService.resolveAddress(subsidy, calculationContext);
         if (log.isDebugEnabled()) {
             log.debug("Resolving of subsidy address (id = {}) took {} sec.", subsidy.getId(),
-                    (System.currentTimeMillis() - startTime) / 1000);
+                    (System.nanoTime() - startTime) / 1000000000F);
         }
         return addressService.isAddressResolved(subsidy);
     }
 
-    private boolean resolveLocalAccount(Subsidy subsidy, CalculationContext calculationContext) {
+    private void resolveLocalAccount(Subsidy subsidy, CalculationContext calculationContext) {
         long startTime = 0;
         if (log.isDebugEnabled()) {
-            startTime = System.currentTimeMillis();
+            startTime = System.nanoTime();
         }
         personAccountService.resolveLocalAccount(subsidy, calculationContext);
         if (log.isDebugEnabled()) {
             log.debug("Resolving of subsidy (id = {}) for local account took {} sec.", subsidy.getId(),
-                    (System.currentTimeMillis() - startTime) / 1000);
+                    (System.nanoTime() - startTime) / 1000000000F);
         }
-        return subsidy.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED;
     }
 
-    private boolean resolveRemoteAccountNumber(Subsidy subsidy, 
+    private boolean resolveRemoteAccountNumber(Subsidy subsidy,
             CalculationContext calculationContext, Boolean updatePuAccount) throws DBException {
         long startTime = 0;
         if (log.isDebugEnabled()) {
-            startTime = System.currentTimeMillis();
+            startTime = System.nanoTime();
         }
         personAccountService.resolveRemoteAccount(subsidy, calculationContext, updatePuAccount);
         if (log.isDebugEnabled()) {
             log.debug("Resolving of subsidy (id = {}) for remote account number took {} sec.", subsidy.getId(),
-                    (System.currentTimeMillis() - startTime) / 1000);
+                    (System.nanoTime() - startTime) / 1000000000F);
         }
         return subsidy.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED;
     }
 
     private void bind(Subsidy subsidy, CalculationContext calculationContext, Boolean updatePuAccount)
             throws DBException {
-        if (!resolveLocalAccount(subsidy, calculationContext)) {
+        //resolve local account.
+        resolveLocalAccount(subsidy, calculationContext);
+
+        if (subsidy.getStatus() != RequestStatus.ACCOUNT_NUMBER_RESOLVED
+                && subsidy.getStatus() != RequestStatus.MORE_ONE_ACCOUNTS_LOCALLY) {
             if (resolveAddress(subsidy, calculationContext)) {
                 resolveRemoteAccountNumber(subsidy, calculationContext, updatePuAccount);
             }
@@ -114,12 +114,12 @@ public class SubsidyBindTaskBean implements ITaskBean {
         // обновляем subsidy запись
         long startTime = 0;
         if (log.isDebugEnabled()) {
-            startTime = System.currentTimeMillis();
+            startTime = System.nanoTime();
         }
         subsidyBean.update(subsidy);
         if (log.isDebugEnabled()) {
             log.debug("Updating of subsidy (id = {}) took {} sec.", subsidy.getId(),
-                    (System.currentTimeMillis() - startTime) / 1000);
+                    (System.nanoTime() - startTime) / 1000000000F);
         }
     }
 
@@ -128,11 +128,11 @@ public class SubsidyBindTaskBean implements ITaskBean {
         //извлечь из базы все id подлежащие связыванию для файла subsidy и доставать записи порциями по BATCH_SIZE штук.
         long startTime = 0;
         if (log.isDebugEnabled()) {
-            startTime = System.currentTimeMillis();
+            startTime = System.nanoTime();
         }
         List<Long> notResolvedSubsidyIds = subsidyBean.findIdsForBinding(subsidyFile.getId());
         if (log.isDebugEnabled()) {
-            log.debug("Finding of subsidy ids for binding took {} sec.", (System.currentTimeMillis() - startTime) / 1000);
+            log.debug("Finding of subsidy ids for binding took {} sec.", (System.nanoTime() - startTime) / 1000000000F);
         }
         List<Long> batch = Lists.newArrayList();
 

@@ -339,7 +339,7 @@ public class ServiceProviderAdapter {
 
         long startTime = 0;
         if (log.isDebugEnabled()) {
-            startTime = System.currentTimeMillis();
+            startTime = System.nanoTime();
         }
         try {
             sqlSession(calculationContext.getDataSource()).selectOne(MAPPING_NAMESPACE + ".acquireAccountDetailsByAddress", params);
@@ -348,7 +348,7 @@ public class ServiceProviderAdapter {
         } finally {
             log.info("acquireAccountDetailsByAddress. Calculation center: {}, parameters : {}", calculationContext, params);
             if (log.isDebugEnabled()) {
-                log.debug("acquireAccountDetailsByAddress. Time of operation: {} sec.", (System.currentTimeMillis() - startTime) / 1000);
+                log.debug("acquireAccountDetailsByAddress. Time of operation: {} sec.", (System.nanoTime() - startTime) / 1000000000F);
             }
         }
 
@@ -439,7 +439,7 @@ public class ServiceProviderAdapter {
 
         long startTime = 0;
         if (log.isDebugEnabled()) {
-            startTime = System.currentTimeMillis();
+            startTime = System.nanoTime();
         }
         try {
             sqlSession(calculationContext.getDataSource()).selectOne(MAPPING_NAMESPACE + ".processPaymentAndBenefit", params);
@@ -448,7 +448,7 @@ public class ServiceProviderAdapter {
         } finally {
             log.info("processPaymentAndBenefit. Calculation center: {}, parameters : {}", calculationContext, params);
             if (log.isDebugEnabled()) {
-                log.debug("processPaymentAndBenefit. Time of operation: {} sec.", (System.currentTimeMillis() - startTime) / 1000);
+                log.debug("processPaymentAndBenefit. Time of operation: {} sec.", (System.nanoTime() - startTime) / 1000000000F);
             }
         }
 
@@ -741,7 +741,7 @@ public class ServiceProviderAdapter {
 
         long startTime = 0;
         if (log.isDebugEnabled()) {
-            startTime = System.currentTimeMillis();
+            startTime = System.nanoTime();
         }
         try {
             sqlSession(calculationContext.getDataSource()).selectOne(MAPPING_NAMESPACE + ".getBenefitData", params);
@@ -750,7 +750,7 @@ public class ServiceProviderAdapter {
         } finally {
             log.info("getBenefitData. Calculation center: {}, parameters : {}", calculationContext, params);
             if (log.isDebugEnabled()) {
-                log.debug("getBenefitData. Time of operation: {} sec.", (System.currentTimeMillis() - startTime) / 1000);
+                log.debug("getBenefitData. Time of operation: {} sec.", (System.nanoTime() - startTime) / 1000000000F);
             }
         }
 
@@ -1033,7 +1033,7 @@ public class ServiceProviderAdapter {
 
         long startTime = 0;
         if (log.isDebugEnabled()) {
-            startTime = System.currentTimeMillis();
+            startTime = System.nanoTime();
         }
         try {
             sqlSession(calculationContext.getDataSource()).selectOne(MAPPING_NAMESPACE + ".processBenefit", params);
@@ -1042,7 +1042,7 @@ public class ServiceProviderAdapter {
         } finally {
             log.info("processBenefit. Calculation center: {}, parameters : {}", calculationContext, params);
             if (log.isDebugEnabled()) {
-                log.debug("processBenefit. Time of operation: {} sec.", (System.currentTimeMillis() - startTime) / 1000);
+                log.debug("processBenefit. Time of operation: {} sec.", (System.nanoTime() - startTime) / 1000000000F);
             }
         }
 
@@ -1212,7 +1212,7 @@ public class ServiceProviderAdapter {
                                     webWarningRenderer.display(warning, localeBean.getSystemLocale()));
                         }
                     }
-                    
+
                     Integer ordFamAsInt = null;
                     try {
                         ordFamAsInt = Integer.valueOf(data.getOrderFamily());
@@ -1306,7 +1306,7 @@ public class ServiceProviderAdapter {
 
         long startTime = 0;
         if (log.isDebugEnabled()) {
-            startTime = System.currentTimeMillis();
+            startTime = System.nanoTime();
         }
         try {
             sqlSession(calculationCenterInfo.getDataSource()).selectOne(MAPPING_NAMESPACE + ".getAttrsByAccCode", params);
@@ -1315,7 +1315,7 @@ public class ServiceProviderAdapter {
         } finally {
             log.info("acquireAccountDetailsByAccount. Calculation center: {}, parameters : {}", calculationCenterInfo, params);
             if (log.isDebugEnabled()) {
-                log.debug("acquireAccountDetailsByAccount. Time of operation: {} sec.", (System.currentTimeMillis() - startTime) / 1000);
+                log.debug("acquireAccountDetailsByAccount. Time of operation: {} sec.", (System.nanoTime() - startTime) / 1000000000F);
             }
         }
 
@@ -1395,7 +1395,7 @@ public class ServiceProviderAdapter {
 
         long startTime = 0;
         if (log.isDebugEnabled()) {
-            startTime = System.currentTimeMillis();
+            startTime = System.nanoTime();
         }
         try {
             sqlSession(calculationCenterInfo.getDataSource()).selectOne(MAPPING_NAMESPACE + ".processActualPayment", params);
@@ -1404,7 +1404,7 @@ public class ServiceProviderAdapter {
         } finally {
             log.info("processActualPayment. Calculation center: {}, parameters : {}", calculationCenterInfo, params);
             if (log.isDebugEnabled()) {
-                log.debug("processActualPayment. Time of operation: {} sec.", (System.currentTimeMillis() - startTime) / 1000);
+                log.debug("processActualPayment. Time of operation: {} sec.", (System.nanoTime() - startTime) / 1000000000F);
             }
         }
 

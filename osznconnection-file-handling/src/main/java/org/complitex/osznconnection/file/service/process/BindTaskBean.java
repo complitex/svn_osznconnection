@@ -147,9 +147,8 @@ public class BindTaskBean implements ITaskBean {
      * @param payment Запись запроса начислений
      * @return Разрешен ли номер л/с
      */
-    private boolean resolveLocalAccount(Payment payment, CalculationContext calculationContext) {
+    private void resolveLocalAccount(Payment payment, CalculationContext calculationContext) {
         personAccountService.resolveLocalAccount(payment, calculationContext);
-        return payment.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED;
     }
 
     /**
@@ -172,7 +171,11 @@ public class BindTaskBean implements ITaskBean {
      * Если адрес разрешен, то пытаемся разрешить номер л/c в ЦН.
      */
     private void bind(Payment payment, CalculationContext calculationContext, Boolean updatePuAccount) throws DBException {
-        if (!resolveLocalAccount(payment, calculationContext)) {
+        //resolve local account.
+        resolveLocalAccount(payment, calculationContext);
+
+        if (payment.getStatus() != RequestStatus.ACCOUNT_NUMBER_RESOLVED
+                && payment.getStatus() != RequestStatus.MORE_ONE_ACCOUNTS_LOCALLY) {
             if (resolveAddress(payment, calculationContext)) {
                 resolveRemoteAccountNumber(payment, calculationContext, updatePuAccount);
             }

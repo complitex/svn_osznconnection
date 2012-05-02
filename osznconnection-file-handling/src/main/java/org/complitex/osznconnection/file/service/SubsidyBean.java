@@ -75,7 +75,6 @@ public class SubsidyBean extends AbstractRequestBean {
     }
 
     @Transactional
-    @SuppressWarnings("unchecked")
     public List<Subsidy> find(SubsidyExample example) {
         return sqlSession().selectList(MAPPING_NAMESPACE + ".find", example);
     }
@@ -112,13 +111,11 @@ public class SubsidyBean extends AbstractRequestBean {
     }
 
     @Transactional
-    @SuppressWarnings("unchecked")
     private List<Long> findIdsForOperation(long fileId) {
         return sqlSession().selectList(MAPPING_NAMESPACE + ".findIdsForOperation", fileId);
     }
 
     @Transactional
-    @SuppressWarnings("unchecked")
     public List<Subsidy> findForOperation(long fileId, List<Long> ids) {
         Map<String, Object> params = Maps.newHashMap();
         params.put("requestFileId", fileId);
@@ -183,12 +180,10 @@ public class SubsidyBean extends AbstractRequestBean {
     }
 
     public List<AbstractRequest> getSubsidies(long requestFileId) {
-        @SuppressWarnings("unchecked")
         List<AbstractRequest> subsidies = sqlSession().selectList(MAPPING_NAMESPACE + ".selectSubsidies", requestFileId);
         return subsidies;
     }
 
-    @SuppressWarnings("unchecked")
     public List<Subsidy> findWithTheSameRash(long fileId, String rash) {
         return sqlSession().selectList(MAPPING_NAMESPACE + ".findWithTheSameRash", ImmutableMap.of("fileId", fileId, "rash", rash));
     }
