@@ -195,7 +195,12 @@ public class TarifFileList extends TemplatePage {
             protected Iterable<? extends RequestFile> getData(int first, int count) {
                 final RequestFileFilter filter = filterModel.getObject();
 
-                //store preference
+                //store preference, but before clear data order related properties.
+                {
+                    filter.setAscending(false);
+                    filter.setSortProperty(null);
+                    setFilterObject(filter);
+                }
                 setFilterObject(filter);
 
                 //prepare filter object

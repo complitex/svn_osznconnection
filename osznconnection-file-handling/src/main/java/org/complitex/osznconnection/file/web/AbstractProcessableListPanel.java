@@ -248,7 +248,6 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
         final String preferencePage = getPreferencePage();
 
         //Фильтр модель
-        @SuppressWarnings("unchecked")
         F filter = (F) getSession().getPreferenceObject(preferencePage, PreferenceKey.FILTER_OBJECT, newFilter());
         final IModel<F> filterModel = new CompoundPropertyModel<F>(filter);
 
@@ -350,8 +349,12 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
             protected Iterable<M> getData(int first, int count) {
                 final F filter = filterModel.getObject();
 
-                //store preference
-                getSession().putPreferenceObject(preferencePage, PreferenceKey.FILTER_OBJECT, filter);
+                //store preference, but before clear data order related properties.
+                {
+                    filter.setAscending(false);
+                    filter.setSortProperty(null);
+                    getSession().putPreferenceObject(preferencePage, PreferenceKey.FILTER_OBJECT, filter);
+                }
 
                 //prepare filter object
                 filter.setFirst(first);
