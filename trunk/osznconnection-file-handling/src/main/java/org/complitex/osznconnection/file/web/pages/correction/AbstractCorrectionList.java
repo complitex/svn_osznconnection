@@ -123,8 +123,12 @@ public abstract class AbstractCorrectionList extends ScrollListPage {
             protected Iterable<? extends Correction> getData(int first, int count) {
                 final CorrectionExample exampleObject = example.getObject();
 
-                //store preference
-                setFilterObject(exampleObject);
+                //store preference, but before clear data order related properties.
+                {
+                    exampleObject.setAsc(false);
+                    exampleObject.setOrderByClause(null);
+                    setFilterObject(exampleObject);
+                }
 
                 exampleObject.setAsc(getSort().isAscending());
                 if (!Strings.isEmpty(getSort().getProperty())) {

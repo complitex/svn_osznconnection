@@ -82,7 +82,7 @@ public class PersonAccountList extends ScrollListPage {
         final WebMarkupContainer content = new WebMarkupContainer("content");
         content.setOutputMarkupId(true);
         add(content);
-        final Form filterForm = new Form("filterForm");
+        final Form<Void> filterForm = new Form<Void>("filterForm");
         content.add(filterForm);
 
         example = new Model<PersonAccountExample>((PersonAccountExample) getFilterObject(newExample()));
@@ -93,8 +93,12 @@ public class PersonAccountList extends ScrollListPage {
             protected Iterable<? extends PersonAccount> getData(int first, int count) {
                 final PersonAccountExample exampleObject = example.getObject();
 
-                //store preference
-                setFilterObject(exampleObject);
+                //store preference, but before clear data order related properties.
+                {
+                    exampleObject.setAsc(false);
+                    exampleObject.setOrderByClause(null);
+                    setFilterObject(exampleObject);
+                }
 
                 exampleObject.setAsc(getSort().isAscending());
                 if (!Strings.isEmpty(getSort().getProperty())) {
@@ -215,7 +219,7 @@ public class PersonAccountList extends ScrollListPage {
         filterForm.add(new DisableAwareDropDownChoice<DomainObject>("userOrganizationFilter",
                 userOrganizationModel, allUserOrganizationsModel, organizationRenderer).setNullValid(true));
 
-        AjaxLink reset = new AjaxLink("reset") {
+        AjaxLink<Void> reset = new AjaxLink<Void>("reset") {
 
             @Override
             public void onClick(AjaxRequestTarget target) {
