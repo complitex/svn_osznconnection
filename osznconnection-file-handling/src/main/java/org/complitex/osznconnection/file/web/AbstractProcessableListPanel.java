@@ -4,6 +4,7 @@
  */
 package org.complitex.osznconnection.file.web;
 
+import org.apache.wicket.ajax.IAjaxCallDecorator;
 import org.complitex.osznconnection.file.web.pages.util.GlobalOptions;
 import org.complitex.template.web.template.TemplateSession;
 import com.google.common.collect.Iterables;
@@ -29,7 +30,6 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.*;
 import org.apache.wicket.markup.html.image.Image;
-import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.CompoundPropertyModel;
@@ -54,12 +54,16 @@ import org.complitex.template.web.component.toolbar.ToolbarButton;
 
 import javax.ejb.EJB;
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.calldecorator.AjaxCallDecorator;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.ISortStateLocator;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.ResourceModel;
 import org.complitex.dictionary.entity.IExecutorObject;
 import org.complitex.dictionary.entity.PreferenceKey;
 import org.complitex.dictionary.service.AbstractFilter;
+import org.complitex.dictionary.web.component.css.CssAttributeBehavior;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.osznconnection.file.service.OsznSessionBean;
 import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
@@ -92,7 +96,6 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
     private final static String ITEM_ID_PREFIX = "item";
     private RequestFileLoadPanel requestFileLoadPanel;
     private WebMarkupContainer buttonContainer;
-    private WebMarkupContainer optionContainer;
     private Map<Long, IModel<Boolean>> selectModels;
     private boolean modificationsAllowed;
     private boolean hasFieldDescription;
@@ -241,7 +244,6 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
                 hasFieldDescription;
 
         final AjaxFeedbackPanel messages = new AjaxFeedbackPanel("messages");
-        messages.setOutputMarkupId(true);
         add(messages);
 
         //Preference page
@@ -253,21 +255,31 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
 
         //Фильтр форма
         filterForm = new Form<F>("filter_form", filterModel);
+        filterForm.setOutputMarkupId(true);
         add(filterForm);
 
-        Link<Void> filter_reset = new Link<Void>("filter_reset") {
+        AjaxLink<Void> filter_reset = new AjaxLink<Void>("filter_reset") {
 
             @Override
-            public void onClick() {
-                filterForm.clearInput();
+            public void onClick(AjaxRequestTarget target) {
                 F filterObject = newFilter();
                 filterModel.setObject(filterObject);
+                target.addComponent(filterForm);
             }
         };
         filterForm.add(filter_reset);
 
+        AjaxButton find = new AjaxButton("find", filterForm) {
+
+            @Override
+            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                target.addComponent(filterForm);
+            }
+        };
+        filterForm.add(find);
+
         //Select all checkbox
-        filterForm.add(new CheckBox("select_all", new Model<Boolean>(false)) {
+        CheckBox selectAll = new CheckBox("select_all", new Model<Boolean>(false)) {
 
             @Override
             public boolean isEnabled() {
@@ -278,7 +290,9 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
             public void updateModel() {
                 //skip update model
             }
-        });
+        };
+        selectAll.add(new CssAttributeBehavior("processable-list-panel-select-all"));
+        filterForm.add(selectAll);
 
         //Id
         filterForm.add(new TextField<String>("id"));
@@ -321,8 +335,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
         filterForm.add(new YearDropDownChoice("year").setNullValid(true));
 
         //Статус
-        filterForm.add(new DropDownChoice<RequestFileStatus>("status",
-                Arrays.asList(RequestFileStatus.values()),
+        filterForm.add(new DropDownChoice<RequestFileStatus>("status", Arrays.asList(RequestFileStatus.values()),
                 new IChoiceRenderer<RequestFileStatus>() {
 
                     @Override
@@ -335,9 +348,6 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
                         return object.name();
                     }
                 }).setNullValid(true));
-
-
-
 
         //Модель выбранных элементов списка
         selectModels = new HashMap<Long, IModel<Boolean>>();
@@ -413,11 +423,9 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
 
                     @Override
                     protected void onUpdate(AjaxRequestTarget target) {
-                        //update form component model
                     }
                 });
-                checkBox.setMarkupId("select" + objectId);
-                checkBox.setOutputMarkupPlaceholderTag(true);
+                checkBox.add(new CssAttributeBehavior("processable-list-panel-select"));
                 item.add(checkBox);
 
                 //Анимация в обработке
@@ -538,8 +546,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
         filterForm.add(new ArrowOrderByBorder("header.status", "status", dataProvider, dataView, filterForm));
 
         //Контейнер чекбокса "Переписать л/с ПУ" для ajax
-        optionContainer = new WebMarkupContainer("options");
-        optionContainer.setOutputMarkupId(true);
+        WebMarkupContainer optionContainer = new WebMarkupContainer("options");
         optionContainer.setVisibilityAllowed(modificationsAllowed);
         filterForm.add(optionContainer);
 
@@ -559,61 +566,75 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
         filterForm.add(buttonContainer);
 
         //Загрузить
-        buttonContainer.add(new Button("load") {
+        buttonContainer.add(new AjaxLink<Void>("load") {
 
             @Override
-            public void onSubmit() {
-                requestFileLoadPanel.open();
+            public void onClick(AjaxRequestTarget target) {
+                requestFileLoadPanel.open(target);
             }
         });
 
         //Связать
-        buttonContainer.add(new Button("bind") {
+        buttonContainer.add(new AjaxLink<Void>("bind") {
 
             @Override
-            public void onSubmit() {
+            public void onClick(AjaxRequestTarget target) {
                 completedDisplayed.put(getBindProcessType(), false);
 
                 bind(getSelected(), buildCommandParameters());
 
                 clearSelect();
                 addTimer(dataViewContainer, filterForm, messages);
+                target.addComponent(filterForm);
             }
         });
 
         //Обработать
-        buttonContainer.add(new Button("process") {
+        buttonContainer.add(new AjaxLink<Void>("process") {
 
             @Override
-            public void onSubmit() {
+            public void onClick(AjaxRequestTarget target) {
                 completedDisplayed.put(getFillProcessType(), false);
 
                 fill(getSelected(), buildCommandParameters());
 
                 clearSelect();
                 addTimer(dataViewContainer, filterForm, messages);
+                target.addComponent(filterForm);
             }
         });
 
         //Выгрузить
-        buttonContainer.add(new Button("save") {
+        buttonContainer.add(new AjaxLink<Void>("save") {
 
             @Override
-            public void onSubmit() {
+            public void onClick(AjaxRequestTarget target) {
                 completedDisplayed.put(getSaveProcessType(), false);
 
                 save(getSelected(), buildCommandParameters());
 
                 clearSelect();
                 addTimer(dataViewContainer, filterForm, messages);
+                target.addComponent(filterForm);
             }
         });
 
         //Удалить
-        buttonContainer.add(new Button("delete") {
+        buttonContainer.add(new AjaxLink<Void>("delete") {
 
             @Override
-            public void onSubmit() {
+            protected IAjaxCallDecorator getAjaxCallDecorator() {
+                return new AjaxCallDecorator() {
+
+                    @Override
+                    public CharSequence decorateScript(CharSequence script) {
+                        return "if(confirm('" + getString("delete_caution") + "')){" + script + "}";
+                    }
+                };
+            }
+
+            @Override
+            public void onClick(AjaxRequestTarget target) {
                 for (long objectId : getSelected()) {
                     final M object = getById(objectId);
 
@@ -631,66 +652,72 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
                         }
                     }
                 }
+                target.addComponent(filterForm);
+                target.addComponent(messages);
             }
         });
 
         //Отменить загрузку
-        buttonContainer.add(new Button("load_cancel") {
-
-            @Override
-            public void onSubmit() {
-                processManagerBean.cancel(getLoadProcessType());
-                info(getString("load_process.canceling"));
-            }
+        buttonContainer.add(new AjaxLink<Void>("load_cancel") {
 
             @Override
             public boolean isVisible() {
                 return processManagerBean.isProcessing(getLoadProcessType());
             }
+
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                processManagerBean.cancel(getLoadProcessType());
+                info(getString("load_process.canceling"));
+                target.addComponent(filterForm);
+            }
         });
 
         //Отменить связывание
-        buttonContainer.add(new Button("bind_cancel") {
-
-            @Override
-            public void onSubmit() {
-                processManagerBean.cancel(getBindProcessType());
-                info(getString("bind_process.canceling"));
-            }
+        buttonContainer.add(new AjaxLink<Void>("bind_cancel") {
 
             @Override
             public boolean isVisible() {
                 return processManagerBean.isProcessing(getBindProcessType());
             }
+
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                processManagerBean.cancel(getBindProcessType());
+                info(getString("bind_process.canceling"));
+                target.addComponent(filterForm);
+            }
         });
 
         //Отменить обработку
-        buttonContainer.add(new Button("fill_cancel") {
-
-            @Override
-            public void onSubmit() {
-                processManagerBean.cancel(getFillProcessType());
-                info(getString("fill_process.canceling"));
-            }
+        buttonContainer.add(new AjaxLink<Void>("fill_cancel") {
 
             @Override
             public boolean isVisible() {
                 return processManagerBean.isProcessing(getFillProcessType());
             }
+
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                processManagerBean.cancel(getFillProcessType());
+                info(getString("fill_process.canceling"));
+                target.addComponent(filterForm);
+            }
         });
 
         //Отменить выгрузку
-        buttonContainer.add(new Button("save_cancel") {
-
-            @Override
-            public void onSubmit() {
-                processManagerBean.cancel(getSaveProcessType());
-                info(getString("save_process.canceling"));
-            }
+        buttonContainer.add(new AjaxLink<Void>("save_cancel") {
 
             @Override
             public boolean isVisible() {
                 return processManagerBean.isProcessing(getSaveProcessType());
+            }
+
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                processManagerBean.cancel(getSaveProcessType());
+                info(getString("save_process.canceling"));
+                target.addComponent(filterForm);
             }
         });
 
@@ -700,10 +727,13 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
                 new RequestFileLoadPanel.ILoader() {
 
                     @Override
-                    public void load(long userOrganizationId, long osznId, String districtCode, int monthFrom, int monthTo, int year) {
+                    public void load(long userOrganizationId, long osznId, String districtCode, int monthFrom, int monthTo,
+                            int year, AjaxRequestTarget target) {
                         completedDisplayed.put(getLoadProcessType(), false);
                         AbstractProcessableListPanel.this.load(userOrganizationId, osznId, districtCode, monthFrom, monthTo, year);
+
                         addTimer(dataViewContainer, filterForm, messages);
+                        target.addComponent(filterForm);
                     }
                 });
         add(requestFileLoadPanel);
@@ -884,16 +914,16 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
         }
     }
 
-    public List<ToolbarButton> getToolbarButtons(String id) {
-        return Arrays.asList((ToolbarButton) new LoadButton(id) {
+    public List<? extends ToolbarButton> getToolbarButtons(String id) {
+        return Arrays.asList(new LoadButton(id) {
 
             {
                 setVisibilityAllowed(modificationsAllowed);
             }
 
             @Override
-            protected void onClick() {
-                requestFileLoadPanel.open();
+            protected void onClick(AjaxRequestTarget target) {
+                requestFileLoadPanel.open(target);
             }
         });
     }
