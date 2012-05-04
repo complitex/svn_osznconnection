@@ -8,10 +8,11 @@ import org.complitex.template.web.component.toolbar.ToolbarButton;
  *         Date: 10.12.10 17:58
  */
 public abstract class LoadButton extends ToolbarButton {
+
     private static final String IMAGE_SRC = "images/icon-open.gif";
     private static final String TITLE_KEY = "load";
 
     public LoadButton(String id) {
-        super(id, new ResourceReference(IMAGE_SRC), TITLE_KEY, "LoadButton");
+        super(id, new ResourceReference(IMAGE_SRC), TITLE_KEY, true);
     }
 }

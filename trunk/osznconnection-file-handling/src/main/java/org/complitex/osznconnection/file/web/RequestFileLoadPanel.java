@@ -1,7 +1,7 @@
 package org.complitex.osznconnection.file.web;
 
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
@@ -14,13 +14,14 @@ import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
 import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
 import org.complitex.dictionary.web.component.MonthDropDownChoice;
 import org.complitex.dictionary.web.component.YearDropDownChoice;
-import org.odlabs.wiquery.core.javascript.JsStatement;
-import org.odlabs.wiquery.ui.core.JsScopeUiEvent;
 import org.odlabs.wiquery.ui.dialog.Dialog;
 
 import javax.ejb.EJB;
 import java.io.Serializable;
 import java.util.List;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.feedback.ContainerFeedbackMessageFilter;
 import org.complitex.osznconnection.file.service.OsznSessionBean;
 import org.complitex.osznconnection.file.web.model.OrganizationModel;
 import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
@@ -39,10 +40,11 @@ public class RequestFileLoadPanel extends Panel {
 
     public static interface ILoader extends Serializable {
 
-        void load(long userOrganizationId, long osznId, String districtCode, int monthFrom, int monthTo, int year);
+        void load(long userOrganizationId, long osznId, String districtCode, int monthFrom, int monthTo, int year,
+                AjaxRequestTarget target);
     }
 
-    public RequestFileLoadPanel(String id, IModel<String> title, final ILoader loader) {
+    public RequestFileLoadPanel(String id, IModel<String> title, ILoader loader) {
         this(id, title, loader, true);
     }
 
@@ -57,20 +59,19 @@ public class RequestFileLoadPanel extends Panel {
         };
         dialog.setModal(true);
         dialog.setMinHeight(100);
-        dialog.setOpenEvent(JsScopeUiEvent.quickScope(new JsStatement().self().chain("parents", "'.ui-dialog:first'").
-                chain("find", "'.ui-dialog-titlebar-close'").
-                chain("hide").render()));
-        dialog.setOutputMarkupId(true);
-        dialog.setOutputMarkupPlaceholderTag(true);
         dialog.setTitle(title);
-        dialog.setVisible(false);
         add(dialog);
 
-        dialog.add(new FeedbackPanel("messages"));
+        WebMarkupContainer content = new WebMarkupContainer("content");
+        dialog.add(content);
+
+        final FeedbackPanel messages = new FeedbackPanel("messages", new ContainerFeedbackMessageFilter(content));
+        messages.setOutputMarkupId(true);
+        content.add(messages);
 
         //Форма
-        Form form = new Form("form");
-        dialog.add(form);
+        Form<Void> form = new Form<Void>("form");
+        content.add(form);
 
         //ОСЗН
         final IModel<List<DomainObject>> osznsModel = new LoadableDetachableModel<List<DomainObject>>() {
@@ -151,10 +152,10 @@ public class RequestFileLoadPanel extends Panel {
         datePeriodContainer.add(to);
 
         //Загрузить
-        Button load = new Button("load") {
+        AjaxButton load = new AjaxButton("load", form) {
 
             @Override
-            public void onSubmit() {
+            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 int f = showDatePeriod ? from.getModelObject() : 0;
                 int t = showDatePeriod ? to.getModelObject() : 0;
 
@@ -165,30 +166,32 @@ public class RequestFileLoadPanel extends Panel {
 
                 final DomainObject oszn = osznModel.getObject();
                 loader.load(userOrganizationModel.getOrganizationId(), oszn.getId(),
-                        organizationStrategy.getDistrictCode(oszn), f, t, year.getModelObject());
+                        organizationStrategy.getDistrictCode(oszn), f, t, year.getModelObject(), target);
 
-                dialog.setAutoOpen(false);
-                dialog.close();
+                target.addComponent(messages);
+                dialog.close(target);
+            }
+
+            @Override
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
+                super.onError(target, form);
+                target.addComponent(messages);
             }
         };
         form.add(load);
 
         //Отмена
-        Button cancel = new Button("cancel") {
+        AjaxLink<Void> cancel = new AjaxLink<Void>("cancel") {
 
             @Override
-            public void onSubmit() {
-                dialog.setAutoOpen(false);
-                dialog.setVisible(false);
-                dialog.close();
+            public void onClick(AjaxRequestTarget target) {
+                dialog.close(target);
             }
         };
-        cancel.setDefaultFormProcessing(false);
         form.add(cancel);
     }
 
-    public void open() {
-        dialog.setAutoOpen(true);
-        dialog.setVisible(true);
+    public void open(AjaxRequestTarget target) {
+        dialog.open(target);
     }
 }
