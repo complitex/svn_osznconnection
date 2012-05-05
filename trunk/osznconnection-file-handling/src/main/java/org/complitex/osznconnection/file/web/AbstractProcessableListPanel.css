@@ -1,0 +1,16 @@
+.loaded_header {
+    width:102px;
+}
+
+.loaded_header input {
+    width: 80px !important;
+}
+
+.buttons_section {
+    margin-top:20px;
+}
+
+.options_section {
+    margin-top:4px;
+    margin-left:2px;
+}

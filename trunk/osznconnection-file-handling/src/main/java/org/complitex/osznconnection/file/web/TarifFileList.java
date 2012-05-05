@@ -1,5 +1,6 @@
 package org.complitex.osznconnection.file.web;
 
+import org.apache.wicket.markup.html.CSSPackageResource;
 import org.apache.wicket.ajax.IAjaxCallDecorator;
 import org.apache.wicket.ajax.calldecorator.AjaxCallDecorator;
 import org.complitex.dictionary.web.component.paging.IPagingNavigatorListener;
@@ -113,6 +114,8 @@ public class TarifFileList extends TemplatePage {
         add(JavascriptPackageResource.getHeaderContribution(WebCommonResourceInitializer.HIGHLIGHT_JS));
         add(JavascriptPackageResource.getHeaderContribution(AbstractProcessableListPanel.class,
                 AbstractProcessableListPanel.class.getSimpleName() + ".js"));
+        add(CSSPackageResource.getHeaderContribution(AbstractProcessableListPanel.class,
+                AbstractProcessableListPanel.class.getSimpleName() + ".css"));
 
         this.hasFieldDescription = hasFieldDescription();
         this.modificationsAllowed =

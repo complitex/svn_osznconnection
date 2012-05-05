@@ -36,8 +36,8 @@
                                 <th><input wicket:id="select_all" type="checkbox"/></th>
                                 <th><input type="text" wicket:id="id"/></th>
                                 <th class="center">
-                                    <div style="width:102px">
-                                        <input type="text" wicket:id="loaded" style="width: 80px"/>
+                                    <div class="loaded_header">
+                                        <input type="text" wicket:id="loaded"/>
                                     </div>
                                 </th>
                                 <th class="center"><select wicket:id="organization"></select></th>
@@ -54,7 +54,7 @@
                             </tr>
                         </thead>
                         <tbody wicket:id="objects_container">
-                            <tr wicket:id="objects" style="height:28px">
+                            <tr wicket:id="objects">
                                 <td>
                                     <input type="checkbox" wicket:id="selected"/>
                                     <img wicket:id="processing" align="top"/>
@@ -76,22 +76,20 @@
 
                     <div wicket:id="paging"></div>
 
-                    <div style="margin-top:10px;">
+                    <div class="buttons_section">
                         <table width="100%">
                             <tbody>
                                 <tr>
                                     <td valign="top">
-                                        <div align="left" style="margin-top:14px;margin-left:2px;">
-                                            <table wicket:id="options">
-                                                <tr>
-                                                    <td><input wicket:id="update_pu_account" type="checkbox"/></td>
-                                                    <td><span><wicket:message key="update_pu_account"/></span></td>
-                                                </tr>
-                                            </table>
+                                        <div wicket:id="options" align="left" class="options_section">
+                                            <label>
+                                                <input wicket:id="update_pu_account" type="checkbox"/>
+                                                <wicket:message key="update_pu_account"/>
+                                            </label>
                                         </div>
                                     </td>
                                     <td valign="top">
-                                        <div align="right" style="margin-top:10px;">
+                                        <div align="right">
                                             <table wicket:id="buttons">
                                                 <tr>
                                                     <td><input type="button" class="btnMiddle" wicket:id="load" wicket:message="value:load"/></td>
