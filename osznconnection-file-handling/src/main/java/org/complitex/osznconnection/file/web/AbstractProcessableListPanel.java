@@ -58,6 +58,7 @@ import org.apache.wicket.ajax.calldecorator.AjaxCallDecorator;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.ISortStateLocator;
+import org.apache.wicket.markup.html.CSSPackageResource;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.ResourceModel;
 import org.complitex.dictionary.entity.IExecutorObject;
@@ -235,6 +236,8 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
         add(JavascriptPackageResource.getHeaderContribution(WebCommonResourceInitializer.HIGHLIGHT_JS));
         add(JavascriptPackageResource.getHeaderContribution(AbstractProcessableListPanel.class,
                 AbstractProcessableListPanel.class.getSimpleName() + ".js"));
+        add(CSSPackageResource.getHeaderContribution(AbstractProcessableListPanel.class,
+                AbstractProcessableListPanel.class.getSimpleName() + ".css"));
 
         this.hasFieldDescription = hasFieldDescription();
         this.modificationsAllowed =
