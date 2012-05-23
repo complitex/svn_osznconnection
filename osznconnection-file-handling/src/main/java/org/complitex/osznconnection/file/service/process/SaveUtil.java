@@ -65,12 +65,13 @@ public final class SaveUtil {
         Writer writer = null;
         try {
             if (groups != null && !groups.isEmpty()) {
-                final long osznId = groups.get(0).getPaymentFile().getOrganizationId();
+                final long userOrganizationId = groups.get(0).getPaymentFile().getUserOrganizationId();
 
                 final Date now = DateUtil.getCurrentDate();
                 final String name = RESULT_FILE_NAME + "_" + sdfFile.format(now) + "." + RESULT_FILE_EXT;
 
-                File file = RequestFileStorage.INSTANCE.createOutputRequestFileDirectory(RequestFileStorage.INSTANCE.getRequestFilesStorageDir(osznId,
+                File file = RequestFileStorage.INSTANCE.createOutputRequestFileDirectory(
+                        RequestFileStorage.INSTANCE.getRequestFilesStorageDir(userOrganizationId,
                         FileHandlingConfig.DEFAULT_SAVE_PAYMENT_BENEFIT_FILES_DIR), name, directory);
 
                 writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), FILE_ENCODING));

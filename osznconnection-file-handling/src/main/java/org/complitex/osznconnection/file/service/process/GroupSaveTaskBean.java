@@ -20,8 +20,8 @@ import org.complitex.osznconnection.file.web.pages.util.GlobalOptions;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 01.11.10 12:58
  */
-@Stateless(name = "SaveTaskBean")
-public class SaveTaskBean extends AbstractSaveTaskBean implements ITaskBean {
+@Stateless(name = "GroupSaveTaskBean")
+public class GroupSaveTaskBean extends AbstractSaveTaskBean implements ITaskBean {
 
     @EJB
     private PaymentBean paymentBean;
@@ -66,7 +66,7 @@ public class SaveTaskBean extends AbstractSaveTaskBean implements ITaskBean {
 
     @Override
     public Class<?> getControllerClass() {
-        return SaveTaskBean.class;
+        return GroupSaveTaskBean.class;
     }
 
     @Override

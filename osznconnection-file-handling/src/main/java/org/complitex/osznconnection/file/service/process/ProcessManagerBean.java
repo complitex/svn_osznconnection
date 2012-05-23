@@ -221,7 +221,7 @@ public class ProcessManagerBean {
                 process.setPreprocess(false);
                 process.setMaxErrors(configBean.getInteger(LOAD_MAX_ERROR_COUNT, true));
                 process.setMaxThread(configBean.getInteger(LOAD_THREAD_SIZE, true));
-                process.setTask(EjbBeanLocator.getBean(LoadGroupTaskBean.class));
+                process.setTask(EjbBeanLocator.getBean(GroupLoadTaskBean.class));
 
                 executorBean.execute(process);
             } else {
@@ -309,7 +309,7 @@ public class ProcessManagerBean {
             }
         };
 
-        execute(SAVE_GROUP, SaveTaskBean.class, getGroups(ids), listener, SAVE_THREAD_SIZE, SAVE_MAX_ERROR_COUNT, processParameters);
+        execute(SAVE_GROUP, GroupSaveTaskBean.class, getGroups(ids), listener, SAVE_THREAD_SIZE, SAVE_MAX_ERROR_COUNT, processParameters);
     }
 
     @Asynchronous

@@ -269,9 +269,11 @@ public class TarifFileList extends TemplatePage {
 
             @Override
             protected void populateItem(final Item<RequestFile> item) {
-                item.setOutputMarkupId(true);
-                
                 final Long objectId = item.getModelObject().getId();
+
+                /* for highlighting to work properly */
+                item.setOutputMarkupId(true);
+                item.setMarkupId(ITEM_ID_PREFIX + objectId);
 
                 //Выбор файлов
                 CheckBox checkBox = new CheckBox("selected", selectModels.get(objectId)) {
