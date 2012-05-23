@@ -403,10 +403,9 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
 
             @Override
             protected void populateItem(final Item<M> item) {
-                final Long objectId = item.getModelObject().getId();
-
                 item.setOutputMarkupId(true);
-                item.setMarkupId(ITEM_ID_PREFIX + objectId);
+
+                final Long objectId = item.getModelObject().getId();
 
                 //Выбор файлов
                 CheckBox checkBox = new CheckBox("selected", selectModels.get(objectId)) {

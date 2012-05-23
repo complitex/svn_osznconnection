@@ -7,14 +7,14 @@ import org.complitex.dictionary.entity.IConfig;
  *         Date: 04.10.2010 11:12:46
  */
 public enum FileHandlingConfig implements IConfig{
-    LOAD_INPUT_REQUEST_FILE_STORAGE_DIR("c:\\storage\\subsidy_in", "storage"),
-    SAVE_OUTPUT_REQUEST_FILE_STORAGE_DIR("c:\\storage\\subsidy_out", "storage"),
-
-    LOAD_INPUT_ACTUAL_PAYMENT_FILE_STORAGE_DIR("c:\\storage\\actual_in", "storage"),
-    SAVE_OUTPUT_ACTUAL_PAYMENT_FILE_STORAGE_DIR("c:\\storage\\actual_out", "storage"),
+    LOAD_TARIF_DIR("c:\\storage\\tarif_in", "storage"),
     
-    LOAD_INPUT_SUBSIDY_FILE_STORAGE_DIR("c:\\storage\\subsidy_in", "storage"),
-    SAVE_OUTPUT_SUBSIDY_FILE_STORAGE_DIR("c:\\storage\\subsidy_out", "storage"),
+    DEFAULT_LOAD_PAYMENT_BENEFIT_FILES_DIR("c:\\storage\\subsidy_in", "storage"),
+    DEFAULT_SAVE_PAYMENT_BENEFIT_FILES_DIR("c:\\storage\\subsidy_out", "storage"),
+    DEFAULT_LOAD_ACTUAL_PAYMENT_DIR("c:\\storage\\actual_in", "storage"),
+    DEFAULT_SAVE_ACTUAL_PAYMENT_DIR("c:\\storage\\actual_out", "storage"),
+    DEFAULT_LOAD_SUBSIDY_DIR("c:\\storage\\subsidy_in", "storage"),
+    DEFAULT_SAVE_SUBSIDY_DIR("c:\\storage\\subsidy_out", "storage"),
 
     PAYMENT_FILENAME_PREFIX("A_", "mask"),
     BENEFIT_FILENAME_PREFIX("AF", "mask"),

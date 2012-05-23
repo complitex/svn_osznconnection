@@ -196,7 +196,8 @@ public class ProcessManagerBean {
                 process.init();
             }
 
-            LoadUtil.LoadGroupParameter loadParameter = LoadUtil.getLoadParameter(osznId, districtCode, monthFrom, monthTo, year);
+            LoadUtil.LoadGroupParameter loadParameter = LoadUtil.getLoadGroupParameter(userOrganizationId, osznId,
+                    districtCode, monthFrom, monthTo, year);
 
             for (RequestFileGroup fileGroup : loadParameter.getRequestFileGroups()) {
                 fileGroup.getPaymentFile().setUserOrganizationId(userOrganizationId);
@@ -314,7 +315,7 @@ public class ProcessManagerBean {
     @Asynchronous
     public void loadActualPayment(long userOrganizationId, long osznId, String districtCode, int monthFrom, int monthTo, int year) {
         try {
-            List<RequestFile> list = LoadUtil.getActualPayments(osznId, districtCode, monthFrom, monthTo, year);
+            List<RequestFile> list = LoadUtil.getActualPayments(userOrganizationId, osznId, districtCode, monthFrom, monthTo, year);
 
             for (RequestFile file : list) {
                 file.setUserOrganizationId(userOrganizationId);
@@ -331,7 +332,7 @@ public class ProcessManagerBean {
     @Asynchronous
     public void loadSubsidy(long userOrganizationId, long osznId, String districtCode, int monthFrom, int monthTo, int year) {
         try {
-            List<RequestFile> list = LoadUtil.getSubsidies(osznId, districtCode, monthFrom, monthTo, year);
+            List<RequestFile> list = LoadUtil.getSubsidies(userOrganizationId, osznId, districtCode, monthFrom, monthTo, year);
 
             for (RequestFile file : list) {
                 file.setUserOrganizationId(userOrganizationId);

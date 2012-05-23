@@ -22,7 +22,6 @@ import java.io.File;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import org.complitex.dictionary.entity.IConfig;
 import org.complitex.osznconnection.file.service.exception.FieldNotFoundException;
 import org.complitex.osznconnection.file.service.file_description.RequestFileDescription;
 import org.complitex.osznconnection.file.service.file_description.RequestFileDescriptionBean;
@@ -102,7 +101,11 @@ public abstract class AbstractSaveTaskBean {
 
     protected abstract String getPuAccountFieldName();
 
-    protected abstract IConfig getConfigDirectory();
+    protected abstract FileHandlingConfig getDefaultConfigDirectory();
+
+    private String getOutputBaseDirectory(long userOrganizationId) {
+        return RequestFileStorage.INSTANCE.getRequestFilesStorageDir(userOrganizationId, getDefaultConfigDirectory());
+    }
 
     private DBFField[] newDBFFields(RequestFileDescription description) {
         List<DBFField> dbfFields = Lists.newArrayList();
@@ -120,14 +123,14 @@ public abstract class AbstractSaveTaskBean {
 
         try {
             //устанавливаем абсолютный путь для сохранения файла запроса
-            File file = RequestFileStorage.getInstance().createOutputRequestFileDirectory(getConfigDirectory(),
-                    requestFile.getName(), requestFile.getDirectory());
+            File file = RequestFileStorage.INSTANCE.createOutputRequestFileDirectory(
+                    getOutputBaseDirectory(requestFile.getUserOrganizationId()), requestFile.getName(), requestFile.getDirectory());
             requestFile.setAbsolutePath(file.getAbsolutePath());
 
             //Удаляем файл если такой есть
-            RequestFileStorage.getInstance().delete(requestFile.getAbsolutePath());
+            RequestFileStorage.INSTANCE.delete(requestFile.getAbsolutePath());
 
-            writer = new DBFWriter(RequestFileStorage.getInstance().createFile(requestFile.getAbsolutePath(), true));
+            writer = new DBFWriter(RequestFileStorage.INSTANCE.createFile(requestFile.getAbsolutePath()));
             writer.setCharactersetName("cp866");
 
             //Создание полей

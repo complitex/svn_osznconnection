@@ -27,6 +27,30 @@ public interface IOsznOrganizationStrategy extends IOrganizationStrategy {
      */
     long SERVICE_ASSOCIATIONS = 914;
     /**
+     * Load payments/benefits directory. It is user organization only attribute.
+     */
+    long LOAD_PAYMENT_BENEFIT_FILES_DIR = 915;
+    /**
+     * Save payments/benefits directory. It is user organization only attribute.
+     */
+    long SAVE_PAYMENT_BENEFIT_FILES_DIR = 916;
+    /**
+     * Load actual payments directory. It is user organization only attribute.
+     */
+    long LOAD_ACTUAL_PAYMENT_DIR = 917;
+    /**
+     * Save actual payments directory. It is user organization only attribute.
+     */
+    long SAVE_ACTUAL_PAYMENT_DIR = 918;
+    /**
+     * Load subsidies directory. It is user organization only attribute.
+     */
+    long LOAD_SUBSIDY_DIR = 919;
+    /**
+     * Save subsidies directory. It is user organization only attribute.
+     */
+    long SAVE_SUBSIDY_DIR = 920;
+    /**
      * Itself organization instance id.
      */
     long ITSELF_ORGANIZATION_OBJECT_ID = 0;
@@ -62,7 +86,7 @@ public interface IOsznOrganizationStrategy extends IOrganizationStrategy {
     List<DomainObject> getAllCalculationCentres(Locale locale);
 
     /**
-     * Returns organization that represents osznconnection programm module, i.e. "itself".
+     * Returns organization that represents osznconnection program module, i.e. "itself".
      * 
      * @return "Itself" organization.
      */
@@ -92,4 +116,12 @@ public interface IOsznOrganizationStrategy extends IOrganizationStrategy {
      * @return Calculation center's data source
      */
     String getDataSource(long calculationCenterId);
+
+    /**
+     * Figures out request files storage directory.
+     * @param userOrganizationId User organization's id.
+     * @param fileStorageAttributeTypeId Attribute type id corresponding desired file type.
+     * @return User organization's request files storage directory.
+     */
+    String getRequestFilesStorageDir(long userOrganizationId, long fileStorageAttributeTypeId);
 }

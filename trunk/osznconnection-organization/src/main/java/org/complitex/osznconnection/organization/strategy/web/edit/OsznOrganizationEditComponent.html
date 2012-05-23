@@ -92,6 +92,31 @@
                         </div>
                     </td>
                 </tr>
+
+                <!-- Oszn Load/Save directories section. It is user organization only attributes. -->
+                <tr wicket:id="loadSaveDirsContainer">
+                    <td colspan="2">
+                        <fieldset style="margin-top: 10px;">
+                            <legend>
+                                <span style="font-weight: bold;">
+                                    <wicket:message key="loadSaveDirsLabel"/>
+                                </span>
+                            </legend>
+                            <div style="margin-top: 10px;">
+                                <table class="tbForm" cellpadding="0" cellspacing="0" border="0">
+                                    <tr wicket:id="dir">
+                                        <th>
+                                            <span wicket:id="label"></span><b wicket:id="required" class="blue">*</b>:
+                                        </th>
+                                        <td>
+                                            <div wicket:id="input"></div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </fieldset>
+                    </td>
+                </tr>
             </table>
         </wicket:panel>
     </body>

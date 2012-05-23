@@ -243,9 +243,10 @@ public class TarifFileList extends TemplatePage {
 
                 List<RequestFile> requestFiles = requestFileBean.getRequestFiles(filter);
 
-                selectModels.clear();
                 for (RequestFile rf : requestFiles) {
-                    selectModels.put(rf.getId(), new Model<Boolean>(false));
+                    if (selectModels.get(rf.getId()) == null) {
+                        selectModels.put(rf.getId(), new Model<Boolean>(false));
+                    }
                 }
 
                 return requestFiles;
@@ -268,10 +269,9 @@ public class TarifFileList extends TemplatePage {
 
             @Override
             protected void populateItem(final Item<RequestFile> item) {
-                final Long objectId = item.getModelObject().getId();
-
                 item.setOutputMarkupId(true);
-                item.setMarkupId(ITEM_ID_PREFIX + objectId);
+                
+                final Long objectId = item.getModelObject().getId();
 
                 //Выбор файлов
                 CheckBox checkBox = new CheckBox("selected", selectModels.get(objectId)) {
