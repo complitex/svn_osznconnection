@@ -22,9 +22,9 @@ import java.util.Map;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 01.11.10 12:57
  */
-@Stateless(name = "LoadGroupTaskBean")
+@Stateless(name = "GroupLoadTaskBean")
 @TransactionManagement(TransactionManagementType.BEAN)
-public class LoadGroupTaskBean implements ITaskBean {
+public class GroupLoadTaskBean implements ITaskBean {
 
     @EJB
     protected PaymentBean paymentBean;
@@ -144,7 +144,7 @@ public class LoadGroupTaskBean implements ITaskBean {
 
     @Override
     public Class<?> getControllerClass() {
-        return LoadGroupTaskBean.class;
+        return GroupLoadTaskBean.class;
     }
 
     @Override
