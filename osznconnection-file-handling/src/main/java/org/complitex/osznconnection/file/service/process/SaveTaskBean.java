@@ -1,6 +1,5 @@
 package org.complitex.osznconnection.file.service.process;
 
-import org.complitex.dictionary.entity.IConfig;
 import org.complitex.dictionary.entity.IExecutorObject;
 import org.complitex.dictionary.service.executor.ExecuteException;
 import org.complitex.dictionary.service.executor.ITaskBean;
@@ -88,7 +87,7 @@ public class SaveTaskBean extends AbstractSaveTaskBean implements ITaskBean {
     }
 
     @Override
-    protected IConfig getConfigDirectory() {
-        return FileHandlingConfig.SAVE_OUTPUT_REQUEST_FILE_STORAGE_DIR;
+    protected FileHandlingConfig getDefaultConfigDirectory() {
+        return FileHandlingConfig.DEFAULT_SAVE_PAYMENT_BENEFIT_FILES_DIR;
     }
 }

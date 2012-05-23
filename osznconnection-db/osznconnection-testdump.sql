@@ -31,7 +31,7 @@ insert into `request_file`(id, group_id, organization_id, `name`, `directory`, `
 (2,1,1,'AF123405.dbf', 'AB', 1, 10, 2010, CURRENT_TIMESTAMP, 'BENEFIT', 3),
 (3,null,1,'TARIF12.dbf', 'AB', 1, 10, 2010, CURRENT_TIMESTAMP, 'TARIF', 3),
 (4,null,1,'B1170710.dbf', 'AB', 1, 10, 2010, '2011-01-12', 'ACTUAL_PAYMENT', 4),
-(5,null,1,'J000001.dbf', 'AB', 1, 10, 2010, '2011-01-12', 'SUBSIDY', 4);
+(5,null,1,'J000001.dbf', '1234\\AB', 1, 10, 2010, '2011-01-12', 'SUBSIDY', 4);
 
 -- Benefit
 insert into `benefit`(`OWN_NUM`, `OWN_NUM_SR`, `OZN`, `F_NAM`, `M_NAM`, `SUR_NAM`, `request_file_id`, `IND_COD`, `PSP_NUM`)
@@ -113,12 +113,13 @@ insert into tarif(`T11_CS_UNI`, `T11_CODE2`, `request_file_id`, `T11_CODE1`) val
 --insert into config(`name`, `value`) values ('SAVE_OUTPUT_FILE_STORAGE_DIR', 'D:\\Artem\\Projects\\org.complitex\\storage\\out');
 --insert into config(`name`, `value`) values ('ADDRESS_IMPORT_FILE_STORAGE_DIR', 'D:\\Artem\\Projects\\org.complitex\\storage\\import');
 
-insert into `config`(`name`, `value`) values ('LOAD_INPUT_REQUEST_FILE_STORAGE_DIR', 'D:\\Artem\\Projects\\org.complitex\\oszn-docs\\payments');
-insert into `config`(`name`, `value`) values ('LOAD_INPUT_ACTUAL_PAYMENT_FILE_STORAGE_DIR', 'D:\\Artem\\Projects\\org.complitex\\oszn-docs\\actual_payments');
-insert into `config`(`name`, `value`) values ('LOAD_INPUT_SUBSIDY_FILE_STORAGE_DIR', 'D:\\Artem\\Projects\\org.complitex\\oszn-docs\\subs');
-insert into `config`(`name`, `value`) values ('SAVE_OUTPUT_REQUEST_FILE_STORAGE_DIR', 'D:\\Artem\\Projects\\org.complitex\\storage\\out\\group');
-insert into `config`(`name`, `value`) values ('SAVE_OUTPUT_ACTUAL_PAYMENT_FILE_STORAGE_DIR', 'D:\\Artem\\Projects\\org.complitex\\storage\\out\\actual');
-insert into `config`(`name`, `value`) values ('SAVE_OUTPUT_SUBSIDY_FILE_STORAGE_DIR', 'D:\\Artem\\Projects\\org.complitex\\storage\\out\\subsidy');
+insert into `config`(`name`, `value`) values ('LOAD_TARIF_DIR', 'D:\\Artem\\Projects\\org.complitex\\oszn-docs\\payments');
+insert into `config`(`name`, `value`) values ('DEFAULT_LOAD_PAYMENT_BENEFIT_FILES_DIR', 'D:\\Artem\\Projects\\org.complitex\\oszn-docs\\payments');
+insert into `config`(`name`, `value`) values ('DEFAULT_LOAD_ACTUAL_PAYMENT_DIR', 'D:\\Artem\\Projects\\org.complitex\\oszn-docs\\actual_payments');
+insert into `config`(`name`, `value`) values ('DEFAULT_LOAD_SUBSIDY_DIR', 'D:\\Artem\\Projects\\org.complitex\\oszn-docs\\subs');
+insert into `config`(`name`, `value`) values ('DEFAULT_SAVE_PAYMENT_BENEFIT_FILES_DIR', 'D:\\Artem\\Projects\\org.complitex\\storage\\out\\group');
+insert into `config`(`name`, `value`) values ('DEFAULT_SAVE_ACTUAL_PAYMENT_DIR', 'D:\\Artem\\Projects\\org.complitex\\storage\\out\\actual');
+insert into `config`(`name`, `value`) values ('DEFAULT_SAVE_SUBSIDY_DIR', 'D:\\Artem\\Projects\\org.complitex\\storage\\out\\subsidy');
 
 -- test users
 -- User '1'

@@ -57,6 +57,9 @@ public class OsznOrganizationStrategy extends OrganizationStrategy implements IO
     public static final String OSZN_ORGANIZATION_STRATEGY_NAME = OsznOrganizationStrategy.class.getSimpleName();
     private static final String RESOURCE_BUNDLE = OsznOrganizationStrategy.class.getName();
     private static final String MAPPING_NAMESPACE = OsznOrganizationStrategy.class.getPackage().getName() + ".OsznOrganization";
+    public static final List<Long> LOAD_SAVE_FILE_DIR_ATTRIBUTES =
+            ImmutableList.of(LOAD_PAYMENT_BENEFIT_FILES_DIR, SAVE_PAYMENT_BENEFIT_FILES_DIR,
+            LOAD_ACTUAL_PAYMENT_DIR, SAVE_ACTUAL_PAYMENT_DIR, LOAD_SUBSIDY_DIR, SAVE_SUBSIDY_DIR);
     @EJB
     private LocaleBean localeBean;
     @EJB
@@ -144,7 +147,8 @@ public class OsznOrganizationStrategy extends OrganizationStrategy implements IO
 
     @Override
     public boolean isSimpleAttributeType(EntityAttributeType entityAttributeType) {
-        if (entityAttributeType.getId().equals(DATA_SOURCE)) {
+        if (entityAttributeType.getId().equals(DATA_SOURCE)
+                || LOAD_SAVE_FILE_DIR_ATTRIBUTES.contains(entityAttributeType.getId())) {
             return false;
         }
         return super.isSimpleAttributeType(entityAttributeType);
@@ -153,8 +157,14 @@ public class OsznOrganizationStrategy extends OrganizationStrategy implements IO
     @Override
     protected void fillAttributes(DomainObject object) {
         super.fillAttributes(object);
+
         if (object.getAttribute(DATA_SOURCE).getLocalizedValues() == null) {
             object.getAttribute(DATA_SOURCE).setLocalizedValues(stringBean.newStringCultures());
+        }
+        for (long attributeTypeId : LOAD_SAVE_FILE_DIR_ATTRIBUTES) {
+            if (object.getAttribute(attributeTypeId).getLocalizedValues() == null) {
+                object.getAttribute(attributeTypeId).setLocalizedValues(stringBean.newStringCultures());
+            }
         }
     }
 
@@ -163,7 +173,8 @@ public class OsznOrganizationStrategy extends OrganizationStrategy implements IO
         super.loadStringCultures(attributes);
 
         for (Attribute attribute : attributes) {
-            if (attribute.getAttributeTypeId().equals(DATA_SOURCE)) {
+            if (attribute.getAttributeTypeId().equals(DATA_SOURCE)
+                    || LOAD_SAVE_FILE_DIR_ATTRIBUTES.contains(attribute.getAttributeTypeId())) {
                 if (attribute.getValueId() != null) {
                     loadStringCultures(attribute);
                 } else {
@@ -347,11 +358,19 @@ public class OsznOrganizationStrategy extends OrganizationStrategy implements IO
         return AttributeUtil.getStringValue(calculationCenter, DATA_SOURCE);
     }
 
+    @Override
+    public String getRequestFilesStorageDir(long userOrganizationId, long fileStorageAttributeTypeId) {
+        DomainObject userOrganization = findById(userOrganizationId, true);
+        return AttributeUtil.getStringValue(userOrganization, fileStorageAttributeTypeId);
+    }
+
     @Transactional
     @Override
     protected Long insertStrings(long attributeTypeId, List<StringCulture> strings) {
-        // if it's data source attribute then data source value should be as is and not upper cased.
-        return attributeTypeId == DATA_SOURCE ? stringBean.insertStrings(strings, getEntityTable(), false)
+        /* if it's data source or one of load/save request file directory attributes 
+        then string value should be inserted as is and not upper cased. */
+        return attributeTypeId == DATA_SOURCE || LOAD_SAVE_FILE_DIR_ATTRIBUTES.contains(attributeTypeId)
+                ? stringBean.insertStrings(strings, getEntityTable(), false)
                 : super.insertStrings(attributeTypeId, strings);
     }
 
@@ -366,7 +385,6 @@ public class OsznOrganizationStrategy extends OrganizationStrategy implements IO
             serviceAssociationIds.add(serviceAssociation.getValueId());
         }
 
-        @SuppressWarnings("unchecked")
         final List<ServiceAssociation> serviceAssociations = sqlSession().selectList(
                 MAPPING_NAMESPACE + ".getServiceAssociations", ImmutableMap.of("ids", serviceAssociationIds));
 

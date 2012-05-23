@@ -7,10 +7,12 @@ import org.complitex.osznconnection.file.service.exception.StorageNotFoundExcept
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.wicket.util.string.Strings;
-import org.complitex.dictionary.entity.IConfig;
+import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
+import org.complitex.osznconnection.organization.strategy.OsznOrganizationStrategy;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -21,64 +23,30 @@ import org.complitex.dictionary.entity.IConfig;
  */
 public class RequestFileStorage {
 
-    private static RequestFileStorage instance;
+    public static RequestFileStorage INSTANCE = new RequestFileStorage();
 
-    public static synchronized RequestFileStorage getInstance() {
-        if (instance == null) {
-            instance = new RequestFileStorage();
-        }
-
-        return instance;
+    private String getConfigString(FileHandlingConfig config, boolean flush) {
+        return EjbBeanLocator.getBean(ConfigBean.class).getString(config, flush);
     }
 
-    /**
-     * @param child дочерняя директория
-     * @param filter фильтр
-     * @return Список файлов в дочерней директории корневой директории файлового хранилища
-     * @throws org.complitex.osznconnection.file.service.exception.StorageNotFoundException Директория не найдена
-     */
-    public List<File> getInputRequestFiles(String child, FileFilter filter) throws StorageNotFoundException {
+    public List<File> getInputTarifFiles(String child, FileFilter filter) throws StorageNotFoundException {
         List<File> files = new ArrayList<File>();
-
-        File dir = new File(EjbBeanLocator.getBean(ConfigBean.class)
-                .getString(FileHandlingConfig.LOAD_INPUT_REQUEST_FILE_STORAGE_DIR, true), child);
-
+        File dir = new File(getConfigString(FileHandlingConfig.LOAD_TARIF_DIR, true), child);
         if (!dir.exists()) {
             throw new StorageNotFoundException(dir.getAbsolutePath());
         }
-
         addFiles(files, dir, filter);
-
         return files;
     }
 
-    public List<File> getInputActualPaymentFiles(String child, FileFilter filter) throws StorageNotFoundException {
+    public List<File> getInputRequestFiles(long userOrganizationId, String districtCodeDir, FileHandlingConfig defaultConfigLoadDirectory,
+            FileFilter filter) throws StorageNotFoundException {
         List<File> files = new ArrayList<File>();
-
-        File dir = new File(EjbBeanLocator.getBean(ConfigBean.class)
-                .getString(FileHandlingConfig.LOAD_INPUT_ACTUAL_PAYMENT_FILE_STORAGE_DIR, true), child);
-
+        File dir = new File(getRequestFilesStorageDir(userOrganizationId, defaultConfigLoadDirectory), districtCodeDir);
         if (!dir.exists()) {
             throw new StorageNotFoundException(dir.getAbsolutePath());
         }
-
         addFiles(files, dir, filter);
-
-        return files;
-    }
-    
-    public List<File> getInputSubsidyFiles(String child, FileFilter filter) throws StorageNotFoundException {
-        List<File> files = new ArrayList<File>();
-
-        File dir = new File(EjbBeanLocator.getBean(ConfigBean.class)
-                .getString(FileHandlingConfig.LOAD_INPUT_SUBSIDY_FILE_STORAGE_DIR, true), child);
-
-        if (!dir.exists()) {
-            throw new StorageNotFoundException(dir.getAbsolutePath());
-        }
-
-        addFiles(files, dir, filter);
-
         return files;
     }
 
@@ -92,8 +60,8 @@ public class RequestFileStorage {
         }
     }
 
-    private void checkOutputRequestFileStorageExists(IConfig configDir) throws StorageNotFoundException {
-        File parent = new File(EjbBeanLocator.getBean(ConfigBean.class).getString(configDir, true));
+    private void checkOutputRequestFileStorageExists(String parentDir) throws StorageNotFoundException {
+        File parent = new File(parentDir);
 
         //Желательно чтобы директория для исходящих файлов запроса уже была создана
         if (!parent.exists()) {
@@ -101,37 +69,91 @@ public class RequestFileStorage {
         }
     }
 
-    public File createOutputRequestFileDirectory(IConfig configDir, String name, String child) throws StorageNotFoundException {
-        checkOutputRequestFileStorageExists(configDir);
+    public File createOutputRequestFileDirectory(String parent, String name, String child) throws StorageNotFoundException {
+        checkOutputRequestFileStorageExists(parent);
 
-        //Создаем директорию с именем кода района если что
-        File dir = new File(EjbBeanLocator.getBean(ConfigBean.class).getString(configDir, false), child);
-        if (!dir.exists()) {
-            dir.mkdir();
+        //Создаем директорию с промежуточным именем если что
+        File dir = new File(parent, child);
+        try {
+            forceMkdir(dir);
+        } catch (IOException e) {
+            throw new RuntimeException("Unexpected error: ", e);
         }
 
         return new File(dir, name);
     }
-    
-    @SuppressWarnings({"ResultOfMethodCallIgnored"})
-    public File createFile(String path, boolean replace) {
-        File file = new File(path);
-        if (replace && file.exists()) {
+
+    private void forceMkdir(File directory) throws IOException {
+        if (directory.exists()) {
+            if (!directory.isDirectory()) {
+                String message = "File " + directory + " exists and is not a directory. Unable to create directory.";
+                throw new IOException(message);
+            }
+        } else {
+            if (!directory.mkdirs()) {
+                // Double-check that some other thread or process hasn't made
+                // the directory in the background
+                if (!directory.isDirectory()) {
+                    throw new IOException("Unable to create directory " + directory);
+                }
+            }
+        }
+    }
+
+    public File createFile(String filePath) {
+        File file = new File(filePath);
+        if (file.exists()) {
             file.delete();
         }
-
         return file;
     }
 
-    @SuppressWarnings({"ResultOfMethodCallIgnored"})
     public void delete(String path) {
         new File(path).delete();
     }
 
-    public String getRelativeParent(File file, FileHandlingConfig dir) {
-        File root = new File(EjbBeanLocator.getBean(ConfigBean.class).getString(dir, false));
+    public String getRelativeParent(File file, String subPath) {
+        File root = new File(subPath);
         String absolutePath = file.getParent();
-
         return absolutePath.substring(root.getAbsolutePath().length());
+    }
+
+    public String getRequestFilesStorageDir(long userOrganizationId, FileHandlingConfig defaultConfigDir) {
+        if (defaultConfigDir == null) {
+            throw new NullPointerException("Default config dir parameter is null.");
+        }
+
+        IOsznOrganizationStrategy osznOrganizationStrategy =
+                EjbBeanLocator.getBean(OsznOrganizationStrategy.OSZN_ORGANIZATION_STRATEGY_NAME);
+        long organizationAttributeTypeId;
+        switch (defaultConfigDir) {
+            case DEFAULT_LOAD_PAYMENT_BENEFIT_FILES_DIR:
+                organizationAttributeTypeId = IOsznOrganizationStrategy.LOAD_PAYMENT_BENEFIT_FILES_DIR;
+                break;
+            case DEFAULT_SAVE_PAYMENT_BENEFIT_FILES_DIR:
+                organizationAttributeTypeId = IOsznOrganizationStrategy.SAVE_PAYMENT_BENEFIT_FILES_DIR;
+                break;
+            case DEFAULT_LOAD_ACTUAL_PAYMENT_DIR:
+                organizationAttributeTypeId = IOsznOrganizationStrategy.LOAD_ACTUAL_PAYMENT_DIR;
+                break;
+            case DEFAULT_SAVE_ACTUAL_PAYMENT_DIR:
+                organizationAttributeTypeId = IOsznOrganizationStrategy.SAVE_ACTUAL_PAYMENT_DIR;
+                break;
+            case DEFAULT_LOAD_SUBSIDY_DIR:
+                organizationAttributeTypeId = IOsznOrganizationStrategy.LOAD_SUBSIDY_DIR;
+                break;
+            case DEFAULT_SAVE_SUBSIDY_DIR:
+                organizationAttributeTypeId = IOsznOrganizationStrategy.SAVE_SUBSIDY_DIR;
+                break;
+            default:
+                throw new IllegalStateException("Wrong default config dir parameter: " + defaultConfigDir);
+        }
+
+        String requestFilesStorageDir = osznOrganizationStrategy.getRequestFilesStorageDir(userOrganizationId,
+                organizationAttributeTypeId);
+        if (Strings.isEmpty(requestFilesStorageDir)) {
+            requestFilesStorageDir = getConfigString(defaultConfigDir, true);
+        }
+        return requestFilesStorageDir;
     }
 }

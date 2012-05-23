@@ -1,6 +1,5 @@
 package org.complitex.osznconnection.file.service.process;
 
-import org.complitex.dictionary.entity.IConfig;
 import org.complitex.dictionary.service.executor.ITaskBean;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.service.*;
@@ -31,7 +30,7 @@ public class SubsidySaveTaskBean extends AbstractSaveTaskBean implements ITaskBe
     }
 
     @Override
-    protected IConfig getConfigDirectory() {
-        return FileHandlingConfig.SAVE_OUTPUT_SUBSIDY_FILE_STORAGE_DIR;
+    protected FileHandlingConfig getDefaultConfigDirectory() {
+        return FileHandlingConfig.DEFAULT_SAVE_SUBSIDY_DIR;
     }
 }

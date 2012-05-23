@@ -1,10 +1,7 @@
 package org.complitex.osznconnection.file.service.process;
 
-import com.linuxense.javadbf.DBFField;
-import org.complitex.dictionary.entity.IConfig;
 import org.complitex.dictionary.service.executor.ITaskBean;
 import org.complitex.osznconnection.file.entity.*;
-import org.complitex.osznconnection.file.entity.RequestFile.TYPE;
 import org.complitex.osznconnection.file.service.*;
 
 import javax.ejb.EJB;
@@ -37,7 +34,7 @@ public class ActualPaymentSaveTaskBean extends AbstractSaveTaskBean implements I
     }
 
     @Override
-    protected IConfig getConfigDirectory() {
-        return FileHandlingConfig.SAVE_OUTPUT_ACTUAL_PAYMENT_FILE_STORAGE_DIR;
+    protected FileHandlingConfig getDefaultConfigDirectory() {
+        return FileHandlingConfig.DEFAULT_SAVE_ACTUAL_PAYMENT_DIR;
     }
 }

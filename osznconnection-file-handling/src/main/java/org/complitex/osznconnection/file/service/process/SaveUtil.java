@@ -24,19 +24,16 @@ import org.complitex.osznconnection.file.entity.FileHandlingConfig;
  *         Date: 06.12.10 14:59
  */
 public final class SaveUtil {
-    
-    private SaveUtil(){}
 
+    private SaveUtil() {
+    }
     private final static Logger log = LoggerFactory.getLogger(SaveUtil.class);
     private final static String FILE_ENCODING = "cp1251";
     private final static String RESULT_FILE_NAME = "Result";
     private final static String RESULT_FILE_EXT = "txt";
-
     private final static SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
     private final static SimpleDateFormat sdfFile = new SimpleDateFormat("yyyyMMdd_HHmmss");
-
     private final static Locale SYSTEM = new Locale("ru");
-    
     private final static Set<RequestStatus> NOT_REPORTABLE_STATUSES = ImmutableSet.of(RequestStatus.PROCESSED,
             RequestStatus.ACCOUNT_NUMBER_RESOLVED, RequestStatus.ADDRESS_CORRECTED);
 
@@ -65,37 +62,50 @@ public final class SaveUtil {
 
     private static void writeDirectory(String directory, List<RequestFileGroup> groups, IWarningRenderer warningRenderer)
             throws StorageNotFoundException {
+        Writer writer = null;
         try {
-            Date now = DateUtil.getCurrentDate();
-            String name = RESULT_FILE_NAME + "_" + sdfFile.format(now) + "." + RESULT_FILE_EXT;
+            if (groups != null && !groups.isEmpty()) {
+                final long osznId = groups.get(0).getPaymentFile().getOrganizationId();
 
-            File file = RequestFileStorage.getInstance().
-                    createOutputRequestFileDirectory(FileHandlingConfig.SAVE_OUTPUT_REQUEST_FILE_STORAGE_DIR, name, directory);
+                final Date now = DateUtil.getCurrentDate();
+                final String name = RESULT_FILE_NAME + "_" + sdfFile.format(now) + "." + RESULT_FILE_EXT;
 
-            Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), FILE_ENCODING));
+                File file = RequestFileStorage.INSTANCE.createOutputRequestFileDirectory(RequestFileStorage.INSTANCE.getRequestFilesStorageDir(osznId,
+                        FileHandlingConfig.DEFAULT_SAVE_PAYMENT_BENEFIT_FILES_DIR), name, directory);
 
-            writer.write("Время выгрузки: " + sdf.format(now));
-            writer.write("\n\nКаталог: " + directory);
+                writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), FILE_ENCODING));
 
-            int requestCount = 0;
+                writer.write("Время выгрузки: " + sdf.format(now));
+                writer.write("\n\nКаталог: " + directory);
 
-            for (RequestFileGroup group : groups) {
-                int count = group.getPaymentFile().getDbfRecordCount();
+                int requestCount = 0;
 
-                writer.write("\n" + group.getPaymentFile().getName() + ", " + group.getBenefitFile().getName()
-                        + " - Запросов: " + count);
-                writeErrorStatus(group.getPaymentFile().getRequests(), writer, warningRenderer, false);
-                writeErrorStatus(group.getBenefitFile().getRequests(), writer, warningRenderer, false);
+                for (RequestFileGroup group : groups) {
+                    int count = group.getPaymentFile().getDbfRecordCount();
 
-                requestCount += count;
+                    writer.write("\n" + group.getPaymentFile().getName() + ", " + group.getBenefitFile().getName()
+                            + " - Запросов: " + count);
+                    writeErrorStatus(group.getPaymentFile().getRequests(), writer, warningRenderer, false);
+                    writeErrorStatus(group.getBenefitFile().getRequests(), writer, warningRenderer, false);
+
+                    requestCount += count;
+                }
+
+                writer.write("\n\nВсего пар файлов: " + groups.size());
+                writer.write("\nВсего запросов: " + requestCount);
+
+                writer.close();
             }
-
-            writer.write("\n\nВсего пар файлов: " + groups.size());
-            writer.write("\nВсего запросов: " + requestCount);
-
-            writer.close();
         } catch (IOException e) {
             log.error("Ошибка сохранения файла Result.txt", e);
+        } finally {
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (IOException e) {
+                    log.error("Ошибка закрытия файла Result.txt", e);
+                }
+            }
         }
     }
 
