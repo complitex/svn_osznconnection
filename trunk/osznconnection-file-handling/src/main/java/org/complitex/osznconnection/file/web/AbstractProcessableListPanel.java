@@ -83,8 +83,8 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
 
         public abstract Component field(Item<M> item);
     }
-    private final static String IMAGE_AJAX_LOADER = "images/ajax-loader2.gif";
-    private final static String IMAGE_AJAX_WAITING = "images/ajax-waiting.gif";
+    public final static String IMAGE_AJAX_LOADER = "images/ajax-loader2.gif";
+    public final static String IMAGE_AJAX_WAITING = "images/ajax-waiting.gif";
     @EJB(name = "OsznOrganizationStrategy")
     private IOsznOrganizationStrategy organizationStrategy;
     @EJB
@@ -406,8 +406,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
                 final Long objectId = item.getModelObject().getId();
 
                 /* for highlighting to work properly */
-                item.setOutputMarkupId(true);
-                item.setMarkupId(ITEM_ID_PREFIX + objectId);
+                augmentItem(item, objectId);
 
                 //Выбор файлов
                 CheckBox checkBox = new CheckBox("selected", selectModels.get(objectId)) {
@@ -862,7 +861,13 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
         addCompetedMessages("save_process", getSaveProcessType());
     }
 
-    private void highlightProcessed(AjaxRequestTarget target, long objectId) {
+    public static void augmentItem(Item<?> item, long objectId) {
+        /* for highlighting to work properly */
+        item.setOutputMarkupId(true);
+        item.setMarkupId(ITEM_ID_PREFIX + objectId);
+    }
+
+    public static void highlightProcessed(AjaxRequestTarget target, long objectId) {
         if (target != null) {
             target.appendJavascript("$('#" + ITEM_ID_PREFIX + objectId + "')"
                     + ".animate({ backgroundColor: 'lightgreen' }, 300)"
@@ -870,7 +875,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
         }
     }
 
-    private void highlightError(AjaxRequestTarget target, long objectId) {
+    public static void highlightError(AjaxRequestTarget target, long objectId) {
         if (target != null) {
             target.appendJavascript("$('#" + ITEM_ID_PREFIX + objectId + "')"
                     + ".animate({ backgroundColor: 'darksalmon' }, 300)"
@@ -900,7 +905,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
         };
     }
 
-    private void addTimer(WebMarkupContainer dataViewContainer, Form<?> filterForm, AjaxFeedbackPanel messages) {
+    public void addTimer(WebMarkupContainer dataViewContainer, Form<?> filterForm, AjaxFeedbackPanel messages) {
         boolean needCreateNewTimer = true;
 
         List<AjaxSelfUpdatingTimerBehavior> timers = Lists.newArrayList(Iterables.filter(dataViewContainer.getBehaviors(),

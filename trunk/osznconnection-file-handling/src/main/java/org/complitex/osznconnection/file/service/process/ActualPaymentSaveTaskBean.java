@@ -7,12 +7,15 @@ import org.complitex.osznconnection.file.service.*;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import java.util.List;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
 
 /**
  * User: Anatoly A. Ivanov java@inhell.ru
  * Date: 20.01.11 23:40
  */
-@Stateless(name = "ActualPaymentSaveTaskBean")
+@Stateless
+@TransactionManagement(TransactionManagementType.BEAN)
 public class ActualPaymentSaveTaskBean extends AbstractSaveTaskBean implements ITaskBean {
 
     @EJB

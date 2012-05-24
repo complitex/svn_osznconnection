@@ -285,12 +285,12 @@ public class ProcessManagerBean {
 
     @Asynchronous
     public void bindGroup(List<Long> ids, Map processParameters) {
-        execute(BIND_GROUP, BindTaskBean.class, getGroups(ids), null, BIND_THREAD_SIZE, BIND_MAX_ERROR_COUNT, processParameters);
+        execute(BIND_GROUP, GroupBindTaskBean.class, getGroups(ids), null, BIND_THREAD_SIZE, BIND_MAX_ERROR_COUNT, processParameters);
     }
 
     @Asynchronous
     public void fillGroup(List<Long> ids, Map processParameters) {
-        execute(FILL_GROUP, FillTaskBean.class, getGroups(ids), null, FILL_THREAD_SIZE, FILL_MAX_ERROR_COUNT, processParameters);
+        execute(FILL_GROUP, GroupFillTaskBean.class, getGroups(ids), null, FILL_THREAD_SIZE, FILL_MAX_ERROR_COUNT, processParameters);
     }
 
     @Asynchronous

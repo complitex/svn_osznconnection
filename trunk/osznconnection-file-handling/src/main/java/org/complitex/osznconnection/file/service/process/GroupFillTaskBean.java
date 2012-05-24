@@ -39,11 +39,11 @@ import org.complitex.osznconnection.file.service_provider.exception.DBException;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 01.11.10 12:56
  */
-@Stateless(name = "FillTaskBean")
+@Stateless
 @TransactionManagement(TransactionManagementType.BEAN)
-public class FillTaskBean implements ITaskBean {
+public class GroupFillTaskBean implements ITaskBean {
 
-    private static final Logger log = LoggerFactory.getLogger(FillTaskBean.class);
+    private static final Logger log = LoggerFactory.getLogger(GroupFillTaskBean.class);
     @Resource
     private UserTransaction userTransaction;
     @EJB
@@ -122,7 +122,7 @@ public class FillTaskBean implements ITaskBean {
 
     @Override
     public Class<?> getControllerClass() {
-        return FillTaskBean.class;
+        return GroupFillTaskBean.class;
     }
 
     @Override

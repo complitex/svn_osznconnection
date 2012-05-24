@@ -32,11 +32,11 @@ import org.complitex.osznconnection.file.web.pages.util.GlobalOptions;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 01.11.10 12:56
  */
-@Stateless(name = "BindTaskBean")
+@Stateless
 @TransactionManagement(TransactionManagementType.BEAN)
-public class BindTaskBean implements ITaskBean {
+public class GroupBindTaskBean implements ITaskBean {
 
-    private static final Logger log = LoggerFactory.getLogger(BindTaskBean.class);
+    private static final Logger log = LoggerFactory.getLogger(GroupBindTaskBean.class);
     @Resource
     private UserTransaction userTransaction;
     @EJB
@@ -123,7 +123,7 @@ public class BindTaskBean implements ITaskBean {
 
     @Override
     public Class getControllerClass() {
-        return BindTaskBean.class;
+        return GroupBindTaskBean.class;
     }
 
     @Override

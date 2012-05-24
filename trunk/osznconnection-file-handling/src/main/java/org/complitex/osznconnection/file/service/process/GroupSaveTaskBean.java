@@ -14,13 +14,16 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import java.util.List;
 import java.util.Map;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
 import org.complitex.osznconnection.file.web.pages.util.GlobalOptions;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 01.11.10 12:58
  */
-@Stateless(name = "GroupSaveTaskBean")
+@Stateless
+@TransactionManagement(TransactionManagementType.BEAN)
 public class GroupSaveTaskBean extends AbstractSaveTaskBean implements ITaskBean {
 
     @EJB
