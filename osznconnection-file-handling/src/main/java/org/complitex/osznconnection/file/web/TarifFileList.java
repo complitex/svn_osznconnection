@@ -69,7 +69,6 @@ import static org.complitex.osznconnection.file.service.process.ProcessType.LOAD
 @AuthorizeInstantiation(SecurityRole.AUTHORIZED)
 public class TarifFileList extends TemplatePage {
 
-    private final static String IMAGE_AJAX_LOADER = "images/ajax-loader2.gif";
     @EJB
     private RequestFileBean requestFileBean;
     @EJB(name = "OsznOrganizationStrategy")
@@ -272,8 +271,7 @@ public class TarifFileList extends TemplatePage {
                 final Long objectId = item.getModelObject().getId();
 
                 /* for highlighting to work properly */
-                item.setOutputMarkupId(true);
-                item.setMarkupId(ITEM_ID_PREFIX + objectId);
+                AbstractProcessableListPanel.augmentItem(item, objectId);
 
                 //Выбор файлов
                 CheckBox checkBox = new CheckBox("selected", selectModels.get(objectId)) {
@@ -299,7 +297,7 @@ public class TarifFileList extends TemplatePage {
                 item.add(checkBox);
 
                 //Анимация в обработке
-                item.add(new Image("processing", new ResourceReference(IMAGE_AJAX_LOADER)) {
+                item.add(new Image("processing", new ResourceReference(AbstractProcessableListPanel.IMAGE_AJAX_LOADER)) {
 
                     @Override
                     public boolean isVisible() {
@@ -492,13 +490,12 @@ public class TarifFileList extends TemplatePage {
         List<RequestFile> list = processManagerBean.getProcessed(LOAD_TARIF, TarifFileList.class);
 
         for (RequestFile rf : list) {
-
             if (rf.getLoadedRecordCount().equals(rf.getDbfRecordCount()) && rf.getDbfRecordCount() != 0) {
                 info(getStringFormat("tarif.loaded", rf.getFullName()));
-                highlightProcessed(target, rf);
+                AbstractProcessableListPanel.highlightProcessed(target, rf.getId());
             } else {
                 error(getStringFormat("tarif.load_error", rf.getFullName()));
-                highlightError(target, rf);
+                AbstractProcessableListPanel.highlightError(target, rf.getId());
             }
         }
 
@@ -516,22 +513,6 @@ public class TarifFileList extends TemplatePage {
                     processManagerBean.getSkippedCount(LOAD_TARIF), processManagerBean.getErrorCount(LOAD_TARIF)));
 
             completedDisplayed = true;
-        }
-    }
-
-    private void highlightProcessed(AjaxRequestTarget target, RequestFile requestFile) {
-        if (target != null) {
-            target.appendJavascript("$('#" + ITEM_ID_PREFIX + requestFile.getId() + "')"
-                    + ".animate({ backgroundColor: 'lightgreen' }, 300)"
-                    + ".animate({ backgroundColor: '#E0E4E9' }, 700)");
-        }
-    }
-
-    private void highlightError(AjaxRequestTarget target, RequestFile requestFile) {
-        if (target != null) {
-            target.appendJavascript("$('#" + ITEM_ID_PREFIX + requestFile.getId() + "')"
-                    + ".animate({ backgroundColor: 'darksalmon' }, 300)"
-                    + ".animate({ backgroundColor: '#E0E4E9' }, 700)");
         }
     }
 

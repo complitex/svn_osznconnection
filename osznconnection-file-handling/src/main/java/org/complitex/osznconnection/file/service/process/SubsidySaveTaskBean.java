@@ -7,8 +7,11 @@ import org.complitex.osznconnection.file.service.*;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import java.util.List;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
 
 @Stateless
+@TransactionManagement(TransactionManagementType.BEAN)
 public class SubsidySaveTaskBean extends AbstractSaveTaskBean implements ITaskBean {
 
     @EJB
