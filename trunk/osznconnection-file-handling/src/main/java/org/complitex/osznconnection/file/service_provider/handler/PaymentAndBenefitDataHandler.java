@@ -19,15 +19,15 @@ import org.complitex.osznconnection.file.service_provider.util.OracleErrors;
  *
  * @author Artem
  */
-public class PaymentAndBenefitDataHandler implements TypeHandler {
+public class PaymentAndBenefitDataHandler implements TypeHandler<List<PaymentAndBenefitData>> {
 
     @Override
-    public void setParameter(PreparedStatement ps, int i, Object parameter, JdbcType jdbcType) throws SQLException {
+    public void setParameter(PreparedStatement ps, int i, List<PaymentAndBenefitData> parameter, JdbcType jdbcType) throws SQLException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public Object getResult(ResultSet rs, String columnName) throws SQLException {
+    public List<PaymentAndBenefitData> getResult(ResultSet rs, String columnName) throws SQLException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

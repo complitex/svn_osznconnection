@@ -19,20 +19,20 @@ import org.complitex.osznconnection.file.service_provider.util.OracleErrors;
  *
  * @author Artem
  */
-public class AccountDetailsByAccCodeHandler implements TypeHandler {
+public class AccountDetailsByAccCodeHandler implements TypeHandler<List<AccountDetail>> {
 
     @Override
-    public void setParameter(PreparedStatement ps, int i, Object parameter, JdbcType jdbcType) throws SQLException {
+    public void setParameter(PreparedStatement ps, int i, List<AccountDetail> parameter, JdbcType jdbcType) throws SQLException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public Object getResult(ResultSet rs, String columnName) throws SQLException {
+    public List<AccountDetail> getResult(ResultSet rs, String columnName) throws SQLException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public Object getResult(CallableStatement cs, int columnIndex) throws SQLException {
+    public List<AccountDetail> getResult(CallableStatement cs, int columnIndex) throws SQLException {
         ResultSet rs = null;
         List<AccountDetail> accountDetails = Lists.newArrayList();
         try {

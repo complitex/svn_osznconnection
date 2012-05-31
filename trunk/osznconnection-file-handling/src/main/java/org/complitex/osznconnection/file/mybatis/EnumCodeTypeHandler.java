@@ -8,8 +8,6 @@ import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
 import org.complitex.osznconnection.file.entity.EnumCodeManager;
 import org.complitex.osznconnection.file.entity.IEnumCode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
@@ -20,14 +18,11 @@ import java.sql.SQLException;
  *
  * @author Artem
  */
-public class EnumCodeTypeHandler extends BaseTypeHandler {
-
-    private static final Logger log = LoggerFactory.getLogger(EnumCodeTypeHandler.class);
+public class EnumCodeTypeHandler extends BaseTypeHandler<IEnumCode> {
 
     @Override
-    public void setNonNullParameter(PreparedStatement ps, int i, Object parameter, JdbcType jdbcType) throws SQLException {
-        IEnumCode enumCode = (IEnumCode) parameter;
-        ps.setInt(i, enumCode.getCode());
+    public void setNonNullParameter(PreparedStatement ps, int i, IEnumCode parameter, JdbcType jdbcType) throws SQLException {
+        ps.setInt(i, parameter.getCode());
     }
 
     @Override
@@ -40,7 +35,7 @@ public class EnumCodeTypeHandler extends BaseTypeHandler {
     }
 
     @Override
-    public Object getNullableResult(CallableStatement cs, int columnIndex) throws SQLException {
+    public IEnumCode getNullableResult(CallableStatement cs, int columnIndex) throws SQLException {
         throw new UnsupportedOperationException();
     }
 }

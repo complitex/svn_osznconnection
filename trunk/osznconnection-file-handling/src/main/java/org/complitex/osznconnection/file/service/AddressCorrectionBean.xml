@@ -42,7 +42,7 @@
             limit #{start}, #{size}
     </select>
 
-    <select id="findStreetCorrectionById" resultMap="streetCorrection" parameterType="long">
+    <select id="findStreetCorrectionById" resultMap="org.complitex.osznconnection.file.service.AddressCorrectionBean.streetCorrection" parameterType="long">
         select * from `street_correction` where `id` = #{id}
     </select>
 
@@ -50,7 +50,7 @@
         select * from `street_type_correction` where `id` = #{id}
     </select>
 
-    <select id="findStreetCorrections" resultMap="streetCorrection" parameterType="org.complitex.osznconnection.file.entity.example.CorrectionExample">
+    <select id="findStreetCorrections" resultMap="org.complitex.osznconnection.file.service.AddressCorrectionBean.streetCorrection" parameterType="org.complitex.osznconnection.file.entity.example.CorrectionExample">
         select * from `street_correction` c where c.`organization_id` = #{organizationId} 
             <if test="userOrganizationsString != null">
                 and c.`user_organization_id` in ${userOrganizationsString}
@@ -61,7 +61,7 @@
             limit #{start}, #{size}
     </select>
 
-    <select id="findStreetTypeCorrections" resultMap="correction" parameterType="map">
+    <select id="findStreetTypeCorrections" resultMap="org.complitex.osznconnection.file.service.CorrectionBean.correction" parameterType="map">
         select * from `street_type_correction` c where c.`organization_id` = #{organizationId}
             <if test="userOrganizationsString != null">
                 and c.`user_organization_id` in ${userOrganizationsString}
@@ -69,11 +69,11 @@
             order by c.`correction`
     </select>
 
-    <select id="findDistrictCorrectionById" resultMap="districtCorrection" parameterType="long">
+    <select id="findDistrictCorrectionById" resultMap="org.complitex.osznconnection.file.service.AddressCorrectionBean.districtCorrection" parameterType="long">
         select * from `district_correction` where `id` = #{id}
     </select>
 
-    <select id="findBuildingCorrectionById" resultMap="buildingCorrection" parameterType="long">
+    <select id="findBuildingCorrectionById" resultMap="org.complitex.osznconnection.file.service.AddressCorrectionBean.buildingCorrection" parameterType="long">
         select * from `building_correction` where `id` = #{id}
     </select>
 
@@ -89,14 +89,14 @@
         </where>
     </select>
 
-    <select id="findBuildingLocalCorrections" parameterType="map" resultMap="buildingCorrection">
+    <select id="findBuildingLocalCorrections" parameterType="map" resultMap="org.complitex.osznconnection.file.service.AddressCorrectionBean.buildingCorrection">
         SELECT * FROM `building_correction`
         WHERE `organization_id` = #{organizationId} AND `correction` = #{correction}
                 AND `correction_corp` = #{correctionCorp} AND `parent_id` = #{parentId}
                 AND `user_organization_id` = #{userOrganizationId}
     </select>
 
-    <select id="findStreetLocalCorrections" parameterType="map" resultMap="streetCorrection">
+    <select id="findStreetLocalCorrections" parameterType="map" resultMap="org.complitex.osznconnection.file.service.AddressCorrectionBean.streetCorrection">
         SELECT * FROM `street_correction`
         WHERE `organization_id` = #{organizationId}
         AND `user_organization_id` = #{userOrganizationId}
@@ -111,7 +111,7 @@
         AND `parent_id` = #{parentId} AND `correction` = #{street}
     </select>
 
-    <select id="findStreetLocalCorrectionsByStreetId" parameterType="map" resultMap="streetCorrection">
+    <select id="findStreetLocalCorrectionsByStreetId" parameterType="map" resultMap="org.complitex.osznconnection.file.service.AddressCorrectionBean.streetCorrection">
         SELECT * FROM `street_correction`
         WHERE `organization_id` = #{organizationId} AND `user_organization_id` = #{userOrganizationId} 
         AND `parent_id` = #{parentId} AND `correction` = #{street} AND `object_id` = #{streetId}
@@ -277,16 +277,16 @@
     </update>
 
     <select id="findStreets" parameterType="org.complitex.osznconnection.file.entity.example.CorrectionExample"
-            resultMap="streetCorrection">
+            resultMap="org.complitex.osznconnection.file.service.AddressCorrectionBean.streetCorrection">
         <include refid="org.complitex.osznconnection.file.service.CorrectionBean.find"/>
     </select>
 
     <select id="findDistricts" parameterType="org.complitex.osznconnection.file.entity.example.CorrectionExample"
-            resultMap="districtCorrection">
+            resultMap="org.complitex.osznconnection.file.service.AddressCorrectionBean.districtCorrection">
         <include refid="org.complitex.osznconnection.file.service.CorrectionBean.find"/>
     </select>
 
-    <select id="findBuildingById" parameterType="long" resultMap="buildingCorrection">
+    <select id="findBuildingById" parameterType="long" resultMap="org.complitex.osznconnection.file.service.AddressCorrectionBean.buildingCorrection">
         SELECT * FROM `building_correction` WHERE `id` = #{id}
     </select>
 
@@ -382,7 +382,7 @@
     </sql>
 
     <select id="findBuildings" parameterType="org.complitex.osznconnection.file.entity.example.BuildingCorrectionExample"
-            resultMap="buildingCorrection">
+            resultMap="org.complitex.osznconnection.file.service.AddressCorrectionBean.buildingCorrection">
         SELECT DISTINCT c.`id`, c.*, IFNULL(osc.`value`, osc_sys.`value`) organization, IFNULL(osc_i.`value`, osc_i_sys.`value`) internalOrganization,
         IFNULL(uosc.`value`, uosc_sys.`value`) userOrganization
 
