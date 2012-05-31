@@ -10,6 +10,9 @@ package org.complitex.osznconnection.file.entity;
  */
 public final class EnumCodeManager {
 
+    private EnumCodeManager() {
+    }
+
     public static IEnumCode valueOf(int code) {
         for (Class<? extends IEnumCode> enm : getSupportedEnums()) {
             for (IEnumCode enumConst : enm.getEnumConstants()) {
@@ -21,7 +24,6 @@ public final class EnumCodeManager {
         throw new IllegalArgumentException("For code " + code + " don't exist status value.");
     }
 
-    @SuppressWarnings({"unchecked"})
     private static Class<? extends IEnumCode>[] getSupportedEnums() {
         return new Class[]{
                     RequestStatus.class,
