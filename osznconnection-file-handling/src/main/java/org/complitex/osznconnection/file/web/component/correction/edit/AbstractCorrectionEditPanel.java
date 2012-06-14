@@ -30,12 +30,12 @@ import javax.ejb.EJB;
 import java.util.List;
 import java.util.Locale;
 import org.apache.wicket.Page;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.osznconnection.file.web.model.OrganizationModel;
 import org.complitex.osznconnection.file.web.pages.correction.AbstractCorrectionList;
@@ -177,7 +177,7 @@ public abstract class AbstractCorrectionEditPanel extends Panel {
             backPageParameters = new PageParameters();
         }
         if (useScrolling) {
-            backPageParameters.put(AbstractCorrectionList.SCROLL_PARAMETER, getModel().getId());
+            backPageParameters.set(AbstractCorrectionList.SCROLL_PARAMETER, getModel().getId());
         }
         if (backPageParameters != null) {
             setResponsePage(getBackPageClass(), backPageParameters);
@@ -303,9 +303,9 @@ public abstract class AbstractCorrectionEditPanel extends Panel {
                 @Override
                 protected void onUpdate(AjaxRequestTarget target) {
                     organization.setEnabled(false);
-                    target.addComponent(organization);
+                    target.add(organization);
                     if (correctionInputPanel.isVisible() && freezeOrganization()) {
-                        target.addComponent(correctionInputPanel);
+                        target.add(correctionInputPanel);
                     }
                 }
             });

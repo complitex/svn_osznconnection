@@ -4,12 +4,10 @@
  */
 package org.complitex.osznconnection.file.web.pages.payment;
 
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.authorization.UnauthorizedInstantiationException;
-import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -47,6 +45,9 @@ import javax.ejb.EJB;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.osznconnection.file.web.component.DataRowHoverBehavior;
 
@@ -76,7 +77,7 @@ public final class PaymentList extends TemplatePage {
     private long fileId;
 
     public PaymentList(PageParameters params) {
-        this.fileId = params.getAsLong(FILE_ID);
+        this.fileId = params.get(FILE_ID).toLong();
         init();
     }
 
@@ -143,7 +144,7 @@ public final class PaymentList extends TemplatePage {
                 return paymentBean.count(example.getObject());
             }
         };
-        dataProvider.setSort("", true);
+        dataProvider.setSort("", SortOrder.ASCENDING);
 
         filterForm.add(new TextField<String>("accountFilter", new PropertyModel<String>(example, "account")));
         filterForm.add(new TextField<String>("firstNameFilter", new PropertyModel<String>(example, "firstName")));
@@ -163,7 +164,7 @@ public final class PaymentList extends TemplatePage {
             public void onClick(AjaxRequestTarget target) {
                 filterForm.clearInput();
                 clearExample();
-                target.addComponent(content);
+                target.add(content);
             }
         };
         filterForm.add(reset);
@@ -171,7 +172,11 @@ public final class PaymentList extends TemplatePage {
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                target.addComponent(content);
+                target.add(content);
+            }
+
+            @Override
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
             }
         };
         filterForm.add(submit);
@@ -271,7 +276,7 @@ public final class PaymentList extends TemplatePage {
             @Override
             public void onSubmit() {
                 PageParameters params = new PageParameters();
-                params.put(GroupList.SCROLL_PARAMETER, fileId);
+                params.set(GroupList.SCROLL_PARAMETER, fileId);
                 setResponsePage(GroupList.class, params);
             }
         };

@@ -6,11 +6,9 @@ package org.complitex.osznconnection.file.web.pages.correction;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
-import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -35,7 +33,10 @@ import org.complitex.osznconnection.file.service.CorrectionBean;
 
 import javax.ejb.EJB;
 import java.util.List;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.model.LoadableDetachableModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
 import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
@@ -146,7 +147,7 @@ public abstract class AbstractCorrectionList extends ScrollListPage {
                 return count(example.getObject());
             }
         };
-        dataProvider.setSort("", true);
+        dataProvider.setSort("", SortOrder.ASCENDING);
 
         final IModel<List<DomainObject>> allOuterOrganizationsModel = new LoadableDetachableModel<List<DomainObject>>() {
 
@@ -237,13 +238,13 @@ public abstract class AbstractCorrectionList extends ScrollListPage {
         filterForm.add(new DisableAwareDropDownChoice<DomainObject>("internalOrganizationFilter",
                 internalOrganizationModel, internalOrganizations, organizationRenderer).setNullValid(true));
 
-        AjaxLink reset = new IndicatingAjaxLink("reset") {
+        AjaxLink<Void> reset = new IndicatingAjaxLink<Void>("reset") {
 
             @Override
             public void onClick(AjaxRequestTarget target) {
                 filterForm.clearInput();
                 clearExample();
-                target.addComponent(content);
+                target.add(content);
             }
         };
         filterForm.add(reset);
@@ -251,7 +252,11 @@ public abstract class AbstractCorrectionList extends ScrollListPage {
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                target.addComponent(content);
+                target.add(content);
+            }
+
+            @Override
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
             }
         };
         filterForm.add(submit);

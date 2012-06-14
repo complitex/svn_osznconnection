@@ -4,12 +4,10 @@
  */
 package org.complitex.osznconnection.file.web.pages.benefit;
 
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.authorization.UnauthorizedInstantiationException;
-import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -46,6 +44,9 @@ import org.complitex.template.web.template.TemplatePage;
 import javax.ejb.EJB;
 import java.util.Arrays;
 import java.util.List;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.osznconnection.file.web.component.DataRowHoverBehavior;
 
@@ -57,15 +58,15 @@ import org.complitex.osznconnection.file.web.component.DataRowHoverBehavior;
 public final class BenefitList extends TemplatePage {
 
     public static final String FILE_ID = "request_file_id";
-    @EJB(name = "BenefitBean")
+    @EJB
     private BenefitBean benefitBean;
-    @EJB(name = "RequestFileBean")
+    @EJB
     private RequestFileBean requestFileBean;
-    @EJB(name = "StatusRenderService")
+    @EJB
     private StatusRenderService statusRenderService;
-    @EJB(name = "WebWarningRenderer")
+    @EJB
     private WebWarningRenderer webWarningRenderer;
-    @EJB(name = "StatusDetailBean")
+    @EJB
     private StatusDetailBean statusDetailBean;
     @EJB
     private OsznSessionBean osznSessionBean;
@@ -73,7 +74,7 @@ public final class BenefitList extends TemplatePage {
     private long fileId;
 
     public BenefitList(PageParameters params) {
-        this.fileId = params.getAsLong(FILE_ID);
+        this.fileId = params.get(FILE_ID).toLong();
         init();
     }
 
@@ -107,7 +108,7 @@ public final class BenefitList extends TemplatePage {
         final WebMarkupContainer content = new WebMarkupContainer("content");
         content.setOutputMarkupId(true);
         add(content);
-        final Form filterForm = new Form("filterForm");
+        final Form<Void> filterForm = new Form<Void>("filterForm");
         content.add(filterForm);
         example = new Model<BenefitExample>(newExample());
 
@@ -140,7 +141,7 @@ public final class BenefitList extends TemplatePage {
                 return benefitBean.count(example.getObject());
             }
         };
-        dataProvider.setSort("", true);
+        dataProvider.setSort("", SortOrder.ASCENDING);
 
         filterForm.add(new TextField<String>("accountFilter", new PropertyModel<String>(example, "account")));
         filterForm.add(new TextField<String>("firstNameFilter", new PropertyModel<String>(example, "firstName")));
@@ -155,13 +156,13 @@ public final class BenefitList extends TemplatePage {
         filterForm.add(new DropDownChoice<RequestStatus>("statusFilter", new PropertyModel<RequestStatus>(example, "status"),
                 Arrays.asList(RequestStatus.values()), new StatusRenderer()).setNullValid(true));
 
-        AjaxLink reset = new AjaxLink("reset") {
+        AjaxLink<Void> reset = new AjaxLink<Void>("reset") {
 
             @Override
             public void onClick(AjaxRequestTarget target) {
                 filterForm.clearInput();
                 clearExample();
-                target.addComponent(content);
+                target.add(content);
             }
         };
         filterForm.add(reset);
@@ -169,7 +170,11 @@ public final class BenefitList extends TemplatePage {
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                target.addComponent(content);
+                target.add(content);
+            }
+
+            @Override
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
             }
         };
         filterForm.add(submit);
@@ -238,7 +243,7 @@ public final class BenefitList extends TemplatePage {
             @Override
             public void onSubmit() {
                 PageParameters params = new PageParameters();
-                params.put(GroupList.SCROLL_PARAMETER, fileId);
+                params.set(GroupList.SCROLL_PARAMETER, fileId);
                 setResponsePage(GroupList.class, params);
             }
         };

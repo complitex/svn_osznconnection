@@ -168,14 +168,13 @@ public class RequestFileLoadPanel extends Panel {
                 loader.load(userOrganizationModel.getOrganizationId(), oszn.getId(),
                         organizationStrategy.getDistrictCode(oszn), f, t, year.getModelObject(), target);
 
-                target.addComponent(messages);
+                target.add(messages);
                 dialog.close(target);
             }
 
             @Override
             protected void onError(AjaxRequestTarget target, Form<?> form) {
-                super.onError(target, form);
-                target.addComponent(messages);
+                target.add(messages);
             }
         };
         form.add(load);

@@ -27,6 +27,7 @@ import javax.ejb.EJB;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 
 /**
  *
@@ -50,10 +51,9 @@ public class AddressCorrectionInputPanel extends Panel {
 
         @Override
         public String getIdValue(T object, int index) {
-            return object.getId() + "";
+            return String.valueOf(object.getId());
         }
     }
-
     private static final int AUTO_COMPLETE_SIZE = 10;
 
     public AddressCorrectionInputPanel(String id, final Correction correction) {
@@ -62,7 +62,7 @@ public class AddressCorrectionInputPanel extends Panel {
         final boolean isDistrict = "district".equals(correction.getEntity());
         final boolean isStreet = "street".equals(correction.getEntity());
         final boolean isBuilding = "building".equals(correction.getEntity());
-        
+
         add(new Label("cityLabel", new AbstractReadOnlyModel<String>() {
 
             @Override
@@ -118,6 +118,7 @@ public class AddressCorrectionInputPanel extends Panel {
         final IModel<Correction> cityModel = new Model<Correction>();
 
         add(new AutocompleteAjaxComponent<Correction>("city", cityModel, new CorrectionRenderer<Correction>()) {
+
             {
                 setAutoUpdate(true);
             }
@@ -144,28 +145,47 @@ public class AddressCorrectionInputPanel extends Panel {
                     correction.setParentId(cityId);
                 }
 
-                if (districtContainer.isVisible()){
+                if (districtContainer.isVisible()) {
                     target.focusComponent(districtContainer.get(0));
-                }else if (streetContainer.isVisible()) {
+                } else if (streetContainer.isVisible()) {
                     target.focusComponent(((AutocompleteAjaxComponent) streetContainer.get(1)).getAutocompleteField());
                 }
             }
         });
 
-        IModel<Correction> streetTypeModel = new PropertyModel<Correction>(correction, "streetTypeCorrection");
-        IModel<List<Correction>> allStreetTypeCorrectionsModel = new AbstractReadOnlyModel<List<Correction>>() {
+        final IModel<List<Correction>> allStreetTypeCorrectionsModel = new AbstractReadOnlyModel<List<Correction>>() {
+
+            List<Correction> streetTypeCorrections;
 
             @Override
             public List<Correction> getObject() {
                 if (correction.getOrganizationId() != null) {
-                    return addressCorrectionBean.findStreetTypeCorrections(correction.getOrganizationId());
+                    if (streetTypeCorrections == null) {
+                        streetTypeCorrections =
+                                addressCorrectionBean.findStreetTypeCorrections(correction.getOrganizationId());
+                    }
+                    return streetTypeCorrections;
                 } else {
                     return Collections.emptyList();
                 }
             }
         };
+        IModel<Correction> streetTypeModel = new PropertyModel<Correction>(correction, "streetTypeCorrection") {
+
+            @Override
+            public void setObject(Correction object) {
+                super.setObject(object);
+            }
+        };
+
         final DropDownChoice<Correction> streetType = new DropDownChoice<Correction>("streetType", streetTypeModel, allStreetTypeCorrectionsModel,
                 new ChoiceRenderer<Correction>("correction", "id"));
+        streetType.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+            }
+        });
         streetType.setOutputMarkupId(true);
         streetType.setVisible(isStreet);
 
@@ -196,6 +216,7 @@ public class AddressCorrectionInputPanel extends Panel {
             };
 
             street = new AutocompleteAjaxComponent<StreetCorrection>("street", streetModel, streetCorrectionRenderer) {
+
                 {
                     setAutoUpdate(true);
                 }
@@ -221,14 +242,13 @@ public class AddressCorrectionInputPanel extends Panel {
                     Long streetId = streetModel.getObject() != null ? streetModel.getObject().getId() : null;
                     correction.setParentId(streetId);
 
-                    if (buildingContainer.isVisible()){
+                    if (buildingContainer.isVisible()) {
                         target.focusComponent(buildingContainer.get(0));
                     }
                 }
             };
-        }
-        else {
-            street = new AutocompleteAjaxComponent<String>("street", new PropertyModel<String>(correction, "correction")){
+        } else {
+            street = new AutocompleteAjaxComponent<String>("street", new PropertyModel<String>(correction, "correction")) {
 
                 @Override
                 public List<String> getValues(String term) {
@@ -238,7 +258,7 @@ public class AddressCorrectionInputPanel extends Panel {
 
                         List<String> list = new ArrayList<String>();
 
-                        for (StreetCorrection c : addressCorrectionBean.findStreetCorrections(example)){
+                        for (StreetCorrection c : addressCorrectionBean.findStreetCorrections(example)) {
                             list.add(c.getCorrection());
                         }
 

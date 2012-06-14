@@ -1,6 +1,6 @@
 package org.complitex.osznconnection.file.web.component;
 
-import org.apache.wicket.ResourceReference;
+import org.apache.wicket.request.resource.SharedResourceReference;
 import org.complitex.template.web.component.toolbar.ToolbarButton;
 
 /**
@@ -13,6 +13,6 @@ public abstract class LoadButton extends ToolbarButton {
     private static final String TITLE_KEY = "load";
 
     public LoadButton(String id) {
-        super(id, new ResourceReference(IMAGE_SRC), TITLE_KEY, true);
+        super(id, new SharedResourceReference(IMAGE_SRC), TITLE_KEY, true);
     }
 }

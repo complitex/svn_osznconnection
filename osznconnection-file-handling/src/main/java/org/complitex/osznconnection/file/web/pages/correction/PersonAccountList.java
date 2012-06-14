@@ -4,12 +4,9 @@
  */
 package org.complitex.osznconnection.file.web.pages.correction;
 
-import com.google.common.collect.ImmutableMap;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
-import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
@@ -31,7 +28,10 @@ import org.complitex.osznconnection.file.service.PersonAccountLocalBean;
 
 import javax.ejb.EJB;
 import java.util.List;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.model.LoadableDetachableModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
 import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
@@ -116,7 +116,7 @@ public class PersonAccountList extends ScrollListPage {
                 return personAccountLocalBean.count(example.getObject());
             }
         };
-        dataProvider.setSort("", true);
+        dataProvider.setSort("", SortOrder.ASCENDING);
 
         filterForm.add(new TextField<String>("puAccountNumberFilter", new PropertyModel<String>(example, "puAccountNumber")));
         filterForm.add(new TextField<String>("firstNameFilter", new PropertyModel<String>(example, "firstName")));
@@ -225,7 +225,7 @@ public class PersonAccountList extends ScrollListPage {
             public void onClick(AjaxRequestTarget target) {
                 filterForm.clearInput();
                 clearExample();
-                target.addComponent(content);
+                target.add(content);
             }
         };
         filterForm.add(reset);
@@ -233,7 +233,11 @@ public class PersonAccountList extends ScrollListPage {
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                target.addComponent(content);
+                target.add(content);
+            }
+
+            @Override
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
             }
         };
         filterForm.add(submit);
@@ -261,7 +265,7 @@ public class PersonAccountList extends ScrollListPage {
                 item.add(new Label("userOrganization", personAccount.getUserOrganization()));
 
                 item.add(new ScrollBookmarkablePageLink<PersonAccountEdit>("edit", PersonAccountEdit.class,
-                        new PageParameters(ImmutableMap.of(PersonAccountEdit.CORRECTION_ID, personAccount.getId())),
+                        new PageParameters().set(PersonAccountEdit.CORRECTION_ID, personAccount.getId()),
                         String.valueOf(personAccount.getId())));
             }
         };

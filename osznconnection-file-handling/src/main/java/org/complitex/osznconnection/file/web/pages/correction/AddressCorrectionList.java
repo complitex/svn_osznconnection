@@ -4,8 +4,8 @@
  */
 package org.complitex.osznconnection.file.web.pages.correction;
 
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.WebPage;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 
 /**
  * Страница для списка коррекций элементов адреса(город, улица).
@@ -25,9 +25,9 @@ public abstract class AddressCorrectionList extends AbstractCorrectionList {
     @Override
     protected PageParameters getEditPageParams(Long objectCorrectionId) {
         PageParameters parameters = new PageParameters();
-        parameters.put(AddressCorrectionEdit.CORRECTED_ENTITY, getEntity());
+        parameters.set(AddressCorrectionEdit.CORRECTED_ENTITY, getEntity());
         if (objectCorrectionId != null) {
-            parameters.put(AddressCorrectionEdit.CORRECTION_ID, objectCorrectionId);
+            parameters.set(AddressCorrectionEdit.CORRECTION_ID, objectCorrectionId);
         }
         return parameters;
     }

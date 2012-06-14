@@ -8,13 +8,13 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Locale;
 import org.apache.wicket.Page;
-import org.apache.wicket.PageParameters;
-import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.address.strategy.street_type.StreetTypeStrategy;
 import org.complitex.template.web.component.toolbar.DeleteItemButton;
 import org.complitex.template.web.component.toolbar.ToolbarButton;
@@ -34,7 +34,7 @@ public class StreetTypeCorrectionEdit extends FormTemplatePage {
     private AbstractCorrectionEditPanel correctionEditPanel;
 
     public StreetTypeCorrectionEdit(PageParameters params) {
-        Long correctionId = params.getAsLong(CORRECTION_ID);
+        Long correctionId = params.get(CORRECTION_ID).toOptionalLong();
         add(correctionEditPanel = new AbstractCorrectionEditPanel("correctionEditPanel", "street_type", correctionId) {
 
             @Override
@@ -73,7 +73,7 @@ public class StreetTypeCorrectionEdit extends FormTemplatePage {
 
             @Override
             protected PageParameters getBackPageParameters() {
-                return PageParameters.NULL;
+                return new PageParameters();
             }
 
             @Override

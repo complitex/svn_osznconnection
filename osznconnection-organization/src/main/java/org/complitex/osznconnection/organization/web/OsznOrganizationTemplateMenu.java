@@ -1,6 +1,6 @@
 package org.complitex.osznconnection.organization.web;
 
-import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.complitex.dictionary.strategy.IStrategy;
 import org.complitex.dictionary.util.EjbBeanLocator;
 import org.complitex.organization.web.OrganizationMenu;

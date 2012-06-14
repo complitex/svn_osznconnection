@@ -4,31 +4,30 @@
  */
 package org.complitex.osznconnection.file.web.component;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.behavior.AbstractBehavior;
+import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.html.IHeaderResponse;
-import org.apache.wicket.markup.html.resources.CompressedResourceReference;
-import org.apache.wicket.markup.html.resources.JavascriptResourceReference;
+import org.apache.wicket.request.resource.PackageResourceReference;
 
 /**
  *
  * @author Artem
  */
-public final class DataRowHoverBehavior extends AbstractBehavior {
+public final class DataRowHoverBehavior extends Behavior {
 
     public DataRowHoverBehavior() {
     }
 
     @Override
-    public void renderHead(IHeaderResponse response) {
-        response.renderCSSReference(new CompressedResourceReference(DataRowHoverBehavior.class,
+    public void renderHead(Component component, IHeaderResponse response) {
+        response.renderCSSReference(new PackageResourceReference(DataRowHoverBehavior.class,
                 DataRowHoverBehavior.class.getSimpleName() + ".css"));
-        response.renderJavascriptReference(new JavascriptResourceReference(DataRowHoverBehavior.class,
+        response.renderJavaScriptReference(new PackageResourceReference(DataRowHoverBehavior.class,
                 DataRowHoverBehavior.class.getSimpleName() + ".js"));
-
     }
 
     public void deactivateDataRow(AjaxRequestTarget target) {
-        target.appendJavascript("(function(){ $('table tr.data-row.data-row-hover').removeClass('data-row-hover'); })();");
+        target.appendJavaScript("(function(){ $('table tr.data-row.data-row-hover').removeClass('data-row-hover'); })();");
     }
 }

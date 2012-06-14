@@ -68,14 +68,14 @@ public abstract class StatusDetailPanel<T extends AbstractRequestExample> extend
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         for (Component component : update) {
-                            target.addComponent(component);
+                            target.add(component);
                         }
 
                         filterByStatusDetailInfo(statusDetailInfo, exampleClass, exampleModel, exampleConfigurator);
 
                         if (statusDetailInfo.getStatusDetails() != null && !statusDetailInfo.getStatusDetails().isEmpty()) {
                             statusDetailsContainer.setVisible(!statusDetailsContainer.isVisible());
-                            target.addComponent(statusDetailsContainer);
+                            target.add(statusDetailsContainer);
                         }
                     }
                 };
@@ -99,7 +99,7 @@ public abstract class StatusDetailPanel<T extends AbstractRequestExample> extend
                                 filterByStatusDetail(statusDetail, exampleModel, exampleConfigurator);
 
                                 for (Component component : update) {
-                                    target.addComponent(component);
+                                    target.add(component);
                                 }
                             }
                         };

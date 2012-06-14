@@ -222,7 +222,7 @@ public class BenefitConnectPanel extends Panel {
                             default:
                                 if (toUpdate != null) {
                                     for (Component component : toUpdate) {
-                                        target.addComponent(component);
+                                        target.add(component);
                                     }
                                 }
                                 closeDialog(target);
@@ -233,12 +233,12 @@ public class BenefitConnectPanel extends Panel {
                         log.error("", e);
                     }
                 }
-                target.addComponent(messages);
+                target.add(messages);
             }
 
             @Override
             protected void onError(AjaxRequestTarget target, Form<?> form) {
-                target.addComponent(messages);
+                target.add(messages);
             }
 
             @Override
@@ -306,7 +306,7 @@ public class BenefitConnectPanel extends Panel {
     protected void closeDialog(AjaxRequestTarget target) {
         container.setVisible(false);
         benefit = null;
-        target.addComponent(container);
+        target.add(container);
         dialog.close(target);
     }
 
@@ -315,7 +315,7 @@ public class BenefitConnectPanel extends Panel {
 
         container.setVisible(true);
         dataModel.clear();
-        target.addComponent(container);
+        target.add(container);
         dialog.open(target);
     }
 }

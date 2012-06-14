@@ -7,11 +7,10 @@ package org.complitex.osznconnection.file.web.pages.correction;
 import com.google.common.collect.Lists;
 import java.util.List;
 import javax.ejb.EJB;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.authorization.UnauthorizedInstantiationException;
-import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
@@ -21,6 +20,7 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
 import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
@@ -55,7 +55,7 @@ public final class PersonAccountEdit extends FormTemplatePage {
     private PersonAccount personAccount;
 
     public PersonAccountEdit(PageParameters params) {
-        this.correctionId = params.getAsLong(CORRECTION_ID);
+        this.correctionId = params.get(CORRECTION_ID).toOptionalLong();
         personAccount = personAccountLocalBean.findById(this.correctionId);
 
         //Проверка доступа к данным
@@ -89,7 +89,7 @@ public final class PersonAccountEdit extends FormTemplatePage {
     private void back(boolean useScrolling) {
         if (useScrolling) {
             PageParameters backPageParameters = new PageParameters();
-            backPageParameters.put(AbstractCorrectionList.SCROLL_PARAMETER, personAccount.getId());
+            backPageParameters.set(AbstractCorrectionList.SCROLL_PARAMETER, personAccount.getId());
             setResponsePage(PersonAccountList.class, backPageParameters);
         } else {
             setResponsePage(PersonAccountList.class);
@@ -231,7 +231,7 @@ public final class PersonAccountEdit extends FormTemplatePage {
 
             @Override
             protected void onError(AjaxRequestTarget target, Form<?> form) {
-                target.addComponent(messages);
+                target.add(messages);
             }
         };
         form.add(submit);

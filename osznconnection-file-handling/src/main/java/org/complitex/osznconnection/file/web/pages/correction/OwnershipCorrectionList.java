@@ -4,10 +4,10 @@
  */
 package org.complitex.osznconnection.file.web.pages.correction;
 
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 
 /**
  * Список коррекций форм власти.
@@ -33,7 +33,7 @@ public class OwnershipCorrectionList extends AbstractCorrectionList {
     protected PageParameters getEditPageParams(Long objectCorrectionId) {
         PageParameters parameters = new PageParameters();
         if (objectCorrectionId != null) {
-            parameters.put(OwnershipCorrectionEdit.CORRECTION_ID, objectCorrectionId);
+            parameters.set(OwnershipCorrectionEdit.CORRECTION_ID, objectCorrectionId);
         }
         return parameters;
     }
