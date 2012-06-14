@@ -5,6 +5,7 @@
 package org.complitex.osznconnection.file.web;
 
 import org.apache.wicket.ajax.IAjaxCallDecorator;
+import org.apache.wicket.markup.html.IHeaderResponse;
 import org.complitex.osznconnection.file.web.pages.util.GlobalOptions;
 import org.complitex.template.web.template.TemplateSession;
 import com.google.common.collect.Iterables;
@@ -20,16 +21,13 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.wicket.ResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.datetime.markup.html.basic.DateLabel;
-import org.apache.wicket.markup.html.JavascriptPackageResource;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.*;
-import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.CompoundPropertyModel;
@@ -58,14 +56,17 @@ import org.apache.wicket.ajax.calldecorator.AjaxCallDecorator;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.ISortStateLocator;
-import org.apache.wicket.markup.html.CSSPackageResource;
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.SharedResourceReference;
 import org.complitex.dictionary.entity.IExecutorObject;
 import org.complitex.dictionary.entity.PreferenceKey;
 import org.complitex.dictionary.service.AbstractFilter;
 import org.complitex.dictionary.web.component.css.CssAttributeBehavior;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
+import org.complitex.dictionary.web.component.image.StaticImage;
 import org.complitex.osznconnection.file.service.OsznSessionBean;
 import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
 
@@ -232,13 +233,16 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
         super.onBeforeRender();
     }
 
-    private void init() {
-        add(JavascriptPackageResource.getHeaderContribution(WebCommonResourceInitializer.HIGHLIGHT_JS));
-        add(JavascriptPackageResource.getHeaderContribution(AbstractProcessableListPanel.class,
+    @Override
+    public void renderHead(IHeaderResponse response) {
+        response.renderJavaScriptReference(WebCommonResourceInitializer.HIGHLIGHT_JS);
+        response.renderJavaScriptReference(new PackageResourceReference(AbstractProcessableListPanel.class,
                 AbstractProcessableListPanel.class.getSimpleName() + ".js"));
-        add(CSSPackageResource.getHeaderContribution(AbstractProcessableListPanel.class,
+        response.renderCSSReference(new PackageResourceReference(AbstractProcessableListPanel.class,
                 AbstractProcessableListPanel.class.getSimpleName() + ".css"));
+    }
 
+    private void init() {
         this.hasFieldDescription = hasFieldDescription();
         this.modificationsAllowed =
                 //- только пользователи, принадлежащие организации или администраторы могут обрабатывать файлы.
@@ -267,7 +271,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
             public void onClick(AjaxRequestTarget target) {
                 F filterObject = newFilter();
                 filterModel.setObject(filterObject);
-                target.addComponent(filterForm);
+                target.add(filterForm);
             }
         };
         filterForm.add(filter_reset);
@@ -276,7 +280,11 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                target.addComponent(filterForm);
+                target.add(filterForm);
+            }
+
+            @Override
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
             }
         };
         filterForm.add(find);
@@ -391,7 +399,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
                 return AbstractProcessableListPanel.this.getSize(filterModel.getObject());
             }
         };
-        dataProvider.setSort("loaded", false);
+        dataProvider.setSort("loaded", SortOrder.DESCENDING);
 
         //Контейнер для ajax
         final WebMarkupContainer dataViewContainer = new WebMarkupContainer("objects_container");
@@ -432,7 +440,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
                 item.add(checkBox);
 
                 //Анимация в обработке
-                item.add(new Image("processing", new ResourceReference(IMAGE_AJAX_LOADER)) {
+                item.add(new StaticImage("processing", new SharedResourceReference(IMAGE_AJAX_LOADER)) {
 
                     @Override
                     public boolean isVisible() {
@@ -441,14 +449,13 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
                 });
 
                 //Анимация ожидание
-                Image waiting = new Image("waiting", new ResourceReference(IMAGE_AJAX_WAITING)) {
+                item.add(new StaticImage("waiting", new SharedResourceReference(IMAGE_AJAX_WAITING)) {
 
                     @Override
                     public boolean isVisible() {
                         return isGlobalWaiting(item.getModelObject()) && !isProcessing(item.getModelObject());
                     }
-                };
-                item.add(waiting);
+                });
 
                 //Идентификатор файла
                 item.add(new Label("id", StringUtil.valueOf(objectId)));
@@ -588,7 +595,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
 
                 clearSelect();
                 addTimer(dataViewContainer, filterForm, messages);
-                target.addComponent(filterForm);
+                target.add(filterForm);
             }
         });
 
@@ -603,7 +610,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
 
                 clearSelect();
                 addTimer(dataViewContainer, filterForm, messages);
-                target.addComponent(filterForm);
+                target.add(filterForm);
             }
         });
 
@@ -618,7 +625,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
 
                 clearSelect();
                 addTimer(dataViewContainer, filterForm, messages);
-                target.addComponent(filterForm);
+                target.add(filterForm);
             }
         });
 
@@ -630,7 +637,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
                 return new AjaxCallDecorator() {
 
                     @Override
-                    public CharSequence decorateScript(CharSequence script) {
+                    public CharSequence decorateScript(Component c, CharSequence script) {
                         return "if(confirm('" + getString("delete_caution") + "')){" + script + "}";
                     }
                 };
@@ -655,8 +662,8 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
                         }
                     }
                 }
-                target.addComponent(filterForm);
-                target.addComponent(messages);
+                target.add(filterForm);
+                target.add(messages);
             }
         });
 
@@ -672,7 +679,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
             public void onClick(AjaxRequestTarget target) {
                 processManagerBean.cancel(getLoadProcessType());
                 info(getString("load_process.canceling"));
-                target.addComponent(filterForm);
+                target.add(filterForm);
             }
         });
 
@@ -688,7 +695,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
             public void onClick(AjaxRequestTarget target) {
                 processManagerBean.cancel(getBindProcessType());
                 info(getString("bind_process.canceling"));
-                target.addComponent(filterForm);
+                target.add(filterForm);
             }
         });
 
@@ -704,7 +711,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
             public void onClick(AjaxRequestTarget target) {
                 processManagerBean.cancel(getFillProcessType());
                 info(getString("fill_process.canceling"));
-                target.addComponent(filterForm);
+                target.add(filterForm);
             }
         });
 
@@ -720,7 +727,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
             public void onClick(AjaxRequestTarget target) {
                 processManagerBean.cancel(getSaveProcessType());
                 info(getString("save_process.canceling"));
-                target.addComponent(filterForm);
+                target.add(filterForm);
             }
         });
 
@@ -736,7 +743,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
                         AbstractProcessableListPanel.this.load(userOrganizationId, osznId, districtCode, monthFrom, monthTo, year);
 
                         addTimer(dataViewContainer, filterForm, messages);
-                        target.addComponent(filterForm);
+                        target.add(filterForm);
                     }
                 });
         add(requestFileLoadPanel);
@@ -869,7 +876,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
 
     public static void highlightProcessed(AjaxRequestTarget target, long objectId) {
         if (target != null) {
-            target.appendJavascript("$('#" + ITEM_ID_PREFIX + objectId + "')"
+            target.appendJavaScript("$('#" + ITEM_ID_PREFIX + objectId + "')"
                     + ".animate({ backgroundColor: 'lightgreen' }, 300)"
                     + ".animate({ backgroundColor: '#E0E4E9' }, 700)");
         }
@@ -877,7 +884,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
 
     public static void highlightError(AjaxRequestTarget target, long objectId) {
         if (target != null) {
-            target.appendJavascript("$('#" + ITEM_ID_PREFIX + objectId + "')"
+            target.appendJavaScript("$('#" + ITEM_ID_PREFIX + objectId + "')"
                     + ".animate({ backgroundColor: 'darksalmon' }, 300)"
                     + ".animate({ backgroundColor: '#E0E4E9' }, 700)");
         }
@@ -893,11 +900,11 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
 
                 if (!isGlobalProcessing() && ++waitForStopTimer > 2) {
                     this.stop();
-                    target.addComponent(filterForm);
+                    target.add(filterForm);
                 } else {
                     //update feedback messages panel
-                    target.addComponent(messages);
-                    target.addComponent(buttonContainer);
+                    target.add(messages);
+                    target.add(buttonContainer);
                 }
 
                 timerIndex++;

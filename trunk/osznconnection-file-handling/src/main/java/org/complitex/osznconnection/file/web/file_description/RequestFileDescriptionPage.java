@@ -7,7 +7,7 @@ package org.complitex.osznconnection.file.web.file_description;
 import java.util.List;
 import javax.ejb.EJB;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -86,13 +86,12 @@ public final class RequestFileDescriptionPage extends TemplatePage {
                         error(getString("db_error"));
                     }
                 }
-                target.addComponent(container);
+                target.add(container);
             }
 
             @Override
             protected void onError(AjaxRequestTarget target, Form<?> form) {
-                super.onError(target, form);
-                target.addComponent(container);
+                target.add(container);
             }
         });
     }

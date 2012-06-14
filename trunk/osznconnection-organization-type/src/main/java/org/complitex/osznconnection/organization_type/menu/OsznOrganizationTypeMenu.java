@@ -4,7 +4,7 @@
  */
 package org.complitex.osznconnection.organization_type.menu;
 
-import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.complitex.dictionary.strategy.IStrategy;
 import org.complitex.dictionary.util.EjbBeanLocator;
 import org.complitex.organization_type.menu.OrganizationTypeMenu;

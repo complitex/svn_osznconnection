@@ -8,8 +8,6 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import org.apache.wicket.Page;
-import org.apache.wicket.PageParameters;
-import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -28,7 +26,9 @@ import org.complitex.osznconnection.ownership.strategy.OwnershipStrategy;
 import javax.ejb.EJB;
 import java.util.List;
 import java.util.Locale;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 
 /**
  * Страница для редактирования коррекций форм власти.
@@ -44,7 +44,7 @@ public final class OwnershipCorrectionEdit extends FormTemplatePage {
         @EJB
         private OwnershipStrategy ownershipStrategy;
 
-        public OwnershipCorrectionEditPanel(String id, final Correction ownershipCorrection) {
+        OwnershipCorrectionEditPanel(String id, final Correction ownershipCorrection) {
             super(id);
 
             final List<DomainObject> allOwnerships = ownershipStrategy.getAll();
@@ -86,7 +86,7 @@ public final class OwnershipCorrectionEdit extends FormTemplatePage {
     private AbstractCorrectionEditPanel correctionEditPanel;
 
     public OwnershipCorrectionEdit(PageParameters params) {
-        Long correctionId = params.getAsLong(CORRECTION_ID);
+        Long correctionId = params.get(CORRECTION_ID).toOptionalLong();
         add(correctionEditPanel = new AbstractCorrectionEditPanel("correctionEditPanel", "ownership", correctionId) {
 
             @Override
@@ -116,7 +116,7 @@ public final class OwnershipCorrectionEdit extends FormTemplatePage {
 
             @Override
             protected PageParameters getBackPageParameters() {
-                return PageParameters.NULL;
+                return new PageParameters();
             }
 
             @Override
@@ -144,4 +144,3 @@ public final class OwnershipCorrectionEdit extends FormTemplatePage {
         return toolbar;
     }
 }
-

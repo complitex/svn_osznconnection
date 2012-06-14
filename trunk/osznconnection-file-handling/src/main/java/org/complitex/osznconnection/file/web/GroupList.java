@@ -1,9 +1,7 @@
 package org.complitex.osznconnection.file.web;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.ISortStateLocator;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.*;
@@ -28,8 +26,10 @@ import org.complitex.template.web.component.toolbar.ToolbarButton;
 import org.complitex.template.web.security.SecurityRole;
 import javax.ejb.EJB;
 import java.util.*;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.osznconnection.file.service.file_description.RequestFileDescriptionBean;
 import org.complitex.template.web.pages.ScrollListPage;
 import org.slf4j.Logger;
@@ -121,7 +121,7 @@ public class GroupList extends ScrollListPage {
                                 this.replaceWith(new BookmarkablePageLinkPanel<RequestFile>("paymentName",
                                         paymentFile.getName(),
                                         ScrollListBehavior.SCROLL_PREFIX + String.valueOf(paymentFileId),
-                                        PaymentList.class, new PageParameters("request_file_id=" + paymentFileId)));
+                                        PaymentList.class, new PageParameters().set("request_file_id", paymentFileId)));
                             }
                             super.onBeforeRender();
                         }
@@ -154,7 +154,7 @@ public class GroupList extends ScrollListPage {
                                 this.replaceWith(new BookmarkablePageLinkPanel<RequestFile>("benefitName",
                                         benefitFile.getName(),
                                         ScrollListBehavior.SCROLL_PREFIX + String.valueOf(benefitFileId),
-                                        BenefitList.class, new PageParameters("request_file_id=" + benefitFileId)));
+                                        BenefitList.class, new PageParameters().set("request_file_id", benefitFileId)));
                             }
                             super.onBeforeRender();
                         }

@@ -14,11 +14,6 @@
 
     <name>Osznconnection - File Handling</name>
 
-    <properties>
-        <!-- do not skip test-->
-        <maven.test.skip>false</maven.test.skip>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.complitex</groupId>

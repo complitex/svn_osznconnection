@@ -160,11 +160,11 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
                     error(getString("address_required"));
                 }
 
-                target.addComponent(messages);
+                target.add(messages);
                 boolean becameVisible = accountDetailsModel.getObject() != null && !accountDetailsModel.getObject().isEmpty();
                 accountNumberPickerPanel.setVisible(becameVisible);
                 if (wasVisible || becameVisible) {
-                    target.addComponent(accountNumberPickerPanel);
+                    target.add(accountNumberPickerPanel);
                 }
             }
         };
@@ -228,11 +228,11 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
                     error(getString("lookup_by_account_required"));
                 }
 
-                target.addComponent(messages);
+                target.add(messages);
                 boolean becameVisible = accountDetailsModel.getObject() != null && !accountDetailsModel.getObject().isEmpty();
                 accountNumberPickerPanel.setVisible(becameVisible);
                 if (wasVisible || becameVisible) {
-                    target.addComponent(accountNumberPickerPanel);
+                    target.add(accountNumberPickerPanel);
                 }
             }
         };
@@ -256,17 +256,17 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
                     try {
                         updateAccountNumber(initialRequest, accountDetailModel.getObject().getAccountNumber(), userOrganizationId);
                         for (Component component : toUpdate) {
-                            target.addComponent(component);
+                            target.add(component);
                         }
                         closeDialog(target);
                     } catch (Exception e) {
                         error(getString("db_error"));
                         log.error("", e);
-                        target.addComponent(messages);
+                        target.add(messages);
                     }
                 } else {
                     error(getString("account_number_not_chosen"));
-                    target.addComponent(messages);
+                    target.add(messages);
                 }
             }
         });
@@ -282,7 +282,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
 
     protected void closeDialog(AjaxRequestTarget target) {
         addressSearchComponent.setVisible(false);
-        target.addComponent(addressSearchComponent);
+        target.add(addressSearchComponent);
         dialog.close(target);
     }
 
@@ -324,7 +324,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
         accountDetailModel.setObject(null);
         accountDetailsModel.setObject(null);
         accountNumberPickerPanel.setVisible(false);
-        target.addComponent(accountNumberPickerPanel);
+        target.add(accountNumberPickerPanel);
 
         //lookup by address
         apartmentModel.setObject(apartment);
@@ -342,12 +342,12 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
         //set active accordion item
         if (immediatelySearchByAddress) {
             lastAccordionActive = 0;
-            target.appendJavascript("(function(){ $('#lookupByAddress .lookupByAddressButton').click(); })()");
+            target.appendJavaScript("(function(){ $('#lookupByAddress .lookupByAddressButton').click(); })()");
         }
         accordion.setActive(new AccordionActive(lastAccordionActive));
 
-        target.addComponent(accordion);
-        target.addComponent(messages);
+        target.add(accordion);
+        target.add(messages);
         dialog.open(target);
     }
 

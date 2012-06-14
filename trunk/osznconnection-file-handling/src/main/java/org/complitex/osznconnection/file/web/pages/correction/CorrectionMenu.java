@@ -8,7 +8,7 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Locale;
 import org.apache.wicket.Page;
-import org.apache.wicket.PageParameters;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.template.web.template.ITemplateLink;
 import org.complitex.template.web.template.ResourceTemplateMenu;
 
@@ -41,7 +41,7 @@ public class CorrectionMenu extends ResourceTemplateMenu {
 
             @Override
             public PageParameters getParameters() {
-                return PageParameters.NULL;
+                return new PageParameters();
             }
 
             @Override
@@ -63,7 +63,7 @@ public class CorrectionMenu extends ResourceTemplateMenu {
 
             @Override
             public PageParameters getParameters() {
-                return PageParameters.NULL;
+                return new PageParameters();
             }
 
             @Override
@@ -85,7 +85,7 @@ public class CorrectionMenu extends ResourceTemplateMenu {
 
             @Override
             public PageParameters getParameters() {
-                return PageParameters.NULL;
+                return new PageParameters();
             }
 
             @Override
@@ -107,7 +107,7 @@ public class CorrectionMenu extends ResourceTemplateMenu {
 
             @Override
             public PageParameters getParameters() {
-                return PageParameters.NULL;
+                return new PageParameters();
             }
 
             @Override
@@ -129,7 +129,7 @@ public class CorrectionMenu extends ResourceTemplateMenu {
 
             @Override
             public PageParameters getParameters() {
-                return PageParameters.NULL;
+                return new PageParameters();
             }
 
             @Override
@@ -151,7 +151,7 @@ public class CorrectionMenu extends ResourceTemplateMenu {
 
             @Override
             public PageParameters getParameters() {
-                return PageParameters.NULL;
+                return new PageParameters();
             }
 
             @Override
@@ -173,7 +173,7 @@ public class CorrectionMenu extends ResourceTemplateMenu {
 
             @Override
             public PageParameters getParameters() {
-                return PageParameters.NULL;
+                return new PageParameters();
             }
 
             @Override
@@ -195,7 +195,7 @@ public class CorrectionMenu extends ResourceTemplateMenu {
 
             @Override
             public PageParameters getParameters() {
-                return PageParameters.NULL;
+                return new PageParameters();
             }
 
             @Override

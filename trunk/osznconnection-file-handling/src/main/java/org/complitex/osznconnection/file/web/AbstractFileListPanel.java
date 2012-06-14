@@ -9,7 +9,6 @@ import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.ISortStateLocator;
 import org.apache.wicket.markup.html.WebPage;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.form.*;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
@@ -21,6 +20,7 @@ import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.entity.RequestFileFilter;
 
 import javax.ejb.EJB;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.dictionary.entity.Log;
 import org.complitex.osznconnection.file.Module;
 import org.complitex.osznconnection.file.entity.RequestFileStatus;
@@ -62,7 +62,7 @@ public abstract class AbstractFileListPanel extends AbstractProcessableListPanel
             public Component field(Item<RequestFile> item) {
                 return new BookmarkablePageLinkPanel<RequestFile>("name", item.getModelObject().getFullName(),
                         ScrollListBehavior.SCROLL_PREFIX + String.valueOf(item.getModelObject().getId()), getItemListPageClass(),
-                        new PageParameters("request_file_id=" + item.getModelObject().getId()));
+                        new PageParameters().set("request_file_id", item.getModelObject().getId()));
             }
         });
     }

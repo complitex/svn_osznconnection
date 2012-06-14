@@ -8,9 +8,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
@@ -33,6 +31,8 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 
 /**
  * Страница для редактирования коррекций привилегий.
@@ -49,7 +49,7 @@ public final class PrivilegeCorrectionEdit extends FormTemplatePage {
 
         private Correction correction;
 
-        public PrivilegeCallback(Correction correction) {
+        PrivilegeCallback(Correction correction) {
             this.correction = correction;
         }
 
@@ -64,7 +64,7 @@ public final class PrivilegeCorrectionEdit extends FormTemplatePage {
     private AbstractCorrectionEditPanel correctionEditPanel;
 
     public PrivilegeCorrectionEdit(PageParameters params) {
-        Long correctionId = params.getAsLong(CORRECTION_ID);
+        Long correctionId = params.get(CORRECTION_ID).toOptionalLong();
 
         add(correctionEditPanel = new AbstractCorrectionEditPanel("correctionEditPanel", privilegeStrategy.getEntityTable(), correctionId) {
 
@@ -106,7 +106,7 @@ public final class PrivilegeCorrectionEdit extends FormTemplatePage {
 
             @Override
             protected PageParameters getBackPageParameters() {
-                return PageParameters.NULL;
+                return new PageParameters();
             }
 
             @Override
@@ -134,4 +134,3 @@ public final class PrivilegeCorrectionEdit extends FormTemplatePage {
         return toolbar;
     }
 }
-

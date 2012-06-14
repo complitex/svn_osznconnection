@@ -170,7 +170,7 @@ public class OsznOrganizationEditComponent extends OrganizationEditComponent {
 
                         @Override
                         protected void onUpdate(AjaxRequestTarget target) {
-                            target.addComponent(serviceAssociationsUpdateContainer);
+                            target.add(serviceAssociationsUpdateContainer);
                         }
                     });
                     item.add(serviceProviderType);
@@ -215,7 +215,7 @@ public class OsznOrganizationEditComponent extends OrganizationEditComponent {
 
                         @Override
                         protected void onUpdate(AjaxRequestTarget target) {
-                            target.addComponent(calculationCenter);
+                            target.add(calculationCenter);
                         }
                     });
                     item.add(calculationCenter);
@@ -235,7 +235,7 @@ public class OsznOrganizationEditComponent extends OrganizationEditComponent {
                 @Override
                 public void onClick(AjaxRequestTarget target) {
                     serviceAssociationList.addNew();
-                    target.addComponent(serviceAssociationsUpdateContainer);
+                    target.add(serviceAssociationsUpdateContainer);
                 }
             };
             addServiceAssociation.setVisible(enabled);
@@ -334,7 +334,7 @@ public class OsznOrganizationEditComponent extends OrganizationEditComponent {
             serviceAssociationsContainer.setVisible(isUserOrganization());
             boolean serviceAssociationContainerVisibleNow = serviceAssociationsContainer.isVisible();
             if (serviceAssociationContainerWasVisible ^ serviceAssociationContainerVisibleNow) {
-                target.addComponent(serviceAssociationsContainer);
+                target.add(serviceAssociationsContainer);
             }
         }
 
@@ -344,7 +344,7 @@ public class OsznOrganizationEditComponent extends OrganizationEditComponent {
             dataSourceContainer.setVisible(isCalculationCenter());
             boolean dataSourceContainerVisibleNow = dataSourceContainer.isVisible();
             if (dataSourceContainerWasVisible ^ dataSourceContainerVisibleNow) {
-                target.addComponent(dataSourceContainer);
+                target.add(dataSourceContainer);
             }
         }
 
@@ -354,7 +354,7 @@ public class OsznOrganizationEditComponent extends OrganizationEditComponent {
             loadSaveDirsContainer.setVisible(isUserOrganization());
             boolean loadSaveDirsContainerVisibleNow = loadSaveDirsContainer.isVisible();
             if (loadSaveDirsContainerWasVisible ^ loadSaveDirsContainerVisibleNow) {
-                target.addComponent(loadSaveDirsContainer);
+                target.add(loadSaveDirsContainer);
             }
         }
 

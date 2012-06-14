@@ -172,7 +172,7 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
 
                         if (toUpdate != null) {
                             for (Component component : toUpdate) {
-                                target.addComponent(component);
+                                target.add(component);
                             }
                         }
                         closeDialog(target);
@@ -194,7 +194,7 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
                         log.error("", e);
                     }
                 }
-                target.addComponent(messages);
+                target.add(messages);
             }
         };
         container.add(save);
@@ -299,7 +299,7 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
 
     protected void closeDialog(AjaxRequestTarget target) {
         container.setVisible(false);
-        target.addComponent(container);
+        target.add(container);
         dialog.close(target);
     }
 
@@ -383,7 +383,7 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
         }
 
         container.setVisible(true);
-        target.addComponent(container);
+        target.add(container);
         dialog.open(target);
     }
 }

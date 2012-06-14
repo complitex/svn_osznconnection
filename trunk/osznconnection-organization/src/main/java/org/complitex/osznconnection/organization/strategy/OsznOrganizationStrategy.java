@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Set;
-import org.apache.wicket.PageParameters;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.entity.StringCulture;
 import org.complitex.dictionary.entity.example.DomainObjectExample;
@@ -33,6 +32,7 @@ import javax.naming.NameClassPair;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.entity.Attribute;
 import org.complitex.dictionary.entity.description.EntityAttributeType;
@@ -78,21 +78,21 @@ public class OsznOrganizationStrategy extends OrganizationStrategy implements IO
     @Override
     public PageParameters getEditPageParams(Long objectId, Long parentId, String parentEntity) {
         PageParameters pageParameters = super.getEditPageParams(objectId, parentId, parentEntity);
-        pageParameters.put(STRATEGY, OSZN_ORGANIZATION_STRATEGY_NAME);
+        pageParameters.set(STRATEGY, OSZN_ORGANIZATION_STRATEGY_NAME);
         return pageParameters;
     }
 
     @Override
     public PageParameters getHistoryPageParams(long objectId) {
         PageParameters pageParameters = super.getHistoryPageParams(objectId);
-        pageParameters.put(STRATEGY, OSZN_ORGANIZATION_STRATEGY_NAME);
+        pageParameters.set(STRATEGY, OSZN_ORGANIZATION_STRATEGY_NAME);
         return pageParameters;
     }
 
     @Override
     public PageParameters getListPageParams() {
         PageParameters pageParameters = super.getListPageParams();
-        pageParameters.put(STRATEGY, OSZN_ORGANIZATION_STRATEGY_NAME);
+        pageParameters.set(STRATEGY, OSZN_ORGANIZATION_STRATEGY_NAME);
         return pageParameters;
     }
 

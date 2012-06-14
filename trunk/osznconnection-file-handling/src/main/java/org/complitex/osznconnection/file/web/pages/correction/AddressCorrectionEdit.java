@@ -8,9 +8,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
@@ -41,6 +39,8 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.osznconnection.file.service.OsznSessionBean;
 
 /**
@@ -126,7 +126,7 @@ public class AddressCorrectionEdit extends FormTemplatePage {
 
         @Override
         protected PageParameters getBackPageParameters() {
-            return PageParameters.NULL;
+            return new PageParameters();
         }
 
         @Override
@@ -451,8 +451,8 @@ public class AddressCorrectionEdit extends FormTemplatePage {
     private AbstractCorrectionEditPanel addressEditPanel;
 
     public AddressCorrectionEdit(PageParameters params) {
-        String entity = params.getString(CORRECTED_ENTITY);
-        Long correctionId = params.getAsLong(CORRECTION_ID);
+        String entity = params.get(CORRECTED_ENTITY).toString();
+        Long correctionId = params.get(CORRECTION_ID).toOptionalLong();
         if ("city".equals(entity)) {
             addressEditPanel = new CityCorrectionEditPanel("addressEditPanel", correctionId);
         } else if ("district".equals(entity)) {

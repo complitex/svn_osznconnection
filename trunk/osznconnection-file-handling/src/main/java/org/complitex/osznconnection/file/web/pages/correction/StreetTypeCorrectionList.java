@@ -6,10 +6,10 @@ package org.complitex.osznconnection.file.web.pages.correction;
 
 import java.util.List;
 import javax.ejb.EJB;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.osznconnection.file.entity.Correction;
 import org.complitex.osznconnection.file.entity.example.CorrectionExample;
 import org.complitex.osznconnection.file.service.AddressCorrectionBean;
@@ -46,7 +46,7 @@ public class StreetTypeCorrectionList extends AbstractCorrectionList {
     protected PageParameters getEditPageParams(Long objectCorrectionId) {
         PageParameters parameters = new PageParameters();
         if (objectCorrectionId != null) {
-            parameters.put(StreetTypeCorrectionEdit.CORRECTION_ID, objectCorrectionId);
+            parameters.set(StreetTypeCorrectionEdit.CORRECTION_ID, objectCorrectionId);
         }
         return parameters;
     }

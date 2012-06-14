@@ -1,6 +1,9 @@
 package org.complitex.osznconnection.file.web;
 
-import org.apache.wicket.markup.html.CSSPackageResource;
+import org.apache.wicket.Component;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
+import org.apache.wicket.markup.html.IHeaderResponse;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.ajax.IAjaxCallDecorator;
 import org.apache.wicket.ajax.calldecorator.AjaxCallDecorator;
 import org.complitex.dictionary.web.component.paging.IPagingNavigatorListener;
@@ -11,19 +14,14 @@ import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import org.apache.wicket.PageParameters;
-import org.apache.wicket.ResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
-import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.datetime.markup.html.basic.DateLabel;
-import org.apache.wicket.markup.html.JavascriptPackageResource;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.CompoundPropertyModel;
@@ -53,9 +51,13 @@ import org.complitex.resources.WebCommonResourceInitializer;
 
 import javax.ejb.EJB;
 import java.util.*;
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.SharedResourceReference;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
+import org.complitex.dictionary.web.component.image.StaticImage;
 import org.complitex.osznconnection.file.service.OsznSessionBean;
 import org.complitex.osznconnection.file.service.file_description.RequestFileDescriptionBean;
 import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
@@ -83,14 +85,13 @@ public class TarifFileList extends TemplatePage {
     private RequestFileDescriptionBean requestFileDescriptionBean;
     private int waitForStopTimer;
     private boolean completedDisplayed = false;
-    private final static String ITEM_ID_PREFIX = "item";
     private RequestFileLoadPanel requestFileLoadPanel;
     private boolean modificationsAllowed;
     private boolean hasFieldDescription;
 
     public TarifFileList(PageParameters parameters) {
         super();
-        init(parameters.getAsLong("request_file_id"));
+        init(parameters.get("request_file_id").toOptionalLong());
     }
 
     public TarifFileList() {
@@ -109,13 +110,17 @@ public class TarifFileList extends TemplatePage {
         return filter;
     }
 
-    private void init(Long requestFileId) {
-        add(JavascriptPackageResource.getHeaderContribution(WebCommonResourceInitializer.HIGHLIGHT_JS));
-        add(JavascriptPackageResource.getHeaderContribution(AbstractProcessableListPanel.class,
+    @Override
+    public void renderHead(IHeaderResponse response) {
+        super.renderHead(response);
+        response.renderJavaScriptReference(WebCommonResourceInitializer.HIGHLIGHT_JS);
+        response.renderJavaScriptReference(new PackageResourceReference(AbstractProcessableListPanel.class,
                 AbstractProcessableListPanel.class.getSimpleName() + ".js"));
-        add(CSSPackageResource.getHeaderContribution(AbstractProcessableListPanel.class,
+        response.renderCSSReference(new PackageResourceReference(AbstractProcessableListPanel.class,
                 AbstractProcessableListPanel.class.getSimpleName() + ".css"));
+    }
 
+    private void init(Long requestFileId) {
         this.hasFieldDescription = hasFieldDescription();
         this.modificationsAllowed =
                 //- только пользователи, принадлежащие организации или администраторы могут обрабатывать файлы.
@@ -143,7 +148,7 @@ public class TarifFileList extends TemplatePage {
             public void onClick(AjaxRequestTarget target) {
                 RequestFileFilter filterObject = newFilter(null);
                 filterModel.setObject(filterObject);
-                target.addComponent(filterForm);
+                target.add(filterForm);
             }
         };
         filterForm.add(filter_reset);
@@ -152,7 +157,11 @@ public class TarifFileList extends TemplatePage {
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                target.addComponent(filterForm);
+                target.add(filterForm);
+            }
+
+            @Override
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
             }
         };
         filterForm.add(find);
@@ -256,7 +265,7 @@ public class TarifFileList extends TemplatePage {
                 return requestFileBean.size(filterModel.getObject());
             }
         };
-        dataProvider.setSort("loaded", false);
+        dataProvider.setSort("loaded", SortOrder.DESCENDING);
 
         //Контейнер для ajax
         final WebMarkupContainer dataViewContainer = new WebMarkupContainer("request_files_container");
@@ -297,7 +306,7 @@ public class TarifFileList extends TemplatePage {
                 item.add(checkBox);
 
                 //Анимация в обработке
-                item.add(new Image("processing", new ResourceReference(AbstractProcessableListPanel.IMAGE_AJAX_LOADER)) {
+                item.add(new StaticImage("processing", new SharedResourceReference(AbstractProcessableListPanel.IMAGE_AJAX_LOADER)) {
 
                     @Override
                     public boolean isVisible() {
@@ -403,7 +412,7 @@ public class TarifFileList extends TemplatePage {
                 return new AjaxCallDecorator() {
 
                     @Override
-                    public CharSequence decorateScript(CharSequence script) {
+                    public CharSequence decorateScript(Component c, CharSequence script) {
                         return "if(confirm('" + getString("delete_caution") + "')){" + script + "}";
                     }
                 };
@@ -432,8 +441,8 @@ public class TarifFileList extends TemplatePage {
                         }
                     }
                 }
-                target.addComponent(filterForm);
-                target.addComponent(messages);
+                target.add(filterForm);
+                target.add(messages);
             }
         };
         delete.setVisibilityAllowed(modificationsAllowed);
@@ -451,7 +460,7 @@ public class TarifFileList extends TemplatePage {
                         processManagerBean.loadTarif(userOrganizationId, osznId, districtCode, monthFrom, monthTo, year);
 
                         addTimer(dataViewContainer, filterForm, messages);
-                        target.addComponent(filterForm);
+                        target.add(filterForm);
                     }
                 }, false);
 
@@ -526,10 +535,10 @@ public class TarifFileList extends TemplatePage {
 
                 if (!isProcessing() && ++waitForStopTimer > 2) {
                     this.stop();
-                    target.addComponent(filterForm);
+                    target.add(filterForm);
                 } else {
                     //update feedback messages panel
-                    target.addComponent(messages);
+                    target.add(messages);
                 }
             }
         };
