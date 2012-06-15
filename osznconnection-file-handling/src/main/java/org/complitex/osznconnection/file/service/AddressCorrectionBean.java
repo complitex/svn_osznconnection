@@ -447,8 +447,8 @@ public class AddressCorrectionBean extends CorrectionBean {
     }
 
     @Transactional
-    public List<Correction> findCityCorrections(CorrectionExample example) {
-        example.setUserOrganizationsString(osznSessionBean.getMainUserOrganizationForSearchCorrections());
+    public List<Correction> findCityCorrections(CorrectionExample example, Long currentUserOrganizationId) {
+        example.setUserOrganizationsString(osznSessionBean.getMainUserOrganizationForSearchCorrections(currentUserOrganizationId));
         return sqlSession().selectList(ADDRESS_BEAN_MAPPING_NAMESPACE + ".findCityCorrections", example);
     }
 
@@ -462,16 +462,16 @@ public class AddressCorrectionBean extends CorrectionBean {
     }
 
     @Transactional
-    public List<StreetCorrection> findStreetCorrections(CorrectionExample example) {
-        example.setUserOrganizationsString(osznSessionBean.getMainUserOrganizationForSearchCorrections());
+    public List<StreetCorrection> findStreetCorrections(CorrectionExample example, Long currentUserOrganizationId) {
+        example.setUserOrganizationsString(osznSessionBean.getMainUserOrganizationForSearchCorrections(currentUserOrganizationId));
         return sqlSession().selectList(ADDRESS_BEAN_MAPPING_NAMESPACE + ".findStreetCorrections", example);
     }
 
     @Transactional
-    public List<Correction> findStreetTypeCorrections(long organizationId) {
+    public List<Correction> findStreetTypeCorrections(long organizationId, Long currentUserOrganizationId) {
         Map<String, Object> params = Maps.newHashMap();
         params.put("organizationId", organizationId);
-        params.put("userOrganizationsString", osznSessionBean.getMainUserOrganizationForSearchCorrections());
+        params.put("userOrganizationsString", osznSessionBean.getMainUserOrganizationForSearchCorrections(currentUserOrganizationId));
         return sqlSession().selectList(ADDRESS_BEAN_MAPPING_NAMESPACE + ".findStreetTypeCorrections", params);
     }
 

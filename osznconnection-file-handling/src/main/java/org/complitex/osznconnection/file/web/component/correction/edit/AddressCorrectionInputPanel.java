@@ -127,8 +127,7 @@ public class AddressCorrectionInputPanel extends Panel {
             public List<Correction> getValues(String term) {
                 if (correction.getOrganizationId() != null) {
                     CorrectionExample example = createExample(term, correction.getOrganizationId(), null);
-
-                    return addressCorrectionBean.findCityCorrections(example);
+                    return addressCorrectionBean.findCityCorrections(example, correction.getUserOrganizationId());
                 }
                 return Collections.emptyList();
             }
@@ -162,7 +161,8 @@ public class AddressCorrectionInputPanel extends Panel {
                 if (correction.getOrganizationId() != null) {
                     if (streetTypeCorrections == null) {
                         streetTypeCorrections =
-                                addressCorrectionBean.findStreetTypeCorrections(correction.getOrganizationId());
+                                addressCorrectionBean.findStreetTypeCorrections(correction.getOrganizationId(),
+                                correction.getUserOrganizationId());
                     }
                     return streetTypeCorrections;
                 } else {
@@ -191,7 +191,7 @@ public class AddressCorrectionInputPanel extends Panel {
 
         final IModel<StreetCorrection> streetModel = new Model<StreetCorrection>();
 
-        FormComponent street;
+        FormComponent<?> street;
 
         if (isBuilding) {
             IChoiceRenderer<StreetCorrection> streetCorrectionRenderer = new IChoiceRenderer<StreetCorrection>() {
@@ -227,7 +227,7 @@ public class AddressCorrectionInputPanel extends Panel {
                     if (cityCorrection != null && correction.getOrganizationId() != null) {
                         CorrectionExample example = createExample(term, correction.getOrganizationId(), cityCorrection.getId());
 
-                        return addressCorrectionBean.findStreetCorrections(example);
+                        return addressCorrectionBean.findStreetCorrections(example, correction.getUserOrganizationId());
                     }
                     return Collections.emptyList();
                 }
@@ -258,7 +258,8 @@ public class AddressCorrectionInputPanel extends Panel {
 
                         List<String> list = new ArrayList<String>();
 
-                        for (StreetCorrection c : addressCorrectionBean.findStreetCorrections(example)) {
+                        for (StreetCorrection c : addressCorrectionBean.findStreetCorrections(example,
+                                correction.getUserOrganizationId())) {
                             list.add(c.getCorrection());
                         }
 

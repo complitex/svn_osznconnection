@@ -246,7 +246,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
         this.hasFieldDescription = hasFieldDescription();
         this.modificationsAllowed =
                 //- только пользователи, принадлежащие организации или администраторы могут обрабатывать файлы.
-                (osznSessionBean.getCurrentUserOrganizationId() != null || osznSessionBean.isAdmin())
+                (osznSessionBean.getCurrentUserOrganizationId(getSession()) != null || osznSessionBean.isAdmin())
                 && //можно обрабатывать файлы, только если в базу загружены описания структур для файлов запросов.
                 hasFieldDescription;
 

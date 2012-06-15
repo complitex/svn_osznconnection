@@ -124,7 +124,7 @@ public class TarifFileList extends TemplatePage {
         this.hasFieldDescription = hasFieldDescription();
         this.modificationsAllowed =
                 //- только пользователи, принадлежащие организации или администраторы могут обрабатывать файлы.
-                (osznSessionBean.getCurrentUserOrganizationId() != null || osznSessionBean.isAdmin())
+                (osznSessionBean.getCurrentUserOrganizationId(getTemplateSession()) != null || osznSessionBean.isAdmin())
                 && //можно обрабатывать файлы, только если в базу загружены описания структур для файлов запросов.
                 hasFieldDescription;
 
