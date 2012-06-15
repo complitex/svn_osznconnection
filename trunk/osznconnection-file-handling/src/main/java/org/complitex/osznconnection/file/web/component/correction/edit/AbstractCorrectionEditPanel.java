@@ -41,6 +41,7 @@ import org.complitex.osznconnection.file.web.model.OrganizationModel;
 import org.complitex.osznconnection.file.web.pages.correction.AbstractCorrectionList;
 import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
 import org.complitex.osznconnection.organization_type.strategy.OsznOrganizationTypeStrategy;
+import org.complitex.template.web.template.TemplateSession;
 
 /**
  * Абстрактная панель для редактирования коррекций.
@@ -89,8 +90,13 @@ public abstract class AbstractCorrectionEditPanel extends Panel {
 
     protected Correction newObjectCorrection(String entity) {
         Correction c = new Correction(entity);
-        c.setUserOrganizationId(osznSessionBean.getCurrentUserOrganizationId());
+        c.setUserOrganizationId(osznSessionBean.getCurrentUserOrganizationId(getSession()));
         return c;
+    }
+
+    @Override
+    public TemplateSession getSession() {
+        return (TemplateSession) super.getSession();
     }
 
     protected Correction getModel() {
@@ -148,8 +154,8 @@ public abstract class AbstractCorrectionEditPanel extends Panel {
                 error(getString("oszn_must_have_user_organization"));
                 valid = false;
             }
-            
-            if(!isOszn && correction.getUserOrganizationId() != null){
+
+            if (!isOszn && correction.getUserOrganizationId() != null) {
                 error(getString("calculation_center_must_not_have_user_organization"));
                 valid = false;
             }

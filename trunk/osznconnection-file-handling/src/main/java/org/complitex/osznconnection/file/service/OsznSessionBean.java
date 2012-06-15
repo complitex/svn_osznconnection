@@ -14,6 +14,7 @@ import java.util.Set;
 import javax.annotation.Resource;
 import javax.annotation.security.DeclareRoles;
 import javax.ejb.SessionContext;
+import org.complitex.dictionary.web.DictionaryFwSession;
 import org.complitex.osznconnection.file.entity.RequestFileFilter;
 import org.complitex.osznconnection.file.entity.RequestFileGroupFilter;
 import org.complitex.osznconnection.file.entity.example.CorrectionExample;
@@ -75,8 +76,15 @@ public class OsznSessionBean {
                 || (hasOuterOrganization(outerOrganizationObjectId) && isUserOrganizationVisibleToCurrentUser(userOrganizationId));
     }
 
-    public Long getCurrentUserOrganizationId() {
-        final DomainObject mainUserOrganization = sessionBean.getMainUserOrganization();
+    /**
+     * Returns main user's organization by means 
+     *  of {@link SessionBean#getMainUserOrganization(DictionaryFwSession)}
+     * 
+     * @param session dictionary session.
+     * @return 
+     */
+    public Long getCurrentUserOrganizationId(DictionaryFwSession session) {
+        DomainObject mainUserOrganization = sessionBean.getMainUserOrganization(session);
         return mainUserOrganization != null && mainUserOrganization.getId() != null
                 && mainUserOrganization.getId() > 0 ? mainUserOrganization.getId() : null;
     }
@@ -116,12 +124,12 @@ public class OsznSessionBean {
             filter.setUserOrganizationsString(getCurrentUserOrganizationsString());
         }
     }
-    
-    public String getMainUserOrganizationForSearchCorrections(){
-        if(sessionBean.isAdmin()){
+
+    public String getMainUserOrganizationForSearchCorrections(Long userOrganizationId) {
+        if (sessionBean.isAdmin()) {
             return null;
         }
-        return getMainUserOrganizationString();
+        return getMainUserOrganizationString(userOrganizationId);
     }
 
     private String getCurrentUserOrganizationsString() {
@@ -146,8 +154,8 @@ public class OsznSessionBean {
                 : Sets.newHashSet(sessionBean.getUserOrganizationObjectIds());
     }
 
-    public String getMainUserOrganizationString() {
-        return getUserOrganizationsString(Sets.newHashSet(getCurrentUserOrganizationId()));
+    public String getMainUserOrganizationString(Long userOrganizationId) {
+        return getUserOrganizationsString(Sets.newHashSet(userOrganizationId));
     }
 
     private boolean isUserOrganizationVisibleToCurrentUser(Long userOrganizationId) {

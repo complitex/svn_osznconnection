@@ -25,6 +25,7 @@ import org.apache.wicket.feedback.ContainerFeedbackMessageFilter;
 import org.complitex.osznconnection.file.service.OsznSessionBean;
 import org.complitex.osznconnection.file.web.model.OrganizationModel;
 import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
+import org.complitex.template.web.template.TemplateSession;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -128,11 +129,8 @@ public class RequestFileLoadPanel extends Panel {
                 "userOrganization", userOrganizationModel, userOrganizationsModel, organizationRenderer);
         userOrganization.setRequired(true);
         userOrganizationContainer.add(userOrganization);
-        Long currentUserOrganizationId = osznSessionBean.getCurrentUserOrganizationId();
-        if (currentUserOrganizationId != null) {
-            userOrganizationModel.setOrganizationId(currentUserOrganizationId);
-            userOrganizationContainer.setVisible(false);
-        }
+        Long currentUserOrganizationId = osznSessionBean.getCurrentUserOrganizationId(getSession());
+        userOrganizationContainer.setVisible(currentUserOrganizationId == null);
 
         final DropDownChoice<Integer> year = new YearDropDownChoice("year", new Model<Integer>());
         year.setRequired(showDatePeriod);
@@ -165,7 +163,11 @@ public class RequestFileLoadPanel extends Panel {
                 }
 
                 final DomainObject oszn = osznModel.getObject();
-                loader.load(userOrganizationModel.getOrganizationId(), oszn.getId(),
+
+                Long mainUserOrganizationId = osznSessionBean.getCurrentUserOrganizationId(RequestFileLoadPanel.this.getSession());
+                long currentUserOrganizationId = mainUserOrganizationId != null ? mainUserOrganizationId
+                        : userOrganizationModel.getOrganizationId();
+                loader.load(currentUserOrganizationId, oszn.getId(),
                         organizationStrategy.getDistrictCode(oszn), f, t, year.getModelObject(), target);
 
                 target.add(messages);
@@ -192,5 +194,10 @@ public class RequestFileLoadPanel extends Panel {
 
     public void open(AjaxRequestTarget target) {
         dialog.open(target);
+    }
+
+    @Override
+    public TemplateSession getSession() {
+        return (TemplateSession) super.getSession();
     }
 }

@@ -257,7 +257,7 @@ public class AddressCorrectionEdit extends FormTemplatePage {
         @Override
         protected StreetCorrection newObjectCorrection(String entity) {
             StreetCorrection c = new StreetCorrection();
-            c.setUserOrganizationId(osznSessionBean.getCurrentUserOrganizationId());
+            c.setUserOrganizationId(osznSessionBean.getCurrentUserOrganizationId(getTemplateSession()));
             return c;
         }
 
@@ -371,7 +371,7 @@ public class AddressCorrectionEdit extends FormTemplatePage {
         @Override
         protected BuildingCorrection newObjectCorrection(String entity) {
             BuildingCorrection c = new BuildingCorrection();
-            c.setUserOrganizationId(osznSessionBean.getCurrentUserOrganizationId());
+            c.setUserOrganizationId(osznSessionBean.getCurrentUserOrganizationId(getTemplateSession()));
             return c;
         }
 
