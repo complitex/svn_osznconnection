@@ -1,5 +1,6 @@
 package org.complitex.osznconnection.file.web;
 
+import org.complitex.osznconnection.file.web.AbstractProcessableListPanel.SelectModelValue;
 import org.apache.wicket.Component;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.markup.html.IHeaderResponse;
@@ -225,8 +226,8 @@ public class TarifFileList extends TemplatePage {
         //Год
         filterForm.add(new YearDropDownChoice("year").setNullValid(true));
 
-        //Модель выбранных элементов списка
-        final Map<Long, IModel<Boolean>> selectModels = new HashMap<Long, IModel<Boolean>>();
+        //Модель выбранных элементов списка.
+        final Map<Long, SelectModelValue> selectModels = new HashMap<>();
 
         //Модель данных списка
         final DataProvider<RequestFile> dataProvider = new DataProvider<RequestFile>() {
@@ -251,11 +252,7 @@ public class TarifFileList extends TemplatePage {
 
                 List<RequestFile> requestFiles = requestFileBean.getRequestFiles(filter);
 
-                for (RequestFile rf : requestFiles) {
-                    if (selectModels.get(rf.getId()) == null) {
-                        selectModels.put(rf.getId(), new Model<Boolean>(false));
-                    }
-                }
+                AbstractProcessableListPanel.initializeSelectModels(selectModels, requestFiles);
 
                 return requestFiles;
             }
@@ -283,7 +280,8 @@ public class TarifFileList extends TemplatePage {
                 AbstractProcessableListPanel.augmentItem(item, objectId);
 
                 //Выбор файлов
-                CheckBox checkBox = new CheckBox("selected", selectModels.get(objectId)) {
+                CheckBox checkBox = new CheckBox("selected",
+                        AbstractProcessableListPanel.newSelectFileCheckboxModel(objectId, selectModels)) {
 
                     @Override
                     public boolean isVisible() {
@@ -382,9 +380,7 @@ public class TarifFileList extends TemplatePage {
 
             @Override
             public void onChangePage() {
-                for (IModel<Boolean> model : selectModels.values()) {
-                    model.setObject(false);
-                }
+                AbstractProcessableListPanel.clearSelection(selectModels);
             }
         });
         filterForm.add(pagingNavigator);
@@ -420,25 +416,25 @@ public class TarifFileList extends TemplatePage {
 
             @Override
             public void onClick(AjaxRequestTarget target) {
-                for (long requestFileId : selectModels.keySet()) {
-                    if (selectModels.get(requestFileId).getObject()) {
-                        RequestFile tarifFile = requestFileBean.findById(requestFileId);
-                        try {
-                            requestFileBean.delete(tarifFile);
+                for (long requestFileId : AbstractProcessableListPanel.getSelectedFileIds(selectModels)) {
+                    RequestFile tarifFile = requestFileBean.findById(requestFileId);
+                    try {
+                        requestFileBean.delete(tarifFile);
 
-                            info(getStringFormat("info.deleted", tarifFile.getFullName()));
+                        selectModels.remove(requestFileId);
 
-                            logBean.info(Module.NAME, TarifFileList.class, RequestFileGroup.class, null, tarifFile.getId(),
-                                    Log.EVENT.REMOVE, tarifFile.getLogChangeList(), "Файл удален успешно. Имя объекта: {0}",
-                                    tarifFile.getLogObjectName());
-                        } catch (Exception e) {
-                            error(getStringFormat("error.delete", tarifFile.getFullName()));
+                        info(getStringFormat("info.deleted", tarifFile.getFullName()));
 
-                            logBean.error(Module.NAME, TarifFileList.class, RequestFileGroup.class, null, tarifFile.getId(),
-                                    Log.EVENT.REMOVE, tarifFile.getLogChangeList(), "Ошибка удаления. Имя объекта: {0}",
-                                    tarifFile.getLogObjectName());
-                            break;
-                        }
+                        logBean.info(Module.NAME, TarifFileList.class, RequestFileGroup.class, null, tarifFile.getId(),
+                                Log.EVENT.REMOVE, tarifFile.getLogChangeList(), "Файл удален успешно. Имя объекта: {0}",
+                                tarifFile.getLogObjectName());
+                    } catch (Exception e) {
+                        error(getStringFormat("error.delete", tarifFile.getFullName()));
+
+                        logBean.error(Module.NAME, TarifFileList.class, RequestFileGroup.class, null, tarifFile.getId(),
+                                Log.EVENT.REMOVE, tarifFile.getLogChangeList(), "Ошибка удаления. Имя объекта: {0}",
+                                tarifFile.getLogObjectName());
+                        break;
                     }
                 }
                 target.add(filterForm);

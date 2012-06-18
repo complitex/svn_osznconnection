@@ -32,6 +32,7 @@ insert into `request_file`(id, group_id, organization_id, `name`, `directory`, `
 (3,null,1,'TARIF12.dbf', 'AB', 1, 10, 2010, CURRENT_TIMESTAMP, 'TARIF', 3),
 (4,null,1,'B1170710.dbf', 'AB', 1, 10, 2010, '2011-01-12', 'ACTUAL_PAYMENT', 4),
 (5,null,1,'J000001.dbf', '1234\\AB', 1, 10, 2010, '2011-01-12', 'SUBSIDY', 4);
+--(6,null,1,'J000002.dbf', '123456\\AB', 1, 10, 2010, '2011-01-12', 'SUBSIDY', 4);
 
 -- Benefit
 insert into `benefit`(`OWN_NUM`, `OWN_NUM_SR`, `OZN`, `F_NAM`, `M_NAM`, `SUR_NAM`, `request_file_id`, `IND_COD`, `PSP_NUM`)
@@ -56,6 +57,7 @@ values
 --    ('107374638','М', '', 'Матвеев', 'Матвеев М...', 'Харьков', 'УЛ', 'ФРАНТИШЕКА КРАЛА', '123', '25-/А','', '19', '09.09.2010', 5),
     ('107374638','М', '', 'Матвеев', 'Матвеев M...', 'Харьков', 'УЛ', 'ФРАНТИШЕКА КРАЛА', '123', '25А','','19', '09.09.2010', 5),
     ('107374638','М', '', 'Матвеев', 'Матвеев M...', 'Харьков', 'УЛ', 'ФРАНТИШЕКА КРАЛА', '123', '25А','','19', '09.09.2010', 5);
+--    ('107374638','М', '', 'Матвеев1', 'Матвеев1 M...', 'Харьков', 'УЛ', 'ФРАНТИШЕКА КРАЛА', '123', '25А','','19', '09.09.2010', 6);
 
 
 -- INSERT INTO `person_account` (`first_name`, `middle_name`, `last_name`, `city`, `street`, `street_type`, `building_num`, `building_corp`, `apartment`, `account_number`, `pu_account_number`, `oszn_id`, `calc_center_id`, `user_organization_id`) 
