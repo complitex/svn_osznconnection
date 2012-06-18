@@ -4,23 +4,27 @@
  */
 package org.complitex.osznconnection.file.web;
 
+import com.google.common.base.Function;
+import static com.google.common.collect.Iterables.*;
 import org.apache.wicket.ajax.IAjaxCallDecorator;
 import org.apache.wicket.markup.html.IHeaderResponse;
 import org.complitex.osznconnection.file.web.pages.util.GlobalOptions;
 import org.complitex.template.web.template.TemplateSession;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
+import static com.google.common.collect.Lists.*;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
@@ -84,6 +88,51 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
 
         public abstract Component field(Item<M> item);
     }
+
+    public static class SelectModelValue implements Serializable {
+
+        private boolean selected;
+        private int sortId;
+
+        public boolean isSelected() {
+            return selected;
+        }
+
+        public int getSortId() {
+            return sortId;
+        }
+
+        public void setSortId(int sortId) {
+            this.sortId = sortId;
+        }
+
+        public void toggle() {
+            selected = !selected;
+        }
+
+        public void clearSelect() {
+            selected = false;
+        }
+    }
+
+    private static class SelectModelValueWithId {
+
+        SelectModelValue selectModelValue;
+        long objectId;
+
+        SelectModelValueWithId(long objectId, SelectModelValue selectModelValue) {
+            this.selectModelValue = selectModelValue;
+            this.objectId = objectId;
+        }
+    }
+
+    private static class SelectValueComparator implements Comparator<SelectModelValueWithId> {
+
+        @Override
+        public int compare(SelectModelValueWithId o1, SelectModelValueWithId o2) {
+            return Integer.compare(o1.selectModelValue.getSortId(), o2.selectModelValue.getSortId());
+        }
+    }
     public final static String IMAGE_AJAX_LOADER = "images/ajax-loader2.gif";
     public final static String IMAGE_AJAX_WAITING = "images/ajax-waiting.gif";
     @EJB(name = "OsznOrganizationStrategy")
@@ -98,7 +147,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
     private final static String ITEM_ID_PREFIX = "item";
     private RequestFileLoadPanel requestFileLoadPanel;
     private WebMarkupContainer buttonContainer;
-    private Map<Long, IModel<Boolean>> selectModels;
+    private Map<Long, SelectModelValue> selectModels;
     private boolean modificationsAllowed;
     private boolean hasFieldDescription;
     private Form<F> filterForm;
@@ -131,12 +180,10 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
     protected abstract void load(long userOrganizationId, long osznId, String districtCode,
             int monthFrom, int monthTo, int year);
 
-    @SuppressWarnings("unchecked")
     protected Class<M> getModelClass() {
         return (Class<M>) (findParameterizedSuperclass()).getActualTypeArguments()[0];
     }
 
-    @SuppressWarnings("unchecked")
     protected Class<F> getFilterClass() {
         return (Class<F>) (findParameterizedSuperclass()).getActualTypeArguments()[1];
     }
@@ -360,8 +407,8 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
                     }
                 }).setNullValid(true));
 
-        //Модель выбранных элементов списка
-        selectModels = new HashMap<Long, IModel<Boolean>>();
+        //Модель выбранных элементов списка.
+        selectModels = new HashMap<>();
 
         //Модель данных списка
         dataProvider = new DataProvider<M>() {
@@ -385,11 +432,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
 
                 List<M> objects = getObjects(filter);
 
-                for (M object : objects) {
-                    if (selectModels.get(object.getId()) == null) {
-                        selectModels.put(object.getId(), new Model<Boolean>(false));
-                    }
-                }
+                initializeSelectModels(selectModels, objects);
 
                 return objects;
             }
@@ -417,7 +460,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
                 augmentItem(item, objectId);
 
                 //Выбор файлов
-                CheckBox checkBox = new CheckBox("selected", selectModels.get(objectId)) {
+                CheckBox checkBox = new CheckBox("selected", newSelectFileCheckboxModel(objectId, selectModels)) {
 
                     @Override
                     public boolean isVisible() {
@@ -541,7 +584,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
 
             @Override
             public void onChangePage() {
-                clearSelect();
+                clearSelection(selectModels);
             }
         });
         filterForm.add(pagingNavigator);
@@ -591,9 +634,9 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
             public void onClick(AjaxRequestTarget target) {
                 completedDisplayed.put(getBindProcessType(), false);
 
-                bind(getSelected(), buildCommandParameters());
+                bind(getSelectedFileIds(selectModels), buildCommandParameters());
 
-                clearSelect();
+                clearSelection(selectModels);
                 addTimer(dataViewContainer, filterForm, messages);
                 target.add(filterForm);
             }
@@ -606,9 +649,9 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
             public void onClick(AjaxRequestTarget target) {
                 completedDisplayed.put(getFillProcessType(), false);
 
-                fill(getSelected(), buildCommandParameters());
+                fill(getSelectedFileIds(selectModels), buildCommandParameters());
 
-                clearSelect();
+                clearSelection(selectModels);
                 addTimer(dataViewContainer, filterForm, messages);
                 target.add(filterForm);
             }
@@ -621,9 +664,9 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
             public void onClick(AjaxRequestTarget target) {
                 completedDisplayed.put(getSaveProcessType(), false);
 
-                save(getSelected(), buildCommandParameters());
+                save(getSelectedFileIds(selectModels), buildCommandParameters());
 
-                clearSelect();
+                clearSelection(selectModels);
                 addTimer(dataViewContainer, filterForm, messages);
                 target.add(filterForm);
             }
@@ -645,13 +688,15 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
 
             @Override
             public void onClick(AjaxRequestTarget target) {
-                for (long objectId : getSelected()) {
+                for (long objectId : getSelectedFileIds(selectModels)) {
                     final M object = getById(objectId);
 
                     if (object != null) {
                         final String objectName = getFullName(object);
                         try {
                             delete(object);
+
+                            selectModels.remove(objectId);
 
                             info(MessageFormat.format(getString("info.deleted"), objectName));
                             logSuccessfulDeletion(object);
@@ -773,21 +818,58 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
         return commandParameters;
     }
 
-    private List<Long> getSelected() {
-        List<Long> ids = new ArrayList<Long>();
-
-        for (Long id : selectModels.keySet()) {
-            if (selectModels.get(id).getObject()) {
-                ids.add(id);
+    public static List<Long> getSelectedFileIds(Map<Long, SelectModelValue> selectModels) {
+        SortedSet<SelectModelValueWithId> selected = new TreeSet<>(new SelectValueComparator());
+        for (long objectId : selectModels.keySet()) {
+            SelectModelValue selectModelValue = selectModels.get(objectId);
+            if (selectModelValue.isSelected()) {
+                selected.add(new SelectModelValueWithId(objectId, selectModelValue));
             }
         }
-        return ids;
+
+        return newArrayList(transform(selected, new Function<SelectModelValueWithId, Long>() {
+
+            @Override
+            public Long apply(SelectModelValueWithId s) {
+                return s.objectId;
+            }
+        }));
     }
 
-    private void clearSelect() {
-        for (IModel<Boolean> model : selectModels.values()) {
-            model.setObject(false);
+    public static void clearSelection(Map<Long, SelectModelValue> selectModels) {
+        for (SelectModelValue selectModelValue : selectModels.values()) {
+            selectModelValue.clearSelect();
         }
+    }
+
+    public static void initializeSelectModels(Map<Long, SelectModelValue> selectModels, List<? extends IExecutorObject> objects) {
+        for (int i = 0; i < objects.size(); i++) {
+            final IExecutorObject object = objects.get(i);
+            SelectModelValue selectModelValue = selectModels.get(object.getId());
+            if (selectModelValue == null) {
+                selectModelValue = new SelectModelValue();
+                selectModels.put(object.getId(), selectModelValue);
+            }
+            selectModelValue.setSortId(i);
+        }
+    }
+
+    public static IModel<Boolean> newSelectFileCheckboxModel(final long objectId,
+            final Map<Long, SelectModelValue> selectModels) {
+        return new Model<Boolean>() {
+
+            @Override
+            public Boolean getObject() {
+                return selectModels.get(objectId).isSelected();
+            }
+
+            @Override
+            public void setObject(Boolean object) {
+                if (object != null) {
+                    selectModels.get(objectId).toggle();
+                }
+            }
+        };
     }
 
     private boolean isGlobalProcessing() {
@@ -915,7 +997,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
     public void addTimer(WebMarkupContainer dataViewContainer, Form<?> filterForm, AjaxFeedbackPanel messages) {
         boolean needCreateNewTimer = true;
 
-        List<AjaxSelfUpdatingTimerBehavior> timers = Lists.newArrayList(Iterables.filter(dataViewContainer.getBehaviors(),
+        List<AjaxSelfUpdatingTimerBehavior> timers = newArrayList(filter(dataViewContainer.getBehaviors(),
                 AjaxSelfUpdatingTimerBehavior.class));
         if (timers != null && !timers.isEmpty()) {
             for (AjaxSelfUpdatingTimerBehavior timer : timers) {
