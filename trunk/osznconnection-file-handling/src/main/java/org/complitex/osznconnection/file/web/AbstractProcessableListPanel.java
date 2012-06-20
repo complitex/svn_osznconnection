@@ -153,7 +153,6 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
     private Form<F> filterForm;
     private DataView<M> dataView;
     private DataProvider<M> dataProvider;
-    private boolean isPostBack;
     private final List<Column> columns = new ArrayList<Column>();
 
     public AbstractProcessableListPanel(String id) {
@@ -252,32 +251,28 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
     }
 
     @Override
-    protected void onBeforeRender() {
-        if (!isPostBack) {
-            isPostBack = true;
+    protected void onInitialize() {
+        super.onInitialize();
 
-            //Дополнительные колонки
+        //Дополнительные колонки
 
-            //дополнительные фильтры
-            for (Column column : columns) {
-                filterForm.add(column.filter());
-            }
-
-            //дополнительные заголовки
-            for (Column column : columns) {
-                filterForm.add(column.head(dataProvider, dataView, filterForm));
-            }
-
-            //Отобразить сообщения
-            showMessages();
-
-            //Если описания структуры для файлов запросов не загружены в базу, сообщить об этом пользователю.
-            if (!hasFieldDescription) {
-                error(getString("file_description_missing"));
-            }
+        //дополнительные фильтры
+        for (Column column : columns) {
+            filterForm.add(column.filter());
         }
 
-        super.onBeforeRender();
+        //дополнительные заголовки
+        for (Column column : columns) {
+            filterForm.add(column.head(dataProvider, dataView, filterForm));
+        }
+
+        //Отобразить сообщения
+        showMessages();
+
+        //Если описания структуры для файлов запросов не загружены в базу, сообщить об этом пользователю.
+        if (!hasFieldDescription) {
+            error(getString("file_description_missing"));
+        }
     }
 
     @Override
