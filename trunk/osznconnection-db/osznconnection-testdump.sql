@@ -7,18 +7,35 @@ insert into organization_string_culture(id, locale_id, value) values
 (3, 1, UPPER('ОСЗН 1')), (3,2,UPPER('ОСЗН 1')), (4,@system_locale_id, UPPER('1')),
 (5, 1, UPPER('Модуль начислений №1')), (5, 2, UPPER('Модуль начислений №1')), (6,@system_locale_id, UPPER('2')),
 (7,@system_locale_id, 'jdbc/osznconnection_remote_resource');
+-- Request files paths attribute values:
+insert into organization_string_culture(id, locale_id, value) values 
+(8,@system_locale_id,'in\\subs-reqs'),(9,@system_locale_id,'out\\subs-reqs'),
+(10,@system_locale_id,'in\\fact'),(11,@system_locale_id,'out\\fact'),
+(12,@system_locale_id,'in\\subs'),(13,@system_locale_id,'out\\subs'),
+(18,@system_locale_id,'spav');
 insert into organization_attribute(attribute_id, object_id, attribute_type_id, value_id, value_type_id) values
+-- oszn:
 (1,1,900,3,900), (1,1,901,4,901), (1,1,902,3,902), (1,1,904,2,904),
+-- Request files paths attributes:
+(1,1,915,8,915),(1,1,916,9,916),(1,1,917,10,917),(1,1,918,11,918),(1,1,919,12,919),(1,1,920,13,920),(1,1,925,18,925),
+-- calculation center:
 (1,2,900,5,900), (1,2,901,6,901), (1,2,904,3,904), (1,2,913,7,913);
 
 -- User organizations
 insert into service_association (pk_id, service_provider_type_id, calculation_center_id) values (1,1,2), (2,1,2);
 insert into organization(object_id) values (3), (4);
-insert into organization_string_culture(id, locale_id, value) values (8,@system_locale_id, UPPER('КП "ЖИЛКОМСЕРВИС"')),(9,@system_locale_id, UPPER('12345')),
-(10,@system_locale_id,UPPER('ЛЕНИНСКИЙ ФИЛИАЛ КП "ЖИЛКОМСЕРВИС"')),(11,@system_locale_id, UPPER('123456'));
+insert into organization_string_culture(id, locale_id, value) values (19,@system_locale_id, UPPER('КП "ЖИЛКОМСЕРВИС"')),(20,@system_locale_id, UPPER('12345')),
+(21,@system_locale_id,UPPER('ЛЕНИНСКИЙ ФИЛИАЛ КП "ЖИЛКОМСЕРВИС"')),(22,@system_locale_id, UPPER('123456')),
+-- Root request files paths attribute values:
+(23,@system_locale_id,'D:\\Artem\\Projects\\org.complitex\\storage\\sz_files\\gks'),
+(24,@system_locale_id,'D:\\Artem\\Projects\\org.complitex\\storage\\sz_files\\gks'),
+-- EDRPOU attribute values:
+(25,@system_locale_id,'1'),
+(26,@system_locale_id,'2');
+
 insert into organization_attribute(attribute_id, object_id, attribute_type_id, value_id, value_type_id) values
-(1,3,900,8,900), (1,3,901,9,901), (1,3,904,1,904), (1,3,914,1,914),
-(1,4,900,10,900), (1,4,901,11,901), (1,4,903,3,903), (1,4,904,1,904), (1,4,914,2,914);
+(1,3,900,19,900), (1,3,901,20,901), (1,3,904,1,904), (1,3,914,1,914), (1,3,926,25,926), (1,3,927,23,927),
+(1,4,900,21,900), (1,4,901,22,901), (1,4,903,3,903), (1,4,904,1,904), (1,4,914,2,914), (1,4,926,26,926), (1,4,927,24,927);
 
 -- Request file descriptions --
 INSERT  INTO `request_file_description`(`id`,`request_file_type`,`date_pattern`) VALUES (1,'ACTUAL_PAYMENT','dd.MM.yyyy'),(2,'PAYMENT','dd.MM.yyyy'),(3,'BENEFIT','dd.MM.yyyy'),(4,'SUBSIDY','dd.MM.yyyy'),(5,'TARIF','dd.MM.yyyy');
@@ -115,13 +132,13 @@ insert into tarif(`T11_CS_UNI`, `T11_CODE2`, `request_file_id`, `T11_CODE1`) val
 --insert into config(`name`, `value`) values ('SAVE_OUTPUT_FILE_STORAGE_DIR', 'D:\\Artem\\Projects\\org.complitex\\storage\\out');
 --insert into config(`name`, `value`) values ('ADDRESS_IMPORT_FILE_STORAGE_DIR', 'D:\\Artem\\Projects\\org.complitex\\storage\\import');
 
-insert into `config`(`name`, `value`) values ('LOAD_TARIF_DIR', 'D:\\Artem\\Projects\\org.complitex\\oszn-docs\\payments');
-insert into `config`(`name`, `value`) values ('DEFAULT_LOAD_PAYMENT_BENEFIT_FILES_DIR', 'D:\\Artem\\Projects\\org.complitex\\oszn-docs\\payments');
-insert into `config`(`name`, `value`) values ('DEFAULT_LOAD_ACTUAL_PAYMENT_DIR', 'D:\\Artem\\Projects\\org.complitex\\oszn-docs\\actual_payments');
-insert into `config`(`name`, `value`) values ('DEFAULT_LOAD_SUBSIDY_DIR', 'D:\\Artem\\Projects\\org.complitex\\oszn-docs\\subs');
-insert into `config`(`name`, `value`) values ('DEFAULT_SAVE_PAYMENT_BENEFIT_FILES_DIR', 'D:\\Artem\\Projects\\org.complitex\\storage\\out\\group');
-insert into `config`(`name`, `value`) values ('DEFAULT_SAVE_ACTUAL_PAYMENT_DIR', 'D:\\Artem\\Projects\\org.complitex\\storage\\out\\actual');
-insert into `config`(`name`, `value`) values ('DEFAULT_SAVE_SUBSIDY_DIR', 'D:\\Artem\\Projects\\org.complitex\\storage\\out\\subsidy');
+--insert into `config`(`name`, `value`) values ('LOAD_TARIF_DIR', 'D:\\Artem\\Projects\\org.complitex\\oszn-docs\\payments');
+--insert into `config`(`name`, `value`) values ('DEFAULT_LOAD_PAYMENT_BENEFIT_FILES_DIR', 'D:\\Artem\\Projects\\org.complitex\\oszn-docs\\payments');
+--insert into `config`(`name`, `value`) values ('DEFAULT_LOAD_ACTUAL_PAYMENT_DIR', 'D:\\Artem\\Projects\\org.complitex\\oszn-docs\\actual_payments');
+--insert into `config`(`name`, `value`) values ('DEFAULT_LOAD_SUBSIDY_DIR', 'D:\\Artem\\Projects\\org.complitex\\oszn-docs\\subs');
+--insert into `config`(`name`, `value`) values ('DEFAULT_SAVE_PAYMENT_BENEFIT_FILES_DIR', 'D:\\Artem\\Projects\\org.complitex\\storage\\out\\group');
+--insert into `config`(`name`, `value`) values ('DEFAULT_SAVE_ACTUAL_PAYMENT_DIR', 'D:\\Artem\\Projects\\org.complitex\\storage\\out\\actual');
+--insert into `config`(`name`, `value`) values ('DEFAULT_SAVE_SUBSIDY_DIR', 'D:\\Artem\\Projects\\org.complitex\\storage\\out\\subsidy');
 
 -- test users
 -- User '1'

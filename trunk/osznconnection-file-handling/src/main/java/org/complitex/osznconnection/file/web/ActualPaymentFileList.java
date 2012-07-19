@@ -81,8 +81,8 @@ public class ActualPaymentFileList extends ScrollListPage {
             }
 
             @Override
-            protected void load(long userOrganizationId, long osznId, String districtCode, int monthFrom, int monthTo, int year) {
-                processManagerBean.loadActualPayment(userOrganizationId, osznId, districtCode, monthFrom, monthTo, year);
+            protected void load(long userOrganizationId, long osznId, int monthFrom, int monthTo, int year) {
+                processManagerBean.loadActualPayment(userOrganizationId, osznId, monthFrom, monthTo, year);
             }
         });
     }

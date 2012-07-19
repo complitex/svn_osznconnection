@@ -450,10 +450,10 @@ public class TarifFileList extends TemplatePage {
                 new RequestFileLoadPanel.ILoader() {
 
                     @Override
-                    public void load(long userOrganizationId, long osznId, String districtCode, int monthFrom, int monthTo,
+                    public void load(long userOrganizationId, long osznId, int monthFrom, int monthTo,
                             int year, AjaxRequestTarget target) {
                         completedDisplayed = false;
-                        processManagerBean.loadTarif(userOrganizationId, osznId, districtCode, monthFrom, monthTo, year);
+                        processManagerBean.loadTarif(userOrganizationId, osznId, monthFrom, monthTo, year);
 
                         addTimer(dataViewContainer, filterForm, messages);
                         target.add(filterForm);

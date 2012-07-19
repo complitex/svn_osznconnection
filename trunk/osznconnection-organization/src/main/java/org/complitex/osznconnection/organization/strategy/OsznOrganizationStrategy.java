@@ -59,7 +59,19 @@ public class OsznOrganizationStrategy extends OrganizationStrategy implements IO
     private static final String MAPPING_NAMESPACE = OsznOrganizationStrategy.class.getPackage().getName() + ".OsznOrganization";
     public static final List<Long> LOAD_SAVE_FILE_DIR_ATTRIBUTES =
             ImmutableList.of(LOAD_PAYMENT_BENEFIT_FILES_DIR, SAVE_PAYMENT_BENEFIT_FILES_DIR,
-            LOAD_ACTUAL_PAYMENT_DIR, SAVE_ACTUAL_PAYMENT_DIR, LOAD_SUBSIDY_DIR, SAVE_SUBSIDY_DIR);
+            LOAD_ACTUAL_PAYMENT_DIR, SAVE_ACTUAL_PAYMENT_DIR, LOAD_SUBSIDY_DIR, SAVE_SUBSIDY_DIR, REFERENCES_DIR);
+    private static final List<Long> CUSTOM_ATTRIBUTE_TYPES = ImmutableList.<Long>builder().
+            add(DATA_SOURCE).
+            addAll(LOAD_SAVE_FILE_DIR_ATTRIBUTES).
+            add(EDRPOU).
+            add(ROOT_REQUEST_FILE_DIRECTORY).
+            build();
+    private static final List<Long> ATTRIBUTE_TYPES_WITH_CUSTOM_STRING_PROCESSING =
+            ImmutableList.<Long>builder().
+            add(DATA_SOURCE).
+            addAll(LOAD_SAVE_FILE_DIR_ATTRIBUTES).
+            add(ROOT_REQUEST_FILE_DIRECTORY).
+            build();
     @EJB
     private LocaleBean localeBean;
     @EJB
@@ -147,8 +159,7 @@ public class OsznOrganizationStrategy extends OrganizationStrategy implements IO
 
     @Override
     public boolean isSimpleAttributeType(EntityAttributeType entityAttributeType) {
-        if (entityAttributeType.getId().equals(DATA_SOURCE)
-                || LOAD_SAVE_FILE_DIR_ATTRIBUTES.contains(entityAttributeType.getId())) {
+        if (CUSTOM_ATTRIBUTE_TYPES.contains(entityAttributeType.getId())) {
             return false;
         }
         return super.isSimpleAttributeType(entityAttributeType);
@@ -158,10 +169,7 @@ public class OsznOrganizationStrategy extends OrganizationStrategy implements IO
     protected void fillAttributes(DomainObject object) {
         super.fillAttributes(object);
 
-        if (object.getAttribute(DATA_SOURCE).getLocalizedValues() == null) {
-            object.getAttribute(DATA_SOURCE).setLocalizedValues(stringBean.newStringCultures());
-        }
-        for (long attributeTypeId : LOAD_SAVE_FILE_DIR_ATTRIBUTES) {
+        for (long attributeTypeId : CUSTOM_ATTRIBUTE_TYPES) {
             if (object.getAttribute(attributeTypeId).getLocalizedValues() == null) {
                 object.getAttribute(attributeTypeId).setLocalizedValues(stringBean.newStringCultures());
             }
@@ -173,8 +181,7 @@ public class OsznOrganizationStrategy extends OrganizationStrategy implements IO
         super.loadStringCultures(attributes);
 
         for (Attribute attribute : attributes) {
-            if (attribute.getAttributeTypeId().equals(DATA_SOURCE)
-                    || LOAD_SAVE_FILE_DIR_ATTRIBUTES.contains(attribute.getAttributeTypeId())) {
+            if (CUSTOM_ATTRIBUTE_TYPES.contains(attribute.getAttributeTypeId())) {
                 if (attribute.getValueId() != null) {
                     loadStringCultures(attribute);
                 } else {
@@ -359,17 +366,24 @@ public class OsznOrganizationStrategy extends OrganizationStrategy implements IO
     }
 
     @Override
-    public String getRequestFilesStorageDir(long userOrganizationId, long fileStorageAttributeTypeId) {
+    public String getRelativeRequestFilesPath(long osznId, long fileTypeAttributeTypeId) {
+        DomainObject oszn = findById(osznId, true);
+        return AttributeUtil.getStringValue(oszn, fileTypeAttributeTypeId);
+    }
+
+    @Override
+    public String getRootRequestFilesStoragePath(long userOrganizationId) {
         DomainObject userOrganization = findById(userOrganizationId, true);
-        return AttributeUtil.getStringValue(userOrganization, fileStorageAttributeTypeId);
+        return AttributeUtil.getStringValue(userOrganization, ROOT_REQUEST_FILE_DIRECTORY);
     }
 
     @Transactional
     @Override
     protected Long insertStrings(long attributeTypeId, List<StringCulture> strings) {
         /* if it's data source or one of load/save request file directory attributes 
-        then string value should be inserted as is and not upper cased. */
-        return attributeTypeId == DATA_SOURCE || LOAD_SAVE_FILE_DIR_ATTRIBUTES.contains(attributeTypeId)
+         * or root directory for loading and saving request files
+         * then string value should be inserted as is and not upper cased. */
+        return ATTRIBUTE_TYPES_WITH_CUSTOM_STRING_PROCESSING.contains(attributeTypeId)
                 ? stringBean.insertStrings(strings, getEntityTable(), false)
                 : super.insertStrings(attributeTypeId, strings);
     }

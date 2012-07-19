@@ -33,7 +33,7 @@ public class SubsidySaveTaskBean extends AbstractSaveTaskBean implements ITaskBe
     }
 
     @Override
-    protected FileHandlingConfig getDefaultConfigDirectory() {
-        return FileHandlingConfig.DEFAULT_SAVE_SUBSIDY_DIR;
+    protected RequestFileDirectoryType getSaveDirectoryType() {
+        return RequestFileDirectoryType.SAVE_SUBSIDY_DIR;
     }
 }

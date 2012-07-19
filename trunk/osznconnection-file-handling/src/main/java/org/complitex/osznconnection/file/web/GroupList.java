@@ -210,8 +210,8 @@ public class GroupList extends ScrollListPage {
         }
 
         @Override
-        protected void load(long userOrganizationId, long osznId, String districtCode, int monthFrom, int monthTo, int year) {
-            processManagerBean.loadGroup(userOrganizationId, osznId, districtCode, monthFrom, monthTo, year);
+        protected void load(long userOrganizationId, long osznId, int monthFrom, int monthTo, int year) {
+            processManagerBean.loadGroup(userOrganizationId, osznId, monthFrom, monthTo, year);
         }
 
         @Override

@@ -176,8 +176,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
 
     protected abstract void save(List<Long> selectedFileIds, Map<Enum<?>, Object> commandParameters);
 
-    protected abstract void load(long userOrganizationId, long osznId, String districtCode,
-            int monthFrom, int monthTo, int year);
+    protected abstract void load(long userOrganizationId, long osznId, int monthFrom, int monthTo, int year);
 
     protected Class<M> getModelClass() {
         return (Class<M>) (findParameterizedSuperclass()).getActualTypeArguments()[0];
@@ -777,10 +776,10 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
                 new RequestFileLoadPanel.ILoader() {
 
                     @Override
-                    public void load(long userOrganizationId, long osznId, String districtCode, int monthFrom, int monthTo,
+                    public void load(long userOrganizationId, long osznId, int monthFrom, int monthTo,
                             int year, AjaxRequestTarget target) {
                         completedDisplayed.put(getLoadProcessType(), false);
-                        AbstractProcessableListPanel.this.load(userOrganizationId, osznId, districtCode, monthFrom, monthTo, year);
+                        AbstractProcessableListPanel.this.load(userOrganizationId, osznId, monthFrom, monthTo, year);
 
                         addTimer(dataViewContainer, filterForm, messages);
                         target.add(filterForm);

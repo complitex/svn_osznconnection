@@ -27,29 +27,41 @@ public interface IOsznOrganizationStrategy extends IOrganizationStrategy {
      */
     long SERVICE_ASSOCIATIONS = 914;
     /**
-     * Load payments/benefits directory. It is user organization only attribute.
+     * Load payments/benefits directory. It is OSZN only attribute.
      */
     long LOAD_PAYMENT_BENEFIT_FILES_DIR = 915;
     /**
-     * Save payments/benefits directory. It is user organization only attribute.
+     * Save payments/benefits directory. It is OSZN only attribute.
      */
     long SAVE_PAYMENT_BENEFIT_FILES_DIR = 916;
     /**
-     * Load actual payments directory. It is user organization only attribute.
+     * Load actual payments directory. It is OSZN only attribute.
      */
     long LOAD_ACTUAL_PAYMENT_DIR = 917;
     /**
-     * Save actual payments directory. It is user organization only attribute.
+     * Save actual payments directory. It is OSZN only attribute.
      */
     long SAVE_ACTUAL_PAYMENT_DIR = 918;
     /**
-     * Load subsidies directory. It is user organization only attribute.
+     * Load subsidies directory. It is OSZN only attribute.
      */
     long LOAD_SUBSIDY_DIR = 919;
     /**
-     * Save subsidies directory. It is user organization only attribute.
+     * Save subsidies directory. It is OSZN only attribute.
      */
     long SAVE_SUBSIDY_DIR = 920;
+    /**
+     * References directory. It is OSZN only attribute.
+     */
+    long REFERENCES_DIR = 925;
+    /**
+     * EDRPOU(ЕДРПОУ). It is user organization only attribute.
+     */
+    long EDRPOU = 926;
+    /**
+     * Root directory for loading and saving request files. It is user organization only attribute.
+     */
+    long ROOT_REQUEST_FILE_DIRECTORY = 927;
     /**
      * Itself organization instance id.
      */
@@ -118,10 +130,17 @@ public interface IOsznOrganizationStrategy extends IOrganizationStrategy {
     String getDataSource(long calculationCenterId);
 
     /**
-     * Figures out request files storage directory.
-     * @param userOrganizationId User organization's id.
-     * @param fileStorageAttributeTypeId Attribute type id corresponding desired file type.
-     * @return User organization's request files storage directory.
+     * Returns relative path to request files storage.
+     * @param osznId Oszn's id.
+     * @param fileTypeAttributeTypeId Attribute type id corresponding desired file type.
+     * @return Relative path to request files storage.
      */
-    String getRequestFilesStorageDir(long userOrganizationId, long fileStorageAttributeTypeId);
+    String getRelativeRequestFilesPath(long osznId, long fileTypeAttributeTypeId);
+
+    /**
+     * Returns root directory to request files storage.
+     * @param userOrganizationId User organization's id.
+     * @return Root directory to request files storage.
+     */
+    String getRootRequestFilesStoragePath(long userOrganizationId);
 }

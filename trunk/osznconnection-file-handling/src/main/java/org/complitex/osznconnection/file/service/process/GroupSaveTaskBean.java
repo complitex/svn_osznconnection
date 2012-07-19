@@ -90,7 +90,7 @@ public class GroupSaveTaskBean extends AbstractSaveTaskBean implements ITaskBean
     }
 
     @Override
-    protected FileHandlingConfig getDefaultConfigDirectory() {
-        return FileHandlingConfig.DEFAULT_SAVE_PAYMENT_BENEFIT_FILES_DIR;
+    protected RequestFileDirectoryType getSaveDirectoryType() {
+        return RequestFileDirectoryType.SAVE_PAYMENT_BENEFIT_FILES_DIR;
     }
 }

@@ -89,8 +89,8 @@ public final class SubsidyFileList extends ScrollListPage {
             }
 
             @Override
-            protected void load(long userOrganizationId, long osznId, String districtCode, int monthFrom, int monthTo, int year) {
-                processManagerBean.loadSubsidy(userOrganizationId, osznId, districtCode, monthFrom, monthTo, year);
+            protected void load(long userOrganizationId, long osznId, int monthFrom, int monthTo, int year) {
+                processManagerBean.loadSubsidy(userOrganizationId, osznId, monthFrom, monthTo, year);
             }
         });
     }

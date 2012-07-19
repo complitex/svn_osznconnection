@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.complitex.osznconnection.file.service.exception.FieldNotFoundException;
+import org.complitex.osznconnection.file.service.exception.StorageNotFoundException;
 import org.complitex.osznconnection.file.service.file_description.RequestFileDescription;
 import org.complitex.osznconnection.file.service.file_description.RequestFileDescriptionBean;
 import org.complitex.osznconnection.file.service.file_description.RequestFileFieldDescription;
@@ -101,10 +102,10 @@ public abstract class AbstractSaveTaskBean {
 
     protected abstract String getPuAccountFieldName();
 
-    protected abstract FileHandlingConfig getDefaultConfigDirectory();
+    protected abstract RequestFileDirectoryType getSaveDirectoryType();
 
-    private String getOutputBaseDirectory(long userOrganizationId) {
-        return RequestFileStorage.INSTANCE.getRequestFilesStorageDir(userOrganizationId, getDefaultConfigDirectory());
+    private String getOutputBaseDirectory(long userOrganizationId, long osznId) throws StorageNotFoundException {
+        return RequestFileStorage.INSTANCE.getRequestFilesStorageDirectory(userOrganizationId, osznId, getSaveDirectoryType());
     }
 
     private DBFField[] newDBFFields(RequestFileDescription description) {
@@ -124,13 +125,12 @@ public abstract class AbstractSaveTaskBean {
         try {
             //устанавливаем абсолютный путь для сохранения файла запроса
             File file = RequestFileStorage.INSTANCE.createOutputRequestFileDirectory(
-                    getOutputBaseDirectory(requestFile.getUserOrganizationId()), requestFile.getName(), requestFile.getDirectory());
+                    getOutputBaseDirectory(requestFile.getUserOrganizationId(), requestFile.getOrganizationId()),
+                    requestFile.getName(), requestFile.getDirectory());
             requestFile.setAbsolutePath(file.getAbsolutePath());
 
-            //Удаляем файл если такой есть
-            RequestFileStorage.INSTANCE.delete(requestFile.getAbsolutePath());
-
-            writer = new DBFWriter(RequestFileStorage.INSTANCE.createFile(requestFile.getAbsolutePath()));
+            //Удаляем файл если такой есть и создаем новый.
+            writer = new DBFWriter(RequestFileStorage.INSTANCE.deleteAndCreateFile(requestFile.getAbsolutePath()));
             writer.setCharactersetName("cp866");
 
             //Создание полей

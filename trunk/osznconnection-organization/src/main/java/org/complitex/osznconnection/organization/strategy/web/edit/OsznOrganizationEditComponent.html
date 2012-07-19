@@ -36,19 +36,27 @@
                         <span wicket:id="parent"></span>
                     </td>
                 </tr>
-
-                <!-- Reference to jdbc data source. Only for calculation centers. -->
-                <tr wicket:id="dataSourceContainer">
+                
+                <!-- EDRPOU. Only for user organizations. -->
+                <tr wicket:id="edrpouContainer">
                     <th>
-                        <span wicket:id="dataSourceLabel"></span><b class="blue">*</b>:
+                        <span wicket:id="label"></span><b wicket:id="required" class="blue">*</b>:
                     </th>
                     <td>
-                        <select wicket:id="dataSource">
-                            <option></option>
-                        </select>
+                        <div wicket:id="input"></div>
                     </td>
                 </tr>
-
+                
+                <!-- Root directory for loading and saving request files. Only for user organizations. -->
+                <tr wicket:id="rootDirectoryContainer">
+                    <th>
+                        <span wicket:id="label"></span><b wicket:id="required" class="blue">*</b>:
+                    </th>
+                    <td>
+                        <div wicket:id="input"></div>
+                    </td>
+                </tr>
+                
                 <!-- Reference to `service_association` helper table. It is user organization only attribute. -->
                 <tr wicket:id="serviceAssociationsContainer">
                     <th style="vertical-align: top; padding-top: 20px;">
@@ -93,7 +101,19 @@
                     </td>
                 </tr>
 
-                <!-- Oszn Load/Save directories section. It is user organization only attributes. -->
+                <!-- Reference to jdbc data source. Only for calculation centers. -->
+                <tr wicket:id="dataSourceContainer">
+                    <th>
+                        <span wicket:id="dataSourceLabel"></span><b class="blue">*</b>:
+                    </th>
+                    <td>
+                        <select wicket:id="dataSource">
+                            <option></option>
+                        </select>
+                    </td>
+                </tr>
+
+                <!-- Oszn Load/Save directories section. It is oszn only attributes. -->
                 <tr wicket:id="loadSaveDirsContainer">
                     <td colspan="2">
                         <fieldset style="margin-top: 10px;">

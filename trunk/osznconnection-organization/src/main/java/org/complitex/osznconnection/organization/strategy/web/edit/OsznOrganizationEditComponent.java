@@ -52,6 +52,8 @@ public class OsznOrganizationEditComponent extends OrganizationEditComponent {
     private WebMarkupContainer serviceAssociationsContainer;
     private WebMarkupContainer dataSourceContainer;
     private WebMarkupContainer loadSaveDirsContainer;
+    private WebMarkupContainer edrpouContainer;
+    private WebMarkupContainer rootDirectoryContainer;
     private IModel<RemoteDataSource> dataSourceModel;
 
     public OsznOrganizationEditComponent(String id, boolean disabled) {
@@ -67,6 +69,7 @@ public class OsznOrganizationEditComponent extends OrganizationEditComponent {
     protected void init() {
         super.init();
 
+        final boolean isDisabled = isDisabled();
         final boolean enabled = enabled();
 
         final OsznOrganization organization = getDomainObject();
@@ -288,13 +291,12 @@ public class OsznOrganizationEditComponent extends OrganizationEditComponent {
             dataSourceContainer.setVisible(isCalculationCenter());
         }
 
-        //load/save directories for request files. It is user organization only attributes.
+        //load/save directories for request files. It is oszn only attributes.
         {
             loadSaveDirsContainer = new WebMarkupContainer("loadSaveDirsContainer");
             loadSaveDirsContainer.setOutputMarkupPlaceholderTag(true);
             add(loadSaveDirsContainer);
 
-            final boolean isDisabled = isDisabled();
             loadSaveDirsContainer.add(new ListView<Long>("dir", OsznOrganizationStrategy.LOAD_SAVE_FILE_DIR_ATTRIBUTES) {
 
                 @Override
@@ -320,7 +322,63 @@ public class OsznOrganizationEditComponent extends OrganizationEditComponent {
             });
 
             //initial visibility
-            loadSaveDirsContainer.setVisible(isUserOrganization());
+            loadSaveDirsContainer.setVisible(isOszn());
+        }
+
+        //EDRPOU. It is user organization only attribute.
+        {
+            edrpouContainer = new WebMarkupContainer("edrpouContainer");
+            edrpouContainer.setOutputMarkupPlaceholderTag(true);
+            add(edrpouContainer);
+            final long attributeTypeId = IOsznOrganizationStrategy.EDRPOU;
+            Attribute attribute = organization.getAttribute(attributeTypeId);
+            if (attribute == null) {
+                attribute = new Attribute();
+                attribute.setAttributeTypeId(attributeTypeId);
+                attribute.setObjectId(organization.getId());
+                attribute.setAttributeId(1L);
+                attribute.setLocalizedValues(stringBean.newStringCultures());
+            }
+            final EntityAttributeType attributeType =
+                    osznOrganizationStrategy.getEntity().getAttributeType(attributeTypeId);
+            edrpouContainer.add(new Label("label",
+                    DomainObjectInputPanel.labelModel(attributeType.getAttributeNames(), getLocale())));
+            edrpouContainer.add(new WebMarkupContainer("required").setVisible(attributeType.isMandatory()));
+
+            edrpouContainer.add(
+                    DomainObjectInputPanel.newInputComponent("organization", getStrategyName(),
+                    organization, attribute, getLocale(), isDisabled));
+
+            //initial visibility
+            edrpouContainer.setVisible(isUserOrganization());
+        }
+
+        //Root directory for loading and saving request files. It is user organization only attribute.
+        {
+            rootDirectoryContainer = new WebMarkupContainer("rootDirectoryContainer");
+            rootDirectoryContainer.setOutputMarkupPlaceholderTag(true);
+            add(rootDirectoryContainer);
+            final long attributeTypeId = IOsznOrganizationStrategy.ROOT_REQUEST_FILE_DIRECTORY;
+            Attribute attribute = organization.getAttribute(attributeTypeId);
+            if (attribute == null) {
+                attribute = new Attribute();
+                attribute.setAttributeTypeId(attributeTypeId);
+                attribute.setObjectId(organization.getId());
+                attribute.setAttributeId(1L);
+                attribute.setLocalizedValues(stringBean.newStringCultures());
+            }
+            final EntityAttributeType attributeType =
+                    osznOrganizationStrategy.getEntity().getAttributeType(attributeTypeId);
+            rootDirectoryContainer.add(new Label("label",
+                    DomainObjectInputPanel.labelModel(attributeType.getAttributeNames(), getLocale())));
+            rootDirectoryContainer.add(new WebMarkupContainer("required").setVisible(attributeType.isMandatory()));
+
+            rootDirectoryContainer.add(
+                    DomainObjectInputPanel.newInputComponent("organization", getStrategyName(),
+                    organization, attribute, getLocale(), isDisabled));
+
+            //initial visibility
+            rootDirectoryContainer.setVisible(isUserOrganization());
         }
     }
 
@@ -351,13 +409,32 @@ public class OsznOrganizationEditComponent extends OrganizationEditComponent {
         //load/save directory.
         {
             boolean loadSaveDirsContainerWasVisible = loadSaveDirsContainer.isVisible();
-            loadSaveDirsContainer.setVisible(isUserOrganization());
+            loadSaveDirsContainer.setVisible(isOszn());
             boolean loadSaveDirsContainerVisibleNow = loadSaveDirsContainer.isVisible();
             if (loadSaveDirsContainerWasVisible ^ loadSaveDirsContainerVisibleNow) {
                 target.add(loadSaveDirsContainer);
             }
         }
 
+        //edrpou.
+        {
+            boolean edrpouContainerWasVisible = edrpouContainer.isVisible();
+            edrpouContainer.setVisible(isUserOrganization());
+            boolean edrpouContainerVisibleNow = edrpouContainer.isVisible();
+            if (edrpouContainerWasVisible ^ edrpouContainerVisibleNow) {
+                target.add(edrpouContainer);
+            }
+        }
+
+        //root directory.
+        {
+            boolean rootDirectoryContainerWasVisible = rootDirectoryContainer.isVisible();
+            rootDirectoryContainer.setVisible(isUserOrganization());
+            boolean rootDirectoryContainerVisibleNow = rootDirectoryContainer.isVisible();
+            if (rootDirectoryContainerWasVisible ^ rootDirectoryContainerVisibleNow) {
+                target.add(rootDirectoryContainer);
+            }
+        }
     }
 
     public boolean isCalculationCenter() {
@@ -425,23 +502,32 @@ public class OsznOrganizationEditComponent extends OrganizationEditComponent {
 
         final DomainObject organization = getDomainObject();
 
-        if (!isUserOrganization()) {
-            //service associations
-            organization.removeAttribute(IOsznOrganizationStrategy.SERVICE_ASSOCIATIONS);
-
+        if (!isOszn()) {
             //load/save request file dirs
             for (long attributeTypeId : OsznOrganizationStrategy.LOAD_SAVE_FILE_DIR_ATTRIBUTES) {
                 organization.removeAttribute(attributeTypeId);
             }
         }
 
-        if (isCalculationCenter()) {
+        if (!isUserOrganization()) {
+            //service associations
+            organization.removeAttribute(IOsznOrganizationStrategy.SERVICE_ASSOCIATIONS);
+
+            //edrpou
+            organization.removeAttribute(IOsznOrganizationStrategy.EDRPOU);
+
+            //root directory
+            organization.removeAttribute(IOsznOrganizationStrategy.ROOT_REQUEST_FILE_DIRECTORY);
+        }
+
+        if (!isCalculationCenter()) {
+            //data source
+            getDomainObject().removeAttribute(IOsznOrganizationStrategy.DATA_SOURCE);
+        } else {
             //data source
             String dataSource = dataSourceModel.getObject().getDataSource();
             stringBean.getSystemStringCulture(organization.getAttribute(IOsznOrganizationStrategy.DATA_SOURCE).getLocalizedValues()).
                     setValue(new StringConverter().toString(dataSource));
-        } else {
-            getDomainObject().removeAttribute(IOsznOrganizationStrategy.DATA_SOURCE);
         }
     }
 
