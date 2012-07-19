@@ -37,7 +37,7 @@ public class ActualPaymentSaveTaskBean extends AbstractSaveTaskBean implements I
     }
 
     @Override
-    protected FileHandlingConfig getDefaultConfigDirectory() {
-        return FileHandlingConfig.DEFAULT_SAVE_ACTUAL_PAYMENT_DIR;
+    protected RequestFileDirectoryType getSaveDirectoryType() {
+        return RequestFileDirectoryType.SAVE_ACTUAL_PAYMENT_DIR;
     }
 }

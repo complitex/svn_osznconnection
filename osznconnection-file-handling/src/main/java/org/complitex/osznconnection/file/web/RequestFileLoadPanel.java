@@ -41,7 +41,7 @@ public class RequestFileLoadPanel extends Panel {
 
     public static interface ILoader extends Serializable {
 
-        void load(long userOrganizationId, long osznId, String districtCode, int monthFrom, int monthTo, int year,
+        void load(long userOrganizationId, long osznId, int monthFrom, int monthTo, int year,
                 AjaxRequestTarget target);
     }
 
@@ -167,8 +167,7 @@ public class RequestFileLoadPanel extends Panel {
                 Long mainUserOrganizationId = osznSessionBean.getCurrentUserOrganizationId(RequestFileLoadPanel.this.getSession());
                 long currentUserOrganizationId = mainUserOrganizationId != null ? mainUserOrganizationId
                         : userOrganizationModel.getOrganizationId();
-                loader.load(currentUserOrganizationId, oszn.getId(),
-                        organizationStrategy.getDistrictCode(oszn), f, t, year.getModelObject(), target);
+                loader.load(currentUserOrganizationId, oszn.getId(), f, t, year.getModelObject(), target);
 
                 target.add(messages);
                 dialog.close(target);

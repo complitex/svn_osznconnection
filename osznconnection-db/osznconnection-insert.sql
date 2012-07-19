@@ -26,35 +26,54 @@ INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (915, 1, UPPER('
 INSERT INTO `entity_attribute_type`(`id`, `entity_id`, `mandatory`, `attribute_type_name_id`, `system`) VALUES (914, 900, 1, 915, 1);
 INSERT INTO `entity_attribute_value_type`(`id`, `attribute_type_id`, `attribute_value_type`) VALUES (914, 914, 'service_association');
 
--- Load payments/benefits directory. It is user organization only attribute. --
+-- -------------------------------
+-- Request files paths attributes
+-- -------------------------------
+
+-- Load payments/benefits directory. It is OSZN only attribute. --
 INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (916, 1, UPPER('Директория входящих запросов на субсидию')), (916, 2, UPPER('Директория входящих запросов на субсидию'));
 INSERT INTO `entity_attribute_type`(`id`, `entity_id`, `mandatory`, `attribute_type_name_id`, `system`) VALUES (915, 900, 0, 916, 1);
 INSERT INTO `entity_attribute_value_type`(`id`, `attribute_type_id`, `attribute_value_type`) VALUES (915, 915, UPPER('string'));
 
--- Save payments/benefits directory. It is user organization only attribute. --
-INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (917, 1, UPPER('Директория исходящих запросов на субсидию')), (917, 2, UPPER('Директория исходящих запросов на субсидию'));
+-- Save payments/benefits directory. It is OSZN only attribute. --
+INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (917, 1, UPPER('Директория исходящих ответов на запросы на субсидию')), (917, 2, UPPER('Директория исходящих ответов на запросы на субсидию'));
 INSERT INTO `entity_attribute_type`(`id`, `entity_id`, `mandatory`, `attribute_type_name_id`, `system`) VALUES (916, 900, 0, 917, 1);
 INSERT INTO `entity_attribute_value_type`(`id`, `attribute_type_id`, `attribute_value_type`) VALUES (916, 916, UPPER('string'));
 
--- Load actual payments directory. It is user organization only attribute. --
-INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (918, 1, UPPER('Директория входящих запросов фактических начислений')), (918, 2, UPPER('Директория входящих запросов фактических начислений'));
+-- Load actual payments directory. It is OSZN only attribute. --
+INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (918, 1, UPPER('Директория входящих запросов фактического начисления')), (918, 2, UPPER('Директория входящих запросов фактического начисления'));
 INSERT INTO `entity_attribute_type`(`id`, `entity_id`, `mandatory`, `attribute_type_name_id`, `system`) VALUES (917, 900, 0, 918, 1);
 INSERT INTO `entity_attribute_value_type`(`id`, `attribute_type_id`, `attribute_value_type`) VALUES (917, 917, UPPER('string'));
 
--- Save actual payments directory. It is user organization only attribute. --
-INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (919, 1, UPPER('Директория исходящих запросов фактических начислений')), (919, 2, UPPER('Директория исходящих запросов фактических начислений'));
+-- Save actual payments directory. It is OSZN only attribute. --
+INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (919, 1, UPPER('Директория исходящих ответов на запросы фактического начисления')), (919, 2, UPPER('Директория исходящих ответов на запросы фактического начисления'));
 INSERT INTO `entity_attribute_type`(`id`, `entity_id`, `mandatory`, `attribute_type_name_id`, `system`) VALUES (918, 900, 0, 919, 1);
 INSERT INTO `entity_attribute_value_type`(`id`, `attribute_type_id`, `attribute_value_type`) VALUES (918, 918, UPPER('string'));
 
--- Load subsidies directory. It is user organization only attribute. --
+-- Load subsidies directory. It is OSZN only attribute. --
 INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (920, 1, UPPER('Директория входящих файлов субсидий')), (920, 2, UPPER('Директория входящих файлов субсидий'));
 INSERT INTO `entity_attribute_type`(`id`, `entity_id`, `mandatory`, `attribute_type_name_id`, `system`) VALUES (919, 900, 0, 920, 1);
 INSERT INTO `entity_attribute_value_type`(`id`, `attribute_type_id`, `attribute_value_type`) VALUES (919, 919, UPPER('string'));
 
--- Save subsidies directory. It is user organization only attribute. --
+-- Save subsidies directory. It is OSZN only attribute. --
 INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (921, 1, UPPER('Директория исходящих файлов субсидий')), (921, 2, UPPER('Директория исходящих файлов субсидий'));
 INSERT INTO `entity_attribute_type`(`id`, `entity_id`, `mandatory`, `attribute_type_name_id`, `system`) VALUES (920, 900, 0, 921, 1);
 INSERT INTO `entity_attribute_value_type`(`id`, `attribute_type_id`, `attribute_value_type`) VALUES (920, 920, UPPER('string'));
+
+-- References directory. It is OSZN only attribute. --
+INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (926, 1, UPPER('Директория справочников')), (926, 2, UPPER('Директория справочников'));
+INSERT INTO `entity_attribute_type`(`id`, `entity_id`, `mandatory`, `attribute_type_name_id`, `system`) VALUES (925, 900, 0, 926, 1);
+INSERT INTO `entity_attribute_value_type`(`id`, `attribute_type_id`, `attribute_value_type`) VALUES (925, 925, UPPER('string'));
+
+-- EDRPOU(ЕДРПОУ) attribute. It is user organization only attribute. --
+INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (927, 1, UPPER('ЕДРПОУ')), (927, 2, UPPER('ЕДРПОУ'));
+INSERT INTO `entity_attribute_type`(`id`, `entity_id`, `mandatory`, `attribute_type_name_id`, `system`) VALUES (926, 900, 1, 927, 1);
+INSERT INTO `entity_attribute_value_type`(`id`, `attribute_type_id`, `attribute_value_type`) VALUES (926, 926, UPPER('string'));
+
+-- Root directory for loading and saving request files. It is user organization only attribute. --
+INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (928, 1, UPPER('Корневой каталог для файлов запрсов')), (928, 2, UPPER('Корневой каталог для файлов запрсов'));
+INSERT INTO `entity_attribute_type`(`id`, `entity_id`, `mandatory`, `attribute_type_name_id`, `system`) VALUES (927, 900, 1, 928, 1);
+INSERT INTO `entity_attribute_value_type`(`id`, `attribute_type_id`, `attribute_value_type`) VALUES (927, 927, UPPER('string'));
 
 -- --------------------------------
 -- Ownership
@@ -370,4 +389,4 @@ INSERT INTO `organization_attribute`(`attribute_id`, `object_id`, `attribute_typ
 (1,0,900,1,900), (1,0,901,2,901);
 
 -- Current database version
-INSERT INTO `update` (`version`) VALUE ('20120523_778_0.1.32');
+INSERT INTO `update` (`version`) VALUE ('20120719_789_0.1.33');
