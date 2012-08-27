@@ -5,6 +5,7 @@
 package org.complitex.osznconnection.file.service.status.details;
 
 import java.io.Serializable;
+import java.util.Locale;
 import org.complitex.osznconnection.file.entity.RequestStatus;
 import org.complitex.osznconnection.file.entity.StatusDetail;
 
@@ -15,7 +16,7 @@ import org.complitex.osznconnection.file.entity.StatusDetail;
 public class SubsidyStatusDetailRenderer implements IStatusDetailRenderer, Serializable {
 
     @Override
-    public String displayStatusDetail(RequestStatus status, StatusDetail statusDetail) {
+    public String displayStatusDetail(RequestStatus status, StatusDetail statusDetail, Locale locale) {
         switch (status) {
             case ACCOUNT_NUMBER_NOT_FOUND:
             case MORE_ONE_ACCOUNTS: {

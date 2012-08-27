@@ -4,6 +4,8 @@
  */
 package org.complitex.osznconnection.file.web;
 
+import org.complitex.osznconnection.file.web.component.load.DateParameter;
+import org.complitex.osznconnection.file.web.component.load.RequestFileLoadPanel;
 import com.google.common.base.Function;
 import static com.google.common.collect.Iterables.*;
 import org.apache.wicket.ajax.IAjaxCallDecorator;
@@ -25,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
@@ -72,6 +75,8 @@ import org.complitex.dictionary.web.component.css.CssAttributeBehavior;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.dictionary.web.component.image.StaticImage;
 import org.complitex.osznconnection.file.service.OsznSessionBean;
+import org.complitex.osznconnection.file.web.component.load.IRequestFileLoader;
+import org.complitex.osznconnection.file.web.component.load.RequestFileLoadPanel.MonthParameterViewMode;
 import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
 
 /**
@@ -141,12 +146,11 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
     private ProcessManagerBean processManagerBean;
     @EJB
     private OsznSessionBean osznSessionBean;
-    private int waitForStopTimer;
-    private int timerIndex = 0;
+    private final AtomicInteger statusTimerIndex = new AtomicInteger();
     private Map<ProcessType, Boolean> completedDisplayed = new EnumMap<ProcessType, Boolean>(ProcessType.class);
     private final static String ITEM_ID_PREFIX = "item";
     private RequestFileLoadPanel requestFileLoadPanel;
-    private WebMarkupContainer buttonContainer;
+    private WebMarkupContainer buttons;
     private Map<Long, SelectModelValue> selectModels;
     private boolean modificationsAllowed;
     private boolean hasFieldDescription;
@@ -176,7 +180,9 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
 
     protected abstract void save(List<Long> selectedFileIds, Map<Enum<?>, Object> commandParameters);
 
-    protected abstract void load(long userOrganizationId, long osznId, int monthFrom, int monthTo, int year);
+    protected abstract void load(long userOrganizationId, long osznId, DateParameter dateParameter);
+
+    protected abstract MonthParameterViewMode getLoadMonthParameterViewMode();
 
     protected Class<M> getModelClass() {
         return (Class<M>) (findParameterizedSuperclass()).getActualTypeArguments()[0];
@@ -276,6 +282,10 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
 
     @Override
     public void renderHead(IHeaderResponse response) {
+        renderResources(response);
+    }
+
+    public static void renderResources(IHeaderResponse response) {
         response.renderJavaScriptReference(WebCommonResourceInitializer.HIGHLIGHT_JS);
         response.renderJavaScriptReference(new PackageResourceReference(AbstractProcessableListPanel.class,
                 AbstractProcessableListPanel.class.getSimpleName() + ".js"));
@@ -458,7 +468,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
 
                     @Override
                     public boolean isVisible() {
-                        return (!isProcessing(item.getModelObject()) && !isGlobalWaiting(item.getModelObject()));
+                        return !isProcessing(item.getModelObject()) && !isGlobalWaiting(item.getModelObject());
                     }
 
                     @Override
@@ -553,7 +563,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
                     protected String load() {
                         String dots = "";
                         if (isProcessing(item.getModelObject()) && isGlobalProcessing()) {
-                            dots += StringUtil.getDots(timerIndex % 5);
+                            dots += StringUtil.getDots(statusTimerIndex.get() % 5);
                         }
 
                         final RequestFileStatus status = getStatus(item.getModelObject());
@@ -607,13 +617,13 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
         }));
 
         //Контейнер кнопок для ajax
-        buttonContainer = new WebMarkupContainer("buttons");
-        buttonContainer.setOutputMarkupId(true);
-        buttonContainer.setVisibilityAllowed(modificationsAllowed);
-        filterForm.add(buttonContainer);
+        buttons = new WebMarkupContainer("buttons");
+        buttons.setOutputMarkupId(true);
+        buttons.setVisibilityAllowed(modificationsAllowed);
+        filterForm.add(buttons);
 
         //Загрузить
-        buttonContainer.add(new AjaxLink<Void>("load") {
+        buttons.add(new AjaxLink<Void>("load") {
 
             @Override
             public void onClick(AjaxRequestTarget target) {
@@ -622,7 +632,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
         });
 
         //Связать
-        buttonContainer.add(new AjaxLink<Void>("bind") {
+        buttons.add(new AjaxLink<Void>("bind") {
 
             @Override
             public void onClick(AjaxRequestTarget target) {
@@ -637,7 +647,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
         });
 
         //Обработать
-        buttonContainer.add(new AjaxLink<Void>("process") {
+        buttons.add(new AjaxLink<Void>("process") {
 
             @Override
             public void onClick(AjaxRequestTarget target) {
@@ -652,7 +662,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
         });
 
         //Выгрузить
-        buttonContainer.add(new AjaxLink<Void>("save") {
+        buttons.add(new AjaxLink<Void>("save") {
 
             @Override
             public void onClick(AjaxRequestTarget target) {
@@ -667,7 +677,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
         });
 
         //Удалить
-        buttonContainer.add(new AjaxLink<Void>("delete") {
+        buttons.add(new AjaxLink<Void>("delete") {
 
             @Override
             protected IAjaxCallDecorator getAjaxCallDecorator() {
@@ -707,7 +717,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
         });
 
         //Отменить загрузку
-        buttonContainer.add(new AjaxLink<Void>("load_cancel") {
+        buttons.add(new AjaxLink<Void>("load_cancel") {
 
             @Override
             public boolean isVisible() {
@@ -723,7 +733,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
         });
 
         //Отменить связывание
-        buttonContainer.add(new AjaxLink<Void>("bind_cancel") {
+        buttons.add(new AjaxLink<Void>("bind_cancel") {
 
             @Override
             public boolean isVisible() {
@@ -739,7 +749,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
         });
 
         //Отменить обработку
-        buttonContainer.add(new AjaxLink<Void>("fill_cancel") {
+        buttons.add(new AjaxLink<Void>("fill_cancel") {
 
             @Override
             public boolean isVisible() {
@@ -755,7 +765,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
         });
 
         //Отменить выгрузку
-        buttonContainer.add(new AjaxLink<Void>("save_cancel") {
+        buttons.add(new AjaxLink<Void>("save_cancel") {
 
             @Override
             public boolean isVisible() {
@@ -773,18 +783,17 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
         //Диалог загрузки
         requestFileLoadPanel = new RequestFileLoadPanel("load_panel",
                 new ResourceModel("load_panel_title"),
-                new RequestFileLoadPanel.ILoader() {
+                new IRequestFileLoader() {
 
                     @Override
-                    public void load(long userOrganizationId, long osznId, int monthFrom, int monthTo,
-                            int year, AjaxRequestTarget target) {
+                    public void load(long userOrganizationId, long osznId, DateParameter dateParameter, AjaxRequestTarget target) {
                         completedDisplayed.put(getLoadProcessType(), false);
-                        AbstractProcessableListPanel.this.load(userOrganizationId, osznId, monthFrom, monthTo, year);
+                        AbstractProcessableListPanel.this.load(userOrganizationId, osznId, dateParameter);
 
                         addTimer(dataViewContainer, filterForm, messages);
                         target.add(filterForm);
                     }
-                });
+                }, getLoadMonthParameterViewMode());
         add(requestFileLoadPanel);
 
         //Запуск таймера
@@ -886,9 +895,9 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
 
     private void addMessages(String keyPrefix, AjaxRequestTarget target, ProcessType processType,
             RequestFileStatus processedStatus, RequestFileStatus errorStatus) {
-        List<M> loadList = processManagerBean.getProcessed(processType, getClass());
+        List<M> list = processManagerBean.getProcessed(processType, getClass());
 
-        for (M object : loadList) {
+        for (M object : list) {
             if (getStatus(object).equals(RequestFileStatus.SKIPPED)) {
                 highlightProcessed(target, object.getId());
                 info(MessageFormat.format(getString(keyPrefix + ".skipped"), getFullName(object)));
@@ -967,28 +976,28 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
     }
 
     private AjaxSelfUpdatingTimerBehavior newTimer(final Form<?> filterForm, final AjaxFeedbackPanel messages) {
-        waitForStopTimer = 0;
+        final AtomicInteger waitForStopTimer = new AtomicInteger();
         return new AjaxSelfUpdatingTimerBehavior(Duration.seconds(7)) {
 
             @Override
             protected void onPostProcessTarget(AjaxRequestTarget target) {
                 showMessages(target);
 
-                if (!isGlobalProcessing() && ++waitForStopTimer > 2) {
+                if (!isGlobalProcessing() && waitForStopTimer.incrementAndGet() > 2) {
                     this.stop();
                     target.add(filterForm);
                 } else {
                     //update feedback messages panel
                     target.add(messages);
-                    target.add(buttonContainer);
+                    target.add(buttons);
                 }
 
-                timerIndex++;
+                statusTimerIndex.incrementAndGet();
             }
         };
     }
 
-    public void addTimer(WebMarkupContainer dataViewContainer, Form<?> filterForm, AjaxFeedbackPanel messages) {
+    private void addTimer(WebMarkupContainer dataViewContainer, Form<?> filterForm, AjaxFeedbackPanel messages) {
         boolean needCreateNewTimer = true;
 
         List<AjaxSelfUpdatingTimerBehavior> timers = newArrayList(filter(dataViewContainer.getBehaviors(),

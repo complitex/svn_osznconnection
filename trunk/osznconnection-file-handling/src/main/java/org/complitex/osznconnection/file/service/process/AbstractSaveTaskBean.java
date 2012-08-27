@@ -117,6 +117,10 @@ public abstract class AbstractSaveTaskBean {
         return dbfFields.toArray(new DBFField[dbfFields.size()]);
     }
 
+    protected String getOutputFileName(String inputFileName) {
+        return inputFileName;
+    }
+
     protected final void save(RequestFile requestFile, boolean updatePuAccount) throws SaveException {
         final RequestFileDescription description = requestFileDescriptionBean.getFileDescription(requestFile.getType());
 
@@ -126,7 +130,7 @@ public abstract class AbstractSaveTaskBean {
             //устанавливаем абсолютный путь для сохранения файла запроса
             File file = RequestFileStorage.INSTANCE.createOutputRequestFileDirectory(
                     getOutputBaseDirectory(requestFile.getUserOrganizationId(), requestFile.getOrganizationId()),
-                    requestFile.getName(), requestFile.getDirectory());
+                    getOutputFileName(requestFile.getName()), requestFile.getDirectory());
             requestFile.setAbsolutePath(file.getAbsolutePath());
 
             //Удаляем файл если такой есть и создаем новый.

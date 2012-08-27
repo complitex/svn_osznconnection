@@ -1,4 +1,4 @@
-package org.complitex.osznconnection.file.web;
+package org.complitex.osznconnection.file.web.component.load;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -12,44 +12,37 @@ import org.apache.wicket.model.Model;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
 import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
-import org.complitex.dictionary.web.component.MonthDropDownChoice;
 import org.complitex.dictionary.web.component.YearDropDownChoice;
 import org.odlabs.wiquery.ui.dialog.Dialog;
 
 import javax.ejb.EJB;
-import java.io.Serializable;
 import java.util.List;
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.feedback.ContainerFeedbackMessageFilter;
+import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.complitex.osznconnection.file.service.OsznSessionBean;
 import org.complitex.osznconnection.file.web.model.OrganizationModel;
 import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
 import org.complitex.template.web.template.TemplateSession;
 
-/**
- * @author Anatoly A. Ivanov java@inheaven.ru
- *         Date: 10.12.10 16:52
- */
-public class RequestFileLoadPanel extends Panel {
+public final class RequestFileLoadPanel extends Panel {
 
     @EJB(name = "OsznOrganizationStrategy")
     private IOsznOrganizationStrategy organizationStrategy;
     @EJB
     private OsznSessionBean osznSessionBean;
     private final Dialog dialog;
+    private static final String MONTH_COMPONENT_ID = "monthComponent";
 
-    public static interface ILoader extends Serializable {
+    public static enum MonthParameterViewMode {
 
-        void load(long userOrganizationId, long osznId, int monthFrom, int monthTo, int year,
-                AjaxRequestTarget target);
+        RANGE, EXACT, HIDDEN
     }
 
-    public RequestFileLoadPanel(String id, IModel<String> title, ILoader loader) {
-        this(id, title, loader, true);
-    }
-
-    public RequestFileLoadPanel(String id, IModel<String> title, final ILoader loader, final boolean showDatePeriod) {
+    public RequestFileLoadPanel(String id, IModel<String> title, final IRequestFileLoader loader,
+            final MonthParameterViewMode monthParameterViewMode) {
         super(id);
 
         dialog = new Dialog("dialog") {
@@ -108,7 +101,7 @@ public class RequestFileLoadPanel extends Panel {
         };
         final OrganizationModel userOrganizationModel = new OrganizationModel() {
 
-            private Long userOrganizationId;
+            Long userOrganizationId;
 
             @Override
             public Long getOrganizationId() {
@@ -133,41 +126,65 @@ public class RequestFileLoadPanel extends Panel {
         userOrganizationContainer.setVisible(currentUserOrganizationId == null);
 
         final DropDownChoice<Integer> year = new YearDropDownChoice("year", new Model<Integer>());
-        year.setRequired(showDatePeriod);
+        year.setRequired(true);
         form.add(year);
 
-        WebMarkupContainer datePeriodContainer = new WebMarkupContainer("date_period_container");
-        datePeriodContainer.setVisible(showDatePeriod);
-        form.add(datePeriodContainer);
+        WebMarkupContainer monthParameterContainer = new WebMarkupContainer("monthParameterContainer");
+        monthParameterContainer.setVisible(monthParameterViewMode != MonthParameterViewMode.HIDDEN);
+        form.add(monthParameterContainer);
 
-        //Период
-        final DropDownChoice<Integer> from = new MonthDropDownChoice("from", new Model<Integer>());
-        from.setRequired(showDatePeriod);
-        datePeriodContainer.add(from);
+        final IModel<MonthRange> monthRangeModel = new Model<>();
+        Component monthComponent;
+        switch (monthParameterViewMode) {
+            case RANGE:
+                monthComponent = new MonthRangePanel(MONTH_COMPONENT_ID, monthRangeModel);
+                break;
+            case EXACT:
+                IModel<Integer> monthPickerModel = new Model<Integer>() {
 
-        final DropDownChoice<Integer> to = new MonthDropDownChoice("to", new Model<Integer>());
-        to.setRequired(showDatePeriod);
-        datePeriodContainer.add(to);
+                    @Override
+                    public void setObject(Integer month) {
+                        if (month != null) {
+                            monthRangeModel.setObject(new MonthRange(month));
+                        } else {
+                            monthRangeModel.setObject(null);
+                        }
+                    }
+
+                    @Override
+                    public Integer getObject() {
+                        MonthRange monthRange = monthRangeModel.getObject();
+                        return monthRange != null ? monthRange.getMonthFrom() : null;
+                    }
+                };
+                monthComponent = new MonthPickerPanel(MONTH_COMPONENT_ID, monthPickerModel);
+                break;
+            case HIDDEN:
+            default:
+                monthComponent = new EmptyPanel(MONTH_COMPONENT_ID);
+                break;
+        }
+        monthParameterContainer.add(monthComponent);
 
         //Загрузить
         AjaxButton load = new AjaxButton("load", form) {
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                int f = showDatePeriod ? from.getModelObject() : 0;
-                int t = showDatePeriod ? to.getModelObject() : 0;
-
-                if (t < f && showDatePeriod) {
-                    error(getString("error.to_less_then_from"));
-                    return;
-                }
-
                 final DomainObject oszn = osznModel.getObject();
-
                 Long mainUserOrganizationId = osznSessionBean.getCurrentUserOrganizationId(RequestFileLoadPanel.this.getSession());
                 long currentUserOrganizationId = mainUserOrganizationId != null ? mainUserOrganizationId
                         : userOrganizationModel.getOrganizationId();
-                loader.load(currentUserOrganizationId, oszn.getId(), f, t, year.getModelObject(), target);
+
+                DateParameter dateParameter;
+                if (monthParameterViewMode == MonthParameterViewMode.HIDDEN) {
+                    dateParameter = new DateParameter(year.getModelObject());
+                } else {
+                    final MonthRange monthRange = monthRangeModel.getObject();
+                    dateParameter = new DateParameter(year.getModelObject(),
+                            monthRange.getMonthFrom(), monthRange.getMonthTo());
+                }
+                loader.load(currentUserOrganizationId, oszn.getId(), dateParameter, target);
 
                 target.add(messages);
                 dialog.close(target);

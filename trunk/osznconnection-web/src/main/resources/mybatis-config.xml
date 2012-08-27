@@ -62,6 +62,10 @@
         <mapper resource="org/complitex/osznconnection/file/service/PaymentBean.xml"/>
         <mapper resource="org/complitex/osznconnection/file/service/ActualPaymentBean.xml"/>
         <mapper resource="org/complitex/osznconnection/file/service/SubsidyBean.xml"/>
+        <mapper resource="org/complitex/osznconnection/file/service/DwellingCharacteristicsBean.xml"/>
+        <mapper resource="org/complitex/osznconnection/file/service/FacilityServiceTypeBean.xml"/>
+        <mapper resource="org/complitex/osznconnection/file/service/FacilityForm2Bean.xml"/>
+        <mapper resource="org/complitex/osznconnection/file/service/FacilityReferenceBookBean.xml"/>
         <mapper resource="org/complitex/osznconnection/file/service/CorrectionBean.xml"/>
         <mapper resource="org/complitex/osznconnection/file/service/AddressCorrectionBean.xml"/>
         <mapper resource="org/complitex/osznconnection/file/service/OwnershipCorrectionBean.xml"/>

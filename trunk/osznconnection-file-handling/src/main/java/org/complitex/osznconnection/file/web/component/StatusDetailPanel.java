@@ -105,8 +105,9 @@ public abstract class StatusDetailPanel<T extends AbstractRequestExample> extend
                         };
                         item.add(filter);
 
-                        filter.add(new Label("name", statusDetailRenderService.displayStatusDetail(statusDetailInfo.getStatus(), statusDetail,
-                                statusDetailRenderer)));
+                        filter.add(new Label("name",
+                                statusDetailRenderService.displayStatusDetail(statusDetailInfo.getStatus(),
+                                statusDetail, statusDetailRenderer, getLocale())));
                     }
                 };
                 statusDetailsContainer.setVisible(false);

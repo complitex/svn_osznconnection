@@ -17,6 +17,8 @@ import javax.ejb.TransactionAttributeType;
 import java.util.List;
 import org.complitex.osznconnection.file.entity.AbstractRequest;
 import org.complitex.osznconnection.file.entity.ActualPayment;
+import org.complitex.osznconnection.file.entity.DwellingCharacteristics;
+import org.complitex.osznconnection.file.entity.FacilityServiceType;
 import org.complitex.osznconnection.file.entity.PaymentDBF;
 import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.entity.RequestStatus;
@@ -64,6 +66,18 @@ public class LookupBean extends AbstractBean {
         addressService.resolveOutgoingAddress(subsidy, calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId));
     }
 
+    @Transactional
+    public void resolveOutgoingAddress(DwellingCharacteristics dwellingCharacteristics, long userOrganizationId) {
+        addressService.resolveOutgoingAddress(dwellingCharacteristics,
+                calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId));
+    }
+
+    @Transactional
+    public void resolveOutgoingAddress(FacilityServiceType facilityServiceType, long userOrganizationId) {
+        addressService.resolveOutgoingAddress(facilityServiceType,
+                calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId));
+    }
+
     /**
      * Получить детальную информацию о клиентах ЦН.
      * Вся работа по поиску делегируется адаптеру взаимодействия с ЦН.
@@ -105,6 +119,28 @@ public class LookupBean extends AbstractBean {
     }
 
     @Transactional
+    @TransactionAttribute(TransactionAttributeType.NEVER)
+    public List<AccountDetail> acquireAccountDetailsByAddress(DwellingCharacteristics dwellingCharacteristics, long userOrganizationId)
+            throws DBException {
+        return acquireAccountDetailsByAddress(dwellingCharacteristics, dwellingCharacteristics.getOutgoingDistrict(),
+                dwellingCharacteristics.getOutgoingStreetType(),
+                dwellingCharacteristics.getOutgoingStreet(), dwellingCharacteristics.getOutgoingBuildingNumber(),
+                dwellingCharacteristics.getOutgoingBuildingCorp(),
+                dwellingCharacteristics.getOutgoingApartment(), dwellingCharacteristics.getDate(), userOrganizationId);
+    }
+
+    @Transactional
+    @TransactionAttribute(TransactionAttributeType.NEVER)
+    public List<AccountDetail> acquireAccountDetailsByAddress(FacilityServiceType facilityServiceType, long userOrganizationId)
+            throws DBException {
+        return acquireAccountDetailsByAddress(facilityServiceType, facilityServiceType.getOutgoingDistrict(),
+                facilityServiceType.getOutgoingStreetType(),
+                facilityServiceType.getOutgoingStreet(), facilityServiceType.getOutgoingBuildingNumber(),
+                facilityServiceType.getOutgoingBuildingCorp(),
+                facilityServiceType.getOutgoingApartment(), facilityServiceType.getDate(), userOrganizationId);
+    }
+
+    @Transactional
     public String resolveOutgoingDistrict(Payment payment, long userOrganizationId) {
         payment.setStatus(RequestStatus.LOADED);
         addressService.resolveOutgoingDistrict(payment, calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId));
@@ -135,6 +171,32 @@ public class LookupBean extends AbstractBean {
         if (!(subsidy.getStatus() == RequestStatus.DISTRICT_UNRESOLVED
                 || subsidy.getStatus() == RequestStatus.MORE_ONE_REMOTE_DISTRICT_CORRECTION)) {
             return subsidy.getOutgoingDistrict();
+        } else {
+            return null;
+        }
+    }
+
+    @Transactional
+    public String resolveOutgoingDistrict(DwellingCharacteristics dwellingCharacteristics, long userOrganizationId) {
+        dwellingCharacteristics.setStatus(RequestStatus.LOADED);
+        addressService.resolveOutgoingDistrict(dwellingCharacteristics,
+                calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId));
+        if (!(dwellingCharacteristics.getStatus() == RequestStatus.DISTRICT_UNRESOLVED
+                || dwellingCharacteristics.getStatus() == RequestStatus.MORE_ONE_REMOTE_DISTRICT_CORRECTION)) {
+            return dwellingCharacteristics.getOutgoingDistrict();
+        } else {
+            return null;
+        }
+    }
+
+    @Transactional
+    public String resolveOutgoingDistrict(FacilityServiceType facilityServiceType, long userOrganizationId) {
+        facilityServiceType.setStatus(RequestStatus.LOADED);
+        addressService.resolveOutgoingDistrict(facilityServiceType,
+                calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId));
+        if (!(facilityServiceType.getStatus() == RequestStatus.DISTRICT_UNRESOLVED
+                || facilityServiceType.getStatus() == RequestStatus.MORE_ONE_REMOTE_DISTRICT_CORRECTION)) {
+            return facilityServiceType.getOutgoingDistrict();
         } else {
             return null;
         }

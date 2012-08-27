@@ -1,5 +1,6 @@
 package org.complitex.osznconnection.file.service;
 
+import com.google.common.collect.ImmutableMap;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.osznconnection.file.entity.RequestFile;
@@ -36,12 +37,19 @@ public class RequestFileBean extends AbstractBean {
     private ActualPaymentBean actualPaymentBean;
     @EJB
     private SubsidyBean subsidyBean;
+    @EJB
+    private DwellingCharacteristicsBean dwellingCharacteristicsBean;
+    @EJB
+    private FacilityServiceTypeBean facilityServiceTypeBean;
+    @EJB
+    private FacilityForm2Bean facilityForm2Bean;
+    @EJB
+    private FacilityReferenceBookBean facilityReferenceBookBean;
 
     public RequestFile findById(long fileId) {
         return (RequestFile) sqlSession().selectOne(MAPPING_NAMESPACE + ".findById", fileId);
     }
 
-    @SuppressWarnings({"unchecked"})
     public List<RequestFile> getRequestFiles(RequestFileFilter filter) {
         osznSessionBean.prepareFilterForPermissionCheck(filter);
 
@@ -52,21 +60,54 @@ public class RequestFileBean extends AbstractBean {
                 return getSubsidyFiles(filter);
             case TARIF:
                 return getTarifFiles(filter);
+            case DWELLING_CHARACTERISTICS:
+                return getDwellingCharacteristicsFiles(filter);
+            case FACILITY_SERVICE_TYPE:
+                return getFacilityServiceTypeFiles(filter);
+            case FACILITY_FORM2:
+                return getFacilityForm2Files(filter);
+            case FACILITY_STREET_TYPE:
+                return getFacilityStreetTypeFiles(filter);
+            case FACILITY_STREET:
+                return getFacilityStreetFiles(filter);
+            case FACILITY_TARIF:
+                return getFacilityTarifFiles(filter);
         }
         throw new IllegalStateException("Unexpected request file type detected: '" + filter.getType() + "'.");
     }
 
-    @SuppressWarnings("unchecked")
     private List<RequestFile> getActualPaymentFiles(RequestFileFilter filter) {
         return sqlSession().selectList(MAPPING_NAMESPACE + ".selectActualPaymentFiles", filter);
     }
 
-    @SuppressWarnings("unchecked")
     private List<RequestFile> getSubsidyFiles(RequestFileFilter filter) {
         return sqlSession().selectList(MAPPING_NAMESPACE + ".selectSubsidyFiles", filter);
     }
 
-    @SuppressWarnings("unchecked")
+    private List<RequestFile> getDwellingCharacteristicsFiles(RequestFileFilter filter) {
+        return sqlSession().selectList(MAPPING_NAMESPACE + ".selectDwellingCharacteristicsFiles", filter);
+    }
+
+    private List<RequestFile> getFacilityServiceTypeFiles(RequestFileFilter filter) {
+        return sqlSession().selectList(MAPPING_NAMESPACE + ".selectFacilityServiceTypeFiles", filter);
+    }
+
+    private List<RequestFile> getFacilityForm2Files(RequestFileFilter filter) {
+        return sqlSession().selectList(MAPPING_NAMESPACE + ".selectFacilityForm2Files", filter);
+    }
+
+    private List<RequestFile> getFacilityStreetTypeFiles(RequestFileFilter filter) {
+        return sqlSession().selectList(MAPPING_NAMESPACE + ".selectFacilityStreetTypeFiles", filter);
+    }
+
+    private List<RequestFile> getFacilityStreetFiles(RequestFileFilter filter) {
+        return sqlSession().selectList(MAPPING_NAMESPACE + ".selectFacilityStreetFiles", filter);
+    }
+
+    private List<RequestFile> getFacilityTarifFiles(RequestFileFilter filter) {
+        return sqlSession().selectList(MAPPING_NAMESPACE + ".selectFacilityTarifFiles", filter);
+    }
+
     private List<RequestFile> getTarifFiles(RequestFileFilter filter) {
         return sqlSession().selectList(MAPPING_NAMESPACE + ".selectTarifFiles", filter);
     }
@@ -76,6 +117,7 @@ public class RequestFileBean extends AbstractBean {
         return (Integer) sqlSession().selectOne(MAPPING_NAMESPACE + ".selectRequestFilesCount", filter);
     }
 
+    @Transactional
     public void save(RequestFile requestFile) {
         if (requestFile.getId() == null) {
             sqlSession().insert(MAPPING_NAMESPACE + ".insertRequestFile", requestFile);
@@ -103,6 +145,20 @@ public class RequestFileBean extends AbstractBean {
                 case SUBSIDY:
                     subsidyBean.delete(requestFile.getId());
                     break;
+                case DWELLING_CHARACTERISTICS:
+                    dwellingCharacteristicsBean.delete(requestFile.getId());
+                    break;
+                case FACILITY_SERVICE_TYPE:
+                    facilityServiceTypeBean.delete(requestFile.getId());
+                    break;
+                case FACILITY_FORM2:
+                    facilityForm2Bean.delete(requestFile.getId());
+                    break;
+                case FACILITY_STREET_TYPE:
+                case FACILITY_STREET:
+                case FACILITY_TARIF:
+                    facilityReferenceBookBean.delete(requestFile.getId(), requestFile.getType());
+                    break;
             }
         }
         sqlSession().delete(MAPPING_NAMESPACE + ".deleteRequestFile", requestFile.getId());
@@ -120,11 +176,20 @@ public class RequestFileBean extends AbstractBean {
     }
 
     @Transactional
-    @SuppressWarnings({"unchecked"})
     public void deleteTarif(Long organizationId) {
         List<RequestFile> tarifs = sqlSession().selectList(MAPPING_NAMESPACE + ".findTarifFiles", organizationId);
         for (RequestFile tarif : tarifs) {
             delete(tarif);
+        }
+    }
+
+    @Transactional
+    public void deleteFacilityReferenceFiles(long osznId, long userOrganizationId, RequestFile.TYPE requestFileType) {
+        List<RequestFile> facilityReferenceFiles = sqlSession().selectList(MAPPING_NAMESPACE + ".getFacilityReferenceFiles",
+                ImmutableMap.of("osznId", osznId, "userOrganizationId", userOrganizationId,
+                "requestFileType", requestFileType.name()));
+        for (RequestFile facilityReferenceFile : facilityReferenceFiles) {
+            delete(facilityReferenceFile);
         }
     }
 

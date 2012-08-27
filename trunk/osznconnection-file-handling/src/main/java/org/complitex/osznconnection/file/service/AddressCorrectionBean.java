@@ -27,7 +27,7 @@ import static org.complitex.dictionary.util.StringUtil.*;
  * Класс для работы с коррекциями адресов.
  * @author Artem
  */
-@Stateless(name = "AddressCorrectionBean")
+@Stateless
 public class AddressCorrectionBean extends CorrectionBean {
 
     private static final Logger log = LoggerFactory.getLogger(AddressCorrectionBean.class);
@@ -93,6 +93,17 @@ public class AddressCorrectionBean extends CorrectionBean {
         params.put("organizationId", osznId);
         params.put("userOrganizationId", userOrganizationId);
         return sqlSession().selectList(ADDRESS_BEAN_MAPPING_NAMESPACE + ".findStreetLocalCorrections", params);
+    }
+
+    @Transactional
+    public List<StreetCorrection> findStreetLocalCorrectionsByCode(Long parentId, String streetCode,
+            long osznId, long userOrganizationId) {
+        Map<String, Object> params = Maps.newHashMap();
+        params.put("parentId", parentId);
+        params.put("streetCode", streetCode);
+        params.put("organizationId", osznId);
+        params.put("userOrganizationId", userOrganizationId);
+        return sqlSession().selectList(ADDRESS_BEAN_MAPPING_NAMESPACE + ".findStreetLocalCorrectionsByCode", params);
     }
 
     @Transactional
@@ -260,8 +271,8 @@ public class AddressCorrectionBean extends CorrectionBean {
         return correction;
     }
 
-    public Correction createStreetTypeCorrection(String streetType, long streetTypeObjectId, long organizationId,
-            long internalOrganizationId, long userOrganizationId) {
+    public Correction createStreetTypeCorrection(String streetType, long streetTypeObjectId,
+            long organizationId, long internalOrganizationId, long userOrganizationId) {
         Correction correction = new Correction("street_type");
         correction.setParentId(null);
         correction.setCorrection(streetType);
@@ -313,8 +324,8 @@ public class AddressCorrectionBean extends CorrectionBean {
     }
 
     @Transactional
-    public void insertStreetTypeCorrection(String streetType, long streetTypeObjectId, long organizationId,
-            long internalOrganizationId, Long userOrganizationId) {
+    public void insertStreetTypeCorrection(String streetType, long streetTypeObjectId,
+            long organizationId, long internalOrganizationId, Long userOrganizationId) {
         insert(createStreetTypeCorrection(streetType, streetTypeObjectId, organizationId, internalOrganizationId,
                 userOrganizationId));
     }

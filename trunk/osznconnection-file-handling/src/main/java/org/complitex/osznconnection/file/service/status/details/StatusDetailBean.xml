@@ -335,4 +335,165 @@
             </otherwise>
         </choose>
     </select>
+    
+    <!-- dwelling characteristics status detail objects -->
+    <resultMap id="dwellingCharacteristicsStatusDetailInfo" type="org.complitex.osznconnection.file.entity.StatusDetailInfo" 
+                extends="org.complitex.osznconnection.file.service.status.details.StatusDetailBean.statusDetailInfo">
+        <collection property="statusDetails" column="status=status,id=request_file_id"
+                    ofType="org.complitex.osznconnection.file.entity.StatusDetail"
+                    select="getDwellingCharacteristicsStatusDetails"/>
+    </resultMap>
+
+    <resultMap id="dwellingCharacteristicsStatusDetail" type="org.complitex.osznconnection.file.entity.StatusDetail" 
+                extends="org.complitex.osznconnection.file.service.status.details.StatusDetailBean.statusDetail">
+        <association property="details" javaType="map">
+            <result column="FIO" property="fio"/>
+            <result column="first_name" property="firstName"/>
+            <result column="middle_name" property="middleName"/>
+            <result column="last_name" property="lastName"/>
+            <result column="CDUL" property="streetCode"/>
+            <result column="HOUSE" property="building"/>
+            <result column="BLILD" property="buildingCorp"/>
+            <result column="APT" property="apartment"/>
+        </association>
+    </resultMap>
+
+    <select id="getDwellingCharacteristicsStatusDetailInfo" parameterType="long" resultMap="org.complitex.osznconnection.file.service.status.details.StatusDetailBean.dwellingCharacteristicsStatusDetailInfo">
+        SELECT COUNT(1) `count`, `status`, `request_file_id` FROM `dwelling_characteristics` WHERE `request_file_id` = #{id}
+        GROUP BY `status`
+        ORDER BY `count` DESC
+    </select>
+
+    <select id="getDwellingCharacteristicsStatusDetails" parameterType="map" resultMap="org.complitex.osznconnection.file.service.status.details.StatusDetailBean.dwellingCharacteristicsStatusDetail">
+        <choose>
+            <!--account number -->
+            <when test="status == 212 or status == 213">
+                SELECT `FIO` `id`, COUNT(1) `count`, `first_name`, `middle_name`, `last_name`, `FIO` FROM `dwelling_characteristics`
+                WHERE `request_file_id` = #{id} AND `status` = #{status}
+                GROUP BY 1
+            </when>
+
+            <!--city TODO: do not expose any city details. Check it and delete city block.-->
+<!--            <when test="status == 200 or status == 205 or status == 221">
+                SELECT '' `id`, COUNT(1) `count` FROM `dwelling_characteristics`
+                WHERE `request_file_id` = #{id} AND `status` = #{status}
+                GROUP BY 1
+            </when>-->
+
+            <!--street-->
+            <when test="status == 201 or status == 237 or status == 208 or status == 207 or status == 223 or status == 224">
+                SELECT CONCAT(`CDUL`) `id`, COUNT(1) `count`, `CDUL` FROM `dwelling_characteristics`
+                WHERE `request_file_id` = #{id} AND `status` = #{status}
+                GROUP BY 1
+            </when>
+
+            <!--building-->
+            <when test="status == 202 or status == 209 or status == 225">
+                SELECT CONCAT(`CDUL`, `HOUSE`) `id`, COUNT(1) `count`, `CDUL`, `HOUSE`
+                FROM `dwelling_characteristics`
+                WHERE `request_file_id` = #{id} AND `status` = #{status}
+                GROUP BY 1
+            </when>
+
+            <!--building corp-->
+            <when test="status == 226">
+                SELECT CONCAT(`CDUL`, `HOUSE`, `BLILD`) `id`, COUNT(1) `count`, `CDUL`, `HOUSE`, `BLILD` 
+                FROM `dwelling_characteristics`
+                WHERE `request_file_id` = #{id} AND `status` = #{status}
+                GROUP BY 1
+            </when>
+
+            <!-- apartment -->
+            <when test="status == 227">
+                SELECT CONCAT(`CDUL`, `HOUSE`, `BLILD`, `APT`) `id`, COUNT(1) `count`, `CDUL`, `HOUSE`, `BLILD`, `APT` 
+                FROM `dwelling_characteristics`
+                WHERE `request_file_id` = #{id} AND `status` = #{status}
+                GROUP BY 1
+            </when>
+            <otherwise>
+                SELECT 1 FROM DUAL where 1=0;
+            </otherwise>
+        </choose>
+    </select>
+    
+    <!-- facility service type status detail objects -->
+    <resultMap id="facilityServiceTypeStatusDetailInfo" type="org.complitex.osznconnection.file.entity.StatusDetailInfo" 
+                extends="org.complitex.osznconnection.file.service.status.details.StatusDetailBean.statusDetailInfo">
+        <collection property="statusDetails" column="status=status,id=request_file_id"
+                    ofType="org.complitex.osznconnection.file.entity.StatusDetail"
+                    select="getFacilityServiceTypeStatusDetails"/>
+    </resultMap>
+
+    <resultMap id="facilityServiceTypeStatusDetail" type="org.complitex.osznconnection.file.entity.StatusDetail" 
+                extends="org.complitex.osznconnection.file.service.status.details.StatusDetailBean.statusDetail">
+        <association property="details" javaType="map">
+            <result column="FIO" property="fio"/>
+            <result column="first_name" property="firstName"/>
+            <result column="middle_name" property="middleName"/>
+            <result column="last_name" property="lastName"/>
+            <result column="CDUL" property="streetCode"/>
+            <result column="HOUSE" property="building"/>
+            <result column="BLILD" property="buildingCorp"/>
+            <result column="APT" property="apartment"/>
+        </association>
+    </resultMap>
+
+    <select id="getFacilityServiceTypeStatusDetailInfo" parameterType="long" 
+                        resultMap="org.complitex.osznconnection.file.service.status.details.StatusDetailBean.dwellingCharacteristicsStatusDetailInfo">
+        SELECT COUNT(1) `count`, `status`, `request_file_id` FROM `facility_service_type` WHERE `request_file_id` = #{id}
+        GROUP BY `status`
+        ORDER BY `count` DESC
+    </select>
+
+    <select id="getFacilityServiceTypeStatusDetails" parameterType="map" resultMap="org.complitex.osznconnection.file.service.status.details.StatusDetailBean.dwellingCharacteristicsStatusDetail">
+        <choose>
+            <!--account number -->
+            <when test="status == 212 or status == 213">
+                SELECT `FIO` `id`, COUNT(1) `count`, `first_name`, `middle_name`, `last_name`, `FIO` FROM `facility_service_type`
+                WHERE `request_file_id` = #{id} AND `status` = #{status}
+                GROUP BY 1
+            </when>
+
+            <!--city TODO: do not expose any city details. Check it and delete city block.-->
+<!--            <when test="status == 200 or status == 205 or status == 221">
+                SELECT '' `id`, COUNT(1) `count` FROM `facility_service_type`
+                WHERE `request_file_id` = #{id} AND `status` = #{status}
+                GROUP BY 1
+            </when>-->
+
+            <!--street-->
+            <when test="status == 201 or status == 237 or status == 208 or status == 207 or status == 223 or status == 224">
+                SELECT CONCAT(`CDUL`) `id`, COUNT(1) `count`, `CDUL` FROM `facility_service_type`
+                WHERE `request_file_id` = #{id} AND `status` = #{status}
+                GROUP BY 1
+            </when>
+
+            <!--building-->
+            <when test="status == 202 or status == 209 or status == 225">
+                SELECT CONCAT(`CDUL`, `HOUSE`) `id`, COUNT(1) `count`, `CDUL`, `HOUSE`
+                FROM `facility_service_type`
+                WHERE `request_file_id` = #{id} AND `status` = #{status}
+                GROUP BY 1
+            </when>
+
+            <!--building corp-->
+            <when test="status == 226">
+                SELECT CONCAT(`CDUL`, `HOUSE`, `BLILD`) `id`, COUNT(1) `count`, `CDUL`, `HOUSE`, `BLILD` 
+                FROM `facility_service_type`
+                WHERE `request_file_id` = #{id} AND `status` = #{status}
+                GROUP BY 1
+            </when>
+
+            <!-- apartment -->
+            <when test="status == 227">
+                SELECT CONCAT(`CDUL`, `HOUSE`, `BLILD`, `APT`) `id`, COUNT(1) `count`, `CDUL`, `HOUSE`, `BLILD`, `APT` 
+                FROM `facility_service_type`
+                WHERE `request_file_id` = #{id} AND `status` = #{status}
+                GROUP BY 1
+            </when>
+            <otherwise>
+                SELECT 1 FROM DUAL where 1=0;
+            </otherwise>
+        </choose>
+    </select>
 </mapper>

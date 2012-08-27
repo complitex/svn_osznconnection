@@ -4,6 +4,7 @@
  */
 package org.complitex.osznconnection.file.service.status.details;
 
+import java.util.Locale;
 import javax.ejb.ConcurrencyManagement;
 import javax.ejb.ConcurrencyManagementType;
 import javax.ejb.Singleton;
@@ -18,9 +19,10 @@ import org.complitex.osznconnection.file.entity.StatusDetail;
 @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 public class StatusDetailRenderService {
 
-    public String displayStatusDetail(RequestStatus status, StatusDetail statusDetail, IStatusDetailRenderer statusDetailRenderer) {
+    public String displayStatusDetail(RequestStatus status, StatusDetail statusDetail,
+            IStatusDetailRenderer statusDetailRenderer, Locale locale) {
         String countString = displayCount(statusDetail.getCount());
-        return statusDetailRenderer.displayStatusDetail(status, statusDetail) + countString;
+        return statusDetailRenderer.displayStatusDetail(status, statusDetail, locale) + countString;
     }
 
     public String displayCount(Long count) {

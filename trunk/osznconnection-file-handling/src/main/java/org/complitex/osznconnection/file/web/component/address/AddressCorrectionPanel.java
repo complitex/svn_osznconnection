@@ -155,7 +155,7 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
         });
         container.add(streetTypeSelect);
 
-        AjaxLink save = new AjaxLink("save") {
+        AjaxLink<Void> save = new AjaxLink<Void>("save") {
 
             @Override
             public void onClick(AjaxRequestTarget target) {
@@ -199,7 +199,7 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
         };
         container.add(save);
 
-        AjaxLink cancel = new AjaxLink("cancel") {
+        AjaxLink<Void> cancel = new AjaxLink<Void>("cancel") {
 
             @Override
             public void onClick(AjaxRequestTarget target) {
@@ -321,8 +321,8 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
      */
     public void open(AjaxRequestTarget target, T request, String firstName, String middleName, String lastName, String city,
             String street, String buildingNumber, String buildingCorp, String apartment, Long cityId, Long streetId, Long buildingId) {
-        open(target, request, firstName, middleName, lastName, city, streetType, street, buildingNumber, buildingCorp,
-                apartment, cityId, streetTypeId, streetId, buildingId, false);
+        open(target, request, firstName, middleName, lastName, city, null, street, buildingNumber, buildingCorp,
+                apartment, cityId, null, streetId, buildingId, false);
     }
 
     /**
@@ -372,7 +372,8 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
         initCorrectedEntity(!streetTypeEnabled);
         if (correctedEntity != CORRECTED_ENTITY.STREET_TYPE) {
             initSearchComponentState(componentState);
-            WiQuerySearchComponent newSearchComponent = new WiQuerySearchComponent("searchComponent", componentState, initFilters(), null, ShowMode.ACTIVE, true);
+            WiQuerySearchComponent newSearchComponent = 
+                    new WiQuerySearchComponent("searchComponent", componentState, initFilters(), null, ShowMode.ACTIVE, true);
             searchComponent.replaceWith(newSearchComponent);
             searchComponent = newSearchComponent;
             streetTypeSelect.setVisible(false);

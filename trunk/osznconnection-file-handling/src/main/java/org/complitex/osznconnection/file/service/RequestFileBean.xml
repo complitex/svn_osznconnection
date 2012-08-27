@@ -96,6 +96,59 @@
         <include refid="org.complitex.osznconnection.file.service.RequestFileBean.fromFilterSort"/>
     </select>
     
+    <select id="selectDwellingCharacteristicsFiles" parameterType="org.complitex.osznconnection.file.entity.RequestFileFilter"
+            resultMap="requestFileResultMap">
+        SELECT *,
+            (SELECT COUNT(1) FROM `dwelling_characteristics` WHERE `request_file_id` = rf.`id`)
+                as loaded_record_count,
+            (SELECT COUNT(1) FROM `dwelling_characteristics` WHERE `request_file_id` = rf.`id` AND `account_number` IS NOT NULL)
+                as binded_record_count,
+            (SELECT COUNT(1) FROM `dwelling_characteristics` WHERE `request_file_id` = rf.`id` AND `status` = 215)
+                as filled_record_count
+        <include refid="org.complitex.osznconnection.file.service.RequestFileBean.fromFilterSort"/>
+    </select>
+    
+    <select id="selectFacilityServiceTypeFiles" parameterType="org.complitex.osznconnection.file.entity.RequestFileFilter"
+            resultMap="requestFileResultMap">
+        SELECT *,
+            (SELECT COUNT(1) FROM `facility_service_type` WHERE `request_file_id` = rf.`id`)
+                as loaded_record_count,
+            (SELECT COUNT(1) FROM `facility_service_type` WHERE `request_file_id` = rf.`id` AND `account_number` IS NOT NULL)
+                as binded_record_count,
+            (SELECT COUNT(1) FROM `facility_service_type` WHERE `request_file_id` = rf.`id` AND `status` = 215)
+                as filled_record_count
+        <include refid="org.complitex.osznconnection.file.service.RequestFileBean.fromFilterSort"/>
+    </select>
+    
+    <select id="selectFacilityForm2Files" parameterType="org.complitex.osznconnection.file.entity.RequestFileFilter"
+            resultMap="requestFileResultMap">
+        SELECT *,
+            (SELECT COUNT(1) FROM `facility_form2` WHERE `request_file_id` = rf.`id` AND `status` = 215)
+                as filled_record_count
+        <include refid="org.complitex.osznconnection.file.service.RequestFileBean.fromFilterSort"/>
+    </select>
+    
+    <select id="selectFacilityStreetTypeFiles" parameterType="org.complitex.osznconnection.file.entity.RequestFileFilter"
+            resultMap="requestFileResultMap">
+        SELECT *, 
+            (SELECT COUNT(1) FROM `facility_street_type_reference` WHERE `request_file_id` = rf.`id`) as loaded_record_count
+        <include refid="org.complitex.osznconnection.file.service.RequestFileBean.fromFilterSort"/>
+    </select>
+    
+    <select id="selectFacilityStreetFiles" parameterType="org.complitex.osznconnection.file.entity.RequestFileFilter"
+            resultMap="requestFileResultMap">
+        SELECT *, 
+            (SELECT COUNT(1) FROM `facility_street_reference` WHERE `request_file_id` = rf.`id`) as loaded_record_count
+        <include refid="org.complitex.osznconnection.file.service.RequestFileBean.fromFilterSort"/>
+    </select>
+    
+    <select id="selectFacilityTarifFiles" parameterType="org.complitex.osznconnection.file.entity.RequestFileFilter"
+            resultMap="requestFileResultMap">
+        SELECT *, 
+            (SELECT COUNT(1) FROM `facility_tarif_reference` WHERE `request_file_id` = rf.`id`) as loaded_record_count
+        <include refid="org.complitex.osznconnection.file.service.RequestFileBean.fromFilterSort"/>
+    </select>
+    
     <select id="selectActualPaymentFiles" parameterType="org.complitex.osznconnection.file.entity.RequestFileFilter"
             resultMap="requestFileResultMap">
         SELECT *,
@@ -110,7 +163,7 @@
     
     <sql id="fromFilterSort">
         FROM `request_file` rf
-            <include refid="requestFilesFilterWhere"/>
+            <include refid="org.complitex.osznconnection.file.service.RequestFileBean.requestFilesFilterWhere"/>
             <if test="sortProperty != null">
                 <choose>
                     <when test="sortProperty == 'name'">
@@ -149,7 +202,7 @@
         from
             `request_file`
         where
-            `name` = #{name} and organization_id = #{organizationId}
+            `name` = #{name} and organization_id = #{organizationId} and `user_organization_id` = #{userOrganizationId}
                 and `registry` = #{registry} and `month` = #{month} and `year` = #{year}
     </select>
 
@@ -158,6 +211,7 @@
         select id from `request_file`
         where
             `name` = #{name} and `organization_id` = #{organizationId} 
+                and `user_organization_id` = #{userOrganizationId}
                 and `registry` = #{registry} and `month` = #{month} and `year` = #{year}
         limit 1
     </select>
@@ -165,7 +219,12 @@
     <select id="findTarifFiles" parameterType="long" resultMap="requestFileResultMap">
         select * from `request_file` where organization_id = #{organizationId} and `type` = 'TARIF'
     </select>
-
+    
+    <select id="getFacilityReferenceFiles" parameterType="map" resultMap="requestFileResultMap">
+        SELECT * FROM `request_file` WHERE `organization_id` = #{osznId} AND `user_organization_id` = #{userOrganizationId}
+            AND `type` = #{requestFileType}
+    </select>
+    
     <select id="selectRequestFileStatus" resultType="org.complitex.osznconnection.file.entity.RequestFileStatus"
             parameterType="long">
         select `status` from `request_file` where `id` = #{id}

@@ -99,7 +99,7 @@ public class CorrectionBean extends AbstractBean {
     }
 
     @Transactional
-    public Long getCorrectionId(String entity, Long objectId, Long organizationId, Long internalOrganizationId) {
+    protected Long getCorrectionId(String entity, Long objectId, Long organizationId, Long internalOrganizationId) {
         Map<String, Object> params = Maps.newHashMap();
         params.put("entity", entity);
         params.put("objectId", objectId);

@@ -39,6 +39,10 @@ public class PersonAccountService extends AbstractBean {
     @EJB
     private SubsidyBean subsidyBean;
     @EJB
+    private DwellingCharacteristicsBean dwellingCharacteristicsBean;
+    @EJB
+    private FacilityServiceTypeBean facilityServiceTypeBean;
+    @EJB
     private RequestFileBean requestFileBean;
     @EJB
     private ServiceProviderAdapter adapter;
@@ -93,6 +97,34 @@ public class PersonAccountService extends AbstractBean {
         }
     }
 
+    @Transactional
+    public void resolveLocalAccount(DwellingCharacteristics dwellingCharacteristics, CalculationContext calculationContext) {
+        try {
+            String accountNumber = personAccountLocalBean.findLocalAccountNumber(dwellingCharacteristics, calculationContext.getCalculationCenterId(),
+                    calculationContext.getUserOrganizationId());
+            if (!Strings.isEmpty(accountNumber)) {
+                dwellingCharacteristics.setAccountNumber(accountNumber);
+                dwellingCharacteristics.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
+            }
+        } catch (MoreOneAccountException e) {
+            dwellingCharacteristics.setStatus(RequestStatus.MORE_ONE_ACCOUNTS_LOCALLY);
+        }
+    }
+
+    @Transactional
+    public void resolveLocalAccount(FacilityServiceType facilityServiceType, CalculationContext calculationContext) {
+        try {
+            String accountNumber = personAccountLocalBean.findLocalAccountNumber(facilityServiceType, calculationContext.getCalculationCenterId(),
+                    calculationContext.getUserOrganizationId());
+            if (!Strings.isEmpty(accountNumber)) {
+                facilityServiceType.setAccountNumber(accountNumber);
+                facilityServiceType.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
+            }
+        } catch (MoreOneAccountException e) {
+            facilityServiceType.setStatus(RequestStatus.MORE_ONE_ACCOUNTS_LOCALLY);
+        }
+    }
+
     /**
      * Попытаться разрешить номер л/с в ЦН.
      * См. org.complitex.osznconnection.file.calculation.adapter.DefaultCalculationCenterAdapter.acquirePersonAccount()
@@ -142,6 +174,36 @@ public class PersonAccountService extends AbstractBean {
                 subsidy.getOutgoingApartment(), (Date) subsidy.getField(SubsidyDBF.DAT1), updatePUAccount);
         if (subsidy.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED) {
             personAccountLocalBean.saveOrUpdate(subsidy, calculationContext.getCalculationCenterId(),
+                    calculationContext.getUserOrganizationId());
+        }
+    }
+
+    @Transactional
+    public void resolveRemoteAccount(DwellingCharacteristics dwellingCharacteristics, CalculationContext calculationContext,
+            Boolean updatePUAccount) throws DBException {
+        adapter.acquirePersonAccount(calculationContext, RequestFile.TYPE.DWELLING_CHARACTERISTICS, dwellingCharacteristics,
+                dwellingCharacteristics.getLastName(), dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.IDCODE),
+                dwellingCharacteristics.getOutgoingDistrict(), dwellingCharacteristics.getOutgoingStreetType(),
+                dwellingCharacteristics.getOutgoingStreet(),
+                dwellingCharacteristics.getOutgoingBuildingNumber(), dwellingCharacteristics.getOutgoingBuildingCorp(),
+                dwellingCharacteristics.getOutgoingApartment(), dwellingCharacteristics.getDate(), updatePUAccount);
+        if (dwellingCharacteristics.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED) {
+            personAccountLocalBean.saveOrUpdate(dwellingCharacteristics, calculationContext.getCalculationCenterId(),
+                    calculationContext.getUserOrganizationId());
+        }
+    }
+
+    @Transactional
+    public void resolveRemoteAccount(FacilityServiceType facilityServiceType, CalculationContext calculationContext,
+            Boolean updatePUAccount) throws DBException {
+        adapter.acquirePersonAccount(calculationContext, RequestFile.TYPE.DWELLING_CHARACTERISTICS, facilityServiceType,
+                facilityServiceType.getLastName(), facilityServiceType.getStringField(FacilityServiceTypeDBF.IDCODE),
+                facilityServiceType.getOutgoingDistrict(), facilityServiceType.getOutgoingStreetType(),
+                facilityServiceType.getOutgoingStreet(),
+                facilityServiceType.getOutgoingBuildingNumber(), facilityServiceType.getOutgoingBuildingCorp(),
+                facilityServiceType.getOutgoingApartment(), facilityServiceType.getDate(), updatePUAccount);
+        if (facilityServiceType.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED) {
+            personAccountLocalBean.saveOrUpdate(facilityServiceType, calculationContext.getCalculationCenterId(),
                     calculationContext.getUserOrganizationId());
         }
     }
@@ -202,6 +264,42 @@ public class PersonAccountService extends AbstractBean {
 
         final CalculationContext calculationContext = calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId);
         personAccountLocalBean.saveOrUpdate(subsidy, calculationContext.getCalculationCenterId(),
+                calculationContext.getUserOrganizationId());
+    }
+
+    @Transactional
+    public void updateAccountNumber(DwellingCharacteristics dwellingCharacteristics, String accountNumber, long userOrganizationId) {
+        dwellingCharacteristics.setAccountNumber(accountNumber);
+        dwellingCharacteristics.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
+        dwellingCharacteristicsBean.updateAccountNumber(dwellingCharacteristics);
+
+        long dwellingCharacteristicsFileId = dwellingCharacteristics.getRequestFileId();
+        RequestFile dwellingCharacteristicsFile = requestFileBean.findById(dwellingCharacteristicsFileId);
+        if (dwellingCharacteristicsBean.isDwellingCharacteristicsFileBound(dwellingCharacteristicsFileId)) {
+            dwellingCharacteristicsFile.setStatus(RequestFileStatus.BOUND);
+            requestFileBean.save(dwellingCharacteristicsFile);
+        }
+
+        final CalculationContext calculationContext = calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId);
+        personAccountLocalBean.saveOrUpdate(dwellingCharacteristics, calculationContext.getCalculationCenterId(),
+                calculationContext.getUserOrganizationId());
+    }
+
+    @Transactional
+    public void updateAccountNumber(FacilityServiceType facilityServiceType, String accountNumber, long userOrganizationId) {
+        facilityServiceType.setAccountNumber(accountNumber);
+        facilityServiceType.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
+        facilityServiceTypeBean.updateAccountNumber(facilityServiceType);
+
+        long facilityServiceTypeFileId = facilityServiceType.getRequestFileId();
+        RequestFile facilityServiceTypeFile = requestFileBean.findById(facilityServiceTypeFileId);
+        if (dwellingCharacteristicsBean.isDwellingCharacteristicsFileBound(facilityServiceTypeFileId)) {
+            facilityServiceTypeFile.setStatus(RequestFileStatus.BOUND);
+            requestFileBean.save(facilityServiceTypeFile);
+        }
+
+        final CalculationContext calculationContext = calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId);
+        personAccountLocalBean.saveOrUpdate(facilityServiceType, calculationContext.getCalculationCenterId(),
                 calculationContext.getUserOrganizationId());
     }
 }

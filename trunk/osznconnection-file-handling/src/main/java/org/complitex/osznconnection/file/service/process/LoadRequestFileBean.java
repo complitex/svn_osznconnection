@@ -14,6 +14,7 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,26 +26,18 @@ import org.complitex.osznconnection.file.service.file_description.RequestFileDes
 import org.complitex.osznconnection.file.service.file_description.RequestFileFieldDescription;
 import org.complitex.osznconnection.file.service.file_description.convert.DBFFieldTypeConverter;
 import org.complitex.osznconnection.file.service.file_description.convert.RequestFileTypeConverter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 01.11.10 16:03
  */
-@Stateless(name = "LoadRequestFileBean")
+@Stateless
 @TransactionManagement(TransactionManagementType.BEAN)
 public class LoadRequestFileBean {
 
-    public static abstract class AbstractLoadRequestFile {
-
-        public abstract Enum[] getFieldNames();
-
-        public abstract AbstractRequest newObject();
-
-        public abstract void save(List<AbstractRequest> batch);
-
-        public void postProcess(int rowNumber, AbstractRequest request) {
-        }
-    }
+    private static final Logger log = LoggerFactory.getLogger(LoadRequestFileBean.class);
     @EJB
     private ConfigBean configBean;
     @EJB
@@ -52,16 +45,31 @@ public class LoadRequestFileBean {
     @EJB
     private RequestFileDescriptionBean requestFileDescriptionBean;
 
+    public static abstract class AbstractLoadRequestFile {
+
+        public abstract Enum[] getFieldNames();
+
+        public abstract AbstractRequest newObject();
+
+        public abstract void save(List<AbstractRequest> batch) throws ExecuteException;
+
+        public void postProcess(int rowNumber, AbstractRequest request) {
+        }
+    }
+
     public boolean load(RequestFile requestFile, AbstractLoadRequestFile loadRequestFile) throws ExecuteException {
         String currentFieldName = "0";
         int index = -1;
-        int batchSize = configBean.getInteger(FileHandlingConfig.LOAD_BATCH_SIZE, true);
+        final int batchSize = configBean.getInteger(FileHandlingConfig.LOAD_BATCH_SIZE, true);
 
         requestFile.setLoadedRecordCount(0);
 
+        FileInputStream fileInputStream = null;
+
         try {
             //Инициализация парсера
-            DBFReader reader = new DBFReader(new FileInputStream(requestFile.getAbsolutePath()));
+            fileInputStream = new FileInputStream(requestFile.getAbsolutePath());
+            DBFReader reader = new DBFReader(fileInputStream);
             reader.setCharactersetName("cp866");
 
             //Начало загрузки
@@ -149,6 +157,8 @@ public class LoadRequestFileBean {
                 if (batch.size() > batchSize) {
                     try {
                         loadRequestFile.save(batch);
+                    } catch (ExecuteException e) {
+                        throw e;
                     } catch (Exception e) {
                         throw new SqlSessionException(e);
                     }
@@ -165,6 +175,8 @@ public class LoadRequestFileBean {
                 if (!batch.isEmpty()) {
                     loadRequestFile.save(batch);
                 }
+            } catch (ExecuteException e) {
+                throw e;
             } catch (Exception e) {
                 throw new SqlSessionException(e);
             }
@@ -174,6 +186,14 @@ public class LoadRequestFileBean {
             requestFileBean.save(requestFile);
         } catch (Exception e) {
             throw new LoadException(e, requestFile, index + 1, currentFieldName);
+        } finally {
+            if (fileInputStream != null) {
+                try {
+                    fileInputStream.close();
+                } catch (IOException e) {
+                    log.error("Couldn't close request file.", e);
+                }
+            }
         }
 
         return true;

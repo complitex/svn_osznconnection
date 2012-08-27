@@ -52,10 +52,10 @@ public class RequestFileStorage {
     }
 
     private void addFiles(List<File> list, File dir, FileFilter filter) {
-        for (File file : dir.listFiles(filter)) {
+        for (File file : dir.listFiles()) {
             if (file.isDirectory()) {
                 addFiles(list, file, filter);
-            } else {
+            } else if (filter.accept(file)) {
                 list.add(file);
             }
         }
