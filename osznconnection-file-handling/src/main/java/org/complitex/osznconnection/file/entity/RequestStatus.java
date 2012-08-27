@@ -21,7 +21,7 @@ public enum RequestStatus implements IEnumCode {
     CITY_UNRESOLVED_LOCALLY(200), STREET_TYPE_UNRESOLVED_LOCALLY(237), STREET_UNRESOLVED_LOCALLY(201), STREET_AND_BUILDING_UNRESOLVED_LOCALLY(231),
     BUILDING_UNRESOLVED_LOCALLY(202),
 
-    /* найдено больше одной записи адреса во внетреннем адресном справочнике */
+    /* найдено больше одной записи адреса во внутреннем адресном справочнике */
     MORE_ONE_LOCAL_CITY(234), MORE_ONE_LOCAL_STREET_TYPE(238), MORE_ONE_LOCAL_STREET(235), MORE_ONE_LOCAL_BUILDING(236),
 
     /* Найдено более одной записи в коррекциях для ОСЗН */

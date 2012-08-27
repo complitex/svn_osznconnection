@@ -56,26 +56,40 @@ public class LoadUtil {
                 String.valueOf(year).substring(2, 4)).replace("{YYYY}", "" + year);
     }
 
+    private static boolean isMatches(FileHandlingConfig config, String name) {
+        return Pattern.compile(getConfigString(config), Pattern.CASE_INSENSITIVE).matcher(name).matches();
+    }
+
     private static boolean isMatches(FileHandlingConfig config, String name, int month, int year) {
         return Pattern.compile(getPattern(getConfigString(config), month, year),
                 Pattern.CASE_INSENSITIVE).matcher(name).matches();
-
     }
 
     private static boolean isMatches(FileHandlingConfig prefix, FileHandlingConfig suffix, String name, int month, int year) {
         return Pattern.compile(getConfigString(prefix) + getPattern(getConfigString(suffix), month, year),
                 Pattern.CASE_INSENSITIVE).matcher(name).matches();
-
     }
 
-    private static RequestFiles getInputTarifFiles(long userOrganizationId, long osznId, final FileHandlingConfig mask,
-            final int month, final int year) throws StorageNotFoundException {
+    private static RequestFiles getInputTarifFiles(long userOrganizationId, long osznId, final FileHandlingConfig mask)
+            throws StorageNotFoundException {
         return RequestFileStorage.INSTANCE.getInputRequestFiles(userOrganizationId, osznId, REFERENCES_DIR,
                 new FileFilter() {
 
                     @Override
                     public boolean accept(File file) {
-                        return file.isDirectory() || isMatches(mask, file.getName(), month, year);
+                        return isMatches(mask, file.getName());
+                    }
+                });
+    }
+
+    private static RequestFiles getInputFacilityReferenceFiles(long userOrganizationId, long osznId,
+            final FileHandlingConfig mask) throws StorageNotFoundException {
+        return RequestFileStorage.INSTANCE.getInputRequestFiles(userOrganizationId, osznId, REFERENCES_DIR,
+                new FileFilter() {
+
+                    @Override
+                    public boolean accept(File file) {
+                        return isMatches(mask, file.getName());
                     }
                 });
     }
@@ -88,7 +102,7 @@ public class LoadUtil {
 
                     @Override
                     public boolean accept(File file) {
-                        return file.isDirectory() || isMatches(prefix, suffix, file.getName(), month, year);
+                        return isMatches(prefix, suffix, file.getName(), month, year);
                     }
                 });
     }
@@ -100,7 +114,7 @@ public class LoadUtil {
 
                     @Override
                     public boolean accept(File file) {
-                        return file.isDirectory() || isMatches(mask, file.getName(), month, year);
+                        return isMatches(mask, file.getName(), month, year);
                     }
                 });
     }
@@ -112,7 +126,31 @@ public class LoadUtil {
 
                     @Override
                     public boolean accept(File file) {
-                        return file.isDirectory() || isMatches(mask, file.getName(), month, year);
+                        return isMatches(mask, file.getName(), month, year);
+                    }
+                });
+    }
+
+    private static RequestFiles getInputDwellingCharacteristicsFiles(long userOrganizationId, long osznId,
+            final FileHandlingConfig mask) throws StorageNotFoundException {
+        return RequestFileStorage.INSTANCE.getInputRequestFiles(userOrganizationId, osznId, LOAD_DWELLING_CHARACTERISTICS_DIR,
+                new FileFilter() {
+
+                    @Override
+                    public boolean accept(File file) {
+                        return isMatches(mask, file.getName());
+                    }
+                });
+    }
+
+    private static RequestFiles getInputFacilityServiceTypeFiles(long userOrganizationId, long osznId,
+            final FileHandlingConfig mask) throws StorageNotFoundException {
+        return RequestFileStorage.INSTANCE.getInputRequestFiles(userOrganizationId, osznId, LOAD_FACILITY_SERVICE_TYPE_DIR,
+                new FileFilter() {
+
+                    @Override
+                    public boolean accept(File file) {
+                        return isMatches(mask, file.getName());
                     }
                 });
     }
@@ -215,28 +253,27 @@ public class LoadUtil {
         return new LoadGroupParameter(requestFileGroups, linkError);
     }
 
-    public static List<RequestFile> getTarifs(long userOrganizationId, long osznId, int monthFrom, int monthTo, int year)
+    public static List<RequestFile> getTarifs(long userOrganizationId, long osznId, int month, int year)
             throws StorageNotFoundException {
         List<RequestFile> tarifs = new ArrayList<RequestFile>();
 
-        for (int month = monthFrom; month <= monthTo; ++month) {
-            RequestFiles requestFiles = getInputTarifFiles(userOrganizationId, osznId, TARIF_PAYMENT_FILENAME_MASK, month, year);
+        RequestFiles requestFiles = getInputTarifFiles(userOrganizationId, osznId, TARIF_PAYMENT_FILENAME_MASK);
 
-            List<File> files = requestFiles.getFiles();
-            for (File file : files) {
-                //fill fields
-                RequestFile requestFile = new RequestFile();
+        List<File> files = requestFiles.getFiles();
+        for (File file : files) {
+            //fill fields
+            RequestFile requestFile = new RequestFile();
 
-                requestFile.setName(file.getName());
-                requestFile.setLength(file.length());
-                requestFile.setAbsolutePath(file.getAbsolutePath());
-                requestFile.setDirectory(RequestFileStorage.INSTANCE.getRelativeParent(file, requestFiles.getPath()));
-                requestFile.setOrganizationId(osznId);
-                requestFile.setYear(year);
-                requestFile.setType(RequestFile.TYPE.TARIF);
+            requestFile.setName(file.getName());
+            requestFile.setLength(file.length());
+            requestFile.setAbsolutePath(file.getAbsolutePath());
+            requestFile.setDirectory(RequestFileStorage.INSTANCE.getRelativeParent(file, requestFiles.getPath()));
+            requestFile.setOrganizationId(osznId);
+            requestFile.setYear(year);
+            requestFile.setMonth(month);
+            requestFile.setType(RequestFile.TYPE.TARIF);
 
-                tarifs.add(requestFile);
-            }
+            tarifs.add(requestFile);
         }
         return tarifs;
     }
@@ -293,5 +330,132 @@ public class LoadUtil {
             }
         }
         return subsidies;
+    }
+
+    public static List<RequestFile> getDwellingCharacteristics(long userOrganizationId, long osznId, int month, int year)
+            throws StorageNotFoundException {
+        List<RequestFile> dwellingCharacteristicsFiles = new ArrayList<RequestFile>();
+
+        RequestFiles requestFiles = getInputDwellingCharacteristicsFiles(userOrganizationId, osznId,
+                DWELLING_CHARACTERISTICS_INPUT_FILENAME_MASK);
+
+        List<File> files = requestFiles.getFiles();
+        for (File file : files) {
+            //fill fields
+            RequestFile requestFile = new RequestFile();
+
+            requestFile.setName(file.getName());
+            requestFile.setLength(file.length());
+            requestFile.setAbsolutePath(file.getAbsolutePath());
+            requestFile.setDirectory(RequestFileStorage.INSTANCE.getRelativeParent(file, requestFiles.getPath()));
+            requestFile.setOrganizationId(osznId);
+            requestFile.setMonth(month);
+            requestFile.setYear(year);
+            requestFile.setType(RequestFile.TYPE.DWELLING_CHARACTERISTICS);
+
+            dwellingCharacteristicsFiles.add(requestFile);
+        }
+        return dwellingCharacteristicsFiles;
+    }
+
+    public static List<RequestFile> getFacilityServiceTypes(long userOrganizationId, long osznId, int month, int year)
+            throws StorageNotFoundException {
+        List<RequestFile> facilityServiceTypeFiles = new ArrayList<RequestFile>();
+
+        RequestFiles requestFiles = getInputFacilityServiceTypeFiles(userOrganizationId, osznId,
+                FACILITY_SERVICE_TYPE_INPUT_FILENAME_MASK);
+
+        List<File> files = requestFiles.getFiles();
+        for (File file : files) {
+            //fill fields
+            RequestFile requestFile = new RequestFile();
+
+            requestFile.setName(file.getName());
+            requestFile.setLength(file.length());
+            requestFile.setAbsolutePath(file.getAbsolutePath());
+            requestFile.setDirectory(RequestFileStorage.INSTANCE.getRelativeParent(file, requestFiles.getPath()));
+            requestFile.setOrganizationId(osznId);
+            requestFile.setMonth(month);
+            requestFile.setYear(year);
+            requestFile.setType(RequestFile.TYPE.FACILITY_SERVICE_TYPE);
+
+            facilityServiceTypeFiles.add(requestFile);
+        }
+        return facilityServiceTypeFiles;
+    }
+
+    public static List<RequestFile> getFacilityStreetTypeReferences(long userOrganizationId, long osznId, int month, int year)
+            throws StorageNotFoundException {
+        List<RequestFile> streetTypeFiles = new ArrayList<RequestFile>();
+
+        RequestFiles requestFiles = getInputFacilityReferenceFiles(userOrganizationId, osznId,
+                FACILITY_STREET_TYPE_REFERENCE_FILENAME_MASK);
+
+        List<File> files = requestFiles.getFiles();
+        for (File file : files) {
+            //fill fields
+            RequestFile requestFile = new RequestFile();
+
+            requestFile.setName(file.getName());
+            requestFile.setLength(file.length());
+            requestFile.setAbsolutePath(file.getAbsolutePath());
+            requestFile.setDirectory(RequestFileStorage.INSTANCE.getRelativeParent(file, requestFiles.getPath()));
+            requestFile.setOrganizationId(osznId);
+            requestFile.setYear(year);
+            requestFile.setMonth(month);
+            requestFile.setType(RequestFile.TYPE.FACILITY_STREET_TYPE);
+            streetTypeFiles.add(requestFile);
+        }
+        return streetTypeFiles;
+    }
+
+    public static List<RequestFile> getFacilityStreetReferences(long userOrganizationId, long osznId, int month, int year)
+            throws StorageNotFoundException {
+        List<RequestFile> streetFiles = new ArrayList<RequestFile>();
+
+        RequestFiles requestFiles = getInputFacilityReferenceFiles(userOrganizationId, osznId,
+                FACILITY_STREET_REFERENCE_FILENAME_MASK);
+
+        List<File> files = requestFiles.getFiles();
+        for (File file : files) {
+            //fill fields
+            RequestFile requestFile = new RequestFile();
+
+            requestFile.setName(file.getName());
+            requestFile.setLength(file.length());
+            requestFile.setAbsolutePath(file.getAbsolutePath());
+            requestFile.setDirectory(RequestFileStorage.INSTANCE.getRelativeParent(file, requestFiles.getPath()));
+            requestFile.setOrganizationId(osznId);
+            requestFile.setYear(year);
+            requestFile.setMonth(month);
+            requestFile.setType(RequestFile.TYPE.FACILITY_STREET);
+            streetFiles.add(requestFile);
+        }
+        return streetFiles;
+    }
+
+    public static List<RequestFile> getFacilityTarifReferences(long userOrganizationId, long osznId, int month, int year)
+            throws StorageNotFoundException {
+        List<RequestFile> tarifFiles = new ArrayList<RequestFile>();
+
+        RequestFiles requestFiles = getInputFacilityReferenceFiles(userOrganizationId, osznId,
+                FACILITY_TARIF_REFERENCE_FILENAME_MASK);
+
+        List<File> files = requestFiles.getFiles();
+        for (File file : files) {
+            //fill fields
+            RequestFile requestFile = new RequestFile();
+
+            requestFile.setName(file.getName());
+            requestFile.setLength(file.length());
+            requestFile.setAbsolutePath(file.getAbsolutePath());
+            requestFile.setDirectory(RequestFileStorage.INSTANCE.getRelativeParent(file, requestFiles.getPath()));
+            requestFile.setOrganizationId(osznId);
+            requestFile.setYear(year);
+            requestFile.setMonth(month);
+            requestFile.setType(RequestFile.TYPE.FACILITY_TARIF);
+            tarifFiles.add(requestFile);
+        }
+        return tarifFiles;
     }
 }

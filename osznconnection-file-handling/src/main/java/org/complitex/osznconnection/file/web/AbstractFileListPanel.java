@@ -26,6 +26,7 @@ import org.complitex.osznconnection.file.Module;
 import org.complitex.osznconnection.file.entity.RequestFileStatus;
 import org.complitex.osznconnection.file.service.RequestFileBean;
 import org.complitex.osznconnection.file.service.file_description.RequestFileDescriptionBean;
+import org.complitex.osznconnection.file.web.component.load.RequestFileLoadPanel.MonthParameterViewMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -173,6 +174,11 @@ public abstract class AbstractFileListPanel extends AbstractProcessableListPanel
     @Override
     protected void delete(RequestFile requestFile) {
         requestFileBean.delete(requestFile);
+    }
+
+    @Override
+    protected MonthParameterViewMode getLoadMonthParameterViewMode() {
+        return MonthParameterViewMode.RANGE;
     }
 
     protected abstract RequestFile.TYPE getRequestFileType();

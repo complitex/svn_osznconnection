@@ -1,5 +1,8 @@
 package org.complitex.osznconnection.file.web;
 
+import org.complitex.osznconnection.file.web.component.load.RequestFileLoadPanel.MonthParameterViewMode;
+import org.complitex.osznconnection.file.web.component.load.DateParameter;
+import org.complitex.osznconnection.file.web.component.load.RequestFileLoadPanel;
 import org.complitex.osznconnection.file.web.AbstractProcessableListPanel.SelectModelValue;
 import org.apache.wicket.Component;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
@@ -61,6 +64,7 @@ import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.dictionary.web.component.image.StaticImage;
 import org.complitex.osznconnection.file.service.OsznSessionBean;
 import org.complitex.osznconnection.file.service.file_description.RequestFileDescriptionBean;
+import org.complitex.osznconnection.file.web.component.load.IRequestFileLoader;
 import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
 
 import static org.complitex.osznconnection.file.service.process.ProcessType.LOAD_TARIF;
@@ -220,9 +224,6 @@ public class TarifFileList extends TemplatePage {
         filterForm.add(new DisableAwareDropDownChoice<DomainObject>("userOrganization", userOrganizationsModel,
                 organizationRenderer).setNullValid(true));
 
-        //Месяц
-        filterForm.add(new MonthDropDownChoice("month").setNullValid(true));
-
         //Год
         filterForm.add(new YearDropDownChoice("year").setNullValid(true));
 
@@ -336,7 +337,6 @@ public class TarifFileList extends TemplatePage {
                 }
                 item.add(new Label("userOrganization", userOrganization));
 
-                item.add(new Label("month", DateUtil.displayMonth(item.getModelObject().getMonth(), getLocale())));
                 item.add(new Label("year", StringUtil.valueOf(item.getModelObject().getYear())));
 
                 item.add(new Label("dbf_record_count", StringUtil.valueOf(item.getModelObject().getDbfRecordCount())));
@@ -391,7 +391,6 @@ public class TarifFileList extends TemplatePage {
         filterForm.add(new ArrowOrderByBorder("header.name", "name", dataProvider, dataView, filterForm));
         filterForm.add(new ArrowOrderByBorder("header.organization", "organization_id", dataProvider, dataView, filterForm));
         filterForm.add(new ArrowOrderByBorder("header.user_organization", "user_organization_id", dataProvider, dataView, filterForm));
-        filterForm.add(new ArrowOrderByBorder("header.month", "month", dataProvider, dataView, filterForm));
         filterForm.add(new ArrowOrderByBorder("header.year", "year", dataProvider, dataView, filterForm));
 
         showMessages();
@@ -447,18 +446,17 @@ public class TarifFileList extends TemplatePage {
         //Диалог загрузки
         requestFileLoadPanel = new RequestFileLoadPanel("load_panel",
                 new ResourceModel("load_panel_title"),
-                new RequestFileLoadPanel.ILoader() {
+                new IRequestFileLoader() {
 
                     @Override
-                    public void load(long userOrganizationId, long osznId, int monthFrom, int monthTo,
-                            int year, AjaxRequestTarget target) {
+                    public void load(long userOrganizationId, long osznId, DateParameter dateParameter, AjaxRequestTarget target) {
                         completedDisplayed = false;
-                        processManagerBean.loadTarif(userOrganizationId, osznId, monthFrom, monthTo, year);
+                        processManagerBean.loadTarif(userOrganizationId, osznId, dateParameter.getMonth(), dateParameter.getYear());
 
                         addTimer(dataViewContainer, filterForm, messages);
                         target.add(filterForm);
                     }
-                }, false);
+                }, MonthParameterViewMode.HIDDEN);
 
         add(requestFileLoadPanel);
 

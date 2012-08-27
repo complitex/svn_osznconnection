@@ -18,6 +18,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.osznconnection.file.entity.RequestFile;
+import org.complitex.osznconnection.file.web.component.load.DateParameter;
 import org.complitex.osznconnection.file.web.pages.subsidy.SubsidyList;
 import org.complitex.template.web.component.toolbar.ToolbarButton;
 import org.complitex.template.web.pages.ScrollListPage;
@@ -89,8 +90,9 @@ public final class SubsidyFileList extends ScrollListPage {
             }
 
             @Override
-            protected void load(long userOrganizationId, long osznId, int monthFrom, int monthTo, int year) {
-                processManagerBean.loadSubsidy(userOrganizationId, osznId, monthFrom, monthTo, year);
+            protected void load(long userOrganizationId, long osznId, DateParameter dateParameter) {
+                processManagerBean.loadSubsidy(userOrganizationId, osznId,
+                        dateParameter.getMonthFrom(), dateParameter.getMonthTo(), dateParameter.getYear());
             }
         });
     }

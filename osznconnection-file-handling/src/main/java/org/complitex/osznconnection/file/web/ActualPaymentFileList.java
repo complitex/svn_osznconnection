@@ -12,6 +12,7 @@ import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.entity.RequestFile.TYPE;
 import org.complitex.osznconnection.file.service.process.ProcessManagerBean;
 import org.complitex.osznconnection.file.service.process.ProcessType;
+import org.complitex.osznconnection.file.web.component.load.DateParameter;
 import org.complitex.osznconnection.file.web.pages.actualpayment.ActualPaymentList;
 import org.complitex.template.web.component.toolbar.ToolbarButton;
 import org.complitex.template.web.pages.ScrollListPage;
@@ -81,8 +82,9 @@ public class ActualPaymentFileList extends ScrollListPage {
             }
 
             @Override
-            protected void load(long userOrganizationId, long osznId, int monthFrom, int monthTo, int year) {
-                processManagerBean.loadActualPayment(userOrganizationId, osznId, monthFrom, monthTo, year);
+            protected void load(long userOrganizationId, long osznId, DateParameter dateParameter) {
+                processManagerBean.loadActualPayment(userOrganizationId, osznId,
+                        dateParameter.getMonthFrom(), dateParameter.getMonthTo(), dateParameter.getYear());
             }
         });
     }

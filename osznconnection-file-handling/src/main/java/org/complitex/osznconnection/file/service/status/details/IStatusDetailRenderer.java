@@ -4,6 +4,7 @@
  */
 package org.complitex.osznconnection.file.service.status.details;
 
+import java.util.Locale;
 import org.complitex.osznconnection.file.entity.RequestStatus;
 import org.complitex.osznconnection.file.entity.StatusDetail;
 
@@ -13,5 +14,5 @@ import org.complitex.osznconnection.file.entity.StatusDetail;
  */
 public interface IStatusDetailRenderer {
 
-    String displayStatusDetail(RequestStatus status, StatusDetail statusDetail);
+    String displayStatusDetail(RequestStatus status, StatusDetail statusDetail, Locale locale);
 }

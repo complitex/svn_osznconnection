@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.complitex.osznconnection.file.service.FacilityForm2Bean">
+
+    <resultMap id="facilityForm2ResultMap" type="org.complitex.osznconnection.file.entity.FacilityForm2"
+                extends="org.complitex.osznconnection.file.service.AbstractRequestBean.abstractRequest">
+
+        <result column="last_name" property="lastName"/>
+        <result column="first_name" property="firstName"/>
+        <result column="middle_name" property="middleName"/>
+        
+        <association property="dbfFields" javaType="map">
+            <result column="CDPR" property="CDPR"/>
+            <result column="IDCODE" property="IDCODE"/>
+            <result column="FIO" property="FIO"/>
+            <result column="PPOS" property="PPOS"/>
+            <result column="RS" property="RS"/>
+            <result column="YEARIN" property="YEARIN"/>
+            <result column="MONTHIN" property="MONTHIN"/>
+            <result column="LGCODE" property="LGCODE"/>
+            <result column="DATA1" property="DATA1"/>
+            <result column="DATA2" property="DATA2"/>
+            <result column="LGKOL" property="LGKOL"/>
+            <result column="LGKAT" property="LGKAT"/>
+            <result column="LGPRC" property="LGPRC"/>
+            <result column="SUMM" property="SUMM"/>
+            <result column="FACT" property="FACT"/>
+            <result column="TARIF" property="TARIF"/>
+            <result column="FLAG" property="FLAG"/>
+        </association>
+    </resultMap>
+
+
+    <insert id="insertFacilityForm2List" parameterType="list">
+        INSERT INTO `facility_form2`
+        (
+        <trim suffixOverrides=",">
+            `request_file_id`, `last_name`, `first_name`, `middle_name`,
+            <foreach collection="list[0].dbfFields.keys" item="key">
+                `${key}`,
+            </foreach>
+        </trim>
+        )
+        VALUES
+        <foreach collection="list" separator="," item="item">
+            (
+            <trim suffixOverrides=",">
+                #{item.requestFileId}, #{item.lastName}, #{item.firstName}, #{item.middleName},
+                <foreach collection="item.dbfFields.keys" item="key">
+                    #{item.dbfFields.${key}},
+                </foreach>
+            </trim>
+            )
+        </foreach>
+    </insert>
+    
+    <select id="selectFacilityForm2" resultMap="facilityForm2ResultMap" parameterType="long">
+        SELECT * FROM `facility_form2` WHERE `request_file_id` = #{id}
+    </select>
+    
+    <delete id="deleteFacilityForm2" parameterType="long">
+        DELETE FROM `facility_form2` WHERE `request_file_id` = #{id};
+    </delete>
+    
+</mapper>

@@ -20,6 +20,10 @@ import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.mysql.MySqlErrors;
 import org.complitex.osznconnection.file.entity.ActualPayment;
 import org.complitex.osznconnection.file.entity.ActualPaymentDBF;
+import org.complitex.osznconnection.file.entity.DwellingCharacteristics;
+import org.complitex.osznconnection.file.entity.DwellingCharacteristicsDBF;
+import org.complitex.osznconnection.file.entity.FacilityServiceType;
+import org.complitex.osznconnection.file.entity.FacilityServiceTypeDBF;
 import org.complitex.osznconnection.file.entity.Payment;
 import org.complitex.osznconnection.file.entity.PaymentDBF;
 import org.complitex.osznconnection.file.entity.Subsidy;
@@ -206,6 +210,118 @@ public class PersonAccountLocalBean extends AbstractBean {
                 subsidy.getStringField(SubsidyDBF.FLAT), subsidy.getOrganizationId(), calculationCenterId,
                 subsidy.getStringField(SubsidyDBF.RASH), userOrganizationId, false, sqlSession());
         String currentStreetType = subsidy.getStringField(SubsidyDBF.CAT_V);
+        if (currentStreetType != null) {
+            currentStreetType = currentStreetType.toUpperCase();
+        }
+
+        if (accounts.isEmpty()) {
+            return null;
+        } else if (accounts.size() == 1) {
+            PersonAccount account = accounts.get(0);
+            if (!Strings.isEmpty(account.getStreetType())) {
+                return account.getStreetType().equals(currentStreetType) ? account.getAccountNumber() : null;
+            } else {
+                account.setStreetType(currentStreetType);
+                updateAccountNumberAndStreetType(account, sqlSession());
+                return account.getAccountNumber();
+            }
+        } else {
+            // find with current street type
+            List<PersonAccount> withStreetType = Lists.newArrayList();
+            for (PersonAccount account : accounts) {
+                if (Strings.isEqual(account.getStreetType(), currentStreetType)) {
+                    withStreetType.add(account);
+                }
+            }
+
+            if (withStreetType.isEmpty()) {
+                String accountNumber = haveTheSameAccountNumber(accounts);
+                if (accountNumber != null) {
+                    return accountNumber;
+                } else {
+                    throw new MoreOneAccountException();
+                }
+            } else if (withStreetType.size() == 1) {
+                return withStreetType.get(0).getAccountNumber();
+            } else {
+                String accountNumber = haveTheSameAccountNumber(withStreetType);
+                if (accountNumber != null) {
+                    return accountNumber;
+                } else {
+                    throw new MoreOneAccountException();
+                }
+            }
+        }
+    }
+
+    @Transactional
+    public String findLocalAccountNumber(DwellingCharacteristics dwellingCharacteristics, long calculationCenterId, long userOrganizationId)
+            throws MoreOneAccountException {
+        List<PersonAccount> accounts = findAccountsLikeName(dwellingCharacteristics.getFirstName(),
+                dwellingCharacteristics.getMiddleName(), dwellingCharacteristics.getLastName(),
+                dwellingCharacteristics.getCity(), dwellingCharacteristics.getStreet(),
+                dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.HOUSE),
+                dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.BLILD),
+                dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.APT),
+                dwellingCharacteristics.getOrganizationId(), calculationCenterId,
+                dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.IDCODE), userOrganizationId, false, sqlSession());
+        String currentStreetType = dwellingCharacteristics.getStreetType();
+        if (currentStreetType != null) {
+            currentStreetType = currentStreetType.toUpperCase();
+        }
+
+        if (accounts.isEmpty()) {
+            return null;
+        } else if (accounts.size() == 1) {
+            PersonAccount account = accounts.get(0);
+            if (!Strings.isEmpty(account.getStreetType())) {
+                return account.getStreetType().equals(currentStreetType) ? account.getAccountNumber() : null;
+            } else {
+                account.setStreetType(currentStreetType);
+                updateAccountNumberAndStreetType(account, sqlSession());
+                return account.getAccountNumber();
+            }
+        } else {
+            // find with current street type
+            List<PersonAccount> withStreetType = Lists.newArrayList();
+            for (PersonAccount account : accounts) {
+                if (Strings.isEqual(account.getStreetType(), currentStreetType)) {
+                    withStreetType.add(account);
+                }
+            }
+
+            if (withStreetType.isEmpty()) {
+                String accountNumber = haveTheSameAccountNumber(accounts);
+                if (accountNumber != null) {
+                    return accountNumber;
+                } else {
+                    throw new MoreOneAccountException();
+                }
+            } else if (withStreetType.size() == 1) {
+                return withStreetType.get(0).getAccountNumber();
+            } else {
+                String accountNumber = haveTheSameAccountNumber(withStreetType);
+                if (accountNumber != null) {
+                    return accountNumber;
+                } else {
+                    throw new MoreOneAccountException();
+                }
+            }
+        }
+    }
+
+    @Transactional
+    public String findLocalAccountNumber(FacilityServiceType facilityServiceType, long calculationCenterId, long userOrganizationId)
+            throws MoreOneAccountException {
+        List<PersonAccount> accounts = findAccountsLikeName(facilityServiceType.getFirstName(),
+                facilityServiceType.getMiddleName(), facilityServiceType.getLastName(),
+                facilityServiceType.getCity(), facilityServiceType.getStreet(),
+                facilityServiceType.getStringField(FacilityServiceTypeDBF.HOUSE),
+                facilityServiceType.getStringField(FacilityServiceTypeDBF.BLILD),
+                facilityServiceType.getStringField(FacilityServiceTypeDBF.APT),
+                facilityServiceType.getOrganizationId(), calculationCenterId,
+                facilityServiceType.getStringField(FacilityServiceTypeDBF.IDCODE), userOrganizationId, false, sqlSession());
+        String currentStreetType = facilityServiceType.getStreetType();
         if (currentStreetType != null) {
             currentStreetType = currentStreetType.toUpperCase();
         }
@@ -485,6 +601,198 @@ public class PersonAccountLocalBean extends AbstractBean {
                         subsidy.getStringField(SubsidyDBF.FLAT), subsidy.getOrganizationId(), calculationCenterId,
                         subsidy.getStringField(SubsidyDBF.RASH), userOrganizationId, false, session);
                 String currentStreetType = subsidy.getStringField(SubsidyDBF.CAT_V);
+                if (currentStreetType != null) {
+                    currentStreetType = currentStreetType.toUpperCase();
+                }
+
+                if (accounts.isEmpty()) {
+                    insert(newPersonAccount, session);
+                } else if (accounts.size() == 1) {
+                    PersonAccount account = accounts.get(0);
+                    if (!Strings.isEmpty(account.getStreetType())) {
+                        if (account.getStreetType().equals(currentStreetType)) {
+                            account.setAccountNumber(newAccountNumber);
+                            updateAccountNumber(account, session);
+                        } else {
+                            insert(newPersonAccount, session);
+                        }
+                    } else {
+                        account.setAccountNumber(newAccountNumber);
+                        account.setStreetType(currentStreetType);
+                        updateAccountNumberAndStreetType(account, session);
+                    }
+                } else {
+                    // find with current street type
+                    List<PersonAccount> withStreetType = Lists.newArrayList();
+                    for (PersonAccount account : accounts) {
+                        if (Strings.isEqual(account.getStreetType(), currentStreetType)) {
+                            withStreetType.add(account);
+                        }
+                    }
+
+                    if (withStreetType.isEmpty()) {
+                        String accountNumber = haveTheSameAccountNumber(accounts);
+                        if (accountNumber != null) {
+                            for (PersonAccount account : accounts) {
+                                account.setAccountNumber(newAccountNumber);
+                                updateAccountNumber(account, session);
+                            }
+                        } else {
+                            // Do nothing.
+                        }
+                    } else if (withStreetType.size() == 1) {
+                        PersonAccount account = withStreetType.get(0);
+                        account.setAccountNumber(newAccountNumber);
+                        updateAccountNumber(account, session);
+                    } else {
+                        String accountNumber = haveTheSameAccountNumber(withStreetType);
+                        if (accountNumber != null) {
+                            for (PersonAccount account : accounts) {
+                                account.setAccountNumber(newAccountNumber);
+                                updateAccountNumber(account, session);
+                            }
+                        } else {
+                            // Do nothing.
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    private PersonAccount newPersonAccount(DwellingCharacteristics dwellingCharacteristics, String accountNumber, long calculationCenterId,
+            long userOrganizationId) {
+        PersonAccount personAccount = new PersonAccount();
+        personAccount.setFirstName(dwellingCharacteristics.getFirstName());
+        personAccount.setMiddleName(dwellingCharacteristics.getMiddleName());
+        personAccount.setLastName(dwellingCharacteristics.getLastName());
+        personAccount.setCity(dwellingCharacteristics.getCity());
+        personAccount.setStreet(dwellingCharacteristics.getStreet());
+        personAccount.setBuildingNumber(dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.HOUSE));
+        personAccount.setBuildingCorp(dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.BLILD));
+        personAccount.setApartment(dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.APT));
+        personAccount.setStreetType(dwellingCharacteristics.getStreetType());
+        personAccount.setOsznId(dwellingCharacteristics.getOrganizationId());
+        personAccount.setCalculationCenterId(calculationCenterId);
+        personAccount.setPuAccountNumber(dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.IDCODE));
+        personAccount.setAccountNumber(accountNumber);
+        personAccount.setUserOrganizationId(userOrganizationId);
+        return personAccount;
+    }
+
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public void saveOrUpdate(final DwellingCharacteristics dwellingCharacteristics, final long calculationCenterId, final long userOrganizationId) {
+        handleTransaction(new TransactionCallback() {
+
+            @Override
+            public void doInTransaction(SqlSession session) {
+                String newAccountNumber = dwellingCharacteristics.getAccountNumber();
+                PersonAccount newPersonAccount = newPersonAccount(dwellingCharacteristics, newAccountNumber, calculationCenterId, userOrganizationId);
+                List<PersonAccount> accounts = findAccountsLikeName(dwellingCharacteristics.getFirstName(),
+                        dwellingCharacteristics.getMiddleName(), dwellingCharacteristics.getLastName(),
+                        dwellingCharacteristics.getCity(), dwellingCharacteristics.getStreet(),
+                        dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.HOUSE),
+                        dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.BLILD),
+                        dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.APT),
+                        dwellingCharacteristics.getOrganizationId(), calculationCenterId,
+                        dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.IDCODE), userOrganizationId, false, session);
+                String currentStreetType = dwellingCharacteristics.getStreetType();
+                if (currentStreetType != null) {
+                    currentStreetType = currentStreetType.toUpperCase();
+                }
+
+                if (accounts.isEmpty()) {
+                    insert(newPersonAccount, session);
+                } else if (accounts.size() == 1) {
+                    PersonAccount account = accounts.get(0);
+                    if (!Strings.isEmpty(account.getStreetType())) {
+                        if (account.getStreetType().equals(currentStreetType)) {
+                            account.setAccountNumber(newAccountNumber);
+                            updateAccountNumber(account, session);
+                        } else {
+                            insert(newPersonAccount, session);
+                        }
+                    } else {
+                        account.setAccountNumber(newAccountNumber);
+                        account.setStreetType(currentStreetType);
+                        updateAccountNumberAndStreetType(account, session);
+                    }
+                } else {
+                    // find with current street type
+                    List<PersonAccount> withStreetType = Lists.newArrayList();
+                    for (PersonAccount account : accounts) {
+                        if (Strings.isEqual(account.getStreetType(), currentStreetType)) {
+                            withStreetType.add(account);
+                        }
+                    }
+
+                    if (withStreetType.isEmpty()) {
+                        String accountNumber = haveTheSameAccountNumber(accounts);
+                        if (accountNumber != null) {
+                            for (PersonAccount account : accounts) {
+                                account.setAccountNumber(newAccountNumber);
+                                updateAccountNumber(account, session);
+                            }
+                        } else {
+                            // Do nothing.
+                        }
+                    } else if (withStreetType.size() == 1) {
+                        PersonAccount account = withStreetType.get(0);
+                        account.setAccountNumber(newAccountNumber);
+                        updateAccountNumber(account, session);
+                    } else {
+                        String accountNumber = haveTheSameAccountNumber(withStreetType);
+                        if (accountNumber != null) {
+                            for (PersonAccount account : accounts) {
+                                account.setAccountNumber(newAccountNumber);
+                                updateAccountNumber(account, session);
+                            }
+                        } else {
+                            // Do nothing.
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    private PersonAccount newPersonAccount(FacilityServiceType facilityServiceType, String accountNumber, long calculationCenterId,
+            long userOrganizationId) {
+        PersonAccount personAccount = new PersonAccount();
+        personAccount.setFirstName(facilityServiceType.getFirstName());
+        personAccount.setMiddleName(facilityServiceType.getMiddleName());
+        personAccount.setLastName(facilityServiceType.getLastName());
+        personAccount.setCity(facilityServiceType.getCity());
+        personAccount.setStreet(facilityServiceType.getStreet());
+        personAccount.setBuildingNumber(facilityServiceType.getStringField(FacilityServiceTypeDBF.HOUSE));
+        personAccount.setBuildingCorp(facilityServiceType.getStringField(FacilityServiceTypeDBF.BLILD));
+        personAccount.setApartment(facilityServiceType.getStringField(FacilityServiceTypeDBF.APT));
+        personAccount.setStreetType(facilityServiceType.getStreetType());
+        personAccount.setOsznId(facilityServiceType.getOrganizationId());
+        personAccount.setCalculationCenterId(calculationCenterId);
+        personAccount.setPuAccountNumber(facilityServiceType.getStringField(FacilityServiceTypeDBF.IDCODE));
+        personAccount.setAccountNumber(accountNumber);
+        personAccount.setUserOrganizationId(userOrganizationId);
+        return personAccount;
+    }
+
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public void saveOrUpdate(final FacilityServiceType facilityServiceType, final long calculationCenterId, final long userOrganizationId) {
+        handleTransaction(new TransactionCallback() {
+
+            @Override
+            public void doInTransaction(SqlSession session) {
+                String newAccountNumber = facilityServiceType.getAccountNumber();
+                PersonAccount newPersonAccount = newPersonAccount(facilityServiceType, newAccountNumber, calculationCenterId, userOrganizationId);
+                List<PersonAccount> accounts = findAccountsLikeName(facilityServiceType.getFirstName(),
+                        facilityServiceType.getMiddleName(), facilityServiceType.getLastName(),
+                        facilityServiceType.getCity(), facilityServiceType.getStreet(),
+                        facilityServiceType.getStringField(FacilityServiceTypeDBF.HOUSE),
+                        facilityServiceType.getStringField(FacilityServiceTypeDBF.BLILD),
+                        facilityServiceType.getStringField(FacilityServiceTypeDBF.APT),
+                        facilityServiceType.getOrganizationId(), calculationCenterId,
+                        facilityServiceType.getStringField(FacilityServiceTypeDBF.IDCODE), userOrganizationId, false, session);
+                String currentStreetType = facilityServiceType.getStreetType();
                 if (currentStreetType != null) {
                     currentStreetType = currentStreetType.toUpperCase();
                 }

@@ -1,5 +1,6 @@
 package org.complitex.osznconnection.file.service.process;
 
+import com.google.common.collect.ImmutableMap;
 import org.complitex.dictionary.entity.IExecutorObject;
 import org.complitex.dictionary.entity.Log;
 import org.complitex.dictionary.service.ConfigBean;
@@ -283,6 +284,51 @@ public class ProcessManagerBean {
         return requestFiles;
     }
 
+    private List<RequestFile> getDwellingCharacteristicsFiles(List<Long> ids) {
+        List<RequestFile> requestFiles = new ArrayList<RequestFile>();
+
+        for (Long id : ids) {
+            RequestFile requestFile = requestFileBean.findById(id);
+
+            if (requestFile != null && !requestFile.isProcessing() && !isGlobalWaiting(BIND_DWELLING_CHARACTERISTICS, requestFile)
+                    && !isGlobalWaiting(FILL_DWELLING_CHARACTERISTICS, requestFile)
+                    && !isGlobalWaiting(SAVE_DWELLING_CHARACTERISTICS, requestFile)) {
+                requestFiles.add(requestFile);
+            }
+        }
+        return requestFiles;
+    }
+
+    private List<RequestFile> getFacilityServiceTypeFiles(List<Long> ids) {
+        List<RequestFile> requestFiles = new ArrayList<RequestFile>();
+
+        for (Long id : ids) {
+            RequestFile requestFile = requestFileBean.findById(id);
+
+            if (requestFile != null && !requestFile.isProcessing() && !isGlobalWaiting(BIND_FACILITY_SERVICE_TYPE, requestFile)
+                    && !isGlobalWaiting(FILL_FACILITY_SERVICE_TYPE, requestFile)
+                    && !isGlobalWaiting(SAVE_FACILITY_SERVICE_TYPE, requestFile)) {
+                requestFiles.add(requestFile);
+            }
+        }
+        return requestFiles;
+    }
+
+    private List<RequestFile> getFacilityForm2Files(List<Long> ids) {
+        List<RequestFile> requestFiles = new ArrayList<RequestFile>();
+
+        for (Long id : ids) {
+            RequestFile requestFile = requestFileBean.findById(id);
+
+            if (requestFile != null && !requestFile.isProcessing()
+                    && !isGlobalWaiting(FILL_FACILITY_FORM2, requestFile)
+                    && !isGlobalWaiting(SAVE_FACILITY_FORM2, requestFile)) {
+                requestFiles.add(requestFile);
+            }
+        }
+        return requestFiles;
+    }
+
     @Asynchronous
     public void bindGroup(List<Long> ids, Map processParameters) {
         execute(BIND_GROUP, GroupBindTaskBean.class, getGroups(ids), null, BIND_THREAD_SIZE, BIND_MAX_ERROR_COUNT, processParameters);
@@ -330,23 +376,6 @@ public class ProcessManagerBean {
     }
 
     @Asynchronous
-    public void loadSubsidy(long userOrganizationId, long osznId, int monthFrom, int monthTo, int year) {
-        try {
-            List<RequestFile> list = LoadUtil.getSubsidies(userOrganizationId, osznId, monthFrom, monthTo, year);
-
-            for (RequestFile file : list) {
-                file.setUserOrganizationId(userOrganizationId);
-            }
-
-            execute(LOAD_SUBSIDY, SubsidyLoadTaskBean.class, list, null, LOAD_THREAD_SIZE, LOAD_MAX_ERROR_COUNT, null);
-        } catch (StorageNotFoundException e) {
-            log.error("Ошибка процесса загрузки файлов.", e);
-            logBean.error(Module.NAME, ProcessManagerBean.class, RequestFile.class, null,
-                    Log.EVENT.CREATE, "Ошибка процесса загрузки файлов. Причина: {0}", e.getMessage());
-        }
-    }
-
-    @Asynchronous
     public void bindActualPayment(List<Long> ids, Map processParameters) {
         execute(BIND_ACTUAL_PAYMENT, ActualPaymentBindTaskBean.class, getActualPaymentFiles(ids), null, BIND_THREAD_SIZE,
                 BIND_MAX_ERROR_COUNT, processParameters);
@@ -365,9 +394,20 @@ public class ProcessManagerBean {
     }
 
     @Asynchronous
-    public void saveSubsidy(List<Long> ids, Map processParameters) {
-        execute(SAVE_SUBSIDY, SubsidySaveTaskBean.class, getSubsidyFiles(ids), null, SAVE_THREAD_SIZE,
-                SAVE_MAX_ERROR_COUNT, processParameters);
+    public void loadSubsidy(long userOrganizationId, long osznId, int monthFrom, int monthTo, int year) {
+        try {
+            List<RequestFile> list = LoadUtil.getSubsidies(userOrganizationId, osznId, monthFrom, monthTo, year);
+
+            for (RequestFile file : list) {
+                file.setUserOrganizationId(userOrganizationId);
+            }
+
+            execute(LOAD_SUBSIDY, SubsidyLoadTaskBean.class, list, null, LOAD_THREAD_SIZE, LOAD_MAX_ERROR_COUNT, null);
+        } catch (StorageNotFoundException e) {
+            log.error("Ошибка процесса загрузки файлов.", e);
+            logBean.error(Module.NAME, ProcessManagerBean.class, RequestFile.class, null,
+                    Log.EVENT.CREATE, "Ошибка процесса загрузки файлов. Причина: {0}", e.getMessage());
+        }
     }
 
     @Asynchronous
@@ -377,15 +417,144 @@ public class ProcessManagerBean {
     }
 
     @Asynchronous
-    public void loadTarif(long userOrganizationId, long osznId, int monthFrom, int monthTo, int year) {
+    public void saveSubsidy(List<Long> ids, Map processParameters) {
+        execute(SAVE_SUBSIDY, SubsidySaveTaskBean.class, getSubsidyFiles(ids), null, SAVE_THREAD_SIZE,
+                SAVE_MAX_ERROR_COUNT, processParameters);
+    }
+
+    @Asynchronous
+    public void loadTarif(long userOrganizationId, long osznId, int month, int year) {
         try {
-            List<RequestFile> list = LoadUtil.getTarifs(userOrganizationId, osznId, monthFrom, monthTo, year);
+            List<RequestFile> list = LoadUtil.getTarifs(userOrganizationId, osznId, month, year);
 
             for (RequestFile file : list) {
                 file.setUserOrganizationId(userOrganizationId);
             }
 
             execute(LOAD_TARIF, LoadTarifTaskBean.class, list, null, LOAD_THREAD_SIZE, LOAD_MAX_ERROR_COUNT, null);
+        } catch (StorageNotFoundException e) {
+            log.error("Ошибка процесса загрузки файлов.", e);
+            logBean.error(Module.NAME, ProcessManagerBean.class, RequestFile.class, null,
+                    Log.EVENT.CREATE, "Ошибка процесса загрузки файлов. Причина: {0}", e.getMessage());
+        }
+    }
+
+    @Asynchronous
+    public void loadDwellingCharacteristics(long userOrganizationId, long osznId, int month, int year) {
+        try {
+            List<RequestFile> list = LoadUtil.getDwellingCharacteristics(userOrganizationId, osznId, month, year);
+
+            for (RequestFile file : list) {
+                file.setUserOrganizationId(userOrganizationId);
+            }
+
+            execute(LOAD_DWELLING_CHARACTERISTICS, DwellingCharacteristicsLoadTaskBean.class, list, null,
+                    LOAD_THREAD_SIZE, LOAD_MAX_ERROR_COUNT, null);
+        } catch (StorageNotFoundException e) {
+            log.error("Ошибка процесса загрузки файлов.", e);
+            logBean.error(Module.NAME, ProcessManagerBean.class, RequestFile.class, null,
+                    Log.EVENT.CREATE, "Ошибка процесса загрузки файлов. Причина: {0}", e.getMessage());
+        }
+    }
+
+    @Asynchronous
+    public void bindDwellingCharacteristics(List<Long> ids, Map processParameters) {
+        execute(BIND_DWELLING_CHARACTERISTICS, DwellingCharacteristicsBindTaskBean.class, getDwellingCharacteristicsFiles(ids),
+                null, BIND_THREAD_SIZE, BIND_MAX_ERROR_COUNT, processParameters);
+    }
+
+    @Asynchronous
+    public void saveDwellingCharacteristics(List<Long> ids, Map processParameters) {
+        execute(SAVE_DWELLING_CHARACTERISTICS, DwellingCharacteristicsSaveTaskBean.class,
+                getDwellingCharacteristicsFiles(ids), null, SAVE_THREAD_SIZE, SAVE_MAX_ERROR_COUNT, processParameters);
+    }
+
+    @Asynchronous
+    public void loadFacilityServiceType(long userOrganizationId, long osznId, int month, int year) {
+        try {
+            List<RequestFile> list = LoadUtil.getFacilityServiceTypes(userOrganizationId, osznId, month, year);
+
+            for (RequestFile file : list) {
+                file.setUserOrganizationId(userOrganizationId);
+            }
+
+            execute(LOAD_FACILITY_SERVICE_TYPE, FacilityServiceTypeLoadTaskBean.class, list, null,
+                    LOAD_THREAD_SIZE, LOAD_MAX_ERROR_COUNT, null);
+        } catch (StorageNotFoundException e) {
+            log.error("Ошибка процесса загрузки файлов.", e);
+            logBean.error(Module.NAME, ProcessManagerBean.class, RequestFile.class, null,
+                    Log.EVENT.CREATE, "Ошибка процесса загрузки файлов. Причина: {0}", e.getMessage());
+        }
+    }
+
+    @Asynchronous
+    public void bindFacilityServiceType(List<Long> ids, Map processParameters) {
+        execute(BIND_FACILITY_SERVICE_TYPE, FacilityServiceTypeBindTaskBean.class, getFacilityServiceTypeFiles(ids),
+                null, BIND_THREAD_SIZE, BIND_MAX_ERROR_COUNT, processParameters);
+    }
+
+    @Asynchronous
+    public void saveFacilityServiceType(List<Long> ids, Map processParameters) {
+        execute(SAVE_FACILITY_SERVICE_TYPE, FacilityServiceTypeSaveTaskBean.class,
+                getFacilityServiceTypeFiles(ids), null, SAVE_THREAD_SIZE, SAVE_MAX_ERROR_COUNT, processParameters);
+    }
+
+    @Asynchronous
+    public void saveFacilityForm2(List<Long> ids, Map processParameters) {
+        execute(SAVE_FACILITY_FORM2, FacilityForm2SaveTaskBean.class,
+                getFacilityForm2Files(ids), null, SAVE_THREAD_SIZE, SAVE_MAX_ERROR_COUNT, processParameters);
+    }
+
+    @Asynchronous
+    public void loadFacilityStreetTypeReferences(long userOrganizationId, long osznId, int month, int year) {
+        try {
+            List<RequestFile> list = LoadUtil.getFacilityStreetTypeReferences(userOrganizationId, osznId, month, year);
+
+            for (RequestFile file : list) {
+                file.setUserOrganizationId(userOrganizationId);
+            }
+
+            execute(LOAD_FACILITY_STREET_TYPE_REFERENCE, FacilityStreetTypeLoadTaskBean.class, list, null,
+                    LOAD_THREAD_SIZE, LOAD_MAX_ERROR_COUNT, null);
+        } catch (StorageNotFoundException e) {
+            log.error("Ошибка процесса загрузки файлов.", e);
+            logBean.error(Module.NAME, ProcessManagerBean.class, RequestFile.class, null,
+                    Log.EVENT.CREATE, "Ошибка процесса загрузки файлов. Причина: {0}", e.getMessage());
+        }
+    }
+
+    @Asynchronous
+    public void loadFacilityStreetReferences(long userOrganizationId, long osznId, int month, int year,
+            Locale locale) {
+        try {
+            List<RequestFile> list = LoadUtil.getFacilityStreetReferences(userOrganizationId, osznId, month, year);
+
+            for (RequestFile file : list) {
+                file.setUserOrganizationId(userOrganizationId);
+            }
+
+            execute(LOAD_FACILITY_STREET_REFERENCE, FacilityStreetLoadTaskBean.class, list, null,
+                    LOAD_THREAD_SIZE, LOAD_MAX_ERROR_COUNT,
+                    ImmutableMap.of(FacilityStreetLoadTaskBean.LOCALE_TASK_PARAMETER_KEY, locale));
+        } catch (StorageNotFoundException e) {
+            log.error("Ошибка процесса загрузки файлов.", e);
+            logBean.error(Module.NAME, ProcessManagerBean.class, RequestFile.class, null,
+                    Log.EVENT.CREATE, "Ошибка процесса загрузки файлов. Причина: {0}", e.getMessage());
+        }
+    }
+
+    @Asynchronous
+    public void loadFacilityTarifReferences(long userOrganizationId, long osznId, int month, int year,
+            Locale locale) {
+        try {
+            List<RequestFile> list = LoadUtil.getFacilityTarifReferences(userOrganizationId, osznId, month, year);
+
+            for (RequestFile file : list) {
+                file.setUserOrganizationId(userOrganizationId);
+            }
+
+            execute(LOAD_FACILITY_TARIF_REFERENCE, FacilityTarifLoadTaskBean.class, list, null,
+                    LOAD_THREAD_SIZE, LOAD_MAX_ERROR_COUNT, null);
         } catch (StorageNotFoundException e) {
             log.error("Ошибка процесса загрузки файлов.", e);
             logBean.error(Module.NAME, ProcessManagerBean.class, RequestFile.class, null,

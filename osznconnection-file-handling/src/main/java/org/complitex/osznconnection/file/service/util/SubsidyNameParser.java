@@ -5,37 +5,13 @@
 package org.complitex.osznconnection.file.service.util;
 
 import org.apache.wicket.util.string.Strings;
+import org.complitex.osznconnection.file.entity.PersonName;
 
 /**
  *
  * @author Artem
  */
 public final class SubsidyNameParser {
-
-    public static class SubsidyName {
-
-        private final String firstName;
-        private final String middleName;
-        private final String lastName;
-
-        public SubsidyName(String firstName, String middleName, String lastName) {
-            this.firstName = firstName;
-            this.middleName = middleName;
-            this.lastName = lastName;
-        }
-
-        public String getFirstName() {
-            return firstName;
-        }
-
-        public String getLastName() {
-            return lastName;
-        }
-
-        public String getMiddleName() {
-            return middleName;
-        }
-    }
 
     private SubsidyNameParser() {
     }
@@ -48,7 +24,7 @@ public final class SubsidyNameParser {
      *   4. "<LastName> <FirstName>"
      *   5. "<LastName>"
      */
-    public static SubsidyName parse(String rash, String fio) {
+    public static PersonName parse(String rash, String fio) {
         if (Strings.isEmpty(fio)) {
             throw new IllegalArgumentException("Поле `FIO` пустое, `RASH` записи: " + rash);
         }
@@ -85,6 +61,6 @@ public final class SubsidyNameParser {
             throw new RuntimeException("Поле `FIO` не содержит фамилию. `FIO`: '" + fio + "', `RASH` записи: " + rash);
         }
 
-        return new SubsidyName(firstName, middleName, lastName);
+        return new PersonName(firstName, middleName, lastName);
     }
 }

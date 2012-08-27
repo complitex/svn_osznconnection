@@ -20,6 +20,7 @@ import org.complitex.osznconnection.file.entity.RequestFileStatus;
 import org.complitex.osznconnection.file.service.RequestFileGroupBean;
 import org.complitex.osznconnection.file.service.process.ProcessManagerBean;
 import org.complitex.osznconnection.file.service.process.ProcessType;
+import org.complitex.osznconnection.file.web.component.load.RequestFileLoadPanel.MonthParameterViewMode;
 import org.complitex.osznconnection.file.web.pages.benefit.BenefitList;
 import org.complitex.osznconnection.file.web.pages.payment.PaymentList;
 import org.complitex.template.web.component.toolbar.ToolbarButton;
@@ -31,6 +32,7 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.osznconnection.file.service.file_description.RequestFileDescriptionBean;
+import org.complitex.osznconnection.file.web.component.load.DateParameter;
 import org.complitex.template.web.pages.ScrollListPage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -210,8 +212,14 @@ public class GroupList extends ScrollListPage {
         }
 
         @Override
-        protected void load(long userOrganizationId, long osznId, int monthFrom, int monthTo, int year) {
-            processManagerBean.loadGroup(userOrganizationId, osznId, monthFrom, monthTo, year);
+        protected void load(long userOrganizationId, long osznId, DateParameter dateParameter) {
+            processManagerBean.loadGroup(userOrganizationId, osznId,
+                    dateParameter.getMonthFrom(), dateParameter.getMonthTo(), dateParameter.getYear());
+        }
+
+        @Override
+        protected MonthParameterViewMode getLoadMonthParameterViewMode() {
+            return MonthParameterViewMode.RANGE;
         }
 
         @Override

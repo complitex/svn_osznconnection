@@ -1,4 +1,4 @@
-package org.complitex.osznconnection.file.web;
+package org.complitex.osznconnection.file.web.menu;
 
 import org.apache.wicket.Page;
 import org.complitex.template.web.template.ITemplateLink;
@@ -8,16 +8,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.complitex.osznconnection.file.web.ActualPaymentFileList;
+import org.complitex.osznconnection.file.web.GroupList;
+import org.complitex.osznconnection.file.web.SubsidyFileList;
+import org.complitex.osznconnection.file.web.TarifFileList;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 27.08.2010 17:31:55
  */
-public class FileHandlingMenu extends ResourceTemplateMenu {
+public class SubsidyRequestMenu extends ResourceTemplateMenu {
 
     @Override
     public String getTitle(Locale locale) {
-        return getString(FileHandlingMenu.class, locale, "title");
+        return getString(SubsidyRequestMenu.class, locale, "title");
     }
 
     @Override
@@ -28,7 +32,7 @@ public class FileHandlingMenu extends ResourceTemplateMenu {
 
             @Override
             public String getLabel(Locale locale) {
-                return getString(FileHandlingMenu.class, locale, "request_file_group_list");
+                return getString(SubsidyRequestMenu.class, locale, "request_file_group_list");
             }
 
             @Override
@@ -51,7 +55,7 @@ public class FileHandlingMenu extends ResourceTemplateMenu {
 
             @Override
             public String getLabel(Locale locale) {
-                return getString(FileHandlingMenu.class, locale, "actual_payment");
+                return getString(SubsidyRequestMenu.class, locale, "actual_payment");
             }
 
             @Override
@@ -74,7 +78,7 @@ public class FileHandlingMenu extends ResourceTemplateMenu {
 
             @Override
             public String getLabel(Locale locale) {
-                return getString(FileHandlingMenu.class, locale, "subsidy");
+                return getString(SubsidyRequestMenu.class, locale, "subsidy");
             }
 
             @Override
@@ -97,7 +101,7 @@ public class FileHandlingMenu extends ResourceTemplateMenu {
 
             @Override
             public String getLabel(Locale locale) {
-                return getString(FileHandlingMenu.class, locale, "tarif_list");
+                return getString(SubsidyRequestMenu.class, locale, "tarif_list");
             }
 
             @Override
@@ -121,6 +125,6 @@ public class FileHandlingMenu extends ResourceTemplateMenu {
 
     @Override
     public String getTagId() {
-        return "file_handling_menu";
+        return "subsidy_request_menu";
     }
 }

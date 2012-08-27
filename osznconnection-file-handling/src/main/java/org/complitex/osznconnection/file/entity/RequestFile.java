@@ -20,7 +20,9 @@ public class RequestFile implements IExecutorObject {
 
     public static enum TYPE {
 
-        BENEFIT, PAYMENT, TARIF, ACTUAL_PAYMENT, SUBSIDY
+        BENEFIT, PAYMENT, TARIF, ACTUAL_PAYMENT, SUBSIDY, DWELLING_CHARACTERISTICS, FACILITY_SERVICE_TYPE,
+        FACILITY_FORM2,
+        FACILITY_STREET_TYPE, FACILITY_STREET, FACILITY_TARIF
     }
 
     private Long id;

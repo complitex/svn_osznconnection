@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.osznconnection.file.entity.AbstractRequest;
-import org.complitex.osznconnection.file.entity.Tarif;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -36,11 +35,6 @@ public class TarifBean extends AbstractBean {
         for (AbstractRequest abstractRequest : abstractRequests) {
             sqlSession().insert(MAPPING_NAMESPACE + ".insertTarif", abstractRequest);
         }
-    }
-
-    @Transactional
-    public void insert(Tarif tarif) {
-        sqlSession().insert(MAPPING_NAMESPACE + ".insertTarif", tarif);
     }
 
     @Transactional

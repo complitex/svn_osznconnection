@@ -29,9 +29,19 @@ public class StatusDetailBean extends AbstractBean {
     public List<StatusDetailInfo> getActualPaymentStatusDetails(long requestFileId) {
         return sqlSession().selectList(MAPPING_NAMESPACE + ".getActualPaymentStatusDetailInfo", requestFileId);
     }
+
+    @SuppressWarnings("unchecked")
+    public List<StatusDetailInfo> getSubsidyStatusDetails(long requestFileId) {
+        return sqlSession().selectList(MAPPING_NAMESPACE + ".getSubsidyStatusDetailInfo", requestFileId);
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<StatusDetailInfo> getDwellingCharacteristicsStatusDetails(long requestFileId) {
+        return sqlSession().selectList(MAPPING_NAMESPACE + ".getDwellingCharacteristicsStatusDetailInfo", requestFileId);
+    }
     
     @SuppressWarnings("unchecked")
-    public List<StatusDetailInfo> getSubsidyStatusDetails(long requestFileId){
-        return sqlSession().selectList(MAPPING_NAMESPACE + ".getSubsidyStatusDetailInfo", requestFileId);
+    public List<StatusDetailInfo> getFacilityServiceTypeStatusDetails(long requestFileId) {
+        return sqlSession().selectList(MAPPING_NAMESPACE + ".getFacilityServiceTypeStatusDetailInfo", requestFileId);
     }
 }

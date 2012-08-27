@@ -16,7 +16,6 @@ import java.util.Locale;
 import java.util.Map;
 import javax.ejb.ConcurrencyManagement;
 import javax.ejb.ConcurrencyManagementType;
-import javax.ejb.Singleton;
 import javax.ejb.Stateless;
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
@@ -32,6 +31,12 @@ import org.complitex.dictionary.service.AbstractBean;
 import static org.complitex.dictionary.util.ResourceUtil.*;
 import org.complitex.osznconnection.file.entity.ActualPaymentDBF;
 import org.complitex.osznconnection.file.entity.BenefitDBF;
+import org.complitex.osznconnection.file.entity.DwellingCharacteristicsDBF;
+import org.complitex.osznconnection.file.entity.FacilityForm2DBF;
+import org.complitex.osznconnection.file.entity.FacilityServiceTypeDBF;
+import org.complitex.osznconnection.file.entity.FacilityStreetDBF;
+import org.complitex.osznconnection.file.entity.FacilityStreetTypeDBF;
+import org.complitex.osznconnection.file.entity.FacilityTarifDBF;
 import org.complitex.osznconnection.file.entity.PaymentDBF;
 import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.entity.SubsidyDBF;
@@ -58,12 +63,19 @@ public class RequestFileDescriptionBean extends AbstractBean {
     private final static Map<RequestFile.TYPE, RequestFileDescription> cache = Collections.synchronizedMap(
             new EnumMap<RequestFile.TYPE, RequestFileDescription>(RequestFile.TYPE.class));
     private final static Map<RequestFile.TYPE, Class<? extends Enum<?>>> REQUEST_FILE_TYPE_MAP =
-            ImmutableMap.of(
-            RequestFile.TYPE.ACTUAL_PAYMENT, ActualPaymentDBF.class,
-            RequestFile.TYPE.PAYMENT, PaymentDBF.class,
-            RequestFile.TYPE.BENEFIT, BenefitDBF.class,
-            RequestFile.TYPE.SUBSIDY, SubsidyDBF.class,
-            RequestFile.TYPE.TARIF, TarifDBF.class);
+            ImmutableMap.<RequestFile.TYPE, Class<? extends Enum<?>>>builder().
+            put(RequestFile.TYPE.ACTUAL_PAYMENT, ActualPaymentDBF.class).
+            put(RequestFile.TYPE.PAYMENT, PaymentDBF.class).
+            put(RequestFile.TYPE.BENEFIT, BenefitDBF.class).
+            put(RequestFile.TYPE.SUBSIDY, SubsidyDBF.class).
+            put(RequestFile.TYPE.TARIF, TarifDBF.class).
+            put(RequestFile.TYPE.DWELLING_CHARACTERISTICS, DwellingCharacteristicsDBF.class).
+            put(RequestFile.TYPE.FACILITY_STREET_TYPE, FacilityStreetTypeDBF.class).
+            put(RequestFile.TYPE.FACILITY_STREET, FacilityStreetDBF.class).
+            put(RequestFile.TYPE.FACILITY_SERVICE_TYPE, FacilityServiceTypeDBF.class).
+            put(RequestFile.TYPE.FACILITY_TARIF, FacilityTarifDBF.class).
+            put(RequestFile.TYPE.FACILITY_FORM2, FacilityForm2DBF.class).
+            build();
 
     @Transactional
     private void insert(RequestFileDescription fileDescription) {

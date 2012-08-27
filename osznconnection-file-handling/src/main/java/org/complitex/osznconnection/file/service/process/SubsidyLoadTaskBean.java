@@ -72,10 +72,10 @@ public class SubsidyLoadTaskBean implements ITaskBean {
     private void parseFio(Subsidy subsidy) {
         final String rash = subsidy.getStringField(SubsidyDBF.RASH);
         final String fio = subsidy.getStringField(SubsidyDBF.FIO);
-        SubsidyNameParser.SubsidyName name = SubsidyNameParser.parse(rash, fio);
-        subsidy.setFirstName(name.getFirstName());
-        subsidy.setMiddleName(name.getMiddleName());
-        subsidy.setLastName(name.getLastName());
+        PersonName personName = SubsidyNameParser.parse(rash, fio);
+        subsidy.setFirstName(personName.getFirstName());
+        subsidy.setMiddleName(personName.getMiddleName());
+        subsidy.setLastName(personName.getLastName());
     }
 
     @Override

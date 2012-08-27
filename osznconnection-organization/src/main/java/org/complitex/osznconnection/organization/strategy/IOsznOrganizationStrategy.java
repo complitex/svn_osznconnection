@@ -51,6 +51,22 @@ public interface IOsznOrganizationStrategy extends IOrganizationStrategy {
      */
     long SAVE_SUBSIDY_DIR = 920;
     /**
+     * Load dwelling characteristics directory. It is OSZN only attribute.
+     */
+    long LOAD_DWELLING_CHARACTERISTICS_DIR = 921;
+    /**
+     * Save dwelling characteristics directory. It is OSZN only attribute.
+     */
+    long SAVE_DWELLING_CHARACTERISTICS_DIR = 922;
+    /**
+     * Load facility service type directory. It is OSZN only attribute.
+     */
+    long LOAD_FACILITY_SERVICE_TYPE_DIR = 923;
+    /**
+     * Save facility service type directory. It is OSZN only attribute.
+     */
+    long SAVE_FACILITY_SERVICE_TYPE_DIR = 924;
+    /**
      * References directory. It is OSZN only attribute.
      */
     long REFERENCES_DIR = 925;
@@ -62,6 +78,10 @@ public interface IOsznOrganizationStrategy extends IOrganizationStrategy {
      * Root directory for loading and saving request files. It is user organization only attribute.
      */
     long ROOT_REQUEST_FILE_DIRECTORY = 927;
+    /**
+     * Save facility form2 directory. It is OSZN only attribute.
+     */
+    long SAVE_FACILITY_FORM2_DIR = 928;
     /**
      * Itself organization instance id.
      */

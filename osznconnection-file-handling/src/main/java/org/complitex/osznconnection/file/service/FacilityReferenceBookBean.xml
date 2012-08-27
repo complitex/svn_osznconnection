@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.complitex.osznconnection.file.service.FacilityReferenceBookBean">
+
+    <insert id="insertFacilityReferences" parameterType="map">
+        INSERT INTO `${table}`
+        (
+        <trim suffixOverrides=",">
+            `request_file_id`, `status`,
+            <foreach collection="request.dbfFields.keys" item="key">
+                `${key}`,
+            </foreach>
+        </trim>
+        )
+        values
+        (
+        <trim suffixOverrides=",">
+            #{request.requestFileId}, #{request.status},
+            <foreach collection="request.dbfFields.keys" item="key">
+                #{request.dbfFields.${key}},
+            </foreach>
+        </trim>
+        )
+    </insert>
+    
+    <select id="findStreetTypeNames" parameterType="map" resultType="string">
+        SELECT `KLKUL_NAME` FROM `facility_street_type_reference` st
+            JOIN `request_file` rf ON st.`request_file_id` = rf.`id`
+            WHERE st.`KLKUL_CODE` = #{streetTypeCode} AND rf.`organization_id` = #{osznId} 
+                AND rf.`user_organization_id` = #{userOrganizationId}
+    </select>
+
+    <delete id="deleteFacilityReferences" parameterType="map">
+        DELETE FROM `${table}` WHERE `request_file_id` = #{requestFileId}
+    </delete>
+    
+</mapper>
