@@ -15,7 +15,7 @@
 
                 <div wicket:id="messages"></div>
 
-                <form action="#" wicket:id="filter_form">
+                <form action="#" wicket:id="form">
                     <table border="0" cellspacing="0" cellpadding="0" class="tbColor table_input">
                         <thead>
                             <tr>
@@ -47,7 +47,7 @@
                                 <th class="center"><select wicket:id="year"></select></th>
                                 <th class="center"></th>
                                 <th class="center"></th>
-                                <th class="center"><input type="text"/></th>
+                                <th class="center"><select wicket:id="status"></select></th>
                                 <th class="center">
                                     <input wicket:id="find" class="btnSmall" type="submit" wicket:message="value:filter" tabindex="0"/>
                                 </th>
@@ -58,6 +58,7 @@
                                 <td>
                                     <input type="checkbox" wicket:id="selected"/>
                                     <img wicket:id="processing" align="top"/>
+                                    <img wicket:id="waiting" align="top"/>
                                 </td>
                                 <td><span wicket:id="id"></span></td>
                                 <td><span wicket:id="loaded"></span></td>
@@ -75,7 +76,10 @@
                     <div wicket:id="paging"></div>
 
                     <div align="right" class="buttons_section">
-                        <input type="button" class="btnMiddle" wicket:id="delete" wicket:message="value:delete"/>
+                        <div style="float: right;" wicket:id="buttons">
+                            <input type="button" class="btnMiddle" wicket:id="load" wicket:message="value:load"/>
+                            <input type="button" class="btnMiddle" wicket:id="delete" wicket:message="value:delete"/>
+                        </div>
                     </div>
                 </form>
             </div>

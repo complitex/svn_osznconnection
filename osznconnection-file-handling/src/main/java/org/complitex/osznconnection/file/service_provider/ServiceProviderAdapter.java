@@ -51,7 +51,7 @@ import org.complitex.osznconnection.file.entity.Subsidy;
 import org.complitex.osznconnection.file.entity.SubsidyDBF;
 import org.complitex.osznconnection.file.service.OwnershipCorrectionBean;
 import org.complitex.osznconnection.file.service.PrivilegeCorrectionBean;
-import org.complitex.osznconnection.file.service.TarifBean;
+import org.complitex.osznconnection.file.service.SubsidyTarifBean;
 import org.complitex.osznconnection.file.service.warning.RequestWarningBean;
 import org.complitex.osznconnection.file.service.warning.WebWarningRenderer;
 import org.complitex.osznconnection.file.service_provider.exception.DBException;
@@ -83,7 +83,7 @@ public class ServiceProviderAdapter {
     @EJB
     private OwnershipCorrectionBean ownershipCorrectionBean;
     @EJB
-    private TarifBean tarifBean;
+    private SubsidyTarifBean subsidyTarifBean;
     @EJB
     private PrivilegeCorrectionBean privilegeCorrectionBean;
     @EJB
@@ -606,7 +606,7 @@ public class ServiceProviderAdapter {
         //apartment fee
         if (tarifHandled
                 && calculationContext.getServiceProviderTypeIds().contains(ServiceProviderTypeStrategy.APARTMENT_FEE)) {
-            if (!handleTarif(calculationContext, payment, PaymentDBF.CODE2_1, data.getApartmentFeeTarif())) {
+            if (!handleSubsidyTarif(calculationContext, payment, PaymentDBF.CODE2_1, data.getApartmentFeeTarif())) {
                 tarifHandled = false;
                 errorTarif = data.getApartmentFeeTarif();
             }
@@ -615,7 +615,7 @@ public class ServiceProviderAdapter {
         if (tarifHandled
                 && calculationContext.getServiceProviderTypeIds().contains(ServiceProviderTypeStrategy.HEATING)) {
             payment.setField(PaymentDBF.NORM_F_2, data.getHeatingArea());
-            if (!handleTarif(calculationContext, payment, PaymentDBF.CODE2_2, data.getHeatingTarif())) {
+            if (!handleSubsidyTarif(calculationContext, payment, PaymentDBF.CODE2_2, data.getHeatingTarif())) {
                 tarifHandled = false;
                 errorTarif = data.getHeatingTarif();
             }
@@ -624,7 +624,7 @@ public class ServiceProviderAdapter {
         if (tarifHandled
                 && calculationContext.getServiceProviderTypeIds().contains(ServiceProviderTypeStrategy.HOT_WATER_SUPPLY)) {
             payment.setField(PaymentDBF.NORM_F_3, data.getChargeHotWater());
-            if (!handleTarif(calculationContext, payment, PaymentDBF.CODE2_3, data.getHotWaterTarif())) {
+            if (!handleSubsidyTarif(calculationContext, payment, PaymentDBF.CODE2_3, data.getHotWaterTarif())) {
                 tarifHandled = false;
                 errorTarif = data.getHotWaterTarif();
             }
@@ -633,7 +633,7 @@ public class ServiceProviderAdapter {
         if (tarifHandled
                 && calculationContext.getServiceProviderTypeIds().contains(ServiceProviderTypeStrategy.COLD_WATER_SUPPLY)) {
             payment.setField(PaymentDBF.NORM_F_4, data.getChargeColdWater());
-            if (!handleTarif(calculationContext, payment, PaymentDBF.CODE2_4, data.getColdWaterTarif())) {
+            if (!handleSubsidyTarif(calculationContext, payment, PaymentDBF.CODE2_4, data.getColdWaterTarif())) {
                 tarifHandled = false;
                 errorTarif = data.getColdWaterTarif();
             }
@@ -642,7 +642,7 @@ public class ServiceProviderAdapter {
         if (tarifHandled
                 && calculationContext.getServiceProviderTypeIds().contains(ServiceProviderTypeStrategy.GAS_SUPPLY)) {
             payment.setField(PaymentDBF.NORM_F_5, data.getChargeGas());
-            if (!handleTarif(calculationContext, payment, PaymentDBF.CODE2_5, data.getGasTarif())) {
+            if (!handleSubsidyTarif(calculationContext, payment, PaymentDBF.CODE2_5, data.getGasTarif())) {
                 tarifHandled = false;
                 errorTarif = data.getGasTarif();
             }
@@ -651,7 +651,7 @@ public class ServiceProviderAdapter {
         if (tarifHandled
                 && calculationContext.getServiceProviderTypeIds().contains(ServiceProviderTypeStrategy.POWER_SUPPLY)) {
             payment.setField(PaymentDBF.NORM_F_6, data.getChargePower());
-            if (!handleTarif(calculationContext, payment, PaymentDBF.CODE2_6, data.getPowerTarif())) {
+            if (!handleSubsidyTarif(calculationContext, payment, PaymentDBF.CODE2_6, data.getPowerTarif())) {
                 tarifHandled = false;
                 errorTarif = data.getPowerTarif();
             }
@@ -660,7 +660,7 @@ public class ServiceProviderAdapter {
         if (tarifHandled
                 && calculationContext.getServiceProviderTypeIds().contains(ServiceProviderTypeStrategy.GARBAGE_DISPOSAL)) {
             payment.setField(PaymentDBF.NORM_F_7, data.getChargeGarbageDisposal());
-            if (!handleTarif(calculationContext, payment, PaymentDBF.CODE2_7, data.getGarbageDisposalTarif())) {
+            if (!handleSubsidyTarif(calculationContext, payment, PaymentDBF.CODE2_7, data.getGarbageDisposalTarif())) {
                 tarifHandled = false;
                 errorTarif = data.getGarbageDisposalTarif();
             }
@@ -669,7 +669,7 @@ public class ServiceProviderAdapter {
         if (tarifHandled
                 && calculationContext.getServiceProviderTypeIds().contains(ServiceProviderTypeStrategy.DRAINAGE)) {
             payment.setField(PaymentDBF.NORM_F_8, data.getChargeDrainage());
-            if (!handleTarif(calculationContext, payment, PaymentDBF.CODE2_8, data.getDrainageTarif())) {
+            if (!handleSubsidyTarif(calculationContext, payment, PaymentDBF.CODE2_8, data.getDrainageTarif())) {
                 tarifHandled = false;
                 errorTarif = data.getDrainageTarif();
             }
@@ -679,9 +679,9 @@ public class ServiceProviderAdapter {
          * Логирование ошибки обработки тарифа.
          */
         if (!tarifHandled) {
-            payment.setStatus(RequestStatus.TARIF_CODE2_1_NOT_FOUND);
+            payment.setStatus(RequestStatus.SUBSIDY_TARIF_CODE_NOT_FOUND);
 
-            log.error("Couldn't find tarif code by calculation center's tarif: '{}', "
+            log.error("Couldn't find subsidy tarif code by calculation center's tarif: '{}', "
                     + "calculation center id: {} and user organization id: {}",
                     new Object[]{
                         errorTarif,
@@ -689,7 +689,7 @@ public class ServiceProviderAdapter {
                         calculationContext.getUserOrganizationId()
                     });
 
-            RequestWarning warning = new RequestWarning(payment.getId(), RequestFile.TYPE.PAYMENT, RequestWarningStatus.TARIF_NOT_FOUND);
+            RequestWarning warning = new RequestWarning(payment.getId(), RequestFile.TYPE.PAYMENT, RequestWarningStatus.SUBSIDY_TARIF_NOT_FOUND);
             warning.addParameter(new RequestWarningParameter(0, errorTarif));
             warning.addParameter(new RequestWarningParameter(1, "organization", calculationContext.getCalculationCenterId()));
             warningBean.save(warning);
@@ -769,8 +769,8 @@ public class ServiceProviderAdapter {
         }
     }
 
-    protected boolean handleTarif(CalculationContext calculationContext, Payment payment, PaymentDBF field, BigDecimal rawTarif) {
-        String tarifCode = getTarifCode(rawTarif, payment.getOrganizationId(), calculationContext.getUserOrganizationId());
+    protected boolean handleSubsidyTarif(CalculationContext calculationContext, Payment payment, PaymentDBF field, BigDecimal rawTarif) {
+        String tarifCode = getSubsidyTarifCode(rawTarif, payment.getOrganizationId(), calculationContext.getUserOrganizationId());
         if (tarifCode == null) {
             return false;
         } else {
@@ -790,13 +790,11 @@ public class ServiceProviderAdapter {
 
     /**
      * Получить тариф.
-     * См. TarifBean.getCode2().
-     *
      * @param T11_CS_UNI
      * @return
      */
-    protected String getTarifCode(BigDecimal T11_CS_UNI, long osznId, long userOrganizationId) {
-        return tarifBean.getCode2(T11_CS_UNI, osznId, userOrganizationId);
+    protected String getSubsidyTarifCode(BigDecimal T11_CS_UNI, long osznId, long userOrganizationId) {
+        return subsidyTarifBean.getCode2(T11_CS_UNI, osznId, userOrganizationId);
     }
 
     public Collection<BenefitData> getBenefitData(CalculationContext calculationContext, Benefit benefit, Date dat1)

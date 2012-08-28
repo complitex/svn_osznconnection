@@ -17,15 +17,15 @@ import org.complitex.osznconnection.file.service.file_description.RequestFileDes
 import org.complitex.osznconnection.file.service.file_description.RequestFileDescriptionBean;
 
 /**
- * Класс для работы с тарифами.
+ * Класс для работы с тарифами субсидий.
  *
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 10.09.2010 18:16:17
  */
 @Stateless
-public class TarifBean extends AbstractBean {
+public class SubsidyTarifBean extends AbstractBean {
 
-    public static final String MAPPING_NAMESPACE = TarifBean.class.getName();
+    public static final String MAPPING_NAMESPACE = SubsidyTarifBean.class.getName();
     @EJB
     private RequestFileDescriptionBean requestFileDescriptionBean;
 
@@ -50,7 +50,7 @@ public class TarifBean extends AbstractBean {
      */
     @Transactional
     public String getCode2(BigDecimal T11_CS_UNI, long osznId, long userOrganizationId) {
-        final RequestFileDescription tarifDescription = requestFileDescriptionBean.getFileDescription(RequestFile.TYPE.TARIF);
+        final RequestFileDescription tarifDescription = requestFileDescriptionBean.getFileDescription(RequestFile.TYPE.SUBSIDY_TARIF);
         Map<String, Object> params = Maps.newHashMap();
         params.put("T11_CS_UNI", tarifDescription.getTypeConverter().toString(T11_CS_UNI));
         params.put("osznId", osznId);

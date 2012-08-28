@@ -40,7 +40,7 @@ import org.complitex.osznconnection.file.entity.FacilityTarifDBF;
 import org.complitex.osznconnection.file.entity.PaymentDBF;
 import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.entity.SubsidyDBF;
-import org.complitex.osznconnection.file.entity.TarifDBF;
+import org.complitex.osznconnection.file.entity.SubsidyTarifDBF;
 import org.complitex.osznconnection.file.service.file_description.RequestFileDescriptionValidateException.ValidationError;
 import org.complitex.osznconnection.file.service.file_description.jaxb.Field;
 import org.complitex.osznconnection.file.service.file_description.jaxb.Fields;
@@ -68,7 +68,7 @@ public class RequestFileDescriptionBean extends AbstractBean {
             put(RequestFile.TYPE.PAYMENT, PaymentDBF.class).
             put(RequestFile.TYPE.BENEFIT, BenefitDBF.class).
             put(RequestFile.TYPE.SUBSIDY, SubsidyDBF.class).
-            put(RequestFile.TYPE.TARIF, TarifDBF.class).
+            put(RequestFile.TYPE.SUBSIDY_TARIF, SubsidyTarifDBF.class).
             put(RequestFile.TYPE.DWELLING_CHARACTERISTICS, DwellingCharacteristicsDBF.class).
             put(RequestFile.TYPE.FACILITY_STREET_TYPE, FacilityStreetTypeDBF.class).
             put(RequestFile.TYPE.FACILITY_STREET, FacilityStreetDBF.class).

@@ -17,8 +17,6 @@ import org.complitex.dictionary.util.ResourceUtil;
 import org.complitex.osznconnection.file.entity.RequestWarning;
 import org.complitex.osznconnection.file.entity.RequestWarningParameter;
 import org.complitex.osznconnection.file.entity.RequestWarningStatus;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -26,8 +24,6 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractWarningRenderer implements IWarningRenderer {
 
-    private static final Logger log = LoggerFactory.getLogger(AbstractWarningRenderer.class);
-    
     private static final Comparator<RequestWarningParameter> WARNING_PARAMETER_COMPARATOR = new Comparator<RequestWarningParameter>() {
 
         @Override

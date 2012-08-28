@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="org.complitex.osznconnection.file.service.TarifBean">
-    <resultMap id="tarifResultMap" type="org.complitex.osznconnection.file.entity.Tarif">
+<mapper namespace="org.complitex.osznconnection.file.service.SubsidyTarifBean">
+    <resultMap id="subsidyTarifResultMap" type="org.complitex.osznconnection.file.entity.SubsidyTarif">
         <id column="id" property="id"/>
         <result column="request_file_id" property="requestFileId"/>
         <result column="status" property="status"/>
@@ -29,8 +29,8 @@
         </association>
     </resultMap>
 
-    <insert id="insertTarif" parameterType="org.complitex.osznconnection.file.entity.Tarif">
-        insert into `tarif`
+    <insert id="insertTarif" parameterType="org.complitex.osznconnection.file.entity.SubsidyTarif">
+        INSERT INTO `subsidy_tarif`
         (
         <trim suffixOverrides=",">
             `request_file_id`, `status`,
@@ -39,7 +39,7 @@
             </foreach>
         </trim>
         )
-        values
+        VALUES
         (
         <trim suffixOverrides=",">
             #{requestFileId}, #{status},
@@ -51,13 +51,12 @@
     </insert>
 
     <delete id="deleteTarifs" parameterType="long">
-        delete from `tarif` where `request_file_id` = #{id};
+        DELETE FROM `subsidy_tarif` WHERE `request_file_id` = #{id};
     </delete>
 
     <select id="getCode2" parameterType="map" resultType="string">
-        SELECT DISTINCT t.`T11_CODE2` 
-                FROM `tarif` t 
-                JOIN `request_file` f ON (f.`id` = t.`request_file_id` AND f.`type` = 'TARIF')
+        SELECT DISTINCT t.`T11_CODE2` FROM `subsidy_tarif` t 
+                JOIN `request_file` f ON (f.`id` = t.`request_file_id` AND f.`type` = 'SUBSIDY_TARIF')
             WHERE t.`T11_CS_UNI` = #{T11_CS_UNI} AND t.`T11_CODE1` = 1 AND f.`organization_id` = #{osznId}
             AND f.`user_organization_id` = #{userOrganizationId}
         LIMIT 0,1

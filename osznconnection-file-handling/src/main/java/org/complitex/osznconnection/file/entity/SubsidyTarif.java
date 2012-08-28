@@ -6,13 +6,11 @@ package org.complitex.osznconnection.file.entity;
  *
  * Файл тарифа.
  * Имя файла TARIF12.DBF
- *
- * @see org.complitex.osznconnection.file.entity.AbstractRequest
  */
-public class Tarif extends AbstractRequest {
+public class SubsidyTarif extends AbstractRequest {
 
     @Override
     public RequestFile.TYPE getRequestFileType() {
-        return RequestFile.TYPE.TARIF;
+        return RequestFile.TYPE.SUBSIDY_TARIF;
     }
 }

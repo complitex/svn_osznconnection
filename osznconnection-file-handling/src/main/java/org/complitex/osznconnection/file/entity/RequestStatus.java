@@ -68,18 +68,13 @@ public enum RequestStatus implements IEnumCode {
     /* Указывает на то, что запись обработана */
     PROCESSED(215),
 
-    /* Указывает на то, что не найден код тарифа в таблице тарифов для заполнения поля CODE2_1.
-     См. org.complitex.osznconnection.file.calculation.adapter.DefaultCalculationCenterAdapter.processData()  */
-    TARIF_CODE2_1_NOT_FOUND(216),
+    /* Указывает на то, что не найден код тарифа для запросов по субсидиям в таблице тарифов для заполнения поля CODE2_1. */
+    SUBSIDY_TARIF_CODE_NOT_FOUND(216),
 
-    /* Не сопоставлен носитель льготы
-        См. org.complitex.osznconnection.file.calculation.adapter.DefaultCalculationCenterAdapter.processBenefitData()
-     */
+    /* Не сопоставлен носитель льготы */
     BENEFIT_OWNER_NOT_ASSOCIATED(217),
 
-    /* Указывает на то, что код привилегии не найден в таблице коррекций
-        См. org.complitex.osznconnection.file.calculation.adapter.DefaultCalculationCenterAdapter.processBenefitData()
-     */
+    /* Указывает на то, что код привилегии не найден в таблице коррекций */
     BENEFIT_NOT_FOUND(218),
 
     PROCESSING_INVALID_FORMAT(219),
@@ -152,7 +147,7 @@ public enum RequestStatus implements IEnumCode {
     private static final Set<RequestStatus> UNPROCESSED_SET_STATUSES = 
             Sets.immutableEnumSet(ImmutableList.<RequestStatus>builder().addAll(UNBOUND_STATUSES).
             add(ACCOUNT_NUMBER_RESOLVED).
-            add(TARIF_CODE2_1_NOT_FOUND).
+            add(SUBSIDY_TARIF_CODE_NOT_FOUND).
             add(BENEFIT_OWNER_NOT_ASSOCIATED).
             add(BENEFIT_NOT_FOUND).
             add(PROCESSING_INVALID_FORMAT).build());

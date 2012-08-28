@@ -11,7 +11,7 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.osznconnection.file.web.ActualPaymentFileList;
 import org.complitex.osznconnection.file.web.GroupList;
 import org.complitex.osznconnection.file.web.SubsidyFileList;
-import org.complitex.osznconnection.file.web.TarifFileList;
+import org.complitex.osznconnection.file.web.SubsidyTarifFileList;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -101,12 +101,12 @@ public class SubsidyRequestMenu extends ResourceTemplateMenu {
 
             @Override
             public String getLabel(Locale locale) {
-                return getString(SubsidyRequestMenu.class, locale, "tarif_list");
+                return getString(SubsidyRequestMenu.class, locale, "subsidy_tarif_list");
             }
 
             @Override
             public Class<? extends Page> getPage() {
-                return TarifFileList.class;
+                return SubsidyTarifFileList.class;
             }
 
             @Override
@@ -116,7 +116,7 @@ public class SubsidyRequestMenu extends ResourceTemplateMenu {
 
             @Override
             public String getTagId() {
-                return "TarifList";
+                return "SubsidyTarifList";
             }
         });
 

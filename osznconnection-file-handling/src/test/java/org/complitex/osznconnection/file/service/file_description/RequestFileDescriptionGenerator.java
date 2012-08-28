@@ -417,7 +417,7 @@ public class RequestFileDescriptionGenerator {
                 RequestFile.TYPE.PAYMENT.name(), PaymentDBF.class,
                 RequestFile.TYPE.BENEFIT.name(), BenefitDBF.class,
                 RequestFile.TYPE.SUBSIDY.name(), SubsidyDBF.class,
-                RequestFile.TYPE.TARIF.name(), TarifDBF.class);
+                RequestFile.TYPE.SUBSIDY_TARIF.name(), TarifDBF.class);
 
         for (String fileType : enumsMap.keySet()) {
             FileDescription fd = factory.createFileDescription();

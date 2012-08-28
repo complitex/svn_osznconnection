@@ -1,5 +1,11 @@
 package org.complitex.osznconnection.file.web;
 
+import org.apache.wicket.markup.html.form.DropDownChoice;
+import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import java.text.MessageFormat;
+import org.complitex.osznconnection.file.service.process.ProcessType;
+import org.complitex.osznconnection.file.entity.RequestFileStatus;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.complitex.osznconnection.file.web.component.load.RequestFileLoadPanel.MonthParameterViewMode;
 import org.complitex.osznconnection.file.web.component.load.DateParameter;
 import org.complitex.osznconnection.file.web.component.load.RequestFileLoadPanel;
@@ -7,7 +13,6 @@ import org.complitex.osznconnection.file.web.AbstractProcessableListPanel.Select
 import org.apache.wicket.Component;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.markup.html.IHeaderResponse;
-import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.ajax.IAjaxCallDecorator;
 import org.apache.wicket.ajax.calldecorator.AjaxCallDecorator;
 import org.complitex.dictionary.web.component.paging.IPagingNavigatorListener;
@@ -56,7 +61,6 @@ import org.complitex.resources.WebCommonResourceInitializer;
 import javax.ejb.EJB;
 import java.util.*;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
-import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.request.resource.SharedResourceReference;
@@ -67,14 +71,12 @@ import org.complitex.osznconnection.file.service.file_description.RequestFileDes
 import org.complitex.osznconnection.file.web.component.load.IRequestFileLoader;
 import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
 
-import static org.complitex.osznconnection.file.service.process.ProcessType.LOAD_TARIF;
+import static org.complitex.osznconnection.file.service.process.ProcessType.LOAD_SUBSIDY_TARIF;
 
 /**
- * @author Anatoly A. Ivanov java@inheaven.ru
- *         Date: 25.08.2010 13:35:35
  */
 @AuthorizeInstantiation(SecurityRole.AUTHORIZED)
-public class TarifFileList extends TemplatePage {
+public class SubsidyTarifFileList extends TemplatePage {
 
     @EJB
     private RequestFileBean requestFileBean;
@@ -88,30 +90,29 @@ public class TarifFileList extends TemplatePage {
     private OsznSessionBean osznSessionBean;
     @EJB
     private RequestFileDescriptionBean requestFileDescriptionBean;
-    private int waitForStopTimer;
-    private boolean completedDisplayed = false;
+    private final AtomicInteger statusTimerIndex = new AtomicInteger();
+    private boolean completedDisplayed;
     private RequestFileLoadPanel requestFileLoadPanel;
-    private boolean modificationsAllowed;
-    private boolean hasFieldDescription;
+    private final boolean modificationsAllowed;
+    private final boolean hasFieldDescription;
 
-    public TarifFileList(PageParameters parameters) {
-        super();
-        init(parameters.get("request_file_id").toOptionalLong());
-    }
-
-    public TarifFileList() {
-        super();
-        init(null);
+    public SubsidyTarifFileList() {
+        this.hasFieldDescription = hasFieldDescription();
+        this.modificationsAllowed =
+                //- только пользователи, принадлежащие организации или администраторы могут обрабатывать файлы.
+                (osznSessionBean.getCurrentUserOrganizationId(getTemplateSession()) != null || osznSessionBean.isAdmin())
+                && //можно обрабатывать файлы, только если в базу загружены описания структур для файлов запросов.
+                hasFieldDescription;
+        init();
     }
 
     private boolean hasFieldDescription() {
-        return requestFileDescriptionBean.getFileDescription(RequestFile.TYPE.TARIF) != null;
+        return requestFileDescriptionBean.getFileDescription(RequestFile.TYPE.SUBSIDY_TARIF) != null;
     }
 
-    private RequestFileFilter newFilter(Long requestFileId) {
+    private RequestFileFilter newFilter() {
         final RequestFileFilter filter = new RequestFileFilter();
-        filter.setType(RequestFile.TYPE.TARIF);
-        filter.setId(requestFileId);
+        filter.setType(RequestFile.TYPE.SUBSIDY_TARIF);
         return filter;
     }
 
@@ -125,58 +126,51 @@ public class TarifFileList extends TemplatePage {
                 AbstractProcessableListPanel.class.getSimpleName() + ".css"));
     }
 
-    private void init(Long requestFileId) {
-        this.hasFieldDescription = hasFieldDescription();
-        this.modificationsAllowed =
-                //- только пользователи, принадлежащие организации или администраторы могут обрабатывать файлы.
-                (osznSessionBean.getCurrentUserOrganizationId(getTemplateSession()) != null || osznSessionBean.isAdmin())
-                && //можно обрабатывать файлы, только если в базу загружены описания структур для файлов запросов.
-                hasFieldDescription;
-
+    private void init() {
         add(new Label("title", getString("title")));
 
         final AjaxFeedbackPanel messages = new AjaxFeedbackPanel("messages");
         add(messages);
 
         //Фильтр модель
-        final RequestFileFilter filter = (RequestFileFilter) getFilterObject(newFilter(requestFileId));
+        final RequestFileFilter filter = (RequestFileFilter) getFilterObject(newFilter());
         final IModel<RequestFileFilter> filterModel = new CompoundPropertyModel<RequestFileFilter>(filter);
 
         //Фильтр форма
-        final Form<RequestFileFilter> filterForm = new Form<RequestFileFilter>("filter_form", filterModel);
-        filterForm.setOutputMarkupId(true);
-        add(filterForm);
+        final Form<RequestFileFilter> form = new Form<RequestFileFilter>("form", filterModel);
+        form.setOutputMarkupId(true);
+        add(form);
 
         AjaxLink<Void> filter_reset = new AjaxLink<Void>("filter_reset") {
 
             @Override
             public void onClick(AjaxRequestTarget target) {
-                RequestFileFilter filterObject = newFilter(null);
+                RequestFileFilter filterObject = newFilter();
                 filterModel.setObject(filterObject);
-                target.add(filterForm);
+                target.add(form);
             }
         };
-        filterForm.add(filter_reset);
+        form.add(filter_reset);
 
-        AjaxButton find = new AjaxButton("find", filterForm) {
+        AjaxButton find = new AjaxButton("find", form) {
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                target.add(filterForm);
+                target.add(form);
             }
 
             @Override
             protected void onError(AjaxRequestTarget target, Form<?> form) {
             }
         };
-        filterForm.add(find);
+        form.add(find);
 
         //Select all checkbox
         CheckBox selectAll = new CheckBox("select_all", new Model<Boolean>(false)) {
 
             @Override
             public boolean isEnabled() {
-                return !isProcessing();
+                return !isGlobalProcessing();
             }
 
             @Override
@@ -185,16 +179,16 @@ public class TarifFileList extends TemplatePage {
             }
         };
         selectAll.add(new CssAttributeBehavior("processable-list-panel-select-all"));
-        filterForm.add(selectAll);
+        form.add(selectAll);
 
         //Id
-        filterForm.add(new TextField<String>("id"));
+        form.add(new TextField<String>("id"));
 
         //Дата загрузки
-        filterForm.add(new DatePicker<Date>("loaded"));
+        form.add(new DatePicker<Date>("loaded"));
 
         //Имя
-        filterForm.add(new TextField<String>("name"));
+        form.add(new TextField<String>("name"));
 
         //Организация
         final IModel<List<DomainObject>> osznsModel = new LoadableDetachableModel<List<DomainObject>>() {
@@ -211,7 +205,7 @@ public class TarifFileList extends TemplatePage {
                 return organizationStrategy.displayDomainObject(object, getLocale());
             }
         };
-        filterForm.add(new DisableAwareDropDownChoice<DomainObject>("organization", osznsModel, organizationRenderer).setNullValid(true));
+        form.add(new DisableAwareDropDownChoice<DomainObject>("organization", osznsModel, organizationRenderer).setNullValid(true));
 
         // Организация пользователя
         final IModel<List<? extends DomainObject>> userOrganizationsModel = new LoadableDetachableModel<List<? extends DomainObject>>() {
@@ -221,11 +215,26 @@ public class TarifFileList extends TemplatePage {
                 return organizationStrategy.getUserOrganizations(getLocale());
             }
         };
-        filterForm.add(new DisableAwareDropDownChoice<DomainObject>("userOrganization", userOrganizationsModel,
+        form.add(new DisableAwareDropDownChoice<DomainObject>("userOrganization", userOrganizationsModel,
                 organizationRenderer).setNullValid(true));
 
         //Год
-        filterForm.add(new YearDropDownChoice("year").setNullValid(true));
+        form.add(new YearDropDownChoice("year").setNullValid(true));
+
+        //Статус
+        form.add(new DropDownChoice<RequestFileStatus>("status", Arrays.asList(RequestFileStatus.values()),
+                new IChoiceRenderer<RequestFileStatus>() {
+
+                    @Override
+                    public Object getDisplayValue(RequestFileStatus status) {
+                        return getString(status.name());
+                    }
+
+                    @Override
+                    public String getIdValue(RequestFileStatus object, int index) {
+                        return object.name();
+                    }
+                }).setNullValid(true));
 
         //Модель выбранных элементов списка.
         final Map<Long, SelectModelValue> selectModels = new HashMap<>();
@@ -268,7 +277,7 @@ public class TarifFileList extends TemplatePage {
         //Контейнер для ajax
         final WebMarkupContainer dataViewContainer = new WebMarkupContainer("request_files_container");
         dataViewContainer.setOutputMarkupId(true);
-        filterForm.add(dataViewContainer);
+        form.add(dataViewContainer);
 
         //Таблица файлов запросов
         final DataView<RequestFile> dataView = new DataView<RequestFile>("request_files", dataProvider, 1) {
@@ -286,12 +295,12 @@ public class TarifFileList extends TemplatePage {
 
                     @Override
                     public boolean isVisible() {
-                        return !isLoading(item.getModelObject()) || !isProcessing();
+                        return !isProcessing(item.getModelObject()) && !isGlobalWaiting(item.getModelObject());
                     }
 
                     @Override
                     public boolean isEnabled() {
-                        return !isProcessing();
+                        return !isGlobalWaiting(item.getModelObject());
                     }
                 };
 
@@ -309,7 +318,16 @@ public class TarifFileList extends TemplatePage {
 
                     @Override
                     public boolean isVisible() {
-                        return isLoading(item.getModelObject());
+                        return isProcessing(item.getModelObject());
+                    }
+                });
+
+                //Анимация ожидание
+                item.add(new StaticImage("waiting", new SharedResourceReference(AbstractProcessableListPanel.IMAGE_AJAX_WAITING)) {
+
+                    @Override
+                    public boolean isVisible() {
+                        return isGlobalWaiting(item.getModelObject()) && !isProcessing(item.getModelObject());
                     }
                 });
 
@@ -352,19 +370,17 @@ public class TarifFileList extends TemplatePage {
                 }));
 
                 //Статус
-                item.add(new Label("status", new AbstractReadOnlyModel<String>() {
+                item.add(new Label("status", new LoadableDetachableModel<String>() {
 
                     @Override
-                    public String getObject() {
-                        if (isLoaded(item.getModelObject())) {
-                            return getStringOrKey("status.loaded");
-                        } else if (isLoading(item.getModelObject())) {
-                            return getStringOrKey("status.loading");
-                        } else if (isLoadError(item.getModelObject())) {
-                            return getStringOrKey("status.load_error");
-                        } else {
-                            return "";
+                    protected String load() {
+                        String dots = "";
+                        if (isProcessing(item.getModelObject()) && isGlobalProcessing()) {
+                            dots += StringUtil.getDots(statusTimerIndex.get() % 5);
                         }
+
+                        final RequestFileStatus status = item.getModelObject().getStatus();
+                        return (status != null ? getString(status.name()) : "") + dots;
                     }
                 }));
             }
@@ -375,7 +391,7 @@ public class TarifFileList extends TemplatePage {
         dataView.setItemReuseStrategy(new ReuseIfLongIdEqualStrategy());
 
         //Постраничная навигация
-        PagingNavigator pagingNavigator = new PagingNavigator("paging", dataView, getPreferencesPage(), filterForm);
+        PagingNavigator pagingNavigator = new PagingNavigator("paging", dataView, getPreferencesPage(), form);
         pagingNavigator.addListener(new IPagingNavigatorListener() { //clear select checkbox model on page change
 
             @Override
@@ -383,24 +399,32 @@ public class TarifFileList extends TemplatePage {
                 AbstractProcessableListPanel.clearSelection(selectModels);
             }
         });
-        filterForm.add(pagingNavigator);
+        form.add(pagingNavigator);
 
         //Сортировка
-        filterForm.add(new ArrowOrderByBorder("header.id", "id", dataProvider, dataView, filterForm));
-        filterForm.add(new ArrowOrderByBorder("header.loaded", "loaded", dataProvider, dataView, filterForm));
-        filterForm.add(new ArrowOrderByBorder("header.name", "name", dataProvider, dataView, filterForm));
-        filterForm.add(new ArrowOrderByBorder("header.organization", "organization_id", dataProvider, dataView, filterForm));
-        filterForm.add(new ArrowOrderByBorder("header.user_organization", "user_organization_id", dataProvider, dataView, filterForm));
-        filterForm.add(new ArrowOrderByBorder("header.year", "year", dataProvider, dataView, filterForm));
+        form.add(new ArrowOrderByBorder("header.id", "id", dataProvider, dataView, form));
+        form.add(new ArrowOrderByBorder("header.loaded", "loaded", dataProvider, dataView, form));
+        form.add(new ArrowOrderByBorder("header.name", "name", dataProvider, dataView, form));
+        form.add(new ArrowOrderByBorder("header.organization", "organization_id", dataProvider, dataView, form));
+        form.add(new ArrowOrderByBorder("header.user_organization", "user_organization_id", dataProvider, dataView, form));
+        form.add(new ArrowOrderByBorder("header.year", "year", dataProvider, dataView, form));
 
-        showMessages();
+        WebMarkupContainer buttons = new WebMarkupContainer("buttons");
+        buttons.setOutputMarkupId(true);
+        buttons.setVisibilityAllowed(modificationsAllowed);
+        form.add(buttons);
 
-        if (isProcessing()) {
-            dataViewContainer.add(newTimer(filterForm, messages));
-        }
+        //Загрузить
+        buttons.add(new AjaxLink<Void>("load") {
+
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                requestFileLoadPanel.open(target);
+            }
+        });
 
         //Удалить
-        final AjaxLink<Void> delete = new AjaxLink<Void>("delete") {
+        buttons.add(new AjaxLink<Void>("delete") {
 
             @Override
             protected IAjaxCallDecorator getAjaxCallDecorator() {
@@ -423,25 +447,21 @@ public class TarifFileList extends TemplatePage {
                         selectModels.remove(requestFileId);
 
                         info(getStringFormat("info.deleted", tarifFile.getFullName()));
-
-                        logBean.info(Module.NAME, TarifFileList.class, RequestFileGroup.class, null, tarifFile.getId(),
+                        logBean.info(Module.NAME, SubsidyTarifFileList.class, RequestFileGroup.class, null, tarifFile.getId(),
                                 Log.EVENT.REMOVE, tarifFile.getLogChangeList(), "Файл удален успешно. Имя объекта: {0}",
                                 tarifFile.getLogObjectName());
                     } catch (Exception e) {
                         error(getStringFormat("error.delete", tarifFile.getFullName()));
-
-                        logBean.error(Module.NAME, TarifFileList.class, RequestFileGroup.class, null, tarifFile.getId(),
+                        logBean.error(Module.NAME, SubsidyTarifFileList.class, RequestFileGroup.class, null, tarifFile.getId(),
                                 Log.EVENT.REMOVE, tarifFile.getLogChangeList(), "Ошибка удаления. Имя объекта: {0}",
                                 tarifFile.getLogObjectName());
                         break;
                     }
                 }
-                target.add(filterForm);
+                target.add(form);
                 target.add(messages);
             }
-        };
-        delete.setVisibilityAllowed(modificationsAllowed);
-        filterForm.add(delete);
+        });
 
         //Диалог загрузки
         requestFileLoadPanel = new RequestFileLoadPanel("load_panel",
@@ -451,10 +471,10 @@ public class TarifFileList extends TemplatePage {
                     @Override
                     public void load(long userOrganizationId, long osznId, DateParameter dateParameter, AjaxRequestTarget target) {
                         completedDisplayed = false;
-                        processManagerBean.loadTarif(userOrganizationId, osznId, dateParameter.getMonth(), dateParameter.getYear());
+                        processManagerBean.loadSubsidyTarif(userOrganizationId, osznId, dateParameter.getMonth(), dateParameter.getYear());
 
-                        addTimer(dataViewContainer, filterForm, messages);
-                        target.add(filterForm);
+                        addTimer(dataViewContainer, form, messages);
+                        target.add(form);
                     }
                 }, MonthParameterViewMode.HIDDEN);
 
@@ -464,76 +484,96 @@ public class TarifFileList extends TemplatePage {
         if (!hasFieldDescription) {
             error(getString("file_description_missing"));
         }
+
+        if (isGlobalProcessing()) {
+            dataViewContainer.add(newTimer(form, messages));
+        }
+
+        showMessages();
     }
 
-    private boolean isProcessing() {
-        return processManagerBean.isProcessing(LOAD_TARIF);
+    private boolean isGlobalProcessing() {
+        return processManagerBean.isProcessing(LOAD_SUBSIDY_TARIF);
     }
 
-    private boolean isLoading(RequestFile requestFile) {
-        return processManagerBean.isProcessing(LOAD_TARIF)
-                && requestFile.getLoadedRecordCount() < requestFile.getDbfRecordCount();
+    private boolean isGlobalWaiting(RequestFile requestFile) {
+        return processManagerBean.isGlobalWaiting(LOAD_SUBSIDY_TARIF, requestFile);
     }
 
-    private boolean isLoaded(RequestFile requestFile) {
-        return requestFile.getLoadedRecordCount().equals(requestFile.getDbfRecordCount())
-                && requestFile.getDbfRecordCount() != 0;
-    }
-
-    private boolean isLoadError(RequestFile requestFile) {
-        return !processManagerBean.isProcessing(LOAD_TARIF) && !isLoaded(requestFile);
+    private boolean isProcessing(RequestFile file) {
+        return file.isProcessing();
     }
 
     private void showMessages() {
-
         showMessages(null);
     }
 
-    private void showMessages(AjaxRequestTarget target) {
-        List<RequestFile> list = processManagerBean.getProcessed(LOAD_TARIF, TarifFileList.class);
+    private void addMessages(String keyPrefix, AjaxRequestTarget target, ProcessType processType,
+            RequestFileStatus processedStatus, RequestFileStatus errorStatus) {
+        List<RequestFile> list = processManagerBean.getProcessed(processType, getClass());
 
-        for (RequestFile rf : list) {
-            if (rf.getLoadedRecordCount().equals(rf.getDbfRecordCount()) && rf.getDbfRecordCount() != 0) {
-                info(getStringFormat("tarif.loaded", rf.getFullName()));
-                AbstractProcessableListPanel.highlightProcessed(target, rf.getId());
-            } else {
-                error(getStringFormat("tarif.load_error", rf.getFullName()));
-                AbstractProcessableListPanel.highlightError(target, rf.getId());
+        for (RequestFile file : list) {
+            if (RequestFileStatus.SKIPPED.equals(file.getStatus())) {
+                AbstractProcessableListPanel.highlightProcessed(target, file.getId());
+                info(MessageFormat.format(getString(keyPrefix + ".skipped"), file.getFullName()));
+            } else if (processedStatus.equals(file.getStatus())) {
+                AbstractProcessableListPanel.highlightProcessed(target, file.getId());
+                info(MessageFormat.format(getString(keyPrefix + ".processed"), file.getFullName()));
+            } else if (errorStatus.equals(file.getStatus())) {
+                AbstractProcessableListPanel.highlightError(target, file.getId());
+                String message = file.getErrorMessage() != null ? ": " + file.getErrorMessage() : "";
+                error(MessageFormat.format(getString(keyPrefix + ".error"), file.getFullName()) + message);
             }
-        }
-
-        //Process completed
-        if (processManagerBean.isCompleted(LOAD_TARIF) && !completedDisplayed) {
-            info(getStringFormat("process.done", processManagerBean.getSuccessCount(LOAD_TARIF),
-                    processManagerBean.getSkippedCount(LOAD_TARIF), processManagerBean.getErrorCount(LOAD_TARIF)));
-
-            completedDisplayed = true;
-        }
-
-        //Process error
-        if (processManagerBean.isCriticalError(LOAD_TARIF) && !completedDisplayed) {
-            error(getStringFormat("process.critical_error", processManagerBean.getSuccessCount(LOAD_TARIF),
-                    processManagerBean.getSkippedCount(LOAD_TARIF), processManagerBean.getErrorCount(LOAD_TARIF)));
-
-            completedDisplayed = true;
         }
     }
 
+    private void addCompetedMessages(String keyPrefix, ProcessType processType) {
+        if (!completedDisplayed) {
+            //Process completed
+            if (processManagerBean.isCompleted(processType)) {
+                info(MessageFormat.format(getString(keyPrefix + ".completed"), processManagerBean.getSuccessCount(processType),
+                        processManagerBean.getSkippedCount(processType), processManagerBean.getErrorCount(processType)));
+                completedDisplayed = true;
+            }
+
+            //Process canceled
+            if (processManagerBean.isCanceled(processType)) {
+                info(MessageFormat.format(getString(keyPrefix + ".canceled"), processManagerBean.getSuccessCount(processType),
+                        processManagerBean.getSkippedCount(processType), processManagerBean.getErrorCount(processType)));
+                completedDisplayed = true;
+            }
+
+            //Process error
+            if (processManagerBean.isCriticalError(processType)) {
+                error(MessageFormat.format(getString(keyPrefix + ".critical_error"), processManagerBean.getSuccessCount(processType),
+                        processManagerBean.getSkippedCount(processType), processManagerBean.getErrorCount(processType)));
+                completedDisplayed = true;
+            }
+        }
+    }
+
+    private void showMessages(AjaxRequestTarget target) {
+        addMessages("load_process", target, LOAD_SUBSIDY_TARIF, RequestFileStatus.LOADED, RequestFileStatus.LOAD_ERROR);
+        addCompetedMessages("load_process", LOAD_SUBSIDY_TARIF);
+    }
+
     private AjaxSelfUpdatingTimerBehavior newTimer(final Form<?> filterForm, final AjaxFeedbackPanel messages) {
-        waitForStopTimer = 0;
+        final AtomicInteger waitForStopTimer = new AtomicInteger();
         return new AjaxSelfUpdatingTimerBehavior(Duration.seconds(4)) {
 
             @Override
             protected void onPostProcessTarget(AjaxRequestTarget target) {
                 showMessages(target);
 
-                if (!isProcessing() && ++waitForStopTimer > 2) {
+                if (!isGlobalProcessing() && waitForStopTimer.incrementAndGet() > 2) {
                     this.stop();
                     target.add(filterForm);
                 } else {
                     //update feedback messages panel
                     target.add(messages);
                 }
+
+                statusTimerIndex.incrementAndGet();
             }
         };
     }

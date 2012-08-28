@@ -70,8 +70,8 @@ public class LoadUtil {
                 Pattern.CASE_INSENSITIVE).matcher(name).matches();
     }
 
-    private static RequestFiles getInputTarifFiles(long userOrganizationId, long osznId, final FileHandlingConfig mask)
-            throws StorageNotFoundException {
+    private static RequestFiles getInputSubsidyTarifFiles(long userOrganizationId, long osznId, 
+            final FileHandlingConfig mask) throws StorageNotFoundException {
         return RequestFileStorage.INSTANCE.getInputRequestFiles(userOrganizationId, osznId, REFERENCES_DIR,
                 new FileFilter() {
 
@@ -253,11 +253,11 @@ public class LoadUtil {
         return new LoadGroupParameter(requestFileGroups, linkError);
     }
 
-    public static List<RequestFile> getTarifs(long userOrganizationId, long osznId, int month, int year)
+    public static List<RequestFile> getSubsidyTarifs(long userOrganizationId, long osznId, int month, int year)
             throws StorageNotFoundException {
-        List<RequestFile> tarifs = new ArrayList<RequestFile>();
+        List<RequestFile> subsidyTarifs = new ArrayList<RequestFile>();
 
-        RequestFiles requestFiles = getInputTarifFiles(userOrganizationId, osznId, TARIF_PAYMENT_FILENAME_MASK);
+        RequestFiles requestFiles = getInputSubsidyTarifFiles(userOrganizationId, osznId, SUBSIDY_TARIF_FILENAME_MASK);
 
         List<File> files = requestFiles.getFiles();
         for (File file : files) {
@@ -271,11 +271,11 @@ public class LoadUtil {
             requestFile.setOrganizationId(osznId);
             requestFile.setYear(year);
             requestFile.setMonth(month);
-            requestFile.setType(RequestFile.TYPE.TARIF);
+            requestFile.setType(RequestFile.TYPE.SUBSIDY_TARIF);
 
-            tarifs.add(requestFile);
+            subsidyTarifs.add(requestFile);
         }
-        return tarifs;
+        return subsidyTarifs;
     }
 
     public static List<RequestFile> getActualPayments(long userOrganizationId, long osznId, int monthFrom,
@@ -436,7 +436,7 @@ public class LoadUtil {
 
     public static List<RequestFile> getFacilityTarifReferences(long userOrganizationId, long osznId, int month, int year)
             throws StorageNotFoundException {
-        List<RequestFile> tarifFiles = new ArrayList<RequestFile>();
+        List<RequestFile> facilityTarifFiles = new ArrayList<RequestFile>();
 
         RequestFiles requestFiles = getInputFacilityReferenceFiles(userOrganizationId, osznId,
                 FACILITY_TARIF_REFERENCE_FILENAME_MASK);
@@ -454,8 +454,8 @@ public class LoadUtil {
             requestFile.setYear(year);
             requestFile.setMonth(month);
             requestFile.setType(RequestFile.TYPE.FACILITY_TARIF);
-            tarifFiles.add(requestFile);
+            facilityTarifFiles.add(requestFile);
         }
-        return tarifFiles;
+        return facilityTarifFiles;
     }
 }

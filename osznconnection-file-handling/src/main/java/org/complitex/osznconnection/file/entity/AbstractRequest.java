@@ -18,10 +18,6 @@ import org.complitex.osznconnection.file.service.file_description.convert.Conver
  *
  * Абстрактное представление записи файла запроса.
  * Используется <code>Map<String, Object></code> для хранения названий и значений полей.
- *
- * @see org.complitex.osznconnection.file.entity.Benefit
- * @see org.complitex.osznconnection.file.entity.Payment
- * @see org.complitex.osznconnection.file.entity.Tarif
  */
 public abstract class AbstractRequest implements Serializable {
 

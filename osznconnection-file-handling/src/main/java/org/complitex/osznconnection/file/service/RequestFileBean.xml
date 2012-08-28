@@ -77,10 +77,10 @@
         </where>
     </sql>
     
-    <select id="selectTarifFiles" parameterType="org.complitex.osznconnection.file.entity.RequestFileFilter"
+    <select id="selectSubsidyTarifFiles" parameterType="org.complitex.osznconnection.file.entity.RequestFileFilter"
             resultMap="requestFileResultMap">
         SELECT *,
-            (SELECT COUNT(1) FROM `tarif` WHERE `request_file_id` = rf.`id`) as loaded_record_count
+            (SELECT COUNT(1) FROM `subsidy_tarif` WHERE `request_file_id` = rf.`id`) as loaded_record_count
         <include refid="org.complitex.osznconnection.file.service.RequestFileBean.fromFilterSort"/>
     </select>
     
@@ -216,8 +216,8 @@
         limit 1
     </select>
 
-    <select id="findTarifFiles" parameterType="long" resultMap="requestFileResultMap">
-        select * from `request_file` where organization_id = #{organizationId} and `type` = 'TARIF'
+    <select id="findSubsidyTarifFiles" parameterType="long" resultMap="requestFileResultMap">
+        SELECT * FROM `request_file` WHERE organization_id = #{organizationId} AND `type` = 'SUBSIDY_TARIF'
     </select>
     
     <select id="getFacilityReferenceFiles" parameterType="map" resultMap="requestFileResultMap">
