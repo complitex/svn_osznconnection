@@ -37,5 +37,5 @@ public enum ProcessType {
     FILL_FACILITY_FORM2,
     SAVE_FACILITY_FORM2,
 
-    LOAD_TARIF
+    LOAD_SUBSIDY_TARIF
 }

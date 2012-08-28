@@ -898,15 +898,14 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
         List<M> list = processManagerBean.getProcessed(processType, getClass());
 
         for (M object : list) {
-            if (getStatus(object).equals(RequestFileStatus.SKIPPED)) {
+            if (RequestFileStatus.SKIPPED.equals(getStatus(object))) {
                 highlightProcessed(target, object.getId());
                 info(MessageFormat.format(getString(keyPrefix + ".skipped"), getFullName(object)));
-            } else if (getStatus(object).equals(processedStatus)) {
+            } else if (processedStatus.equals(getStatus(object))) {
                 highlightProcessed(target, object.getId());
                 info(MessageFormat.format(getString(keyPrefix + ".processed"), getFullName(object)));
-            } else if (getStatus(object).equals(errorStatus)) {
+            } else if (errorStatus.equals(getStatus(object))) {
                 highlightError(target, object.getId());
-
                 String message = object.getErrorMessage() != null ? ": " + object.getErrorMessage() : "";
                 error(MessageFormat.format(getString(keyPrefix + ".error"), getFullName(object)) + message);
             }
@@ -919,7 +918,6 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
             if (processManagerBean.isCompleted(processType)) {
                 info(MessageFormat.format(getString(keyPrefix + ".completed"), processManagerBean.getSuccessCount(processType),
                         processManagerBean.getSkippedCount(processType), processManagerBean.getErrorCount(processType)));
-
                 completedDisplayed.put(processType, true);
             }
 
@@ -927,7 +925,6 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
             if (processManagerBean.isCanceled(processType)) {
                 info(MessageFormat.format(getString(keyPrefix + ".canceled"), processManagerBean.getSuccessCount(processType),
                         processManagerBean.getSkippedCount(processType), processManagerBean.getErrorCount(processType)));
-
                 completedDisplayed.put(processType, true);
             }
 
@@ -935,7 +932,6 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
             if (processManagerBean.isCriticalError(processType)) {
                 error(MessageFormat.format(getString(keyPrefix + ".critical_error"), processManagerBean.getSuccessCount(processType),
                         processManagerBean.getSkippedCount(processType), processManagerBean.getErrorCount(processType)));
-
                 completedDisplayed.put(processType, true);
             }
         }

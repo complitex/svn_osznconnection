@@ -423,15 +423,15 @@ public class ProcessManagerBean {
     }
 
     @Asynchronous
-    public void loadTarif(long userOrganizationId, long osznId, int month, int year) {
+    public void loadSubsidyTarif(long userOrganizationId, long osznId, int month, int year) {
         try {
-            List<RequestFile> list = LoadUtil.getTarifs(userOrganizationId, osznId, month, year);
+            List<RequestFile> list = LoadUtil.getSubsidyTarifs(userOrganizationId, osznId, month, year);
 
             for (RequestFile file : list) {
                 file.setUserOrganizationId(userOrganizationId);
             }
 
-            execute(LOAD_TARIF, LoadTarifTaskBean.class, list, null, LOAD_THREAD_SIZE, LOAD_MAX_ERROR_COUNT, null);
+            execute(LOAD_SUBSIDY_TARIF, SubsidyTarifLoadTaskBean.class, list, null, LOAD_THREAD_SIZE, LOAD_MAX_ERROR_COUNT, null);
         } catch (StorageNotFoundException e) {
             log.error("Ошибка процесса загрузки файлов.", e);
             logBean.error(Module.NAME, ProcessManagerBean.class, RequestFile.class, null,

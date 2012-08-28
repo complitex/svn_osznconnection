@@ -4,11 +4,9 @@ package org.complitex.osznconnection.file.entity;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 10.09.2010 17:43:11
  * 
- * Перечисление допустимых имен и типов полей записей файлов тарифов.
- *
- * @see org.complitex.osznconnection.file.entity.Tarif
+ * Перечисление допустимых имен и типов полей записей файлов тарифов для запросов по субсидиям.
  */
-public enum TarifDBF {
+public enum SubsidyTarifDBF {
 
     T11_DATA_T,
     T11_DATA_E,

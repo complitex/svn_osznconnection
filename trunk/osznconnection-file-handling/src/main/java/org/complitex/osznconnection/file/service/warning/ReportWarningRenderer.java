@@ -12,7 +12,7 @@ import javax.ejb.Singleton;
  *
  * @author Artem
  */
-@Singleton(name = "ReportWarningRenderer")
+@Singleton
 @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 public class ReportWarningRenderer extends AbstractWarningRenderer {
 

@@ -350,11 +350,11 @@ CREATE TABLE `benefit` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Льготы';
 
 -- ------------------------------
--- Tarif
+-- Subsudy Tarif
 -- ------------------------------
-DROP TABLE IF EXISTS `tarif`;
+DROP TABLE IF EXISTS `subsidy_tarif`;
 
-CREATE TABLE `tarif` (
+CREATE TABLE `subsidy_tarif` (
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор тарифа',
     `request_file_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор файла тарифов',
     `status` INTEGER NULL COMMENT 'Код статуса. См. таблицу status_description и класс RequestStatus',

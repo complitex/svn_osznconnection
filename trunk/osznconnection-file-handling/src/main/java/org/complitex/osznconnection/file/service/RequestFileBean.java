@@ -21,14 +21,14 @@ import java.util.List;
  *
  * @see org.complitex.osznconnection.file.entity.RequestFile
  */
-@Stateless(name = "RequestFileBean")
+@Stateless
 public class RequestFileBean extends AbstractBean {
 
     public static final String MAPPING_NAMESPACE = RequestFileBean.class.getName();
     @EJB
     private OsznSessionBean osznSessionBean;
     @EJB
-    private TarifBean tarifBean;
+    private SubsidyTarifBean subsidyTarifBean;
     @EJB
     private PaymentBean paymentBean;
     @EJB
@@ -58,8 +58,8 @@ public class RequestFileBean extends AbstractBean {
                 return getActualPaymentFiles(filter);
             case SUBSIDY:
                 return getSubsidyFiles(filter);
-            case TARIF:
-                return getTarifFiles(filter);
+            case SUBSIDY_TARIF:
+                return getSubsidyTarifFiles(filter);
             case DWELLING_CHARACTERISTICS:
                 return getDwellingCharacteristicsFiles(filter);
             case FACILITY_SERVICE_TYPE:
@@ -108,8 +108,8 @@ public class RequestFileBean extends AbstractBean {
         return sqlSession().selectList(MAPPING_NAMESPACE + ".selectFacilityTarifFiles", filter);
     }
 
-    private List<RequestFile> getTarifFiles(RequestFileFilter filter) {
-        return sqlSession().selectList(MAPPING_NAMESPACE + ".selectTarifFiles", filter);
+    private List<RequestFile> getSubsidyTarifFiles(RequestFileFilter filter) {
+        return sqlSession().selectList(MAPPING_NAMESPACE + ".selectSubsidyTarifFiles", filter);
     }
 
     public int size(RequestFileFilter filter) {
@@ -136,8 +136,8 @@ public class RequestFileBean extends AbstractBean {
                 case PAYMENT:
                     paymentBean.delete(requestFile.getId());
                     break;
-                case TARIF:
-                    tarifBean.delete(requestFile.getId());
+                case SUBSIDY_TARIF:
+                    subsidyTarifBean.delete(requestFile.getId());
                     break;
                 case ACTUAL_PAYMENT:
                     actualPaymentBean.delete(requestFile.getId());
@@ -176,10 +176,10 @@ public class RequestFileBean extends AbstractBean {
     }
 
     @Transactional
-    public void deleteTarif(Long organizationId) {
-        List<RequestFile> tarifs = sqlSession().selectList(MAPPING_NAMESPACE + ".findTarifFiles", organizationId);
-        for (RequestFile tarif : tarifs) {
-            delete(tarif);
+    public void deleteSubsidyTarifFiles(Long organizationId) {
+        List<RequestFile> subsidyTarifs = sqlSession().selectList(MAPPING_NAMESPACE + ".findSubsidyTarifFiles", organizationId);
+        for (RequestFile subsidyTarif : subsidyTarifs) {
+            delete(subsidyTarif);
         }
     }
 

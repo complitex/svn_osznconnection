@@ -580,15 +580,14 @@ public final class FacilityForm2FileList extends ScrollListPage {
         List<RequestFile> list = processManagerBean.getProcessed(processType, getClass());
 
         for (RequestFile requestFile : list) {
-            if (requestFile.getStatus().equals(RequestFileStatus.SKIPPED)) {
+            if (requestFile.getStatus() == RequestFileStatus.SKIPPED) {
                 AbstractProcessableListPanel.highlightProcessed(target, requestFile.getId());
                 info(MessageFormat.format(getString(keyPrefix + ".skipped"), requestFile.getFullName()));
-            } else if (requestFile.getStatus().equals(processedStatus)) {
+            } else if (requestFile.getStatus() == processedStatus) {
                 AbstractProcessableListPanel.highlightProcessed(target, requestFile.getId());
                 info(MessageFormat.format(getString(keyPrefix + ".processed"), requestFile.getFullName()));
-            } else if (requestFile.getStatus().equals(errorStatus)) {
+            } else if (requestFile.getStatus() == errorStatus) {
                 AbstractProcessableListPanel.highlightError(target, requestFile.getId());
-
                 String message = requestFile.getErrorMessage() != null ? ": " + requestFile.getErrorMessage() : "";
                 error(MessageFormat.format(getString(keyPrefix + ".error"), requestFile.getFullName()) + message);
             }

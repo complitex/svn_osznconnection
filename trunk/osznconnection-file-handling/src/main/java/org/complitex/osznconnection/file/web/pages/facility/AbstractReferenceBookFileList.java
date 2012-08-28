@@ -104,7 +104,7 @@ public abstract class AbstractReferenceBookFileList extends TemplatePage {
     @EJB
     private RequestFileDescriptionBean requestFileDescriptionBean;
     private final AtomicInteger statusTimerIndex = new AtomicInteger();
-    private boolean completedDisplayed = false;
+    private boolean completedDisplayed;
     private RequestFileLoadPanel requestFileLoadPanel;
     private final boolean modificationsAllowed;
     private final boolean hasFieldDescription;
@@ -541,13 +541,13 @@ public abstract class AbstractReferenceBookFileList extends TemplatePage {
         List<RequestFile> loadList = processManagerBean.getProcessed(processType, getClass());
 
         for (RequestFile file : loadList) {
-            if (file.getStatus() == RequestFileStatus.SKIPPED) {
+            if (RequestFileStatus.SKIPPED.equals(file.getStatus())) {
                 AbstractProcessableListPanel.highlightProcessed(target, file.getId());
                 info(getStringFormat(keyPrefix + ".skipped", file.getFullName()));
-            } else if (file.getStatus() == processedStatus) {
+            } else if (processedStatus.equals(file.getStatus())) {
                 AbstractProcessableListPanel.highlightProcessed(target, file.getId());
                 info(getStringFormat(keyPrefix + ".processed", file.getFullName()));
-            } else if (file.getStatus() == errorStatus) {
+            } else if (errorStatus.equals(file.getStatus())) {
                 AbstractProcessableListPanel.highlightError(target, file.getId());
                 String message = file.getErrorMessage() != null ? ": " + file.getErrorMessage() : "";
                 error(getStringFormat(keyPrefix + ".error", file.getFullName()) + message);
@@ -587,7 +587,7 @@ public abstract class AbstractReferenceBookFileList extends TemplatePage {
 
     private AjaxSelfUpdatingTimerBehavior newTimer(final Form<?> filterForm, final AjaxFeedbackPanel messages) {
         final AtomicInteger waitForStopTimer = new AtomicInteger();
-        return new AjaxSelfUpdatingTimerBehavior(Duration.seconds(2)) {
+        return new AjaxSelfUpdatingTimerBehavior(Duration.seconds(4)) {
 
             @Override
             protected void onPostProcessTarget(AjaxRequestTarget target) {

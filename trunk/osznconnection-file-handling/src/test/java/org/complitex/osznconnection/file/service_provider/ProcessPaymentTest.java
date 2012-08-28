@@ -38,7 +38,7 @@ public class ProcessPaymentTest extends AbstractTest {
             }
 
             @Override
-            protected String getTarifCode(BigDecimal T11_CS_UNI, long organizationId, long userOrganizationId) {
+            protected String getSubsidyTarifCode(BigDecimal T11_CS_UNI, long organizationId, long userOrganizationId) {
                 System.out.println("T11_CS_UNI : " + T11_CS_UNI);
                 return "0";
             }
