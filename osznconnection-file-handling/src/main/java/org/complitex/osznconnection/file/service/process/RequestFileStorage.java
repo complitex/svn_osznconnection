@@ -128,12 +128,6 @@ public class RequestFileStorage {
             rootRequestFilesPath = rootRequestFilesPath.substring(0, rootRequestFilesPath.length());
         }
 
-        //district code directory.
-        String districtCodeDir = osznOrganizationStrategy.getDistrictCode(osznId);
-        if (districtCodeDir == null) {
-            throw new StorageNotFoundException(new NullPointerException("Код района не задан."), "''");
-        }
-
         //relative request files path:
         long osznRelativePathAttributeTypeId = fileDirectoryType.getAttributeTypeId();
         String relativeRequestFilesPath = osznOrganizationStrategy.getRelativeRequestFilesPath(osznId,
@@ -144,6 +138,6 @@ public class RequestFileStorage {
             relativeRequestFilesPath = relativeRequestFilesPath.substring(1);
         }
 
-        return rootRequestFilesPath + File.separator + districtCodeDir + File.separator + relativeRequestFilesPath;
+        return rootRequestFilesPath + File.separator + relativeRequestFilesPath;
     }
 }
