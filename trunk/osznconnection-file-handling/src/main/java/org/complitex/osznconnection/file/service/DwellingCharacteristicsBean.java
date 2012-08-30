@@ -40,7 +40,7 @@ public class DwellingCharacteristicsBean extends AbstractRequestBean {
         LAST_NAME("last_name"),
         STREET_CODE(DwellingCharacteristicsDBF.CDUL.name()),
         BUILDING(DwellingCharacteristicsDBF.HOUSE.name()),
-        CORP(DwellingCharacteristicsDBF.BLILD.name()),
+        CORP(DwellingCharacteristicsDBF.BUILD.name()),
         APARTMENT(DwellingCharacteristicsDBF.APT.name()),
         STATUS("status");
         private String orderBy;

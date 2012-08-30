@@ -434,7 +434,7 @@ public class AddressService extends AbstractBean {
 
         //Связывание дома
         String buildingNumber = dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.HOUSE);
-        String buildingCorp = dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.BLILD);
+        String buildingCorp = dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.BUILD);
         Long buildingId = null;
         BuildingCorrection buildingCorrection = null;
         List<BuildingCorrection> buildingCorrections = addressCorrectionBean.findBuildingLocalCorrections(
@@ -557,7 +557,7 @@ public class AddressService extends AbstractBean {
 
         //Связывание дома
         String buildingNumber = facilityServiceType.getStringField(FacilityServiceTypeDBF.HOUSE);
-        String buildingCorp = facilityServiceType.getStringField(FacilityServiceTypeDBF.BLILD);
+        String buildingCorp = facilityServiceType.getStringField(FacilityServiceTypeDBF.BUILD);
         Long buildingId = null;
         BuildingCorrection buildingCorrection = null;
         List<BuildingCorrection> buildingCorrections = addressCorrectionBean.findBuildingLocalCorrections(
@@ -1846,7 +1846,7 @@ public class AddressService extends AbstractBean {
         String city = dwellingCharacteristics.getCity();
         String streetCode = dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.CDUL);
         String buildingNumber = dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.HOUSE);
-        String buildingCorp = dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.BLILD);
+        String buildingCorp = dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.BUILD);
 
         switch (entity) {
             case CITY: {
@@ -1965,7 +1965,7 @@ public class AddressService extends AbstractBean {
         String city = facilityServiceType.getCity();
         String streetCode = facilityServiceType.getStringField(FacilityServiceTypeDBF.CDUL);
         String buildingNumber = facilityServiceType.getStringField(FacilityServiceTypeDBF.HOUSE);
-        String buildingCorp = facilityServiceType.getStringField(FacilityServiceTypeDBF.BLILD);
+        String buildingCorp = facilityServiceType.getStringField(FacilityServiceTypeDBF.BUILD);
 
         switch (entity) {
             case CITY: {

@@ -353,7 +353,7 @@
             <result column="last_name" property="lastName"/>
             <result column="CDUL" property="streetCode"/>
             <result column="HOUSE" property="building"/>
-            <result column="BLILD" property="buildingCorp"/>
+            <result column="BUILD" property="buildingCorp"/>
             <result column="APT" property="apartment"/>
         </association>
     </resultMap>
@@ -397,7 +397,7 @@
 
             <!--building corp-->
             <when test="status == 226">
-                SELECT CONCAT(`CDUL`, `HOUSE`, `BLILD`) `id`, COUNT(1) `count`, `CDUL`, `HOUSE`, `BLILD` 
+                SELECT CONCAT(`CDUL`, `HOUSE`, `BUILD`) `id`, COUNT(1) `count`, `CDUL`, `HOUSE`, `BUILD` 
                 FROM `dwelling_characteristics`
                 WHERE `request_file_id` = #{id} AND `status` = #{status}
                 GROUP BY 1
@@ -405,7 +405,7 @@
 
             <!-- apartment -->
             <when test="status == 227">
-                SELECT CONCAT(`CDUL`, `HOUSE`, `BLILD`, `APT`) `id`, COUNT(1) `count`, `CDUL`, `HOUSE`, `BLILD`, `APT` 
+                SELECT CONCAT(`CDUL`, `HOUSE`, `BUILD`, `APT`) `id`, COUNT(1) `count`, `CDUL`, `HOUSE`, `BUILD`, `APT` 
                 FROM `dwelling_characteristics`
                 WHERE `request_file_id` = #{id} AND `status` = #{status}
                 GROUP BY 1
@@ -433,7 +433,7 @@
             <result column="last_name" property="lastName"/>
             <result column="CDUL" property="streetCode"/>
             <result column="HOUSE" property="building"/>
-            <result column="BLILD" property="buildingCorp"/>
+            <result column="BUILD" property="buildingCorp"/>
             <result column="APT" property="apartment"/>
         </association>
     </resultMap>
@@ -478,7 +478,7 @@
 
             <!--building corp-->
             <when test="status == 226">
-                SELECT CONCAT(`CDUL`, `HOUSE`, `BLILD`) `id`, COUNT(1) `count`, `CDUL`, `HOUSE`, `BLILD` 
+                SELECT CONCAT(`CDUL`, `HOUSE`, `BUILD`) `id`, COUNT(1) `count`, `CDUL`, `HOUSE`, `BUILD` 
                 FROM `facility_service_type`
                 WHERE `request_file_id` = #{id} AND `status` = #{status}
                 GROUP BY 1
@@ -486,7 +486,7 @@
 
             <!-- apartment -->
             <when test="status == 227">
-                SELECT CONCAT(`CDUL`, `HOUSE`, `BLILD`, `APT`) `id`, COUNT(1) `count`, `CDUL`, `HOUSE`, `BLILD`, `APT` 
+                SELECT CONCAT(`CDUL`, `HOUSE`, `BUILD`, `APT`) `id`, COUNT(1) `count`, `CDUL`, `HOUSE`, `BUILD`, `APT` 
                 FROM `facility_service_type`
                 WHERE `request_file_id` = #{id} AND `status` = #{status}
                 GROUP BY 1

@@ -22,7 +22,7 @@ public enum DwellingCharacteristicsDBF {
     INDEX, // Почтовый индекс
     CDUL, // Код улицы
     HOUSE, // Номер дома
-    BLILD, // Корпус
+    BUILD, // Корпус
     APT, // Номер квартиры
     VL, // Тип собственности
     PLZAG, // Общая площадь помещения
