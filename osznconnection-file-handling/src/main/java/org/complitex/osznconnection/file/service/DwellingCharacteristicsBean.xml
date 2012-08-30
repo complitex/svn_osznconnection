@@ -43,7 +43,7 @@
             <result column="INDEX" property="INDEX"/>
             <result column="CDUL" property="CDUL"/>
             <result column="HOUSE" property="HOUSE"/>
-            <result column="BLILD" property="BLILD"/>
+            <result column="BUILD" property="BUILD"/>
             <result column="APT" property="APT"/>
             <result column="VL" property="VL"/>
             <result column="PLZAG" property="PLZAG"/>
@@ -108,7 +108,7 @@
             AND d.`HOUSE` LIKE CONCAT('%', #{building}, '%')
         </if>
         <if test="corp != null">
-            AND d.`BLILD` LIKE CONCAT('%', #{corp}, '%')
+            AND d.`BUILD` LIKE CONCAT('%', #{corp}, '%')
         </if>
         <if test="apartment != null">
             AND d.`APT` LIKE CONCAT('%', #{apartment}, '%')
@@ -131,7 +131,7 @@
         p.`request_warning_id` param_request_warning_id, p.`order` param_order, p.`type` param_type, p.`value` param_value
         FROM (
             SELECT d.`id`, d.`status`, d.`request_file_id`, d.`IDCODE`, d.`first_name`, d.`middle_name`, d.`last_name`, d.`FIO`,
-                d.`CDUL`, d.`HOUSE`, d.`BLILD`, d.`APT`, d.`date`,
+                d.`CDUL`, d.`HOUSE`, d.`BUILD`, d.`APT`, d.`date`,
                 f.`organization_id`,
                 d.`internal_city_id`, d.`internal_street_id`, d.`internal_street_type_id`, d.`internal_building_id`,
                 d.`outgoing_city`, d.`outgoing_district`, d.`outgoing_street`, d.`outgoing_street_type`, d.`outgoing_building_number`,
@@ -143,7 +143,7 @@
                 <include refid="org.complitex.osznconnection.file.service.DwellingCharacteristicsBean.filter"/>
                 <if test="orderByClause != null">
                     <choose>
-                        <when test="orderByClause == 'IDCODE' or orderByClause == 'HOUSE' or orderByClause == 'BLILD'
+                        <when test="orderByClause == 'IDCODE' or orderByClause == 'HOUSE' or orderByClause == 'BUILD'
                                 or orderByClause == 'APT'">
                             ORDER BY `${orderByClause}`+0
                         </when>
@@ -207,7 +207,7 @@
     
     <select id="findForOperation" parameterType="map" resultMap="dwellingCharacteristicsResultMap">
         SELECT d.`id`, d.`status`, d.`request_file_id`, d.`last_name`, d.`first_name`, d.`middle_name`, d.`FIO`,
-        d.`city`, d.`CDUL`, d.`street`, d.`street_type`, d.`HOUSE`, d.`BLILD`, d.`APT`, d.`IDCODE`, d.`date`,
+        d.`city`, d.`CDUL`, d.`street`, d.`street_type`, d.`HOUSE`, d.`BUILD`, d.`APT`, d.`IDCODE`, d.`date`,
         f.`organization_id`,
         d.`internal_city_id`, d.`internal_street_id`, d.`internal_street_type_id`, d.`internal_building_id`,
         d.`outgoing_city`, d.`outgoing_district`, d.`outgoing_street`, d.`outgoing_street_type`, d.`outgoing_building_number`,
@@ -246,7 +246,7 @@
             AND TO_CYRILLIC(`HOUSE`) = TO_CYRILLIC(#{buildingNumber})
         </if>
         <if test="buildingCorp != null">
-            AND TO_CYRILLIC(`BLILD`) = TO_CYRILLIC(#{buildingCorp})
+            AND TO_CYRILLIC(`BUILD`) = TO_CYRILLIC(#{buildingCorp})
         </if>
     </update>
     

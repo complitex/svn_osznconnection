@@ -261,7 +261,7 @@ public class PersonAccountLocalBean extends AbstractBean {
                 dwellingCharacteristics.getMiddleName(), dwellingCharacteristics.getLastName(),
                 dwellingCharacteristics.getCity(), dwellingCharacteristics.getStreet(),
                 dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.HOUSE),
-                dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.BLILD),
+                dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.BUILD),
                 dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.APT),
                 dwellingCharacteristics.getOrganizationId(), calculationCenterId,
                 dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.IDCODE), userOrganizationId, false, sqlSession());
@@ -317,7 +317,7 @@ public class PersonAccountLocalBean extends AbstractBean {
                 facilityServiceType.getMiddleName(), facilityServiceType.getLastName(),
                 facilityServiceType.getCity(), facilityServiceType.getStreet(),
                 facilityServiceType.getStringField(FacilityServiceTypeDBF.HOUSE),
-                facilityServiceType.getStringField(FacilityServiceTypeDBF.BLILD),
+                facilityServiceType.getStringField(FacilityServiceTypeDBF.BUILD),
                 facilityServiceType.getStringField(FacilityServiceTypeDBF.APT),
                 facilityServiceType.getOrganizationId(), calculationCenterId,
                 facilityServiceType.getStringField(FacilityServiceTypeDBF.IDCODE), userOrganizationId, false, sqlSession());
@@ -669,7 +669,7 @@ public class PersonAccountLocalBean extends AbstractBean {
         personAccount.setCity(dwellingCharacteristics.getCity());
         personAccount.setStreet(dwellingCharacteristics.getStreet());
         personAccount.setBuildingNumber(dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.HOUSE));
-        personAccount.setBuildingCorp(dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.BLILD));
+        personAccount.setBuildingCorp(dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.BUILD));
         personAccount.setApartment(dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.APT));
         personAccount.setStreetType(dwellingCharacteristics.getStreetType());
         personAccount.setOsznId(dwellingCharacteristics.getOrganizationId());
@@ -692,7 +692,7 @@ public class PersonAccountLocalBean extends AbstractBean {
                         dwellingCharacteristics.getMiddleName(), dwellingCharacteristics.getLastName(),
                         dwellingCharacteristics.getCity(), dwellingCharacteristics.getStreet(),
                         dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.HOUSE),
-                        dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.BLILD),
+                        dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.BUILD),
                         dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.APT),
                         dwellingCharacteristics.getOrganizationId(), calculationCenterId,
                         dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.IDCODE), userOrganizationId, false, session);
@@ -765,7 +765,7 @@ public class PersonAccountLocalBean extends AbstractBean {
         personAccount.setCity(facilityServiceType.getCity());
         personAccount.setStreet(facilityServiceType.getStreet());
         personAccount.setBuildingNumber(facilityServiceType.getStringField(FacilityServiceTypeDBF.HOUSE));
-        personAccount.setBuildingCorp(facilityServiceType.getStringField(FacilityServiceTypeDBF.BLILD));
+        personAccount.setBuildingCorp(facilityServiceType.getStringField(FacilityServiceTypeDBF.BUILD));
         personAccount.setApartment(facilityServiceType.getStringField(FacilityServiceTypeDBF.APT));
         personAccount.setStreetType(facilityServiceType.getStreetType());
         personAccount.setOsznId(facilityServiceType.getOrganizationId());
@@ -788,7 +788,7 @@ public class PersonAccountLocalBean extends AbstractBean {
                         facilityServiceType.getMiddleName(), facilityServiceType.getLastName(),
                         facilityServiceType.getCity(), facilityServiceType.getStreet(),
                         facilityServiceType.getStringField(FacilityServiceTypeDBF.HOUSE),
-                        facilityServiceType.getStringField(FacilityServiceTypeDBF.BLILD),
+                        facilityServiceType.getStringField(FacilityServiceTypeDBF.BUILD),
                         facilityServiceType.getStringField(FacilityServiceTypeDBF.APT),
                         facilityServiceType.getOrganizationId(), calculationCenterId,
                         facilityServiceType.getStringField(FacilityServiceTypeDBF.IDCODE), userOrganizationId, false, session);

@@ -234,7 +234,7 @@ public final class DwellingCharacteristicsList extends TemplatePage {
                 item.add(new Label("lastName", dwellingCharacteristics.getLastName()));
                 item.add(new Label("streetCode", dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.CDUL)));
                 item.add(new Label("building", dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.HOUSE)));
-                item.add(new Label("corp", dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.BLILD)));
+                item.add(new Label("corp", dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.BUILD)));
                 item.add(new Label("apartment", dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.APT)));
                 item.add(new Label("status", statusRenderService.displayStatus(dwellingCharacteristics.getStatus(), getLocale())));
                 item.add(new Label("statusDetails", webWarningRenderer.display(dwellingCharacteristics.getWarnings(), getLocale())));
@@ -255,7 +255,7 @@ public final class DwellingCharacteristicsList extends TemplatePage {
                                 street != null ? street + " (" + streetCodeFragment + ")" : streetCodeFragment,
                                 (street == null ? getString("buildingPrefix") + " " : "")
                                 + dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.HOUSE),
-                                dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.BLILD),
+                                dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.BUILD),
                                 dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.APT),
                                 dwellingCharacteristics.getInternalCityId(),
                                 dwellingCharacteristics.getInternalStreetId(),

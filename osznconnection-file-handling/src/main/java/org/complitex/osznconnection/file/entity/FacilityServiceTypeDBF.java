@@ -22,7 +22,7 @@ public enum FacilityServiceTypeDBF {
     INDEX, // Почтовый индекс
     CDUL, // Код улицы
     HOUSE, // Номер дома
-    BLILD, // Корпус
+    BUILD, // Корпус
     APT, // Номер квартиры
     KAT, // Категория льготы ЕДАРП
     LGCODE, // Код возмещения

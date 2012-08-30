@@ -40,7 +40,7 @@ public class FacilityServiceTypeBean extends AbstractRequestBean {
         LAST_NAME("last_name"),
         STREET_CODE(FacilityServiceTypeDBF.CDUL.name()),
         BUILDING(FacilityServiceTypeDBF.HOUSE.name()),
-        CORP(FacilityServiceTypeDBF.BLILD.name()),
+        CORP(FacilityServiceTypeDBF.BUILD.name()),
         APARTMENT(FacilityServiceTypeDBF.APT.name()),
         STATUS("status");
         private String orderBy;

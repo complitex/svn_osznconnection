@@ -235,7 +235,7 @@ public final class FacilityServiceTypeList extends TemplatePage {
                 item.add(new Label("lastName", facilityServiceType.getLastName()));
                 item.add(new Label("streetCode", facilityServiceType.getStringField(FacilityServiceTypeDBF.CDUL)));
                 item.add(new Label("building", facilityServiceType.getStringField(FacilityServiceTypeDBF.HOUSE)));
-                item.add(new Label("corp", facilityServiceType.getStringField(FacilityServiceTypeDBF.BLILD)));
+                item.add(new Label("corp", facilityServiceType.getStringField(FacilityServiceTypeDBF.BUILD)));
                 item.add(new Label("apartment", facilityServiceType.getStringField(FacilityServiceTypeDBF.APT)));
                 item.add(new Label("status", statusRenderService.displayStatus(facilityServiceType.getStatus(), getLocale())));
                 item.add(new Label("statusDetails", webWarningRenderer.display(facilityServiceType.getWarnings(), getLocale())));
@@ -256,7 +256,7 @@ public final class FacilityServiceTypeList extends TemplatePage {
                                 street != null ? street + " (" + streetCodeFragment + ")" : streetCodeFragment,
                                 (street == null ? getString("buildingPrefix") + " " : "")
                                 + facilityServiceType.getStringField(FacilityServiceTypeDBF.HOUSE),
-                                facilityServiceType.getStringField(FacilityServiceTypeDBF.BLILD),
+                                facilityServiceType.getStringField(FacilityServiceTypeDBF.BUILD),
                                 facilityServiceType.getStringField(FacilityServiceTypeDBF.APT),
                                 facilityServiceType.getInternalCityId(),
                                 facilityServiceType.getInternalStreetId(),
