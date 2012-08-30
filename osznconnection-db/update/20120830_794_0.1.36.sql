@@ -12,6 +12,6 @@ UPDATE `request_file_field_description`	SET `name` = 'BUILD' WHERE `name` = 'BLI
 	`request_file_description_id` IN (SELECT d.`id` FROM `request_file_description` d WHERE 
 			d.`request_file_type` IN ('DWELLING_CHARACTERISTICS', 'FACILITY_SERVICE_TYPE'))
 
-INSERT INTO `update` (`version`) VALUE ('20120830_792_0.1.36');
+INSERT INTO `update` (`version`) VALUE ('20120830_794_0.1.36');
 
 SET GLOBAL log_bin_trust_function_creators = 0;
