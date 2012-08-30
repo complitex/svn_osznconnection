@@ -10,7 +10,7 @@ ALTER TABLE `facility_service_type` DROP KEY `key_BLILD`, CHANGE COLUMN `BLILD` 
 	
 UPDATE `request_file_field_description`	SET `name` = 'BUILD' WHERE `name` = 'BLILD' AND 
 	`request_file_description_id` IN (SELECT d.`id` FROM `request_file_description` d WHERE 
-			d.`request_file_type` IN ('DWELLING_CHARACTERISTICS', 'FACILITY_SERVICE_TYPE'))
+			d.`request_file_type` IN ('DWELLING_CHARACTERISTICS', 'FACILITY_SERVICE_TYPE'));
 
 INSERT INTO `update` (`version`) VALUE ('20120830_794_0.1.36');
 
