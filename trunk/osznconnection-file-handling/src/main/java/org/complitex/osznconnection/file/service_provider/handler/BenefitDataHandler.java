@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.osznconnection.file.service_provider.handler;
 
 import com.google.common.collect.Lists;
@@ -10,6 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+
+import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
 import org.complitex.osznconnection.file.entity.BenefitData;
@@ -19,20 +17,24 @@ import org.complitex.osznconnection.file.service_provider.util.OracleErrors;
  *
  * @author Artem
  */
-public class BenefitDataHandler implements TypeHandler<List<BenefitData>> {
-
+public class BenefitDataHandler extends BaseTypeHandler<List<BenefitData>> {
     @Override
-    public void setParameter(PreparedStatement ps, int i, List<BenefitData> parameter, JdbcType jdbcType) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void setNonNullParameter(PreparedStatement ps, int i, List<BenefitData> parameter, JdbcType jdbcType) throws SQLException {
+        throw new UnsupportedOperationException("Only procedure call supported");
     }
 
     @Override
-    public List<BenefitData> getResult(ResultSet rs, String columnName) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public List<BenefitData> getNullableResult(ResultSet rs, String columnName) throws SQLException {
+        throw new UnsupportedOperationException("Only procedure call supported");
     }
 
     @Override
-    public List<BenefitData> getResult(CallableStatement cs, int columnIndex) throws SQLException {
+    public List<BenefitData> getNullableResult(ResultSet rs, int columnIndex) throws SQLException {
+        throw new UnsupportedOperationException("Only procedure call supported");
+    }
+
+    @Override
+    public List<BenefitData> getNullableResult(CallableStatement cs, int columnIndex) throws SQLException {
         ResultSet rs = null;
         List<BenefitData> benefitDatas = Lists.newArrayList();
         try {

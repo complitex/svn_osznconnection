@@ -10,6 +10,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+
+import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
 import org.complitex.osznconnection.file.entity.ActualPaymentData;
@@ -19,20 +21,24 @@ import org.complitex.osznconnection.file.service_provider.util.OracleErrors;
  *
  * @author Artem
  */
-public class ActualPaymentDataHandler implements TypeHandler<List<ActualPaymentData>> {
-
+public class ActualPaymentDataHandler extends BaseTypeHandler<List<ActualPaymentData>> {
     @Override
-    public void setParameter(PreparedStatement ps, int i, List<ActualPaymentData> parameter, JdbcType jdbcType) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void setNonNullParameter(PreparedStatement ps, int i, List<ActualPaymentData> parameter, JdbcType jdbcType) throws SQLException {
+        throw new UnsupportedOperationException("Only procedure call supported");
     }
 
     @Override
-    public List<ActualPaymentData> getResult(ResultSet rs, String columnName) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public List<ActualPaymentData> getNullableResult(ResultSet rs, String columnName) throws SQLException {
+        throw new UnsupportedOperationException("Only procedure call supported");
     }
 
     @Override
-    public List<ActualPaymentData> getResult(CallableStatement cs, int columnIndex) throws SQLException {
+    public List<ActualPaymentData> getNullableResult(ResultSet rs, int columnIndex) throws SQLException {
+        throw new UnsupportedOperationException("Only procedure call supported");
+    }
+
+    @Override
+    public List<ActualPaymentData> getNullableResult(CallableStatement cs, int columnIndex) throws SQLException {
         ResultSet rs = null;
         List<ActualPaymentData> actualPaymentDatas = Lists.newArrayList();
         try {

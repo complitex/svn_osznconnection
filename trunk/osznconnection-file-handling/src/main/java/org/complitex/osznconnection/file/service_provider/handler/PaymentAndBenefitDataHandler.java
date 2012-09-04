@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.osznconnection.file.service_provider.handler;
 
 import com.google.common.collect.Lists;
@@ -10,6 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+
+import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
 import org.complitex.osznconnection.file.entity.PaymentAndBenefitData;
@@ -19,20 +17,25 @@ import org.complitex.osznconnection.file.service_provider.util.OracleErrors;
  *
  * @author Artem
  */
-public class PaymentAndBenefitDataHandler implements TypeHandler<List<PaymentAndBenefitData>> {
-
+public class PaymentAndBenefitDataHandler extends BaseTypeHandler<List<PaymentAndBenefitData>> {
     @Override
-    public void setParameter(PreparedStatement ps, int i, List<PaymentAndBenefitData> parameter, JdbcType jdbcType) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void setNonNullParameter(PreparedStatement ps, int i, List<PaymentAndBenefitData> parameter, JdbcType jdbcType)
+            throws SQLException {
+        throw new UnsupportedOperationException("Only procedure call supported");
     }
 
     @Override
-    public List<PaymentAndBenefitData> getResult(ResultSet rs, String columnName) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public List<PaymentAndBenefitData> getNullableResult(ResultSet rs, String columnName) throws SQLException {
+        throw new UnsupportedOperationException("Only procedure call supported");
     }
 
     @Override
-    public List<PaymentAndBenefitData> getResult(CallableStatement cs, int columnIndex) throws SQLException {
+    public List<PaymentAndBenefitData> getNullableResult(ResultSet rs, int columnIndex) throws SQLException {
+        throw new UnsupportedOperationException("Only procedure call supported");
+    }
+
+    @Override
+    public List<PaymentAndBenefitData> getNullableResult(CallableStatement cs, int columnIndex) throws SQLException {
         ResultSet rs = null;
         List<PaymentAndBenefitData> paymentAndBenefitDatas = Lists.newArrayList();
         try {
@@ -40,6 +43,7 @@ public class PaymentAndBenefitDataHandler implements TypeHandler<List<PaymentAnd
 
             while (rs.next()) {
                 PaymentAndBenefitData paymentAndBenefitData = new PaymentAndBenefitData();
+
                 paymentAndBenefitData.setLodgerCount(rs.getInt("lodg_cnt"));
                 paymentAndBenefitData.setUserCount(rs.getInt("usr_cnt"));
                 paymentAndBenefitData.setPercent(rs.getBigDecimal("pct"));
@@ -64,6 +68,7 @@ public class PaymentAndBenefitDataHandler implements TypeHandler<List<PaymentAnd
                 paymentAndBenefitData.setChargePower(rs.getBigDecimal("charge_en"));
                 paymentAndBenefitData.setChargeGarbageDisposal(rs.getBigDecimal("charge_tr"));
                 paymentAndBenefitData.setChargeDrainage(rs.getBigDecimal("charge_gvo"));
+
                 paymentAndBenefitDatas.add(paymentAndBenefitData);
             }
         } catch (SQLException e) {
