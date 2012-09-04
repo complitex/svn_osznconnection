@@ -17,6 +17,7 @@ import org.complitex.osznconnection.file.service_provider.util.OracleErrors;
  *
  * @author Artem
  */
+@Deprecated
 public class AccountDetailsByAccCodeHandler extends BaseTypeHandler<List<AccountDetail>> {
     @Override
     public void setNonNullParameter(PreparedStatement ps, int i, List<AccountDetail> parameter, JdbcType jdbcType)

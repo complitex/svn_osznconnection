@@ -17,6 +17,7 @@ import org.complitex.osznconnection.file.service_provider.util.OracleErrors;
  *
  * @author Artem
  */
+@Deprecated
 public class BenefitDataHandler extends BaseTypeHandler<List<BenefitData>> {
     @Override
     public void setNonNullParameter(PreparedStatement ps, int i, List<BenefitData> parameter, JdbcType jdbcType) throws SQLException {
