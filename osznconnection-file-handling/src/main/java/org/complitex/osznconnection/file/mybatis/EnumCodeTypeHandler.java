@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.osznconnection.file.mybatis;
 
 import org.apache.ibatis.type.BaseTypeHandler;
@@ -19,7 +15,6 @@ import java.sql.SQLException;
  * @author Artem
  */
 public class EnumCodeTypeHandler extends BaseTypeHandler<IEnumCode> {
-
     @Override
     public void setNonNullParameter(PreparedStatement ps, int i, IEnumCode parameter, JdbcType jdbcType) throws SQLException {
         ps.setInt(i, parameter.getCode());
@@ -31,6 +26,17 @@ public class EnumCodeTypeHandler extends BaseTypeHandler<IEnumCode> {
         if (!rs.wasNull()) {
             return EnumCodeManager.valueOf(code);
         }
+        return null;
+    }
+
+    @Override
+    public IEnumCode getNullableResult(ResultSet rs, int columnIndex) throws SQLException {
+        int code = rs.getInt(columnIndex);
+
+        if (!rs.wasNull()) {
+            return EnumCodeManager.valueOf(code);
+        }
+
         return null;
     }
 
