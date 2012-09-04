@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.complitex.osznconnection.file.service_provider.ServiceProviderAdapter">
+    <resultMap id="accountDetailMap" type="org.complitex.osznconnection.file.entity.AccountDetail">
+        <result column="acc_code" property="accountNumber"/>
+        <result column="ownerName" property="owner_fio"/>
+        <result column="ownerINN" property="owner_inn"/>
+        <result column="serviceProviderAccountNumberInfo" property="erc_zheu_code"/>
+        <result column="megabankAccountNumber" property="erc_code"/>
+    </resultMap>
 
     <select id="acquireAccountDetailsByAddress" statementType="CALLABLE" parameterType="map">
         <![CDATA[
@@ -12,30 +19,66 @@
             #{pHousePart, mode=IN, javaType=string, jdbcType=VARCHAR},
             #{pFlatNum, mode=IN, javaType=string, jdbcType=VARCHAR},
             #{date, mode=IN, javaType=date, jdbcType=DATE},
-            #{details, mode=OUT, jdbcType=CURSOR, 
-                typeHandler=org.complitex.osznconnection.file.service_provider.handler.AccountDetailsByAddressHandler})
+            #{details, mode=OUT, jdbcType=CURSOR, resultMap=accountDetailMap})
         }
         ]]>
     </select>
+
+    <resultMap id="paymentAndBenefitDataResultMap" type="org.complitex.osznconnection.file.entity.PaymentAndBenefitData">
+        <result property="lodgerCount" column="lodg_cnt"/>
+        <result property="userCount" column="usr_cnt"/>
+        <result property="percent" column="pct"/>
+        <result property="apartmentFeeCharge" column="charge"/>
+        <result property="normCharge" column="norm_charge"/>
+        <result property="saldo" column="saldo_in"/>
+        <result property="reducedArea" column="ts"/>
+        <result property="roomCount" column="rc"/>
+        <result property="ownership" column="own"/>
+        <result property="apartmentFeeTarif" column="b_tarif"/>
+        <result property="heatingTarif" column="b_tarif_ot"/>
+        <result property="hotWaterTarif" column="b_tarif_gv"/>
+        <result property="coldWaterTarif" column="b_tarif_hv"/>
+        <result property="gasTarif" column="b_tarif_gas"/>
+        <result property="powerTarif" column="b_tarif_en"/>
+        <result property="garbageDisposalTarif" column="b_tarif_tr"/>
+        <result property="drainageTarif" column="b_tarif_gvo"/>
+        <result property="heatingArea" column="hs"/>
+        <result property="chargeHotWater" column="charge_gv"/>
+        <result property="chargeColdWater" column="charge_hv"/>
+        <result property="chargeGas" column="charge_gas"/>
+        <result property="chargePower" column="charge_en"/>
+        <result property="chargeGarbageDisposal" column="charge_tr"/>
+        <result property="chargeDrainage" column="charge_gvo"/>
+    </resultMap>
 
     <select id="processPaymentAndBenefit" statementType="CALLABLE" parameterType="map">
         <![CDATA[
          {#{resultCode, mode=OUT, javaType=int, jdbcType=NUMERIC} = call COMP.Z$RUNTIME_SZ_UTL.GETCHARGEANDPARAMS(
             #{accountNumber, mode=IN, javaType=string, jdbcType=VARCHAR},
             #{dat1, mode=IN, javaType=date, jdbcType=DATE},
-            #{data, mode=OUT, jdbcType=CURSOR,
-                typeHandler=org.complitex.osznconnection.file.service_provider.handler.PaymentAndBenefitDataHandler})
+            #{data, mode=OUT, jdbcType=CURSOR, resultMap=paymentAndBenefitDataResultMap})
         }
         ]]>
     </select>
+
+    <resultMap id="benefitDataResultMap" type="org.complitex.osznconnection.file.entity.BenefitData">
+        <result property="lastName" column="ln"/>
+        <result property="firstName" column="fn"/>
+        <result property="middleName" column="mn"/>
+        <result property="inn" column="inn"/>
+        <result property="passportNumber" column="pn"/>
+        <result property="passportSerial" column="ps"/>
+        <result property="orderFamily" column="ord"/>
+        <result property="code" column="cc"/>
+        <result property="userCount" column="uc"/>
+    </resultMap>
 
     <sql id="getPrivs">
         <![CDATA[
          {#{resultCode, mode=OUT, javaType=int, jdbcType=NUMERIC} = call COMP.Z$RUNTIME_SZ_UTL.GETPRIVS(
             #{accountNumber, mode=IN, javaType=string, jdbcType=VARCHAR},
             #{dat1, mode=IN, javaType=date, jdbcType=DATE},
-            #{benefitData, mode=OUT, jdbcType=CURSOR,
-                typeHandler=org.complitex.osznconnection.file.service_provider.handler.BenefitDataHandler})
+            #{benefitData, mode=OUT, jdbcType=CURSOR, resultMap=benefitDataResultMap})
         }
         ]]>
     </sql>
@@ -48,27 +91,55 @@
         <include refid="org.complitex.osznconnection.file.service_provider.ServiceProviderAdapter.getPrivs"/>
     </select>
 
+    <resultMap id="accountDetailResultMap" type="org.complitex.osznconnection.file.entity.AccountDetail">
+        <result property="accountNumber" column="mn_code"/>
+        <result property="ownerName" column="FIO"/>
+        <result property="megabankAccountNumber" column="ERC_CODE"/>
+        <result property="serviceProviderAccountNumberInfo" column="zheu_code"/>
+        <result property="streetType" column="STREET_SORT"/>
+        <result property="street" column="STREET_NAME"/>
+        <result property="buildingNumber" column="HOUSE_NAME"/>
+        <result property="buildingCorp" column="HOUSE_PART"/>
+        <result property="apartment" column="FLAT"/>
+    </resultMap>
+
     <select id="getAttrsByAccCode" statementType="CALLABLE" parameterType="map">
         <![CDATA[
          {#{resultCode, mode=OUT, javaType=int, jdbcType=NUMERIC} = call COMP.Z$RUNTIME_SZ_UTL.GETATTRSBYACCCODE(
             #{pDistrName, mode=IN, javaType=string, jdbcType=VARCHAR},
             #{pAccCode, mode=IN, javaType=string, jdbcType=VARCHAR},
             #{pAccCodeType, mode=IN, javaType=int, jdbcType=INTEGER},
-            #{details, mode=OUT, jdbcType=CURSOR,
-                typeHandler=org.complitex.osznconnection.file.service_provider.handler.AccountDetailsByAccCodeHandler})
+            #{details, mode=OUT, jdbcType=CURSOR, resultMap=accountDetailResultMap})
         }
         ]]>
     </select>
+
+    <resultMap id="actualPaymentDataResultMap" type="org.complitex.osznconnection.file.entity.ActualPaymentData">
+        <result property="apartmentFeeCharge" column="fact_charge"/>
+        <result property="apartmentFeeTarif" column="fact_tarif"/>
+        <result property="heatingCharge" column="fact_charge_ot"/>
+        <result property="heatingTarif" column="fact_tarif_ot"/>
+        <result property="hotWaterCharge" column="fact_charge_gv"/>
+        <result property="hotWaterTarif" column="fact_tarif_gv"/>
+        <result property="coldWaterCharge" column="fact_charge_hv"/>
+        <result property="coldWaterTarif" column="fact_tarif_hv"/>
+        <result property="gasCharge" column="fact_charge_gas"/>
+        <result property="gasTarif" column="fact_tarif_gas"/>
+        <result property="powerCharge" column="fact_charge_en"/>
+        <result property="powerTarif" column="fact_tarif_en"/>
+        <result property="garbageDisposalCharge" column="fact_charge_tr"/>
+        <result property="garbageDisposalTarif" column="fact_tarif_tr"/>
+        <result property="drainageCharge" column="fact_charge_gvo"/>
+        <result property="drainageTarif" column="fact_tarif_gvo"/>
+    </resultMap>
 
     <select id="processActualPayment" statementType="CALLABLE" parameterType="map">
         <![CDATA[
          {#{resultCode, mode=OUT, javaType=int, jdbcType=NUMERIC} = call COMP.Z$RUNTIME_SZ_UTL.GETFACTCHARGEANDTARIF(
             #{accountNumber, mode=IN, javaType=string, jdbcType=VARCHAR},
             #{date, mode=IN, javaType=date, jdbcType=DATE},
-            #{data, mode=OUT, jdbcType=CURSOR,
-                    typeHandler=org.complitex.osznconnection.file.service_provider.handler.ActualPaymentDataHandler})
+            #{data, mode=OUT, jdbcType=CURSOR, resultMap=actualPaymentDataResultMap})
         }
         ]]>
     </select>
-
 </mapper>

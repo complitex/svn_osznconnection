@@ -57,6 +57,7 @@ import org.complitex.osznconnection.file.service.warning.WebWarningRenderer;
 import org.complitex.osznconnection.file.service_provider.exception.DBException;
 import org.complitex.osznconnection.file.service_provider.exception.ServiceProviderAccountNumberParseException;
 import org.complitex.osznconnection.file.service_provider.exception.UnknownAccountNumberTypeException;
+import org.complitex.osznconnection.file.service_provider.util.OracleErrors;
 import org.complitex.osznconnection.service_provider_type.strategy.ServiceProviderTypeStrategy;
 import static org.complitex.osznconnection.file.service_provider.util.ServiceProviderAccountNumberParser.*;
 import org.slf4j.Logger;
@@ -410,7 +411,9 @@ public class ServiceProviderAdapter {
         try {
             sqlSession(calculationContext.getDataSource()).selectOne(MAPPING_NAMESPACE + ".acquireAccountDetailsByAddress", params);
         } catch (Exception e) {
-            throw new DBException(e);
+            if (!OracleErrors.isCursorClosedError(e)) {
+                throw new DBException(e);
+            }
         } finally {
             log.info("acquireAccountDetailsByAddress. Calculation center: {}, parameters : {}", calculationContext, params);
             if (log.isDebugEnabled()) {
@@ -510,7 +513,9 @@ public class ServiceProviderAdapter {
         try {
             sqlSession(calculationContext.getDataSource()).selectOne(MAPPING_NAMESPACE + ".processPaymentAndBenefit", params);
         } catch (Exception e) {
-            throw new DBException(e);
+            if (!OracleErrors.isCursorClosedError(e)) {
+                throw new DBException(e);
+            }
         } finally {
             log.info("processPaymentAndBenefit. Calculation center: {}, parameters : {}", calculationContext, params);
             if (log.isDebugEnabled()) {
@@ -810,7 +815,9 @@ public class ServiceProviderAdapter {
         try {
             sqlSession(calculationContext.getDataSource()).selectOne(MAPPING_NAMESPACE + ".getBenefitData", params);
         } catch (Exception e) {
-            throw new DBException(e);
+            if (!OracleErrors.isCursorClosedError(e)) {
+                throw new DBException(e);
+            }
         } finally {
             log.info("getBenefitData. Calculation center: {}, parameters : {}", calculationContext, params);
             if (log.isDebugEnabled()) {
@@ -1102,7 +1109,9 @@ public class ServiceProviderAdapter {
         try {
             sqlSession(calculationContext.getDataSource()).selectOne(MAPPING_NAMESPACE + ".processBenefit", params);
         } catch (Exception e) {
-            throw new DBException(e);
+            if (!OracleErrors.isCursorClosedError(e)) {
+                throw new DBException(e);
+            }
         } finally {
             log.info("processBenefit. Calculation center: {}, parameters : {}", calculationContext, params);
             if (log.isDebugEnabled()) {
@@ -1375,7 +1384,9 @@ public class ServiceProviderAdapter {
         try {
             sqlSession(calculationCenterInfo.getDataSource()).selectOne(MAPPING_NAMESPACE + ".getAttrsByAccCode", params);
         } catch (Exception e) {
-            throw new DBException(e);
+            if (!OracleErrors.isCursorClosedError(e)) {
+                throw new DBException(e);
+            }
         } finally {
             log.info("acquireAccountDetailsByAccount. Calculation center: {}, parameters : {}", calculationCenterInfo, params);
             if (log.isDebugEnabled()) {
@@ -1464,7 +1475,9 @@ public class ServiceProviderAdapter {
         try {
             sqlSession(calculationCenterInfo.getDataSource()).selectOne(MAPPING_NAMESPACE + ".processActualPayment", params);
         } catch (Exception e) {
-            throw new DBException(e);
+            if (!OracleErrors.isCursorClosedError(e)) {
+                throw new DBException(e);
+            }
         } finally {
             log.info("processActualPayment. Calculation center: {}, parameters : {}", calculationCenterInfo, params);
             if (log.isDebugEnabled()) {

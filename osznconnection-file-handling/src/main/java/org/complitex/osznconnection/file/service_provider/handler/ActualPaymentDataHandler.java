@@ -21,6 +21,7 @@ import org.complitex.osznconnection.file.service_provider.util.OracleErrors;
  *
  * @author Artem
  */
+@Deprecated
 public class ActualPaymentDataHandler extends BaseTypeHandler<List<ActualPaymentData>> {
     @Override
     public void setNonNullParameter(PreparedStatement ps, int i, List<ActualPaymentData> parameter, JdbcType jdbcType) throws SQLException {
