@@ -34,7 +34,7 @@
                                 </th>
                             </tr>
                             <tr>
-                                <th><input wicket:id="select_all" type="checkbox"/></th>
+                                <th><div wicket:id="selectAllCheckBoxPanel"></div></th>
                                 <th><input type="text" wicket:id="id"/></th>
                                 <th class="center">
                                     <div class="loaded_header">
@@ -56,9 +56,7 @@
                         <tbody wicket:id="request_files_container">
                             <tr wicket:id="request_files">
                                 <td>
-                                    <input type="checkbox" wicket:id="selected"/>
-                                    <img wicket:id="processing" align="top"/>
-                                    <img wicket:id="waiting" align="top"/>
+                                   <div wicket:id="itemCheckBoxPanel"></div>
                                 </td>
                                 <td><span wicket:id="id"></span></td>
                                 <td><span wicket:id="loaded"></span></td>
