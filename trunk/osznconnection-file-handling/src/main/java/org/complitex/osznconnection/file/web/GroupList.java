@@ -319,8 +319,6 @@ public class GroupList extends ScrollListPage {
 
         @Override
         protected void showMessages(AjaxRequestTarget target) {
-            super.showMessages(target);
-
             for (RequestFile rf : processManagerBean.getLinkError(ProcessType.LOAD_GROUP, true)) {
                 error(getStringFormat("request_file.link_error", rf.getFullName()));
             }

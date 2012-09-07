@@ -6,32 +6,23 @@ package org.complitex.osznconnection.file.web;
 
 import org.complitex.osznconnection.file.web.component.load.DateParameter;
 import org.complitex.osznconnection.file.web.component.load.RequestFileLoadPanel;
-import com.google.common.base.Function;
-import static com.google.common.collect.Iterables.*;
-import org.apache.wicket.ajax.IAjaxCallDecorator;
+import com.google.common.collect.ImmutableSet;
 import org.apache.wicket.markup.html.IHeaderResponse;
 import org.complitex.osznconnection.file.web.pages.util.GlobalOptions;
 import org.complitex.template.web.template.TemplateSession;
-import static com.google.common.collect.Lists.*;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Date;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Set;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
-import org.apache.wicket.datetime.markup.html.basic.DateLabel;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.*;
@@ -41,25 +32,18 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.util.time.Duration;
-import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.util.DateUtil;
 import org.complitex.dictionary.util.StringUtil;
 import org.complitex.dictionary.web.component.*;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
-import org.complitex.dictionary.web.component.paging.IPagingNavigatorListener;
-import org.complitex.dictionary.web.component.paging.PagingNavigator;
 import org.complitex.osznconnection.file.entity.RequestFileStatus;
 import org.complitex.osznconnection.file.service.process.ProcessManagerBean;
 import org.complitex.osznconnection.file.service.process.ProcessType;
 import org.complitex.osznconnection.file.web.component.LoadButton;
-import org.complitex.osznconnection.file.web.component.ReuseIfLongIdEqualStrategy;
 import org.complitex.resources.WebCommonResourceInitializer;
 import org.complitex.template.web.component.toolbar.ToolbarButton;
-
 import javax.ejb.EJB;
 import org.apache.wicket.Component;
-import org.apache.wicket.ajax.calldecorator.AjaxCallDecorator;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.ISortStateLocator;
@@ -67,17 +51,28 @@ import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.resource.PackageResourceReference;
-import org.apache.wicket.request.resource.SharedResourceReference;
 import org.complitex.dictionary.entity.IExecutorObject;
 import org.complitex.dictionary.entity.PreferenceKey;
 import org.complitex.dictionary.service.AbstractFilter;
-import org.complitex.dictionary.web.component.css.CssAttributeBehavior;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
-import org.complitex.dictionary.web.component.image.StaticImage;
-import org.complitex.osznconnection.file.service.OsznSessionBean;
-import org.complitex.osznconnection.file.web.component.load.IRequestFileLoader;
 import org.complitex.osznconnection.file.web.component.load.RequestFileLoadPanel.MonthParameterViewMode;
-import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
+import org.complitex.osznconnection.file.web.component.process.DeleteButton;
+import org.complitex.osznconnection.file.web.component.process.ItemCheckBoxPanel;
+import org.complitex.osznconnection.file.web.component.process.ItemDateLoadedLabel;
+import org.complitex.osznconnection.file.web.component.process.ItemOrganizationLabel;
+import org.complitex.osznconnection.file.web.component.process.ItemStatusLabel;
+import org.complitex.osznconnection.file.web.component.process.MessagesManager;
+import org.complitex.osznconnection.file.web.component.process.ModificationManager;
+import org.complitex.osznconnection.file.web.component.process.OsznFilter;
+import org.complitex.osznconnection.file.web.component.process.ProcessDataView;
+import org.complitex.osznconnection.file.web.component.process.ProcessPagingNavigator;
+import org.complitex.osznconnection.file.web.component.process.ProcessingManager;
+import org.complitex.osznconnection.file.web.component.process.RequestFileLoader;
+import org.complitex.osznconnection.file.web.component.process.SelectAllCheckBoxPanel;
+import org.complitex.osznconnection.file.web.component.process.RequestFileStatusFilter;
+import org.complitex.osznconnection.file.web.component.process.SelectManager;
+import org.complitex.osznconnection.file.web.component.process.TimerManager;
+import org.complitex.osznconnection.file.web.component.process.UserOrganizationFilter;
 
 /**
  *
@@ -93,74 +88,66 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
 
         public abstract Component field(Item<M> item);
     }
-
-    public static class SelectModelValue implements Serializable {
-
-        private boolean selected;
-        private int sortId;
-
-        public boolean isSelected() {
-            return selected;
-        }
-
-        public int getSortId() {
-            return sortId;
-        }
-
-        public void setSortId(int sortId) {
-            this.sortId = sortId;
-        }
-
-        public void toggle() {
-            selected = !selected;
-        }
-
-        public void clearSelect() {
-            selected = false;
-        }
-    }
-
-    private static class SelectModelValueWithId {
-
-        SelectModelValue selectModelValue;
-        long objectId;
-
-        SelectModelValueWithId(long objectId, SelectModelValue selectModelValue) {
-            this.selectModelValue = selectModelValue;
-            this.objectId = objectId;
-        }
-    }
-
-    private static class SelectValueComparator implements Comparator<SelectModelValueWithId> {
-
-        @Override
-        public int compare(SelectModelValueWithId o1, SelectModelValueWithId o2) {
-            return Integer.compare(o1.selectModelValue.getSortId(), o2.selectModelValue.getSortId());
-        }
-    }
-    public final static String IMAGE_AJAX_LOADER = "images/ajax-loader2.gif";
-    public final static String IMAGE_AJAX_WAITING = "images/ajax-waiting.gif";
-    @EJB(name = "OsznOrganizationStrategy")
-    private IOsznOrganizationStrategy organizationStrategy;
+    private static final int AJAX_TIMER = 7;
     @EJB
     private ProcessManagerBean processManagerBean;
-    @EJB
-    private OsznSessionBean osznSessionBean;
-    private final AtomicInteger statusTimerIndex = new AtomicInteger();
-    private Map<ProcessType, Boolean> completedDisplayed = new EnumMap<ProcessType, Boolean>(ProcessType.class);
-    private final static String ITEM_ID_PREFIX = "item";
     private RequestFileLoadPanel requestFileLoadPanel;
-    private WebMarkupContainer buttons;
-    private Map<Long, SelectModelValue> selectModels;
-    private boolean modificationsAllowed;
-    private boolean hasFieldDescription;
-    private Form<F> filterForm;
-    private DataView<M> dataView;
+    private final ModificationManager modificationManager;
+    private final ProcessingManager<M> processingManager;
+    private final MessagesManager<M> messagesManager;
+    private Form<F> form;
+    private ProcessDataView<M> dataView;
     private DataProvider<M> dataProvider;
     private final List<Column> columns = new ArrayList<Column>();
 
     public AbstractProcessableListPanel(String id) {
         super(id);
+        this.modificationManager = new ModificationManager(this, hasFieldDescription());
+        this.processingManager = new ProcessingManager<M>() {
+
+            @Override
+            public boolean isProcessing(M object) {
+                return AbstractProcessableListPanel.this.isProcessing(object);
+            }
+
+            @Override
+            protected Set<ProcessType> getSupportedProcessTypes() {
+                return ImmutableSet.of(getLoadProcessType(), getBindProcessType(), getFillProcessType(),
+                        getSaveProcessType());
+            }
+        };
+        this.messagesManager = new MessagesManager<M>(this) {
+
+            @Override
+            protected RequestFileStatus getStatus(M object) {
+                return AbstractProcessableListPanel.this.getStatus(object);
+            }
+
+            @Override
+            protected String getFullName(M object) {
+                return AbstractProcessableListPanel.this.getFullName(object);
+            }
+
+            @Override
+            public void showMessages(AjaxRequestTarget target) {
+                addMessages("load_process", target, getLoadProcessType(),
+                        RequestFileStatus.LOADED, RequestFileStatus.LOAD_ERROR);
+                addMessages("bind_process", target, getBindProcessType(),
+                        RequestFileStatus.BOUND, RequestFileStatus.BIND_ERROR);
+                addMessages("fill_process", target, getFillProcessType(),
+                        RequestFileStatus.FILLED, RequestFileStatus.FILL_ERROR);
+                addMessages("save_process", target, getSaveProcessType(),
+                        RequestFileStatus.SAVED, RequestFileStatus.SAVE_ERROR);
+
+                addCompetedMessages("load_process", getLoadProcessType());
+                addCompetedMessages("bind_process", getBindProcessType());
+                addCompetedMessages("fill_process", getFillProcessType());
+                addCompetedMessages("save_process", getSaveProcessType());
+
+                AbstractProcessableListPanel.this.showMessages(target);
+            }
+        };
+
         init();
     }
 
@@ -263,21 +250,19 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
 
         //дополнительные фильтры
         for (Column column : columns) {
-            filterForm.add(column.filter());
+            form.add(column.filter());
         }
 
         //дополнительные заголовки
         for (Column column : columns) {
-            filterForm.add(column.head(dataProvider, dataView, filterForm));
+            form.add(column.head(dataProvider, dataView, form));
         }
 
         //Отобразить сообщения
-        showMessages();
-
-        //Если описания структуры для файлов запросов не загружены в базу, сообщить об этом пользователю.
-        if (!hasFieldDescription) {
-            error(getString("file_description_missing"));
-        }
+        messagesManager.showMessages();
+        
+        //Отобразить сообщения об отсутствии описания файлов запросов если необходимо
+        modificationManager.reportErrorIfNecessary();
     }
 
     @Override
@@ -294,13 +279,6 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
     }
 
     private void init() {
-        this.hasFieldDescription = hasFieldDescription();
-        this.modificationsAllowed =
-                //- только пользователи, принадлежащие организации или администраторы могут обрабатывать файлы.
-                (osznSessionBean.getCurrentUserOrganizationId(getSession()) != null || osznSessionBean.isAdmin())
-                && //можно обрабатывать файлы, только если в базу загружены описания структур для файлов запросов.
-                hasFieldDescription;
-
         final AjaxFeedbackPanel messages = new AjaxFeedbackPanel("messages");
         add(messages);
 
@@ -309,117 +287,70 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
 
         //Фильтр модель
         F filter = (F) getSession().getPreferenceObject(preferencePage, PreferenceKey.FILTER_OBJECT, newFilter());
-        final IModel<F> filterModel = new CompoundPropertyModel<F>(filter);
+        final IModel<F> model = new CompoundPropertyModel<F>(filter);
 
         //Фильтр форма
-        filterForm = new Form<F>("filter_form", filterModel);
-        filterForm.setOutputMarkupId(true);
-        add(filterForm);
+        form = new Form<F>("form", model);
+        form.setOutputMarkupId(true);
+        add(form);
 
         AjaxLink<Void> filter_reset = new AjaxLink<Void>("filter_reset") {
 
             @Override
             public void onClick(AjaxRequestTarget target) {
                 F filterObject = newFilter();
-                filterModel.setObject(filterObject);
-                target.add(filterForm);
+                model.setObject(filterObject);
+                target.add(form);
             }
         };
-        filterForm.add(filter_reset);
+        form.add(filter_reset);
 
-        AjaxButton find = new AjaxButton("find", filterForm) {
+        AjaxButton find = new AjaxButton("find", form) {
 
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                target.add(filterForm);
+                target.add(form);
             }
 
             @Override
             protected void onError(AjaxRequestTarget target, Form<?> form) {
             }
         };
-        filterForm.add(find);
+        form.add(find);
 
         //Select all checkbox
-        CheckBox selectAll = new CheckBox("select_all", new Model<Boolean>(false)) {
-
-            @Override
-            public boolean isEnabled() {
-                return !isGlobalProcessing();
-            }
-
-            @Override
-            public void updateModel() {
-                //skip update model
-            }
-        };
-        selectAll.add(new CssAttributeBehavior("processable-list-panel-select-all"));
-        filterForm.add(selectAll);
+        form.add(new SelectAllCheckBoxPanel("selectAllCheckBoxPanel", processingManager));
 
         //Id
-        filterForm.add(new TextField<String>("id"));
+        form.add(new TextField<String>("id"));
 
         //Дата загрузки
-        filterForm.add(new DatePicker<Date>("loaded"));
+        form.add(new DatePicker<Date>("loaded"));
 
-        //Организация
-        final IModel<List<DomainObject>> osznsModel = new LoadableDetachableModel<List<DomainObject>>() {
-
-            @Override
-            protected List<DomainObject> load() {
-                return organizationStrategy.getAllOSZNs(getLocale());
-            }
-        };
-        final DomainObjectDisableAwareRenderer organizationRenderer = new DomainObjectDisableAwareRenderer() {
-
-            @Override
-            public Object getDisplayValue(DomainObject object) {
-                return organizationStrategy.displayDomainObject(object, getLocale());
-            }
-        };
-        filterForm.add(new DisableAwareDropDownChoice<DomainObject>("organization", osznsModel, organizationRenderer).setNullValid(true));
+        //ОСЗН
+        form.add(new OsznFilter("organization"));
 
         // Организация пользователя
-        final IModel<List<? extends DomainObject>> userOrganizationsModel = new LoadableDetachableModel<List<? extends DomainObject>>() {
-
-            @Override
-            protected List<? extends DomainObject> load() {
-                return organizationStrategy.getUserOrganizations(getLocale());
-            }
-        };
-        filterForm.add(new DisableAwareDropDownChoice<DomainObject>("userOrganization", userOrganizationsModel,
-                organizationRenderer).setNullValid(true));
+        form.add(new UserOrganizationFilter("userOrganization"));
 
         //Месяц
-        filterForm.add(new MonthDropDownChoice("month").setNullValid(true));
+        form.add(new MonthDropDownChoice("month").setNullValid(true));
 
         //Год
-        filterForm.add(new YearDropDownChoice("year").setNullValid(true));
+        form.add(new YearDropDownChoice("year").setNullValid(true));
 
         //Статус
-        filterForm.add(new DropDownChoice<RequestFileStatus>("status", Arrays.asList(RequestFileStatus.values()),
-                new IChoiceRenderer<RequestFileStatus>() {
-
-                    @Override
-                    public Object getDisplayValue(RequestFileStatus status) {
-                        return getString(status.name());
-                    }
-
-                    @Override
-                    public String getIdValue(RequestFileStatus object, int index) {
-                        return object.name();
-                    }
-                }).setNullValid(true));
+        form.add(new RequestFileStatusFilter("status"));
 
         //Модель выбранных элементов списка.
-        selectModels = new HashMap<>();
+        final SelectManager selectManager = new SelectManager();
 
         //Модель данных списка
         dataProvider = new DataProvider<M>() {
 
             @Override
             protected Iterable<M> getData(int first, int count) {
-                final F filter = filterModel.getObject();
+                final F filter = model.getObject();
 
                 //store preference, but before clear data order related properties.
                 {
@@ -436,14 +367,14 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
 
                 List<M> objects = getObjects(filter);
 
-                initializeSelectModels(selectModels, objects);
+                selectManager.initializeSelectModels(objects);
 
                 return objects;
             }
 
             @Override
             protected int getSize() {
-                return AbstractProcessableListPanel.this.getSize(filterModel.getObject());
+                return AbstractProcessableListPanel.this.getSize(model.getObject());
             }
         };
         dataProvider.setSort("loaded", SortOrder.DESCENDING);
@@ -451,80 +382,31 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
         //Контейнер для ajax
         final WebMarkupContainer dataViewContainer = new WebMarkupContainer("objects_container");
         dataViewContainer.setOutputMarkupId(true);
-        filterForm.add(dataViewContainer);
+        form.add(dataViewContainer);
+
+        final TimerManager timerManager = new TimerManager(AJAX_TIMER, messagesManager, processingManager, form, dataViewContainer);
+        timerManager.addUpdateComponent(messages);
 
         //Таблица файлов запросов
-        dataView = new DataView<M>("objects", dataProvider, 1) {
+        dataView = new ProcessDataView<M>("objects", dataProvider) {
 
             @Override
             protected void populateItem(final Item<M> item) {
                 final Long objectId = item.getModelObject().getId();
 
-                /* for highlighting to work properly */
-                augmentItem(item, objectId);
-
-                //Выбор файлов
-                CheckBox checkBox = new CheckBox("selected", newSelectFileCheckboxModel(objectId, selectModels)) {
-
-                    @Override
-                    public boolean isVisible() {
-                        return !isProcessing(item.getModelObject()) && !isGlobalWaiting(item.getModelObject());
-                    }
-
-                    @Override
-                    public boolean isEnabled() {
-                        return !isGlobalWaiting(item.getModelObject());
-                    }
-                };
-
-                checkBox.add(new AjaxFormComponentUpdatingBehavior("onchange") {
-
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                    }
-                });
-                checkBox.add(new CssAttributeBehavior("processable-list-panel-select"));
-                item.add(checkBox);
-
-                //Анимация в обработке
-                item.add(new StaticImage("processing", new SharedResourceReference(IMAGE_AJAX_LOADER)) {
-
-                    @Override
-                    public boolean isVisible() {
-                        return isProcessing(item.getModelObject());
-                    }
-                });
-
-                //Анимация ожидание
-                item.add(new StaticImage("waiting", new SharedResourceReference(IMAGE_AJAX_WAITING)) {
-
-                    @Override
-                    public boolean isVisible() {
-                        return isGlobalWaiting(item.getModelObject()) && !isProcessing(item.getModelObject());
-                    }
-                });
+                item.add(new ItemCheckBoxPanel<M>("itemCheckBoxPanel", processingManager, selectManager));
 
                 //Идентификатор файла
                 item.add(new Label("id", StringUtil.valueOf(objectId)));
 
                 //Дата загрузки
-                final Date loaded = getLoaded(item.getModelObject());
-                item.add(DateLabel.forDatePattern("loaded", new Model<Date>(loaded),
-                        DateUtil.isCurrentDay(loaded) ? "HH:mm:ss" : "dd.MM.yy HH:mm:ss"));
+                item.add(new ItemDateLoadedLabel("loaded", getLoaded(item.getModelObject())));
 
                 //ОСЗН
-                DomainObject domainObject = organizationStrategy.findById(getOsznId(item.getModelObject()), true);
-                String organization = organizationStrategy.displayDomainObject(domainObject, getLocale());
-                item.add(new Label("organization", organization));
+                item.add(new ItemOrganizationLabel("organization", getOsznId(item.getModelObject())));
 
                 //Организация пользователя
-                final Long userOrganizationId = getUserOrganizationId(item.getModelObject());
-                String userOrganization = null;
-                if (userOrganizationId != null) {
-                    DomainObject userOrganizationObject = organizationStrategy.findById(userOrganizationId, true);
-                    userOrganization = organizationStrategy.displayDomainObject(userOrganizationObject, getLocale());
-                }
-                item.add(new Label("userOrganization", userOrganization));
+                item.add(new ItemOrganizationLabel("userOrganization", getUserOrganizationId(item.getModelObject())));
 
                 item.add(new Label("month", DateUtil.displayMonth(getMonth(item.getModelObject()), getLocale())));
                 item.add(new Label("year", StringUtil.valueOf(getYear(item.getModelObject()))));
@@ -557,21 +439,15 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
                 }));
 
                 //Статус
-                item.add(new Label("status", new LoadableDetachableModel<String>() {
+                item.add(new ItemStatusLabel<M>("status", processingManager, timerManager) {
 
                     @Override
-                    protected String load() {
-                        String dots = "";
-                        if (isProcessing(item.getModelObject()) && isGlobalProcessing()) {
-                            dots += StringUtil.getDots(statusTimerIndex.get() % 5);
-                        }
-
-                        final RequestFileStatus status = getStatus(item.getModelObject());
-                        return (status != null ? getString(status.name()) : "") + dots;
+                    protected RequestFileStatus getStatus(M object) {
+                        return AbstractProcessableListPanel.this.getStatus(object);
                     }
-                }));
+                });
 
-                //Допольнительные поля
+                //Дополнительные поля
                 for (Column column : columns) {
                     item.add(column.field(item));
                 }
@@ -579,33 +455,24 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
         };
         dataViewContainer.add(dataView);
 
-        //Reuse Strategy
-        dataView.setItemReuseStrategy(new ReuseIfLongIdEqualStrategy());
-
         //Постраничная навигация
-        PagingNavigator pagingNavigator = new PagingNavigator("paging", dataView, preferencePage, filterForm);
-        pagingNavigator.addListener(new IPagingNavigatorListener() { //clear select checkbox model on page change
-
-            @Override
-            public void onChangePage() {
-                clearSelection(selectModels);
-            }
-        });
-        filterForm.add(pagingNavigator);
+        ProcessPagingNavigator pagingNavigator = new ProcessPagingNavigator("paging", dataView, preferencePage,
+                selectManager, form);
+        form.add(pagingNavigator);
 
         //Сортировка
-        filterForm.add(new ArrowOrderByBorder("header.id", "id", dataProvider, dataView, filterForm));
-        filterForm.add(new ArrowOrderByBorder("header.loaded", "loaded", dataProvider, dataView, filterForm));
-        filterForm.add(new ArrowOrderByBorder("header.organization", "organization_id", dataProvider, dataView, filterForm));
-        filterForm.add(new ArrowOrderByBorder("header.user_organization", "user_organization_id", dataProvider, dataView, filterForm));
-        filterForm.add(new ArrowOrderByBorder("header.month", "month", dataProvider, dataView, filterForm));
-        filterForm.add(new ArrowOrderByBorder("header.year", "year", dataProvider, dataView, filterForm));
-        filterForm.add(new ArrowOrderByBorder("header.status", "status", dataProvider, dataView, filterForm));
+        form.add(new ArrowOrderByBorder("header.id", "id", dataProvider, dataView, form));
+        form.add(new ArrowOrderByBorder("header.loaded", "loaded", dataProvider, dataView, form));
+        form.add(new ArrowOrderByBorder("header.organization", "organization_id", dataProvider, dataView, form));
+        form.add(new ArrowOrderByBorder("header.user_organization", "user_organization_id", dataProvider, dataView, form));
+        form.add(new ArrowOrderByBorder("header.month", "month", dataProvider, dataView, form));
+        form.add(new ArrowOrderByBorder("header.year", "year", dataProvider, dataView, form));
+        form.add(new ArrowOrderByBorder("header.status", "status", dataProvider, dataView, form));
 
         //Контейнер чекбокса "Переписать л/с ПУ" для ajax
         WebMarkupContainer optionContainer = new WebMarkupContainer("options");
-        optionContainer.setVisibilityAllowed(modificationsAllowed);
-        filterForm.add(optionContainer);
+        optionContainer.setVisibilityAllowed(modificationManager.isModificationsAllowed());
+        form.add(optionContainer);
 
         optionContainer.add(new CheckBox("update_pu_account", new Model<Boolean>(
                 getSessionParameter(GlobalOptions.UPDATE_PU_ACCOUNT))).add(new AjaxFormComponentUpdatingBehavior("onchange") {
@@ -617,10 +484,12 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
         }));
 
         //Контейнер кнопок для ajax
-        buttons = new WebMarkupContainer("buttons");
+        WebMarkupContainer buttons = new WebMarkupContainer("buttons");
         buttons.setOutputMarkupId(true);
-        buttons.setVisibilityAllowed(modificationsAllowed);
-        filterForm.add(buttons);
+        buttons.setVisibilityAllowed(modificationManager.isModificationsAllowed());
+        form.add(buttons);
+
+        timerManager.addUpdateComponent(buttons);
 
         //Загрузить
         buttons.add(new AjaxLink<Void>("load") {
@@ -636,13 +505,13 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
 
             @Override
             public void onClick(AjaxRequestTarget target) {
-                completedDisplayed.put(getBindProcessType(), false);
+                messagesManager.resetCompletedStatus(getBindProcessType());
 
-                bind(getSelectedFileIds(selectModels), buildCommandParameters());
+                bind(selectManager.getSelectedFileIds(), buildCommandParameters());
 
-                clearSelection(selectModels);
-                addTimer(dataViewContainer, filterForm, messages);
-                target.add(filterForm);
+                selectManager.clearSelection();
+                timerManager.addTimer();
+                target.add(form);
             }
         });
 
@@ -651,13 +520,13 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
 
             @Override
             public void onClick(AjaxRequestTarget target) {
-                completedDisplayed.put(getFillProcessType(), false);
+                messagesManager.resetCompletedStatus(getFillProcessType());
 
-                fill(getSelectedFileIds(selectModels), buildCommandParameters());
+                fill(selectManager.getSelectedFileIds(), buildCommandParameters());
 
-                clearSelection(selectModels);
-                addTimer(dataViewContainer, filterForm, messages);
-                target.add(filterForm);
+                selectManager.clearSelection();
+                timerManager.addTimer();
+                target.add(form);
             }
         });
 
@@ -666,33 +535,22 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
 
             @Override
             public void onClick(AjaxRequestTarget target) {
-                completedDisplayed.put(getSaveProcessType(), false);
+                messagesManager.resetCompletedStatus(getSaveProcessType());
 
-                save(getSelectedFileIds(selectModels), buildCommandParameters());
+                save(selectManager.getSelectedFileIds(), buildCommandParameters());
 
-                clearSelection(selectModels);
-                addTimer(dataViewContainer, filterForm, messages);
-                target.add(filterForm);
+                selectManager.clearSelection();
+                timerManager.addTimer();
+                target.add(form);
             }
         });
 
         //Удалить
-        buttons.add(new AjaxLink<Void>("delete") {
-
-            @Override
-            protected IAjaxCallDecorator getAjaxCallDecorator() {
-                return new AjaxCallDecorator() {
-
-                    @Override
-                    public CharSequence decorateScript(Component c, CharSequence script) {
-                        return "if(confirm('" + getString("delete_caution") + "')){" + script + "}";
-                    }
-                };
-            }
+        buttons.add(new DeleteButton("delete") {
 
             @Override
             public void onClick(AjaxRequestTarget target) {
-                for (long objectId : getSelectedFileIds(selectModels)) {
+                for (long objectId : selectManager.getSelectedFileIds()) {
                     final M object = getById(objectId);
 
                     if (object != null) {
@@ -700,7 +558,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
                         try {
                             delete(object);
 
-                            selectModels.remove(objectId);
+                            selectManager.remove(objectId);
 
                             info(MessageFormat.format(getString("info.deleted"), objectName));
                             logSuccessfulDeletion(object);
@@ -711,7 +569,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
                         }
                     }
                 }
-                target.add(filterForm);
+                target.add(form);
                 target.add(messages);
             }
         });
@@ -728,7 +586,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
             public void onClick(AjaxRequestTarget target) {
                 processManagerBean.cancel(getLoadProcessType());
                 info(getString("load_process.canceling"));
-                target.add(filterForm);
+                target.add(form);
             }
         });
 
@@ -744,7 +602,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
             public void onClick(AjaxRequestTarget target) {
                 processManagerBean.cancel(getBindProcessType());
                 info(getString("bind_process.canceling"));
-                target.add(filterForm);
+                target.add(form);
             }
         });
 
@@ -760,7 +618,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
             public void onClick(AjaxRequestTarget target) {
                 processManagerBean.cancel(getFillProcessType());
                 info(getString("fill_process.canceling"));
-                target.add(filterForm);
+                target.add(form);
             }
         });
 
@@ -776,30 +634,24 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
             public void onClick(AjaxRequestTarget target) {
                 processManagerBean.cancel(getSaveProcessType());
                 info(getString("save_process.canceling"));
-                target.add(filterForm);
+                target.add(form);
             }
         });
 
         //Диалог загрузки
         requestFileLoadPanel = new RequestFileLoadPanel("load_panel",
                 new ResourceModel("load_panel_title"),
-                new IRequestFileLoader() {
+                new RequestFileLoader(messagesManager, timerManager, getLoadProcessType(), form) {
 
                     @Override
-                    public void load(long userOrganizationId, long osznId, DateParameter dateParameter, AjaxRequestTarget target) {
-                        completedDisplayed.put(getLoadProcessType(), false);
+                    public void load(long userOrganizationId, long osznId, DateParameter dateParameter) {
                         AbstractProcessableListPanel.this.load(userOrganizationId, osznId, dateParameter);
-
-                        addTimer(dataViewContainer, filterForm, messages);
-                        target.add(filterForm);
                     }
                 }, getLoadMonthParameterViewMode());
         add(requestFileLoadPanel);
 
         //Запуск таймера
-        if (isGlobalProcessing()) {
-            dataViewContainer.add(newTimer(filterForm, messages));
-        }
+        timerManager.startTimer();
     }
 
     private Boolean getSessionParameter(Enum<?> key) {
@@ -821,201 +673,14 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
         return commandParameters;
     }
 
-    public static List<Long> getSelectedFileIds(Map<Long, SelectModelValue> selectModels) {
-        SortedSet<SelectModelValueWithId> selected = new TreeSet<>(new SelectValueComparator());
-        for (long objectId : selectModels.keySet()) {
-            SelectModelValue selectModelValue = selectModels.get(objectId);
-            if (selectModelValue.isSelected()) {
-                selected.add(new SelectModelValueWithId(objectId, selectModelValue));
-            }
-        }
-
-        return newArrayList(transform(selected, new Function<SelectModelValueWithId, Long>() {
-
-            @Override
-            public Long apply(SelectModelValueWithId s) {
-                return s.objectId;
-            }
-        }));
-    }
-
-    public static void clearSelection(Map<Long, SelectModelValue> selectModels) {
-        for (SelectModelValue selectModelValue : selectModels.values()) {
-            selectModelValue.clearSelect();
-        }
-    }
-
-    public static void initializeSelectModels(Map<Long, SelectModelValue> selectModels, List<? extends IExecutorObject> objects) {
-        for (int i = 0; i < objects.size(); i++) {
-            final IExecutorObject object = objects.get(i);
-            SelectModelValue selectModelValue = selectModels.get(object.getId());
-            if (selectModelValue == null) {
-                selectModelValue = new SelectModelValue();
-                selectModels.put(object.getId(), selectModelValue);
-            }
-            selectModelValue.setSortId(i);
-        }
-    }
-
-    public static IModel<Boolean> newSelectFileCheckboxModel(final long objectId,
-            final Map<Long, SelectModelValue> selectModels) {
-        return new Model<Boolean>() {
-
-            @Override
-            public Boolean getObject() {
-                return selectModels.get(objectId).isSelected();
-            }
-
-            @Override
-            public void setObject(Boolean object) {
-                if (object != null) {
-                    selectModels.get(objectId).toggle();
-                }
-            }
-        };
-    }
-
-    private boolean isGlobalProcessing() {
-        return processManagerBean.isGlobalProcessing(getLoadProcessType())
-                || processManagerBean.isGlobalProcessing(getBindProcessType())
-                || processManagerBean.isGlobalProcessing(getFillProcessType())
-                || processManagerBean.isGlobalProcessing(getSaveProcessType());
-    }
-
-    private boolean isGlobalWaiting(M object) {
-        return processManagerBean.isGlobalWaiting(getLoadProcessType(), object)
-                || processManagerBean.isGlobalWaiting(getBindProcessType(), object)
-                || processManagerBean.isGlobalWaiting(getFillProcessType(), object)
-                || processManagerBean.isGlobalWaiting(getSaveProcessType(), object);
-    }
-
-    private void showMessages() {
-        showMessages(null);
-    }
-
-    private void addMessages(String keyPrefix, AjaxRequestTarget target, ProcessType processType,
-            RequestFileStatus processedStatus, RequestFileStatus errorStatus) {
-        List<M> list = processManagerBean.getProcessed(processType, getClass());
-
-        for (M object : list) {
-            if (RequestFileStatus.SKIPPED.equals(getStatus(object))) {
-                highlightProcessed(target, object.getId());
-                info(MessageFormat.format(getString(keyPrefix + ".skipped"), getFullName(object)));
-            } else if (processedStatus.equals(getStatus(object))) {
-                highlightProcessed(target, object.getId());
-                info(MessageFormat.format(getString(keyPrefix + ".processed"), getFullName(object)));
-            } else if (errorStatus.equals(getStatus(object))) {
-                highlightError(target, object.getId());
-                String message = object.getErrorMessage() != null ? ": " + object.getErrorMessage() : "";
-                error(MessageFormat.format(getString(keyPrefix + ".error"), getFullName(object)) + message);
-            }
-        }
-    }
-
-    private void addCompetedMessages(String keyPrefix, ProcessType processType) {
-        if (completedDisplayed.get(processType) == null || !completedDisplayed.get(processType)) {
-            //Process completed
-            if (processManagerBean.isCompleted(processType)) {
-                info(MessageFormat.format(getString(keyPrefix + ".completed"), processManagerBean.getSuccessCount(processType),
-                        processManagerBean.getSkippedCount(processType), processManagerBean.getErrorCount(processType)));
-                completedDisplayed.put(processType, true);
-            }
-
-            //Process canceled
-            if (processManagerBean.isCanceled(processType)) {
-                info(MessageFormat.format(getString(keyPrefix + ".canceled"), processManagerBean.getSuccessCount(processType),
-                        processManagerBean.getSkippedCount(processType), processManagerBean.getErrorCount(processType)));
-                completedDisplayed.put(processType, true);
-            }
-
-            //Process error
-            if (processManagerBean.isCriticalError(processType)) {
-                error(MessageFormat.format(getString(keyPrefix + ".critical_error"), processManagerBean.getSuccessCount(processType),
-                        processManagerBean.getSkippedCount(processType), processManagerBean.getErrorCount(processType)));
-                completedDisplayed.put(processType, true);
-            }
-        }
-    }
-
     protected void showMessages(AjaxRequestTarget target) {
-        addMessages("load_process", target, getLoadProcessType(), RequestFileStatus.LOADED, RequestFileStatus.LOAD_ERROR);
-        addMessages("bind_process", target, getBindProcessType(), RequestFileStatus.BOUND, RequestFileStatus.BIND_ERROR);
-        addMessages("fill_process", target, getFillProcessType(), RequestFileStatus.FILLED, RequestFileStatus.FILL_ERROR);
-        addMessages("save_process", target, getSaveProcessType(), RequestFileStatus.SAVED, RequestFileStatus.SAVE_ERROR);
-
-        addCompetedMessages("load_process", getLoadProcessType());
-        addCompetedMessages("bind_process", getBindProcessType());
-        addCompetedMessages("fill_process", getFillProcessType());
-        addCompetedMessages("save_process", getSaveProcessType());
-    }
-
-    public static void augmentItem(Item<?> item, long objectId) {
-        /* for highlighting to work properly */
-        item.setOutputMarkupId(true);
-        item.setMarkupId(ITEM_ID_PREFIX + objectId);
-    }
-
-    public static void highlightProcessed(AjaxRequestTarget target, long objectId) {
-        if (target != null) {
-            target.appendJavaScript("$('#" + ITEM_ID_PREFIX + objectId + "')"
-                    + ".animate({ backgroundColor: 'lightgreen' }, 300)"
-                    + ".animate({ backgroundColor: '#E0E4E9' }, 700)");
-        }
-    }
-
-    public static void highlightError(AjaxRequestTarget target, long objectId) {
-        if (target != null) {
-            target.appendJavaScript("$('#" + ITEM_ID_PREFIX + objectId + "')"
-                    + ".animate({ backgroundColor: 'darksalmon' }, 300)"
-                    + ".animate({ backgroundColor: '#E0E4E9' }, 700)");
-        }
-    }
-
-    private AjaxSelfUpdatingTimerBehavior newTimer(final Form<?> filterForm, final AjaxFeedbackPanel messages) {
-        final AtomicInteger waitForStopTimer = new AtomicInteger();
-        return new AjaxSelfUpdatingTimerBehavior(Duration.seconds(7)) {
-
-            @Override
-            protected void onPostProcessTarget(AjaxRequestTarget target) {
-                showMessages(target);
-
-                if (!isGlobalProcessing() && waitForStopTimer.incrementAndGet() > 2) {
-                    this.stop();
-                    target.add(filterForm);
-                } else {
-                    //update feedback messages panel
-                    target.add(messages);
-                    target.add(buttons);
-                }
-
-                statusTimerIndex.incrementAndGet();
-            }
-        };
-    }
-
-    private void addTimer(WebMarkupContainer dataViewContainer, Form<?> filterForm, AjaxFeedbackPanel messages) {
-        boolean needCreateNewTimer = true;
-
-        List<AjaxSelfUpdatingTimerBehavior> timers = newArrayList(filter(dataViewContainer.getBehaviors(),
-                AjaxSelfUpdatingTimerBehavior.class));
-        if (timers != null && !timers.isEmpty()) {
-            for (AjaxSelfUpdatingTimerBehavior timer : timers) {
-                if (!timer.isStopped()) {
-                    needCreateNewTimer = false;
-                    break;
-                }
-            }
-        }
-        if (needCreateNewTimer) {
-            dataViewContainer.add(newTimer(filterForm, messages));
-        }
     }
 
     public List<? extends ToolbarButton> getToolbarButtons(String id) {
         return Arrays.asList(new LoadButton(id) {
 
             {
-                setVisibilityAllowed(modificationsAllowed);
+                setVisibilityAllowed(modificationManager.isModificationsAllowed());
             }
 
             @Override

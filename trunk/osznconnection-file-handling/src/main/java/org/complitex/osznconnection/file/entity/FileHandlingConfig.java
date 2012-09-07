@@ -6,7 +6,7 @@ import org.complitex.dictionary.entity.IConfig;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 04.10.2010 11:12:46
  */
-public enum FileHandlingConfig implements IConfig{
+public enum FileHandlingConfig implements IConfig {
     PAYMENT_FILENAME_PREFIX("A_", "mask"),
     BENEFIT_FILENAME_PREFIX("AF", "mask"),
     PAYMENT_BENEFIT_FILENAME_SUFFIX("\\d{4}{MM}\\.DBF", "mask"),
