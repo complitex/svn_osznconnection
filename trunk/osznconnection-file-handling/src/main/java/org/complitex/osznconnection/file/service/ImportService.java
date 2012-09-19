@@ -145,7 +145,7 @@ public class ImportService {
     }
 
     private <T extends IImportFile> void processDictionary(T importFile) throws ImportFileNotFoundException,
-            ImportObjectLinkException, ImportFileReadException {
+            ImportObjectLinkException, ImportFileReadException, ImportDuplicateException {
         if (importFile instanceof AddressImportFile){ //Address
             addressImportService.process(importFile, dictionaryListener);
         }else if (importFile instanceof OwnershipImportFile){ // Ownership
