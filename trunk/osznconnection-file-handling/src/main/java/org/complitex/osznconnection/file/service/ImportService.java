@@ -144,10 +144,10 @@ public class ImportService {
         errorMessage = null;
     }
 
-    private <T extends IImportFile> void processDictionary(T importFile) throws ImportFileNotFoundException,
+    private <T extends IImportFile> void processDictionary(T importFile, long localeId) throws ImportFileNotFoundException,
             ImportObjectLinkException, ImportFileReadException, ImportDuplicateException {
         if (importFile instanceof AddressImportFile){ //Address
-            addressImportService.process(importFile, dictionaryListener);
+            addressImportService.process(importFile, dictionaryListener, localeId);
         }else if (importFile instanceof OwnershipImportFile){ // Ownership
             ownershipImportService.process(dictionaryListener);
         }else if (importFile instanceof PrivilegeImportFile){ //Privilege
@@ -188,7 +188,7 @@ public class ImportService {
     }
 
     @Asynchronous
-    public <T extends IImportFile> void process(List<T> dictionaryFiles, List<T> correctionFiles, Long orgId){
+    public <T extends IImportFile> void process(List<T> dictionaryFiles, List<T> correctionFiles, Long orgId, long localeId){
         if (processing){
             return;
         }
@@ -202,7 +202,7 @@ public class ImportService {
             for(T t : dictionaryFiles){
                 userTransaction.begin();
 
-                processDictionary(t);
+                processDictionary(t, localeId);
 
                 userTransaction.commit();
             }

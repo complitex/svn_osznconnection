@@ -1,5 +1,6 @@
 package org.complitex.osznconnection.file.web;
 
+import org.complitex.template.web.component.LocalePicker;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
@@ -31,6 +32,7 @@ import org.complitex.template.web.template.TemplatePage;
 import javax.ejb.EJB;
 import java.util.*;
 
+import org.complitex.dictionary.service.LocaleBean;
 import static org.complitex.address.entity.AddressImportFile.*;
 
 /**
@@ -44,9 +46,12 @@ public class ImportPage extends TemplatePage {
     private ImportService importService;
     @EJB(name = "OsznOrganizationStrategy")
     private IOsznOrganizationStrategy organizationStrategy;
+    @EJB
+    private LocaleBean localeBean;
     private int stopTimer = 0;
     private final IModel<List<IImportFile>> dictionaryModel;
     private final IModel<List<IImportFile>> correctionModel;
+    private final IModel<Locale> localeModel;
 
     public ImportPage() {
         final WebMarkupContainer container = new WebMarkupContainer("container");
@@ -120,6 +125,9 @@ public class ImportPage extends TemplatePage {
                     }
                 }));
 
+        localeModel = new Model<Locale>(localeBean.getSystemLocale());
+        form.add(new LocalePicker("localePicker", localeModel, false));
+
         //Кнопка импортировать
         Button process = new Button("process") {
 
@@ -132,7 +140,8 @@ public class ImportPage extends TemplatePage {
 
                 if (!importService.isProcessing()) {
                     importService.process(dictionaryModel.getObject(), correctionModel.getObject(),
-                            organizationModel.getObject() != null ? organizationModel.getObject().getId() : null);
+                            organizationModel.getObject() != null ? organizationModel.getObject().getId() : null,
+                            localeBean.convert(localeModel.getObject()).getId());
 
                     container.add(newTimer());
                 }

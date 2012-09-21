@@ -15,16 +15,18 @@
             </ul>
 
             <form action="#" wicket:id="form">
-                <h2><wicket:message key="dictionary_import"/></h2>
+                <div wicket:id="localePicker"></div>
+                
+                <h2 style="margin-top: 5px;"><wicket:message key="dictionary_import"/></h2>
                 <span wicket:id="dictionary"></span>
-                <br/>
 
-                <h2><wicket:message key="correction_import"/></h2>
+                <h2 style="margin-top: 5px;"><wicket:message key="correction_import"/></h2>
                 <select wicket:id="organization"></select><br/>
                 <span wicket:id="corrections"></span>
-                <br/>
 
-                <input type="submit" class="btnBig" wicket:id="process" wicket:message="value:process"/>
+                <div style="margin-top: 15px;">
+                    <input type="submit" class="btnBig" wicket:id="process" wicket:message="value:process"/>
+                </div>
             </form>
         </div>
     </div>
