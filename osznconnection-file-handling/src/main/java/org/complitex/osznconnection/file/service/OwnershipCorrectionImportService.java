@@ -1,7 +1,7 @@
 package org.complitex.osznconnection.file.service;
 
 import au.com.bytecode.opencsv.CSVReader;
-import org.complitex.dictionary.entity.AbstractImportService;
+import org.complitex.dictionary.service.AbstractImportService;
 import org.complitex.dictionary.service.IImportListener;
 import org.complitex.dictionary.service.exception.ImportFileNotFoundException;
 import org.complitex.dictionary.service.exception.ImportFileReadException;
