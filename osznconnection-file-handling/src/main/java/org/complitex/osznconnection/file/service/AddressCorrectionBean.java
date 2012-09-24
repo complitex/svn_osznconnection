@@ -1,5 +1,6 @@
 package org.complitex.osznconnection.file.service;
 
+import org.complitex.dictionary.util.BuildingNumberConverter;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import org.apache.wicket.util.string.Strings;

@@ -7,11 +7,6 @@
             <class name="org.complitex.osznconnection.file.service_provider.util.ServiceProviderAccountNumberParserTest"/>
         </classes>
     </test>
-    <test name="BuildingNumberConverterTest">
-        <classes>
-            <class name="org.complitex.osznconnection.file.service.BuildingNumberConverterTest"/>
-        </classes>
-    </test>
     <test name="SubsidyNameParserTest">
         <classes>
             <class name="org.complitex.osznconnection.file.service.util.SubsidyNameParserTest"/>
