@@ -32,47 +32,33 @@ import java.util.*;
 @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 @TransactionManagement(TransactionManagementType.BEAN)
 public class ImportService {
+
     private final static Logger log = LoggerFactory.getLogger(ImportService.class);
-
     public static final long INT_ORG_ID = 0L;
-
     @Resource
     private UserTransaction userTransaction;
-
     @EJB
     private AddressImportService addressImportService;
-
     @EJB
     private AddressCorrectionImportService addressCorrectionImportService;
-
     @EJB
     private OwnershipImportService ownershipImportService;
-
     @EJB
     private PrivilegeImportService privilegeImportService;
-
     @EJB
     private OwnershipCorrectionImportService ownershipCorrectionImportService;
-
     @EJB
     private PrivilegeCorrectionImportService privilegeCorrectionImportService;
-
     @EJB
     private ConfigBean configBean;
-
     @EJB
     private LogBean logBean;
-
     private boolean processing;
     private boolean error;
     private boolean success;
-
     private String errorMessage;
-
     private Map<IImportFile, ImportMessage> dictionaryMap = new LinkedHashMap<IImportFile, ImportMessage>();
-
     private Map<IImportFile, ImportMessage> correctionMap = new LinkedHashMap<IImportFile, ImportMessage>();
-
     private IImportListener dictionaryListener = new IImportListener() {
 
         @Override
@@ -90,8 +76,11 @@ public class ImportService {
             logBean.info(Module.NAME, ImportService.class, importFile.getClass(), null, Log.EVENT.CREATE,
                     "Имя файла: {0}, количество записей: {1}", importFile.getFileName(), recordCount);
         }
-    };
 
+        @Override
+        public void warn(IImportFile importFile, String message) {
+        }
+    };
     private IImportListener correctionListener = new IImportListener() {
 
         @Override
@@ -108,6 +97,10 @@ public class ImportService {
         public void completeImport(IImportFile importFile, int recordCount) {
             logBean.info(Module.NAME, ImportService.class, importFile.getClass(), null, Log.EVENT.CREATE,
                     "Имя файла: {0}, количество записей: {1}", importFile.getFileName(), recordCount);
+        }
+
+        @Override
+        public void warn(IImportFile importFile, String message) {
         }
     };
 
@@ -127,15 +120,15 @@ public class ImportService {
         return errorMessage;
     }
 
-    public ImportMessage getDictionaryMessage(IImportFile importFile){
+    public ImportMessage getDictionaryMessage(IImportFile importFile) {
         return dictionaryMap.get(importFile);
     }
 
-    public ImportMessage getCorrectionMessage(IImportFile importFile){
+    public ImportMessage getCorrectionMessage(IImportFile importFile) {
         return correctionMap.get(importFile);
     }
 
-    private void init(){
+    private void init() {
         dictionaryMap.clear();
         correctionMap.clear();
         processing = true;
@@ -146,19 +139,19 @@ public class ImportService {
 
     private <T extends IImportFile> void processDictionary(T importFile, long localeId) throws ImportFileNotFoundException,
             ImportObjectLinkException, ImportFileReadException, ImportDuplicateException {
-        if (importFile instanceof AddressImportFile){ //Address
+        if (importFile instanceof AddressImportFile) { //Address
             addressImportService.process(importFile, dictionaryListener, localeId);
-        }else if (importFile instanceof OwnershipImportFile){ // Ownership
+        } else if (importFile instanceof OwnershipImportFile) { // Ownership
             ownershipImportService.process(dictionaryListener);
-        }else if (importFile instanceof PrivilegeImportFile){ //Privilege
+        } else if (importFile instanceof PrivilegeImportFile) { //Privilege
             privilegeImportService.process(dictionaryListener);
         }
     }
 
     private <T extends IImportFile> void processCorrection(T importFile, long orgId) throws ImportFileNotFoundException,
             ImportObjectLinkException, ImportFileReadException {
-        if (importFile instanceof AddressImportFile){ //Address
-            switch ((AddressImportFile) importFile){
+        if (importFile instanceof AddressImportFile) { //Address
+            switch ((AddressImportFile) importFile) {
                 case CITY:
                     addressCorrectionImportService.importCityToCorrection(orgId, INT_ORG_ID, correctionListener);
                     break;
@@ -172,11 +165,11 @@ public class ImportService {
                     addressCorrectionImportService.importStreetToCorrection(orgId, INT_ORG_ID, correctionListener);
                     break;
                 case BUILDING:
-                    addressCorrectionImportService.importBuildingToCorrection(orgId, INT_ORG_ID,  correctionListener);
+                    addressCorrectionImportService.importBuildingToCorrection(orgId, INT_ORG_ID, correctionListener);
                     break;
             }
-        }else if (importFile instanceof CorrectionImportFile){ //Correction
-            switch ((CorrectionImportFile)importFile){
+        } else if (importFile instanceof CorrectionImportFile) { //Correction
+            switch ((CorrectionImportFile) importFile) {
                 case OWNERSHIP_CORRECTION:
                     ownershipCorrectionImportService.process(orgId, INT_ORG_ID, correctionListener);
                     break;
@@ -188,8 +181,8 @@ public class ImportService {
     }
 
     @Asynchronous
-    public <T extends IImportFile> void process(List<T> dictionaryFiles, List<T> correctionFiles, Long orgId, long localeId){
-        if (processing){
+    public <T extends IImportFile> void process(List<T> dictionaryFiles, List<T> correctionFiles, Long orgId, long localeId) {
+        if (processing) {
             return;
         }
 
@@ -199,7 +192,7 @@ public class ImportService {
 
         try {
             //Dictionary
-            for(T t : dictionaryFiles){
+            for (T t : dictionaryFiles) {
                 userTransaction.begin();
 
                 processDictionary(t, localeId);
@@ -208,7 +201,7 @@ public class ImportService {
             }
 
             //Correction
-            for (T t : correctionFiles){
+            for (T t : correctionFiles) {
                 userTransaction.begin();
 
                 processCorrection(t, orgId);
@@ -230,7 +223,7 @@ public class ImportService {
             errorMessage = e instanceof AbstractException ? e.getMessage() : new ImportCriticalException(e).getMessage();
 
             logBean.error(Module.NAME, ImportService.class, null, null, Log.EVENT.CREATE, errorMessage);
-        }finally {
+        } finally {
             processing = false;
         }
     }
