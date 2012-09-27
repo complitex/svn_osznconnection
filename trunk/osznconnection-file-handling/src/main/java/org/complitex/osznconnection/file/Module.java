@@ -1,7 +1,5 @@
 package org.complitex.osznconnection.file;
 
-import org.complitex.dictionary.service.ConfigBean;
-import org.complitex.osznconnection.file.entity.FileHandlingConfig;
 import org.complitex.osznconnection.file.service.RequestFileBean;
 import org.complitex.osznconnection.file.service.RequestFileGroupBean;
 
@@ -17,10 +15,8 @@ import javax.ejb.Startup;
 @Singleton(name = "FileHandlingModule")
 @Startup
 public class Module {
-
     public static final String NAME = "org.complitex.osznconnection.file";
-    @EJB
-    private ConfigBean configBean;
+
     @EJB
     private RequestFileBean requestFileBean;
     @EJB
@@ -28,9 +24,6 @@ public class Module {
 
     @PostConstruct
     public void init() {
-        //init config
-        configBean.init(FileHandlingConfig.class.getName(), FileHandlingConfig.values());
-
         requestFileBean.fixProcessingOnInit();
         requestFileGroupBean.fixProcessingOnInit();
     }
