@@ -11,7 +11,7 @@ import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
 import org.complitex.osznconnection.file.entity.BenefitData;
-import org.complitex.osznconnection.file.service_provider.util.OracleErrors;
+import org.complitex.dictionary.oracle.OracleErrors;
 
 /**
  *

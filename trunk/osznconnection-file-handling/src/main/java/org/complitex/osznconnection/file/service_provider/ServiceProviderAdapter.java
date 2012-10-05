@@ -57,7 +57,7 @@ import org.complitex.osznconnection.file.service.warning.WebWarningRenderer;
 import org.complitex.osznconnection.file.service_provider.exception.DBException;
 import org.complitex.osznconnection.file.service_provider.exception.ServiceProviderAccountNumberParseException;
 import org.complitex.osznconnection.file.service_provider.exception.UnknownAccountNumberTypeException;
-import org.complitex.osznconnection.file.service_provider.util.OracleErrors;
+import org.complitex.dictionary.oracle.OracleErrors;
 import org.complitex.osznconnection.service_provider_type.strategy.ServiceProviderTypeStrategy;
 import static org.complitex.osznconnection.file.service_provider.util.ServiceProviderAccountNumberParser.*;
 import org.slf4j.Logger;
