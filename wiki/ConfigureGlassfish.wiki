@@ -2,10 +2,7 @@
 
 ==Register the JDBC connection pool==
 {{{
-C:\glassfishv3\glassfish\bin>asadmin.bat create-jdbc-connection-pool 
---driverclassname com.mysql.jdbc.Driver 
---restype java.sql.Driver 
---property url=jdbc\:mysql\://localhost\:3306/osznconnection:user=osznconnection:password=osznconnection osznconnectionPool 
+C:\glassfishv3\glassfish\bin>asadmin.bat create-jdbc-connection-pool --driverclassname com.mysql.jdbc.Driver --restype java.sql.Driver --property url=jdbc\:mysql\://localhost\:3306/osznconnection:user=osznconnection:password=osznconnection:characterResultSets=utf8:characterEncoding=utf8:useUnicode=true osznconnectionPool
 }}}
 
 ==Create a JDBC resource with the specified JNDI name==
@@ -16,9 +13,7 @@ C:\glassfishv3\glassfish\bin>asadmin.bat create-jdbc-resource
 
 ==Add the named authentication realm==
 {{{
-C:\glassfishv3\glassfish\bin>asadmin.bat create-auth-realm
---classname com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm
---property jaas-context=jdbcRealm:datasource-jndi=jdbc/osznconnectionResource:user-table=user:user-name-column=login:password-column=password:group-table=usergroup:group-name-column=group_name:charset=UTF-8 osznconnectionRealm
+C:\glassfishv3\glassfish\bin>asadmin.bat create-auth-realm --classname com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm --property jaas-context=jdbcRealm:datasource-jndi=jdbc/osznconnectionResource:user-table=user:user-name-column=login:password-column=password:group-table=usergroup:group-name-column=group_name:charset=UTF-8:digest-algorithm=MD5 osznconnectionRealm
 }}}
 
 
