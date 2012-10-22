@@ -1,6 +1,6 @@
 @ECHO off
 
-SET GLASSFISH_ASADMIN=C:\glassfishv3\glassfish\bin\asadmin.bat
+SET GLASSFISH_ASADMIN=C:\glassfish3\glassfish\bin\asadmin.bat
 
 ECHO ---------------------------------------------------
 ECHO Local database and Realm
@@ -15,7 +15,7 @@ call %GLASSFISH_ASADMIN% create-jdbc-resource --connectionpoolid osznconnectionP
 
 ECHO.
 ECHO Add the named authentication realm
-call %GLASSFISH_ASADMIN% create-auth-realm --classname com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm --property jaas-context=jdbcRealm:datasource-jndi=jdbc/osznconnectionResource:user-table=user:user-name-column=login:password-column=password:group-table=usergroup:group-name-column=group_name:charset=UTF-8 osznconnectionRealm
+call %GLASSFISH_ASADMIN% create-auth-realm --classname com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm --property jaas-context=jdbcRealm:datasource-jndi=jdbc/osznconnectionResource:user-table=user:user-name-column=login:password-column=password:group-table=usergroup:group-name-column=group_name:charset=UTF-8:digest-algorithm=MD5 osznconnectionRealm
  
 ECHO.
 ECHO ---------------------------------------------------
