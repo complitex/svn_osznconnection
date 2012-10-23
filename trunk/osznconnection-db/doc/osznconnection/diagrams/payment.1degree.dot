@@ -33,13 +33,12 @@ digraph "oneDegreeRelationshipsDiagram" {
       <TR><TD PORT="object_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">object_id</TD></TR>
       <TR><TD PORT="parent_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_id</TD></TR>
       <TR><TD PORT="parent_entity_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_entity_id</TD></TR>
-      <TR><TD PORT="entity_type_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">entity_type_id</TD></TR>
       <TR><TD PORT="start_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">start_date</TD></TR>
       <TR><TD PORT="end_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">end_date</TD></TR>
       <TR><TD PORT="status" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">status</TD></TR>
       <TR><TD PORT="permission_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">permission_id</TD></TR>
       <TR><TD PORT="external_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">external_id</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">4 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">2 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">4 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">2 &gt;</TD></TR>
     </TABLE>>
     URL="apartment.html"
     tooltip="apartment"
@@ -52,13 +51,12 @@ digraph "oneDegreeRelationshipsDiagram" {
       <TR><TD PORT="object_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">object_id</TD></TR>
       <TR><TD PORT="parent_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_id</TD></TR>
       <TR><TD PORT="parent_entity_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_entity_id</TD></TR>
-      <TR><TD PORT="entity_type_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">entity_type_id</TD></TR>
       <TR><TD PORT="start_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">start_date</TD></TR>
       <TR><TD PORT="end_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">end_date</TD></TR>
       <TR><TD PORT="status" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">status</TD></TR>
       <TR><TD PORT="permission_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">permission_id</TD></TR>
       <TR><TD PORT="external_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">external_id</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">8 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">4 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">8 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">7 &gt;</TD></TR>
     </TABLE>>
     URL="building.html"
     tooltip="building"
@@ -71,13 +69,12 @@ digraph "oneDegreeRelationshipsDiagram" {
       <TR><TD PORT="object_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">object_id</TD></TR>
       <TR><TD PORT="parent_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_id</TD></TR>
       <TR><TD PORT="parent_entity_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_entity_id</TD></TR>
-      <TR><TD PORT="entity_type_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">entity_type_id</TD></TR>
       <TR><TD PORT="start_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">start_date</TD></TR>
       <TR><TD PORT="end_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">end_date</TD></TR>
       <TR><TD PORT="status" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">status</TD></TR>
       <TR><TD PORT="permission_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">permission_id</TD></TR>
       <TR><TD PORT="external_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">external_id</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">3 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">4 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">3 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">7 &gt;</TD></TR>
     </TABLE>>
     URL="city.html"
     tooltip="city"
@@ -102,63 +99,63 @@ digraph "oneDegreeRelationshipsDiagram" {
       <TR><TD PORT="outgoing_building_corp" COLSPAN="2" ALIGN="LEFT">outgoing_building_corp</TD><TD PORT="outgoing_building_corp.type" ALIGN="LEFT">varchar[100]</TD></TR>
       <TR><TD PORT="outgoing_apartment" COLSPAN="2" ALIGN="LEFT">outgoing_apartment</TD><TD PORT="outgoing_apartment.type" ALIGN="LEFT">varchar[100]</TD></TR>
       <TR><TD PORT="status" COLSPAN="2" BGCOLOR="#f4f7da" ALIGN="LEFT">status</TD><TD PORT="status.type" ALIGN="LEFT">int[10]</TD></TR>
-      <TR><TD PORT="OWN_NUM" COLSPAN="2" ALIGN="LEFT">OWN_NUM</TD><TD PORT="OWN_NUM.type" ALIGN="LEFT">varchar[15]</TD></TR>
-      <TR><TD PORT="REE_NUM" COLSPAN="2" ALIGN="LEFT">REE_NUM</TD><TD PORT="REE_NUM.type" ALIGN="LEFT">int[10]</TD></TR>
-      <TR><TD PORT="OPP" COLSPAN="2" ALIGN="LEFT">OPP</TD><TD PORT="OPP.type" ALIGN="LEFT">varchar[8]</TD></TR>
-      <TR><TD PORT="NUMB" COLSPAN="2" ALIGN="LEFT">NUMB</TD><TD PORT="NUMB.type" ALIGN="LEFT">int[10]</TD></TR>
-      <TR><TD PORT="MARK" COLSPAN="2" ALIGN="LEFT">MARK</TD><TD PORT="MARK.type" ALIGN="LEFT">int[10]</TD></TR>
-      <TR><TD PORT="CODE" COLSPAN="2" ALIGN="LEFT">CODE</TD><TD PORT="CODE.type" ALIGN="LEFT">int[10]</TD></TR>
-      <TR><TD PORT="ENT_COD" COLSPAN="2" ALIGN="LEFT">ENT_COD</TD><TD PORT="ENT_COD.type" ALIGN="LEFT">int[10]</TD></TR>
-      <TR><TD PORT="FROG" COLSPAN="2" ALIGN="LEFT">FROG</TD><TD PORT="FROG.type" ALIGN="LEFT">decimal[5,1]</TD></TR>
-      <TR><TD PORT="FL_PAY" COLSPAN="2" ALIGN="LEFT">FL_PAY</TD><TD PORT="FL_PAY.type" ALIGN="LEFT">decimal[9,2]</TD></TR>
-      <TR><TD PORT="NM_PAY" COLSPAN="2" ALIGN="LEFT">NM_PAY</TD><TD PORT="NM_PAY.type" ALIGN="LEFT">decimal[9,2]</TD></TR>
-      <TR><TD PORT="DEBT" COLSPAN="2" ALIGN="LEFT">DEBT</TD><TD PORT="DEBT.type" ALIGN="LEFT">decimal[9,2]</TD></TR>
-      <TR><TD PORT="CODE2_1" COLSPAN="2" ALIGN="LEFT">CODE2_1</TD><TD PORT="CODE2_1.type" ALIGN="LEFT">int[10]</TD></TR>
-      <TR><TD PORT="CODE2_2" COLSPAN="2" ALIGN="LEFT">CODE2_2</TD><TD PORT="CODE2_2.type" ALIGN="LEFT">int[10]</TD></TR>
-      <TR><TD PORT="CODE2_3" COLSPAN="2" ALIGN="LEFT">CODE2_3</TD><TD PORT="CODE2_3.type" ALIGN="LEFT">int[10]</TD></TR>
-      <TR><TD PORT="CODE2_4" COLSPAN="2" ALIGN="LEFT">CODE2_4</TD><TD PORT="CODE2_4.type" ALIGN="LEFT">int[10]</TD></TR>
-      <TR><TD PORT="CODE2_5" COLSPAN="2" ALIGN="LEFT">CODE2_5</TD><TD PORT="CODE2_5.type" ALIGN="LEFT">int[10]</TD></TR>
-      <TR><TD PORT="CODE2_6" COLSPAN="2" ALIGN="LEFT">CODE2_6</TD><TD PORT="CODE2_6.type" ALIGN="LEFT">int[10]</TD></TR>
-      <TR><TD PORT="CODE2_7" COLSPAN="2" ALIGN="LEFT">CODE2_7</TD><TD PORT="CODE2_7.type" ALIGN="LEFT">int[10]</TD></TR>
-      <TR><TD PORT="CODE2_8" COLSPAN="2" ALIGN="LEFT">CODE2_8</TD><TD PORT="CODE2_8.type" ALIGN="LEFT">int[10]</TD></TR>
-      <TR><TD PORT="NORM_F_1" COLSPAN="2" ALIGN="LEFT">NORM_F_1</TD><TD PORT="NORM_F_1.type" ALIGN="LEFT">decimal[10,4]</TD></TR>
-      <TR><TD PORT="NORM_F_2" COLSPAN="2" ALIGN="LEFT">NORM_F_2</TD><TD PORT="NORM_F_2.type" ALIGN="LEFT">decimal[10,4]</TD></TR>
-      <TR><TD PORT="NORM_F_3" COLSPAN="2" ALIGN="LEFT">NORM_F_3</TD><TD PORT="NORM_F_3.type" ALIGN="LEFT">decimal[10,4]</TD></TR>
-      <TR><TD PORT="NORM_F_4" COLSPAN="2" ALIGN="LEFT">NORM_F_4</TD><TD PORT="NORM_F_4.type" ALIGN="LEFT">decimal[10,4]</TD></TR>
-      <TR><TD PORT="NORM_F_5" COLSPAN="2" ALIGN="LEFT">NORM_F_5</TD><TD PORT="NORM_F_5.type" ALIGN="LEFT">decimal[10,4]</TD></TR>
-      <TR><TD PORT="NORM_F_6" COLSPAN="2" ALIGN="LEFT">NORM_F_6</TD><TD PORT="NORM_F_6.type" ALIGN="LEFT">decimal[10,4]</TD></TR>
-      <TR><TD PORT="NORM_F_7" COLSPAN="2" ALIGN="LEFT">NORM_F_7</TD><TD PORT="NORM_F_7.type" ALIGN="LEFT">decimal[10,4]</TD></TR>
-      <TR><TD PORT="NORM_F_8" COLSPAN="2" ALIGN="LEFT">NORM_F_8</TD><TD PORT="NORM_F_8.type" ALIGN="LEFT">decimal[10,4]</TD></TR>
-      <TR><TD PORT="OWN_NUM_SR" COLSPAN="2" BGCOLOR="#f4f7da" ALIGN="LEFT">OWN_NUM_SR</TD><TD PORT="OWN_NUM_SR.type" ALIGN="LEFT">varchar[15]</TD></TR>
-      <TR><TD PORT="DAT1" COLSPAN="2" ALIGN="LEFT">DAT1</TD><TD PORT="DAT1.type" ALIGN="LEFT">date[10]</TD></TR>
-      <TR><TD PORT="DAT2" COLSPAN="2" ALIGN="LEFT">DAT2</TD><TD PORT="DAT2.type" ALIGN="LEFT">date[10]</TD></TR>
-      <TR><TD PORT="OZN_PRZ" COLSPAN="2" ALIGN="LEFT">OZN_PRZ</TD><TD PORT="OZN_PRZ.type" ALIGN="LEFT">int[10]</TD></TR>
-      <TR><TD PORT="DAT_F_1" COLSPAN="2" ALIGN="LEFT">DAT_F_1</TD><TD PORT="DAT_F_1.type" ALIGN="LEFT">date[10]</TD></TR>
-      <TR><TD PORT="DAT_F_2" COLSPAN="2" ALIGN="LEFT">DAT_F_2</TD><TD PORT="DAT_F_2.type" ALIGN="LEFT">date[10]</TD></TR>
-      <TR><TD PORT="DAT_FOP_1" COLSPAN="2" ALIGN="LEFT">DAT_FOP_1</TD><TD PORT="DAT_FOP_1.type" ALIGN="LEFT">date[10]</TD></TR>
-      <TR><TD PORT="DAT_FOP_2" COLSPAN="2" ALIGN="LEFT">DAT_FOP_2</TD><TD PORT="DAT_FOP_2.type" ALIGN="LEFT">date[10]</TD></TR>
-      <TR><TD PORT="ID_RAJ" COLSPAN="2" ALIGN="LEFT">ID_RAJ</TD><TD PORT="ID_RAJ.type" ALIGN="LEFT">varchar[5]</TD></TR>
-      <TR><TD PORT="SUR_NAM" COLSPAN="2" BGCOLOR="#f4f7da" ALIGN="LEFT">SUR_NAM</TD><TD PORT="SUR_NAM.type" ALIGN="LEFT">varchar[30]</TD></TR>
-      <TR><TD PORT="F_NAM" COLSPAN="2" BGCOLOR="#f4f7da" ALIGN="LEFT">F_NAM</TD><TD PORT="F_NAM.type" ALIGN="LEFT">varchar[15]</TD></TR>
-      <TR><TD PORT="M_NAM" COLSPAN="2" BGCOLOR="#f4f7da" ALIGN="LEFT">M_NAM</TD><TD PORT="M_NAM.type" ALIGN="LEFT">varchar[20]</TD></TR>
-      <TR><TD PORT="IND_COD" COLSPAN="2" ALIGN="LEFT">IND_COD</TD><TD PORT="IND_COD.type" ALIGN="LEFT">varchar[10]</TD></TR>
-      <TR><TD PORT="INDX" COLSPAN="2" ALIGN="LEFT">INDX</TD><TD PORT="INDX.type" ALIGN="LEFT">varchar[6]</TD></TR>
-      <TR><TD PORT="N_NAME" COLSPAN="2" BGCOLOR="#f4f7da" ALIGN="LEFT">N_NAME</TD><TD PORT="N_NAME.type" ALIGN="LEFT">varchar[30]</TD></TR>
-      <TR><TD PORT="VUL_NAME" COLSPAN="2" BGCOLOR="#f4f7da" ALIGN="LEFT">VUL_NAME</TD><TD PORT="VUL_NAME.type" ALIGN="LEFT">varchar[30]</TD></TR>
-      <TR><TD PORT="BLD_NUM" COLSPAN="2" BGCOLOR="#f4f7da" ALIGN="LEFT">BLD_NUM</TD><TD PORT="BLD_NUM.type" ALIGN="LEFT">varchar[7]</TD></TR>
-      <TR><TD PORT="CORP_NUM" COLSPAN="2" ALIGN="LEFT">CORP_NUM</TD><TD PORT="CORP_NUM.type" ALIGN="LEFT">varchar[2]</TD></TR>
-      <TR><TD PORT="FLAT" COLSPAN="2" BGCOLOR="#f4f7da" ALIGN="LEFT">FLAT</TD><TD PORT="FLAT.type" ALIGN="LEFT">varchar[9]</TD></TR>
-      <TR><TD PORT="CODE3_1" COLSPAN="2" ALIGN="LEFT">CODE3_1</TD><TD PORT="CODE3_1.type" ALIGN="LEFT">int[10]</TD></TR>
-      <TR><TD PORT="CODE3_2" COLSPAN="2" ALIGN="LEFT">CODE3_2</TD><TD PORT="CODE3_2.type" ALIGN="LEFT">int[10]</TD></TR>
-      <TR><TD PORT="CODE3_3" COLSPAN="2" ALIGN="LEFT">CODE3_3</TD><TD PORT="CODE3_3.type" ALIGN="LEFT">int[10]</TD></TR>
-      <TR><TD PORT="CODE3_4" COLSPAN="2" ALIGN="LEFT">CODE3_4</TD><TD PORT="CODE3_4.type" ALIGN="LEFT">int[10]</TD></TR>
-      <TR><TD PORT="CODE3_5" COLSPAN="2" ALIGN="LEFT">CODE3_5</TD><TD PORT="CODE3_5.type" ALIGN="LEFT">int[10]</TD></TR>
-      <TR><TD PORT="CODE3_6" COLSPAN="2" ALIGN="LEFT">CODE3_6</TD><TD PORT="CODE3_6.type" ALIGN="LEFT">int[10]</TD></TR>
-      <TR><TD PORT="CODE3_7" COLSPAN="2" ALIGN="LEFT">CODE3_7</TD><TD PORT="CODE3_7.type" ALIGN="LEFT">int[10]</TD></TR>
-      <TR><TD PORT="CODE3_8" COLSPAN="2" ALIGN="LEFT">CODE3_8</TD><TD PORT="CODE3_8.type" ALIGN="LEFT">int[10]</TD></TR>
-      <TR><TD PORT="OPP_SERV" COLSPAN="2" ALIGN="LEFT">OPP_SERV</TD><TD PORT="OPP_SERV.type" ALIGN="LEFT">varchar[8]</TD></TR>
-      <TR><TD PORT="RESERV1" COLSPAN="2" ALIGN="LEFT">RESERV1</TD><TD PORT="RESERV1.type" ALIGN="LEFT">int[10]</TD></TR>
-      <TR><TD PORT="RESERV2" COLSPAN="2" ALIGN="LEFT">RESERV2</TD><TD PORT="RESERV2.type" ALIGN="LEFT">varchar[10]</TD></TR>
+      <TR><TD PORT="OWN_NUM" COLSPAN="2" ALIGN="LEFT">OWN_NUM</TD><TD PORT="OWN_NUM.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="REE_NUM" COLSPAN="2" ALIGN="LEFT">REE_NUM</TD><TD PORT="REE_NUM.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="OPP" COLSPAN="2" ALIGN="LEFT">OPP</TD><TD PORT="OPP.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="NUMB" COLSPAN="2" ALIGN="LEFT">NUMB</TD><TD PORT="NUMB.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="MARK" COLSPAN="2" ALIGN="LEFT">MARK</TD><TD PORT="MARK.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="CODE" COLSPAN="2" ALIGN="LEFT">CODE</TD><TD PORT="CODE.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="ENT_COD" COLSPAN="2" ALIGN="LEFT">ENT_COD</TD><TD PORT="ENT_COD.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="FROG" COLSPAN="2" ALIGN="LEFT">FROG</TD><TD PORT="FROG.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="FL_PAY" COLSPAN="2" ALIGN="LEFT">FL_PAY</TD><TD PORT="FL_PAY.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="NM_PAY" COLSPAN="2" ALIGN="LEFT">NM_PAY</TD><TD PORT="NM_PAY.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="DEBT" COLSPAN="2" ALIGN="LEFT">DEBT</TD><TD PORT="DEBT.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="CODE2_1" COLSPAN="2" ALIGN="LEFT">CODE2_1</TD><TD PORT="CODE2_1.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="CODE2_2" COLSPAN="2" ALIGN="LEFT">CODE2_2</TD><TD PORT="CODE2_2.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="CODE2_3" COLSPAN="2" ALIGN="LEFT">CODE2_3</TD><TD PORT="CODE2_3.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="CODE2_4" COLSPAN="2" ALIGN="LEFT">CODE2_4</TD><TD PORT="CODE2_4.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="CODE2_5" COLSPAN="2" ALIGN="LEFT">CODE2_5</TD><TD PORT="CODE2_5.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="CODE2_6" COLSPAN="2" ALIGN="LEFT">CODE2_6</TD><TD PORT="CODE2_6.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="CODE2_7" COLSPAN="2" ALIGN="LEFT">CODE2_7</TD><TD PORT="CODE2_7.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="CODE2_8" COLSPAN="2" ALIGN="LEFT">CODE2_8</TD><TD PORT="CODE2_8.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="NORM_F_1" COLSPAN="2" ALIGN="LEFT">NORM_F_1</TD><TD PORT="NORM_F_1.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="NORM_F_2" COLSPAN="2" ALIGN="LEFT">NORM_F_2</TD><TD PORT="NORM_F_2.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="NORM_F_3" COLSPAN="2" ALIGN="LEFT">NORM_F_3</TD><TD PORT="NORM_F_3.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="NORM_F_4" COLSPAN="2" ALIGN="LEFT">NORM_F_4</TD><TD PORT="NORM_F_4.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="NORM_F_5" COLSPAN="2" ALIGN="LEFT">NORM_F_5</TD><TD PORT="NORM_F_5.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="NORM_F_6" COLSPAN="2" ALIGN="LEFT">NORM_F_6</TD><TD PORT="NORM_F_6.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="NORM_F_7" COLSPAN="2" ALIGN="LEFT">NORM_F_7</TD><TD PORT="NORM_F_7.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="NORM_F_8" COLSPAN="2" ALIGN="LEFT">NORM_F_8</TD><TD PORT="NORM_F_8.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="OWN_NUM_SR" COLSPAN="2" BGCOLOR="#f4f7da" ALIGN="LEFT">OWN_NUM_SR</TD><TD PORT="OWN_NUM_SR.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="DAT1" COLSPAN="2" ALIGN="LEFT">DAT1</TD><TD PORT="DAT1.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="DAT2" COLSPAN="2" ALIGN="LEFT">DAT2</TD><TD PORT="DAT2.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="OZN_PRZ" COLSPAN="2" ALIGN="LEFT">OZN_PRZ</TD><TD PORT="OZN_PRZ.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="DAT_F_1" COLSPAN="2" ALIGN="LEFT">DAT_F_1</TD><TD PORT="DAT_F_1.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="DAT_F_2" COLSPAN="2" ALIGN="LEFT">DAT_F_2</TD><TD PORT="DAT_F_2.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="DAT_FOP_1" COLSPAN="2" ALIGN="LEFT">DAT_FOP_1</TD><TD PORT="DAT_FOP_1.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="DAT_FOP_2" COLSPAN="2" ALIGN="LEFT">DAT_FOP_2</TD><TD PORT="DAT_FOP_2.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="ID_RAJ" COLSPAN="2" ALIGN="LEFT">ID_RAJ</TD><TD PORT="ID_RAJ.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="SUR_NAM" COLSPAN="2" BGCOLOR="#f4f7da" ALIGN="LEFT">SUR_NAM</TD><TD PORT="SUR_NAM.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="F_NAM" COLSPAN="2" BGCOLOR="#f4f7da" ALIGN="LEFT">F_NAM</TD><TD PORT="F_NAM.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="M_NAM" COLSPAN="2" BGCOLOR="#f4f7da" ALIGN="LEFT">M_NAM</TD><TD PORT="M_NAM.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="IND_COD" COLSPAN="2" ALIGN="LEFT">IND_COD</TD><TD PORT="IND_COD.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="INDX" COLSPAN="2" ALIGN="LEFT">INDX</TD><TD PORT="INDX.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="N_NAME" COLSPAN="2" BGCOLOR="#f4f7da" ALIGN="LEFT">N_NAME</TD><TD PORT="N_NAME.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="VUL_NAME" COLSPAN="2" BGCOLOR="#f4f7da" ALIGN="LEFT">VUL_NAME</TD><TD PORT="VUL_NAME.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="BLD_NUM" COLSPAN="2" BGCOLOR="#f4f7da" ALIGN="LEFT">BLD_NUM</TD><TD PORT="BLD_NUM.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="CORP_NUM" COLSPAN="2" ALIGN="LEFT">CORP_NUM</TD><TD PORT="CORP_NUM.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="FLAT" COLSPAN="2" BGCOLOR="#f4f7da" ALIGN="LEFT">FLAT</TD><TD PORT="FLAT.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="CODE3_1" COLSPAN="2" ALIGN="LEFT">CODE3_1</TD><TD PORT="CODE3_1.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="CODE3_2" COLSPAN="2" ALIGN="LEFT">CODE3_2</TD><TD PORT="CODE3_2.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="CODE3_3" COLSPAN="2" ALIGN="LEFT">CODE3_3</TD><TD PORT="CODE3_3.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="CODE3_4" COLSPAN="2" ALIGN="LEFT">CODE3_4</TD><TD PORT="CODE3_4.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="CODE3_5" COLSPAN="2" ALIGN="LEFT">CODE3_5</TD><TD PORT="CODE3_5.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="CODE3_6" COLSPAN="2" ALIGN="LEFT">CODE3_6</TD><TD PORT="CODE3_6.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="CODE3_7" COLSPAN="2" ALIGN="LEFT">CODE3_7</TD><TD PORT="CODE3_7.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="CODE3_8" COLSPAN="2" ALIGN="LEFT">CODE3_8</TD><TD PORT="CODE3_8.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="OPP_SERV" COLSPAN="2" ALIGN="LEFT">OPP_SERV</TD><TD PORT="OPP_SERV.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="RESERV1" COLSPAN="2" ALIGN="LEFT">RESERV1</TD><TD PORT="RESERV1.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="RESERV2" COLSPAN="2" ALIGN="LEFT">RESERV2</TD><TD PORT="RESERV2.type" ALIGN="LEFT">varchar[100]</TD></TR>
       <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 6</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 row</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">0 &gt;</TD></TR>
     </TABLE>>
     URL="payment.html"
@@ -182,7 +179,8 @@ digraph "oneDegreeRelationshipsDiagram" {
       <TR><TD PORT="check_sum" COLSPAN="3" ALIGN="LEFT">check_sum</TD></TR>
       <TR><TD PORT="type" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">type</TD></TR>
       <TR><TD PORT="status" COLSPAN="3" ALIGN="LEFT">status</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">4 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">3 &gt;</TD></TR>
+      <TR><TD PORT="user_organization_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">user_organization_id</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">7 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">7 &gt;</TD></TR>
     </TABLE>>
     URL="request_file.html"
     tooltip="request_file"
@@ -195,13 +193,12 @@ digraph "oneDegreeRelationshipsDiagram" {
       <TR><TD PORT="object_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">object_id</TD></TR>
       <TR><TD PORT="parent_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_id</TD></TR>
       <TR><TD PORT="parent_entity_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_entity_id</TD></TR>
-      <TR><TD PORT="entity_type_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">entity_type_id</TD></TR>
       <TR><TD PORT="start_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">start_date</TD></TR>
       <TR><TD PORT="end_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">end_date</TD></TR>
       <TR><TD PORT="status" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">status</TD></TR>
       <TR><TD PORT="permission_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">permission_id</TD></TR>
       <TR><TD PORT="external_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">external_id</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">6 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">4 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">6 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">7 &gt;</TD></TR>
     </TABLE>>
     URL="street.html"
     tooltip="street"
@@ -214,13 +211,12 @@ digraph "oneDegreeRelationshipsDiagram" {
       <TR><TD PORT="object_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">object_id</TD></TR>
       <TR><TD PORT="parent_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_id</TD></TR>
       <TR><TD PORT="parent_entity_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_entity_id</TD></TR>
-      <TR><TD PORT="entity_type_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">entity_type_id</TD></TR>
       <TR><TD PORT="start_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">start_date</TD></TR>
       <TR><TD PORT="end_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">end_date</TD></TR>
       <TR><TD PORT="status" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">status</TD></TR>
       <TR><TD PORT="permission_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">permission_id</TD></TR>
       <TR><TD PORT="external_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">external_id</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">17 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">4 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">17 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">7 &gt;</TD></TR>
     </TABLE>>
     URL="street_type.html"
     tooltip="street_type"

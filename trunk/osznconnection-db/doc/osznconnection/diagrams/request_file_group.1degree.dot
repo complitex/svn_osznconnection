@@ -38,7 +38,8 @@ digraph "oneDegreeRelationshipsDiagram" {
       <TR><TD PORT="check_sum" COLSPAN="3" ALIGN="LEFT">check_sum</TD></TR>
       <TR><TD PORT="type" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">type</TD></TR>
       <TR><TD PORT="status" COLSPAN="3" ALIGN="LEFT">status</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">4 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">3 &gt;</TD></TR>
+      <TR><TD PORT="user_organization_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">user_organization_id</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">7 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">7 &gt;</TD></TR>
     </TABLE>>
     URL="request_file.html"
     tooltip="request_file"

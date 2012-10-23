@@ -26,10 +26,10 @@ digraph "oneDegreeRelationshipsDiagram" {
       <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">preference</TD></TR>
       <TR><TD PORT="id" COLSPAN="2" BGCOLOR="#bed1b8" ALIGN="LEFT">id</TD><TD PORT="id.type" ALIGN="LEFT">bigint[19]</TD></TR>
       <TR><TD PORT="user_id" COLSPAN="2" BGCOLOR="#f4f7da" ALIGN="LEFT">user_id</TD><TD PORT="user_id.type" ALIGN="LEFT">bigint[19]</TD></TR>
-      <TR><TD PORT="page" COLSPAN="2" ALIGN="LEFT">page</TD><TD PORT="page.type" ALIGN="LEFT">varchar[255]</TD></TR>
-      <TR><TD PORT="key" COLSPAN="2" ALIGN="LEFT">key</TD><TD PORT="key.type" ALIGN="LEFT">varchar[255]</TD></TR>
+      <TR><TD PORT="page" COLSPAN="2" BGCOLOR="#f4f7da" ALIGN="LEFT">page</TD><TD PORT="page.type" ALIGN="LEFT">varchar[255]</TD></TR>
+      <TR><TD PORT="key" COLSPAN="2" BGCOLOR="#f4f7da" ALIGN="LEFT">key</TD><TD PORT="key.type" ALIGN="LEFT">varchar[255]</TD></TR>
       <TR><TD PORT="value" COLSPAN="2" ALIGN="LEFT">value</TD><TD PORT="value.type" ALIGN="LEFT">varchar[255]</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">0 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">0 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">17 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">0 &gt;</TD></TR>
     </TABLE>>
     URL="preference.html"
     tooltip="preference"
@@ -42,7 +42,7 @@ digraph "oneDegreeRelationshipsDiagram" {
       <TR><TD PORT="login" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">login</TD></TR>
       <TR><TD PORT="password" COLSPAN="3" ALIGN="LEFT">password</TD></TR>
       <TR><TD PORT="user_info_object_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">user_info_object_id</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">2 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">4 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">5 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">4 &gt;</TD></TR>
     </TABLE>>
     URL="user.html"
     tooltip="user"

@@ -102,7 +102,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 </tr>
 </thead>
 <tbody valign='top'>
-<tr class='even'>
+<tr class='odd'>
  <td class='primaryKey' title='Primary Key'>id</td>
  <td class='detail'>bigint</td>
  <td class='detail' align='right'>19</td>
@@ -111,7 +111,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'></td>
  <td class='detail'>
   <table border='0' width='100%' cellspacing='0' cellpadding='0'>
-   <tr class='relative even' valign='top'>
+   <tr class='relative odd' valign='top'>
     <td class='relatedTable detail' title="request_file.group_id refs request_file_group.id via fk_request_file__request_file_group"><a href='request_file.html'>request_file</a><span class='relatedKey'>.group_id</span>
     </td>
     <td class='constraint detail'>fk_request_file__request_file_group<span title='Restrict delete:
@@ -122,7 +122,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Идентификатор группы фалов запросов</td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='detail'>created</td>
  <td class='detail'>timestamp</td>
  <td class='detail' align='right'>19</td>
@@ -133,7 +133,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Дата создания</td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='detail'>status</td>
  <td class='detail'>int</td>
  <td class='detail' align='right'>10</td>
@@ -145,7 +145,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='comment detail'>Код статуса. См. таблицу status_description и класс RequestFileStatus</td>
 </tr>
 </table>
-<p title='3 columns'>Table contained 1 rows at Ср июн 22 19:31 NOVST 2011<p/>
+<p title='3 columns'>Table contained 1 rows at Ср окт 24 03:49 GMT+07:00 2012<p/>
 </td></tr></table>
 <div class='indent'>
 <b>Indexes:</b>
@@ -171,17 +171,21 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 <br><form action='get'><b>Close relationships</b><span class='degrees' id='degrees' title='Detail diminishes with increased separation from request_file_group'>
 &nbsp;within <label for='oneDegree'><input type='radio' name='degrees' id='oneDegree' checked>one</label>  <label for='twoDegrees'><input type='radio' name='degrees' id='twoDegrees'>two degrees</label> of separation</span><b>:</b></form>
 <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="request_file.html" title="request_file" alt="" coords="269,5,427,379">
+<area shape="rect" id="node1" href="request_file.html" title="request_file" alt="" coords="269,5,441,403">
 <area shape="rect" id="node3" href="request_file_group.html" title="request_file_group" alt="" coords="5,25,224,156">
 </map>
   <a name='diagram'><img id='oneDegreeImg' src='../diagrams/request_file_group.1degree.png' usemap='#oneDegreeRelationshipsDiagram' class='diagram' border='0' alt='' align='left'></a>
 <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="actual_payment.html" title="actual_payment" alt="" coords="473,5,615,85">
-<area shape="rect" id="node3" href="request_file.html" title="request_file" alt="" coords="269,103,427,478">
-<area shape="rect" id="node9" href="request_file_group.html" title="request_file_group" alt="" coords="5,96,224,227">
-<area shape="rect" id="node11" href="organization.html" title="organization" alt="" coords="43,244,186,324">
-<area shape="rect" id="node4" href="benefit.html" title="benefit" alt="" coords="487,103,601,183">
-<area shape="rect" id="node6" href="payment.html" title="payment" alt="" coords="484,200,604,280">
+<area shape="rect" id="node1" href="actual_payment.html" title="actual_payment" alt="" coords="510,5,653,85">
+<area shape="rect" id="node3" href="request_file.html" title="request_file" alt="" coords="269,299,441,696">
+<area shape="rect" id="node15" href="request_file_group.html" title="request_file_group" alt="" coords="5,319,224,449">
+<area shape="rect" id="node17" href="organization.html" title="organization" alt="" coords="43,541,186,621">
+<area shape="rect" id="node4" href="benefit.html" title="benefit" alt="" coords="524,103,639,183">
+<area shape="rect" id="node6" href="dwelling_characteristics.html" title="dwelling_characteristics" alt="" coords="486,200,677,280">
+<area shape="rect" id="node8" href="facility_form2.html" title="facility_form2" alt="" coords="511,297,651,377">
+<area shape="rect" id="node10" href="facility_service_type.html" title="facility_service_type" alt="" coords="500,395,663,475">
+<area shape="rect" id="node12" href="payment.html" title="payment" alt="" coords="521,492,641,572">
+<area shape="rect" id="node19" href="subsidy.html" title="subsidy" alt="" coords="519,589,644,669">
 </map>
 
   <a name='diagram'><img id='twoDegreesImg' src='../diagrams/request_file_group.2degrees.png' usemap='#twoDegreesRelationshipsDiagram' class='diagram' border='0' alt='' align='left'></a>

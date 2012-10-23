@@ -102,7 +102,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 </tr>
 </thead>
 <tbody valign='top'>
-<tr class='even'>
+<tr class='odd'>
  <td class='primaryKey' title='Primary Key'>id</td>
  <td class='detail'>bigint</td>
  <td class='detail' align='right'>19</td>
@@ -113,7 +113,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Идентификатор организации пользователей</td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='indexedColumn' title='Indexed'>user_id</td>
  <td class='detail'>bigint</td>
  <td class='detail' align='right'>19</td>
@@ -123,7 +123,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'></td>
  <td class='detail'>
   <table border='0' width='100%' cellspacing='0' cellpadding='0'>
-   <tr class='relative odd' valign='top'>
+   <tr class='relative even' valign='top'>
     <td class='relatedTable detail' title="user_organization.user_id refs user.id via fk_user_organization__user"><a href='user.html'>user</a><span class='relatedKey'>.id</span>
     </td>
     <td class='constraint detail'>fk_user_organization__user<span title='Restrict delete:
@@ -133,7 +133,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  </td>
  <td class='comment detail'>Идентификатор пользователя</td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='indexedColumn' title='Indexed'>organization_object_id</td>
  <td class='detail'>bigint</td>
  <td class='detail' align='right'>19</td>
@@ -143,7 +143,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'></td>
  <td class='detail'>
   <table border='0' width='100%' cellspacing='0' cellpadding='0'>
-   <tr class='relative even' valign='top'>
+   <tr class='relative odd' valign='top'>
     <td class='relatedTable detail' title="user_organization.organization_object_id refs organization.object_id via fk_user_organization__organization"><a href='organization.html'>organization</a><span class='relatedKey'>.object_id</span>
     </td>
     <td class='constraint detail'>fk_user_organization__organization<span title='Restrict delete:
@@ -153,7 +153,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  </td>
  <td class='comment detail'>Идентификатор организации</td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='detail'>main</td>
  <td class='detail'>bit</td>
  <td class='detail' align='right'>0</td>
@@ -165,7 +165,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='comment detail'>Является ли организация основной</td>
 </tr>
 </table>
-<p title='4 columns'>Table contained 0 rows at Ср июн 22 19:31 NOVST 2011<p/>
+<p title='4 columns'>Table contained 3 rows at Ср окт 24 03:49 GMT+07:00 2012<p/>
 </td></tr></table>
 <div class='indent'>
 <b>Indexes:</b>
@@ -204,32 +204,32 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 &nbsp;within <label for='oneDegree'><input type='radio' name='degrees' id='oneDegree' checked>one</label>  <label for='twoDegrees'><input type='radio' name='degrees' id='twoDegrees'>two degrees</label> of separation</span><b>:</b></form>
 <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
 <area shape="rect" id="node1" href="user_organization.html" title="user_organization" alt="" coords="218,62,467,215">
-<area shape="rect" id="node3" href="organization.html" title="organization" alt="" coords="14,170,165,454">
+<area shape="rect" id="node3" href="organization.html" title="organization" alt="" coords="14,171,165,432">
 <area shape="rect" id="node5" href="user.html" title="user" alt="" coords="6,5,173,153">
 </map>
   <a name='diagram'><img id='oneDegreeImg' src='../diagrams/user_organization.1degree.png' usemap='#oneDegreeRelationshipsDiagram' class='diagram' border='0' alt='' align='left'></a>
 <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="building_correction.html" title="building_correction" alt="" coords="1114,7,1278,87">
-<area shape="rect" id="node3" href="organization.html" title="organization" alt="" coords="390,360,541,644">
-<area shape="rect" id="node6" href="street_correction.html" title="street_correction" alt="" coords="866,83,1022,163">
-<area shape="rect" id="node17" href="entity_type.html" title="entity_type" alt="" coords="202,497,345,577">
-<area shape="rect" id="node19" href="entity.html" title="entity" alt="" coords="6,497,157,577">
-<area shape="rect" id="node26" href="permission.html" title="permission" alt="" coords="207,594,340,674">
-<area shape="rect" id="node7" href="city_correction.html" title="city_correction" alt="" coords="607,233,753,313">
-<area shape="rect" id="node46" href="street_type_correction.html" title="street_type_correction" alt="" coords="586,135,774,215">
-<area shape="rect" id="node10" href="city_type_correction.html" title="city_type_correction" alt="" coords="595,382,765,462">
-<area shape="rect" id="node13" href="district_correction.html" title="district_correction" alt="" coords="867,306,1021,386">
-<area shape="rect" id="node20" href="log.html" title="log" alt="" coords="877,1025,1011,1105">
-<area shape="rect" id="node22" href="user.html" title="user" alt="" coords="597,1003,763,1151">
-<area shape="rect" id="node50" href="user_info.html" title="user_info" alt="" coords="398,662,533,742">
-<area shape="rect" id="node27" href="organization_attribute.html" title="organization_attribute" alt="" coords="589,515,771,595">
-<area shape="rect" id="node29" href="ownership_correction.html" title="ownership_correction" alt="" coords="591,613,769,693">
-<area shape="rect" id="node32" href="person_account.html" title="person_account" alt="" coords="603,710,757,790">
-<area shape="rect" id="node35" href="preference.html" title="preference" alt="" coords="878,927,1010,1007">
-<area shape="rect" id="node37" href="privilege_correction.html" title="privilege_correction" alt="" coords="597,807,763,887">
-<area shape="rect" id="node40" href="request_file.html" title="request_file" alt="" coords="613,905,747,985">
-<area shape="rect" id="node54" href="user_organization.html" title="user_organization" alt="" coords="819,580,1069,733">
-<area shape="rect" id="node57" href="usergroup.html" title="usergroup" alt="" coords="879,1122,1009,1202">
+<area shape="rect" id="node1" href="building_correction.html" title="building_correction" alt="" coords="926,7,1090,87">
+<area shape="rect" id="node3" href="organization.html" title="organization" alt="" coords="202,400,353,662">
+<area shape="rect" id="node6" href="street_correction.html" title="street_correction" alt="" coords="678,91,834,171">
+<area shape="rect" id="node25" href="entity.html" title="entity" alt="" coords="6,496,157,576">
+<area shape="rect" id="node27" href="permission.html" title="permission" alt="" coords="15,622,148,702">
+<area shape="rect" id="node8" href="city_correction.html" title="city_correction" alt="" coords="419,256,565,336">
+<area shape="rect" id="node53" href="street_type_correction.html" title="street_type_correction" alt="" coords="398,159,586,239">
+<area shape="rect" id="node12" href="city_type_correction.html" title="city_type_correction" alt="" coords="407,422,577,502">
+<area shape="rect" id="node16" href="district_correction.html" title="district_correction" alt="" coords="679,338,833,418">
+<area shape="rect" id="node21" href="log.html" title="log" alt="" coords="685,1162,827,1242">
+<area shape="rect" id="node23" href="user.html" title="user" alt="" coords="409,1140,575,1288">
+<area shape="rect" id="node59" href="user_info.html" title="user_info" alt="" coords="210,679,345,759">
+<area shape="rect" id="node28" href="organization_attribute.html" title="organization_attribute" alt="" coords="401,555,583,635">
+<area shape="rect" id="node30" href="ownership_correction.html" title="ownership_correction" alt="" coords="403,652,581,732">
+<area shape="rect" id="node34" href="person_account.html" title="person_account" alt="" coords="415,750,569,830">
+<area shape="rect" id="node38" href="preference.html" title="preference" alt="" coords="686,1064,826,1144">
+<area shape="rect" id="node40" href="privilege_correction.html" title="privilege_correction" alt="" coords="409,847,575,927">
+<area shape="rect" id="node44" href="request_file.html" title="request_file" alt="" coords="425,944,559,1024">
+<area shape="rect" id="node47" href="service_association.html" title="service_association" alt="" coords="407,1042,577,1122">
+<area shape="rect" id="node62" href="user_organization.html" title="user_organization" alt="" coords="631,665,881,818">
+<area shape="rect" id="node65" href="usergroup.html" title="usergroup" alt="" coords="691,1259,821,1339">
 </map>
 
   <a name='diagram'><img id='twoDegreesImg' src='../diagrams/user_organization.2degrees.png' usemap='#twoDegreesRelationshipsDiagram' class='diagram' border='0' alt='' align='left'></a>

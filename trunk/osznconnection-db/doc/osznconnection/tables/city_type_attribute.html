@@ -102,7 +102,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 </tr>
 </thead>
 <tbody valign='top'>
-<tr class='even'>
+<tr class='odd'>
  <td class='primaryKey' title='Primary Key'>pk_id</td>
  <td class='detail'>bigint</td>
  <td class='detail' align='right'>19</td>
@@ -113,7 +113,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Суррогатный ключ</td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='indexedColumn' title='Indexed'>attribute_id</td>
  <td class='detail'>bigint</td>
  <td class='detail' align='right'>19</td>
@@ -124,7 +124,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Идентификатор атрибута</td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='indexedColumn' title='Indexed'>object_id</td>
  <td class='detail'>bigint</td>
  <td class='detail' align='right'>19</td>
@@ -134,7 +134,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'></td>
  <td class='detail'>
   <table border='0' width='100%' cellspacing='0' cellpadding='0'>
-   <tr class='relative even' valign='top'>
+   <tr class='relative odd' valign='top'>
     <td class='relatedTable detail' title="city_type_attribute.object_id refs city_type.object_id via fk_city_type_attribute__city_type"><a href='city_type.html'>city_type</a><span class='relatedKey'>.object_id</span>
     </td>
     <td class='constraint detail'>fk_city_type_attribute__city_type<span title='Restrict delete:
@@ -144,7 +144,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  </td>
  <td class='comment detail'>Идентификатор объекта</td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='indexedColumn' title='Indexed'>attribute_type_id</td>
  <td class='detail'>bigint</td>
  <td class='detail' align='right'>19</td>
@@ -154,7 +154,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'></td>
  <td class='detail'>
   <table border='0' width='100%' cellspacing='0' cellpadding='0'>
-   <tr class='relative odd' valign='top'>
+   <tr class='relative even' valign='top'>
     <td class='relatedTable detail' title="city_type_attribute.attribute_type_id refs entity_attribute_type.id via fk_city_type_attribute__entity_attribute_type"><a href='entity_attribute_type.html'>entity_attribute_type</a><span class='relatedKey'>.id</span>
     </td>
     <td class='constraint detail'>fk_city_type_attribute__entity_attribute_type<span title='Restrict delete:
@@ -164,7 +164,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  </td>
  <td class='comment detail'>Идентификатор типа атрибута: 1300 - КРАТКОЕ НАЗВАНИЕ, 1301 - НАЗВАНИЕ</td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='indexedColumn' title='Indexed'>value_id</td>
  <td class='detail'>bigint</td>
  <td class='detail' align='right'>19</td>
@@ -175,7 +175,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Идентификатор значения</td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='indexedColumn' title='Indexed'>value_type_id</td>
  <td class='detail'>bigint</td>
  <td class='detail' align='right'>19</td>
@@ -185,7 +185,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'></td>
  <td class='detail'>
   <table border='0' width='100%' cellspacing='0' cellpadding='0'>
-   <tr class='relative odd' valign='top'>
+   <tr class='relative even' valign='top'>
     <td class='relatedTable detail' title="city_type_attribute.value_type_id refs entity_attribute_value_type.id via fk_city_type_attribute__entity_attribute_value_type"><a href='entity_attribute_value_type.html'>entity_attribute_value_type</a><span class='relatedKey'>.id</span>
     </td>
     <td class='constraint detail'>fk_city_type_attribute__entity_attribute_value_type<span title='Restrict delete:
@@ -195,7 +195,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  </td>
  <td class='comment detail'>Идентификатор типа значения атрибута: 1300 - STRING_CULTURE, 1301 - STRING_CULTURE</td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='indexedColumn' title='Indexed'>start_date</td>
  <td class='detail'>timestamp</td>
  <td class='detail' align='right'>19</td>
@@ -206,7 +206,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Дата начала периода действия атрибута</td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='indexedColumn' title='Indexed'>end_date</td>
  <td class='detail'>timestamp</td>
  <td class='detail' align='right'>19</td>
@@ -217,7 +217,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Дата окончания периода действия атрибута</td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='indexedColumn' title='Indexed'>status</td>
  <td class='detail'>varchar</td>
  <td class='detail' align='right'>20</td>
@@ -229,7 +229,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='comment detail'>Статус: ACTIVE, INACTIVE, ARCHIVE</td>
 </tr>
 </table>
-<p title='9 columns'>Table contained 4 rows at Ср июн 22 19:31 NOVST 2011<p/>
+<p title='9 columns'>Table contained 4 rows at Ср окт 24 03:49 GMT+07:00 2012<p/>
 </td></tr></table>
 <div class='indent'>
 <b>Indexes:</b>
@@ -303,36 +303,37 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 <br><form action='get'><b>Close relationships</b><span class='degrees' id='degrees' title='Detail diminishes with increased separation from city_type_attribute'>
 &nbsp;within <label for='oneDegree'><input type='radio' name='degrees' id='oneDegree' checked>one</label>  <label for='twoDegrees'><input type='radio' name='degrees' id='twoDegrees'>two degrees</label> of separation</span><b>:</b></form>
 <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="city_type_attribute.html" title="city_type_attribute" alt="" coords="491,205,735,472">
-<area shape="rect" id="node3" href="entity_attribute_type.html" title="entity_attribute_type" alt="" coords="6,321,197,537">
-<area shape="rect" id="node5" href="city_type.html" title="city_type" alt="" coords="269,5,419,289">
-<area shape="rect" id="node7" href="entity_attribute_value_type.html" title="entity_attribute_value_type" alt="" coords="242,343,446,468">
+<area shape="rect" id="node1" href="city_type_attribute.html" title="city_type_attribute" alt="" coords="491,183,735,449">
+<area shape="rect" id="node3" href="entity_attribute_type.html" title="entity_attribute_type" alt="" coords="6,299,197,515">
+<area shape="rect" id="node5" href="city_type.html" title="city_type" alt="" coords="269,5,419,267">
+<area shape="rect" id="node7" href="entity_attribute_value_type.html" title="entity_attribute_value_type" alt="" coords="242,320,446,445">
 </map>
   <a name='diagram'><img id='oneDegreeImg' src='../diagrams/city_type_attribute.1degree.png' usemap='#oneDegreeRelationshipsDiagram' class='diagram' border='0' alt='' align='left'></a>
 <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="apartment_attribute.html" title="apartment_attribute" alt="" coords="922,103,1089,183">
-<area shape="rect" id="node3" href="entity_attribute_type.html" title="entity_attribute_type" alt="" coords="398,777,589,993">
-<area shape="rect" id="node5" href="entity_attribute_value_type.html" title="entity_attribute_value_type" alt="" coords="634,709,838,835">
-<area shape="rect" id="node19" href="entity.html" title="entity" alt="" coords="202,1167,353,1247">
-<area shape="rect" id="node35" href="string_culture.html" title="string_culture" alt="" coords="6,1167,157,1247">
-<area shape="rect" id="node6" href="building_address_attribute.html" title="building_address_attribute" alt="" coords="904,200,1107,280">
-<area shape="rect" id="node9" href="building_attribute.html" title="building_attribute" alt="" coords="927,297,1083,377">
-<area shape="rect" id="node12" href="city_attribute.html" title="city_attribute" alt="" coords="937,395,1074,475">
-<area shape="rect" id="node15" href="city_type.html" title="city_type" alt="" coords="661,1382,811,1666">
-<area shape="rect" id="node17" href="entity_type.html" title="entity_type" alt="" coords="422,1235,565,1315">
-<area shape="rect" id="node21" href="permission.html" title="permission" alt="" coords="427,1564,560,1644">
-<area shape="rect" id="node22" href="city_type_attribute.html" title="city_type_attribute" alt="" coords="883,1368,1127,1635">
-<area shape="rect" id="node26" href="city_type_correction.html" title="city_type_correction" alt="" coords="921,1652,1090,1732">
-<area shape="rect" id="node28" href="country_attribute.html" title="country_attribute" alt="" coords="927,492,1083,572">
-<area shape="rect" id="node31" href="district_attribute.html" title="district_attribute" alt="" coords="930,589,1081,669">
-<area shape="rect" id="node41" href="organization_attribute.html" title="organization_attribute" alt="" coords="914,687,1097,767">
-<area shape="rect" id="node44" href="ownership_attribute.html" title="ownership_attribute" alt="" coords="922,784,1089,864">
-<area shape="rect" id="node47" href="privilege_attribute.html" title="privilege_attribute" alt="" coords="918,881,1093,961">
-<area shape="rect" id="node50" href="region_attribute.html" title="region_attribute" alt="" coords="930,979,1081,1059">
-<area shape="rect" id="node53" href="room_attribute.html" title="room_attribute" alt="" coords="933,1076,1078,1156">
-<area shape="rect" id="node56" href="street_attribute.html" title="street_attribute" alt="" coords="927,1173,1083,1253">
-<area shape="rect" id="node59" href="street_type_attribute.html" title="street_type_attribute" alt="" coords="915,1271,1095,1351">
-<area shape="rect" id="node62" href="user_info_attribute.html" title="user_info_attribute" alt="" coords="923,5,1087,85">
+<area shape="rect" id="node1" href="apartment_attribute.html" title="apartment_attribute" alt="" coords="930,5,1097,85">
+<area shape="rect" id="node3" href="entity_attribute_type.html" title="entity_attribute_type" alt="" coords="406,867,597,1083">
+<area shape="rect" id="node5" href="entity_attribute_value_type.html" title="entity_attribute_value_type" alt="" coords="642,755,846,880">
+<area shape="rect" id="node17" href="entity.html" title="entity" alt="" coords="210,888,361,968">
+<area shape="rect" id="node33" href="string_culture.html" title="string_culture" alt="" coords="6,921,165,1001">
+<area shape="rect" id="node6" href="building_address_attribute.html" title="building_address_attribute" alt="" coords="912,103,1115,183">
+<area shape="rect" id="node9" href="building_attribute.html" title="building_attribute" alt="" coords="935,200,1091,280">
+<area shape="rect" id="node12" href="city_attribute.html" title="city_attribute" alt="" coords="945,297,1082,377">
+<area shape="rect" id="node15" href="city_type.html" title="city_type" alt="" coords="669,1588,819,1849">
+<area shape="rect" id="node19" href="permission.html" title="permission" alt="" coords="435,1747,568,1827">
+<area shape="rect" id="node20" href="city_type_attribute.html" title="city_type_attribute" alt="" coords="891,1563,1135,1829">
+<area shape="rect" id="node24" href="city_type_correction.html" title="city_type_correction" alt="" coords="929,1847,1098,1927">
+<area shape="rect" id="node26" href="country_attribute.html" title="country_attribute" alt="" coords="935,395,1091,475">
+<area shape="rect" id="node29" href="district_attribute.html" title="district_attribute" alt="" coords="938,492,1089,572">
+<area shape="rect" id="node37" href="organization_attribute.html" title="organization_attribute" alt="" coords="922,589,1105,669">
+<area shape="rect" id="node40" href="organization_type_attribute.html" title="organization_type_attribute" alt="" coords="910,687,1117,767">
+<area shape="rect" id="node43" href="ownership_attribute.html" title="ownership_attribute" alt="" coords="930,784,1097,864">
+<area shape="rect" id="node46" href="privilege_attribute.html" title="privilege_attribute" alt="" coords="926,881,1101,961">
+<area shape="rect" id="node49" href="region_attribute.html" title="region_attribute" alt="" coords="938,979,1089,1059">
+<area shape="rect" id="node52" href="room_attribute.html" title="room_attribute" alt="" coords="941,1076,1086,1156">
+<area shape="rect" id="node55" href="service_provider_type_attribute.html" title="service_provider_type_attribute" alt="" coords="896,1173,1131,1253">
+<area shape="rect" id="node58" href="street_attribute.html" title="street_attribute" alt="" coords="935,1271,1091,1351">
+<area shape="rect" id="node61" href="street_type_attribute.html" title="street_type_attribute" alt="" coords="923,1368,1103,1448">
+<area shape="rect" id="node64" href="user_info_attribute.html" title="user_info_attribute" alt="" coords="927,1465,1099,1545">
 </map>
 
   <a name='diagram'><img id='twoDegreesImg' src='../diagrams/city_type_attribute.2degrees.png' usemap='#twoDegreesRelationshipsDiagram' class='diagram' border='0' alt='' align='left'></a>

@@ -22,9 +22,11 @@ digraph "oneDegreeRelationshipsDiagram" {
   "street_correction":"internal_organization_id":w -> "organization":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "street_correction":"organization_id":w -> "organization":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "street_correction":"street_type_correction_id":w -> "street_type_correction":"id.type":e [arrowhead=none dir=back arrowtail=crowodot];
+  "street_correction":"user_organization_id":w -> "organization":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "street_type_correction":"internal_organization_id":w -> "organization":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "street_type_correction":"object_id":w -> "street_type":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "street_type_correction":"organization_id":w -> "organization":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "street_type_correction":"user_organization_id":w -> "organization":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "organization" [
     label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
@@ -33,13 +35,12 @@ digraph "oneDegreeRelationshipsDiagram" {
       <TR><TD PORT="object_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">object_id</TD></TR>
       <TR><TD PORT="parent_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_id</TD></TR>
       <TR><TD PORT="parent_entity_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_entity_id</TD></TR>
-      <TR><TD PORT="entity_type_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">entity_type_id</TD></TR>
       <TR><TD PORT="start_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">start_date</TD></TR>
       <TR><TD PORT="end_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">end_date</TD></TR>
       <TR><TD PORT="status" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">status</TD></TR>
       <TR><TD PORT="permission_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">permission_id</TD></TR>
       <TR><TD PORT="external_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">external_id</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">5 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">21 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">5 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">32 &gt;</TD></TR>
     </TABLE>>
     URL="organization.html"
     tooltip="organization"
@@ -56,7 +57,8 @@ digraph "oneDegreeRelationshipsDiagram" {
       <TR><TD PORT="organization_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">organization_id</TD></TR>
       <TR><TD PORT="organization_code" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">organization_code</TD></TR>
       <TR><TD PORT="internal_organization_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">internal_organization_id</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 5</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">4 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 &gt;</TD></TR>
+      <TR><TD PORT="user_organization_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">user_organization_id</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 6</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">4 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 &gt;</TD></TR>
     </TABLE>>
     URL="street_correction.html"
     tooltip="street_correction"
@@ -69,13 +71,12 @@ digraph "oneDegreeRelationshipsDiagram" {
       <TR><TD PORT="object_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">object_id</TD></TR>
       <TR><TD PORT="parent_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_id</TD></TR>
       <TR><TD PORT="parent_entity_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_entity_id</TD></TR>
-      <TR><TD PORT="entity_type_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">entity_type_id</TD></TR>
       <TR><TD PORT="start_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">start_date</TD></TR>
       <TR><TD PORT="end_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">end_date</TD></TR>
       <TR><TD PORT="status" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">status</TD></TR>
       <TR><TD PORT="permission_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">permission_id</TD></TR>
       <TR><TD PORT="external_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">external_id</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">17 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">4 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">17 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">7 &gt;</TD></TR>
     </TABLE>>
     URL="street_type.html"
     tooltip="street_type"
@@ -91,7 +92,8 @@ digraph "oneDegreeRelationshipsDiagram" {
       <TR><TD PORT="organization_id" COLSPAN="2" BGCOLOR="#f4f7da" ALIGN="LEFT">organization_id</TD><TD PORT="organization_id.type" ALIGN="LEFT">bigint[19]</TD></TR>
       <TR><TD PORT="organization_code" COLSPAN="2" ALIGN="LEFT">organization_code</TD><TD PORT="organization_code.type" ALIGN="LEFT">varchar[100]</TD></TR>
       <TR><TD PORT="internal_organization_id" COLSPAN="2" BGCOLOR="#f4f7da" ALIGN="LEFT">internal_organization_id</TD><TD PORT="internal_organization_id.type" ALIGN="LEFT">bigint[19]</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">17 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 &gt;</TD></TR>
+      <TR><TD PORT="user_organization_id" COLSPAN="2" BGCOLOR="#f4f7da" ALIGN="LEFT">user_organization_id</TD><TD PORT="user_organization_id.type" ALIGN="LEFT">bigint[19]</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 4</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">17 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 &gt;</TD></TR>
     </TABLE>>
     URL="street_type_correction.html"
     tooltip="street_type_correction"

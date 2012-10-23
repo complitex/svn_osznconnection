@@ -124,9 +124,33 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  Parent cannot be deleted if children exist'>&nbsp;R</span></td>
    </tr>
    <tr class='relative even' valign='top'>
+    <td class='relatedTable detail' title="dwelling_characteristics.request_file_id refs request_file.id via fk_dwelling_characteristics__request_file"><a href='dwelling_characteristics.html'>dwelling_characteristics</a><span class='relatedKey'>.request_file_id</span>
+    </td>
+    <td class='constraint detail'>fk_dwelling_characteristics__request_file<span title='Restrict delete:
+ Parent cannot be deleted if children exist'>&nbsp;R</span></td>
+   </tr>
+   <tr class='relative even' valign='top'>
+    <td class='relatedTable detail' title="facility_form2.request_file_id refs request_file.id via fk_facility_form2__request_file"><a href='facility_form2.html'>facility_form2</a><span class='relatedKey'>.request_file_id</span>
+    </td>
+    <td class='constraint detail'>fk_facility_form2__request_file<span title='Restrict delete:
+ Parent cannot be deleted if children exist'>&nbsp;R</span></td>
+   </tr>
+   <tr class='relative even' valign='top'>
+    <td class='relatedTable detail' title="facility_service_type.request_file_id refs request_file.id via fk_facility_service_type__request_file"><a href='facility_service_type.html'>facility_service_type</a><span class='relatedKey'>.request_file_id</span>
+    </td>
+    <td class='constraint detail'>fk_facility_service_type__request_file<span title='Restrict delete:
+ Parent cannot be deleted if children exist'>&nbsp;R</span></td>
+   </tr>
+   <tr class='relative even' valign='top'>
     <td class='relatedTable detail' title="payment.request_file_id refs request_file.id via fk_payment__request_file"><a href='payment.html'>payment</a><span class='relatedKey'>.request_file_id</span>
     </td>
     <td class='constraint detail'>fk_payment__request_file<span title='Restrict delete:
+ Parent cannot be deleted if children exist'>&nbsp;R</span></td>
+   </tr>
+   <tr class='relative even' valign='top'>
+    <td class='relatedTable detail' title="subsidy.request_file_id refs request_file.id via fk_subsidy__request_file"><a href='subsidy.html'>subsidy</a><span class='relatedKey'>.request_file_id</span>
+    </td>
+    <td class='constraint detail'>fk_subsidy__request_file<span title='Restrict delete:
  Parent cannot be deleted if children exist'>&nbsp;R</span></td>
    </tr>
   </table>
@@ -295,8 +319,28 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>См. таблицу status_description и класс RequestFileStatus</td>
 </tr>
+<tr class='even'>
+ <td class='indexedColumn' title='Indexed'>user_organization_id</td>
+ <td class='detail'>bigint</td>
+ <td class='detail' align='right'>19</td>
+ <td class='detail' align='center'></td>
+ <td class='detail' align='center'></td>
+ <td class='detail'></td>
+ <td class='detail'></td>
+ <td class='detail'>
+  <table border='0' width='100%' cellspacing='0' cellpadding='0'>
+   <tr class='relative even' valign='top'>
+    <td class='relatedTable detail' title="request_file.user_organization_id refs organization.object_id via fk_request_file__user_organization"><a href='organization.html'>organization</a><span class='relatedKey'>.object_id</span>
+    </td>
+    <td class='constraint detail'>fk_request_file__user_organization<span title='Restrict delete:
+ Parent cannot be deleted if children exist'>&nbsp;R</span></td>
+   </tr>
+  </table>
+ </td>
+ <td class='comment detail'>Идентификатор организации пользователя, который загрузил текущий файл</td>
+</tr>
 </table>
-<p title='14 columns'>Table contained 4 rows at Ср июн 22 19:31 NOVST 2011<p/>
+<p title='15 columns'>Table contained 7 rows at Ср окт 24 03:49 GMT+07:00 2012<p/>
 </td></tr></table>
 <div class='indent'>
 <b>Indexes:</b>
@@ -359,16 +403,22 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
   <td class='constraint' style='text-align:left;'>key_type</td>
  </tr>
  <tr>
+  <td class='indexedColumn'>user_organization_id</td>
+  <td class='detail'>Performance</td>
+  <td class='detail' style='text-align:left;'><span title='Ascending'>Asc</span></td>
+  <td class='constraint' style='text-align:left;'>key_user_organization_id</td>
+ </tr>
+ <tr>
   <td class='indexedColumn'>year</td>
   <td class='detail'>Performance</td>
   <td class='detail' style='text-align:left;'><span title='Ascending'>Asc</span></td>
   <td class='constraint' style='text-align:left;'>key_year</td>
  </tr>
  <tr>
-  <td class='indexedColumn'>name + organization_id + registry + month + year</td>
+  <td class='indexedColumn'>name + organization_id + user_organization_id + registry + month + year</td>
   <td class='detail'>Must be unique</td>
-  <td class='detail' style='text-align:left;'><span title='Ascending'>Asc</span>/<span title='Ascending'>Asc</span>/<span title='Ascending'>Asc</span>/<span title='Ascending'>Asc</span>/<span title='Ascending'>Asc</span></td>
-  <td class='constraint' style='text-align:left;'>unique_id</td>
+  <td class='detail' style='text-align:left;'><span title='Ascending'>Asc</span>/<span title='Ascending'>Asc</span>/<span title='Ascending'>Asc</span>/<span title='Ascending'>Asc</span>/<span title='Ascending'>Asc</span>/<span title='Ascending'>Asc</span></td>
+  <td class='constraint' style='text-align:left;'>request_file_unique_id</td>
  </tr>
 </table>
 </div>
@@ -376,40 +426,48 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 <br><form action='get'><b>Close relationships</b><span class='degrees' id='degrees' title='Detail diminishes with increased separation from request_file'>
 &nbsp;within <label for='oneDegree'><input type='radio' name='degrees' id='oneDegree' checked>one</label>  <label for='twoDegrees'><input type='radio' name='degrees' id='twoDegrees'>two degrees</label> of separation</span><b>:</b></form>
 <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="actual_payment.html" title="actual_payment" alt="" coords="491,5,693,1264">
-<area shape="rect" id="node3" href="request_file.html" title="request_file" alt="" coords="207,1301,447,1681">
-<area shape="rect" id="node9" href="request_file_group.html" title="request_file_group" alt="" coords="6,1288,162,1413">
-<area shape="rect" id="node11" href="organization.html" title="organization" alt="" coords="9,1431,159,1715">
-<area shape="rect" id="node4" href="benefit.html" title="benefit" alt="" coords="518,1281,666,1905">
-<area shape="rect" id="node6" href="payment.html" title="payment" alt="" coords="491,1923,693,3635">
+<area shape="rect" id="node1" href="actual_payment.html" title="actual_payment" alt="" coords="512,5,715,1264">
+<area shape="rect" id="node3" href="request_file.html" title="request_file" alt="" coords="207,2925,468,3328">
+<area shape="rect" id="node15" href="request_file_group.html" title="request_file_group" alt="" coords="6,2951,162,3076">
+<area shape="rect" id="node17" href="organization.html" title="organization" alt="" coords="9,3159,159,3420">
+<area shape="rect" id="node4" href="benefit.html" title="benefit" alt="" coords="539,1281,687,1905">
+<area shape="rect" id="node6" href="dwelling_characteristics.html" title="dwelling_characteristics" alt="" coords="512,1923,715,2887">
+<area shape="rect" id="node8" href="facility_form2.html" title="facility_form2" alt="" coords="535,2905,691,3506">
+<area shape="rect" id="node10" href="facility_service_type.html" title="facility_service_type" alt="" coords="512,3523,715,4623">
+<area shape="rect" id="node12" href="payment.html" title="payment" alt="" coords="512,4641,715,6353">
+<area shape="rect" id="node19" href="subsidy.html" title="subsidy" alt="" coords="512,6371,715,7992">
 </map>
   <a name='diagram'><img id='oneDegreeImg' src='../diagrams/request_file.1degree.png' usemap='#oneDegreeRelationshipsDiagram' class='diagram' border='0' alt='' align='left'></a>
 <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="actual_payment.html" title="actual_payment" alt="" coords="875,2439,1077,3698">
-<area shape="rect" id="node3" href="building.html" title="building" alt="" coords="401,2318,535,2398">
-<area shape="rect" id="node5" href="city.html" title="city" alt="" coords="401,2610,535,2690">
-<area shape="rect" id="node7" href="street.html" title="street" alt="" coords="401,2512,535,2592">
-<area shape="rect" id="node9" href="street_type.html" title="street_type" alt="" coords="397,2707,539,2787">
-<area shape="rect" id="node11" href="request_file.html" title="request_file" alt="" coords="591,801,831,1181">
-<area shape="rect" id="node14" href="entity_type.html" title="entity_type" alt="" coords="202,2512,345,2592">
-<area shape="rect" id="node16" href="entity.html" title="entity" alt="" coords="6,2512,157,2592">
-<area shape="rect" id="node18" href="permission.html" title="permission" alt="" coords="207,2610,340,2690">
-<area shape="rect" id="node26" href="organization.html" title="organization" alt="" coords="393,3784,543,4068">
-<area shape="rect" id="node68" href="request_file_group.html" title="request_file_group" alt="" coords="390,827,546,952">
-<area shape="rect" id="node12" href="apartment.html" title="apartment" alt="" coords="401,2415,535,2495">
-<area shape="rect" id="node19" href="benefit.html" title="benefit" alt="" coords="902,68,1050,692">
-<area shape="rect" id="node24" href="building_correction.html" title="building_correction" alt="" coords="1122,3752,1286,3832">
-<area shape="rect" id="node30" href="street_correction.html" title="street_correction" alt="" coords="898,3715,1054,3795">
-<area shape="rect" id="node34" href="city_correction.html" title="city_correction" alt="" coords="638,3642,783,3722">
-<area shape="rect" id="node78" href="street_type_correction.html" title="street_type_correction" alt="" coords="617,3544,805,3624">
-<area shape="rect" id="node38" href="city_type_correction.html" title="city_type_correction" alt="" coords="626,4330,795,4410">
-<area shape="rect" id="node41" href="district_correction.html" title="district_correction" alt="" coords="899,4403,1053,4483">
-<area shape="rect" id="node49" href="organization_attribute.html" title="organization_attribute" alt="" coords="619,3843,802,3923">
-<area shape="rect" id="node51" href="ownership_correction.html" title="ownership_correction" alt="" coords="622,3940,799,4020">
-<area shape="rect" id="node54" href="payment.html" title="payment" alt="" coords="875,710,1077,2422">
-<area shape="rect" id="node61" href="person_account.html" title="person_account" alt="" coords="634,4038,787,4118">
-<area shape="rect" id="node64" href="privilege_correction.html" title="privilege_correction" alt="" coords="627,4135,794,4215">
-<area shape="rect" id="node85" href="user_organization.html" title="user_organization" alt="" coords="630,4232,791,4312">
+<area shape="rect" id="node1" href="actual_payment.html" title="actual_payment" alt="" coords="708,4303,911,5561">
+<area shape="rect" id="node3" href="building.html" title="building" alt="" coords="466,4437,601,4517">
+<area shape="rect" id="node5" href="city.html" title="city" alt="" coords="213,4069,347,4149">
+<area shape="rect" id="node7" href="street.html" title="street" alt="" coords="466,4137,601,4217">
+<area shape="rect" id="node9" href="street_type.html" title="street_type" alt="" coords="209,4239,351,4319">
+<area shape="rect" id="node11" href="request_file.html" title="request_file" alt="" coords="403,1565,664,1968">
+<area shape="rect" id="node14" href="entity.html" title="entity" alt="" coords="6,4237,157,4317">
+<area shape="rect" id="node16" href="permission.html" title="permission" alt="" coords="15,4137,148,4217">
+<area shape="rect" id="node23" href="organization.html" title="organization" alt="" coords="205,437,355,699">
+<area shape="rect" id="node83" href="request_file_group.html" title="request_file_group" alt="" coords="202,1591,358,1716">
+<area shape="rect" id="node12" href="apartment.html" title="apartment" alt="" coords="213,4372,347,4452">
+<area shape="rect" id="node17" href="benefit.html" title="benefit" alt="" coords="735,904,883,1528">
+<area shape="rect" id="node21" href="building_correction.html" title="building_correction" alt="" coords="955,5,1119,85">
+<area shape="rect" id="node27" href="street_correction.html" title="street_correction" alt="" coords="731,187,887,267">
+<area shape="rect" id="node31" href="city_correction.html" title="city_correction" alt="" coords="461,945,606,1025">
+<area shape="rect" id="node95" href="street_type_correction.html" title="street_type_correction" alt="" coords="439,1043,627,1123">
+<area shape="rect" id="node36" href="city_type_correction.html" title="city_type_correction" alt="" coords="449,751,618,831">
+<area shape="rect" id="node40" href="district_correction.html" title="district_correction" alt="" coords="733,89,886,169">
+<area shape="rect" id="node45" href="dwelling_characteristics.html" title="dwelling_characteristics" alt="" coords="708,5579,911,6543">
+<area shape="rect" id="node51" href="facility_form2.html" title="facility_form2" alt="" coords="731,285,887,886">
+<area shape="rect" id="node53" href="facility_service_type.html" title="facility_service_type" alt="" coords="708,3185,911,4285">
+<area shape="rect" id="node61" href="organization_attribute.html" title="organization_attribute" alt="" coords="442,848,625,928">
+<area shape="rect" id="node63" href="ownership_correction.html" title="ownership_correction" alt="" coords="445,264,622,344">
+<area shape="rect" id="node67" href="payment.html" title="payment" alt="" coords="708,6597,911,8309">
+<area shape="rect" id="node74" href="person_account.html" title="person_account" alt="" coords="457,361,610,441">
+<area shape="rect" id="node78" href="privilege_correction.html" title="privilege_correction" alt="" coords="450,459,617,539">
+<area shape="rect" id="node86" href="service_association.html" title="service_association" alt="" coords="449,556,618,636">
+<area shape="rect" id="node103" href="subsidy.html" title="subsidy" alt="" coords="708,1545,911,3167">
+<area shape="rect" id="node109" href="user_organization.html" title="user_organization" alt="" coords="453,653,614,733">
 </map>
 
   <a name='diagram'><img id='twoDegreesImg' src='../diagrams/request_file.2degrees.png' usemap='#twoDegreesRelationshipsDiagram' class='diagram' border='0' alt='' align='left'></a>
