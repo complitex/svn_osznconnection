@@ -102,7 +102,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 </tr>
 </thead>
 <tbody valign='top'>
-<tr class='odd'>
+<tr class='even'>
  <td class='primaryKey' title='Primary Key'>pk_id</td>
  <td class='detail'>bigint</td>
  <td class='detail' align='right'>19</td>
@@ -113,7 +113,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Суррогатный ключ</td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='indexedColumn' title='Indexed'>object_id</td>
  <td class='detail'>bigint</td>
  <td class='detail' align='right'>19</td>
@@ -122,7 +122,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'></td>
  <td class='detail'>
   <table border='0' width='100%' cellspacing='0' cellpadding='0'>
-   <tr class='relative even' valign='top'>
+   <tr class='relative odd' valign='top'>
     <td class='relatedTable detail' title="country_attribute.object_id refs country.object_id via fk_country_attribute__country"><a href='country_attribute.html'>country_attribute</a><span class='relatedKey'>.object_id</span>
     </td>
     <td class='constraint detail'>fk_country_attribute__country<span title='Restrict delete:
@@ -133,7 +133,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Идентификатор объекта</td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='indexedColumn' title='Indexed'>parent_id</td>
  <td class='detail'>bigint</td>
  <td class='detail' align='right'>19</td>
@@ -144,7 +144,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Идентификатор родительского объекта: не используется</td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='indexedColumn' title='Indexed'>parent_entity_id</td>
  <td class='detail'>bigint</td>
  <td class='detail' align='right'>19</td>
@@ -154,7 +154,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'></td>
  <td class='detail'>
   <table border='0' width='100%' cellspacing='0' cellpadding='0'>
-   <tr class='relative even' valign='top'>
+   <tr class='relative odd' valign='top'>
     <td class='relatedTable detail' title="country.parent_entity_id refs entity.id via fk_country__entity"><a href='entity.html'>entity</a><span class='relatedKey'>.id</span>
     </td>
     <td class='constraint detail'>fk_country__entity<span title='Restrict delete:
@@ -163,26 +163,6 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
   </table>
  </td>
  <td class='comment detail'>Идентификатор сущности родительского объекта: не используется</td>
-</tr>
-<tr class='odd'>
- <td class='indexedColumn' title='Indexed'>entity_type_id</td>
- <td class='detail'>bigint</td>
- <td class='detail' align='right'>19</td>
- <td class='detail' align='center' title='nullable'>&nbsp;&radic;&nbsp;</td>
- <td class='detail' align='center'></td>
- <td class='detail' align='right'>null</td>
- <td class='detail'></td>
- <td class='detail'>
-  <table border='0' width='100%' cellspacing='0' cellpadding='0'>
-   <tr class='relative odd' valign='top'>
-    <td class='relatedTable detail' title="country.entity_type_id refs entity_type.id via fk_country__entity_type"><a href='entity_type.html'>entity_type</a><span class='relatedKey'>.id</span>
-    </td>
-    <td class='constraint detail'>fk_country__entity_type<span title='Restrict delete:
- Parent cannot be deleted if children exist'>&nbsp;R</span></td>
-   </tr>
-  </table>
- </td>
- <td class='comment detail'>Идентификатор типа сущности: не используется</td>
 </tr>
 <tr class='even'>
  <td class='indexedColumn' title='Indexed'>start_date</td>
@@ -249,7 +229,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='comment detail'>Внешний идентификатор импорта записи</td>
 </tr>
 </table>
-<p title='10 columns'>Table contained 2 rows at Ср июн 22 19:31 NOVST 2011<p/>
+<p title='9 columns'>Table contained 2 rows at Ср окт 24 03:49 GMT+07:00 2012<p/>
 </td></tr></table>
 <div class='indent'>
 <b>Indexes:</b>
@@ -276,13 +256,6 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
   <td class='detail'>Performance</td>
   <td class='detail' style='text-align:left;'><span title='Ascending'>Asc</span></td>
   <td class='constraint' style='text-align:left;'>key_end_date</td>
-  <td>&nbsp;</td>
- </tr>
- <tr>
-  <td class='indexedColumn'>entity_type_id</td>
-  <td class='detail'>Performance</td>
-  <td class='detail' style='text-align:left;'><span title='Ascending'>Asc</span></td>
-  <td class='constraint' style='text-align:left;'>key_entity_type_id</td>
   <td>&nbsp;</td>
  </tr>
  <tr>
@@ -347,36 +320,36 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 <br><form action='get'><b>Close relationships</b><span class='degrees' id='degrees' title='Detail diminishes with increased separation from country'>
 &nbsp;within <label for='oneDegree'><input type='radio' name='degrees' id='oneDegree' checked>one</label>  <label for='twoDegrees'><input type='radio' name='degrees' id='twoDegrees'>two degrees</label> of separation</span><b>:</b></form>
 <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="country.html" title="country" alt="" coords="430,25,671,314">
-<area shape="rect" id="node3" href="entity_type.html" title="entity_type" alt="" coords="213,119,385,289">
-<area shape="rect" id="node5" href="entity.html" title="entity" alt="" coords="6,97,167,245">
-<area shape="rect" id="node7" href="permission.html" title="permission" alt="" coords="229,307,368,477">
-<area shape="rect" id="node8" href="country_attribute.html" title="country_attribute" alt="" coords="717,5,873,267">
+<area shape="rect" id="node1" href="country.html" title="country" alt="" coords="213,25,454,292">
+<area shape="rect" id="node3" href="entity.html" title="entity" alt="" coords="6,47,167,195">
+<area shape="rect" id="node5" href="permission.html" title="permission" alt="" coords="17,213,156,384">
+<area shape="rect" id="node6" href="country_attribute.html" title="country_attribute" alt="" coords="499,5,655,267">
 </map>
   <a name='diagram'><img id='oneDegreeImg' src='../diagrams/country.1degree.png' usemap='#oneDegreeRelationshipsDiagram' class='diagram' border='0' alt='' align='left'></a>
 <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="apartment.html" title="apartment" alt="" coords="685,589,819,669">
-<area shape="rect" id="node3" href="entity_type.html" title="entity_type" alt="" coords="411,712,583,883">
-<area shape="rect" id="node5" href="entity.html" title="entity" alt="" coords="202,734,363,882">
-<area shape="rect" id="node7" href="permission.html" title="permission" alt="" coords="428,900,567,1071">
-<area shape="rect" id="node39" href="string_culture.html" title="string_culture" alt="" coords="6,868,157,948">
-<area shape="rect" id="node8" href="building.html" title="building" alt="" coords="685,995,819,1075">
-<area shape="rect" id="node12" href="building_address.html" title="building_address" alt="" coords="674,1092,830,1172">
-<area shape="rect" id="node16" href="city.html" title="city" alt="" coords="685,1287,819,1367">
-<area shape="rect" id="node20" href="city_type.html" title="city_type" alt="" coords="685,1481,819,1561">
-<area shape="rect" id="node24" href="country.html" title="country" alt="" coords="631,687,873,977">
-<area shape="rect" id="node28" href="country_attribute.html" title="country_attribute" alt="" coords="918,1577,1074,1839">
-<area shape="rect" id="node30" href="entity_attribute_type.html" title="entity_attribute_type" alt="" coords="409,1605,586,1685">
-<area shape="rect" id="node33" href="entity_attribute_value_type.html" title="entity_attribute_value_type" alt="" coords="650,1712,854,1792">
-<area shape="rect" id="node34" href="district.html" title="district" alt="" coords="685,1579,819,1659">
-<area shape="rect" id="node45" href="organization.html" title="organization" alt="" coords="681,5,823,85">
-<area shape="rect" id="node49" href="ownership.html" title="ownership" alt="" coords="685,1189,819,1269">
-<area shape="rect" id="node53" href="privilege.html" title="privilege" alt="" coords="677,200,827,280">
-<area shape="rect" id="node57" href="region.html" title="region" alt="" coords="685,297,819,377">
-<area shape="rect" id="node61" href="room.html" title="room" alt="" coords="685,1384,819,1464">
-<area shape="rect" id="node65" href="street.html" title="street" alt="" coords="685,395,819,475">
-<area shape="rect" id="node69" href="street_type.html" title="street_type" alt="" coords="681,492,823,572">
-<area shape="rect" id="node73" href="user_info.html" title="user_info" alt="" coords="685,103,819,183">
+<area shape="rect" id="node1" href="apartment.html" title="apartment" alt="" coords="470,1621,605,1701">
+<area shape="rect" id="node3" href="entity.html" title="entity" alt="" coords="210,993,371,1141">
+<area shape="rect" id="node5" href="permission.html" title="permission" alt="" coords="221,1159,360,1329">
+<area shape="rect" id="node31" href="string_culture.html" title="string_culture" alt="" coords="6,757,165,837">
+<area shape="rect" id="node6" href="building.html" title="building" alt="" coords="470,1719,605,1799">
+<area shape="rect" id="node9" href="building_address.html" title="building_address" alt="" coords="459,1816,615,1896">
+<area shape="rect" id="node12" href="city.html" title="city" alt="" coords="470,1913,605,1993">
+<area shape="rect" id="node15" href="city_type.html" title="city_type" alt="" coords="470,169,605,249">
+<area shape="rect" id="node18" href="country.html" title="country" alt="" coords="417,364,658,631">
+<area shape="rect" id="node21" href="country_attribute.html" title="country_attribute" alt="" coords="953,5,1109,267">
+<area shape="rect" id="node23" href="entity_attribute_type.html" title="entity_attribute_type" alt="" coords="449,72,626,152">
+<area shape="rect" id="node26" href="entity_attribute_value_type.html" title="entity_attribute_value_type" alt="" coords="703,140,907,220">
+<area shape="rect" id="node27" href="district.html" title="district" alt="" coords="470,267,605,347">
+<area shape="rect" id="node35" href="organization.html" title="organization" alt="" coords="466,745,609,825">
+<area shape="rect" id="node38" href="organization_type.html" title="organization_type" alt="" coords="458,648,617,728">
+<area shape="rect" id="node41" href="ownership.html" title="ownership" alt="" coords="470,843,605,923">
+<area shape="rect" id="node44" href="privilege.html" title="privilege" alt="" coords="462,940,613,1020">
+<area shape="rect" id="node47" href="region.html" title="region" alt="" coords="470,1135,605,1215">
+<area shape="rect" id="node50" href="room.html" title="room" alt="" coords="470,1037,605,1117">
+<area shape="rect" id="node53" href="service_provider_type.html" title="service_provider_type" alt="" coords="449,1232,626,1312">
+<area shape="rect" id="node56" href="street.html" title="street" alt="" coords="470,1329,605,1409">
+<area shape="rect" id="node59" href="street_type.html" title="street_type" alt="" coords="466,1524,609,1604">
+<area shape="rect" id="node62" href="user_info.html" title="user_info" alt="" coords="470,1427,605,1507">
 </map>
 
   <a name='diagram'><img id='twoDegreesImg' src='../diagrams/country.2degrees.png' usemap='#twoDegreesRelationshipsDiagram' class='diagram' border='0' alt='' align='left'></a>

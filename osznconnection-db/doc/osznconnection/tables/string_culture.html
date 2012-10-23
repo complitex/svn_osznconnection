@@ -102,7 +102,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 </tr>
 </thead>
 <tbody valign='top'>
-<tr class='even'>
+<tr class='odd'>
  <td class='primaryKey' title='Primary Key'>pk_id</td>
  <td class='detail'>bigint</td>
  <td class='detail' align='right'>19</td>
@@ -113,7 +113,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Суррогатный ключ</td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='indexedColumn' title='Indexed'>id</td>
  <td class='detail'>bigint</td>
  <td class='detail' align='right'>19</td>
@@ -122,22 +122,16 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'></td>
  <td class='detail'>
   <table border='0' width='100%' cellspacing='0' cellpadding='0'>
-   <tr class='relative odd' valign='top'>
+   <tr class='relative even' valign='top'>
     <td class='relatedTable detail' title="entity.entity_name_id refs string_culture.id via fk_entity__string_culture"><a href='entity.html'>entity</a><span class='relatedKey'>.entity_name_id</span>
     </td>
     <td class='constraint detail'>fk_entity__string_culture<span title='Restrict delete:
  Parent cannot be deleted if children exist'>&nbsp;R</span></td>
    </tr>
-   <tr class='relative odd' valign='top'>
+   <tr class='relative even' valign='top'>
     <td class='relatedTable detail' title="entity_attribute_type.attribute_type_name_id refs string_culture.id via fk_entity_attribute_type__string_culture"><a href='entity_attribute_type.html'>entity_attribute_type</a><span class='relatedKey'>.attribute_type_name_id</span>
     </td>
     <td class='constraint detail'>fk_entity_attribute_type__string_culture<span title='Restrict delete:
- Parent cannot be deleted if children exist'>&nbsp;R</span></td>
-   </tr>
-   <tr class='relative odd' valign='top'>
-    <td class='relatedTable detail' title="entity_type.entity_type_name_id refs string_culture.id via fk_entity_type__string_culture"><a href='entity_type.html'>entity_type</a><span class='relatedKey'>.entity_type_name_id</span>
-    </td>
-    <td class='constraint detail'>fk_entity_type__string_culture<span title='Restrict delete:
  Parent cannot be deleted if children exist'>&nbsp;R</span></td>
    </tr>
   </table>
@@ -145,7 +139,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Идентификатор локализации</td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='indexedColumn' title='Indexed'>locale_id</td>
  <td class='detail'>bigint</td>
  <td class='detail' align='right'>19</td>
@@ -155,7 +149,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'></td>
  <td class='detail'>
   <table border='0' width='100%' cellspacing='0' cellpadding='0'>
-   <tr class='relative even' valign='top'>
+   <tr class='relative odd' valign='top'>
     <td class='relatedTable detail' title="string_culture.locale_id refs locales.id via fk_string_culture__locales"><a href='locales.html'>locales</a><span class='relatedKey'>.id</span>
     </td>
     <td class='constraint detail'>fk_string_culture__locales<span title='Restrict delete:
@@ -165,7 +159,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  </td>
  <td class='comment detail'>Идентификатор локали</td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='indexedColumn' title='Indexed'>value</td>
  <td class='detail'>varchar</td>
  <td class='detail' align='right'>1000</td>
@@ -177,7 +171,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='comment detail'>Текстовое значение</td>
 </tr>
 </table>
-<p title='4 columns'>Table contained 96 rows at Ср июн 22 19:31 NOVST 2011<p/>
+<p title='4 columns'>Table contained 130 rows at Ср окт 24 03:49 GMT+07:00 2012<p/>
 </td></tr></table>
 <div class='indent'>
 <b>Indexes:</b>
@@ -221,65 +215,69 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 <br><form action='get'><b>Close relationships</b><span class='degrees' id='degrees' title='Detail diminishes with increased separation from string_culture'>
 &nbsp;within <label for='oneDegree'><input type='radio' name='degrees' id='oneDegree' checked>one</label>  <label for='twoDegrees'><input type='radio' name='degrees' id='twoDegrees'>two degrees</label> of separation</span><b>:</b></form>
 <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="entity.html" title="entity" alt="" coords="449,145,610,293">
-<area shape="rect" id="node3" href="string_culture.html" title="string_culture" alt="" coords="183,166,403,319">
-<area shape="rect" id="node11" href="locales.html" title="locales" alt="" coords="5,216,139,341">
-<area shape="rect" id="node4" href="entity_attribute_type.html" title="entity_attribute_type" alt="" coords="655,5,846,221">
-<area shape="rect" id="node7" href="entity_type.html" title="entity_type" alt="" coords="665,239,837,409">
+<area shape="rect" id="node1" href="entity.html" title="entity" alt="" coords="457,5,618,153">
+<area shape="rect" id="node3" href="string_culture.html" title="string_culture" alt="" coords="183,70,411,223">
+<area shape="rect" id="node8" href="locales.html" title="locales" alt="" coords="5,120,139,245">
+<area shape="rect" id="node4" href="entity_attribute_type.html" title="entity_attribute_type" alt="" coords="663,27,854,243">
 </map>
   <a name='diagram'><img id='oneDegreeImg' src='../diagrams/string_culture.1degree.png' usemap='#oneDegreeRelationshipsDiagram' class='diagram' border='0' alt='' align='left'></a>
 <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="apartment.html" title="apartment" alt="" coords="945,200,1079,280">
-<area shape="rect" id="node3" href="entity_type.html" title="entity_type" alt="" coords="683,717,855,888">
-<area shape="rect" id="node5" href="entity.html" title="entity" alt="" coords="467,874,629,1022">
-<area shape="rect" id="node70" href="string_culture.html" title="string_culture" alt="" coords="193,895,413,1049">
-<area shape="rect" id="node6" href="apartment_attribute.html" title="apartment_attribute" alt="" coords="1177,631,1343,711">
-<area shape="rect" id="node8" href="entity_attribute_type.html" title="entity_attribute_type" alt="" coords="674,969,865,1185">
-<area shape="rect" id="node11" href="entity_attribute_value_type.html" title="entity_attribute_value_type" alt="" coords="910,1036,1114,1116">
-<area shape="rect" id="node12" href="apartment_string_culture.html" title="apartment_string_culture" alt="" coords="205,213,400,293">
-<area shape="rect" id="node14" href="locales.html" title="locales" alt="" coords="5,1007,139,1132">
-<area shape="rect" id="node15" href="building.html" title="building" alt="" coords="945,297,1079,377">
-<area shape="rect" id="node18" href="building_address.html" title="building_address" alt="" coords="934,395,1090,475">
-<area shape="rect" id="node21" href="building_address_attribute.html" title="building_address_attribute" alt="" coords="1159,825,1361,905">
-<area shape="rect" id="node25" href="building_address_string_culture.html" title="building_address_string_culture" alt="" coords="183,311,422,391">
-<area shape="rect" id="node27" href="building_attribute.html" title="building_attribute" alt="" coords="1182,728,1338,808">
-<area shape="rect" id="node31" href="building_string_culture.html" title="building_string_culture" alt="" coords="213,408,393,488">
-<area shape="rect" id="node33" href="city.html" title="city" alt="" coords="945,492,1079,572">
-<area shape="rect" id="node36" href="city_attribute.html" title="city_attribute" alt="" coords="1191,923,1329,1003">
-<area shape="rect" id="node40" href="city_string_culture.html" title="city_string_culture" alt="" coords="222,505,383,585">
-<area shape="rect" id="node42" href="city_type.html" title="city_type" alt="" coords="945,589,1079,669">
-<area shape="rect" id="node45" href="city_type_attribute.html" title="city_type_attribute" alt="" coords="1179,1020,1341,1100">
-<area shape="rect" id="node49" href="city_type_string_culture.html" title="city_type_string_culture" alt="" coords="209,603,396,683">
-<area shape="rect" id="node51" href="country.html" title="country" alt="" coords="945,687,1079,767">
-<area shape="rect" id="node54" href="country_attribute.html" title="country_attribute" alt="" coords="1182,1117,1338,1197">
-<area shape="rect" id="node58" href="country_string_culture.html" title="country_string_culture" alt="" coords="213,700,393,780">
-<area shape="rect" id="node60" href="district.html" title="district" alt="" coords="945,1169,1079,1249">
-<area shape="rect" id="node63" href="district_attribute.html" title="district_attribute" alt="" coords="1185,1215,1335,1295">
-<area shape="rect" id="node67" href="district_string_culture.html" title="district_string_culture" alt="" coords="215,797,390,877">
-<area shape="rect" id="node76" href="organization.html" title="organization" alt="" coords="941,1303,1083,1383">
-<area shape="rect" id="node79" href="organization_attribute.html" title="organization_attribute" alt="" coords="1169,1312,1351,1392">
-<area shape="rect" id="node83" href="organization_string_culture.html" title="organization_string_culture" alt="" coords="199,1067,406,1147">
-<area shape="rect" id="node85" href="ownership.html" title="ownership" alt="" coords="945,1703,1079,1783">
-<area shape="rect" id="node88" href="ownership_attribute.html" title="ownership_attribute" alt="" coords="1177,1703,1343,1783">
-<area shape="rect" id="node92" href="ownership_string_culture.html" title="ownership_string_culture" alt="" coords="203,1164,402,1244">
-<area shape="rect" id="node94" href="privilege.html" title="privilege" alt="" coords="937,1836,1087,1916">
-<area shape="rect" id="node97" href="privilege_attribute.html" title="privilege_attribute" alt="" coords="1173,1836,1347,1916">
-<area shape="rect" id="node101" href="privilege_string_culture.html" title="privilege_string_culture" alt="" coords="203,1261,402,1341">
-<area shape="rect" id="node103" href="region.html" title="region" alt="" coords="945,1969,1079,2049">
-<area shape="rect" id="node106" href="region_attribute.html" title="region_attribute" alt="" coords="1185,1969,1335,2049">
-<area shape="rect" id="node110" href="region_string_culture.html" title="region_string_culture" alt="" coords="215,1359,390,1439">
-<area shape="rect" id="node112" href="room.html" title="room" alt="" coords="945,5,1079,85">
-<area shape="rect" id="node115" href="room_attribute.html" title="room_attribute" alt="" coords="1187,436,1333,516">
-<area shape="rect" id="node119" href="room_string_culture.html" title="room_string_culture" alt="" coords="218,1456,387,1536">
-<area shape="rect" id="node121" href="street.html" title="street" alt="" coords="945,1436,1079,1516">
-<area shape="rect" id="node124" href="street_attribute.html" title="street_attribute" alt="" coords="1182,1436,1338,1516">
-<area shape="rect" id="node128" href="street_string_culture.html" title="street_string_culture" alt="" coords="217,1553,389,1633">
-<area shape="rect" id="node130" href="street_type.html" title="street_type" alt="" coords="941,103,1083,183">
-<area shape="rect" id="node133" href="street_type_attribute.html" title="street_type_attribute" alt="" coords="1170,533,1350,613">
-<area shape="rect" id="node137" href="street_type_string_culture.html" title="street_type_string_culture" alt="" coords="201,1651,405,1731">
-<area shape="rect" id="node140" href="user_info.html" title="user_info" alt="" coords="945,1569,1079,1649">
-<area shape="rect" id="node143" href="user_info_attribute.html" title="user_info_attribute" alt="" coords="1178,1569,1342,1649">
-<area shape="rect" id="node147" href="user_info_string_culture.html" title="user_info_string_culture" alt="" coords="207,1748,398,1828">
+<area shape="rect" id="node1" href="apartment.html" title="apartment" alt="" coords="734,1164,869,1244">
+<area shape="rect" id="node3" href="entity.html" title="entity" alt="" coords="499,1595,661,1743">
+<area shape="rect" id="node62" href="string_culture.html" title="string_culture" alt="" coords="205,1661,433,1814">
+<area shape="rect" id="node4" href="apartment_attribute.html" title="apartment_attribute" alt="" coords="1225,1009,1391,1089">
+<area shape="rect" id="node6" href="entity_attribute_type.html" title="entity_attribute_type" alt="" coords="706,1661,897,1877">
+<area shape="rect" id="node9" href="entity_attribute_value_type.html" title="entity_attribute_value_type" alt="" coords="942,1689,1146,1769">
+<area shape="rect" id="node10" href="apartment_string_culture.html" title="apartment_string_culture" alt="" coords="221,5,416,85">
+<area shape="rect" id="node12" href="locales.html" title="locales" alt="" coords="5,835,139,960">
+<area shape="rect" id="node13" href="building.html" title="building" alt="" coords="734,1431,869,1511">
+<area shape="rect" id="node15" href="building_address.html" title="building_address" alt="" coords="723,1297,879,1377">
+<area shape="rect" id="node17" href="building_address_attribute.html" title="building_address_attribute" alt="" coords="1207,1209,1409,1289">
+<area shape="rect" id="node21" href="building_address_string_culture.html" title="building_address_string_culture" alt="" coords="199,103,438,183">
+<area shape="rect" id="node23" href="building_attribute.html" title="building_attribute" alt="" coords="1230,1404,1386,1484">
+<area shape="rect" id="node27" href="building_string_culture.html" title="building_string_culture" alt="" coords="229,200,409,280">
+<area shape="rect" id="node29" href="city.html" title="city" alt="" coords="734,1528,869,1608">
+<area shape="rect" id="node31" href="city_attribute.html" title="city_attribute" alt="" coords="1239,1501,1377,1581">
+<area shape="rect" id="node35" href="city_string_culture.html" title="city_string_culture" alt="" coords="238,297,399,377">
+<area shape="rect" id="node37" href="city_type.html" title="city_type" alt="" coords="734,1933,869,2013">
+<area shape="rect" id="node39" href="city_type_attribute.html" title="city_type_attribute" alt="" coords="1227,1899,1389,1979">
+<area shape="rect" id="node43" href="city_type_string_culture.html" title="city_type_string_culture" alt="" coords="225,395,412,475">
+<area shape="rect" id="node45" href="country.html" title="country" alt="" coords="734,2032,869,2112">
+<area shape="rect" id="node47" href="country_attribute.html" title="country_attribute" alt="" coords="1230,1996,1386,2076">
+<area shape="rect" id="node51" href="country_string_culture.html" title="country_string_culture" alt="" coords="229,492,409,572">
+<area shape="rect" id="node53" href="district.html" title="district" alt="" coords="734,2221,869,2301">
+<area shape="rect" id="node55" href="district_attribute.html" title="district_attribute" alt="" coords="1233,2196,1383,2276">
+<area shape="rect" id="node59" href="district_string_culture.html" title="district_string_culture" alt="" coords="231,589,406,669">
+<area shape="rect" id="node66" href="organization.html" title="organization" alt="" coords="730,2427,873,2507">
+<area shape="rect" id="node68" href="organization_attribute.html" title="organization_attribute" alt="" coords="1217,2399,1399,2479">
+<area shape="rect" id="node72" href="organization_string_culture.html" title="organization_string_culture" alt="" coords="215,687,422,767">
+<area shape="rect" id="node74" href="organization_type.html" title="organization_type" alt="" coords="965,868,1123,948">
+<area shape="rect" id="node76" href="organization_type_attribute.html" title="organization_type_attribute" alt="" coords="1205,912,1411,992">
+<area shape="rect" id="node80" href="organization_type_string_culture.html" title="organization_type_string_culture" alt="" coords="197,784,440,864">
+<area shape="rect" id="node82" href="ownership.html" title="ownership" alt="" coords="977,1073,1111,1153">
+<area shape="rect" id="node84" href="ownership_attribute.html" title="ownership_attribute" alt="" coords="1225,1112,1391,1192">
+<area shape="rect" id="node88" href="ownership_string_culture.html" title="ownership_string_culture" alt="" coords="219,881,418,961">
+<area shape="rect" id="node90" href="privilege.html" title="privilege" alt="" coords="969,1592,1119,1672">
+<area shape="rect" id="node92" href="privilege_attribute.html" title="privilege_attribute" alt="" coords="1221,1599,1395,1679">
+<area shape="rect" id="node96" href="privilege_string_culture.html" title="privilege_string_culture" alt="" coords="219,979,418,1059">
+<area shape="rect" id="node98" href="region.html" title="region" alt="" coords="977,2136,1111,2216">
+<area shape="rect" id="node100" href="region_attribute.html" title="region_attribute" alt="" coords="1233,2093,1383,2173">
+<area shape="rect" id="node104" href="region_string_culture.html" title="region_string_culture" alt="" coords="231,1076,406,1156">
+<area shape="rect" id="node106" href="room.html" title="room" alt="" coords="977,2547,1111,2627">
+<area shape="rect" id="node108" href="room_attribute.html" title="room_attribute" alt="" coords="1235,2496,1381,2576">
+<area shape="rect" id="node112" href="room_string_culture.html" title="room_string_culture" alt="" coords="234,1173,403,1253">
+<area shape="rect" id="node114" href="service_provider_type.html" title="service_provider_type" alt="" coords="713,1031,890,1111">
+<area shape="rect" id="node116" href="service_provider_type_attribute.html" title="service_provider_type_attribute" alt="" coords="1191,1696,1425,1776">
+<area shape="rect" id="node120" href="service_provider_type_string_culture.html" title="service_provider_type_string_culture" alt="" coords="183,1271,454,1351">
+<area shape="rect" id="node122" href="street.html" title="street" alt="" coords="977,1859,1111,1939">
+<area shape="rect" id="node124" href="street_attribute.html" title="street_attribute" alt="" coords="1230,1793,1386,1873">
+<area shape="rect" id="node128" href="street_string_culture.html" title="street_string_culture" alt="" coords="233,1368,405,1448">
+<area shape="rect" id="node130" href="street_type.html" title="street_type" alt="" coords="973,1279,1115,1359">
+<area shape="rect" id="node132" href="street_type_attribute.html" title="street_type_attribute" alt="" coords="1218,1307,1398,1387">
+<area shape="rect" id="node136" href="street_type_string_culture.html" title="street_type_string_culture" alt="" coords="217,1465,421,1545">
+<area shape="rect" id="node139" href="user_info.html" title="user_info" alt="" coords="977,2341,1111,2421">
+<area shape="rect" id="node141" href="user_info_attribute.html" title="user_info_attribute" alt="" coords="1222,2293,1394,2373">
+<area shape="rect" id="node145" href="user_info_string_culture.html" title="user_info_string_culture" alt="" coords="223,1563,414,1643">
 </map>
 
   <a name='diagram'><img id='twoDegreesImg' src='../diagrams/string_culture.2degrees.png' usemap='#twoDegreesRelationshipsDiagram' class='diagram' border='0' alt='' align='left'></a>

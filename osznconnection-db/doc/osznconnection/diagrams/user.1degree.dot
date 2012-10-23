@@ -38,7 +38,7 @@ digraph "oneDegreeRelationshipsDiagram" {
       <TR><TD PORT="event" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">event</TD></TR>
       <TR><TD PORT="status" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">status</TD></TR>
       <TR><TD PORT="description" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">description</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">0 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">38 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 &gt;</TD></TR>
     </TABLE>>
     URL="log.html"
     tooltip="log"
@@ -49,10 +49,10 @@ digraph "oneDegreeRelationshipsDiagram" {
       <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">preference</TD></TR>
       <TR><TD PORT="id" COLSPAN="3" BGCOLOR="#bed1b8" ALIGN="LEFT">id</TD></TR>
       <TR><TD PORT="user_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">user_id</TD></TR>
-      <TR><TD PORT="page" COLSPAN="3" ALIGN="LEFT">page</TD></TR>
-      <TR><TD PORT="key" COLSPAN="3" ALIGN="LEFT">key</TD></TR>
+      <TR><TD PORT="page" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">page</TD></TR>
+      <TR><TD PORT="key" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">key</TD></TR>
       <TR><TD PORT="value" COLSPAN="3" ALIGN="LEFT">value</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">0 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">17 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
     </TABLE>>
     URL="preference.html"
     tooltip="preference"
@@ -65,7 +65,7 @@ digraph "oneDegreeRelationshipsDiagram" {
       <TR><TD PORT="login" COLSPAN="2" BGCOLOR="#f4f7da" ALIGN="LEFT">login</TD><TD PORT="login.type" ALIGN="LEFT">varchar[45]</TD></TR>
       <TR><TD PORT="password" COLSPAN="2" ALIGN="LEFT">password</TD><TD PORT="password.type" ALIGN="LEFT">varchar[45]</TD></TR>
       <TR><TD PORT="user_info_object_id" COLSPAN="2" BGCOLOR="#f4f7da" ALIGN="LEFT">user_info_object_id</TD><TD PORT="user_info_object_id.type" ALIGN="LEFT">bigint[19]</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">2 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">4 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">5 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">4 &gt;</TD></TR>
     </TABLE>>
     URL="user.html"
     tooltip="user"
@@ -78,13 +78,12 @@ digraph "oneDegreeRelationshipsDiagram" {
       <TR><TD PORT="object_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">object_id</TD></TR>
       <TR><TD PORT="parent_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_id</TD></TR>
       <TR><TD PORT="parent_entity_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_entity_id</TD></TR>
-      <TR><TD PORT="entity_type_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">entity_type_id</TD></TR>
       <TR><TD PORT="start_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">start_date</TD></TR>
       <TR><TD PORT="end_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">end_date</TD></TR>
       <TR><TD PORT="status" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">status</TD></TR>
       <TR><TD PORT="permission_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">permission_id</TD></TR>
       <TR><TD PORT="external_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">external_id</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">0 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">2 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">5 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">2 &gt;</TD></TR>
     </TABLE>>
     URL="user_info.html"
     tooltip="user_info"
@@ -97,7 +96,7 @@ digraph "oneDegreeRelationshipsDiagram" {
       <TR><TD PORT="user_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">user_id</TD></TR>
       <TR><TD PORT="organization_object_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">organization_object_id</TD></TR>
       <TR><TD PORT="main" COLSPAN="3" ALIGN="LEFT">main</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">0 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">3 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
     </TABLE>>
     URL="user_organization.html"
     tooltip="user_organization"
@@ -109,7 +108,7 @@ digraph "oneDegreeRelationshipsDiagram" {
       <TR><TD PORT="id" COLSPAN="3" BGCOLOR="#bed1b8" ALIGN="LEFT">id</TD></TR>
       <TR><TD PORT="login" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">login</TD></TR>
       <TR><TD PORT="group_name" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">group_name</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">3 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">6 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
     </TABLE>>
     URL="usergroup.html"
     tooltip="usergroup"

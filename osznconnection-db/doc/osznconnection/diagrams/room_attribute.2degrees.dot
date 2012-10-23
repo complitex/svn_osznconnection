@@ -37,22 +37,23 @@ digraph "twoDegreesRelationshipsDiagram" {
   "entity_attribute_type":"attribute_type_name_id":w -> "string_culture":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "entity_attribute_type":"entity_id":w -> "entity":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "entity_attribute_value_type":"attribute_type_id":w -> "entity_attribute_type":"id":e [arrowhead=none dir=back arrowtail=crowodot];
-  "entity_type":"elipses":w -> "entity":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
-  "entity_type":"elipses":w -> "string_culture":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "organization_attribute":"elipses":w -> "entity_attribute_type":"id":e [arrowhead=none dir=back arrowtail=crowodot];
   "organization_attribute":"elipses":w -> "entity_attribute_value_type":"id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "organization_type_attribute":"elipses":w -> "entity_attribute_type":"id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "organization_type_attribute":"elipses":w -> "entity_attribute_value_type":"id":e [arrowhead=none dir=back arrowtail=crowodot];
   "ownership_attribute":"elipses":w -> "entity_attribute_type":"id":e [arrowhead=none dir=back arrowtail=crowodot];
   "ownership_attribute":"elipses":w -> "entity_attribute_value_type":"id":e [arrowhead=none dir=back arrowtail=crowodot];
   "privilege_attribute":"elipses":w -> "entity_attribute_type":"id":e [arrowhead=none dir=back arrowtail=crowodot];
   "privilege_attribute":"elipses":w -> "entity_attribute_value_type":"id":e [arrowhead=none dir=back arrowtail=crowodot];
   "region_attribute":"elipses":w -> "entity_attribute_type":"id":e [arrowhead=none dir=back arrowtail=crowodot];
   "region_attribute":"elipses":w -> "entity_attribute_value_type":"id":e [arrowhead=none dir=back arrowtail=crowodot];
-  "room":"entity_type_id":w -> "entity_type":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "room":"parent_entity_id":w -> "entity":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "room":"permission_id":w -> "permission":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "room_attribute":"attribute_type_id":w -> "entity_attribute_type":"id":e [arrowhead=none dir=back arrowtail=crowodot];
   "room_attribute":"object_id":w -> "room":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "room_attribute":"value_type_id":w -> "entity_attribute_value_type":"id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "service_provider_type_attribute":"elipses":w -> "entity_attribute_type":"id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "service_provider_type_attribute":"elipses":w -> "entity_attribute_value_type":"id":e [arrowhead=none dir=back arrowtail=crowodot];
   "street_attribute":"elipses":w -> "entity_attribute_type":"id":e [arrowhead=none dir=back arrowtail=crowodot];
   "street_attribute":"elipses":w -> "entity_attribute_value_type":"id":e [arrowhead=none dir=back arrowtail=crowodot];
   "street_type_attribute":"elipses":w -> "entity_attribute_type":"id":e [arrowhead=none dir=back arrowtail=crowodot];
@@ -134,7 +135,7 @@ digraph "twoDegreesRelationshipsDiagram" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">entity</TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">15 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">17 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">17 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">18 &gt;</TD></TR>
     </TABLE>>
     URL="entity.html"
     tooltip="entity"
@@ -150,7 +151,7 @@ digraph "twoDegreesRelationshipsDiagram" {
       <TR><TD PORT="start_date" COLSPAN="3" ALIGN="LEFT">start_date</TD></TR>
       <TR><TD PORT="end_date" COLSPAN="3" ALIGN="LEFT">end_date</TD></TR>
       <TR><TD PORT="system" COLSPAN="3" ALIGN="LEFT">system</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">30 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">16 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">48 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">18 &gt;</TD></TR>
     </TABLE>>
     URL="entity_attribute_type.html"
     tooltip="entity_attribute_type"
@@ -162,30 +163,30 @@ digraph "twoDegreesRelationshipsDiagram" {
       <TR><TD PORT="id" COLSPAN="3" BGCOLOR="#bed1b8" ALIGN="LEFT">id</TD></TR>
       <TR><TD PORT="attribute_type_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">attribute_type_id</TD></TR>
       <TR><TD PORT="attribute_value_type" COLSPAN="3" ALIGN="LEFT">attribute_value_type</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">30 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">15 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">48 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">17 &gt;</TD></TR>
     </TABLE>>
     URL="entity_attribute_value_type.html"
     tooltip="entity_attribute_value_type"
-  ];
-  "entity_type" [
-    label=<
-    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
-      <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">entity_type</TD></TR>
-      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">3 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">15 &gt;</TD></TR>
-    </TABLE>>
-    URL="entity_type.html"
-    tooltip="entity_type"
   ];
   "organization_attribute" [
     label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">organization_attribute</TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">13 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">35 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
     </TABLE>>
     URL="organization_attribute.html"
     tooltip="organization_attribute"
+  ];
+  "organization_type_attribute" [
+    label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">organization_type_attribute</TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">3 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
+    </TABLE>>
+    URL="organization_type_attribute.html"
+    tooltip="organization_type_attribute"
   ];
   "ownership_attribute" [
     label=<
@@ -202,7 +203,7 @@ digraph "twoDegreesRelationshipsDiagram" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">permission</TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">  </TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 row</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">15 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">  </TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 row</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">17 &gt;</TD></TR>
     </TABLE>>
     URL="permission.html"
     tooltip="permission"
@@ -235,13 +236,12 @@ digraph "twoDegreesRelationshipsDiagram" {
       <TR><TD PORT="object_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">object_id</TD></TR>
       <TR><TD PORT="parent_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_id</TD></TR>
       <TR><TD PORT="parent_entity_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_entity_id</TD></TR>
-      <TR><TD PORT="entity_type_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">entity_type_id</TD></TR>
       <TR><TD PORT="start_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">start_date</TD></TR>
       <TR><TD PORT="end_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">end_date</TD></TR>
       <TR><TD PORT="status" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">status</TD></TR>
       <TR><TD PORT="permission_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">permission_id</TD></TR>
       <TR><TD PORT="external_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">external_id</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">4 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">4 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 &gt;</TD></TR>
     </TABLE>>
     URL="room.html"
     tooltip="room"
@@ -263,6 +263,16 @@ digraph "twoDegreesRelationshipsDiagram" {
     </TABLE>>
     URL="room_attribute.html"
     tooltip="room_attribute"
+  ];
+  "service_provider_type_attribute" [
+    label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">service_provider_type_attribute</TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">2 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
+    </TABLE>>
+    URL="service_provider_type_attribute.html"
+    tooltip="service_provider_type_attribute"
   ];
   "street_attribute" [
     label=<
@@ -289,7 +299,7 @@ digraph "twoDegreesRelationshipsDiagram" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">string_culture</TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">96 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">3 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">130 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">2 &gt;</TD></TR>
     </TABLE>>
     URL="string_culture.html"
     tooltip="string_culture"
@@ -299,7 +309,7 @@ digraph "twoDegreesRelationshipsDiagram" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">user_info_attribute</TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">0 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">15 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
     </TABLE>>
     URL="user_info_attribute.html"
     tooltip="user_info_attribute"

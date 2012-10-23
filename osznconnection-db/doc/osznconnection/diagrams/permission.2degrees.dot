@@ -24,14 +24,11 @@ digraph "twoDegreesRelationshipsDiagram" {
   "actual_payment":"elipses":w -> "street":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "actual_payment":"elipses":w -> "street_type":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "actual_payment":"elipses":w -> "request_file":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
-  "apartment":"entity_type_id":w -> "entity_type":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "apartment":"parent_entity_id":w -> "entity":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "apartment":"permission_id":w -> "permission":"permission_id.type":e [arrowhead=none dir=back arrowtail=crowodot];
   "apartment_attribute":"elipses":w -> "apartment":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
-  "building":"entity_type_id":w -> "entity_type":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "building":"parent_entity_id":w -> "entity":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "building":"permission_id":w -> "permission":"permission_id.type":e [arrowhead=none dir=back arrowtail=crowodot];
-  "building_address":"entity_type_id":w -> "entity_type":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "building_address":"parent_entity_id":w -> "entity":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "building_address":"permission_id":w -> "permission":"permission_id.type":e [arrowhead=none dir=back arrowtail=crowodot];
   "building_address_attribute":"elipses":w -> "building_address":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
@@ -40,25 +37,24 @@ digraph "twoDegreesRelationshipsDiagram" {
   "building_correction":"elipses":w -> "building":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "building_correction":"elipses":w -> "organization":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "building_correction":"elipses":w -> "street_correction":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
-  "city":"entity_type_id":w -> "entity_type":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "building_correction":"elipses":w -> "organization":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "city":"parent_entity_id":w -> "entity":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "city":"permission_id":w -> "permission":"permission_id.type":e [arrowhead=none dir=back arrowtail=crowodot];
   "city_attribute":"elipses":w -> "city":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "city_correction":"elipses":w -> "organization":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "city_correction":"elipses":w -> "city":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "city_correction":"elipses":w -> "organization":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
-  "city_type":"entity_type_id":w -> "entity_type":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "city_correction":"elipses":w -> "organization":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "city_type":"parent_entity_id":w -> "entity":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "city_type":"permission_id":w -> "permission":"permission_id.type":e [arrowhead=none dir=back arrowtail=crowodot];
   "city_type_attribute":"elipses":w -> "city_type":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "city_type_correction":"elipses":w -> "organization":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "city_type_correction":"elipses":w -> "city_type":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "city_type_correction":"elipses":w -> "organization":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
-  "country":"entity_type_id":w -> "entity_type":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "city_type_correction":"elipses":w -> "organization":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "country":"parent_entity_id":w -> "entity":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "country":"permission_id":w -> "permission":"permission_id.type":e [arrowhead=none dir=back arrowtail=crowodot];
   "country_attribute":"elipses":w -> "country":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
-  "district":"entity_type_id":w -> "entity_type":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "district":"parent_entity_id":w -> "entity":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "district":"permission_id":w -> "permission":"permission_id.type":e [arrowhead=none dir=back arrowtail=crowodot];
   "district_attribute":"elipses":w -> "district":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
@@ -66,17 +62,29 @@ digraph "twoDegreesRelationshipsDiagram" {
   "district_correction":"elipses":w -> "district":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "district_correction":"elipses":w -> "organization":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "district_correction":"elipses":w -> "city_correction":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
-  "entity_type":"elipses":w -> "entity":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
-  "organization":"entity_type_id":w -> "entity_type":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "district_correction":"elipses":w -> "organization":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "dwelling_characteristics":"elipses":w -> "building":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "dwelling_characteristics":"elipses":w -> "city":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "dwelling_characteristics":"elipses":w -> "street":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "dwelling_characteristics":"elipses":w -> "street_type":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "dwelling_characteristics":"elipses":w -> "request_file":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "facility_service_type":"elipses":w -> "building":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "facility_service_type":"elipses":w -> "city":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "facility_service_type":"elipses":w -> "street":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "facility_service_type":"elipses":w -> "street_type":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "facility_service_type":"elipses":w -> "request_file":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "organization":"parent_entity_id":w -> "entity":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "organization":"permission_id":w -> "permission":"permission_id.type":e [arrowhead=none dir=back arrowtail=crowodot];
   "organization_attribute":"elipses":w -> "organization":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
-  "ownership":"entity_type_id":w -> "entity_type":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "organization_type":"parent_entity_id":w -> "entity":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "organization_type":"permission_id":w -> "permission":"permission_id.type":e [arrowhead=none dir=back arrowtail=crowodot];
+  "organization_type_attribute":"elipses":w -> "organization_type":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "ownership":"parent_entity_id":w -> "entity":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "ownership":"permission_id":w -> "permission":"permission_id.type":e [arrowhead=none dir=back arrowtail=crowodot];
   "ownership_attribute":"elipses":w -> "ownership":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "ownership_correction":"elipses":w -> "organization":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "ownership_correction":"elipses":w -> "ownership":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "ownership_correction":"elipses":w -> "organization":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "ownership_correction":"elipses":w -> "organization":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "payment":"elipses":w -> "apartment":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "payment":"elipses":w -> "building":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
@@ -86,23 +94,27 @@ digraph "twoDegreesRelationshipsDiagram" {
   "payment":"elipses":w -> "request_file":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "person_account":"elipses":w -> "organization":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "person_account":"elipses":w -> "organization":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
-  "privilege":"entity_type_id":w -> "entity_type":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "person_account":"elipses":w -> "organization":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "privilege":"parent_entity_id":w -> "entity":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "privilege":"permission_id":w -> "permission":"permission_id.type":e [arrowhead=none dir=back arrowtail=crowodot];
   "privilege_attribute":"elipses":w -> "privilege":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "privilege_correction":"elipses":w -> "organization":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "privilege_correction":"elipses":w -> "privilege":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "privilege_correction":"elipses":w -> "organization":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
-  "region":"entity_type_id":w -> "entity_type":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "privilege_correction":"elipses":w -> "organization":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "region":"parent_entity_id":w -> "entity":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "region":"permission_id":w -> "permission":"permission_id.type":e [arrowhead=none dir=back arrowtail=crowodot];
   "region_attribute":"elipses":w -> "region":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "request_file":"elipses":w -> "organization":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
-  "room":"entity_type_id":w -> "entity_type":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "request_file":"elipses":w -> "organization":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "room":"parent_entity_id":w -> "entity":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "room":"permission_id":w -> "permission":"permission_id.type":e [arrowhead=none dir=back arrowtail=crowodot];
   "room_attribute":"elipses":w -> "room":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
-  "street":"entity_type_id":w -> "entity_type":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "service_association":"elipses":w -> "organization":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "service_association":"elipses":w -> "service_provider_type":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "service_provider_type":"parent_entity_id":w -> "entity":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "service_provider_type":"permission_id":w -> "permission":"permission_id.type":e [arrowhead=none dir=back arrowtail=crowodot];
+  "service_provider_type_attribute":"elipses":w -> "privilege":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "street":"parent_entity_id":w -> "entity":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "street":"permission_id":w -> "permission":"permission_id.type":e [arrowhead=none dir=back arrowtail=crowodot];
   "street_attribute":"elipses":w -> "street":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
@@ -111,15 +123,20 @@ digraph "twoDegreesRelationshipsDiagram" {
   "street_correction":"elipses":w -> "organization":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "street_correction":"elipses":w -> "city_correction":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "street_correction":"elipses":w -> "street_type_correction":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
-  "street_type":"entity_type_id":w -> "entity_type":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "street_correction":"elipses":w -> "organization":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "street_type":"parent_entity_id":w -> "entity":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "street_type":"permission_id":w -> "permission":"permission_id.type":e [arrowhead=none dir=back arrowtail=crowodot];
   "street_type_attribute":"elipses":w -> "street_type":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "street_type_correction":"elipses":w -> "organization":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "street_type_correction":"elipses":w -> "street_type":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "street_type_correction":"elipses":w -> "organization":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "street_type_correction":"elipses":w -> "organization":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "subsidy":"elipses":w -> "building":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "subsidy":"elipses":w -> "city":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "subsidy":"elipses":w -> "street":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "subsidy":"elipses":w -> "street_type":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "subsidy":"elipses":w -> "request_file":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "user":"elipses":w -> "user_info":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
-  "user_info":"entity_type_id":w -> "entity_type":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "user_info":"parent_entity_id":w -> "entity":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "user_info":"permission_id":w -> "permission":"permission_id.type":e [arrowhead=none dir=back arrowtail=crowodot];
   "user_info_attribute":"elipses":w -> "user_info":"object_id":e [arrowhead=none dir=back arrowtail=crowodot];
@@ -143,13 +160,12 @@ digraph "twoDegreesRelationshipsDiagram" {
       <TR><TD PORT="object_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">object_id</TD></TR>
       <TR><TD PORT="parent_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_id</TD></TR>
       <TR><TD PORT="parent_entity_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_entity_id</TD></TR>
-      <TR><TD PORT="entity_type_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">entity_type_id</TD></TR>
       <TR><TD PORT="start_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">start_date</TD></TR>
       <TR><TD PORT="end_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">end_date</TD></TR>
       <TR><TD PORT="status" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">status</TD></TR>
       <TR><TD PORT="permission_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">permission_id</TD></TR>
       <TR><TD PORT="external_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">external_id</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">4 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">2 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">4 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">2 &gt;</TD></TR>
     </TABLE>>
     URL="apartment.html"
     tooltip="apartment"
@@ -172,13 +188,12 @@ digraph "twoDegreesRelationshipsDiagram" {
       <TR><TD PORT="object_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">object_id</TD></TR>
       <TR><TD PORT="parent_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_id</TD></TR>
       <TR><TD PORT="parent_entity_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_entity_id</TD></TR>
-      <TR><TD PORT="entity_type_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">entity_type_id</TD></TR>
       <TR><TD PORT="start_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">start_date</TD></TR>
       <TR><TD PORT="end_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">end_date</TD></TR>
       <TR><TD PORT="status" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">status</TD></TR>
       <TR><TD PORT="permission_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">permission_id</TD></TR>
       <TR><TD PORT="external_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">external_id</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">8 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">4 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">8 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">7 &gt;</TD></TR>
     </TABLE>>
     URL="building.html"
     tooltip="building"
@@ -191,13 +206,12 @@ digraph "twoDegreesRelationshipsDiagram" {
       <TR><TD PORT="object_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">object_id</TD></TR>
       <TR><TD PORT="parent_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_id</TD></TR>
       <TR><TD PORT="parent_entity_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_entity_id</TD></TR>
-      <TR><TD PORT="entity_type_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">entity_type_id</TD></TR>
       <TR><TD PORT="start_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">start_date</TD></TR>
       <TR><TD PORT="end_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">end_date</TD></TR>
       <TR><TD PORT="status" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">status</TD></TR>
       <TR><TD PORT="permission_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">permission_id</TD></TR>
       <TR><TD PORT="external_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">external_id</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">9 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">9 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 &gt;</TD></TR>
     </TABLE>>
     URL="building_address.html"
     tooltip="building_address"
@@ -227,7 +241,7 @@ digraph "twoDegreesRelationshipsDiagram" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">building_correction</TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 4</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">4 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 5</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">4 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
     </TABLE>>
     URL="building_correction.html"
     tooltip="building_correction"
@@ -240,13 +254,12 @@ digraph "twoDegreesRelationshipsDiagram" {
       <TR><TD PORT="object_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">object_id</TD></TR>
       <TR><TD PORT="parent_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_id</TD></TR>
       <TR><TD PORT="parent_entity_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_entity_id</TD></TR>
-      <TR><TD PORT="entity_type_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">entity_type_id</TD></TR>
       <TR><TD PORT="start_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">start_date</TD></TR>
       <TR><TD PORT="end_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">end_date</TD></TR>
       <TR><TD PORT="status" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">status</TD></TR>
       <TR><TD PORT="permission_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">permission_id</TD></TR>
       <TR><TD PORT="external_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">external_id</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">3 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">4 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">3 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">7 &gt;</TD></TR>
     </TABLE>>
     URL="city.html"
     tooltip="city"
@@ -266,7 +279,7 @@ digraph "twoDegreesRelationshipsDiagram" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">city_correction</TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">2 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">2 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 4</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">2 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">2 &gt;</TD></TR>
     </TABLE>>
     URL="city_correction.html"
     tooltip="city_correction"
@@ -279,13 +292,12 @@ digraph "twoDegreesRelationshipsDiagram" {
       <TR><TD PORT="object_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">object_id</TD></TR>
       <TR><TD PORT="parent_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_id</TD></TR>
       <TR><TD PORT="parent_entity_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_entity_id</TD></TR>
-      <TR><TD PORT="entity_type_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">entity_type_id</TD></TR>
       <TR><TD PORT="start_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">start_date</TD></TR>
       <TR><TD PORT="end_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">end_date</TD></TR>
       <TR><TD PORT="status" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">status</TD></TR>
       <TR><TD PORT="permission_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">permission_id</TD></TR>
       <TR><TD PORT="external_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">external_id</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">2 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">2 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">2 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">2 &gt;</TD></TR>
     </TABLE>>
     URL="city_type.html"
     tooltip="city_type"
@@ -305,7 +317,7 @@ digraph "twoDegreesRelationshipsDiagram" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">city_type_correction</TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">0 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 4</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">0 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
     </TABLE>>
     URL="city_type_correction.html"
     tooltip="city_type_correction"
@@ -318,13 +330,12 @@ digraph "twoDegreesRelationshipsDiagram" {
       <TR><TD PORT="object_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">object_id</TD></TR>
       <TR><TD PORT="parent_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_id</TD></TR>
       <TR><TD PORT="parent_entity_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_entity_id</TD></TR>
-      <TR><TD PORT="entity_type_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">entity_type_id</TD></TR>
       <TR><TD PORT="start_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">start_date</TD></TR>
       <TR><TD PORT="end_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">end_date</TD></TR>
       <TR><TD PORT="status" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">status</TD></TR>
       <TR><TD PORT="permission_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">permission_id</TD></TR>
       <TR><TD PORT="external_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">external_id</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">2 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">2 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 &gt;</TD></TR>
     </TABLE>>
     URL="country.html"
     tooltip="country"
@@ -347,13 +358,12 @@ digraph "twoDegreesRelationshipsDiagram" {
       <TR><TD PORT="object_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">object_id</TD></TR>
       <TR><TD PORT="parent_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_id</TD></TR>
       <TR><TD PORT="parent_entity_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_entity_id</TD></TR>
-      <TR><TD PORT="entity_type_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">entity_type_id</TD></TR>
       <TR><TD PORT="start_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">start_date</TD></TR>
       <TR><TD PORT="end_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">end_date</TD></TR>
       <TR><TD PORT="status" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">status</TD></TR>
       <TR><TD PORT="permission_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">permission_id</TD></TR>
       <TR><TD PORT="external_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">external_id</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">4 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">2 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">4 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">2 &gt;</TD></TR>
     </TABLE>>
     URL="district.html"
     tooltip="district"
@@ -373,30 +383,40 @@ digraph "twoDegreesRelationshipsDiagram" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">district_correction</TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 4</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 row</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 5</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 row</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
     </TABLE>>
     URL="district_correction.html"
     tooltip="district_correction"
+  ];
+  "dwelling_characteristics" [
+    label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">dwelling_characteristics</TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 5</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 row</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
+    </TABLE>>
+    URL="dwelling_characteristics.html"
+    tooltip="dwelling_characteristics"
   ];
   "entity" [
     label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">entity</TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">15 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">17 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">17 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">18 &gt;</TD></TR>
     </TABLE>>
     URL="entity.html"
     tooltip="entity"
   ];
-  "entity_type" [
+  "facility_service_type" [
     label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
-      <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">entity_type</TD></TR>
+      <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">facility_service_type</TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">3 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">15 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 5</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 row</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
     </TABLE>>
-    URL="entity_type.html"
-    tooltip="entity_type"
+    URL="facility_service_type.html"
+    tooltip="facility_service_type"
   ];
   "organization" [
     label=<
@@ -406,13 +426,12 @@ digraph "twoDegreesRelationshipsDiagram" {
       <TR><TD PORT="object_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">object_id</TD></TR>
       <TR><TD PORT="parent_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_id</TD></TR>
       <TR><TD PORT="parent_entity_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_entity_id</TD></TR>
-      <TR><TD PORT="entity_type_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">entity_type_id</TD></TR>
       <TR><TD PORT="start_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">start_date</TD></TR>
       <TR><TD PORT="end_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">end_date</TD></TR>
       <TR><TD PORT="status" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">status</TD></TR>
       <TR><TD PORT="permission_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">permission_id</TD></TR>
       <TR><TD PORT="external_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">external_id</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">5 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">21 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">5 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">32 &gt;</TD></TR>
     </TABLE>>
     URL="organization.html"
     tooltip="organization"
@@ -422,10 +441,38 @@ digraph "twoDegreesRelationshipsDiagram" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">organization_attribute</TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">13 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">35 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
     </TABLE>>
     URL="organization_attribute.html"
     tooltip="organization_attribute"
+  ];
+  "organization_type" [
+    label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">organization_type</TD></TR>
+      <TR><TD PORT="pk_id" COLSPAN="3" BGCOLOR="#bed1b8" ALIGN="LEFT">pk_id</TD></TR>
+      <TR><TD PORT="object_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">object_id</TD></TR>
+      <TR><TD PORT="parent_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_id</TD></TR>
+      <TR><TD PORT="parent_entity_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_entity_id</TD></TR>
+      <TR><TD PORT="start_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">start_date</TD></TR>
+      <TR><TD PORT="end_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">end_date</TD></TR>
+      <TR><TD PORT="status" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">status</TD></TR>
+      <TR><TD PORT="permission_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">permission_id</TD></TR>
+      <TR><TD PORT="external_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">external_id</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">3 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 &gt;</TD></TR>
+    </TABLE>>
+    URL="organization_type.html"
+    tooltip="organization_type"
+  ];
+  "organization_type_attribute" [
+    label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">organization_type_attribute</TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">3 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
+    </TABLE>>
+    URL="organization_type_attribute.html"
+    tooltip="organization_type_attribute"
   ];
   "ownership" [
     label=<
@@ -435,13 +482,12 @@ digraph "twoDegreesRelationshipsDiagram" {
       <TR><TD PORT="object_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">object_id</TD></TR>
       <TR><TD PORT="parent_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_id</TD></TR>
       <TR><TD PORT="parent_entity_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_entity_id</TD></TR>
-      <TR><TD PORT="entity_type_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">entity_type_id</TD></TR>
       <TR><TD PORT="start_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">start_date</TD></TR>
       <TR><TD PORT="end_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">end_date</TD></TR>
       <TR><TD PORT="status" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">status</TD></TR>
       <TR><TD PORT="permission_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">permission_id</TD></TR>
       <TR><TD PORT="external_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">external_id</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">6 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">2 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">6 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">2 &gt;</TD></TR>
     </TABLE>>
     URL="ownership.html"
     tooltip="ownership"
@@ -461,7 +507,7 @@ digraph "twoDegreesRelationshipsDiagram" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">ownership_correction</TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">8 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 4</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">8 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
     </TABLE>>
     URL="ownership_correction.html"
     tooltip="ownership_correction"
@@ -485,7 +531,7 @@ digraph "twoDegreesRelationshipsDiagram" {
       <TR><TD PORT="table" COLSPAN="2" BGCOLOR="#f4f7da" ALIGN="LEFT">table</TD><TD PORT="table.type" ALIGN="LEFT">varchar[64]</TD></TR>
       <TR><TD PORT="entity" COLSPAN="2" BGCOLOR="#f4f7da" ALIGN="LEFT">entity</TD><TD PORT="entity.type" ALIGN="LEFT">varchar[64]</TD></TR>
       <TR><TD PORT="object_id" COLSPAN="2" BGCOLOR="#f4f7da" ALIGN="LEFT">object_id</TD><TD PORT="object_id.type" ALIGN="LEFT">bigint[19]</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 0</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 row</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">15 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 0</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 row</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">17 &gt;</TD></TR>
     </TABLE>>
     URL="permission.html"
     tooltip="permission"
@@ -495,7 +541,7 @@ digraph "twoDegreesRelationshipsDiagram" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">person_account</TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">0 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">0 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
     </TABLE>>
     URL="person_account.html"
     tooltip="person_account"
@@ -508,13 +554,12 @@ digraph "twoDegreesRelationshipsDiagram" {
       <TR><TD PORT="object_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">object_id</TD></TR>
       <TR><TD PORT="parent_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_id</TD></TR>
       <TR><TD PORT="parent_entity_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_entity_id</TD></TR>
-      <TR><TD PORT="entity_type_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">entity_type_id</TD></TR>
       <TR><TD PORT="start_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">start_date</TD></TR>
       <TR><TD PORT="end_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">end_date</TD></TR>
       <TR><TD PORT="status" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">status</TD></TR>
       <TR><TD PORT="permission_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">permission_id</TD></TR>
       <TR><TD PORT="external_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">external_id</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">104 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">2 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">104 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">3 &gt;</TD></TR>
     </TABLE>>
     URL="privilege.html"
     tooltip="privilege"
@@ -534,7 +579,7 @@ digraph "twoDegreesRelationshipsDiagram" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">privilege_correction</TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">2 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 4</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">2 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
     </TABLE>>
     URL="privilege_correction.html"
     tooltip="privilege_correction"
@@ -547,13 +592,12 @@ digraph "twoDegreesRelationshipsDiagram" {
       <TR><TD PORT="object_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">object_id</TD></TR>
       <TR><TD PORT="parent_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_id</TD></TR>
       <TR><TD PORT="parent_entity_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_entity_id</TD></TR>
-      <TR><TD PORT="entity_type_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">entity_type_id</TD></TR>
       <TR><TD PORT="start_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">start_date</TD></TR>
       <TR><TD PORT="end_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">end_date</TD></TR>
       <TR><TD PORT="status" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">status</TD></TR>
       <TR><TD PORT="permission_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">permission_id</TD></TR>
       <TR><TD PORT="external_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">external_id</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">3 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">3 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 &gt;</TD></TR>
     </TABLE>>
     URL="region.html"
     tooltip="region"
@@ -573,7 +617,7 @@ digraph "twoDegreesRelationshipsDiagram" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">request_file</TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">4 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">3 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">7 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">7 &gt;</TD></TR>
     </TABLE>>
     URL="request_file.html"
     tooltip="request_file"
@@ -586,13 +630,12 @@ digraph "twoDegreesRelationshipsDiagram" {
       <TR><TD PORT="object_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">object_id</TD></TR>
       <TR><TD PORT="parent_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_id</TD></TR>
       <TR><TD PORT="parent_entity_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_entity_id</TD></TR>
-      <TR><TD PORT="entity_type_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">entity_type_id</TD></TR>
       <TR><TD PORT="start_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">start_date</TD></TR>
       <TR><TD PORT="end_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">end_date</TD></TR>
       <TR><TD PORT="status" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">status</TD></TR>
       <TR><TD PORT="permission_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">permission_id</TD></TR>
       <TR><TD PORT="external_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">external_id</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">4 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">4 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 &gt;</TD></TR>
     </TABLE>>
     URL="room.html"
     tooltip="room"
@@ -607,6 +650,44 @@ digraph "twoDegreesRelationshipsDiagram" {
     URL="room_attribute.html"
     tooltip="room_attribute"
   ];
+  "service_association" [
+    label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">service_association</TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">2 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
+    </TABLE>>
+    URL="service_association.html"
+    tooltip="service_association"
+  ];
+  "service_provider_type" [
+    label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">service_provider_type</TD></TR>
+      <TR><TD PORT="pk_id" COLSPAN="3" BGCOLOR="#bed1b8" ALIGN="LEFT">pk_id</TD></TR>
+      <TR><TD PORT="object_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">object_id</TD></TR>
+      <TR><TD PORT="parent_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_id</TD></TR>
+      <TR><TD PORT="parent_entity_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_entity_id</TD></TR>
+      <TR><TD PORT="start_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">start_date</TD></TR>
+      <TR><TD PORT="end_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">end_date</TD></TR>
+      <TR><TD PORT="status" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">status</TD></TR>
+      <TR><TD PORT="permission_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">permission_id</TD></TR>
+      <TR><TD PORT="external_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">external_id</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">2 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 &gt;</TD></TR>
+    </TABLE>>
+    URL="service_provider_type.html"
+    tooltip="service_provider_type"
+  ];
+  "service_provider_type_attribute" [
+    label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">service_provider_type_attribute</TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">2 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
+    </TABLE>>
+    URL="service_provider_type_attribute.html"
+    tooltip="service_provider_type_attribute"
+  ];
   "street" [
     label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
@@ -615,13 +696,12 @@ digraph "twoDegreesRelationshipsDiagram" {
       <TR><TD PORT="object_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">object_id</TD></TR>
       <TR><TD PORT="parent_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_id</TD></TR>
       <TR><TD PORT="parent_entity_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_entity_id</TD></TR>
-      <TR><TD PORT="entity_type_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">entity_type_id</TD></TR>
       <TR><TD PORT="start_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">start_date</TD></TR>
       <TR><TD PORT="end_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">end_date</TD></TR>
       <TR><TD PORT="status" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">status</TD></TR>
       <TR><TD PORT="permission_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">permission_id</TD></TR>
       <TR><TD PORT="external_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">external_id</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">6 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">4 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">6 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">7 &gt;</TD></TR>
     </TABLE>>
     URL="street.html"
     tooltip="street"
@@ -641,7 +721,7 @@ digraph "twoDegreesRelationshipsDiagram" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">street_correction</TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 5</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">4 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 6</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">4 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 &gt;</TD></TR>
     </TABLE>>
     URL="street_correction.html"
     tooltip="street_correction"
@@ -654,13 +734,12 @@ digraph "twoDegreesRelationshipsDiagram" {
       <TR><TD PORT="object_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">object_id</TD></TR>
       <TR><TD PORT="parent_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_id</TD></TR>
       <TR><TD PORT="parent_entity_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_entity_id</TD></TR>
-      <TR><TD PORT="entity_type_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">entity_type_id</TD></TR>
       <TR><TD PORT="start_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">start_date</TD></TR>
       <TR><TD PORT="end_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">end_date</TD></TR>
       <TR><TD PORT="status" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">status</TD></TR>
       <TR><TD PORT="permission_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">permission_id</TD></TR>
       <TR><TD PORT="external_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">external_id</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">17 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">4 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">17 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">7 &gt;</TD></TR>
     </TABLE>>
     URL="street_type.html"
     tooltip="street_type"
@@ -680,17 +759,27 @@ digraph "twoDegreesRelationshipsDiagram" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">street_type_correction</TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">17 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 4</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">17 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 &gt;</TD></TR>
     </TABLE>>
     URL="street_type_correction.html"
     tooltip="street_type_correction"
+  ];
+  "subsidy" [
+    label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">subsidy</TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 5</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">2 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
+    </TABLE>>
+    URL="subsidy.html"
+    tooltip="subsidy"
   ];
   "user" [
     label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">user</TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">2 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">4 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">5 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">4 &gt;</TD></TR>
     </TABLE>>
     URL="user.html"
     tooltip="user"
@@ -703,13 +792,12 @@ digraph "twoDegreesRelationshipsDiagram" {
       <TR><TD PORT="object_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">object_id</TD></TR>
       <TR><TD PORT="parent_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_id</TD></TR>
       <TR><TD PORT="parent_entity_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_entity_id</TD></TR>
-      <TR><TD PORT="entity_type_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">entity_type_id</TD></TR>
       <TR><TD PORT="start_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">start_date</TD></TR>
       <TR><TD PORT="end_date" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">end_date</TD></TR>
       <TR><TD PORT="status" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">status</TD></TR>
       <TR><TD PORT="permission_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">permission_id</TD></TR>
       <TR><TD PORT="external_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">external_id</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">0 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">2 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">5 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">2 &gt;</TD></TR>
     </TABLE>>
     URL="user_info.html"
     tooltip="user_info"
@@ -719,7 +807,7 @@ digraph "twoDegreesRelationshipsDiagram" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">user_info_attribute</TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">0 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">15 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
     </TABLE>>
     URL="user_info_attribute.html"
     tooltip="user_info_attribute"
@@ -729,7 +817,7 @@ digraph "twoDegreesRelationshipsDiagram" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">user_organization</TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">0 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">3 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
     </TABLE>>
     URL="user_organization.html"
     tooltip="user_organization"

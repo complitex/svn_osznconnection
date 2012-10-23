@@ -160,6 +160,12 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  Parent cannot be deleted if children exist'>&nbsp;R</span></td>
    </tr>
    <tr class='relative even' valign='top'>
+    <td class='relatedTable detail' title="organization_type_attribute.value_type_id refs entity_attribute_value_type.id via fk_organization_type_attribute__entity_attribute_value_type"><a href='organization_type_attribute.html'>organization_type_attribute</a><span class='relatedKey'>.value_type_id</span>
+    </td>
+    <td class='constraint detail'>fk_organization_type_attribute__entity_attribute_value_type<span title='Restrict delete:
+ Parent cannot be deleted if children exist'>&nbsp;R</span></td>
+   </tr>
+   <tr class='relative even' valign='top'>
     <td class='relatedTable detail' title="ownership_attribute.value_type_id refs entity_attribute_value_type.id via fk_ownership_attribute__entity_attribute_value_type"><a href='ownership_attribute.html'>ownership_attribute</a><span class='relatedKey'>.value_type_id</span>
     </td>
     <td class='constraint detail'>fk_ownership_attribute__entity_attribute_value_type<span title='Restrict delete:
@@ -181,6 +187,12 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
     <td class='relatedTable detail' title="room_attribute.value_type_id refs entity_attribute_value_type.id via fk_room_attribute__entity_attribute_value_type"><a href='room_attribute.html'>room_attribute</a><span class='relatedKey'>.value_type_id</span>
     </td>
     <td class='constraint detail'>fk_room_attribute__entity_attribute_value_type<span title='Restrict delete:
+ Parent cannot be deleted if children exist'>&nbsp;R</span></td>
+   </tr>
+   <tr class='relative even' valign='top'>
+    <td class='relatedTable detail' title="service_provider_type_attribute.value_type_id refs entity_attribute_value_type.id via fk_service_provider_type_attribute__entity_attribute_value_type"><a href='service_provider_type_attribute.html'>service_provider_type_attribute</a><span class='relatedKey'>.value_type_id</span>
+    </td>
+    <td class='constraint detail'>fk_service_provider_type_attribute__entity_attribute_value_type<span title='Restrict delete:
  Parent cannot be deleted if children exist'>&nbsp;R</span></td>
    </tr>
    <tr class='relative even' valign='top'>
@@ -238,7 +250,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='comment detail'>Тип значения атрибута</td>
 </tr>
 </table>
-<p title='3 columns'>Table contained 30 rows at Ср июн 22 19:31 NOVST 2011<p/>
+<p title='3 columns'>Table contained 48 rows at Ср окт 24 03:49 GMT+07:00 2012<p/>
 </td></tr></table>
 <div class='indent'>
 <b>Indexes:</b>
@@ -270,60 +282,65 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 <br><form action='get'><b>Close relationships</b><span class='degrees' id='degrees' title='Detail diminishes with increased separation from entity_attribute_value_type'>
 &nbsp;within <label for='oneDegree'><input type='radio' name='degrees' id='oneDegree' checked>one</label>  <label for='twoDegrees'><input type='radio' name='degrees' id='twoDegrees'>two degrees</label> of separation</span><b>:</b></form>
 <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="apartment_attribute.html" title="apartment_attribute" alt="" coords="559,5,726,267">
-<area shape="rect" id="node3" href="entity_attribute_type.html" title="entity_attribute_type" alt="" coords="6,2060,197,2276">
-<area shape="rect" id="node5" href="entity_attribute_value_type.html" title="entity_attribute_value_type" alt="" coords="241,2080,497,2211">
-<area shape="rect" id="node6" href="building_address_attribute.html" title="building_address_attribute" alt="" coords="541,284,744,545">
-<area shape="rect" id="node9" href="building_attribute.html" title="building_attribute" alt="" coords="565,563,721,824">
-<area shape="rect" id="node12" href="city_attribute.html" title="city_attribute" alt="" coords="566,841,719,1103">
-<area shape="rect" id="node15" href="city_type_attribute.html" title="city_type_attribute" alt="" coords="562,1120,723,1381">
-<area shape="rect" id="node18" href="country_attribute.html" title="country_attribute" alt="" coords="565,1399,721,1660">
-<area shape="rect" id="node21" href="district_attribute.html" title="district_attribute" alt="" coords="566,1677,719,1939">
-<area shape="rect" id="node25" href="organization_attribute.html" title="organization_attribute" alt="" coords="551,1956,734,2217">
-<area shape="rect" id="node28" href="ownership_attribute.html" title="ownership_attribute" alt="" coords="559,2235,726,2496">
-<area shape="rect" id="node31" href="privilege_attribute.html" title="privilege_attribute" alt="" coords="555,2513,730,2775">
-<area shape="rect" id="node34" href="region_attribute.html" title="region_attribute" alt="" coords="566,2792,719,3053">
-<area shape="rect" id="node37" href="room_attribute.html" title="room_attribute" alt="" coords="566,3071,719,3332">
-<area shape="rect" id="node40" href="street_attribute.html" title="street_attribute" alt="" coords="562,3349,723,3611">
-<area shape="rect" id="node43" href="street_type_attribute.html" title="street_type_attribute" alt="" coords="553,3628,733,3889">
-<area shape="rect" id="node46" href="user_info_attribute.html" title="user_info_attribute" alt="" coords="561,3907,725,4168">
+<area shape="rect" id="node1" href="apartment_attribute.html" title="apartment_attribute" alt="" coords="575,5,742,267">
+<area shape="rect" id="node3" href="entity_attribute_type.html" title="entity_attribute_type" alt="" coords="6,2339,197,2555">
+<area shape="rect" id="node5" href="entity_attribute_value_type.html" title="entity_attribute_value_type" alt="" coords="241,2359,497,2489">
+<area shape="rect" id="node6" href="building_address_attribute.html" title="building_address_attribute" alt="" coords="557,284,760,545">
+<area shape="rect" id="node9" href="building_attribute.html" title="building_attribute" alt="" coords="581,563,737,824">
+<area shape="rect" id="node12" href="city_attribute.html" title="city_attribute" alt="" coords="582,841,735,1103">
+<area shape="rect" id="node15" href="city_type_attribute.html" title="city_type_attribute" alt="" coords="578,1120,739,1381">
+<area shape="rect" id="node18" href="country_attribute.html" title="country_attribute" alt="" coords="581,1399,737,1660">
+<area shape="rect" id="node21" href="district_attribute.html" title="district_attribute" alt="" coords="582,1677,735,1939">
+<area shape="rect" id="node25" href="organization_attribute.html" title="organization_attribute" alt="" coords="567,1956,750,2217">
+<area shape="rect" id="node28" href="organization_type_attribute.html" title="organization_type_attribute" alt="" coords="555,2235,762,2496">
+<area shape="rect" id="node31" href="ownership_attribute.html" title="ownership_attribute" alt="" coords="575,2513,742,2775">
+<area shape="rect" id="node34" href="privilege_attribute.html" title="privilege_attribute" alt="" coords="571,2792,746,3053">
+<area shape="rect" id="node37" href="region_attribute.html" title="region_attribute" alt="" coords="582,3071,735,3332">
+<area shape="rect" id="node40" href="room_attribute.html" title="room_attribute" alt="" coords="582,3349,735,3611">
+<area shape="rect" id="node43" href="service_provider_type_attribute.html" title="service_provider_type_attribute" alt="" coords="541,3628,776,3889">
+<area shape="rect" id="node46" href="street_attribute.html" title="street_attribute" alt="" coords="578,3907,739,4168">
+<area shape="rect" id="node49" href="street_type_attribute.html" title="street_type_attribute" alt="" coords="569,4185,749,4447">
+<area shape="rect" id="node52" href="user_info_attribute.html" title="user_info_attribute" alt="" coords="573,4464,745,4725">
 </map>
   <a name='diagram'><img id='oneDegreeImg' src='../diagrams/entity_attribute_value_type.1degree.png' usemap='#oneDegreeRelationshipsDiagram' class='diagram' border='0' alt='' align='left'></a>
 <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="apartment.html" title="apartment" alt="" coords="426,1120,561,1200">
-<area shape="rect" id="node3" href="entity.html" title="entity" alt="" coords="202,2051,353,2131">
-<area shape="rect" id="node47" href="string_culture.html" title="string_culture" alt="" coords="6,2084,157,2164">
-<area shape="rect" id="node4" href="apartment_attribute.html" title="apartment_attribute" alt="" coords="951,5,1118,267">
-<area shape="rect" id="node6" href="entity_attribute_type.html" title="entity_attribute_type" alt="" coords="398,2048,589,2264">
-<area shape="rect" id="node9" href="entity_attribute_value_type.html" title="entity_attribute_value_type" alt="" coords="633,2091,889,2221">
-<area shape="rect" id="node10" href="building.html" title="building" alt="" coords="426,1319,561,1399">
-<area shape="rect" id="node12" href="building_address.html" title="building_address" alt="" coords="415,1219,571,1299">
-<area shape="rect" id="node14" href="building_address_attribute.html" title="building_address_attribute" alt="" coords="933,284,1136,545">
-<area shape="rect" id="node18" href="building_attribute.html" title="building_attribute" alt="" coords="957,563,1113,824">
-<area shape="rect" id="node22" href="city.html" title="city" alt="" coords="426,1421,561,1501">
-<area shape="rect" id="node24" href="city_attribute.html" title="city_attribute" alt="" coords="958,841,1111,1103">
-<area shape="rect" id="node28" href="city_type.html" title="city_type" alt="" coords="426,1529,561,1609">
-<area shape="rect" id="node30" href="city_type_attribute.html" title="city_type_attribute" alt="" coords="954,1120,1115,1381">
-<area shape="rect" id="node34" href="country.html" title="country" alt="" coords="426,1648,561,1728">
-<area shape="rect" id="node36" href="country_attribute.html" title="country_attribute" alt="" coords="957,1399,1113,1660">
-<area shape="rect" id="node40" href="district.html" title="district" alt="" coords="426,1788,561,1868">
-<area shape="rect" id="node42" href="district_attribute.html" title="district_attribute" alt="" coords="958,1677,1111,1939">
-<area shape="rect" id="node51" href="organization.html" title="organization" alt="" coords="422,1951,565,2031">
-<area shape="rect" id="node53" href="organization_attribute.html" title="organization_attribute" alt="" coords="943,1956,1126,2217">
-<area shape="rect" id="node57" href="ownership.html" title="ownership" alt="" coords="694,2277,829,2357">
-<area shape="rect" id="node59" href="ownership_attribute.html" title="ownership_attribute" alt="" coords="951,2235,1118,2496">
-<area shape="rect" id="node63" href="privilege.html" title="privilege" alt="" coords="686,2520,837,2600">
-<area shape="rect" id="node65" href="privilege_attribute.html" title="privilege_attribute" alt="" coords="947,2513,1122,2775">
-<area shape="rect" id="node69" href="region.html" title="region" alt="" coords="694,2781,829,2861">
-<area shape="rect" id="node71" href="region_attribute.html" title="region_attribute" alt="" coords="958,2792,1111,3053">
-<area shape="rect" id="node75" href="room.html" title="room" alt="" coords="694,3051,829,3131">
-<area shape="rect" id="node77" href="room_attribute.html" title="room_attribute" alt="" coords="958,3071,1111,3332">
-<area shape="rect" id="node81" href="street.html" title="street" alt="" coords="694,3355,829,3435">
-<area shape="rect" id="node83" href="street_attribute.html" title="street_attribute" alt="" coords="954,3349,1115,3611">
-<area shape="rect" id="node87" href="street_type.html" title="street_type" alt="" coords="690,3543,833,3623">
-<area shape="rect" id="node89" href="street_type_attribute.html" title="street_type_attribute" alt="" coords="945,3628,1125,3889">
-<area shape="rect" id="node93" href="user_info.html" title="user_info" alt="" coords="694,3893,829,3973">
-<area shape="rect" id="node95" href="user_info_attribute.html" title="user_info_attribute" alt="" coords="953,3907,1117,4168">
+<area shape="rect" id="node1" href="apartment.html" title="apartment" alt="" coords="434,1253,569,1333">
+<area shape="rect" id="node3" href="entity.html" title="entity" alt="" coords="210,2159,361,2239">
+<area shape="rect" id="node47" href="string_culture.html" title="string_culture" alt="" coords="6,2237,165,2317">
+<area shape="rect" id="node4" href="apartment_attribute.html" title="apartment_attribute" alt="" coords="975,5,1142,267">
+<area shape="rect" id="node6" href="entity_attribute_type.html" title="entity_attribute_type" alt="" coords="406,2292,597,2508">
+<area shape="rect" id="node9" href="entity_attribute_value_type.html" title="entity_attribute_value_type" alt="" coords="641,2359,897,2489">
+<area shape="rect" id="node10" href="building.html" title="building" alt="" coords="434,1449,569,1529">
+<area shape="rect" id="node12" href="building_address.html" title="building_address" alt="" coords="423,1351,579,1431">
+<area shape="rect" id="node14" href="building_address_attribute.html" title="building_address_attribute" alt="" coords="957,284,1160,545">
+<area shape="rect" id="node18" href="building_attribute.html" title="building_attribute" alt="" coords="981,563,1137,824">
+<area shape="rect" id="node22" href="city.html" title="city" alt="" coords="434,1548,569,1628">
+<area shape="rect" id="node24" href="city_attribute.html" title="city_attribute" alt="" coords="982,841,1135,1103">
+<area shape="rect" id="node28" href="city_type.html" title="city_type" alt="" coords="434,1649,569,1729">
+<area shape="rect" id="node30" href="city_type_attribute.html" title="city_type_attribute" alt="" coords="978,1120,1139,1381">
+<area shape="rect" id="node34" href="country.html" title="country" alt="" coords="434,1753,569,1833">
+<area shape="rect" id="node36" href="country_attribute.html" title="country_attribute" alt="" coords="981,1399,1137,1660">
+<area shape="rect" id="node40" href="district.html" title="district" alt="" coords="434,1865,569,1945">
+<area shape="rect" id="node42" href="district_attribute.html" title="district_attribute" alt="" coords="982,1677,1135,1939">
+<area shape="rect" id="node51" href="organization.html" title="organization" alt="" coords="430,1991,573,2071">
+<area shape="rect" id="node53" href="organization_attribute.html" title="organization_attribute" alt="" coords="967,1956,1150,2217">
+<area shape="rect" id="node57" href="organization_type.html" title="organization_type" alt="" coords="690,1937,849,2017">
+<area shape="rect" id="node59" href="organization_type_attribute.html" title="organization_type_attribute" alt="" coords="955,2235,1162,2496">
+<area shape="rect" id="node63" href="ownership.html" title="ownership" alt="" coords="702,2579,837,2659">
+<area shape="rect" id="node65" href="ownership_attribute.html" title="ownership_attribute" alt="" coords="975,2513,1142,2775">
+<area shape="rect" id="node69" href="privilege.html" title="privilege" alt="" coords="694,2836,845,2916">
+<area shape="rect" id="node71" href="privilege_attribute.html" title="privilege_attribute" alt="" coords="971,2792,1146,3053">
+<area shape="rect" id="node75" href="region.html" title="region" alt="" coords="702,3392,837,3472">
+<area shape="rect" id="node77" href="region_attribute.html" title="region_attribute" alt="" coords="982,3349,1135,3611">
+<area shape="rect" id="node81" href="room.html" title="room" alt="" coords="702,3581,837,3661">
+<area shape="rect" id="node83" href="room_attribute.html" title="room_attribute" alt="" coords="982,3628,1135,3889">
+<area shape="rect" id="node87" href="service_provider_type_attribute.html" title="service_provider_type_attribute" alt="" coords="941,3071,1176,3332">
+<area shape="rect" id="node91" href="street.html" title="street" alt="" coords="702,3885,837,3965">
+<area shape="rect" id="node93" href="street_attribute.html" title="street_attribute" alt="" coords="978,3907,1139,4168">
+<area shape="rect" id="node97" href="street_type.html" title="street_type" alt="" coords="698,4133,841,4213">
+<area shape="rect" id="node99" href="street_type_attribute.html" title="street_type_attribute" alt="" coords="969,4185,1149,4447">
+<area shape="rect" id="node103" href="user_info.html" title="user_info" alt="" coords="702,4321,837,4401">
+<area shape="rect" id="node105" href="user_info_attribute.html" title="user_info_attribute" alt="" coords="973,4464,1145,4725">
 </map>
 
   <a name='diagram'><img id='twoDegreesImg' src='../diagrams/entity_attribute_value_type.2degrees.png' usemap='#twoDegreesRelationshipsDiagram' class='diagram' border='0' alt='' align='left'></a>

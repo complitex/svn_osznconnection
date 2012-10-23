@@ -102,7 +102,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 </tr>
 </thead>
 <tbody valign='top'>
-<tr class='even'>
+<tr class='odd'>
  <td class='primaryKey' title='Primary Key'>id</td>
  <td class='detail'>bigint</td>
  <td class='detail' align='right'>19</td>
@@ -113,7 +113,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Идентификатор льготы</td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='indexedColumn' title='Indexed'>request_file_id</td>
  <td class='detail'>bigint</td>
  <td class='detail' align='right'>19</td>
@@ -123,7 +123,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'></td>
  <td class='detail'>
   <table border='0' width='100%' cellspacing='0' cellpadding='0'>
-   <tr class='relative odd' valign='top'>
+   <tr class='relative even' valign='top'>
     <td class='relatedTable detail' title="benefit.request_file_id refs request_file.id via fk_benefit__request_file"><a href='request_file.html'>request_file</a><span class='relatedKey'>.id</span>
     </td>
     <td class='constraint detail'>fk_benefit__request_file<span title='Restrict delete:
@@ -133,7 +133,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  </td>
  <td class='comment detail'>Идентификатор файла запросов</td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='indexedColumn' title='Indexed'>account_number</td>
  <td class='detail'>varchar</td>
  <td class='detail' align='right'>100</td>
@@ -144,7 +144,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Номер счета</td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='indexedColumn' title='Indexed'>status</td>
  <td class='detail'>int</td>
  <td class='detail' align='right'>10</td>
@@ -155,10 +155,10 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Код статуса. См. таблицу status_description и класс RequestStatus</td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='detail'>OWN_NUM</td>
  <td class='detail'>varchar</td>
- <td class='detail' align='right'>15</td>
+ <td class='detail' align='right'>100</td>
  <td class='detail' align='center' title='nullable'>&nbsp;&radic;&nbsp;</td>
  <td class='detail' align='center'></td>
  <td class='detail' align='right'>null</td>
@@ -166,10 +166,10 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Номер дела</td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='detail'>REE_NUM</td>
- <td class='detail'>int</td>
- <td class='detail' align='right'>10</td>
+ <td class='detail'>varchar</td>
+ <td class='detail' align='right'>100</td>
  <td class='detail' align='center' title='nullable'>&nbsp;&radic;&nbsp;</td>
  <td class='detail' align='center'></td>
  <td class='detail' align='right'>null</td>
@@ -177,10 +177,10 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Номер реестра</td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='indexedColumn' title='Indexed'>OWN_NUM_SR</td>
  <td class='detail'>varchar</td>
- <td class='detail' align='right'>15</td>
+ <td class='detail' align='right'>100</td>
  <td class='detail' align='center' title='nullable'>&nbsp;&radic;&nbsp;</td>
  <td class='detail' align='center'></td>
  <td class='detail' align='right'>null</td>
@@ -188,10 +188,10 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Лицевой счет в обслуж. организации</td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='detail'>FAM_NUM</td>
- <td class='detail'>int</td>
- <td class='detail' align='right'>10</td>
+ <td class='detail'>varchar</td>
+ <td class='detail' align='right'>100</td>
  <td class='detail' align='center' title='nullable'>&nbsp;&radic;&nbsp;</td>
  <td class='detail' align='center'></td>
  <td class='detail' align='right'>null</td>
@@ -199,10 +199,10 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Номер члена семьи</td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='indexedColumn' title='Indexed'>SUR_NAM</td>
  <td class='detail'>varchar</td>
- <td class='detail' align='right'>30</td>
+ <td class='detail' align='right'>100</td>
  <td class='detail' align='center' title='nullable'>&nbsp;&radic;&nbsp;</td>
  <td class='detail' align='center'></td>
  <td class='detail' align='right'>null</td>
@@ -210,10 +210,10 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Фамилия</td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='indexedColumn' title='Indexed'>F_NAM</td>
  <td class='detail'>varchar</td>
- <td class='detail' align='right'>15</td>
+ <td class='detail' align='right'>100</td>
  <td class='detail' align='center' title='nullable'>&nbsp;&radic;&nbsp;</td>
  <td class='detail' align='center'></td>
  <td class='detail' align='right'>null</td>
@@ -221,10 +221,10 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Имя</td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='indexedColumn' title='Indexed'>M_NAM</td>
  <td class='detail'>varchar</td>
- <td class='detail' align='right'>20</td>
+ <td class='detail' align='right'>100</td>
  <td class='detail' align='center' title='nullable'>&nbsp;&radic;&nbsp;</td>
  <td class='detail' align='center'></td>
  <td class='detail' align='right'>null</td>
@@ -232,10 +232,10 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Отчество</td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='detail'>IND_COD</td>
  <td class='detail'>varchar</td>
- <td class='detail' align='right'>10</td>
+ <td class='detail' align='right'>100</td>
  <td class='detail' align='center' title='nullable'>&nbsp;&radic;&nbsp;</td>
  <td class='detail' align='center'></td>
  <td class='detail' align='right'>null</td>
@@ -243,10 +243,10 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Идентификационный номер</td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='detail'>PSP_SER</td>
  <td class='detail'>varchar</td>
- <td class='detail' align='right'>6</td>
+ <td class='detail' align='right'>100</td>
  <td class='detail' align='center' title='nullable'>&nbsp;&radic;&nbsp;</td>
  <td class='detail' align='center'></td>
  <td class='detail' align='right'>null</td>
@@ -254,10 +254,10 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Серия паспорта</td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='detail'>PSP_NUM</td>
  <td class='detail'>varchar</td>
- <td class='detail' align='right'>6</td>
+ <td class='detail' align='right'>100</td>
  <td class='detail' align='center' title='nullable'>&nbsp;&radic;&nbsp;</td>
  <td class='detail' align='center'></td>
  <td class='detail' align='right'>null</td>
@@ -265,10 +265,10 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Номер паспорта</td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='detail'>OZN</td>
- <td class='detail'>int</td>
- <td class='detail' align='right'>10</td>
+ <td class='detail'>varchar</td>
+ <td class='detail' align='right'>100</td>
  <td class='detail' align='center' title='nullable'>&nbsp;&radic;&nbsp;</td>
  <td class='detail' align='center'></td>
  <td class='detail' align='right'>null</td>
@@ -276,10 +276,10 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Признак владельца</td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='detail'>CM_AREA</td>
- <td class='detail'>decimal</td>
- <td class='detail' align='right'>10,2</td>
+ <td class='detail'>varchar</td>
+ <td class='detail' align='right'>100</td>
  <td class='detail' align='center' title='nullable'>&nbsp;&radic;&nbsp;</td>
  <td class='detail' align='center'></td>
  <td class='detail' align='right'>null</td>
@@ -287,10 +287,10 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Общая площадь</td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='detail'>HEAT_AREA</td>
- <td class='detail'>decimal</td>
- <td class='detail' align='right'>10,2</td>
+ <td class='detail'>varchar</td>
+ <td class='detail' align='right'>100</td>
  <td class='detail' align='center' title='nullable'>&nbsp;&radic;&nbsp;</td>
  <td class='detail' align='center'></td>
  <td class='detail' align='right'>null</td>
@@ -298,10 +298,10 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Обогреваемая площадь</td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='detail'>OWN_FRM</td>
- <td class='detail'>int</td>
- <td class='detail' align='right'>10</td>
+ <td class='detail'>varchar</td>
+ <td class='detail' align='right'>100</td>
  <td class='detail' align='center' title='nullable'>&nbsp;&radic;&nbsp;</td>
  <td class='detail' align='center'></td>
  <td class='detail' align='right'>null</td>
@@ -309,10 +309,10 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Форма собственности</td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='detail'>HOSTEL</td>
- <td class='detail'>int</td>
- <td class='detail' align='right'>10</td>
+ <td class='detail'>varchar</td>
+ <td class='detail' align='right'>100</td>
  <td class='detail' align='center' title='nullable'>&nbsp;&radic;&nbsp;</td>
  <td class='detail' align='center'></td>
  <td class='detail' align='right'>null</td>
@@ -320,10 +320,10 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Количество комнат</td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='detail'>PRIV_CAT</td>
- <td class='detail'>int</td>
- <td class='detail' align='right'>10</td>
+ <td class='detail'>varchar</td>
+ <td class='detail' align='right'>100</td>
  <td class='detail' align='center' title='nullable'>&nbsp;&radic;&nbsp;</td>
  <td class='detail' align='center'></td>
  <td class='detail' align='right'>null</td>
@@ -331,10 +331,10 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Категория льготы на платежи</td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='detail'>ORD_FAM</td>
- <td class='detail'>int</td>
- <td class='detail' align='right'>10</td>
+ <td class='detail'>varchar</td>
+ <td class='detail' align='right'>100</td>
  <td class='detail' align='center' title='nullable'>&nbsp;&radic;&nbsp;</td>
  <td class='detail' align='center'></td>
  <td class='detail' align='right'>null</td>
@@ -342,10 +342,10 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Порядок семьи льготников для расчета платежей</td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='detail'>OZN_SQ_ADD</td>
- <td class='detail'>int</td>
- <td class='detail' align='right'>10</td>
+ <td class='detail'>varchar</td>
+ <td class='detail' align='right'>100</td>
  <td class='detail' align='center' title='nullable'>&nbsp;&radic;&nbsp;</td>
  <td class='detail' align='center'></td>
  <td class='detail' align='right'>null</td>
@@ -353,10 +353,10 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Признак учета дополнительной площади</td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='detail'>OZN_ABS</td>
- <td class='detail'>int</td>
- <td class='detail' align='right'>10</td>
+ <td class='detail'>varchar</td>
+ <td class='detail' align='right'>100</td>
  <td class='detail' align='center' title='nullable'>&nbsp;&radic;&nbsp;</td>
  <td class='detail' align='center'></td>
  <td class='detail' align='right'>null</td>
@@ -364,10 +364,10 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Признак отсутствия данных в базе ЖЭО</td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='detail'>RESERV1</td>
- <td class='detail'>decimal</td>
- <td class='detail' align='right'>10,2</td>
+ <td class='detail'>varchar</td>
+ <td class='detail' align='right'>100</td>
  <td class='detail' align='center' title='nullable'>&nbsp;&radic;&nbsp;</td>
  <td class='detail' align='center'></td>
  <td class='detail' align='right'>null</td>
@@ -375,10 +375,10 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Резерв</td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='detail'>RESERV2</td>
  <td class='detail'>varchar</td>
- <td class='detail' align='right'>10</td>
+ <td class='detail' align='right'>100</td>
  <td class='detail' align='center' title='nullable'>&nbsp;&radic;&nbsp;</td>
  <td class='detail' align='center'></td>
  <td class='detail' align='right'>null</td>
@@ -387,7 +387,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='comment detail'>Резерв</td>
 </tr>
 </table>
-<p title='25 columns'>Table contained 1 rows at Ср июн 22 19:31 NOVST 2011<p/>
+<p title='25 columns'>Table contained 1 rows at Ср окт 24 03:49 GMT+07:00 2012<p/>
 </td></tr></table>
 <div class='indent'>
 <b>Indexes:</b>
@@ -455,17 +455,21 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 <br><form action='get'><b>Close relationships</b><span class='degrees' id='degrees' title='Detail diminishes with increased separation from benefit'>
 &nbsp;within <label for='oneDegree'><input type='radio' name='degrees' id='oneDegree' checked>one</label>  <label for='twoDegrees'><input type='radio' name='degrees' id='twoDegrees'>two degrees</label> of separation</span><b>:</b></form>
 <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="benefit.html" title="benefit" alt="" coords="210,5,454,635">
-<area shape="rect" id="node3" href="request_file.html" title="request_file" alt="" coords="6,30,165,405">
+<area shape="rect" id="node1" href="benefit.html" title="benefit" alt="" coords="223,5,460,635">
+<area shape="rect" id="node3" href="request_file.html" title="request_file" alt="" coords="6,31,178,428">
 </map>
   <a name='diagram'><img id='oneDegreeImg' src='../diagrams/benefit.1degree.png' usemap='#oneDegreeRelationshipsDiagram' class='diagram' border='0' alt='' align='left'></a>
 <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="actual_payment.html" title="actual_payment" alt="" coords="462,5,605,85">
-<area shape="rect" id="node3" href="request_file.html" title="request_file" alt="" coords="207,127,366,502">
-<area shape="rect" id="node9" href="request_file_group.html" title="request_file_group" alt="" coords="6,147,162,227">
-<area shape="rect" id="node11" href="organization.html" title="organization" alt="" coords="13,244,155,324">
-<area shape="rect" id="node4" href="benefit.html" title="benefit" alt="" coords="411,103,655,732">
-<area shape="rect" id="node6" href="payment.html" title="payment" alt="" coords="473,749,593,829">
+<area shape="rect" id="node1" href="actual_payment.html" title="actual_payment" alt="" coords="471,5,614,85">
+<area shape="rect" id="node3" href="request_file.html" title="request_file" alt="" coords="207,848,379,1245">
+<area shape="rect" id="node15" href="request_file_group.html" title="request_file_group" alt="" coords="6,869,162,949">
+<area shape="rect" id="node17" href="organization.html" title="organization" alt="" coords="13,1065,155,1145">
+<area shape="rect" id="node4" href="benefit.html" title="benefit" alt="" coords="424,103,661,732">
+<area shape="rect" id="node6" href="dwelling_characteristics.html" title="dwelling_characteristics" alt="" coords="447,749,638,829">
+<area shape="rect" id="node8" href="facility_form2.html" title="facility_form2" alt="" coords="473,847,613,927">
+<area shape="rect" id="node10" href="facility_service_type.html" title="facility_service_type" alt="" coords="461,944,624,1024">
+<area shape="rect" id="node12" href="payment.html" title="payment" alt="" coords="483,1041,603,1121">
+<area shape="rect" id="node19" href="subsidy.html" title="subsidy" alt="" coords="480,1139,605,1219">
 </map>
 
   <a name='diagram'><img id='twoDegreesImg' src='../diagrams/benefit.2degrees.png' usemap='#twoDegreesRelationshipsDiagram' class='diagram' border='0' alt='' align='left'></a>

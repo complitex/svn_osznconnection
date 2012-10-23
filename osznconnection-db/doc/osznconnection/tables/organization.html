@@ -102,7 +102,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 </tr>
 </thead>
 <tbody valign='top'>
-<tr class='even'>
+<tr class='odd'>
  <td class='primaryKey' title='Primary Key'>pk_id</td>
  <td class='detail'>bigint</td>
  <td class='detail' align='right'>19</td>
@@ -113,7 +113,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Суррогатный ключ</td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='indexedColumn' title='Indexed'>object_id</td>
  <td class='detail'>bigint</td>
  <td class='detail' align='right'>19</td>
@@ -122,127 +122,193 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'></td>
  <td class='detail'>
   <table border='0' width='100%' cellspacing='0' cellpadding='0'>
-   <tr class='relative odd' valign='top'>
+   <tr class='relative even' valign='top'>
     <td class='relatedTable detail' title="building_correction.internal_organization_id refs organization.object_id via fk_building_correction__internal_organization"><a href='building_correction.html'>building_correction</a><span class='relatedKey'>.internal_organization_id</span>
     </td>
     <td class='constraint detail'>fk_building_correction__internal_organization<span title='Restrict delete:
  Parent cannot be deleted if children exist'>&nbsp;R</span></td>
    </tr>
-   <tr class='relative odd' valign='top'>
+   <tr class='relative even' valign='top'>
     <td class='relatedTable detail' title="building_correction.organization_id refs organization.object_id via fk_building_correction__organization"><a href='building_correction.html'>building_correction</a><span class='relatedKey'>.organization_id</span>
     </td>
     <td class='constraint detail'>fk_building_correction__organization<span title='Restrict delete:
  Parent cannot be deleted if children exist'>&nbsp;R</span></td>
    </tr>
-   <tr class='relative odd' valign='top'>
+   <tr class='relative even' valign='top'>
+    <td class='relatedTable detail' title="building_correction.user_organization_id refs organization.object_id via fk_building_correction__user_organization"><a href='building_correction.html'>building_correction</a><span class='relatedKey'>.user_organization_id</span>
+    </td>
+    <td class='constraint detail'>fk_building_correction__user_organization<span title='Restrict delete:
+ Parent cannot be deleted if children exist'>&nbsp;R</span></td>
+   </tr>
+   <tr class='relative even' valign='top'>
     <td class='relatedTable detail' title="city_correction.internal_organization_id refs organization.object_id via fk_city_correction__internal_organization"><a href='city_correction.html'>city_correction</a><span class='relatedKey'>.internal_organization_id</span>
     </td>
     <td class='constraint detail'>fk_city_correction__internal_organization<span title='Restrict delete:
  Parent cannot be deleted if children exist'>&nbsp;R</span></td>
    </tr>
-   <tr class='relative odd' valign='top'>
+   <tr class='relative even' valign='top'>
     <td class='relatedTable detail' title="city_correction.organization_id refs organization.object_id via fk_city_correction__organization"><a href='city_correction.html'>city_correction</a><span class='relatedKey'>.organization_id</span>
     </td>
     <td class='constraint detail'>fk_city_correction__organization<span title='Restrict delete:
  Parent cannot be deleted if children exist'>&nbsp;R</span></td>
    </tr>
-   <tr class='relative odd' valign='top'>
+   <tr class='relative even' valign='top'>
+    <td class='relatedTable detail' title="city_correction.user_organization_id refs organization.object_id via fk_city_correction__user_organization"><a href='city_correction.html'>city_correction</a><span class='relatedKey'>.user_organization_id</span>
+    </td>
+    <td class='constraint detail'>fk_city_correction__user_organization<span title='Restrict delete:
+ Parent cannot be deleted if children exist'>&nbsp;R</span></td>
+   </tr>
+   <tr class='relative even' valign='top'>
     <td class='relatedTable detail' title="city_type_correction.internal_organization_id refs organization.object_id via fk_city_type_correction__internal_organization"><a href='city_type_correction.html'>city_type_correction</a><span class='relatedKey'>.internal_organization_id</span>
     </td>
     <td class='constraint detail'>fk_city_type_correction__internal_organization<span title='Restrict delete:
  Parent cannot be deleted if children exist'>&nbsp;R</span></td>
    </tr>
-   <tr class='relative odd' valign='top'>
+   <tr class='relative even' valign='top'>
     <td class='relatedTable detail' title="city_type_correction.organization_id refs organization.object_id via fk_city_type_correction__organization"><a href='city_type_correction.html'>city_type_correction</a><span class='relatedKey'>.organization_id</span>
     </td>
     <td class='constraint detail'>fk_city_type_correction__organization<span title='Restrict delete:
  Parent cannot be deleted if children exist'>&nbsp;R</span></td>
    </tr>
-   <tr class='relative odd' valign='top'>
+   <tr class='relative even' valign='top'>
+    <td class='relatedTable detail' title="city_type_correction.user_organization_id refs organization.object_id via fk_city_type__user_organization"><a href='city_type_correction.html'>city_type_correction</a><span class='relatedKey'>.user_organization_id</span>
+    </td>
+    <td class='constraint detail'>fk_city_type__user_organization<span title='Restrict delete:
+ Parent cannot be deleted if children exist'>&nbsp;R</span></td>
+   </tr>
+   <tr class='relative even' valign='top'>
     <td class='relatedTable detail' title="district_correction.internal_organization_id refs organization.object_id via fk_district_correction__internal_organization"><a href='district_correction.html'>district_correction</a><span class='relatedKey'>.internal_organization_id</span>
     </td>
     <td class='constraint detail'>fk_district_correction__internal_organization<span title='Restrict delete:
  Parent cannot be deleted if children exist'>&nbsp;R</span></td>
    </tr>
-   <tr class='relative odd' valign='top'>
+   <tr class='relative even' valign='top'>
     <td class='relatedTable detail' title="district_correction.organization_id refs organization.object_id via fk_district_correction__organization"><a href='district_correction.html'>district_correction</a><span class='relatedKey'>.organization_id</span>
     </td>
     <td class='constraint detail'>fk_district_correction__organization<span title='Restrict delete:
  Parent cannot be deleted if children exist'>&nbsp;R</span></td>
    </tr>
-   <tr class='relative odd' valign='top'>
+   <tr class='relative even' valign='top'>
+    <td class='relatedTable detail' title="district_correction.user_organization_id refs organization.object_id via fk_district_correction__user_organization"><a href='district_correction.html'>district_correction</a><span class='relatedKey'>.user_organization_id</span>
+    </td>
+    <td class='constraint detail'>fk_district_correction__user_organization<span title='Restrict delete:
+ Parent cannot be deleted if children exist'>&nbsp;R</span></td>
+   </tr>
+   <tr class='relative even' valign='top'>
     <td class='relatedTable detail' title="organization_attribute.object_id refs organization.object_id via fk_organization_attribute__organization"><a href='organization_attribute.html'>organization_attribute</a><span class='relatedKey'>.object_id</span>
     </td>
     <td class='constraint detail'>fk_organization_attribute__organization<span title='Restrict delete:
  Parent cannot be deleted if children exist'>&nbsp;R</span></td>
    </tr>
-   <tr class='relative odd' valign='top'>
+   <tr class='relative even' valign='top'>
     <td class='relatedTable detail' title="ownership_correction.internal_organization_id refs organization.object_id via fk_ownership_correction__internal_organization"><a href='ownership_correction.html'>ownership_correction</a><span class='relatedKey'>.internal_organization_id</span>
     </td>
     <td class='constraint detail'>fk_ownership_correction__internal_organization<span title='Restrict delete:
  Parent cannot be deleted if children exist'>&nbsp;R</span></td>
    </tr>
-   <tr class='relative odd' valign='top'>
+   <tr class='relative even' valign='top'>
     <td class='relatedTable detail' title="ownership_correction.organization_id refs organization.object_id via fk_ownership_correction__organization"><a href='ownership_correction.html'>ownership_correction</a><span class='relatedKey'>.organization_id</span>
     </td>
     <td class='constraint detail'>fk_ownership_correction__organization<span title='Restrict delete:
  Parent cannot be deleted if children exist'>&nbsp;R</span></td>
    </tr>
-   <tr class='relative odd' valign='top'>
+   <tr class='relative even' valign='top'>
+    <td class='relatedTable detail' title="ownership_correction.user_organization_id refs organization.object_id via fk_ownership_correction__user_organization"><a href='ownership_correction.html'>ownership_correction</a><span class='relatedKey'>.user_organization_id</span>
+    </td>
+    <td class='constraint detail'>fk_ownership_correction__user_organization<span title='Restrict delete:
+ Parent cannot be deleted if children exist'>&nbsp;R</span></td>
+   </tr>
+   <tr class='relative even' valign='top'>
     <td class='relatedTable detail' title="person_account.calc_center_id refs organization.object_id via fk_person_account__calc_center_organization"><a href='person_account.html'>person_account</a><span class='relatedKey'>.calc_center_id</span>
     </td>
     <td class='constraint detail'>fk_person_account__calc_center_organization<span title='Restrict delete:
  Parent cannot be deleted if children exist'>&nbsp;R</span></td>
    </tr>
-   <tr class='relative odd' valign='top'>
+   <tr class='relative even' valign='top'>
     <td class='relatedTable detail' title="person_account.oszn_id refs organization.object_id via fk_person_account__osnz_organization"><a href='person_account.html'>person_account</a><span class='relatedKey'>.oszn_id</span>
     </td>
     <td class='constraint detail'>fk_person_account__osnz_organization<span title='Restrict delete:
  Parent cannot be deleted if children exist'>&nbsp;R</span></td>
    </tr>
-   <tr class='relative odd' valign='top'>
+   <tr class='relative even' valign='top'>
+    <td class='relatedTable detail' title="person_account.user_organization_id refs organization.object_id via fk_person_account__user_organization"><a href='person_account.html'>person_account</a><span class='relatedKey'>.user_organization_id</span>
+    </td>
+    <td class='constraint detail'>fk_person_account__user_organization<span title='Restrict delete:
+ Parent cannot be deleted if children exist'>&nbsp;R</span></td>
+   </tr>
+   <tr class='relative even' valign='top'>
     <td class='relatedTable detail' title="privilege_correction.internal_organization_id refs organization.object_id via fk_privilege_correction__internal_organization"><a href='privilege_correction.html'>privilege_correction</a><span class='relatedKey'>.internal_organization_id</span>
     </td>
     <td class='constraint detail'>fk_privilege_correction__internal_organization<span title='Restrict delete:
  Parent cannot be deleted if children exist'>&nbsp;R</span></td>
    </tr>
-   <tr class='relative odd' valign='top'>
+   <tr class='relative even' valign='top'>
     <td class='relatedTable detail' title="privilege_correction.organization_id refs organization.object_id via fk_privilege_correction__organization"><a href='privilege_correction.html'>privilege_correction</a><span class='relatedKey'>.organization_id</span>
     </td>
     <td class='constraint detail'>fk_privilege_correction__organization<span title='Restrict delete:
  Parent cannot be deleted if children exist'>&nbsp;R</span></td>
    </tr>
-   <tr class='relative odd' valign='top'>
+   <tr class='relative even' valign='top'>
+    <td class='relatedTable detail' title="privilege_correction.user_organization_id refs organization.object_id via fk_privilege_correction__user_organization"><a href='privilege_correction.html'>privilege_correction</a><span class='relatedKey'>.user_organization_id</span>
+    </td>
+    <td class='constraint detail'>fk_privilege_correction__user_organization<span title='Restrict delete:
+ Parent cannot be deleted if children exist'>&nbsp;R</span></td>
+   </tr>
+   <tr class='relative even' valign='top'>
     <td class='relatedTable detail' title="request_file.organization_id refs organization.object_id via fk_request_file__organization"><a href='request_file.html'>request_file</a><span class='relatedKey'>.organization_id</span>
     </td>
     <td class='constraint detail'>fk_request_file__organization<span title='Restrict delete:
  Parent cannot be deleted if children exist'>&nbsp;R</span></td>
    </tr>
-   <tr class='relative odd' valign='top'>
+   <tr class='relative even' valign='top'>
+    <td class='relatedTable detail' title="request_file.user_organization_id refs organization.object_id via fk_request_file__user_organization"><a href='request_file.html'>request_file</a><span class='relatedKey'>.user_organization_id</span>
+    </td>
+    <td class='constraint detail'>fk_request_file__user_organization<span title='Restrict delete:
+ Parent cannot be deleted if children exist'>&nbsp;R</span></td>
+   </tr>
+   <tr class='relative even' valign='top'>
+    <td class='relatedTable detail' title="service_association.calculation_center_id refs organization.object_id via fk_service_association__calculation_center"><a href='service_association.html'>service_association</a><span class='relatedKey'>.calculation_center_id</span>
+    </td>
+    <td class='constraint detail'>fk_service_association__calculation_center<span title='Restrict delete:
+ Parent cannot be deleted if children exist'>&nbsp;R</span></td>
+   </tr>
+   <tr class='relative even' valign='top'>
     <td class='relatedTable detail' title="street_correction.internal_organization_id refs organization.object_id via fk_street_correction__internal_organization"><a href='street_correction.html'>street_correction</a><span class='relatedKey'>.internal_organization_id</span>
     </td>
     <td class='constraint detail'>fk_street_correction__internal_organization<span title='Restrict delete:
  Parent cannot be deleted if children exist'>&nbsp;R</span></td>
    </tr>
-   <tr class='relative odd' valign='top'>
+   <tr class='relative even' valign='top'>
     <td class='relatedTable detail' title="street_correction.organization_id refs organization.object_id via fk_street_correction__organization"><a href='street_correction.html'>street_correction</a><span class='relatedKey'>.organization_id</span>
     </td>
     <td class='constraint detail'>fk_street_correction__organization<span title='Restrict delete:
  Parent cannot be deleted if children exist'>&nbsp;R</span></td>
    </tr>
-   <tr class='relative odd' valign='top'>
+   <tr class='relative even' valign='top'>
+    <td class='relatedTable detail' title="street_correction.user_organization_id refs organization.object_id via fk_street_correction__user_organization"><a href='street_correction.html'>street_correction</a><span class='relatedKey'>.user_organization_id</span>
+    </td>
+    <td class='constraint detail'>fk_street_correction__user_organization<span title='Restrict delete:
+ Parent cannot be deleted if children exist'>&nbsp;R</span></td>
+   </tr>
+   <tr class='relative even' valign='top'>
     <td class='relatedTable detail' title="street_type_correction.internal_organization_id refs organization.object_id via fk_street_type_correction__internal_organization"><a href='street_type_correction.html'>street_type_correction</a><span class='relatedKey'>.internal_organization_id</span>
     </td>
     <td class='constraint detail'>fk_street_type_correction__internal_organization<span title='Restrict delete:
  Parent cannot be deleted if children exist'>&nbsp;R</span></td>
    </tr>
-   <tr class='relative odd' valign='top'>
+   <tr class='relative even' valign='top'>
     <td class='relatedTable detail' title="street_type_correction.organization_id refs organization.object_id via fk_street_type_correction__organization"><a href='street_type_correction.html'>street_type_correction</a><span class='relatedKey'>.organization_id</span>
     </td>
     <td class='constraint detail'>fk_street_type_correction__organization<span title='Restrict delete:
  Parent cannot be deleted if children exist'>&nbsp;R</span></td>
    </tr>
-   <tr class='relative odd' valign='top'>
+   <tr class='relative even' valign='top'>
+    <td class='relatedTable detail' title="street_type_correction.user_organization_id refs organization.object_id via fk_street_type__user_organization"><a href='street_type_correction.html'>street_type_correction</a><span class='relatedKey'>.user_organization_id</span>
+    </td>
+    <td class='constraint detail'>fk_street_type__user_organization<span title='Restrict delete:
+ Parent cannot be deleted if children exist'>&nbsp;R</span></td>
+   </tr>
+   <tr class='relative even' valign='top'>
     <td class='relatedTable detail' title="user_organization.organization_object_id refs organization.object_id via fk_user_organization__organization"><a href='user_organization.html'>user_organization</a><span class='relatedKey'>.organization_object_id</span>
     </td>
     <td class='constraint detail'>fk_user_organization__organization<span title='Restrict delete:
@@ -253,7 +319,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Идентификатор объекта</td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='indexedColumn' title='Indexed'>parent_id</td>
  <td class='detail'>bigint</td>
  <td class='detail' align='right'>19</td>
@@ -264,7 +330,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Идентификатор родительского объекта: не используется</td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='indexedColumn' title='Indexed'>parent_entity_id</td>
  <td class='detail'>bigint</td>
  <td class='detail' align='right'>19</td>
@@ -274,7 +340,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'></td>
  <td class='detail'>
   <table border='0' width='100%' cellspacing='0' cellpadding='0'>
-   <tr class='relative odd' valign='top'>
+   <tr class='relative even' valign='top'>
     <td class='relatedTable detail' title="organization.parent_entity_id refs entity.id via fk_organization__entity"><a href='entity.html'>entity</a><span class='relatedKey'>.id</span>
     </td>
     <td class='constraint detail'>fk_organization__entity<span title='Restrict delete:
@@ -283,26 +349,6 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
   </table>
  </td>
  <td class='comment detail'>Идентификатор сущности родительского объекта: не используется</td>
-</tr>
-<tr class='even'>
- <td class='indexedColumn' title='Indexed'>entity_type_id</td>
- <td class='detail'>bigint</td>
- <td class='detail' align='right'>19</td>
- <td class='detail' align='center' title='nullable'>&nbsp;&radic;&nbsp;</td>
- <td class='detail' align='center'></td>
- <td class='detail' align='right'>null</td>
- <td class='detail'></td>
- <td class='detail'>
-  <table border='0' width='100%' cellspacing='0' cellpadding='0'>
-   <tr class='relative even' valign='top'>
-    <td class='relatedTable detail' title="organization.entity_type_id refs entity_type.id via fk_organization__entity_type"><a href='entity_type.html'>entity_type</a><span class='relatedKey'>.id</span>
-    </td>
-    <td class='constraint detail'>fk_organization__entity_type<span title='Restrict delete:
- Parent cannot be deleted if children exist'>&nbsp;R</span></td>
-   </tr>
-  </table>
- </td>
- <td class='comment detail'>Идентификатор типа сущности: 900 - ОСЗН, 901 - МОДУЛЬ НАЧИСЛЕНИЙ, 902 - ОРГАНИЗАЦИЯ ПОЛЬЗОВАТЕЛЕЙ</td>
 </tr>
 <tr class='odd'>
  <td class='indexedColumn' title='Indexed'>start_date</td>
@@ -369,7 +415,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='comment detail'>Внешний идентификатор импорта записи</td>
 </tr>
 </table>
-<p title='10 columns'>Table contained 5 rows at Ср июн 22 19:31 NOVST 2011<p/>
+<p title='9 columns'>Table contained 5 rows at Ср окт 24 03:49 GMT+07:00 2012<p/>
 </td></tr></table>
 <div class='indent'>
 <b>Indexes:</b>
@@ -396,13 +442,6 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
   <td class='detail'>Performance</td>
   <td class='detail' style='text-align:left;'><span title='Ascending'>Asc</span></td>
   <td class='constraint' style='text-align:left;'>key_end_date</td>
-  <td>&nbsp;</td>
- </tr>
- <tr>
-  <td class='indexedColumn'>entity_type_id</td>
-  <td class='detail'>Performance</td>
-  <td class='detail' style='text-align:left;'><span title='Ascending'>Asc</span></td>
-  <td class='constraint' style='text-align:left;'>key_entity_type_id</td>
   <td>&nbsp;</td>
  </tr>
  <tr>
@@ -467,63 +506,69 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 <br><form action='get'><b>Close relationships</b><span class='degrees' id='degrees' title='Detail diminishes with increased separation from organization'>
 &nbsp;within <label for='oneDegree'><input type='radio' name='degrees' id='oneDegree' checked>one</label>  <label for='twoDegrees'><input type='radio' name='degrees' id='twoDegrees'>two degrees</label> of separation</span><b>:</b></form>
 <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="building_correction.html" title="building_correction" alt="" coords="1199,398,1385,637">
-<area shape="rect" id="node3" href="organization.html" title="organization" alt="" coords="430,793,671,1082">
-<area shape="rect" id="node6" href="street_correction.html" title="street_correction" alt="" coords="955,287,1154,526">
-<area shape="rect" id="node17" href="entity_type.html" title="entity_type" alt="" coords="213,887,385,1057">
-<area shape="rect" id="node19" href="entity.html" title="entity" alt="" coords="6,865,167,1013">
-<area shape="rect" id="node23" href="permission.html" title="permission" alt="" coords="229,1075,368,1245">
-<area shape="rect" id="node7" href="city_correction.html" title="city_correction" alt="" coords="720,5,907,221">
-<area shape="rect" id="node41" href="street_type_correction.html" title="street_type_correction" alt="" coords="717,239,910,455">
-<area shape="rect" id="node10" href="city_type_correction.html" title="city_type_correction" alt="" coords="720,580,907,796">
-<area shape="rect" id="node13" href="district_correction.html" title="district_correction" alt="" coords="961,849,1148,1065">
-<area shape="rect" id="node24" href="organization_attribute.html" title="organization_attribute" alt="" coords="722,885,905,1147">
-<area shape="rect" id="node26" href="ownership_correction.html" title="ownership_correction" alt="" coords="720,1164,907,1380">
-<area shape="rect" id="node29" href="person_account.html" title="person_account" alt="" coords="727,1398,899,1773">
-<area shape="rect" id="node32" href="privilege_correction.html" title="privilege_correction" alt="" coords="720,1791,907,2007">
-<area shape="rect" id="node35" href="request_file.html" title="request_file" alt="" coords="734,2025,893,2399">
-<area shape="rect" id="node44" href="user_organization.html" title="user_organization" alt="" coords="723,2454,903,2602">
+<area shape="rect" id="node1" href="building_correction.html" title="building_correction" alt="" coords="981,476,1168,737">
+<area shape="rect" id="node3" href="organization.html" title="organization" alt="" coords="213,953,454,1220">
+<area shape="rect" id="node6" href="street_correction.html" title="street_correction" alt="" coords="738,347,937,608">
+<area shape="rect" id="node22" href="entity.html" title="entity" alt="" coords="6,975,167,1123">
+<area shape="rect" id="node24" href="permission.html" title="permission" alt="" coords="17,1141,156,1312">
+<area shape="rect" id="node8" href="city_correction.html" title="city_correction" alt="" coords="503,5,689,243">
+<area shape="rect" id="node48" href="street_type_correction.html" title="street_type_correction" alt="" coords="499,261,693,499">
+<area shape="rect" id="node12" href="city_type_correction.html" title="city_type_correction" alt="" coords="503,698,689,937">
+<area shape="rect" id="node16" href="district_correction.html" title="district_correction" alt="" coords="744,991,931,1230">
+<area shape="rect" id="node25" href="organization_attribute.html" title="organization_attribute" alt="" coords="505,1063,687,1324">
+<area shape="rect" id="node27" href="ownership_correction.html" title="ownership_correction" alt="" coords="503,1342,689,1581">
+<area shape="rect" id="node31" href="person_account.html" title="person_account" alt="" coords="510,1599,682,1996">
+<area shape="rect" id="node35" href="privilege_correction.html" title="privilege_correction" alt="" coords="503,2014,689,2253">
+<area shape="rect" id="node39" href="request_file.html" title="request_file" alt="" coords="510,2271,682,2668">
+<area shape="rect" id="node42" href="service_association.html" title="service_association" alt="" coords="499,2685,693,2811">
+<area shape="rect" id="node53" href="user_organization.html" title="user_organization" alt="" coords="506,2865,686,3013">
 </map>
   <a name='diagram'><img id='oneDegreeImg' src='../diagrams/organization.1degree.png' usemap='#oneDegreeRelationshipsDiagram' class='diagram' border='0' alt='' align='left'></a>
 <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="actual_payment.html" title="actual_payment" alt="" coords="1185,107,1327,187">
-<area shape="rect" id="node3" href="building.html" title="building" alt="" coords="947,5,1082,85">
-<area shape="rect" id="node5" href="city.html" title="city" alt="" coords="685,524,819,604">
-<area shape="rect" id="node7" href="street.html" title="street" alt="" coords="947,175,1082,255">
-<area shape="rect" id="node9" href="street_type.html" title="street_type" alt="" coords="681,427,823,507">
-<area shape="rect" id="node11" href="request_file.html" title="request_file" alt="" coords="935,381,1094,755">
-<area shape="rect" id="node14" href="entity_type.html" title="entity_type" alt="" coords="411,873,583,1044">
-<area shape="rect" id="node16" href="entity.html" title="entity" alt="" coords="202,1218,363,1366">
-<area shape="rect" id="node18" href="permission.html" title="permission" alt="" coords="428,1061,567,1232">
-<area shape="rect" id="node30" href="organization.html" title="organization" alt="" coords="631,1570,873,1859">
-<area shape="rect" id="node110" href="request_file_group.html" title="request_file_group" alt="" coords="674,985,830,1065">
-<area shape="rect" id="node12" href="apartment.html" title="apartment" alt="" coords="685,1180,819,1260">
-<area shape="rect" id="node64" href="string_culture.html" title="string_culture" alt="" coords="6,1264,157,1344">
-<area shape="rect" id="node19" href="benefit.html" title="benefit" alt="" coords="1199,380,1313,460">
-<area shape="rect" id="node24" href="building_address.html" title="building_address" alt="" coords="674,719,830,799">
-<area shape="rect" id="node28" href="building_correction.html" title="building_correction" alt="" coords="1400,1861,1587,2099">
-<area shape="rect" id="node34" href="street_correction.html" title="street_correction" alt="" coords="1157,1385,1355,1623">
-<area shape="rect" id="node38" href="city_correction.html" title="city_correction" alt="" coords="921,1007,1108,1223">
-<area shape="rect" id="node124" href="street_type_correction.html" title="street_type_correction" alt="" coords="918,773,1111,989">
-<area shape="rect" id="node42" href="city_type.html" title="city_type" alt="" coords="685,1375,819,1455">
-<area shape="rect" id="node46" href="city_type_correction.html" title="city_type_correction" alt="" coords="921,1473,1108,1689">
-<area shape="rect" id="node50" href="country.html" title="country" alt="" coords="685,1083,819,1163">
-<area shape="rect" id="node54" href="district.html" title="district" alt="" coords="685,1877,819,1957">
-<area shape="rect" id="node58" href="district_correction.html" title="district_correction" alt="" coords="1163,2280,1349,2496">
-<area shape="rect" id="node65" href="entity_attribute_type.html" title="entity_attribute_type" alt="" coords="409,2344,586,2424">
-<area shape="rect" id="node68" href="entity_attribute_value_type.html" title="entity_attribute_value_type" alt="" coords="650,2731,854,2811">
-<area shape="rect" id="node75" href="organization_attribute.html" title="organization_attribute" alt="" coords="923,2719,1106,2980">
-<area shape="rect" id="node79" href="ownership.html" title="ownership" alt="" coords="685,1472,819,1552">
-<area shape="rect" id="node83" href="ownership_correction.html" title="ownership_correction" alt="" coords="921,1707,1108,1923">
-<area shape="rect" id="node87" href="payment.html" title="payment" alt="" coords="1196,259,1316,339">
-<area shape="rect" id="node94" href="person_account.html" title="person_account" alt="" coords="929,2013,1101,2387">
-<area shape="rect" id="node97" href="privilege.html" title="privilege" alt="" coords="677,1277,827,1357">
-<area shape="rect" id="node101" href="privilege_correction.html" title="privilege_correction" alt="" coords="921,1240,1108,1456">
-<area shape="rect" id="node105" href="region.html" title="region" alt="" coords="685,816,819,896">
-<area shape="rect" id="node112" href="room.html" title="room" alt="" coords="685,621,819,701">
-<area shape="rect" id="node131" href="user.html" title="user" alt="" coords="947,2585,1082,2665">
-<area shape="rect" id="node133" href="user_info.html" title="user_info" alt="" coords="685,1975,819,2055">
-<area shape="rect" id="node137" href="user_organization.html" title="user_organization" alt="" coords="1166,2595,1346,2743">
+<area shape="rect" id="node1" href="actual_payment.html" title="actual_payment" alt="" coords="981,290,1123,370">
+<area shape="rect" id="node3" href="building.html" title="building" alt="" coords="738,84,873,164">
+<area shape="rect" id="node5" href="city.html" title="city" alt="" coords="470,916,605,996">
+<area shape="rect" id="node7" href="street.html" title="street" alt="" coords="738,290,873,370">
+<area shape="rect" id="node9" href="street_type.html" title="street_type" alt="" coords="466,783,609,863">
+<area shape="rect" id="node11" href="request_file.html" title="request_file" alt="" coords="719,710,891,1107">
+<area shape="rect" id="node14" href="entity.html" title="entity" alt="" coords="210,1209,371,1357">
+<area shape="rect" id="node16" href="permission.html" title="permission" alt="" coords="221,992,360,1163">
+<area shape="rect" id="node26" href="organization.html" title="organization" alt="" coords="417,1996,658,2263">
+<area shape="rect" id="node120" href="request_file_group.html" title="request_file_group" alt="" coords="459,1111,615,1191">
+<area shape="rect" id="node12" href="apartment.html" title="apartment" alt="" coords="470,1208,605,1288">
+<area shape="rect" id="node66" href="string_culture.html" title="string_culture" alt="" coords="6,1716,165,1796">
+<area shape="rect" id="node17" href="benefit.html" title="benefit" alt="" coords="995,758,1109,838">
+<area shape="rect" id="node21" href="building_address.html" title="building_address" alt="" coords="459,358,615,438">
+<area shape="rect" id="node24" href="building_correction.html" title="building_correction" alt="" coords="1196,2139,1383,2400">
+<area shape="rect" id="node30" href="street_correction.html" title="street_correction" alt="" coords="953,2015,1151,2276">
+<area shape="rect" id="node34" href="city_correction.html" title="city_correction" alt="" coords="712,1417,899,1656">
+<area shape="rect" id="node139" href="street_type_correction.html" title="street_type_correction" alt="" coords="709,1161,902,1400">
+<area shape="rect" id="node39" href="city_type.html" title="city_type" alt="" coords="470,2280,605,2360">
+<area shape="rect" id="node42" href="city_type_correction.html" title="city_type_correction" alt="" coords="712,2997,899,3236">
+<area shape="rect" id="node47" href="country.html" title="country" alt="" coords="470,455,605,535">
+<area shape="rect" id="node50" href="district.html" title="district" alt="" coords="470,2378,605,2458">
+<area shape="rect" id="node53" href="district_correction.html" title="district_correction" alt="" coords="959,2402,1145,2641">
+<area shape="rect" id="node59" href="dwelling_characteristics.html" title="dwelling_characteristics" alt="" coords="957,391,1147,471">
+<area shape="rect" id="node67" href="entity_attribute_type.html" title="entity_attribute_type" alt="" coords="449,3012,626,3092">
+<area shape="rect" id="node70" href="entity_attribute_value_type.html" title="entity_attribute_value_type" alt="" coords="703,3423,907,3503">
+<area shape="rect" id="node72" href="facility_form2.html" title="facility_form2" alt="" coords="982,660,1122,740">
+<area shape="rect" id="node74" href="facility_service_type.html" title="facility_service_type" alt="" coords="971,92,1133,172">
+<area shape="rect" id="node82" href="organization_attribute.html" title="organization_attribute" alt="" coords="961,3288,1143,3550">
+<area shape="rect" id="node86" href="organization_type.html" title="organization_type" alt="" coords="458,2475,617,2555">
+<area shape="rect" id="node89" href="ownership.html" title="ownership" alt="" coords="470,1306,605,1386">
+<area shape="rect" id="node92" href="ownership_correction.html" title="ownership_correction" alt="" coords="712,1673,899,1912">
+<area shape="rect" id="node97" href="payment.html" title="payment" alt="" coords="992,494,1112,574">
+<area shape="rect" id="node104" href="person_account.html" title="person_account" alt="" coords="719,2510,891,2907">
+<area shape="rect" id="node108" href="privilege.html" title="privilege" alt="" coords="462,1403,613,1483">
+<area shape="rect" id="node111" href="privilege_correction.html" title="privilege_correction" alt="" coords="712,1929,899,2168">
+<area shape="rect" id="node116" href="region.html" title="region" alt="" coords="470,552,605,632">
+<area shape="rect" id="node123" href="room.html" title="room" alt="" coords="470,650,605,730">
+<area shape="rect" id="node126" href="service_association.html" title="service_association" alt="" coords="708,567,903,692">
+<area shape="rect" id="node129" href="service_provider_type.html" title="service_provider_type" alt="" coords="449,1014,626,1094">
+<area shape="rect" id="node147" href="subsidy.html" title="subsidy" alt="" coords="989,190,1115,270">
+<area shape="rect" id="node153" href="user.html" title="user" alt="" coords="738,3290,873,3370">
+<area shape="rect" id="node155" href="user_info.html" title="user_info" alt="" coords="470,2572,605,2652">
+<area shape="rect" id="node158" href="user_organization.html" title="user_organization" alt="" coords="962,2890,1142,3038">
 </map>
 
   <a name='diagram'><img id='twoDegreesImg' src='../diagrams/organization.2degrees.png' usemap='#twoDegreesRelationshipsDiagram' class='diagram' border='0' alt='' align='left'></a>

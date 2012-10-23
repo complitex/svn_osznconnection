@@ -19,8 +19,6 @@ digraph "oneDegreeRelationshipsDiagram" {
   edge [
     arrowsize="0.8"
   ];
-  "entity_type":"entity_id":w -> "entity":"id":e [arrowhead=none dir=back arrowtail=crowodot];
-  "ownership":"entity_type_id":w -> "entity_type":"id":e [arrowhead=none dir=back arrowtail=crowodot];
   "ownership":"parent_entity_id":w -> "entity":"id":e [arrowhead=none dir=back arrowtail=crowodot];
   "ownership":"permission_id":w -> "permission":"permission_id":e [arrowhead=none dir=back arrowtail=crowodot];
   "ownership_attribute":"object_id":w -> "ownership":"object_id.type":e [arrowhead=none dir=back arrowtail=crowodot];
@@ -33,24 +31,10 @@ digraph "oneDegreeRelationshipsDiagram" {
       <TR><TD PORT="entity_table" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">entity_table</TD></TR>
       <TR><TD PORT="entity_name_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">entity_name_id</TD></TR>
       <TR><TD PORT="strategy_factory" COLSPAN="3" ALIGN="LEFT">strategy_factory</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">15 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">17 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">17 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">18 &gt;</TD></TR>
     </TABLE>>
     URL="entity.html"
     tooltip="entity"
-  ];
-  "entity_type" [
-    label=<
-    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
-      <TR><TD COLSPAN="3" BGCOLOR="#9bab96" ALIGN="CENTER">entity_type</TD></TR>
-      <TR><TD PORT="id" COLSPAN="3" BGCOLOR="#bed1b8" ALIGN="LEFT">id</TD></TR>
-      <TR><TD PORT="entity_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">entity_id</TD></TR>
-      <TR><TD PORT="entity_type_name_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">entity_type_name_id</TD></TR>
-      <TR><TD PORT="start_date" COLSPAN="3" ALIGN="LEFT">start_date</TD></TR>
-      <TR><TD PORT="end_date" COLSPAN="3" ALIGN="LEFT">end_date</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">3 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">15 &gt;</TD></TR>
-    </TABLE>>
-    URL="entity_type.html"
-    tooltip="entity_type"
   ];
   "ownership" [
     label=<
@@ -60,13 +44,12 @@ digraph "oneDegreeRelationshipsDiagram" {
       <TR><TD PORT="object_id" COLSPAN="2" BGCOLOR="#f4f7da" ALIGN="LEFT">object_id</TD><TD PORT="object_id.type" ALIGN="LEFT">bigint[19]</TD></TR>
       <TR><TD PORT="parent_id" COLSPAN="2" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_id</TD><TD PORT="parent_id.type" ALIGN="LEFT">bigint[19]</TD></TR>
       <TR><TD PORT="parent_entity_id" COLSPAN="2" BGCOLOR="#f4f7da" ALIGN="LEFT">parent_entity_id</TD><TD PORT="parent_entity_id.type" ALIGN="LEFT">bigint[19]</TD></TR>
-      <TR><TD PORT="entity_type_id" COLSPAN="2" BGCOLOR="#f4f7da" ALIGN="LEFT">entity_type_id</TD><TD PORT="entity_type_id.type" ALIGN="LEFT">bigint[19]</TD></TR>
       <TR><TD PORT="start_date" COLSPAN="2" BGCOLOR="#f4f7da" ALIGN="LEFT">start_date</TD><TD PORT="start_date.type" ALIGN="LEFT">timestamp[19]</TD></TR>
       <TR><TD PORT="end_date" COLSPAN="2" BGCOLOR="#f4f7da" ALIGN="LEFT">end_date</TD><TD PORT="end_date.type" ALIGN="LEFT">timestamp[19]</TD></TR>
       <TR><TD PORT="status" COLSPAN="2" BGCOLOR="#f4f7da" ALIGN="LEFT">status</TD><TD PORT="status.type" ALIGN="LEFT">varchar[20]</TD></TR>
       <TR><TD PORT="permission_id" COLSPAN="2" BGCOLOR="#f4f7da" ALIGN="LEFT">permission_id</TD><TD PORT="permission_id.type" ALIGN="LEFT">bigint[19]</TD></TR>
       <TR><TD PORT="external_id" COLSPAN="2" BGCOLOR="#f4f7da" ALIGN="LEFT">external_id</TD><TD PORT="external_id.type" ALIGN="LEFT">bigint[19]</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">6 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">2 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 2</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">6 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">2 &gt;</TD></TR>
     </TABLE>>
     URL="ownership.html"
     tooltip="ownership"
@@ -100,7 +83,8 @@ digraph "oneDegreeRelationshipsDiagram" {
       <TR><TD PORT="organization_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">organization_id</TD></TR>
       <TR><TD PORT="organization_code" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">organization_code</TD></TR>
       <TR><TD PORT="internal_organization_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">internal_organization_id</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 3</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">8 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
+      <TR><TD PORT="user_organization_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">user_organization_id</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">&lt; 4</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">8 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">  </TD></TR>
     </TABLE>>
     URL="ownership_correction.html"
     tooltip="ownership_correction"
@@ -114,7 +98,7 @@ digraph "oneDegreeRelationshipsDiagram" {
       <TR><TD PORT="table" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">table</TD></TR>
       <TR><TD PORT="entity" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">entity</TD></TR>
       <TR><TD PORT="object_id" COLSPAN="3" BGCOLOR="#f4f7da" ALIGN="LEFT">object_id</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">  </TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 row</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">15 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#f7f7f7">  </TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">1 row</TD><TD ALIGN="RIGHT" BGCOLOR="#f7f7f7">17 &gt;</TD></TR>
     </TABLE>>
     URL="permission.html"
     tooltip="permission"

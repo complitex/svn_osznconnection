@@ -102,7 +102,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 </tr>
 </thead>
 <tbody valign='top'>
-<tr class='odd'>
+<tr class='even'>
  <td class='primaryKey' title='Primary Key'>pk_id</td>
  <td class='detail'>bigint</td>
  <td class='detail' align='right'>19</td>
@@ -113,7 +113,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Суррогатный ключ</td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='indexedColumn' title='Indexed'>object_id</td>
  <td class='detail'>bigint</td>
  <td class='detail' align='right'>19</td>
@@ -122,28 +122,46 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'></td>
  <td class='detail'>
   <table border='0' width='100%' cellspacing='0' cellpadding='0'>
-   <tr class='relative even' valign='top'>
+   <tr class='relative odd' valign='top'>
     <td class='relatedTable detail' title="actual_payment.internal_street_id refs street.object_id via fk_actual_payment__street"><a href='actual_payment.html'>actual_payment</a><span class='relatedKey'>.internal_street_id</span>
     </td>
     <td class='constraint detail'>fk_actual_payment__street<span title='Restrict delete:
  Parent cannot be deleted if children exist'>&nbsp;R</span></td>
    </tr>
-   <tr class='relative even' valign='top'>
+   <tr class='relative odd' valign='top'>
+    <td class='relatedTable detail' title="dwelling_characteristics.internal_street_id refs street.object_id via fk_dwelling_characteristics__street"><a href='dwelling_characteristics.html'>dwelling_characteristics</a><span class='relatedKey'>.internal_street_id</span>
+    </td>
+    <td class='constraint detail'>fk_dwelling_characteristics__street<span title='Restrict delete:
+ Parent cannot be deleted if children exist'>&nbsp;R</span></td>
+   </tr>
+   <tr class='relative odd' valign='top'>
+    <td class='relatedTable detail' title="facility_service_type.internal_street_id refs street.object_id via fk_facility_service_type__street"><a href='facility_service_type.html'>facility_service_type</a><span class='relatedKey'>.internal_street_id</span>
+    </td>
+    <td class='constraint detail'>fk_facility_service_type__street<span title='Restrict delete:
+ Parent cannot be deleted if children exist'>&nbsp;R</span></td>
+   </tr>
+   <tr class='relative odd' valign='top'>
     <td class='relatedTable detail' title="payment.internal_street_id refs street.object_id via fk_payment__street"><a href='payment.html'>payment</a><span class='relatedKey'>.internal_street_id</span>
     </td>
     <td class='constraint detail'>fk_payment__street<span title='Restrict delete:
  Parent cannot be deleted if children exist'>&nbsp;R</span></td>
    </tr>
-   <tr class='relative even' valign='top'>
+   <tr class='relative odd' valign='top'>
     <td class='relatedTable detail' title="street_attribute.object_id refs street.object_id via fk_street_attribute__street"><a href='street_attribute.html'>street_attribute</a><span class='relatedKey'>.object_id</span>
     </td>
     <td class='constraint detail'>fk_street_attribute__street<span title='Restrict delete:
  Parent cannot be deleted if children exist'>&nbsp;R</span></td>
    </tr>
-   <tr class='relative even' valign='top'>
+   <tr class='relative odd' valign='top'>
     <td class='relatedTable detail' title="street_correction.object_id refs street.object_id via fk_street_correction__street"><a href='street_correction.html'>street_correction</a><span class='relatedKey'>.object_id</span>
     </td>
     <td class='constraint detail'>fk_street_correction__street<span title='Restrict delete:
+ Parent cannot be deleted if children exist'>&nbsp;R</span></td>
+   </tr>
+   <tr class='relative odd' valign='top'>
+    <td class='relatedTable detail' title="subsidy.internal_street_id refs street.object_id via fk_subsidy__street"><a href='subsidy.html'>subsidy</a><span class='relatedKey'>.internal_street_id</span>
+    </td>
+    <td class='constraint detail'>fk_subsidy__street<span title='Restrict delete:
  Parent cannot be deleted if children exist'>&nbsp;R</span></td>
    </tr>
   </table>
@@ -151,7 +169,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Идентификатор объекта</td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='indexedColumn' title='Indexed'>parent_id</td>
  <td class='detail'>bigint</td>
  <td class='detail' align='right'>19</td>
@@ -162,7 +180,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Идентификатор родительского объекта</td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='indexedColumn' title='Indexed'>parent_entity_id</td>
  <td class='detail'>bigint</td>
  <td class='detail' align='right'>19</td>
@@ -172,7 +190,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'></td>
  <td class='detail'>
   <table border='0' width='100%' cellspacing='0' cellpadding='0'>
-   <tr class='relative even' valign='top'>
+   <tr class='relative odd' valign='top'>
     <td class='relatedTable detail' title="street.parent_entity_id refs entity.id via fk_street__entity"><a href='entity.html'>entity</a><span class='relatedKey'>.id</span>
     </td>
     <td class='constraint detail'>fk_street__entity<span title='Restrict delete:
@@ -181,26 +199,6 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
   </table>
  </td>
  <td class='comment detail'>Идентификатор сущности родительского объекта: 400 - city</td>
-</tr>
-<tr class='odd'>
- <td class='indexedColumn' title='Indexed'>entity_type_id</td>
- <td class='detail'>bigint</td>
- <td class='detail' align='right'>19</td>
- <td class='detail' align='center' title='nullable'>&nbsp;&radic;&nbsp;</td>
- <td class='detail' align='center'></td>
- <td class='detail' align='right'>null</td>
- <td class='detail'></td>
- <td class='detail'>
-  <table border='0' width='100%' cellspacing='0' cellpadding='0'>
-   <tr class='relative odd' valign='top'>
-    <td class='relatedTable detail' title="street.entity_type_id refs entity_type.id via fk_street__entity_type"><a href='entity_type.html'>entity_type</a><span class='relatedKey'>.id</span>
-    </td>
-    <td class='constraint detail'>fk_street__entity_type<span title='Restrict delete:
- Parent cannot be deleted if children exist'>&nbsp;R</span></td>
-   </tr>
-  </table>
- </td>
- <td class='comment detail'>Идентификатор типа сущности: не используется</td>
 </tr>
 <tr class='even'>
  <td class='indexedColumn' title='Indexed'>start_date</td>
@@ -267,7 +265,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='comment detail'>Внешний идентификатор импорта записи</td>
 </tr>
 </table>
-<p title='10 columns'>Table contained 6 rows at Ср июн 22 19:31 NOVST 2011<p/>
+<p title='9 columns'>Table contained 6 rows at Ср окт 24 03:49 GMT+07:00 2012<p/>
 </td></tr></table>
 <div class='indent'>
 <b>Indexes:</b>
@@ -294,13 +292,6 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
   <td class='detail'>Performance</td>
   <td class='detail' style='text-align:left;'><span title='Ascending'>Asc</span></td>
   <td class='constraint' style='text-align:left;'>key_end_date</td>
-  <td>&nbsp;</td>
- </tr>
- <tr>
-  <td class='indexedColumn'>entity_type_id</td>
-  <td class='detail'>Performance</td>
-  <td class='detail' style='text-align:left;'><span title='Ascending'>Asc</span></td>
-  <td class='constraint' style='text-align:left;'>key_entity_type_id</td>
   <td>&nbsp;</td>
  </tr>
  <tr>
@@ -365,46 +356,52 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 <br><form action='get'><b>Close relationships</b><span class='degrees' id='degrees' title='Detail diminishes with increased separation from street'>
 &nbsp;within <label for='oneDegree'><input type='radio' name='degrees' id='oneDegree' checked>one</label>  <label for='twoDegrees'><input type='radio' name='degrees' id='twoDegrees'>two degrees</label> of separation</span><b>:</b></form>
 <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="actual_payment.html" title="actual_payment" alt="" coords="716,5,919,1264">
-<area shape="rect" id="node3" href="street.html" title="street" alt="" coords="430,2189,671,2478">
-<area shape="rect" id="node4" href="entity_type.html" title="entity_type" alt="" coords="213,2283,385,2453">
-<area shape="rect" id="node6" href="entity.html" title="entity" alt="" coords="6,2261,167,2409">
-<area shape="rect" id="node12" href="permission.html" title="permission" alt="" coords="229,2471,368,2641">
-<area shape="rect" id="node7" href="payment.html" title="payment" alt="" coords="716,1281,919,2993">
-<area shape="rect" id="node13" href="street_attribute.html" title="street_attribute" alt="" coords="737,3011,898,3272">
-<area shape="rect" id="node15" href="street_correction.html" title="street_correction" alt="" coords="718,3290,917,3529">
+<area shape="rect" id="node1" href="actual_payment.html" title="actual_payment" alt="" coords="499,5,701,1264">
+<area shape="rect" id="node3" href="street.html" title="street" alt="" coords="213,3447,454,3713">
+<area shape="rect" id="node11" href="entity.html" title="entity" alt="" coords="6,3469,167,3617">
+<area shape="rect" id="node13" href="permission.html" title="permission" alt="" coords="17,3635,156,3805">
+<area shape="rect" id="node4" href="dwelling_characteristics.html" title="dwelling_characteristics" alt="" coords="499,1282,701,2246">
+<area shape="rect" id="node6" href="facility_service_type.html" title="facility_service_type" alt="" coords="499,2263,701,3363">
+<area shape="rect" id="node8" href="payment.html" title="payment" alt="" coords="499,3381,701,5093">
+<area shape="rect" id="node14" href="street_attribute.html" title="street_attribute" alt="" coords="519,5111,681,5372">
+<area shape="rect" id="node16" href="street_correction.html" title="street_correction" alt="" coords="501,5389,699,5651">
+<area shape="rect" id="node18" href="subsidy.html" title="subsidy" alt="" coords="499,5668,701,7289">
 </map>
   <a name='diagram'><img id='oneDegreeImg' src='../diagrams/street.1degree.png' usemap='#oneDegreeRelationshipsDiagram' class='diagram' border='0' alt='' align='left'></a>
 <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="actual_payment.html" title="actual_payment" alt="" coords="1151,316,1353,1575">
-<area shape="rect" id="node3" href="building.html" title="building" alt="" coords="945,1549,1079,1629">
-<area shape="rect" id="node5" href="city.html" title="city" alt="" coords="685,407,819,487">
-<area shape="rect" id="node7" href="street.html" title="street" alt="" coords="631,699,873,989">
-<area shape="rect" id="node9" href="street_type.html" title="street_type" alt="" coords="681,504,823,584">
-<area shape="rect" id="node11" href="request_file.html" title="request_file" alt="" coords="945,361,1079,441">
-<area shape="rect" id="node14" href="entity_type.html" title="entity_type" alt="" coords="411,895,583,1065">
-<area shape="rect" id="node16" href="entity.html" title="entity" alt="" coords="202,1275,363,1423">
-<area shape="rect" id="node18" href="permission.html" title="permission" alt="" coords="428,1119,567,1289">
-<area shape="rect" id="node28" href="organization.html" title="organization" alt="" coords="681,192,823,272">
-<area shape="rect" id="node12" href="apartment.html" title="apartment" alt="" coords="685,1043,819,1123">
-<area shape="rect" id="node53" href="string_culture.html" title="string_culture" alt="" coords="6,1321,157,1401">
-<area shape="rect" id="node22" href="building_address.html" title="building_address" alt="" coords="674,1335,830,1415">
-<area shape="rect" id="node26" href="building_correction.html" title="building_correction" alt="" coords="1398,21,1562,101">
-<area shape="rect" id="node32" href="street_correction.html" title="street_correction" alt="" coords="1153,59,1351,298">
-<area shape="rect" id="node36" href="city_correction.html" title="city_correction" alt="" coords="939,95,1085,175">
-<area shape="rect" id="node100" href="street_type_correction.html" title="street_type_correction" alt="" coords="918,192,1106,272">
-<area shape="rect" id="node40" href="city_type.html" title="city_type" alt="" coords="685,1663,819,1743">
-<area shape="rect" id="node44" href="country.html" title="country" alt="" coords="685,1760,819,1840">
-<area shape="rect" id="node48" href="district.html" title="district" alt="" coords="685,1468,819,1548">
-<area shape="rect" id="node54" href="entity_attribute_type.html" title="entity_attribute_type" alt="" coords="409,1893,586,1973">
-<area shape="rect" id="node57" href="entity_attribute_value_type.html" title="entity_attribute_value_type" alt="" coords="650,1929,854,2009">
-<area shape="rect" id="node64" href="ownership.html" title="ownership" alt="" coords="685,309,819,389">
-<area shape="rect" id="node68" href="payment.html" title="payment" alt="" coords="1151,1592,1353,3304">
-<area shape="rect" id="node75" href="privilege.html" title="privilege" alt="" coords="677,601,827,681">
-<area shape="rect" id="node79" href="region.html" title="region" alt="" coords="685,1565,819,1645">
-<area shape="rect" id="node84" href="room.html" title="room" alt="" coords="685,1140,819,1220">
-<area shape="rect" id="node91" href="street_attribute.html" title="street_attribute" alt="" coords="931,1795,1093,2056">
-<area shape="rect" id="node107" href="user_info.html" title="user_info" alt="" coords="685,1237,819,1317">
+<area shape="rect" id="node1" href="actual_payment.html" title="actual_payment" alt="" coords="925,1487,1128,2745">
+<area shape="rect" id="node3" href="building.html" title="building" alt="" coords="693,3820,827,3900">
+<area shape="rect" id="node5" href="city.html" title="city" alt="" coords="438,2585,573,2665">
+<area shape="rect" id="node7" href="street.html" title="street" alt="" coords="639,2725,881,2992">
+<area shape="rect" id="node9" href="street_type.html" title="street_type" alt="" coords="434,2719,577,2799">
+<area shape="rect" id="node11" href="request_file.html" title="request_file" alt="" coords="693,1508,827,1588">
+<area shape="rect" id="node14" href="entity.html" title="entity" alt="" coords="210,3437,371,3585">
+<area shape="rect" id="node16" href="permission.html" title="permission" alt="" coords="221,3123,360,3293">
+<area shape="rect" id="node24" href="organization.html" title="organization" alt="" coords="434,363,577,443">
+<area shape="rect" id="node12" href="apartment.html" title="apartment" alt="" coords="438,2852,573,2932">
+<area shape="rect" id="node53" href="string_culture.html" title="string_culture" alt="" coords="6,3708,165,3788">
+<area shape="rect" id="node19" href="building_address.html" title="building_address" alt="" coords="427,3923,583,4003">
+<area shape="rect" id="node22" href="building_correction.html" title="building_correction" alt="" coords="1173,5,1337,85">
+<area shape="rect" id="node28" href="street_correction.html" title="street_correction" alt="" coords="927,89,1126,351">
+<area shape="rect" id="node32" href="city_correction.html" title="city_correction" alt="" coords="687,313,833,393">
+<area shape="rect" id="node105" href="street_type_correction.html" title="street_type_correction" alt="" coords="666,411,854,491">
+<area shape="rect" id="node37" href="city_type.html" title="city_type" alt="" coords="438,3047,573,3127">
+<area shape="rect" id="node40" href="country.html" title="country" alt="" coords="438,3144,573,3224">
+<area shape="rect" id="node43" href="district.html" title="district" alt="" coords="438,3241,573,3321">
+<area shape="rect" id="node46" href="dwelling_characteristics.html" title="dwelling_characteristics" alt="" coords="925,4402,1128,5366">
+<area shape="rect" id="node54" href="entity_attribute_type.html" title="entity_attribute_type" alt="" coords="417,4295,594,4375">
+<area shape="rect" id="node57" href="entity_attribute_value_type.html" title="entity_attribute_value_type" alt="" coords="658,5763,862,5843">
+<area shape="rect" id="node59" href="facility_service_type.html" title="facility_service_type" alt="" coords="925,369,1128,1469">
+<area shape="rect" id="node67" href="organization_type.html" title="organization_type" alt="" coords="426,3339,585,3419">
+<area shape="rect" id="node70" href="ownership.html" title="ownership" alt="" coords="438,3825,573,3905">
+<area shape="rect" id="node73" href="payment.html" title="payment" alt="" coords="925,5420,1128,7132">
+<area shape="rect" id="node80" href="privilege.html" title="privilege" alt="" coords="430,2949,581,3029">
+<area shape="rect" id="node83" href="region.html" title="region" alt="" coords="438,3436,573,3516">
+<area shape="rect" id="node88" href="room.html" title="room" alt="" coords="438,3533,573,3613">
+<area shape="rect" id="node91" href="service_provider_type.html" title="service_provider_type" alt="" coords="417,3631,594,3711">
+<area shape="rect" id="node96" href="street_attribute.html" title="street_attribute" alt="" coords="946,7149,1107,7411">
+<area shape="rect" id="node113" href="subsidy.html" title="subsidy" alt="" coords="925,2763,1128,4384">
+<area shape="rect" id="node119" href="user_info.html" title="user_info" alt="" coords="438,3728,573,3808">
 </map>
 
   <a name='diagram'><img id='twoDegreesImg' src='../diagrams/street.2degrees.png' usemap='#twoDegreesRelationshipsDiagram' class='diagram' border='0' alt='' align='left'></a>

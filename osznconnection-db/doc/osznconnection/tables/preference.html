@@ -102,7 +102,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 </tr>
 </thead>
 <tbody valign='top'>
-<tr class='even'>
+<tr class='odd'>
  <td class='primaryKey' title='Primary Key'>id</td>
  <td class='detail'>bigint</td>
  <td class='detail' align='right'>19</td>
@@ -113,7 +113,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Идентификатор предпочтения</td>
 </tr>
-<tr class='odd'>
+<tr class='even'>
  <td class='indexedColumn' title='Indexed'>user_id</td>
  <td class='detail'>bigint</td>
  <td class='detail' align='right'>19</td>
@@ -123,7 +123,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'></td>
  <td class='detail'>
   <table border='0' width='100%' cellspacing='0' cellpadding='0'>
-   <tr class='relative odd' valign='top'>
+   <tr class='relative even' valign='top'>
     <td class='relatedTable detail' title="preference.user_id refs user.id via fk_preference__user"><a href='user.html'>user</a><span class='relatedKey'>.id</span>
     </td>
     <td class='constraint detail'>fk_preference__user<span title='Restrict delete:
@@ -133,8 +133,8 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  </td>
  <td class='comment detail'>Идентификатор пользователя</td>
 </tr>
-<tr class='even'>
- <td class='detail'>page</td>
+<tr class='odd'>
+ <td class='indexedColumn' title='Indexed'>page</td>
  <td class='detail'>varchar</td>
  <td class='detail' align='right'>255</td>
  <td class='detail' align='center'></td>
@@ -144,8 +144,8 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Класс страницы</td>
 </tr>
-<tr class='odd'>
- <td class='detail'>key</td>
+<tr class='even'>
+ <td class='indexedColumn' title='Indexed'>key</td>
  <td class='detail'>varchar</td>
  <td class='detail' align='right'>255</td>
  <td class='detail' align='center'></td>
@@ -155,7 +155,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='detail'> </td>
  <td class='comment detail'>Ключ</td>
 </tr>
-<tr class='even'>
+<tr class='odd'>
  <td class='detail'>value</td>
  <td class='detail'>varchar</td>
  <td class='detail' align='right'>255</td>
@@ -167,7 +167,7 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
  <td class='comment detail'>Значение</td>
 </tr>
 </table>
-<p title='5 columns'>Table contained 0 rows at Ср июн 22 19:31 NOVST 2011<p/>
+<p title='5 columns'>Table contained 17 rows at Ср окт 24 03:49 GMT+07:00 2012<p/>
 </td></tr></table>
 <div class='indent'>
 <b>Indexes:</b>
@@ -193,23 +193,29 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
   <td class='detail' style='text-align:left;'><span title='Ascending'>Asc</span></td>
   <td class='constraint' style='text-align:left;'>key_user_id</td>
  </tr>
+ <tr>
+  <td class='indexedColumn'>user_id + page + key</td>
+  <td class='detail'>Must be unique</td>
+  <td class='detail' style='text-align:left;'><span title='Ascending'>Asc</span>/<span title='Ascending'>Asc</span>/<span title='Ascending'>Asc</span></td>
+  <td class='constraint' style='text-align:left;'>unique_key</td>
+ </tr>
 </table>
 </div>
 <table width='100%' border='0'><tr><td class='container'>
 <br><form action='get'><b>Close relationships</b><span class='degrees' id='degrees' title='Detail diminishes with increased separation from preference'>
 &nbsp;within <label for='oneDegree'><input type='radio' name='degrees' id='oneDegree' checked>one</label>  <label for='twoDegrees'><input type='radio' name='degrees' id='twoDegrees'>two degrees</label> of separation</span><b>:</b></form>
 <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="preference.html" title="preference" alt="" coords="217,5,417,181">
+<area shape="rect" id="node1" href="preference.html" title="preference" alt="" coords="217,5,425,181">
 <area shape="rect" id="node3" href="user.html" title="user" alt="" coords="6,30,173,178">
 </map>
   <a name='diagram'><img id='oneDegreeImg' src='../diagrams/preference.1degree.png' usemap='#oneDegreeRelationshipsDiagram' class='diagram' border='0' alt='' align='left'></a>
 <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="log.html" title="log" alt="" coords="430,296,565,376">
+<area shape="rect" id="node1" href="log.html" title="log" alt="" coords="430,296,573,376">
 <area shape="rect" id="node3" href="user.html" title="user" alt="" coords="186,237,353,385">
 <area shape="rect" id="node7" href="user_info.html" title="user_info" alt="" coords="6,305,141,385">
-<area shape="rect" id="node4" href="preference.html" title="preference" alt="" coords="397,5,597,181">
-<area shape="rect" id="node8" href="user_organization.html" title="user_organization" alt="" coords="417,199,578,279">
-<area shape="rect" id="node10" href="usergroup.html" title="usergroup" alt="" coords="432,393,563,473">
+<area shape="rect" id="node4" href="preference.html" title="preference" alt="" coords="397,5,605,181">
+<area shape="rect" id="node8" href="user_organization.html" title="user_organization" alt="" coords="421,199,582,279">
+<area shape="rect" id="node10" href="usergroup.html" title="usergroup" alt="" coords="436,393,567,473">
 </map>
 
   <a name='diagram'><img id='twoDegreesImg' src='../diagrams/preference.2degrees.png' usemap='#twoDegreesRelationshipsDiagram' class='diagram' border='0' alt='' align='left'></a>
