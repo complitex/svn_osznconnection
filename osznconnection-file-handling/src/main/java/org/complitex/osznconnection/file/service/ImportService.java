@@ -10,6 +10,7 @@ import org.complitex.dictionary.service.ConfigBean;
 import org.complitex.dictionary.service.IImportListener;
 import org.complitex.dictionary.service.LogBean;
 import org.complitex.dictionary.service.exception.*;
+import org.complitex.dictionary.util.DateUtil;
 import org.complitex.osznconnection.file.Module;
 import org.complitex.osznconnection.file.entity.CorrectionImportFile;
 import org.complitex.osznconnection.ownership.entity.OwnershipImportFile;
@@ -140,7 +141,7 @@ public class ImportService {
     private <T extends IImportFile> void processDictionary(T importFile, long localeId) throws ImportFileNotFoundException,
             ImportObjectLinkException, ImportFileReadException, ImportDuplicateException {
         if (importFile instanceof AddressImportFile) { //Address
-            addressImportService.process(importFile, dictionaryListener, localeId);
+            addressImportService.process(importFile, dictionaryListener, localeId, DateUtil.getCurrentDate());
         } else if (importFile instanceof OwnershipImportFile) { // Ownership
             ownershipImportService.process(dictionaryListener);
         } else if (importFile instanceof PrivilegeImportFile) { //Privilege
