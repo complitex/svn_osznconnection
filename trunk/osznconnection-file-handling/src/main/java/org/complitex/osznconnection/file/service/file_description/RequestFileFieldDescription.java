@@ -25,6 +25,12 @@ public class RequestFileFieldDescription implements Serializable {
         this.type = type;
         this.length = length;
         this.scale = scale;
+
+        //integer -> long
+        if (Integer.class.getName().equals(type)){
+            type = Long.class.getName();
+        }
+
         try {
             fieldType = Thread.currentThread().getContextClassLoader().loadClass(type);
         } catch (ClassNotFoundException e) {

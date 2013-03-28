@@ -29,7 +29,7 @@ public final class RequestFileTypeConverter {
         if (value instanceof String) {
             return (String) value;
         }
-        if (value instanceof Integer) {
+        if (value instanceof Integer || value instanceof Long) {
             return value.toString();
         }
         if (value instanceof BigDecimal) {
@@ -39,6 +39,7 @@ public final class RequestFileTypeConverter {
             final DateFormat dateFormat = new SimpleDateFormat(datePattern);
             return dateFormat.format((Date) value);
         }
+
         throw new IllegalStateException("Couldn't transform object value to string. Value type: " + value.getClass());
     }
 
@@ -54,6 +55,9 @@ public final class RequestFileTypeConverter {
             if (type == Integer.class) {
                 return (T) Integer.valueOf(value);
             }
+            if (type == Long.class) {
+                return (T) Long.valueOf(value);
+            }
             if (type == BigDecimal.class) {
                 return (T) new BigDecimal(value);
             }
@@ -61,10 +65,9 @@ public final class RequestFileTypeConverter {
                 final DateFormat dateFormat = new SimpleDateFormat(datePattern);
                 return (T) dateFormat.parse(value);
             }
+
             throw new IllegalStateException("Couldn't transform string to object value. Type: " + type);
-        } catch (NumberFormatException e) {
-            throw new ConversionException(e);
-        } catch (ParseException e) {
+        } catch (NumberFormatException | ParseException e) {
             throw new ConversionException(e);
         }
     }

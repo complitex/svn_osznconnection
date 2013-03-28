@@ -11,9 +11,13 @@
 	$Id: DBFWriter.java,v 1.9 2004/03/31 10:57:16 anil Exp $
 */
 package com.linuxense.javadbf;
+
 import java.io.*;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Vector;
 
 /**
 	An object of this class can create a DBF file.
@@ -168,7 +172,8 @@ public class DBFWriter extends DBFBase {
 
 				case 'N':
                     if (header.fieldArray[i].getDecimalCount() > 0 && !(values[i] instanceof BigDecimal)
-                            || header.fieldArray[i].getDecimalCount() == 0 && !(values[i] instanceof Integer)) {
+                            || header.fieldArray[i].getDecimalCount() == 0
+                            && !(values[i] instanceof Integer || values[i] instanceof Long)) {
                         throw new DBFException("Invalid value for field " + i);
                     }
 					break;

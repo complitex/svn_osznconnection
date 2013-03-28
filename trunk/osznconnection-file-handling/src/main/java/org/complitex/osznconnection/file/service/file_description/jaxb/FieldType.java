@@ -36,12 +36,19 @@ public enum FieldType {
 
     @XmlEnumValue("java.lang.String")
     STRING("java.lang.String"),
+
     @XmlEnumValue("java.lang.Integer")
     INTEGER("java.lang.Integer"),
+
+    @XmlEnumValue("java.lang.Long")
+    LONG("java.lang.Long"),
+
     @XmlEnumValue("java.math.BigDecimal")
     BIG_DECIMAL("java.math.BigDecimal"),
+
     @XmlEnumValue("java.util.Date")
     DATE("java.util.Date");
+
     private final String value;
 
     FieldType(String v) {

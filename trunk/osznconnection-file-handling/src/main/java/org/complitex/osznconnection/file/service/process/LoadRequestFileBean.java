@@ -5,9 +5,19 @@ import com.linuxense.javadbf.DBFReader;
 import org.complitex.dictionary.service.ConfigBean;
 import org.complitex.dictionary.service.executor.ExecuteException;
 import org.complitex.dictionary.util.DateUtil;
-import org.complitex.osznconnection.file.entity.*;
+import org.complitex.osznconnection.file.entity.AbstractRequest;
+import org.complitex.osznconnection.file.entity.FileHandlingConfig;
+import org.complitex.osznconnection.file.entity.RequestFile;
+import org.complitex.osznconnection.file.entity.RequestStatus;
 import org.complitex.osznconnection.file.service.RequestFileBean;
 import org.complitex.osznconnection.file.service.exception.*;
+import org.complitex.osznconnection.file.service.file_description.RequestFileDescription;
+import org.complitex.osznconnection.file.service.file_description.RequestFileDescriptionBean;
+import org.complitex.osznconnection.file.service.file_description.RequestFileFieldDescription;
+import org.complitex.osznconnection.file.service.file_description.convert.DBFFieldTypeConverter;
+import org.complitex.osznconnection.file.service.file_description.convert.RequestFileTypeConverter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -16,18 +26,7 @@ import javax.ejb.TransactionManagementType;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import org.complitex.osznconnection.file.service.file_description.RequestFileDescription;
-import org.complitex.osznconnection.file.service.file_description.RequestFileDescriptionBean;
-import org.complitex.osznconnection.file.service.file_description.RequestFileFieldDescription;
-import org.complitex.osznconnection.file.service.file_description.convert.DBFFieldTypeConverter;
-import org.complitex.osznconnection.file.service.file_description.convert.RequestFileTypeConverter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.*;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -228,7 +227,7 @@ public class LoadRequestFileBean {
         }
 
         //для чисел нужно проверить масштаб.
-        if (expectedFieldType == Integer.class || expectedFieldType == BigDecimal.class) {
+        if (expectedFieldType == BigDecimal.class || expectedFieldType == Long.class) {
             final int realFieldScale = dBFField.getDecimalCount();
             Integer expectedFieldScale = fieldDescription.getScale();
             if (expectedFieldScale == null) {

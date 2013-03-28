@@ -73,9 +73,11 @@ public class GroupLoadTaskBean implements ITaskBean {
                 //установка номера реестра
                 if (rowNumber == 0) {
                     Payment payment = (Payment) request;
-                    Integer registry = payment.getField(PaymentDBF.REE_NUM);
+
+                    Long registry = payment.getField(PaymentDBF.REE_NUM);
+
                     if (registry != null) {
-                        paymentFile.setRegistry(registry);
+                        paymentFile.setRegistry(registry.intValue());
                     }
                 }
             }
@@ -105,9 +107,11 @@ public class GroupLoadTaskBean implements ITaskBean {
                     //установка номера реестра
                     if (rowNumber == 0) {
                         Benefit benefit = (Benefit) request;
-                        Integer registry = benefit.getField(BenefitDBF.REE_NUM);
+
+                        Long registry = benefit.getField(BenefitDBF.REE_NUM);
+
                         if (registry != null) {
-                            benefitFile.setRegistry(registry);
+                            benefitFile.setRegistry(registry.intValue());
                         }
                     }
                 }
