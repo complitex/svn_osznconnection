@@ -6,41 +6,9 @@ package org.complitex.osznconnection.file.service.file_description;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import javax.ejb.ConcurrencyManagement;
-import javax.ejb.ConcurrencyManagementType;
-import javax.ejb.Stateless;
-import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.UnmarshalException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.ValidationEvent;
-import javax.xml.bind.util.ValidationEventCollector;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.AbstractBean;
-import static org.complitex.dictionary.util.ResourceUtil.*;
-import org.complitex.osznconnection.file.entity.ActualPaymentDBF;
-import org.complitex.osznconnection.file.entity.BenefitDBF;
-import org.complitex.osznconnection.file.entity.DwellingCharacteristicsDBF;
-import org.complitex.osznconnection.file.entity.FacilityForm2DBF;
-import org.complitex.osznconnection.file.entity.FacilityServiceTypeDBF;
-import org.complitex.osznconnection.file.entity.FacilityStreetDBF;
-import org.complitex.osznconnection.file.entity.FacilityStreetTypeDBF;
-import org.complitex.osznconnection.file.entity.FacilityTarifDBF;
-import org.complitex.osznconnection.file.entity.PaymentDBF;
-import org.complitex.osznconnection.file.entity.RequestFile;
-import org.complitex.osznconnection.file.entity.SubsidyDBF;
-import org.complitex.osznconnection.file.entity.SubsidyTarifDBF;
+import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.service.file_description.RequestFileDescriptionValidateException.ValidationError;
 import org.complitex.osznconnection.file.service.file_description.jaxb.Field;
 import org.complitex.osznconnection.file.service.file_description.jaxb.Fields;
@@ -48,6 +16,22 @@ import org.complitex.osznconnection.file.service.file_description.jaxb.FileDescr
 import org.complitex.osznconnection.file.service.file_description.jaxb.FileDescriptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.ejb.ConcurrencyManagement;
+import javax.ejb.ConcurrencyManagementType;
+import javax.ejb.Stateless;
+import javax.xml.XMLConstants;
+import javax.xml.bind.*;
+import javax.xml.bind.util.ValidationEventCollector;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.*;
+
+import static org.complitex.dictionary.util.ResourceUtil.getFormatString;
+import static org.complitex.dictionary.util.ResourceUtil.getString;
 
 /**
  *
@@ -112,8 +96,8 @@ public class RequestFileDescriptionBean extends AbstractBean {
         synchronized (cache) {
             RequestFileDescription fileDescription = cache.get(requestFileType);
             if (fileDescription == null) {
-                fileDescription = (RequestFileDescription) sqlSession().selectOne(MAPPING_NAMESPACE + ".find",
-                        requestFileType.name());
+                fileDescription = sqlSession().selectOne(MAPPING_NAMESPACE + ".find", requestFileType.name());
+
                 cache.put(requestFileType, fileDescription);
             }
             return fileDescription;

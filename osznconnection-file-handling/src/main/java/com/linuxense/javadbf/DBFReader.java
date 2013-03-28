@@ -263,15 +263,14 @@ public class DBFReader extends DBFBase {
 							dataInputStream.read( t_numeric);
 							t_numeric = Utils.trimLeftSpaces( t_numeric);
 
-							if( t_numeric.length > 0 && !Utils.contains( t_numeric, (byte)'?')) {                                 
+							if( t_numeric.length > 0 && !Utils.contains( t_numeric, (byte)'?')) {
                                 if (Utils.contains(t_numeric, (byte)'.')){
                                     recordObjects[i] = new BigDecimal(new String( t_numeric));
                                 }else{
-                                    recordObjects[i] = new Integer(new String( t_numeric));
+                                    recordObjects[i] = new Long(new String(t_numeric));
                                 }
 							}
 							else {
-
 								recordObjects[i] = null;
 							}
 						}

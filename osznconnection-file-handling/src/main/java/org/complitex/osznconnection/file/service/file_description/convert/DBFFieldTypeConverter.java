@@ -19,7 +19,7 @@ public class DBFFieldTypeConverter {
             case DBFField.FIELD_TYPE_C:
                 return String.class;
             case DBFField.FIELD_TYPE_N:
-                return dbfField.getDecimalCount() == 0 ? Integer.class : BigDecimal.class;
+                return dbfField.getDecimalCount() == 0 ? Long.class : BigDecimal.class;
             case DBFField.FIELD_TYPE_D:
                 return Date.class;
             default:
@@ -31,7 +31,7 @@ public class DBFFieldTypeConverter {
     public static byte toDBFType(String fieldName, Class<?> javaType) {
         if (javaType == String.class) {
             return DBFField.FIELD_TYPE_C;
-        } else if (javaType == Integer.class || javaType == BigDecimal.class) {
+        } else if (javaType == Long.class || javaType == BigDecimal.class) {
             return DBFField.FIELD_TYPE_N;
         } else if (javaType == Date.class) {
             return DBFField.FIELD_TYPE_D;

@@ -4,19 +4,16 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.Date;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.entity.example.PaymentExample;
+import org.complitex.osznconnection.service_provider_type.strategy.ServiceProviderTypeStrategy;
+
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import org.complitex.osznconnection.service_provider_type.strategy.ServiceProviderTypeStrategy;
+import java.math.BigDecimal;
+import java.util.*;
 
 /**
  * Обработка записей файла запроса начислений
@@ -309,7 +306,7 @@ public class PaymentBean extends AbstractRequestBean {
         for (Payment p : payments) {
             Object frog = p.getField(PaymentDBF.FROG);
             if (frog != null) {
-                if (frog instanceof Integer && (Integer) frog > 0) {
+                if (frog instanceof Long && (Long) frog > 0) {
                     dat1Set.add((Date) p.getField(PaymentDBF.DAT1));
                 } else if (frog instanceof BigDecimal && ((BigDecimal) frog).compareTo(BigDecimal.ZERO) > 0) {
                     dat1Set.add((Date) p.getField(PaymentDBF.DAT1));
