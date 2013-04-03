@@ -4,10 +4,6 @@
  */
 package org.complitex.osznconnection.file.web.pages.facility;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import javax.ejb.EJB;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
@@ -24,9 +20,11 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.ResourceModel;
+import org.complitex.dictionary.util.DateUtil;
 import org.complitex.dictionary.util.StringUtil;
 import org.complitex.dictionary.web.component.AjaxFeedbackPanel;
 import org.complitex.dictionary.web.component.DatePicker;
+import org.complitex.dictionary.web.component.MonthDropDownChoice;
 import org.complitex.dictionary.web.component.YearDropDownChoice;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
 import org.complitex.osznconnection.file.entity.RequestFile;
@@ -39,29 +37,17 @@ import org.complitex.osznconnection.file.web.component.LoadButton;
 import org.complitex.osznconnection.file.web.component.load.DateParameter;
 import org.complitex.osznconnection.file.web.component.load.RequestFileLoadPanel;
 import org.complitex.osznconnection.file.web.component.load.RequestFileLoadPanel.MonthParameterViewMode;
-import org.complitex.osznconnection.file.web.component.process.ItemCheckBoxPanel;
-import org.complitex.osznconnection.file.web.component.process.ItemDateLoadedLabel;
-import org.complitex.osznconnection.file.web.component.process.ItemOrganizationLabel;
-import org.complitex.osznconnection.file.web.component.process.ModificationManager;
-import org.complitex.osznconnection.file.web.component.process.OsznFilter;
-import org.complitex.osznconnection.file.web.component.process.ProcessDataView;
-import org.complitex.osznconnection.file.web.component.process.ProcessPagingNavigator;
-import org.complitex.osznconnection.file.web.component.process.RequestFileDataProvider;
-import org.complitex.osznconnection.file.web.component.process.RequestFileDeleteButton;
-import org.complitex.osznconnection.file.web.component.process.RequestFileItemStatusLabel;
-import org.complitex.osznconnection.file.web.component.process.RequestFileLoader;
-import org.complitex.osznconnection.file.web.component.process.RequestFileMessagesManager;
-import org.complitex.osznconnection.file.web.component.process.RequestFileProcessingManager;
-import org.complitex.osznconnection.file.web.component.process.RequestFileStatusFilter;
-import org.complitex.osznconnection.file.web.component.process.SelectAllCheckBoxPanel;
-import org.complitex.osznconnection.file.web.component.process.SelectManager;
-import org.complitex.osznconnection.file.web.component.process.TimerManager;
-import org.complitex.osznconnection.file.web.component.process.UserOrganizationFilter;
+import org.complitex.osznconnection.file.web.component.process.*;
 import org.complitex.template.web.component.toolbar.ToolbarButton;
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.TemplatePage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.ejb.EJB;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -168,6 +154,9 @@ public abstract class AbstractReferenceBookFileList extends TemplatePage {
         // Организация пользователя
         form.add(new UserOrganizationFilter("userOrganization"));
 
+        //Месяц
+        form.add(new MonthDropDownChoice("month").setNullValid(true));
+
         //Год
         form.add(new YearDropDownChoice("year").setNullValid(true));
 
@@ -214,6 +203,7 @@ public abstract class AbstractReferenceBookFileList extends TemplatePage {
                 //Организация пользователя
                 item.add(new ItemOrganizationLabel("userOrganization", item.getModelObject().getUserOrganizationId()));
 
+                item.add(new Label("month", DateUtil.displayMonth(item.getModelObject().getMonth(), getLocale())));
                 item.add(new Label("year", StringUtil.valueOf(item.getModelObject().getYear())));
 
                 item.add(new Label("dbf_record_count", StringUtil.valueOf(item.getModelObject().getDbfRecordCount())));
@@ -223,8 +213,7 @@ public abstract class AbstractReferenceBookFileList extends TemplatePage {
 
                     @Override
                     protected String load() {
-                        return StringUtil.valueOf(item.getModelObject().getLoadedRecordCount(),
-                                item.getModelObject().getDbfRecordCount());
+                        return StringUtil.valueOf(item.getModelObject().getLoadedRecordCount());
                     }
                 }));
 
@@ -245,6 +234,7 @@ public abstract class AbstractReferenceBookFileList extends TemplatePage {
         form.add(new ArrowOrderByBorder("header.name", "name", dataProvider, dataView, form));
         form.add(new ArrowOrderByBorder("header.organization", "organization_id", dataProvider, dataView, form));
         form.add(new ArrowOrderByBorder("header.user_organization", "user_organization_id", dataProvider, dataView, form));
+        form.add(new ArrowOrderByBorder("header.month", "month", dataProvider, dataView, form));
         form.add(new ArrowOrderByBorder("header.year", "year", dataProvider, dataView, form));
         form.add(new ArrowOrderByBorder("header.status", "status", dataProvider, dataView, form));
 
@@ -303,7 +293,7 @@ public abstract class AbstractReferenceBookFileList extends TemplatePage {
                     public void load(long userOrganizationId, long osznId, DateParameter dateParameter) {
                         AbstractReferenceBookFileList.this.load(userOrganizationId, osznId, dateParameter);
                     }
-                }, MonthParameterViewMode.HIDDEN);
+                }, MonthParameterViewMode.EXACT);
 
         add(requestFileLoadPanel);
 
