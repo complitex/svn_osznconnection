@@ -4,15 +4,9 @@
  */
 package org.complitex.osznconnection.file.service;
 
-import com.google.common.collect.ImmutableMap;
-import java.util.List;
-import java.util.Locale;
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.entity.DomainObject;
+import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.entity.Log;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.AbstractBean;
@@ -23,17 +17,20 @@ import org.complitex.dictionary.strategy.IStrategy;
 import org.complitex.dictionary.strategy.StrategyFactory;
 import org.complitex.dictionary.util.ResourceUtil;
 import org.complitex.osznconnection.file.Module;
-import org.complitex.osznconnection.file.entity.AbstractRequest;
-import org.complitex.osznconnection.file.entity.Correction;
-import org.complitex.osznconnection.file.entity.FacilityStreet;
-import org.complitex.osznconnection.file.entity.FacilityStreetDBF;
-import org.complitex.osznconnection.file.entity.FileHandlingConfig;
-import org.complitex.osznconnection.file.entity.RequestFile;
-import org.complitex.osznconnection.file.entity.StreetCorrection;
+import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.service.process.FacilityStreetLoadTaskBean;
 import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import java.util.List;
+import java.util.Locale;
+
+import static com.google.common.collect.ImmutableMap.of;
 
 /**
  *
@@ -43,7 +40,7 @@ import org.slf4j.LoggerFactory;
 public class FacilityReferenceBookBean extends AbstractBean {
 
     private static final String RESOURCE_BUNDLE = FacilityReferenceBookBean.class.getName();
-    private static final String MAPPING_NAMESPACE = FacilityReferenceBookBean.class.getName();
+    private static final String NS = FacilityReferenceBookBean.class.getName();
     private static final Logger log = LoggerFactory.getLogger(FacilityReferenceBookBean.class);
     @EJB
     private AddressCorrectionBean addressCorrectionBean;
@@ -62,8 +59,7 @@ public class FacilityReferenceBookBean extends AbstractBean {
             final String table = getTableName(requestFileType);
 
             for (AbstractRequest request : requests) {
-                sqlSession().insert(MAPPING_NAMESPACE + ".insertFacilityReferences",
-                        ImmutableMap.of("table", table, "request", request));
+                sqlSession().insert(NS + ".insertFacilityReferences", of("table", table, "request", request));
             }
         }
     }
@@ -83,14 +79,43 @@ public class FacilityReferenceBookBean extends AbstractBean {
 
     @Transactional
     public void delete(long requestFileId, RequestFile.TYPE requestFileType) {
-        sqlSession().delete(MAPPING_NAMESPACE + ".deleteFacilityReferences",
-                ImmutableMap.of("requestFileId", requestFileId, "table", getTableName(requestFileType)));
+        sqlSession().delete(NS + ".deleteFacilityReferences", of("requestFileId", requestFileId, "table",
+                getTableName(requestFileType)));
+    }
+
+    //FacilityStreetType
+
+    public List<FacilityStreetType> getFacilityStreetTypes(FilterWrapper<FacilityStreetType> filterWrapper){
+        return sqlSession().selectList(NS + ".selectFacilityStreetTypes", filterWrapper);
+    }
+
+    public Integer getFacilityStreetTypesCount(FilterWrapper<FacilityStreetType> filterWrapper){
+        return sqlSession().selectOne(NS + ".selectFacilityStreetTypesCount", filterWrapper);
+    }
+
+    //FacilityStreet
+
+    public List<FacilityStreet> getFacilityStreets(FilterWrapper<FacilityStreet> filterWrapper){
+        return sqlSession().selectList(NS + ".selectFacilityStreets", filterWrapper);
+    }
+
+    public Integer getFacilityStreetsCount(FilterWrapper<FacilityStreet> filterWrapper){
+        return sqlSession().selectOne(NS + ".selectFacilityStreetsCount", filterWrapper);
+    }
+
+    //FacilityTarif
+
+    public List<FacilityTarif> getFacilityTarifs(FilterWrapper<FacilityTarif> filterWrapper){
+        return sqlSession().selectList(NS + ".selectFacilityTarifs", filterWrapper);
+    }
+
+    public Integer getFacilityTarifsCount(FilterWrapper<FacilityTarif> filterWrapper){
+        return sqlSession().selectOne(NS + ".selectFacilityTarifsCount", filterWrapper);
     }
 
     private List<String> findStreetTypeNames(String streetTypeCode, long osznId, long userOrganizationId) {
-        return sqlSession().selectList(MAPPING_NAMESPACE + ".findStreetTypeNames",
-                ImmutableMap.of("streetTypeCode", streetTypeCode, "osznId", osznId,
-                "userOrganizationId", userOrganizationId));
+        return sqlSession().selectList(NS + ".findStreetTypeNames", of("streetTypeCode", streetTypeCode, "osznId", osznId,
+                        "userOrganizationId", userOrganizationId));
     }
 
     /**
@@ -230,7 +255,6 @@ public class FacilityReferenceBookBean extends AbstractBean {
                     log.error("No one internal street was found in local base. Internal city id: {}, "
                             + "internal street type id: {}, street name: '{}', oszn id: {}, user organization id: {}",
                             new Object[]{cityId, streetTypeId, streetName, osznId, userOrganizationId});
-                    return;
                 }
             }
         }

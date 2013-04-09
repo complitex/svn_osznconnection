@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.osznconnection.file.entity;
 
 /**
@@ -9,6 +5,12 @@ package org.complitex.osznconnection.file.entity;
  * @author Artem
  */
 public class FacilityStreetType extends AbstractRequest {
+    public FacilityStreetType() {
+    }
+
+    public FacilityStreetType(Long requestFileId) {
+        setRequestFileId(requestFileId);
+    }
 
     public <T> T getField(FacilityStreetTypeDBF facilityStreetTypeDBF) {
         return getField(facilityStreetTypeDBF.name());

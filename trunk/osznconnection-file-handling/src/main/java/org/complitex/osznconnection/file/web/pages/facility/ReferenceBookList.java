@@ -4,7 +4,6 @@
  */
 package org.complitex.osznconnection.file.web.pages.facility;
 
-import java.util.Arrays;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
@@ -19,11 +18,14 @@ import org.apache.wicket.model.ResourceModel;
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.FormTemplatePage;
 
+import java.util.Arrays;
+
 /**
  *
  * @author Artem
  */
 @AuthorizeInstantiation(SecurityRole.AUTHORIZED)
+@Deprecated
 public final class ReferenceBookList extends FormTemplatePage {
 
     public ReferenceBookList() {

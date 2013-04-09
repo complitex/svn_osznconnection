@@ -33,5 +33,77 @@
     <delete id="deleteFacilityReferences" parameterType="map">
         DELETE FROM `${table}` WHERE `request_file_id` = #{requestFileId}
     </delete>
-    
+
+    <!--FacilityStreetType-->
+
+    <resultMap id="facilityStreetTypeResultMap" type="org.complitex.osznconnection.file.entity.FacilityStreetType">
+        <id column="id" property="id"/>
+        <result column="request_file_id" property="requestFileId"/>
+
+        <association property="dbfFields" javaType="map">
+            <result column="KLKUL_CODE" property="KLKUL_CODE"/>
+            <result column="KLKUL_NAME" property="KLKUL_NAME"/>
+        </association>
+    </resultMap>
+
+    <select id="selectFacilityStreetTypes" parameterType="org.complitex.dictionary.entity.FilterWrapper"
+            resultMap="facilityStreetTypeResultMap">
+        select * from `facility_street_type_reference` where `request_file_id` = #{object.requestFileId}
+          order by ${sortProperty} ${asc} limit #{first}, #{count}
+    </select>
+
+    <select id="selectFacilityStreetTypesCount" parameterType="org.complitex.dictionary.entity.FilterWrapper"
+            resultType="int">
+        select count(*) from `facility_street_type_reference` where `request_file_id` = #{object.requestFileId}
+    </select>
+
+    <!--FacilityStreet-->
+
+    <resultMap id="facilityStreetResultMap" type="org.complitex.osznconnection.file.entity.FacilityStreet">
+        <id column="id" property="id"/>
+        <result column="request_file_id" property="requestFileId"/>
+
+        <association property="dbfFields" javaType="map">
+            <result column="KL_CODERN" property="KL_CODERN"/>
+            <result column="KL_CODEUL" property="KL_CODEUL"/>
+            <result column="KL_NAME" property="KL_NAME"/>
+            <result column="KL_CODEKUL" property="KL_CODEKUL"/>
+        </association>
+    </resultMap>
+
+    <select id="selectFacilityStreets" parameterType="long" resultMap="facilityStreetResultMap">
+        select * from `facility_street_reference` where `request_file_id` = #{requestFileId}
+    </select>
+
+    <!--FacilityTarif-->
+
+    <resultMap id="facilityTarifResultMap" type="org.complitex.osznconnection.file.entity.FacilityTarif">
+        <id column="id" property="id"/>
+        <result column="request_file_id" property="requestFileId"/>
+
+        <association property="dbfFields" javaType="map">
+            <result column="TAR_CODE" property="TAR_CODE"/>
+            <result column="TAR_CDPLG" property="TAR_CDPLG"/>
+            <result column="TAR_SERV" property="TAR_SERV"/>
+            <result column="TAR_DATEB" property="TAR_DATEB"/>
+            <result column="TAR_DATEE" property="TAR_DATEE"/>
+            <result column="TAR_COEF" property="TAR_COEF"/>
+            <result column="TAR_COST" property="TAR_COST"/>
+            <result column="TAR_UNIT" property="TAR_UNIT"/>
+            <result column="TAR_METER" property="TAR_METER"/>
+            <result column="TAR_NMBAS" property="TAR_NMBAS"/>
+            <result column="TAR_NMSUP" property="TAR_NMSUP"/>
+            <result column="TAR_NMUBS" property="TAR_NMUBS"/>
+            <result column="TAR_NMUSP" property="TAR_NMUSP"/>
+            <result column="TAR_NMUMX" property="TAR_NMUMX"/>
+            <result column="TAR_TPNMB" property="TAR_TPNMB"/>
+            <result column="TAR_TPNMS" property="TAR_TPNMS"/>
+            <result column="TAR_NMUPL" property="TAR_NMUPL"/>
+            <result column="TAR_PRIV" property="TAR_PRIV"/>
+        </association>
+    </resultMap>
+
+    <select id="selectFacilityTarifs" parameterType="long" resultMap="facilityTarifResultMap">
+        select * from `facility_tarif_reference` where `request_file_id` = #{requestFileId}
+    </select>
 </mapper>
