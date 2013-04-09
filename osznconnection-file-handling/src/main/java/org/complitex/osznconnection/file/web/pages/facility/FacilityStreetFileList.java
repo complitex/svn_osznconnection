@@ -4,11 +4,13 @@
  */
 package org.complitex.osznconnection.file.web.pages.facility;
 
-import javax.ejb.EJB;
+import org.apache.wicket.Page;
 import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.service.process.ProcessManagerBean;
 import org.complitex.osznconnection.file.service.process.ProcessType;
 import org.complitex.osznconnection.file.web.component.load.DateParameter;
+
+import javax.ejb.EJB;
 
 /**
  *
@@ -36,5 +38,10 @@ public final class FacilityStreetFileList extends AbstractReferenceBookFileList 
     @Override
     protected ProcessType getLoadProcessType() {
         return ProcessType.LOAD_FACILITY_STREET_REFERENCE;
+    }
+
+    @Override
+    protected Class<? extends Page> getItemsPage() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

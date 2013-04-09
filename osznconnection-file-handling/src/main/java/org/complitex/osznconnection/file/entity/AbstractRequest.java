@@ -1,16 +1,16 @@
 package org.complitex.osznconnection.file.entity;
 
 import com.google.common.collect.Lists;
-
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.complitex.dictionary.entity.ILongId;
 import org.complitex.dictionary.util.EjbBeanLocator;
 import org.complitex.osznconnection.file.service.file_description.RequestFileDescription;
 import org.complitex.osznconnection.file.service.file_description.RequestFileDescriptionBean;
 import org.complitex.osznconnection.file.service.file_description.RequestFileFieldDescription;
 import org.complitex.osznconnection.file.service.file_description.convert.ConversionException;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -19,7 +19,7 @@ import org.complitex.osznconnection.file.service.file_description.convert.Conver
  * Абстрактное представление записи файла запроса.
  * Используется <code>Map<String, Object></code> для хранения названий и значений полей.
  */
-public abstract class AbstractRequest implements Serializable {
+public abstract class AbstractRequest implements ILongId{
 
     private Long id;
     private Long requestFileId;
@@ -56,6 +56,7 @@ public abstract class AbstractRequest implements Serializable {
         dbfFields.put(fieldName, description.getTypeConverter().toString(object));
     }
 
+    //todo wtf
     protected RequestFileDescription getDescription() {
         RequestFileDescriptionBean requestFileDescriptionBean = EjbBeanLocator.getBean(RequestFileDescriptionBean.class);
         return requestFileDescriptionBean.getFileDescription(getRequestFileType());

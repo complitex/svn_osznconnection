@@ -1,19 +1,20 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.osznconnection.file.web.pages.facility;
 
-import javax.ejb.EJB;
+import org.apache.wicket.Page;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.service.process.ProcessManagerBean;
 import org.complitex.osznconnection.file.service.process.ProcessType;
 import org.complitex.osznconnection.file.web.component.load.DateParameter;
+import org.complitex.template.web.security.SecurityRole;
+
+import javax.ejb.EJB;
 
 /**
  *
  * @author Artem
  */
+@AuthorizeInstantiation(SecurityRole.AUTHORIZED)
 public final class FacilityStreetTypeFileList extends AbstractReferenceBookFileList {
 
     @EJB
@@ -36,5 +37,10 @@ public final class FacilityStreetTypeFileList extends AbstractReferenceBookFileL
     @Override
     protected ProcessType getLoadProcessType() {
         return ProcessType.LOAD_FACILITY_STREET_TYPE_REFERENCE;
+    }
+
+    @Override
+    protected Class<? extends Page> getItemsPage() {
+        return FacilityStreetTypeList.class;
     }
 }

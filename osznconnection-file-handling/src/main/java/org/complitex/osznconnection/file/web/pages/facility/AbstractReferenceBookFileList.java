@@ -4,6 +4,7 @@
  */
 package org.complitex.osznconnection.file.web.pages.facility;
 
+import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
@@ -20,12 +21,10 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.dictionary.util.DateUtil;
 import org.complitex.dictionary.util.StringUtil;
-import org.complitex.dictionary.web.component.AjaxFeedbackPanel;
-import org.complitex.dictionary.web.component.DatePicker;
-import org.complitex.dictionary.web.component.MonthDropDownChoice;
-import org.complitex.dictionary.web.component.YearDropDownChoice;
+import org.complitex.dictionary.web.component.*;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
 import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.entity.RequestFileFilter;
@@ -79,6 +78,8 @@ public abstract class AbstractReferenceBookFileList extends TemplatePage {
     protected abstract void load(long userOrganizationId, long osznId, DateParameter dateParameter);
 
     protected abstract ProcessType getLoadProcessType();
+
+    protected abstract Class<? extends Page> getItemsPage();
 
     private boolean hasFieldDescription() {
         return requestFileDescriptionBean.getFileDescription(getRequestFileType()) != null;
@@ -187,7 +188,7 @@ public abstract class AbstractReferenceBookFileList extends TemplatePage {
                 final Long objectId = item.getModelObject().getId();
 
                 //Выбор файлов
-                item.add(new ItemCheckBoxPanel<RequestFile>("itemCheckBoxPanel", processingManager, selectManager));
+                item.add(new ItemCheckBoxPanel<>("itemCheckBoxPanel", processingManager, selectManager));
 
                 //Идентификатор файла
                 item.add(new Label("id", StringUtil.valueOf(objectId)));
@@ -195,7 +196,8 @@ public abstract class AbstractReferenceBookFileList extends TemplatePage {
                 //Дата загрузки
                 item.add(new ItemDateLoadedLabel("loaded", item.getModelObject().getLoaded()));
 
-                item.add(new Label("name", item.getModelObject().getFullName()));
+                item.add(new BookmarkablePageLinkPanel<>("name", item.getModelObject().getFullName(), getItemsPage(),
+                        new PageParameters().set("request_file_id", objectId)));
 
                 //ОСЗН
                 item.add(new ItemOrganizationLabel("organization", item.getModelObject().getOrganizationId()));
