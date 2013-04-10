@@ -9,6 +9,12 @@ package org.complitex.osznconnection.file.entity;
  * @author Artem
  */
 public class FacilityStreet extends AbstractRequest {
+    public FacilityStreet() {
+    }
+
+    public FacilityStreet(Long requestFileId) {
+        setRequestFileId(requestFileId);
+    }
 
     public <T> T getField(FacilityStreetDBF facilityStreetDBF) {
         return getField(facilityStreetDBF.name());

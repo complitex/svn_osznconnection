@@ -15,7 +15,6 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
@@ -239,15 +238,6 @@ public abstract class AbstractReferenceBookFileList extends TemplatePage {
         form.add(new ArrowOrderByBorder("header.month", "month", dataProvider, dataView, form));
         form.add(new ArrowOrderByBorder("header.year", "year", dataProvider, dataView, form));
         form.add(new ArrowOrderByBorder("header.status", "status", dataProvider, dataView, form));
-
-        //Назад
-        form.add(new Link<Void>("back") {
-
-            @Override
-            public void onClick() {
-                setResponsePage(ReferenceBookList.class);
-            }
-        });
 
         WebMarkupContainer buttons = new WebMarkupContainer("buttons");
         buttons.setOutputMarkupId(true);
