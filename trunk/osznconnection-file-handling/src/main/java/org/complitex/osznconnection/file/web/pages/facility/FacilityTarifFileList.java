@@ -42,6 +42,6 @@ public final class FacilityTarifFileList extends AbstractReferenceBookFileList {
 
     @Override
     protected Class<? extends Page> getItemsPage() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return FacilityTarifList.class;
     }
 }
