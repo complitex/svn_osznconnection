@@ -46,15 +46,23 @@
         </association>
     </resultMap>
 
+    <sql id="selectFacilityStreetTypesWhere">
+        <where>
+            `request_file_id` = #{object.requestFileId}
+            <if test="object.dbfFields.KLKUL_CODE != null">and `KLKUL_CODE` = #{object.dbfFields.KLKUL_CODE}</if>
+            <if test="object.dbfFields.KLKUL_NAME != null">and `KLKUL_NAME` like concat('%', #{object.dbfFields.KLKUL_NAME}, '%')</if>
+        </where>
+    </sql>
+
     <select id="selectFacilityStreetTypes" parameterType="org.complitex.dictionary.entity.FilterWrapper"
             resultMap="facilityStreetTypeResultMap">
-        select * from `facility_street_type_reference` where `request_file_id` = #{object.requestFileId}
-          order by ${sortProperty} ${asc} limit #{first}, #{count}
+        select * from `facility_street_type_reference` <include refid="selectFacilityStreetTypesWhere"/>
+          order by ${sortProperty} <if test="sortProperty == 'KLKUL_CODE'">+ 0</if> ${asc} limit #{first}, #{count}
     </select>
 
     <select id="selectFacilityStreetTypesCount" parameterType="org.complitex.dictionary.entity.FilterWrapper"
             resultType="int">
-        select count(*) from `facility_street_type_reference` where `request_file_id` = #{object.requestFileId}
+        select count(*) from `facility_street_type_reference` <include refid="selectFacilityStreetTypesWhere"/>
     </select>
 
     <!--FacilityStreet-->
@@ -71,8 +79,24 @@
         </association>
     </resultMap>
 
-    <select id="selectFacilityStreets" parameterType="long" resultMap="facilityStreetResultMap">
-        select * from `facility_street_reference` where `request_file_id` = #{requestFileId}
+    <sql id="selectFacilityStreetsWhere">
+        <where>
+            `request_file_id` = #{object.requestFileId}
+            <if test="object.dbfFields.KL_CODERN != null">and `KL_CODERN` = #{object.dbfFields.KL_CODERN}</if>
+            <if test="object.dbfFields.KL_CODEUL != null">and `KL_CODEUL` = #{object.dbfFields.KL_CODEUL}</if>
+            <if test="object.dbfFields.KL_NAME != null">and `KL_NAME` like concat('%', #{object.dbfFields.KL_NAME}, '%')</if>
+            <if test="object.dbfFields.KL_CODEKUL != null">and `KL_CODEKUL` = #{object.dbfFields.KL_CODEKUL}</if>
+        </where>
+    </sql>
+
+    <select id="selectFacilityStreets" parameterType="org.complitex.dictionary.entity.FilterWrapper"
+        resultMap="facilityStreetResultMap">
+        select * from `facility_street_reference` <include refid="selectFacilityStreetsWhere"/>
+          order by ${sortProperty} <if test="sortProperty != 'KL_NAME'">+ 0</if> ${asc} limit #{first}, #{count}
+    </select>
+
+    <select id="selectFacilityStreetsCount" parameterType="org.complitex.dictionary.entity.FilterWrapper" resultType="int">
+        select count(*) from `facility_street_reference` <include refid="selectFacilityStreetsWhere"/>
     </select>
 
     <!--FacilityTarif-->

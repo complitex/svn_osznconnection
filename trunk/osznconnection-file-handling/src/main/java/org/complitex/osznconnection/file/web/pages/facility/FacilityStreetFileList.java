@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.osznconnection.file.web.pages.facility;
 
 import org.apache.wicket.Page;
@@ -42,6 +38,6 @@ public final class FacilityStreetFileList extends AbstractReferenceBookFileList 
 
     @Override
     protected Class<? extends Page> getItemsPage() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return FacilityStreetList.class;
     }
 }

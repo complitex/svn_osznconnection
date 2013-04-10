@@ -23,7 +23,7 @@ public class FacilityStreetTypeList extends ListTemplatePage<FacilityStreetType>
     private FacilityReferenceBookBean facilityReferenceBookBean;
 
     public FacilityStreetTypeList(PageParameters pageParameters) {
-        super(pageParameters);
+        super(pageParameters, "dbfFields.", FacilityStreetTypeFileList.class);
     }
 
     @Override
@@ -43,6 +43,6 @@ public class FacilityStreetTypeList extends ListTemplatePage<FacilityStreetType>
 
     @Override
     protected List<String> getProperties() {
-        return StringUtil.asList("dbfFields.", FacilityStreetTypeDBF.class);
+        return StringUtil.asList(FacilityStreetTypeDBF.class);
     }
 }

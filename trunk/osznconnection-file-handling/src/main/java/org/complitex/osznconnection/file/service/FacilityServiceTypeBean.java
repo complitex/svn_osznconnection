@@ -7,20 +7,17 @@ package org.complitex.osznconnection.file.service;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import org.complitex.dictionary.mybatis.Transactional;
+import org.complitex.osznconnection.file.entity.*;
+import org.complitex.osznconnection.file.entity.example.FacilityServiceTypeExample;
+
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import org.complitex.dictionary.mybatis.Transactional;
-import org.complitex.osznconnection.file.entity.AbstractRequest;
-import org.complitex.osznconnection.file.entity.FacilityServiceType;
-import org.complitex.osznconnection.file.entity.FacilityServiceTypeDBF;
-import org.complitex.osznconnection.file.entity.RequestFile;
-import org.complitex.osznconnection.file.entity.RequestStatus;
-import org.complitex.osznconnection.file.entity.example.FacilityServiceTypeExample;
 
 /**
  *
@@ -70,7 +67,7 @@ public class FacilityServiceTypeBean extends AbstractRequestBean {
 
     @Transactional
     public int count(FacilityServiceTypeExample example) {
-        return (Integer) sqlSession().selectOne(MAPPING_NAMESPACE + ".count", example);
+        return sqlSession().selectOne(MAPPING_NAMESPACE + ".count", example);
     }
 
     @Transactional
@@ -91,7 +88,7 @@ public class FacilityServiceTypeBean extends AbstractRequestBean {
         Map<String, Object> params = Maps.newHashMap();
         params.put("requestFileId", fileId);
         params.put("statuses", statuses);
-        return (Integer) sqlSession().selectOne(MAPPING_NAMESPACE + ".countByFile", params);
+        return sqlSession().selectOne(MAPPING_NAMESPACE + ".countByFile", params);
     }
 
     @Transactional
