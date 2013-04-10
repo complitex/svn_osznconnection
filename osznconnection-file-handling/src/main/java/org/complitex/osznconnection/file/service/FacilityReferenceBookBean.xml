@@ -127,7 +127,38 @@
         </association>
     </resultMap>
 
-    <select id="selectFacilityTarifs" parameterType="long" resultMap="facilityTarifResultMap">
-        select * from `facility_tarif_reference` where `request_file_id` = #{requestFileId}
+    <sql id="selectFacilityTarifsWhere">
+        <where>
+            `request_file_id` = #{object.requestFileId}
+            <if test="object.dbfFields.TAR_CODE != null">and `TAR_CODE` = #{object.dbfFields.TAR_CODE}</if>
+            <if test="object.dbfFields.TAR_CDPLG != null">and `TAR_CDPLG` = #{object.dbfFields.TAR_CDPLG}</if>
+            <if test="object.dbfFields.TAR_SERV != null">and `TAR_SERV` = #{object.dbfFields.TAR_SERV}</if>
+            <if test="object.dbfFields.TAR_DATEB != null">and `TAR_DATEB` = #{object.dbfFields.TAR_DATEB}</if>
+            <if test="object.dbfFields.TAR_DATEE != null">and `TAR_DATEE` = #{object.dbfFields.TAR_DATEE}</if>
+            <if test="object.dbfFields.TAR_COEF != null">and `TAR_COEF` = #{object.dbfFields.TAR_COEF}</if>
+            <if test="object.dbfFields.TAR_COST != null">and `TAR_COST` = #{object.dbfFields.TAR_COST}</if>
+            <if test="object.dbfFields.TAR_UNIT != null">and `TAR_UNIT` = #{object.dbfFields.TAR_UNIT}</if>
+            <if test="object.dbfFields.TAR_METER != null">and `TAR_METER` = #{object.dbfFields.TAR_METER}</if>
+            <if test="object.dbfFields.TAR_NMBAS != null">and `TAR_NMBAS` = #{object.dbfFields.TAR_NMBAS}</if>
+            <if test="object.dbfFields.TAR_NMSUP != null">and `TAR_NMSUP` = #{object.dbfFields.TAR_NMSUP}</if>
+            <if test="object.dbfFields.TAR_NMUBS != null">and `TAR_NMUBS` = #{object.dbfFields.TAR_NMUBS}</if>
+            <if test="object.dbfFields.TAR_NMUSP != null">and `TAR_NMUSP` = #{object.dbfFields.TAR_NMUSP}</if>
+            <if test="object.dbfFields.TAR_NMUMX != null">and `TAR_NMUMX` = #{object.dbfFields.TAR_NMUMX}</if>
+            <if test="object.dbfFields.TAR_TPNMB != null">and `TAR_TPNMB` = #{object.dbfFields.TAR_TPNMB}</if>
+            <if test="object.dbfFields.TAR_TPNMS != null">and `TAR_TPNMS` = #{object.dbfFields.TAR_TPNMS}</if>
+            <if test="object.dbfFields.TAR_NMUPL != null">and `TAR_NMUPL` = #{object.dbfFields.TAR_NMUPL}</if>
+            <if test="object.dbfFields.TAR_PRIV != null">and `TAR_PRIV` = #{object.dbfFields.TAR_PRIV}</if>
+        </where>
+    </sql>
+
+    <select id="selectFacilityTarifs" parameterType="org.complitex.dictionary.entity.FilterWrapper"
+            resultMap="facilityTarifResultMap">
+        select * from `facility_tarif_reference` <include refid="selectFacilityTarifsWhere"/>
+          order by ${sortProperty} <if test="sortProperty != 'TAR_DATEB' and  sortProperty != 'TAR_DATEE'">+ 0</if>
+            ${asc} limit #{first}, #{count}
+    </select>
+
+    <select id="selectFacilityTarifsCount" parameterType="org.complitex.dictionary.entity.FilterWrapper" resultType="int">
+        select count(*) from `facility_tarif_reference` <include refid="selectFacilityTarifsWhere"/>
     </select>
 </mapper>

@@ -9,6 +9,12 @@ package org.complitex.osznconnection.file.entity;
  * @author Artem
  */
 public class FacilityTarif extends AbstractRequest {
+    public FacilityTarif() {
+    }
+
+    public FacilityTarif(Long requestFileId) {
+        setRequestFileId(requestFileId);
+    }
 
     public <T> T getField(FacilityTarifDBF facilityTarifDBF) {
         return getField(facilityTarifDBF.name());
