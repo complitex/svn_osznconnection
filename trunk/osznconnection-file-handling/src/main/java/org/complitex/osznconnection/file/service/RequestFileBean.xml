@@ -63,7 +63,7 @@
         <where>
             <if test="id != null">`id` like #{id}</if>
             <if test="groupId != null">`group_id` = #{groupId}</if>
-            <if test="loaded != null">AND YEAR(`loaded`) = YEAR(#{loaded}) AND DAYOFYEAR()(`loaded`) = DAYOFYEAR()(#{loaded})</if>
+            <if test="loaded != null">AND YEAR(`loaded`) = YEAR(#{loaded}) AND DAYOFYEAR(`loaded`) = DAYOFYEAR(#{loaded})</if>
             <if test="name != null">and `name` like CONCAT('%',#{name},'%')</if>
             <if test="organizationId != null">and `organization_id` = #{organizationId}</if>
             <if test="userOrganization != null">and `user_organization_id` = #{userOrganization.id}</if>
