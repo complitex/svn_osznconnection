@@ -47,7 +47,7 @@ public class RequestFileBean extends AbstractBean {
     private FacilityReferenceBookBean facilityReferenceBookBean;
 
     public RequestFile findById(long fileId) {
-        return (RequestFile) sqlSession().selectOne(MAPPING_NAMESPACE + ".findById", fileId);
+        return sqlSession().selectOne(MAPPING_NAMESPACE + ".findById", fileId);
     }
 
     public List<RequestFile> getRequestFiles(RequestFileFilter filter) {
@@ -114,7 +114,7 @@ public class RequestFileBean extends AbstractBean {
 
     public int size(RequestFileFilter filter) {
         osznSessionBean.prepareFilterForPermissionCheck(filter);
-        return (Integer) sqlSession().selectOne(MAPPING_NAMESPACE + ".selectRequestFilesCount", filter);
+        return sqlSession().selectOne(MAPPING_NAMESPACE + ".selectRequestFilesCount", filter);
     }
 
     @Transactional
@@ -165,7 +165,7 @@ public class RequestFileBean extends AbstractBean {
     }
 
     public boolean checkLoaded(RequestFile requestFile) {
-        Long id = (Long) sqlSession().selectOne(MAPPING_NAMESPACE + ".selectLoadedId", requestFile);
+        Long id = sqlSession().selectOne(MAPPING_NAMESPACE + ".selectLoadedId", requestFile);
 
         if (id != null) {
             requestFile.setId(id);
@@ -194,7 +194,7 @@ public class RequestFileBean extends AbstractBean {
     }
 
     public RequestFileStatus getRequestFileStatus(RequestFile requestFile) {
-        return (RequestFileStatus) sqlSession().selectOne(MAPPING_NAMESPACE + ".selectRequestFileStatus", requestFile);
+        return sqlSession().selectOne(MAPPING_NAMESPACE + ".selectRequestFileStatus", requestFile);
     }
 
     public void fixProcessingOnInit() {
