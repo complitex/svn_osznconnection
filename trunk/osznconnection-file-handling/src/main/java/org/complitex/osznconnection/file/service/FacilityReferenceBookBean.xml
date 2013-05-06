@@ -99,6 +99,12 @@
         select count(*) from `facility_street_reference` <include refid="selectFacilityStreetsWhere"/>
     </select>
 
+    <select id="selectFacilityStreetByCode" parameterType="map" resultMap="facilityStreetResultMap">
+        select * from `facility_street_reference` s join `request_file` rf on s.`request_file_id` = rf.`id`
+          where s.`KL_CODEUL` = #{streetCode} and rf.`organization_id` = #{osznId}
+              and rf.`user_organization_id` = #{userOrganizationId}
+    </select>
+
     <!--FacilityTarif-->
 
     <resultMap id="facilityTarifResultMap" type="org.complitex.osznconnection.file.entity.FacilityTarif">

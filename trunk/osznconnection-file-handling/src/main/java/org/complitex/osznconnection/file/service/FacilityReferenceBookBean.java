@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.osznconnection.file.service;
 
 import org.apache.wicket.util.string.Strings;
@@ -11,6 +7,7 @@ import org.complitex.dictionary.entity.Log;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.dictionary.service.ConfigBean;
+import org.complitex.dictionary.service.LocaleBean;
 import org.complitex.dictionary.service.LogBean;
 import org.complitex.dictionary.service.executor.ExecuteException;
 import org.complitex.dictionary.strategy.IStrategy;
@@ -50,6 +47,9 @@ public class FacilityReferenceBookBean extends AbstractBean {
     private StrategyFactory strategyFactory;
     @EJB
     private LogBean logBean;
+
+    @EJB
+    private LocaleBean localeBean;
 
     @Transactional
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
@@ -103,6 +103,11 @@ public class FacilityReferenceBookBean extends AbstractBean {
         return sqlSession().selectOne(NS + ".selectFacilityStreetsCount", filterWrapper);
     }
 
+    public FacilityStreet getFacilityStreet(String streetCode, Long osznId, Long userOrganizationId){
+        return sqlSession().selectOne(NS + ".selectFacilityStreetByCode", of("streetCode", streetCode, "osznId", osznId,
+                "userOrganizationId", userOrganizationId));
+    }
+
     //FacilityTarif
 
     public List<FacilityTarif> getFacilityTarifs(FilterWrapper<FacilityTarif> filterWrapper){
@@ -118,38 +123,32 @@ public class FacilityReferenceBookBean extends AbstractBean {
                         "userOrganizationId", userOrganizationId));
     }
 
-    /**
-     * Updates street corrections' codes.
-     * 
-     * @throws ExecuteException If parent city correction was not found (or more than one found), 
-     *  if street type entry was not found by code in facility street type reference (or more than one found).
-     */
-    @Transactional
-    public void updateStreetCorrections(List<FacilityStreet> streets, long userOrganizationId, Locale locale)
-            throws ExecuteException {
-        final String streetTypeReferenceFileName =
-                configBean.getString(FileHandlingConfig.FACILITY_STREET_TYPE_REFERENCE_FILENAME_MASK, true).
-                replace("\\", "");
-        for (FacilityStreet street : streets) {
-            updateStreetCorrections(street, userOrganizationId, locale, streetTypeReferenceFileName);
-        }
-    }
-
     private String printStringValue(String value, Locale locale) {
         return Strings.isEmpty(value) ? ResourceUtil.getString(RESOURCE_BUNDLE, "empty_string_value", locale) : value;
     }
 
-    @Transactional
-    private void updateStreetCorrections(FacilityStreet street, long userOrganizationId, Locale locale,
+    public void updateStreetCorrections(String streetCode, Long userOrganizationId, Long osznId)
+            throws ExecuteException {
+        FacilityStreet facilityStreet = getFacilityStreet(streetCode, osznId, userOrganizationId);
+
+        if (facilityStreet != null) {
+            updateStreetCorrections(facilityStreet, userOrganizationId, osznId, "");
+        }
+    }
+
+    public void updateStreetCorrections(FacilityStreet street, Long userOrganizationId, Long osznId,
             final String streetTypeReferenceFileName) throws ExecuteException {
-        final long osznId = street.getOrganizationId();
+        Locale locale = localeBean.getSystemLocale(); //todo locale?
+
         String streetName = street.getStringField(FacilityStreetDBF.KL_NAME);
         String streetCode = street.getStringField(FacilityStreetDBF.KL_CODEUL);
         String streetTypeCode = street.getStringField(FacilityStreetDBF.KL_CODEKUL);
+
         final String defaultCity = configBean.getString(FileHandlingConfig.DEFAULT_REQUEST_FILE_CITY, true);
 
         Long cityId;
         Correction cityCorrection;
+
         List<Correction> cityCorrections = addressCorrectionBean.findCityLocalCorrections(defaultCity, osznId, userOrganizationId);
         if (cityCorrections.size() == 1) {
             cityCorrection = cityCorrections.get(0);
@@ -162,6 +161,7 @@ public class FacilityReferenceBookBean extends AbstractBean {
 
         String streetTypeName;
         List<String> streetTypeNames = findStreetTypeNames(streetTypeCode, osznId, userOrganizationId);
+
         if (streetTypeNames.size() == 1) {
             streetTypeName = streetTypeNames.get(0);
         } else {
@@ -176,6 +176,7 @@ public class FacilityReferenceBookBean extends AbstractBean {
         Correction streetTypeCorrection;
         List<Correction> streetTypeCorrections =
                 addressCorrectionBean.findStreetTypeLocalCorrections(streetTypeName, osznId, userOrganizationId);
+
         if (streetTypeCorrections.size() == 1) {
             streetTypeCorrection = streetTypeCorrections.get(0);
             streetTypeId = streetTypeCorrection.getObjectId();
@@ -194,7 +195,7 @@ public class FacilityReferenceBookBean extends AbstractBean {
             } else if (streetTypeIds.size() > 1) {
                 throw new ExecuteException(
                         ResourceUtil.getFormatString(RESOURCE_BUNDLE, "facility_internal_street_type.too_many",
-                        locale, printStringValue(streetTypeName, locale)));
+                                locale, printStringValue(streetTypeName, locale)));
             } else {
                 logBean.error(Module.NAME, FacilityStreetLoadTaskBean.class, FacilityStreet.class, null, street.getId(),
                         Log.EVENT.CREATE, null,
@@ -209,19 +210,21 @@ public class FacilityReferenceBookBean extends AbstractBean {
         List<StreetCorrection> streetCorrections =
                 addressCorrectionBean.findStreetLocalCorrections(cityCorrection.getId(), streetTypeCorrection.getId(),
                 streetName, osznId, userOrganizationId);
+
         if (streetCorrections.size() == 1) {
             StreetCorrection streetCorrection = streetCorrections.get(0);
             if (!Strings.isEqual(streetCode, streetCorrection.getCode())) {
                 // коды не совпадают, нужно обновить код соответствия.
                 streetCorrection.setCode(streetCode);
+
                 addressCorrectionBean.updateStreet(streetCorrection);
             }
         } else if (streetCorrections.size() > 1) {
             throw new ExecuteException(
                     ResourceUtil.getFormatString(RESOURCE_BUNDLE, "facility_street_corrections.too_many",
-                    locale, printStringValue(cityCorrection.getCorrection(), locale), cityCorrection.getId(),
-                    printStringValue(streetTypeCorrection.getCorrection(), locale), streetTypeCorrection.getId(),
-                    printStringValue(streetName, locale)));
+                            locale, printStringValue(cityCorrection.getCorrection(), locale), cityCorrection.getId(),
+                            printStringValue(streetTypeCorrection.getCorrection(), locale), streetTypeCorrection.getId(),
+                            printStringValue(streetName, locale)));
         } else {
             // искать по внутренней базе улиц
             List<Long> streetIds =
@@ -244,8 +247,8 @@ public class FacilityReferenceBookBean extends AbstractBean {
                 if (streetIds.size() > 1) {
                     throw new ExecuteException(
                             ResourceUtil.getFormatString(RESOURCE_BUNDLE, "facility_internal_street.too_many",
-                            locale, internalCityName, cityId, internalStreetTypeName, streetTypeId,
-                            printStringValue(streetName, locale)));
+                                    locale, internalCityName, cityId, internalStreetTypeName, streetTypeId,
+                                    printStringValue(streetName, locale)));
                 } else {
                     logBean.error(Module.NAME, FacilityStreetLoadTaskBean.class, FacilityStreet.class, null, street.getId(),
                             Log.EVENT.CREATE, null,

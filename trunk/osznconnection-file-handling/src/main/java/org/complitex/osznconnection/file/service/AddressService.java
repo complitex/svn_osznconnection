@@ -6,27 +6,30 @@ package org.complitex.osznconnection.file.service;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import java.util.List;
-import java.util.Set;
+import org.apache.wicket.util.string.Strings;
+import org.complitex.address.strategy.building.entity.Building;
+import org.complitex.address.strategy.street.StreetStrategy;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.AbstractBean;
+import org.complitex.dictionary.service.LocaleBean;
+import org.complitex.dictionary.service.executor.ExecuteException;
+import org.complitex.dictionary.strategy.IStrategy;
 import org.complitex.dictionary.strategy.StrategyFactory;
 import org.complitex.osznconnection.file.entity.*;
-
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import org.apache.wicket.util.string.Strings;
 import org.complitex.osznconnection.file.service.exception.DublicateCorrectionException;
-import org.complitex.address.strategy.building.entity.Building;
-import org.complitex.address.strategy.street.StreetStrategy;
-import org.complitex.dictionary.service.LocaleBean;
-import org.complitex.dictionary.strategy.IStrategy;
 import org.complitex.osznconnection.file.service.exception.MoreOneCorrectionException;
 import org.complitex.osznconnection.file.service.exception.NotFoundCorrectionException;
 import org.complitex.osznconnection.file.service_provider.ServiceProviderAdapter;
 import org.complitex.osznconnection.file.web.component.address.AddressCorrectionPanel.CORRECTED_ENTITY;
 import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Класс разрешает адрес.
@@ -34,27 +37,40 @@ import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrat
  */
 @Stateless(name = "AddressService")
 public class AddressService extends AbstractBean {
+    private static final Logger log = LoggerFactory.getLogger(AddressService.class);
 
     @EJB
     private AddressCorrectionBean addressCorrectionBean;
+
     @EJB
     private PaymentBean paymentBean;
+
     @EJB
     private ActualPaymentBean actualPaymentBean;
+
     @EJB
     private SubsidyBean subsidyBean;
+
     @EJB
     private BenefitBean benefitBean;
+
     @EJB
     private DwellingCharacteristicsBean dwellingCharacteristicsBean;
+
     @EJB
     private StrategyFactory strategyFactory;
+
     @EJB
     private LocaleBean localeBean;
+
     @EJB
     private StreetStrategy streetStrategy;
+
     @EJB
     private ServiceProviderAdapter adapter;
+
+    @EJB
+    private FacilityReferenceBookBean facilityReferenceBookBean;
 
     private void resolveLocalAddress(ActualPayment actualPayment, long userOrganizationId) {
         //осзн id
@@ -363,8 +379,8 @@ public class AddressService extends AbstractBean {
 
         //Связывание города
         String city = dwellingCharacteristics.getCity();
-        Long cityId = null;
-        Correction cityCorrection = null;
+        Long cityId;
+        Correction cityCorrection;
         List<Correction> cityCorrections = addressCorrectionBean.findCityLocalCorrections(city, osznId, userOrganizationId);
         if (cityCorrections.size() == 1) {
             cityCorrection = cityCorrections.get(0);
@@ -394,9 +410,22 @@ public class AddressService extends AbstractBean {
 
         //связывание улицы
         String streetCode = dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.CDUL);
-        StreetCorrection streetCorrection = null;
+        StreetCorrection streetCorrection;
+
         List<StreetCorrection> streetCorrections = addressCorrectionBean.findStreetLocalCorrectionsByCode(
                 cityCorrection.getId(), streetCode, osznId, userOrganizationId);
+
+        if (streetCorrections.isEmpty()){
+            try {
+                facilityReferenceBookBean.updateStreetCorrections(streetCode, userOrganizationId, osznId);
+
+                streetCorrections = addressCorrectionBean.findStreetLocalCorrectionsByCode(
+                        cityCorrection.getId(), streetCode, osznId, userOrganizationId);
+            } catch (ExecuteException e) {
+                log.error("Ошибка создания коррекции", e);
+            }
+        }
+
         if (streetCorrections.size() >= 1) {
             //сформируем множество ids улиц
             Set<Long> streetIds = Sets.newHashSet();
@@ -486,8 +515,10 @@ public class AddressService extends AbstractBean {
 
         //Связывание города
         String city = facilityServiceType.getCity();
-        Long cityId = null;
-        Correction cityCorrection = null;
+
+        Long cityId;
+        Correction cityCorrection;
+
         List<Correction> cityCorrections = addressCorrectionBean.findCityLocalCorrections(city, osznId, userOrganizationId);
         if (cityCorrections.size() == 1) {
             cityCorrection = cityCorrections.get(0);
@@ -517,9 +548,22 @@ public class AddressService extends AbstractBean {
 
         //связывание улицы
         String streetCode = facilityServiceType.getStringField(FacilityServiceTypeDBF.CDUL);
-        StreetCorrection streetCorrection = null;
+        StreetCorrection streetCorrection;
+
         List<StreetCorrection> streetCorrections = addressCorrectionBean.findStreetLocalCorrectionsByCode(
                 cityCorrection.getId(), streetCode, osznId, userOrganizationId);
+
+        if (streetCorrections.isEmpty()){
+            try {
+                facilityReferenceBookBean.updateStreetCorrections(streetCode, userOrganizationId, osznId);
+
+                streetCorrections = addressCorrectionBean.findStreetLocalCorrectionsByCode(
+                        cityCorrection.getId(), streetCode, osznId, userOrganizationId);
+            } catch (ExecuteException e) {
+                log.error("Ошибка создания коррекции", e);
+            }
+        }
+
         if (streetCorrections.size() >= 1) {
             //сформируем множество названий улиц
             Set<String> streetNames = Sets.newHashSet();
@@ -953,7 +997,6 @@ public class AddressService extends AbstractBean {
      * См. org.complitex.osznconnection.file.calculation.adapter.DefaultCalculationCenterAdapter - адаптер по умолчанию.
      * Квартиры не ищем, а проставляем напрямую, обрезая пробелы.
      * Алгоритм аналогичен для поиска остальных составляющих адреса.
-     * @param actualPayment
      */
     @Transactional
     public void resolveOutgoingAddress(Payment payment, CalculationContext calculationContext) {
@@ -1393,8 +1436,6 @@ public class AddressService extends AbstractBean {
 
     /**
      * разрешить адрес по схеме "ОСЗН адрес -> локальная адресная база -> адрес центра начислений"
-     * @param actualPayment
-     * @param calculationCenterId
      */
     @Transactional
     public void resolveAddress(Payment payment, CalculationContext calculationContext) {

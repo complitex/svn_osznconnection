@@ -30,8 +30,8 @@ import static org.complitex.dictionary.util.StringUtil.*;
  */
 @Stateless
 public class AddressCorrectionBean extends CorrectionBean {
-
     private static final Logger log = LoggerFactory.getLogger(AddressCorrectionBean.class);
+
     private static final String ADDRESS_BEAN_MAPPING_NAMESPACE = AddressCorrectionBean.class.getName();
     @EJB
     private LocaleBean localeBean;

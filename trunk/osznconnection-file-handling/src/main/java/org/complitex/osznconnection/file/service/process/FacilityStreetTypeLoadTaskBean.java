@@ -4,24 +4,21 @@
  */
 package org.complitex.osznconnection.file.service.process;
 
-import java.util.List;
-import java.util.Map;
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
 import org.complitex.dictionary.entity.IExecutorObject;
 import org.complitex.dictionary.entity.Log;
 import org.complitex.dictionary.service.executor.ExecuteException;
 import org.complitex.dictionary.service.executor.ITaskBean;
 import org.complitex.osznconnection.file.Module;
-import org.complitex.osznconnection.file.entity.AbstractRequest;
-import org.complitex.osznconnection.file.entity.FacilityStreetType;
-import org.complitex.osznconnection.file.entity.FacilityStreetTypeDBF;
-import org.complitex.osznconnection.file.entity.RequestFile;
-import org.complitex.osznconnection.file.entity.RequestFileStatus;
+import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.service.FacilityReferenceBookBean;
 import org.complitex.osznconnection.file.service.RequestFileBean;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -41,10 +38,6 @@ public class FacilityStreetTypeLoadTaskBean implements ITaskBean {
     @Override
     public boolean execute(IExecutorObject executorObject, Map commandParameters) throws ExecuteException {
         RequestFile requestFile = (RequestFile) executorObject;
-
-        //delete previous facility street type
-        requestFileBean.deleteFacilityReferenceFiles(requestFile.getOrganizationId(), requestFile.getUserOrganizationId(),
-                requestFile.getType());
 
         requestFile.setStatus(RequestFileStatus.LOADING);
         loadRequestFileBean.load(requestFile, new LoadRequestFileBean.AbstractLoadRequestFile() {
