@@ -14,11 +14,15 @@ import org.complitex.dictionary.service.executor.ITaskBean;
 import org.complitex.osznconnection.file.Module;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.service.AddressService;
+import org.complitex.osznconnection.file.service.FacilityServiceTypeBean;
 import org.complitex.osznconnection.file.service.PersonAccountService;
 import org.complitex.osznconnection.file.service.RequestFileBean;
 import org.complitex.osznconnection.file.service.exception.AlreadyProcessingException;
 import org.complitex.osznconnection.file.service.exception.BindException;
 import org.complitex.osznconnection.file.service.exception.CanceledByUserException;
+import org.complitex.osznconnection.file.service_provider.CalculationCenterBean;
+import org.complitex.osznconnection.file.service_provider.exception.DBException;
+import org.complitex.osznconnection.file.web.pages.util.GlobalOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,10 +35,6 @@ import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import java.util.List;
 import java.util.Map;
-import org.complitex.osznconnection.file.service.FacilityServiceTypeBean;
-import org.complitex.osznconnection.file.service_provider.CalculationCenterBean;
-import org.complitex.osznconnection.file.service_provider.exception.DBException;
-import org.complitex.osznconnection.file.web.pages.util.GlobalOptions;
 
 /**
  *
@@ -43,20 +43,26 @@ import org.complitex.osznconnection.file.web.pages.util.GlobalOptions;
 @Stateless
 @TransactionManagement(TransactionManagementType.BEAN)
 public class FacilityServiceTypeBindTaskBean implements ITaskBean {
-
     private static final Logger log = LoggerFactory.getLogger(FacilityServiceTypeBindTaskBean.class);
+
     @Resource
     private UserTransaction userTransaction;
+
     @EJB
     protected ConfigBean configBean;
+
     @EJB
     private AddressService addressService;
+
     @EJB
     private PersonAccountService personAccountService;
+
     @EJB
     private CalculationCenterBean calculationCenterBean;
+
     @EJB
     private FacilityServiceTypeBean facilityServiceTypeBean;
+
     @EJB
     private RequestFileBean requestFileBean;
 
@@ -66,6 +72,7 @@ public class FacilityServiceTypeBindTaskBean implements ITaskBean {
             startTime = System.nanoTime();
         }
         addressService.resolveLocalStreet(facilityServiceType, calculationContext.getUserOrganizationId());
+
         if (log.isDebugEnabled()) {
             log.debug("Resolving of facility service type street (id = {}) took {} sec.", facilityServiceType.getId(),
                     (System.nanoTime() - startTime) / 1000000000F);
@@ -184,7 +191,7 @@ public class FacilityServiceTypeBindTaskBean implements ITaskBean {
 
     @Override
     public boolean execute(IExecutorObject executorObject, Map commandParameters) throws ExecuteException {
-        // ищем в параметрах комманды опцию "Переписывать номер л/с ПУ номером л/с МН"
+        // ищем в параметрах команды опцию "Переписывать номер л/с ПУ номером л/с МН"
         final Boolean updatePuAccount = commandParameters.containsKey(GlobalOptions.UPDATE_PU_ACCOUNT)
                 ? (Boolean) commandParameters.get(GlobalOptions.UPDATE_PU_ACCOUNT) : false;
 

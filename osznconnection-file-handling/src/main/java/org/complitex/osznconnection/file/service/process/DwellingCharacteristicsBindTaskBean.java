@@ -13,12 +13,13 @@ import org.complitex.dictionary.service.executor.ExecuteException;
 import org.complitex.dictionary.service.executor.ITaskBean;
 import org.complitex.osznconnection.file.Module;
 import org.complitex.osznconnection.file.entity.*;
-import org.complitex.osznconnection.file.service.AddressService;
-import org.complitex.osznconnection.file.service.PersonAccountService;
-import org.complitex.osznconnection.file.service.RequestFileBean;
+import org.complitex.osznconnection.file.service.*;
 import org.complitex.osznconnection.file.service.exception.AlreadyProcessingException;
 import org.complitex.osznconnection.file.service.exception.BindException;
 import org.complitex.osznconnection.file.service.exception.CanceledByUserException;
+import org.complitex.osznconnection.file.service_provider.CalculationCenterBean;
+import org.complitex.osznconnection.file.service_provider.exception.DBException;
+import org.complitex.osznconnection.file.web.pages.util.GlobalOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,10 +32,6 @@ import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import java.util.List;
 import java.util.Map;
-import org.complitex.osznconnection.file.service.DwellingCharacteristicsBean;
-import org.complitex.osznconnection.file.service_provider.CalculationCenterBean;
-import org.complitex.osznconnection.file.service_provider.exception.DBException;
-import org.complitex.osznconnection.file.web.pages.util.GlobalOptions;
 
 /**
  *
@@ -43,29 +40,37 @@ import org.complitex.osznconnection.file.web.pages.util.GlobalOptions;
 @Stateless
 @TransactionManagement(TransactionManagementType.BEAN)
 public class DwellingCharacteristicsBindTaskBean implements ITaskBean {
-
     private static final Logger log = LoggerFactory.getLogger(DwellingCharacteristicsBindTaskBean.class);
+
     @Resource
     private UserTransaction userTransaction;
+
     @EJB
     protected ConfigBean configBean;
+
     @EJB
     private AddressService addressService;
+
     @EJB
     private PersonAccountService personAccountService;
+
     @EJB
     private CalculationCenterBean calculationCenterBean;
+
     @EJB
     private DwellingCharacteristicsBean dwellingCharacteristicsBean;
+
     @EJB
     private RequestFileBean requestFileBean;
 
-    private void resolveStreet(DwellingCharacteristics dwellingCharacteristics, CalculationContext calculationContext) {
+    private void resolveStreet(DwellingCharacteristics dwellingCharacteristics, CalculationContext cc) {
         long startTime = 0;
         if (log.isDebugEnabled()) {
             startTime = System.nanoTime();
         }
-        addressService.resolveLocalStreet(dwellingCharacteristics, calculationContext.getUserOrganizationId());
+
+        addressService.resolveLocalStreet(dwellingCharacteristics, cc.getUserOrganizationId());
+
         if (log.isDebugEnabled()) {
             log.debug("Resolving of dwelling characteristics street (id = {}) took {} sec.", dwellingCharacteristics.getId(),
                     (System.nanoTime() - startTime) / 1000000000F);
