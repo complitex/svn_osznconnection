@@ -30,6 +30,8 @@
         <result column="street" property="street"/>
         <result column="street_type" property="streetType"/>
 
+        <result column="street_reference" property="streetReference"/>
+
         <association property="dbfFields" javaType="map">
             <result column="COD" property="COD"/>
             <result column="CDPR" property="CDPR"/>
@@ -93,6 +95,10 @@
     </insert>
     
     <sql id="filter">
+        <if test="account != null">
+            AND fst.`RAH` LIKE CONCAT('%',#{account},'%')
+        </if>
+
         <if test="idCode != null">
             AND fst.`IDCODE` LIKE CONCAT('%',#{idCode},'%')
         </if>
@@ -100,9 +106,11 @@
         <if test="firstName != null">
             AND fst.`first_name` LIKE CONCAT('%',#{firstName},'%')
         </if>
+
         <if test="middleName != null">
             AND fst.`middle_name` LIKE CONCAT('%',#{middleName},'%')
         </if>
+
         <if test="lastName != null">
             AND fst.`last_name` LIKE CONCAT('%',#{lastName},'%')
         </if>
@@ -110,12 +118,19 @@
         <if test="streetCode != null">
             AND fst.`CDUL` LIKE CONCAT('%', #{streetCode}, '%')
         </if>
+
+        <if test="streetReference != null">
+            AND  fsr.`KL_NAME` LIKE CONCAT('%', #{streetReference}, '%')
+        </if>
+
         <if test="building != null">
             AND fst.`HOUSE` LIKE CONCAT('%', #{building}, '%')
         </if>
+
         <if test="corp != null">
             AND fst.`BUILD` LIKE CONCAT('%', #{corp}, '%')
         </if>
+
         <if test="apartment != null">
             AND fst.`APT` LIKE CONCAT('%', #{apartment}, '%')
         </if>
@@ -126,7 +141,9 @@
     </sql>
 
     <select id="count" resultType="int" parameterType="org.complitex.osznconnection.file.entity.example.FacilityServiceTypeExample">
-        SELECT COUNT(1) FROM `facility_service_type` fst WHERE fst.`request_file_id` = #{requestFileId}
+        SELECT COUNT(1) FROM `facility_service_type` fst
+          JOIN `facility_street_reference` fsr ON fst.`CDUL` = fsr.`KL_CODEUL`
+        WHERE fst.`request_file_id` = #{requestFileId}
         <include refid="org.complitex.osznconnection.file.service.FacilityServiceTypeBean.filter"/>
     </select>
 
@@ -142,15 +159,16 @@
                 fst.`internal_city_id`, fst.`internal_street_id`, fst.`internal_street_type_id`, fst.`internal_building_id`,
                 fst.`outgoing_city`, fst.`outgoing_district`, fst.`outgoing_street`, fst.`outgoing_street_type`, fst.`outgoing_building_number`,
                 fst.`outgoing_building_corp`, fst.`outgoing_apartment`, fst.`street_correction_id`,
-                fst.`city`, fst.`street`, fst.`street_type`
+                fst.`city`, fst.`street`, fst.`street_type`, fsr.`KL_NAME` as street_reference
             FROM `facility_service_type` fst
-            JOIN `request_file` f ON f.`id` = fst.`request_file_id`
-                WHERE fst.`request_file_id` = #{requestFileId}
+                JOIN `request_file` f ON f.`id` = fst.`request_file_id`
+                JOIN `facility_street_reference` fsr ON fst.`CDUL` = fsr.`KL_CODEUL`
+            WHERE fst.`request_file_id` = #{requestFileId}
                 <include refid="org.complitex.osznconnection.file.service.FacilityServiceTypeBean.filter"/>
                 <if test="orderByClause != null">
                     <choose>
                         <when test="orderByClause == 'IDCODE' or orderByClause == 'HOUSE' or orderByClause == 'BUILD'
-                                or orderByClause == 'APT'">
+                                or orderByClause == 'APT' or orderByClause == 'RAH'">
                             ORDER BY `${orderByClause}`+0
                         </when>
                         <otherwise>

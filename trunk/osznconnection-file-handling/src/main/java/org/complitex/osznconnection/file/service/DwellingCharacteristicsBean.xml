@@ -30,6 +30,8 @@
         <result column="street" property="street"/>
         <result column="street_type" property="streetType"/>
 
+        <result column="street_reference" property="streetReference"/>
+
         <association property="dbfFields" javaType="map">
             <result column="COD" property="COD"/>
             <result column="CDPR" property="CDPR"/>
@@ -94,9 +96,11 @@
         <if test="firstName != null">
             AND d.`first_name` LIKE CONCAT('%',#{firstName},'%')
         </if>
+
         <if test="middleName != null">
             AND d.`middle_name` LIKE CONCAT('%',#{middleName},'%')
         </if>
+
         <if test="lastName != null">
             AND d.`last_name` LIKE CONCAT('%',#{lastName},'%')
         </if>
@@ -104,6 +108,11 @@
         <if test="streetCode != null">
             AND d.`CDUL` LIKE CONCAT('%', #{streetCode}, '%')
         </if>
+
+        <if test="streetReference != null">
+            AND fsr.`KL_NAME` LIKE CONCAT('%', #{streetReference}, '%')
+        </if>
+
         <if test="building != null">
             AND d.`HOUSE` LIKE CONCAT('%', #{building}, '%')
         </if>
@@ -120,7 +129,8 @@
     </sql>
 
     <select id="count" resultType="int" parameterType="org.complitex.osznconnection.file.entity.example.DwellingCharacteristicsExample">
-        SELECT COUNT(1) FROM `dwelling_characteristics` d WHERE d.`request_file_id` = #{requestFileId}
+        SELECT COUNT(1) FROM `dwelling_characteristics` d JOIN `facility_street_reference` fsr ON d.`CDUL` = fsr.`KL_CODEUL`
+        WHERE d.`request_file_id` = #{requestFileId}
         <include refid="org.complitex.osznconnection.file.service.DwellingCharacteristicsBean.filter"/>
     </select>
 
@@ -136,10 +146,11 @@
                 d.`internal_city_id`, d.`internal_street_id`, d.`internal_street_type_id`, d.`internal_building_id`,
                 d.`outgoing_city`, d.`outgoing_district`, d.`outgoing_street`, d.`outgoing_street_type`, d.`outgoing_building_number`,
                 d.`outgoing_building_corp`, d.`outgoing_apartment`, d.`street_correction_id`,
-                d.`city`, d.`street`, d.`street_type`
+                d.`city`, d.`street`, d.`street_type`, fsr.`KL_NAME` as street_reference
             FROM `dwelling_characteristics` d
-            JOIN `request_file` f ON f.`id` = d.`request_file_id`
-                WHERE d.`request_file_id` = #{requestFileId}
+              JOIN `request_file` f ON f.`id` = d.`request_file_id`
+              JOIN `facility_street_reference` fsr ON d.`CDUL` = fsr.`KL_CODEUL`
+            WHERE d.`request_file_id` = #{requestFileId}
                 <include refid="org.complitex.osznconnection.file.service.DwellingCharacteristicsBean.filter"/>
                 <if test="orderByClause != null">
                     <choose>

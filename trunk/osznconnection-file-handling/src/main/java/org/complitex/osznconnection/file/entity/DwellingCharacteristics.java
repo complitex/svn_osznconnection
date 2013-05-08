@@ -12,23 +12,6 @@ import java.util.Map;
  * @author Artem
  */
 public class DwellingCharacteristics extends AbstractRequest {
-
-    public <T> T getField(DwellingCharacteristicsDBF dwellingCharacteristicsDBF) {
-        return getField(dwellingCharacteristicsDBF.name());
-    }
-
-    public String getStringField(DwellingCharacteristicsDBF dwellingCharacteristicsDBF) {
-        return dbfFields.get(dwellingCharacteristicsDBF.name());
-    }
-
-    public void setField(DwellingCharacteristicsDBF dwellingCharacteristicsDBF, Object object) {
-        setField(dwellingCharacteristicsDBF.name(), object);
-    }
-
-    @Override
-    public RequestFile.TYPE getRequestFileType() {
-        return RequestFile.TYPE.DWELLING_CHARACTERISTICS;
-    }
     private Long internalCityId;
     private Long internalStreetId;
     private Long internalStreetTypeId;
@@ -50,6 +33,8 @@ public class DwellingCharacteristics extends AbstractRequest {
     private String firstName;
     private String middleName;
 
+    private String streetReference;
+
     public DwellingCharacteristics() {
     }
 
@@ -58,12 +43,21 @@ public class DwellingCharacteristics extends AbstractRequest {
         this.date = date;
     }
 
-    public Long getInternalBuildingId() {
-        return internalBuildingId;
+    public <T> T getField(DwellingCharacteristicsDBF dwellingCharacteristicsDBF) {
+        return getField(dwellingCharacteristicsDBF.name());
     }
 
-    public void setInternalBuildingId(Long internalBuildingId) {
-        this.internalBuildingId = internalBuildingId;
+    public String getStringField(DwellingCharacteristicsDBF dwellingCharacteristicsDBF) {
+        return dbfFields.get(dwellingCharacteristicsDBF.name());
+    }
+
+    public void setField(DwellingCharacteristicsDBF dwellingCharacteristicsDBF, Object object) {
+        setField(dwellingCharacteristicsDBF.name(), object);
+    }
+
+    @Override
+    public RequestFile.TYPE getRequestFileType() {
+        return RequestFile.TYPE.DWELLING_CHARACTERISTICS;
     }
 
     public Long getInternalCityId() {
@@ -90,28 +84,12 @@ public class DwellingCharacteristics extends AbstractRequest {
         this.internalStreetTypeId = internalStreetTypeId;
     }
 
-    public String getOutgoingApartment() {
-        return outgoingApartment;
+    public Long getInternalBuildingId() {
+        return internalBuildingId;
     }
 
-    public void setOutgoingApartment(String outgoingApartment) {
-        this.outgoingApartment = outgoingApartment;
-    }
-
-    public String getOutgoingBuildingCorp() {
-        return outgoingBuildingCorp;
-    }
-
-    public void setOutgoingBuildingCorp(String outgoingBuildingCorp) {
-        this.outgoingBuildingCorp = outgoingBuildingCorp;
-    }
-
-    public String getOutgoingBuildingNumber() {
-        return outgoingBuildingNumber;
-    }
-
-    public void setOutgoingBuildingNumber(String outgoingBuildingNumber) {
-        this.outgoingBuildingNumber = outgoingBuildingNumber;
+    public void setInternalBuildingId(Long internalBuildingId) {
+        this.internalBuildingId = internalBuildingId;
     }
 
     public String getOutgoingCity() {
@@ -120,6 +98,14 @@ public class DwellingCharacteristics extends AbstractRequest {
 
     public void setOutgoingCity(String outgoingCity) {
         this.outgoingCity = outgoingCity;
+    }
+
+    public String getOutgoingDistrict() {
+        return outgoingDistrict;
+    }
+
+    public void setOutgoingDistrict(String outgoingDistrict) {
+        this.outgoingDistrict = outgoingDistrict;
     }
 
     public String getOutgoingStreet() {
@@ -138,12 +124,36 @@ public class DwellingCharacteristics extends AbstractRequest {
         this.outgoingStreetType = outgoingStreetType;
     }
 
-    public String getOutgoingDistrict() {
-        return outgoingDistrict;
+    public String getOutgoingBuildingNumber() {
+        return outgoingBuildingNumber;
     }
 
-    public void setOutgoingDistrict(String outgoingDistrict) {
-        this.outgoingDistrict = outgoingDistrict;
+    public void setOutgoingBuildingNumber(String outgoingBuildingNumber) {
+        this.outgoingBuildingNumber = outgoingBuildingNumber;
+    }
+
+    public String getOutgoingBuildingCorp() {
+        return outgoingBuildingCorp;
+    }
+
+    public void setOutgoingBuildingCorp(String outgoingBuildingCorp) {
+        this.outgoingBuildingCorp = outgoingBuildingCorp;
+    }
+
+    public String getOutgoingApartment() {
+        return outgoingApartment;
+    }
+
+    public void setOutgoingApartment(String outgoingApartment) {
+        this.outgoingApartment = outgoingApartment;
+    }
+
+    public Long getStreetCorrectionId() {
+        return streetCorrectionId;
+    }
+
+    public void setStreetCorrectionId(Long streetCorrectionId) {
+        this.streetCorrectionId = streetCorrectionId;
     }
 
     public Map<String, String> getUpdateFieldMap() {
@@ -154,28 +164,12 @@ public class DwellingCharacteristics extends AbstractRequest {
         this.updateFieldMap = updateFieldMap;
     }
 
-    public String getLastName() {
-        return lastName;
+    public Date getDate() {
+        return date;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getMiddleName() {
-        return middleName;
-    }
-
-    public void setMiddleName(String middleName) {
-        this.middleName = middleName;
+    public void setDate(Date date) {
+        this.date = date;
     }
 
     public String getCity() {
@@ -202,19 +196,35 @@ public class DwellingCharacteristics extends AbstractRequest {
         this.streetType = streetType;
     }
 
-    public Long getStreetCorrectionId() {
-        return streetCorrectionId;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setStreetCorrectionId(Long streetCorrectionId) {
-        this.streetCorrectionId = streetCorrectionId;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
-    public Date getDate() {
-        return date;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getMiddleName() {
+        return middleName;
+    }
+
+    public void setMiddleName(String middleName) {
+        this.middleName = middleName;
+    }
+
+    public String getStreetReference() {
+        return streetReference;
+    }
+
+    public void setStreetReference(String streetReference) {
+        this.streetReference = streetReference;
     }
 }

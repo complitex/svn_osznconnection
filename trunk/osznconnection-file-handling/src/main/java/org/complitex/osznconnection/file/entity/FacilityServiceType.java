@@ -50,6 +50,8 @@ public class FacilityServiceType extends AbstractRequest {
     private String firstName;
     private String middleName;
 
+    private String streetReference;
+
     public FacilityServiceType() {
     }
 
@@ -216,5 +218,13 @@ public class FacilityServiceType extends AbstractRequest {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public String getStreetReference() {
+        return streetReference;
+    }
+
+    public void setStreetReference(String streetReference) {
+        this.streetReference = streetReference;
     }
 }
