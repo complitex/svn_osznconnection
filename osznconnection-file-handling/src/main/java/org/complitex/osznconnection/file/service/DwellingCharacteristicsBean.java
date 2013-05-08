@@ -7,20 +7,17 @@ package org.complitex.osznconnection.file.service;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import org.complitex.dictionary.mybatis.Transactional;
+import org.complitex.osznconnection.file.entity.*;
+import org.complitex.osznconnection.file.entity.example.DwellingCharacteristicsExample;
+
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import org.complitex.dictionary.mybatis.Transactional;
-import org.complitex.osznconnection.file.entity.AbstractRequest;
-import org.complitex.osznconnection.file.entity.DwellingCharacteristics;
-import org.complitex.osznconnection.file.entity.DwellingCharacteristicsDBF;
-import org.complitex.osznconnection.file.entity.RequestFile;
-import org.complitex.osznconnection.file.entity.RequestStatus;
-import org.complitex.osznconnection.file.entity.example.DwellingCharacteristicsExample;
 
 /**
  *
@@ -33,12 +30,12 @@ public class DwellingCharacteristicsBean extends AbstractRequestBean {
     private static final Map<Long, Set<DwellingCharacteristicsDBF>> UPDATE_FIELD_MAP = ImmutableMap.of();
 
     public enum OrderBy {
-
         IDCODE(DwellingCharacteristicsDBF.IDCODE.name()),
         FIRST_NAME("first_name"),
         MIDDLE_NAME("middle_name"),
         LAST_NAME("last_name"),
         STREET_CODE(DwellingCharacteristicsDBF.CDUL.name()),
+        STREET_REFERENCE("street_reference"),
         BUILDING(DwellingCharacteristicsDBF.HOUSE.name()),
         CORP(DwellingCharacteristicsDBF.BUILD.name()),
         APARTMENT(DwellingCharacteristicsDBF.APT.name()),

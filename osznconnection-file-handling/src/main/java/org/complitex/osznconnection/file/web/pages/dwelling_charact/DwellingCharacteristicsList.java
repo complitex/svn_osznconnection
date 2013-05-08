@@ -4,10 +4,6 @@
  */
 package org.complitex.osznconnection.file.web.pages.dwelling_charact;
 
-import java.io.File;
-import java.util.Arrays;
-import java.util.List;
-import javax.ejb.EJB;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
@@ -31,17 +27,9 @@ import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
-import org.complitex.osznconnection.file.entity.DwellingCharacteristics;
-import org.complitex.osznconnection.file.entity.DwellingCharacteristicsDBF;
-import org.complitex.osznconnection.file.entity.RequestFile;
-import org.complitex.osznconnection.file.entity.RequestStatus;
-import org.complitex.osznconnection.file.entity.StatusDetailInfo;
+import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.entity.example.DwellingCharacteristicsExample;
-import org.complitex.osznconnection.file.service.AddressService;
-import org.complitex.osznconnection.file.service.DwellingCharacteristicsBean;
-import org.complitex.osznconnection.file.service.OsznSessionBean;
-import org.complitex.osznconnection.file.service.RequestFileBean;
-import org.complitex.osznconnection.file.service.StatusRenderService;
+import org.complitex.osznconnection.file.service.*;
 import org.complitex.osznconnection.file.service.exception.DublicateCorrectionException;
 import org.complitex.osznconnection.file.service.exception.MoreOneCorrectionException;
 import org.complitex.osznconnection.file.service.exception.NotFoundCorrectionException;
@@ -57,33 +45,43 @@ import org.complitex.osznconnection.file.web.component.address.AddressCorrection
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.TemplatePage;
 
+import javax.ejb.EJB;
+import java.io.File;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  *
  * @author Artem
  */
 @AuthorizeInstantiation(SecurityRole.AUTHORIZED)
 public final class DwellingCharacteristicsList extends TemplatePage {
-
-    public static final String FILE_ID = "request_file_id";
     @EJB
     private DwellingCharacteristicsBean dwellingCharacteristicsBean;
+
     @EJB
     private RequestFileBean requestFileBean;
+
     @EJB
     private StatusRenderService statusRenderService;
+
     @EJB
     private WebWarningRenderer webWarningRenderer;
+
     @EJB
     private StatusDetailBean statusDetailBean;
+
     @EJB
     private AddressService addressService;
+
     @EJB
     private OsznSessionBean osznSessionBean;
+
     private IModel<DwellingCharacteristicsExample> example;
     private long fileId;
 
     public DwellingCharacteristicsList(PageParameters params) {
-        this.fileId = params.get(FILE_ID).toLong();
+        this.fileId = params.get("request_file_id").toLong();
         init();
     }
 
@@ -155,15 +153,16 @@ public final class DwellingCharacteristicsList extends TemplatePage {
         };
         dataProvider.setSort("", SortOrder.ASCENDING);
 
-        filterForm.add(new TextField<String>("idCodeFilter", new PropertyModel<String>(example, "idCode")));
-        filterForm.add(new TextField<String>("firstNameFilter", new PropertyModel<String>(example, "firstName")));
-        filterForm.add(new TextField<String>("middleNameFilter", new PropertyModel<String>(example, "middleName")));
-        filterForm.add(new TextField<String>("lastNameFilter", new PropertyModel<String>(example, "lastName")));
-        filterForm.add(new TextField<String>("streetCodeFilter", new PropertyModel<String>(example, "streetCode")));
-        filterForm.add(new TextField<String>("buildingFilter", new PropertyModel<String>(example, "building")));
-        filterForm.add(new TextField<String>("corpFilter", new PropertyModel<String>(example, "corp")));
-        filterForm.add(new TextField<String>("apartmentFilter", new PropertyModel<String>(example, "apartment")));
-        filterForm.add(new DropDownChoice<RequestStatus>("statusFilter", new PropertyModel<RequestStatus>(example, "status"),
+        filterForm.add(new TextField<>("idCodeFilter", new PropertyModel<String>(example, "idCode")));
+        filterForm.add(new TextField<>("firstNameFilter", new PropertyModel<String>(example, "firstName")));
+        filterForm.add(new TextField<>("middleNameFilter", new PropertyModel<String>(example, "middleName")));
+        filterForm.add(new TextField<>("lastNameFilter", new PropertyModel<String>(example, "lastName")));
+        filterForm.add(new TextField<>("streetCodeFilter", new PropertyModel<String>(example, "streetCode")));
+        filterForm.add(new TextField<>("streetReferenceFilter", new PropertyModel<String>(example, "streetReference")));
+        filterForm.add(new TextField<>("buildingFilter", new PropertyModel<String>(example, "building")));
+        filterForm.add(new TextField<>("corpFilter", new PropertyModel<String>(example, "corp")));
+        filterForm.add(new TextField<>("apartmentFilter", new PropertyModel<String>(example, "apartment")));
+        filterForm.add(new DropDownChoice<>("statusFilter", new PropertyModel<RequestStatus>(example, "status"),
                 Arrays.asList(RequestStatus.values()), new StatusRenderer()).setNullValid(true));
 
         AjaxLink<Void> reset = new AjaxLink<Void>("reset") {
@@ -233,6 +232,7 @@ public final class DwellingCharacteristicsList extends TemplatePage {
                 item.add(new Label("middleName", dwellingCharacteristics.getMiddleName()));
                 item.add(new Label("lastName", dwellingCharacteristics.getLastName()));
                 item.add(new Label("streetCode", dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.CDUL)));
+                item.add(new Label("streetReference", dwellingCharacteristics.getStreetReference()));
                 item.add(new Label("building", dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.HOUSE)));
                 item.add(new Label("corp", dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.BUILD)));
                 item.add(new Label("apartment", dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.APT)));
@@ -286,6 +286,7 @@ public final class DwellingCharacteristicsList extends TemplatePage {
         filterForm.add(new ArrowOrderByBorder("middleNameHeader", DwellingCharacteristicsBean.OrderBy.MIDDLE_NAME.getOrderBy(), dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("lastNameHeader", DwellingCharacteristicsBean.OrderBy.LAST_NAME.getOrderBy(), dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("streetCodeHeader", DwellingCharacteristicsBean.OrderBy.STREET_CODE.getOrderBy(), dataProvider, data, content));
+        filterForm.add(new ArrowOrderByBorder("streetReferenceHeader", DwellingCharacteristicsBean.OrderBy.STREET_REFERENCE.getOrderBy(), dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("buildingHeader", DwellingCharacteristicsBean.OrderBy.BUILDING.getOrderBy(), dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("corpHeader", DwellingCharacteristicsBean.OrderBy.CORP.getOrderBy(), dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("apartmentHeader", DwellingCharacteristicsBean.OrderBy.APARTMENT.getOrderBy(), dataProvider, data, content));

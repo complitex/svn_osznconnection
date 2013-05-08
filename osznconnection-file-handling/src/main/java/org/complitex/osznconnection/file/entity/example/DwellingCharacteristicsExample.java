@@ -9,12 +9,12 @@ package org.complitex.osznconnection.file.entity.example;
  * @author Artem
  */
 public class DwellingCharacteristicsExample extends AbstractRequestExample {
-
     private String idCode;
     private String firstName;
     private String middleName;
     private String lastName;
     private String streetCode;
+    private String streetReference;
     private String building;
     private String corp;
     private String apartment;
@@ -23,20 +23,52 @@ public class DwellingCharacteristicsExample extends AbstractRequestExample {
     private String orderByClause;
     private boolean asc;
 
-    public String getApartment() {
-        return apartment;
+    public String getIdCode() {
+        return idCode;
     }
 
-    public void setApartment(String apartment) {
-        this.apartment = apartment;
+    public void setIdCode(String idCode) {
+        this.idCode = idCode;
     }
 
-    public boolean isAsc() {
-        return asc;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setAsc(boolean asc) {
-        this.asc = asc;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getMiddleName() {
+        return middleName;
+    }
+
+    public void setMiddleName(String middleName) {
+        this.middleName = middleName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getStreetCode() {
+        return streetCode;
+    }
+
+    public void setStreetCode(String streetCode) {
+        this.streetCode = streetCode;
+    }
+
+    public String getStreetReference() {
+        return streetReference;
+    }
+
+    public void setStreetReference(String streetReference) {
+        this.streetReference = streetReference;
     }
 
     public String getBuilding() {
@@ -55,52 +87,12 @@ public class DwellingCharacteristicsExample extends AbstractRequestExample {
         this.corp = corp;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getApartment() {
+        return apartment;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getMiddleName() {
-        return middleName;
-    }
-
-    public void setMiddleName(String middleName) {
-        this.middleName = middleName;
-    }
-
-    public String getIdCode() {
-        return idCode;
-    }
-
-    public void setIdCode(String idCode) {
-        this.idCode = idCode;
-    }
-
-    public String getOrderByClause() {
-        return orderByClause;
-    }
-
-    public void setOrderByClause(String orderByClause) {
-        this.orderByClause = orderByClause;
-    }
-
-    public int getSize() {
-        return size;
-    }
-
-    public void setSize(int size) {
-        this.size = size;
+    public void setApartment(String apartment) {
+        this.apartment = apartment;
     }
 
     public int getStart() {
@@ -111,11 +103,27 @@ public class DwellingCharacteristicsExample extends AbstractRequestExample {
         this.start = start;
     }
 
-    public String getStreetCode() {
-        return streetCode;
+    public int getSize() {
+        return size;
     }
 
-    public void setStreetCode(String streetCode) {
-        this.streetCode = streetCode;
+    public void setSize(int size) {
+        this.size = size;
+    }
+
+    public String getOrderByClause() {
+        return orderByClause;
+    }
+
+    public void setOrderByClause(String orderByClause) {
+        this.orderByClause = orderByClause;
+    }
+
+    public boolean isAsc() {
+        return asc;
+    }
+
+    public void setAsc(boolean asc) {
+        this.asc = asc;
     }
 }

@@ -31,11 +31,13 @@ public class FacilityServiceTypeBean extends AbstractRequestBean {
 
     public enum OrderBy {
 
+        RAH(FacilityServiceTypeDBF.RAH.name()),
         IDCODE(FacilityServiceTypeDBF.IDCODE.name()),
         FIRST_NAME("first_name"),
         MIDDLE_NAME("middle_name"),
         LAST_NAME("last_name"),
         STREET_CODE(FacilityServiceTypeDBF.CDUL.name()),
+        STREET_REFERENCE("street_reference"),
         BUILDING(FacilityServiceTypeDBF.HOUSE.name()),
         CORP(FacilityServiceTypeDBF.BUILD.name()),
         APARTMENT(FacilityServiceTypeDBF.APT.name()),

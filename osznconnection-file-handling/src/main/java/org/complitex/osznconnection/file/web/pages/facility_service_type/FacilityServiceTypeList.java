@@ -4,10 +4,6 @@
  */
 package org.complitex.osznconnection.file.web.pages.facility_service_type;
 
-import java.io.File;
-import java.util.Arrays;
-import java.util.List;
-import javax.ejb.EJB;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
@@ -31,18 +27,10 @@ import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
-import org.complitex.osznconnection.file.entity.FacilityServiceType;
-import org.complitex.osznconnection.file.entity.FacilityServiceTypeDBF;
-import org.complitex.osznconnection.file.entity.RequestFile;
-import org.complitex.osznconnection.file.entity.RequestStatus;
-import org.complitex.osznconnection.file.entity.StatusDetailInfo;
+import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.entity.example.FacilityServiceTypeExample;
-import org.complitex.osznconnection.file.service.AddressService;
-import org.complitex.osznconnection.file.service.FacilityServiceTypeBean;
+import org.complitex.osznconnection.file.service.*;
 import org.complitex.osznconnection.file.service.FacilityServiceTypeBean.OrderBy;
-import org.complitex.osznconnection.file.service.OsznSessionBean;
-import org.complitex.osznconnection.file.service.RequestFileBean;
-import org.complitex.osznconnection.file.service.StatusRenderService;
 import org.complitex.osznconnection.file.service.exception.DublicateCorrectionException;
 import org.complitex.osznconnection.file.service.exception.MoreOneCorrectionException;
 import org.complitex.osznconnection.file.service.exception.NotFoundCorrectionException;
@@ -58,33 +46,43 @@ import org.complitex.osznconnection.file.web.component.address.AddressCorrection
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.TemplatePage;
 
+import javax.ejb.EJB;
+import java.io.File;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  *
  * @author Artem
  */
 @AuthorizeInstantiation(SecurityRole.AUTHORIZED)
 public final class FacilityServiceTypeList extends TemplatePage {
-
-    public static final String FILE_ID = "request_file_id";
     @EJB
     private FacilityServiceTypeBean facilityServiceTypeBean;
+
     @EJB
     private RequestFileBean requestFileBean;
+
     @EJB
     private StatusRenderService statusRenderService;
+
     @EJB
     private WebWarningRenderer webWarningRenderer;
+
     @EJB
     private StatusDetailBean statusDetailBean;
+
     @EJB
     private AddressService addressService;
+
     @EJB
     private OsznSessionBean osznSessionBean;
+
     private IModel<FacilityServiceTypeExample> example;
     private long fileId;
 
     public FacilityServiceTypeList(PageParameters params) {
-        this.fileId = params.get(FILE_ID).toLong();
+        this.fileId = params.get("request_file_id").toLong();
         init();
     }
 
@@ -93,8 +91,9 @@ public final class FacilityServiceTypeList extends TemplatePage {
     }
 
     private FacilityServiceTypeExample newExample() {
-        final FacilityServiceTypeExample e = new FacilityServiceTypeExample();
+        FacilityServiceTypeExample e = new FacilityServiceTypeExample();
         e.setRequestFileId(fileId);
+
         return e;
     }
 
@@ -120,9 +119,9 @@ public final class FacilityServiceTypeList extends TemplatePage {
         content.setOutputMarkupId(true);
         add(content);
 
-        final Form<Void> filterForm = new Form<Void>("filterForm");
+        final Form filterForm = new Form("filterForm");
         content.add(filterForm);
-        example = new Model<FacilityServiceTypeExample>(newExample());
+        example = new Model<>(newExample());
 
         StatusDetailPanel<FacilityServiceTypeExample> statusDetailPanel =
                 new StatusDetailPanel<FacilityServiceTypeExample>("statusDetailsPanel", example,
@@ -156,15 +155,17 @@ public final class FacilityServiceTypeList extends TemplatePage {
         };
         dataProvider.setSort("", SortOrder.ASCENDING);
 
-        filterForm.add(new TextField<String>("idCodeFilter", new PropertyModel<String>(example, "idCode")));
-        filterForm.add(new TextField<String>("firstNameFilter", new PropertyModel<String>(example, "firstName")));
-        filterForm.add(new TextField<String>("middleNameFilter", new PropertyModel<String>(example, "middleName")));
-        filterForm.add(new TextField<String>("lastNameFilter", new PropertyModel<String>(example, "lastName")));
-        filterForm.add(new TextField<String>("streetCodeFilter", new PropertyModel<String>(example, "streetCode")));
-        filterForm.add(new TextField<String>("buildingFilter", new PropertyModel<String>(example, "building")));
-        filterForm.add(new TextField<String>("corpFilter", new PropertyModel<String>(example, "corp")));
-        filterForm.add(new TextField<String>("apartmentFilter", new PropertyModel<String>(example, "apartment")));
-        filterForm.add(new DropDownChoice<RequestStatus>("statusFilter", new PropertyModel<RequestStatus>(example, "status"),
+        filterForm.add(new TextField<>("accountFilter", new PropertyModel<String>(example, "account")));
+        filterForm.add(new TextField<>("idCodeFilter", new PropertyModel<String>(example, "idCode")));
+        filterForm.add(new TextField<>("firstNameFilter", new PropertyModel<String>(example, "firstName")));
+        filterForm.add(new TextField<>("middleNameFilter", new PropertyModel<String>(example, "middleName")));
+        filterForm.add(new TextField<>("lastNameFilter", new PropertyModel<String>(example, "lastName")));
+        filterForm.add(new TextField<>("streetReferenceFilter", new PropertyModel<String>(example, "streetReference")));
+        filterForm.add(new TextField<>("streetCodeFilter", new PropertyModel<String>(example, "streetCode")));
+        filterForm.add(new TextField<>("buildingFilter", new PropertyModel<String>(example, "building")));
+        filterForm.add(new TextField<>("corpFilter", new PropertyModel<String>(example, "corp")));
+        filterForm.add(new TextField<>("apartmentFilter", new PropertyModel<String>(example, "apartment")));
+        filterForm.add(new DropDownChoice<>("statusFilter", new PropertyModel<RequestStatus>(example, "status"),
                 Arrays.asList(RequestStatus.values()), new StatusRenderer()).setNullValid(true));
 
         AjaxLink<Void> reset = new AjaxLink<Void>("reset") {
@@ -229,11 +230,13 @@ public final class FacilityServiceTypeList extends TemplatePage {
             protected void populateItem(Item<FacilityServiceType> item) {
                 final FacilityServiceType facilityServiceType = item.getModelObject();
 
+                item.add(new Label("account", facilityServiceType.getStringField(FacilityServiceTypeDBF.RAH)));
                 item.add(new Label("idCode", facilityServiceType.getStringField(FacilityServiceTypeDBF.IDCODE)));
                 item.add(new Label("firstName", facilityServiceType.getFirstName()));
                 item.add(new Label("middleName", facilityServiceType.getMiddleName()));
                 item.add(new Label("lastName", facilityServiceType.getLastName()));
                 item.add(new Label("streetCode", facilityServiceType.getStringField(FacilityServiceTypeDBF.CDUL)));
+                item.add(new Label("streetReference", facilityServiceType.getStreetReference()));
                 item.add(new Label("building", facilityServiceType.getStringField(FacilityServiceTypeDBF.HOUSE)));
                 item.add(new Label("corp", facilityServiceType.getStringField(FacilityServiceTypeDBF.BUILD)));
                 item.add(new Label("apartment", facilityServiceType.getStringField(FacilityServiceTypeDBF.APT)));
@@ -282,11 +285,13 @@ public final class FacilityServiceTypeList extends TemplatePage {
         };
         filterForm.add(data);
 
+        filterForm.add(new ArrowOrderByBorder("accountHeader", OrderBy.RAH.getOrderBy(), dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("idCodeHeader", OrderBy.IDCODE.getOrderBy(), dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("firstNameHeader", OrderBy.FIRST_NAME.getOrderBy(), dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("middleNameHeader", OrderBy.MIDDLE_NAME.getOrderBy(), dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("lastNameHeader", OrderBy.LAST_NAME.getOrderBy(), dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("streetCodeHeader", OrderBy.STREET_CODE.getOrderBy(), dataProvider, data, content));
+        filterForm.add(new ArrowOrderByBorder("streetReferenceHeader", OrderBy.STREET_REFERENCE.getOrderBy(), dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("buildingHeader", OrderBy.BUILDING.getOrderBy(), dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("corpHeader", OrderBy.CORP.getOrderBy(), dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("apartmentHeader", OrderBy.APARTMENT.getOrderBy(), dataProvider, data, content));
