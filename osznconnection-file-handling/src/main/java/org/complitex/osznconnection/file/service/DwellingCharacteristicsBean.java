@@ -66,8 +66,8 @@ public class DwellingCharacteristicsBean extends AbstractRequestBean {
     }
 
     @Transactional
-    public int count(DwellingCharacteristicsExample example) {
-        return (Integer) sqlSession().selectOne(MAPPING_NAMESPACE + ".count", example);
+    public Integer count(DwellingCharacteristicsExample example) {
+        return sqlSession().selectOne(MAPPING_NAMESPACE + ".count", example);
     }
 
     @Transactional
@@ -84,11 +84,11 @@ public class DwellingCharacteristicsBean extends AbstractRequestBean {
         return countByFile(fileId, RequestStatus.unboundStatuses());
     }
 
-    private int countByFile(long fileId, Set<RequestStatus> statuses) {
+    private Integer countByFile(long fileId, Set<RequestStatus> statuses) {
         Map<String, Object> params = Maps.newHashMap();
         params.put("requestFileId", fileId);
         params.put("statuses", statuses);
-        return (Integer) sqlSession().selectOne(MAPPING_NAMESPACE + ".countByFile", params);
+        return sqlSession().selectOne(MAPPING_NAMESPACE + ".countByFile", params);
     }
 
     @Transactional

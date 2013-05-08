@@ -34,6 +34,7 @@ public class DwellingCharacteristics extends AbstractRequest {
     private String middleName;
 
     private String streetReference;
+    private String streetTypeReference;
 
     public DwellingCharacteristics() {
     }
@@ -226,5 +227,13 @@ public class DwellingCharacteristics extends AbstractRequest {
 
     public void setStreetReference(String streetReference) {
         this.streetReference = streetReference;
+    }
+
+    public String getStreetTypeReference() {
+        return streetTypeReference;
+    }
+
+    public void setStreetTypeReference(String streetTypeReference) {
+        this.streetTypeReference = streetTypeReference;
     }
 }

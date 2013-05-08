@@ -31,6 +31,7 @@
         <result column="street_type" property="streetType"/>
 
         <result column="street_reference" property="streetReference"/>
+        <result column="street_type_reference" property="streetTypeReference"/>
 
         <association property="dbfFields" javaType="map">
             <result column="COD" property="COD"/>
@@ -129,8 +130,8 @@
     </sql>
 
     <select id="count" resultType="int" parameterType="org.complitex.osznconnection.file.entity.example.DwellingCharacteristicsExample">
-        SELECT COUNT(1) FROM `dwelling_characteristics` d JOIN `facility_street_reference` fsr ON d.`CDUL` = fsr.`KL_CODEUL`
-        WHERE d.`request_file_id` = #{requestFileId}
+        SELECT COUNT(1) FROM `dwelling_characteristics` d LEFT JOIN `facility_street_reference` fsr ON d.`CDUL` = fsr.`KL_CODEUL`
+          WHERE d.`request_file_id` = #{requestFileId}
         <include refid="org.complitex.osznconnection.file.service.DwellingCharacteristicsBean.filter"/>
     </select>
 
@@ -146,10 +147,11 @@
                 d.`internal_city_id`, d.`internal_street_id`, d.`internal_street_type_id`, d.`internal_building_id`,
                 d.`outgoing_city`, d.`outgoing_district`, d.`outgoing_street`, d.`outgoing_street_type`, d.`outgoing_building_number`,
                 d.`outgoing_building_corp`, d.`outgoing_apartment`, d.`street_correction_id`,
-                d.`city`, d.`street`, d.`street_type`, fsr.`KL_NAME` as street_reference
+                d.`city`, d.`street`, d.`street_type`, fsr.`KL_NAME` as street_reference, fstr.`KLKUL_NAME` as street_type_reference
             FROM `dwelling_characteristics` d
               JOIN `request_file` f ON f.`id` = d.`request_file_id`
-              JOIN `facility_street_reference` fsr ON d.`CDUL` = fsr.`KL_CODEUL`
+              LEFT JOIN `facility_street_reference` fsr ON d.`CDUL` = fsr.`KL_CODEUL`
+              LEFT JOIN `facility_street_type_reference` fstr ON fstr.`KLKUL_CODE` = fsr.KL_CODEKUL
             WHERE d.`request_file_id` = #{requestFileId}
                 <include refid="org.complitex.osznconnection.file.service.DwellingCharacteristicsBean.filter"/>
                 <if test="orderByClause != null">
