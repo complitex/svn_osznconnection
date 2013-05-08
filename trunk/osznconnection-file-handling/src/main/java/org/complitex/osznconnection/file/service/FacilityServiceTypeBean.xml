@@ -142,7 +142,7 @@
 
     <select id="count" resultType="int" parameterType="org.complitex.osznconnection.file.entity.example.FacilityServiceTypeExample">
         SELECT COUNT(1) FROM `facility_service_type` fst
-          JOIN `facility_street_reference` fsr ON fst.`CDUL` = fsr.`KL_CODEUL`
+          LEFT JOIN `facility_street_reference` fsr ON fst.`CDUL` = fsr.`KL_CODEUL`
         WHERE fst.`request_file_id` = #{requestFileId}
         <include refid="org.complitex.osznconnection.file.service.FacilityServiceTypeBean.filter"/>
     </select>
@@ -162,7 +162,7 @@
                 fst.`city`, fst.`street`, fst.`street_type`, fsr.`KL_NAME` as street_reference
             FROM `facility_service_type` fst
                 JOIN `request_file` f ON f.`id` = fst.`request_file_id`
-                JOIN `facility_street_reference` fsr ON fst.`CDUL` = fsr.`KL_CODEUL`
+                LEFT JOIN `facility_street_reference` fsr ON fst.`CDUL` = fsr.`KL_CODEUL`
             WHERE fst.`request_file_id` = #{requestFileId}
                 <include refid="org.complitex.osznconnection.file.service.FacilityServiceTypeBean.filter"/>
                 <if test="orderByClause != null">
