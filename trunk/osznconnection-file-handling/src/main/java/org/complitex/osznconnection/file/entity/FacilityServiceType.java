@@ -51,6 +51,8 @@ public class FacilityServiceType extends AbstractRequest {
     private String middleName;
 
     private String streetReference;
+    private String streetTypeReference;
+    private String streetTypeReferenceCode;
 
     public FacilityServiceType() {
     }
@@ -226,5 +228,21 @@ public class FacilityServiceType extends AbstractRequest {
 
     public void setStreetReference(String streetReference) {
         this.streetReference = streetReference;
+    }
+
+    public String getStreetTypeReference() {
+        return streetTypeReference;
+    }
+
+    public void setStreetTypeReference(String streetTypeReference) {
+        this.streetTypeReference = streetTypeReference;
+    }
+
+    public String getStreetTypeReferenceCode() {
+        return streetTypeReferenceCode;
+    }
+
+    public void setStreetTypeReferenceCode(String streetTypeReferenceCode) {
+        this.streetTypeReferenceCode = streetTypeReferenceCode;
     }
 }
