@@ -51,6 +51,8 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.complitex.osznconnection.file.entity.FacilityServiceTypeDBF.CDUL;
+
 /**
  *
  * @author Artem
@@ -247,21 +249,27 @@ public final class FacilityServiceTypeList extends TemplatePage {
 
                     @Override
                     public void onClick(AjaxRequestTarget target) {
-                        final String city = facilityServiceType.getCity();
-                        final String street = facilityServiceType.getStreet();
-                        final String streetCodePrefix = getString("streetCodePrefix");
-                        final String streetCodeFragment =
-                                (Strings.isEmpty(city) ? Strings.capitalize(streetCodePrefix) : streetCodePrefix)
-                                + " " + facilityServiceType.getStringField(FacilityServiceTypeDBF.CDUL);
+                        String street = facilityServiceType.getStreet() != null
+                                ? facilityServiceType.getStreet()
+                                : facilityServiceType.getStreetReference() != null
+                                ? facilityServiceType.getStreetReference()
+                                : getString("streetCodePrefix") + " " + facilityServiceType.getStringField(CDUL);
+
+                        String streetType = facilityServiceType.getStreetType() != null
+                                ? facilityServiceType.getStreetType()
+                                : facilityServiceType.getStreetTypeReference() != null
+                                ? facilityServiceType.getStreetTypeReference()
+                                : getString("streetTypeNotFound");
+
+
                         addressCorrectionPanel.open(target, facilityServiceType, facilityServiceType.getFirstName(),
                                 facilityServiceType.getMiddleName(), facilityServiceType.getLastName(),
-                                facilityServiceType.getCity(),
-                                street != null ? street + " (" + streetCodeFragment + ")" : streetCodeFragment,
-                                (street == null ? getString("buildingPrefix") + " " : "")
-                                + facilityServiceType.getStringField(FacilityServiceTypeDBF.HOUSE),
+                                facilityServiceType.getCity(), streetType, street,
+                                facilityServiceType.getStringField(FacilityServiceTypeDBF.HOUSE),
                                 facilityServiceType.getStringField(FacilityServiceTypeDBF.BUILD),
                                 facilityServiceType.getStringField(FacilityServiceTypeDBF.APT),
                                 facilityServiceType.getInternalCityId(),
+                                facilityServiceType.getInternalStreetTypeId(),
                                 facilityServiceType.getInternalStreetId(),
                                 facilityServiceType.getInternalBuildingId());
                     }
