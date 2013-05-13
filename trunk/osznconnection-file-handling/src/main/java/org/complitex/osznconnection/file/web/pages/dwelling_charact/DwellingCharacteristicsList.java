@@ -50,6 +50,8 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.complitex.osznconnection.file.entity.DwellingCharacteristicsDBF.CDUL;
+
 /**
  *
  * @author Artem
@@ -231,7 +233,7 @@ public final class DwellingCharacteristicsList extends TemplatePage {
                 item.add(new Label("firstName", dwellingCharacteristics.getFirstName()));
                 item.add(new Label("middleName", dwellingCharacteristics.getMiddleName()));
                 item.add(new Label("lastName", dwellingCharacteristics.getLastName()));
-                item.add(new Label("streetCode", dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.CDUL)));
+                item.add(new Label("streetCode", dwellingCharacteristics.getStringField(CDUL)));
                 item.add(new Label("streetReference", dwellingCharacteristics.getStreetReference()));
                 item.add(new Label("building", dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.HOUSE)));
                 item.add(new Label("corp", dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.BUILD)));
@@ -243,21 +245,26 @@ public final class DwellingCharacteristicsList extends TemplatePage {
 
                     @Override
                     public void onClick(AjaxRequestTarget target) {
-                        final String city = dwellingCharacteristics.getCity();
-                        final String street = dwellingCharacteristics.getStreet();
-                        final String streetCodePrefix = getString("streetCodePrefix");
-                        final String streetCodeFragment =
-                                (Strings.isEmpty(city) ? Strings.capitalize(streetCodePrefix) : streetCodePrefix)
-                                + " " + dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.CDUL);
+                        String street = dwellingCharacteristics.getStreet() != null
+                                ? dwellingCharacteristics.getStreet()
+                                : dwellingCharacteristics.getStreetReference() != null
+                                ? dwellingCharacteristics.getStreetReference()
+                                : getString("streetCodePrefix") + " " + dwellingCharacteristics.getStringField(CDUL);
+
+                        String streetType = dwellingCharacteristics.getStreetType() != null
+                                ? dwellingCharacteristics.getStreetType()
+                                : dwellingCharacteristics.getStreetTypeReference() != null
+                                ? dwellingCharacteristics.getStreetTypeReference()
+                                : getString("streetTypeNotFound");
+
                         addressCorrectionPanel.open(target, dwellingCharacteristics, dwellingCharacteristics.getFirstName(),
                                 dwellingCharacteristics.getMiddleName(), dwellingCharacteristics.getLastName(),
-                                dwellingCharacteristics.getCity(),
-                                street != null ? street + " (" + streetCodeFragment + ")" : streetCodeFragment,
-                                (street == null ? getString("buildingPrefix") + " " : "")
-                                + dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.HOUSE),
+                                dwellingCharacteristics.getCity(), streetType, street,
+                                dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.HOUSE),
                                 dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.BUILD),
                                 dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.APT),
                                 dwellingCharacteristics.getInternalCityId(),
+                                dwellingCharacteristics.getInternalStreetTypeId(),
                                 dwellingCharacteristics.getInternalStreetId(),
                                 dwellingCharacteristics.getInternalBuildingId());
                     }
