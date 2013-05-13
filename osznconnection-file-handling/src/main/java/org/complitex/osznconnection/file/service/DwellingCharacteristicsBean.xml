@@ -32,6 +32,7 @@
 
         <result column="street_reference" property="streetReference"/>
         <result column="street_type_reference" property="streetTypeReference"/>
+        <result column="street_type_reference_code" property="streetTypeReferenceCode"/>
 
         <association property="dbfFields" javaType="map">
             <result column="COD" property="COD"/>
@@ -147,11 +148,13 @@
                 d.`internal_city_id`, d.`internal_street_id`, d.`internal_street_type_id`, d.`internal_building_id`,
                 d.`outgoing_city`, d.`outgoing_district`, d.`outgoing_street`, d.`outgoing_street_type`, d.`outgoing_building_number`,
                 d.`outgoing_building_corp`, d.`outgoing_apartment`, d.`street_correction_id`,
-                d.`city`, d.`street`, d.`street_type`, fsr.`KL_NAME` as street_reference, fstr.`KLKUL_NAME` as street_type_reference
+                d.`city`, d.`street`, d.`street_type`, fsr.`KL_NAME` as street_reference, fstr.`KLKUL_NAME` as street_type_reference,
+                fsr.`KL_CODEKUL` as street_type_reference_code
+
             FROM `dwelling_characteristics` d
               JOIN `request_file` f ON f.`id` = d.`request_file_id`
               LEFT JOIN `facility_street_reference` fsr ON d.`CDUL` = fsr.`KL_CODEUL`
-              LEFT JOIN `facility_street_type_reference` fstr ON fstr.`KLKUL_CODE` = fsr.KL_CODEKUL
+              LEFT JOIN `facility_street_type_reference` fstr ON fstr.`KLKUL_CODE` = fsr.`KL_CODEKUL`
             WHERE d.`request_file_id` = #{requestFileId}
                 <include refid="org.complitex.osznconnection.file.service.DwellingCharacteristicsBean.filter"/>
                 <if test="orderByClause != null">
@@ -220,14 +223,17 @@
     
     <select id="findForOperation" parameterType="map" resultMap="dwellingCharacteristicsResultMap">
         SELECT d.`id`, d.`status`, d.`request_file_id`, d.`last_name`, d.`first_name`, d.`middle_name`, d.`FIO`,
-        d.`city`, d.`CDUL`, d.`street`, d.`street_type`, d.`HOUSE`, d.`BUILD`, d.`APT`, d.`IDCODE`, d.`date`,
-        f.`organization_id`,
-        d.`internal_city_id`, d.`internal_street_id`, d.`internal_street_type_id`, d.`internal_building_id`,
-        d.`outgoing_city`, d.`outgoing_district`, d.`outgoing_street`, d.`outgoing_street_type`, d.`outgoing_building_number`,
-        d.`outgoing_building_corp`, d.`outgoing_apartment`, d.`street_correction_id`,
-        d.`account_number`
+            d.`city`, d.`CDUL`, d.`street`, d.`street_type`, d.`HOUSE`, d.`BUILD`, d.`APT`, d.`IDCODE`, d.`date`,
+            f.`organization_id`,
+            d.`internal_city_id`, d.`internal_street_id`, d.`internal_street_type_id`, d.`internal_building_id`,
+            d.`outgoing_city`, d.`outgoing_district`, d.`outgoing_street`, d.`outgoing_street_type`, d.`outgoing_building_number`,
+            d.`outgoing_building_corp`, d.`outgoing_apartment`, d.`street_correction_id`,
+            d.`account_number`,  fsr.`KL_NAME` as street_reference, fstr.`KLKUL_NAME` as street_type_reference,
+            fsr.`KL_CODEKUL` as street_type_reference_code
         FROM `dwelling_characteristics` d
-        JOIN `request_file` f ON d.`request_file_id` = f.`id`
+            JOIN `request_file` f ON d.`request_file_id` = f.`id`
+            LEFT JOIN `facility_street_reference` fsr ON d.`CDUL` = fsr.`KL_CODEUL`
+            LEFT JOIN `facility_street_type_reference` fstr ON fstr.`KLKUL_CODE` = fsr.`KL_CODEKUL`
         WHERE d.`request_file_id` = #{requestFileId} AND d.`id` IN
         <foreach collection="ids" item="id" open="(" close=")" separator=",">
             #{id}

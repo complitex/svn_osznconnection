@@ -35,6 +35,7 @@ public class DwellingCharacteristics extends AbstractRequest {
 
     private String streetReference;
     private String streetTypeReference;
+    private String streetTypeReferenceCode;
 
     public DwellingCharacteristics() {
     }
@@ -235,5 +236,13 @@ public class DwellingCharacteristics extends AbstractRequest {
 
     public void setStreetTypeReference(String streetTypeReference) {
         this.streetTypeReference = streetTypeReference;
+    }
+
+    public String getStreetTypeReferenceCode() {
+        return streetTypeReferenceCode;
+    }
+
+    public void setStreetTypeReferenceCode(String streetTypeReferenceCode) {
+        this.streetTypeReferenceCode = streetTypeReferenceCode;
     }
 }

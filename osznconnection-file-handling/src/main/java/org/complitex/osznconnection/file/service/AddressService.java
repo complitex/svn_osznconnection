@@ -22,7 +22,6 @@ import org.complitex.osznconnection.file.service.exception.MoreOneCorrectionExce
 import org.complitex.osznconnection.file.service.exception.NotFoundCorrectionException;
 import org.complitex.osznconnection.file.service_provider.ServiceProviderAdapter;
 import org.complitex.osznconnection.file.web.component.address.AddressCorrectionPanel.CORRECTED_ENTITY;
-import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +29,8 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import java.util.List;
 import java.util.Set;
+
+import static org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID;
 
 /**
  * Класс разрешает адрес.
@@ -92,7 +93,7 @@ public class AddressService extends AbstractBean {
             if (cityIds.size() == 1) {
                 cityId = cityIds.get(0);
                 cityCorrection = addressCorrectionBean.createCityCorrection(city.toUpperCase(), cityId, osznId,
-                        IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
+                        ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
                 addressCorrectionBean.insert(cityCorrection);
             } else if (cityIds.size() > 1) {
                 actualPayment.setStatus(RequestStatus.MORE_ONE_LOCAL_CITY);
@@ -124,7 +125,7 @@ public class AddressService extends AbstractBean {
             if (streetTypeIds.size() == 1) {
                 streetTypeId = streetTypeIds.get(0);
                 streetTypeCorrection = addressCorrectionBean.createStreetTypeCorrection(streetType.toUpperCase(),
-                        streetTypeId, osznId, IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
+                        streetTypeId, osznId, ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
                 addressCorrectionBean.insert(streetTypeCorrection);
             } else if (streetTypeIds.size() > 1) {
                 actualPayment.setStatus(RequestStatus.MORE_ONE_LOCAL_STREET_TYPE);
@@ -158,7 +159,7 @@ public class AddressService extends AbstractBean {
                 streetId = streetIds.get(0);
                 streetCorrection = addressCorrectionBean.createStreetCorrection(street.toUpperCase(), streetCode.toUpperCase(),
                         streetTypeCorrection.getId(), cityCorrection.getId(), streetId, osznId,
-                        IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
+                        ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
                 addressCorrectionBean.insertStreet(streetCorrection);
             } else if (streetIds.size() > 1) {
                 actualPayment.setStatus(RequestStatus.MORE_ONE_LOCAL_STREET);
@@ -194,7 +195,7 @@ public class AddressService extends AbstractBean {
             if (buildingIds.size() == 1) {
                 buildingId = buildingIds.get(0);
                 buildingCorrection = addressCorrectionBean.createBuildingCorrection(buildingNumber.toUpperCase(), buildingCorp.toUpperCase(),
-                        streetCorrection.getId(), buildingId, osznId, IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID,
+                        streetCorrection.getId(), buildingId, osznId, ITSELF_ORGANIZATION_OBJECT_ID,
                         userOrganizationId);
                 addressCorrectionBean.insertBuilding(buildingCorrection);
             } else if (buildingIds.size() > 1) {
@@ -242,7 +243,7 @@ public class AddressService extends AbstractBean {
             if (cityIds.size() == 1) {
                 cityId = cityIds.get(0);
                 cityCorrection = addressCorrectionBean.createCityCorrection(city.toUpperCase(), cityId, osznId,
-                        IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
+                        ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
                 addressCorrectionBean.insert(cityCorrection);
             } else if (cityIds.size() > 1) {
                 subsidy.setStatus(RequestStatus.MORE_ONE_LOCAL_CITY);
@@ -274,7 +275,7 @@ public class AddressService extends AbstractBean {
             if (streetTypeIds.size() == 1) {
                 streetTypeId = streetTypeIds.get(0);
                 streetTypeCorrection = addressCorrectionBean.createStreetTypeCorrection(streetType.toUpperCase(),
-                        streetTypeId, osznId, IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
+                        streetTypeId, osznId, ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
                 addressCorrectionBean.insert(streetTypeCorrection);
             } else if (streetTypeIds.size() > 1) {
                 subsidy.setStatus(RequestStatus.MORE_ONE_LOCAL_STREET_TYPE);
@@ -308,7 +309,7 @@ public class AddressService extends AbstractBean {
                 streetId = streetIds.get(0);
                 streetCorrection = addressCorrectionBean.createStreetCorrection(street.toUpperCase(), streetCode.toUpperCase(),
                         streetTypeCorrection.getId(), cityCorrection.getId(), streetId, osznId,
-                        IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
+                        ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
                 addressCorrectionBean.insertStreet(streetCorrection);
             } else if (streetIds.size() > 1) {
                 subsidy.setStatus(RequestStatus.MORE_ONE_LOCAL_STREET);
@@ -345,7 +346,7 @@ public class AddressService extends AbstractBean {
                 buildingId = buildingIds.get(0);
                 buildingCorrection = addressCorrectionBean.createBuildingCorrection(buildingNumber.toUpperCase(),
                         buildingCorp != null ? buildingCorp.toUpperCase() : null,
-                        streetCorrection.getId(), buildingId, osznId, IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID,
+                        streetCorrection.getId(), buildingId, osznId, ITSELF_ORGANIZATION_OBJECT_ID,
                         userOrganizationId);
                 addressCorrectionBean.insertBuilding(buildingCorrection);
             } else if (buildingIds.size() > 1) {
@@ -393,7 +394,7 @@ public class AddressService extends AbstractBean {
             if (cityIds.size() == 1) {
                 cityId = cityIds.get(0);
                 cityCorrection = addressCorrectionBean.createCityCorrection(city.toUpperCase(), cityId, osznId,
-                        IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
+                        ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
                 addressCorrectionBean.insert(cityCorrection);
             } else if (cityIds.size() > 1) {
                 dwellingCharacteristics.setStatus(RequestStatus.MORE_ONE_LOCAL_CITY);
@@ -406,6 +407,39 @@ public class AddressService extends AbstractBean {
 
         if (cityId != null) {
             dwellingCharacteristics.setInternalCityId(cityId);
+        }
+
+        //связывание типа улицы
+        String streetType = dwellingCharacteristics.getStreetTypeReference();
+        Long streetTypeId;
+        Correction streetTypeCorrection;
+        List<Correction> streetTypeCorrections = addressCorrectionBean.findStreetTypeLocalCorrections(streetType,
+                osznId, userOrganizationId);
+
+        if (streetTypeCorrections.size() == 1) {
+            streetTypeCorrection = streetTypeCorrections.get(0);
+            streetTypeId = streetTypeCorrection.getObjectId();
+        } else if (streetTypeCorrections.size() > 1) {
+            dwellingCharacteristics.setStatus(RequestStatus.MORE_ONE_LOCAL_STREET_TYPE_CORRECTION);
+            return;
+        } else {
+            List<Long> streetTypeIds = addressCorrectionBean.findInternalStreetTypeIds(streetType);
+            if (streetTypeIds.size() == 1) {
+                streetTypeId = streetTypeIds.get(0);
+                streetTypeCorrection = addressCorrectionBean.createStreetTypeCorrection(streetType.toUpperCase(),
+                        streetTypeId, osznId, ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
+                addressCorrectionBean.insert(streetTypeCorrection);
+            } else if (streetTypeIds.size() > 1) {
+                dwellingCharacteristics.setStatus(RequestStatus.MORE_ONE_LOCAL_STREET_TYPE);
+                return;
+            } else {
+                dwellingCharacteristics.setStatus(RequestStatus.STREET_TYPE_UNRESOLVED_LOCALLY);
+                return;
+            }
+        }
+
+        if (streetTypeId != null) {
+            dwellingCharacteristics.setInternalStreetTypeId(streetTypeId);
         }
 
         //связывание улицы
@@ -482,7 +516,7 @@ public class AddressService extends AbstractBean {
                 buildingCorrection = addressCorrectionBean.createBuildingCorrection(buildingNumber.toUpperCase(),
                         buildingCorp != null ? buildingCorp.toUpperCase() : null,
                         dwellingCharacteristics.getStreetCorrectionId(), buildingId, osznId,
-                        IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
+                        ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
                 addressCorrectionBean.insertBuilding(buildingCorrection);
             } else if (buildingIds.size() > 1) {
                 dwellingCharacteristics.setStatus(RequestStatus.MORE_ONE_LOCAL_BUILDING);
@@ -531,7 +565,7 @@ public class AddressService extends AbstractBean {
             if (cityIds.size() == 1) {
                 cityId = cityIds.get(0);
                 cityCorrection = addressCorrectionBean.createCityCorrection(city.toUpperCase(), cityId, osznId,
-                        IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
+                        ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
                 addressCorrectionBean.insert(cityCorrection);
             } else if (cityIds.size() > 1) {
                 facilityServiceType.setStatus(RequestStatus.MORE_ONE_LOCAL_CITY);
@@ -620,7 +654,7 @@ public class AddressService extends AbstractBean {
                 buildingCorrection = addressCorrectionBean.createBuildingCorrection(buildingNumber.toUpperCase(),
                         buildingCorp != null ? buildingCorp.toUpperCase() : null,
                         facilityServiceType.getStreetCorrectionId(), buildingId, osznId,
-                        IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
+                        ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
                 addressCorrectionBean.insertBuilding(buildingCorrection);
             } else if (buildingIds.size() > 1) {
                 facilityServiceType.setStatus(RequestStatus.MORE_ONE_LOCAL_BUILDING);
@@ -691,7 +725,7 @@ public class AddressService extends AbstractBean {
             if (cityIds.size() == 1) {
                 cityId = cityIds.get(0);
                 cityCorrection = addressCorrectionBean.createCityCorrection(city.toUpperCase(), cityId, osznId,
-                        IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
+                        ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
                 addressCorrectionBean.insert(cityCorrection);
             } else if (cityIds.size() > 1) {
                 payment.setStatus(RequestStatus.MORE_ONE_LOCAL_CITY);
@@ -915,7 +949,7 @@ public class AddressService extends AbstractBean {
                 buildingId = buildingIds.get(0);
                 buildingCorrection = addressCorrectionBean.createBuildingCorrection(buildingNumber.toUpperCase(),
                         buildingCorp != null ? buildingCorp.toUpperCase() : null,
-                        streetCorrection.getId(), buildingId, osznId, IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID,
+                        streetCorrection.getId(), buildingId, osznId, ITSELF_ORGANIZATION_OBJECT_ID,
                         userOrganizationId);
                 addressCorrectionBean.insertBuilding(buildingCorrection);
             } else if (buildingIds.size() > 1) {
@@ -956,7 +990,7 @@ public class AddressService extends AbstractBean {
             return null;
         } else {
             streetTypeCorrection = addressCorrectionBean.createStreetTypeCorrection(streetType.toUpperCase(),
-                    streetTypeObjectId, osznId, IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
+                    streetTypeObjectId, osznId, ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
             addressCorrectionBean.insert(streetTypeCorrection);
             return streetTypeCorrection;
         }
@@ -981,7 +1015,7 @@ public class AddressService extends AbstractBean {
         } else {
             streetCorrection = addressCorrectionBean.createStreetCorrection(street.toUpperCase(), null,
                     streetTypeCorrectionId, cityCorrectionId, streetObjectId, osznId,
-                    IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
+                    ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
             addressCorrectionBean.insertStreet(streetCorrection);
             return streetCorrection;
         }
@@ -1521,7 +1555,7 @@ public class AddressService extends AbstractBean {
                     throw new DublicateCorrectionException();
                 } else {
                     Correction cityCorrection = addressCorrectionBean.createCityCorrection(city.toUpperCase(), cityId, osznId,
-                            IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
+                            ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
 //                    if (addressCorrectionBean.checkAddressExistence(cityCorrection)) {
 //                        throw new DublicateCorrectionException();
 //                    }
@@ -1552,7 +1586,7 @@ public class AddressService extends AbstractBean {
                         throw new MoreOneCorrectionException("street_type");
                     } else {
                         streetTypeCorrection = addressCorrectionBean.createStreetTypeCorrection(streetType.toUpperCase(),
-                                streetTypeId, osznId, IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
+                                streetTypeId, osznId, ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
                         addressCorrectionBean.insert(streetTypeCorrection);
                     }
 
@@ -1563,7 +1597,7 @@ public class AddressService extends AbstractBean {
                     } else {
                         StreetCorrection streetCorrection = addressCorrectionBean.createStreetCorrection(street.toUpperCase(), null,
                                 streetTypeCorrection.getId(), cityCorrection.getId(), streetId, osznId,
-                                IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
+                                ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
 //                            if (addressCorrectionBean.checkStreetExistence(streetCorrection)) {
 //                                throw new DublicateCorrectionException();
 //                            }
@@ -1605,7 +1639,7 @@ public class AddressService extends AbstractBean {
                                         buildingNumber.toUpperCase(),
                                         buildingCorp != null ? buildingCorp.toUpperCase() : null,
                                         streetCorrection.getId(), buildingId, osznId,
-                                        IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
+                                        ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
 //                                if (addressCorrectionBean.checkBuildingExistence(buildingCorrection)) {
 //                                    throw new DublicateCorrectionException();
 //                                }
@@ -1654,7 +1688,7 @@ public class AddressService extends AbstractBean {
                     throw new DublicateCorrectionException();
                 } else {
                     Correction cityCorrection = addressCorrectionBean.createCityCorrection(city.toUpperCase(), cityId, osznId,
-                            IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
+                            ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
                     addressCorrectionBean.insert(cityCorrection);
                     actualPaymentBean.markCorrected(requestFileId, city);
                 }
@@ -1667,7 +1701,7 @@ public class AddressService extends AbstractBean {
                     throw new DublicateCorrectionException();
                 } else {
                     Correction streetTypeCorrection = addressCorrectionBean.createStreetTypeCorrection(streetType.toUpperCase(),
-                            streetTypeId, osznId, IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
+                            streetTypeId, osznId, ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
                     addressCorrectionBean.insert(streetTypeCorrection);
                     actualPaymentBean.markCorrected(requestFileId, city, streetType);
                 }
@@ -1691,7 +1725,7 @@ public class AddressService extends AbstractBean {
                             StreetCorrection streetCorrection = addressCorrectionBean.createStreetCorrection(street.toUpperCase(),
                                     streetCode.toUpperCase(),
                                     streetTypeCorrection.getId(), cityCorrection.getId(), streetId, osznId,
-                                    IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
+                                    ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
                             addressCorrectionBean.insertStreet(streetCorrection);
                             actualPaymentBean.markCorrected(requestFileId, city, streetType, streetCode);
                         }
@@ -1731,7 +1765,7 @@ public class AddressService extends AbstractBean {
                                         buildingNumber.toUpperCase(),
                                         buildingCorp != null ? buildingCorp.toUpperCase() : null,
                                         streetCorrection.getId(), buildingId, osznId,
-                                        IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
+                                        ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
                                 addressCorrectionBean.insertBuilding(buildingCorrection);
                                 actualPaymentBean.markCorrected(requestFileId, city, streetType, streetCode, buildingNumber, buildingCorp);
                             }
@@ -1776,7 +1810,7 @@ public class AddressService extends AbstractBean {
                     throw new DublicateCorrectionException();
                 } else {
                     Correction cityCorrection = addressCorrectionBean.createCityCorrection(city.toUpperCase(), cityId, osznId,
-                            IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
+                            ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
                     addressCorrectionBean.insert(cityCorrection);
                     subsidyBean.markCorrected(requestFileId, city);
                 }
@@ -1789,7 +1823,7 @@ public class AddressService extends AbstractBean {
                     throw new DublicateCorrectionException();
                 } else {
                     Correction streetTypeCorrection = addressCorrectionBean.createStreetTypeCorrection(streetType.toUpperCase(),
-                            streetTypeId, osznId, IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
+                            streetTypeId, osznId, ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
                     addressCorrectionBean.insert(streetTypeCorrection);
                     subsidyBean.markCorrected(requestFileId, city, streetType);
                 }
@@ -1813,7 +1847,7 @@ public class AddressService extends AbstractBean {
                             StreetCorrection streetCorrection = addressCorrectionBean.createStreetCorrection(street.toUpperCase(),
                                     streetCode.toUpperCase(),
                                     streetTypeCorrection.getId(), cityCorrection.getId(), streetId, osznId,
-                                    IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
+                                    ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
                             addressCorrectionBean.insertStreet(streetCorrection);
                             subsidyBean.markCorrected(requestFileId, city, streetType, streetCode);
                         }
@@ -1853,7 +1887,7 @@ public class AddressService extends AbstractBean {
                                         buildingNumber.toUpperCase(),
                                         buildingCorp != null ? buildingCorp.toUpperCase() : null,
                                         streetCorrection.getId(), buildingId, osznId,
-                                        IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
+                                        ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
                                 addressCorrectionBean.insertBuilding(buildingCorrection);
                                 subsidyBean.markCorrected(requestFileId, city, streetType, streetCode, buildingNumber, buildingCorp);
                             }
@@ -1896,15 +1930,31 @@ public class AddressService extends AbstractBean {
                     throw new DublicateCorrectionException();
                 } else {
                     Correction cityCorrection = addressCorrectionBean.createCityCorrection(city.toUpperCase(), cityId, osznId,
-                            IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
+                            ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
                     addressCorrectionBean.insert(cityCorrection);
                     dwellingCharacteristicsBean.markCorrected(requestFileId);
                 }
             }
             break;
             case STREET_TYPE: {
-                throw new IllegalArgumentException("Street type couldn't corrected for dwelling characteristics.");
+                String streetType = dwellingCharacteristics.getStreetTypeReference();
+
+                List<Correction> streetTypeCorrections = addressCorrectionBean.findStreetTypeLocalCorrections(streetType,
+                        osznId, userOrganizationId);
+
+                if (streetTypeCorrections.isEmpty()){
+                    Correction streetTypeCorrection = addressCorrectionBean.createStreetTypeCorrection(streetType,
+                            streetTypeId, osznId, ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
+
+                    streetTypeCorrection.setCode(dwellingCharacteristics.getStreetTypeReferenceCode());
+
+                    addressCorrectionBean.insert(streetTypeCorrection);
+                    dwellingCharacteristicsBean.markCorrected(requestFileId);
+                }else {
+                    throw new DublicateCorrectionException();
+                }
             }
+            break;
             case STREET: {
                 List<Correction> cityCorrections = addressCorrectionBean.findCityLocalCorrections(city, osznId, userOrganizationId);
                 if (cityCorrections.size() == 1) {
@@ -1923,7 +1973,7 @@ public class AddressService extends AbstractBean {
                         throw new MoreOneCorrectionException("street_type");
                     } else {
                         streetTypeCorrection = addressCorrectionBean.createStreetTypeCorrection(streetType.toUpperCase(),
-                                streetTypeId, osznId, IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
+                                streetTypeId, osznId, ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
                         addressCorrectionBean.insert(streetTypeCorrection);
                     }
 
@@ -1935,7 +1985,7 @@ public class AddressService extends AbstractBean {
                     } else {
                         StreetCorrection streetCorrection = addressCorrectionBean.createStreetCorrection(street.toUpperCase(), streetCode,
                                 streetTypeCorrection.getId(), cityCorrection.getId(), streetId, osznId,
-                                IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
+                                ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
                         addressCorrectionBean.insertStreet(streetCorrection);
                         dwellingCharacteristicsBean.markCorrected(requestFileId, streetCode);
                     }
@@ -1972,7 +2022,7 @@ public class AddressService extends AbstractBean {
                                         buildingNumber.toUpperCase(),
                                         buildingCorp != null ? buildingCorp.toUpperCase() : null,
                                         streetCorrection.getId(), buildingId, osznId,
-                                        IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
+                                        ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
                                 addressCorrectionBean.insertBuilding(buildingCorrection);
                                 dwellingCharacteristicsBean.markCorrected(requestFileId, streetCode, buildingNumber, buildingCorp);
                             }
@@ -2015,7 +2065,7 @@ public class AddressService extends AbstractBean {
                     throw new DublicateCorrectionException();
                 } else {
                     Correction cityCorrection = addressCorrectionBean.createCityCorrection(city.toUpperCase(), cityId, osznId,
-                            IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
+                            ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
                     addressCorrectionBean.insert(cityCorrection);
                     dwellingCharacteristicsBean.markCorrected(requestFileId);
                 }
@@ -2042,7 +2092,7 @@ public class AddressService extends AbstractBean {
                         throw new MoreOneCorrectionException("street_type");
                     } else {
                         streetTypeCorrection = addressCorrectionBean.createStreetTypeCorrection(streetType.toUpperCase(),
-                                streetTypeId, osznId, IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
+                                streetTypeId, osznId, ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
                         addressCorrectionBean.insert(streetTypeCorrection);
                     }
 
@@ -2054,7 +2104,7 @@ public class AddressService extends AbstractBean {
                     } else {
                         StreetCorrection streetCorrection = addressCorrectionBean.createStreetCorrection(street.toUpperCase(), streetCode,
                                 streetTypeCorrection.getId(), cityCorrection.getId(), streetId, osznId,
-                                IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
+                                ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
                         addressCorrectionBean.insertStreet(streetCorrection);
                         dwellingCharacteristicsBean.markCorrected(requestFileId, streetCode);
                     }
@@ -2091,7 +2141,7 @@ public class AddressService extends AbstractBean {
                                         buildingNumber.toUpperCase(),
                                         buildingCorp != null ? buildingCorp.toUpperCase() : null,
                                         streetCorrection.getId(), buildingId, osznId,
-                                        IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
+                                        ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
                                 addressCorrectionBean.insertBuilding(buildingCorrection);
                                 dwellingCharacteristicsBean.markCorrected(requestFileId, streetCode, buildingNumber, buildingCorp);
                             }
