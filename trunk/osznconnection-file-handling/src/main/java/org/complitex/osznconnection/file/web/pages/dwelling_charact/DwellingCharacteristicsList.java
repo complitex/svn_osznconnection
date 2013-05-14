@@ -50,6 +50,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.complitex.dictionary.util.StringUtil.emptyOnNull;
 import static org.complitex.osznconnection.file.entity.DwellingCharacteristicsDBF.CDUL;
 
 /**
@@ -159,7 +160,6 @@ public final class DwellingCharacteristicsList extends TemplatePage {
         filterForm.add(new TextField<>("firstNameFilter", new PropertyModel<String>(example, "firstName")));
         filterForm.add(new TextField<>("middleNameFilter", new PropertyModel<String>(example, "middleName")));
         filterForm.add(new TextField<>("lastNameFilter", new PropertyModel<String>(example, "lastName")));
-        filterForm.add(new TextField<>("streetCodeFilter", new PropertyModel<String>(example, "streetCode")));
         filterForm.add(new TextField<>("streetReferenceFilter", new PropertyModel<String>(example, "streetReference")));
         filterForm.add(new TextField<>("buildingFilter", new PropertyModel<String>(example, "building")));
         filterForm.add(new TextField<>("corpFilter", new PropertyModel<String>(example, "corp")));
@@ -233,8 +233,8 @@ public final class DwellingCharacteristicsList extends TemplatePage {
                 item.add(new Label("firstName", dwellingCharacteristics.getFirstName()));
                 item.add(new Label("middleName", dwellingCharacteristics.getMiddleName()));
                 item.add(new Label("lastName", dwellingCharacteristics.getLastName()));
-                item.add(new Label("streetCode", dwellingCharacteristics.getStringField(CDUL)));
-                item.add(new Label("streetReference", dwellingCharacteristics.getStreetReference()));
+                item.add(new Label("streetReference", emptyOnNull(dwellingCharacteristics.getStreetReference()) + " "
+                        + emptyOnNull(dwellingCharacteristics.getStreetTypeReference())));
                 item.add(new Label("building", dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.HOUSE)));
                 item.add(new Label("corp", dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.BUILD)));
                 item.add(new Label("apartment", dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.APT)));
@@ -292,7 +292,6 @@ public final class DwellingCharacteristicsList extends TemplatePage {
         filterForm.add(new ArrowOrderByBorder("firstNameHeader", DwellingCharacteristicsBean.OrderBy.FIRST_NAME.getOrderBy(), dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("middleNameHeader", DwellingCharacteristicsBean.OrderBy.MIDDLE_NAME.getOrderBy(), dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("lastNameHeader", DwellingCharacteristicsBean.OrderBy.LAST_NAME.getOrderBy(), dataProvider, data, content));
-        filterForm.add(new ArrowOrderByBorder("streetCodeHeader", DwellingCharacteristicsBean.OrderBy.STREET_CODE.getOrderBy(), dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("streetReferenceHeader", DwellingCharacteristicsBean.OrderBy.STREET_REFERENCE.getOrderBy(), dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("buildingHeader", DwellingCharacteristicsBean.OrderBy.BUILDING.getOrderBy(), dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("corpHeader", DwellingCharacteristicsBean.OrderBy.CORP.getOrderBy(), dataProvider, data, content));
