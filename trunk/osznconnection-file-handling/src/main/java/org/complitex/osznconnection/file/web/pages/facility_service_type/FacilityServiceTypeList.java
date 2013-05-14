@@ -237,8 +237,8 @@ public final class FacilityServiceTypeList extends TemplatePage {
                 item.add(new Label("firstName", facilityServiceType.getFirstName()));
                 item.add(new Label("middleName", facilityServiceType.getMiddleName()));
                 item.add(new Label("lastName", facilityServiceType.getLastName()));
-                item.add(new Label("streetReference", emptyOnNull(facilityServiceType.getStreetReference()) + " "
-                        + emptyOnNull(facilityServiceType.getStreetTypeReference())));
+                item.add(new Label("streetReference", emptyOnNull(facilityServiceType.getStreetTypeReference()) + " "
+                        + emptyOnNull(facilityServiceType.getStreetReference())));
                 item.add(new Label("building", facilityServiceType.getStringField(FacilityServiceTypeDBF.HOUSE)));
                 item.add(new Label("corp", facilityServiceType.getStringField(FacilityServiceTypeDBF.BUILD)));
                 item.add(new Label("apartment", facilityServiceType.getStringField(FacilityServiceTypeDBF.APT)));
