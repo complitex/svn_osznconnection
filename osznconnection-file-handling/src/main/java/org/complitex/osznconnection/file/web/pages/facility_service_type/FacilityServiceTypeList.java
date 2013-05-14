@@ -51,6 +51,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.complitex.dictionary.util.StringUtil.emptyOnNull;
 import static org.complitex.osznconnection.file.entity.FacilityServiceTypeDBF.CDUL;
 
 /**
@@ -163,7 +164,6 @@ public final class FacilityServiceTypeList extends TemplatePage {
         filterForm.add(new TextField<>("middleNameFilter", new PropertyModel<String>(example, "middleName")));
         filterForm.add(new TextField<>("lastNameFilter", new PropertyModel<String>(example, "lastName")));
         filterForm.add(new TextField<>("streetReferenceFilter", new PropertyModel<String>(example, "streetReference")));
-        filterForm.add(new TextField<>("streetCodeFilter", new PropertyModel<String>(example, "streetCode")));
         filterForm.add(new TextField<>("buildingFilter", new PropertyModel<String>(example, "building")));
         filterForm.add(new TextField<>("corpFilter", new PropertyModel<String>(example, "corp")));
         filterForm.add(new TextField<>("apartmentFilter", new PropertyModel<String>(example, "apartment")));
@@ -237,8 +237,8 @@ public final class FacilityServiceTypeList extends TemplatePage {
                 item.add(new Label("firstName", facilityServiceType.getFirstName()));
                 item.add(new Label("middleName", facilityServiceType.getMiddleName()));
                 item.add(new Label("lastName", facilityServiceType.getLastName()));
-                item.add(new Label("streetCode", facilityServiceType.getStringField(FacilityServiceTypeDBF.CDUL)));
-                item.add(new Label("streetReference", facilityServiceType.getStreetReference()));
+                item.add(new Label("streetReference", emptyOnNull(facilityServiceType.getStreetReference()) + " "
+                        + emptyOnNull(facilityServiceType.getStreetTypeReference())));
                 item.add(new Label("building", facilityServiceType.getStringField(FacilityServiceTypeDBF.HOUSE)));
                 item.add(new Label("corp", facilityServiceType.getStringField(FacilityServiceTypeDBF.BUILD)));
                 item.add(new Label("apartment", facilityServiceType.getStringField(FacilityServiceTypeDBF.APT)));
@@ -298,7 +298,6 @@ public final class FacilityServiceTypeList extends TemplatePage {
         filterForm.add(new ArrowOrderByBorder("firstNameHeader", OrderBy.FIRST_NAME.getOrderBy(), dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("middleNameHeader", OrderBy.MIDDLE_NAME.getOrderBy(), dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("lastNameHeader", OrderBy.LAST_NAME.getOrderBy(), dataProvider, data, content));
-        filterForm.add(new ArrowOrderByBorder("streetCodeHeader", OrderBy.STREET_CODE.getOrderBy(), dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("streetReferenceHeader", OrderBy.STREET_REFERENCE.getOrderBy(), dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("buildingHeader", OrderBy.BUILDING.getOrderBy(), dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("corpHeader", OrderBy.CORP.getOrderBy(), dataProvider, data, content));
