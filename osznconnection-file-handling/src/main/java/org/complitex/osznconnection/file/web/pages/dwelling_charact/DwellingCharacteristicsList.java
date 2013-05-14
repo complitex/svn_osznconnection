@@ -233,7 +233,7 @@ public final class DwellingCharacteristicsList extends TemplatePage {
                 item.add(new Label("firstName", dwellingCharacteristics.getFirstName()));
                 item.add(new Label("middleName", dwellingCharacteristics.getMiddleName()));
                 item.add(new Label("lastName", dwellingCharacteristics.getLastName()));
-                item.add(new Label("streetReference", emptyOnNull(dwellingCharacteristics.getStreetReference()) + " "
+                item.add(new Label("streetReference", emptyOnNull(dwellingCharacteristics.getStreetTypeReference()) + " "
                         + emptyOnNull(dwellingCharacteristics.getStreetTypeReference())));
                 item.add(new Label("building", dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.HOUSE)));
                 item.add(new Label("corp", dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.BUILD)));
