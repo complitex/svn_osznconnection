@@ -139,7 +139,7 @@ public class GroupBindTaskBean implements ITaskBean {
      */
     private boolean resolveAddress(Payment payment, CalculationContext calculationContext) {
         addressService.resolveAddress(payment, calculationContext);
-        return addressService.isAddressResolved(payment);
+        return payment.getStatus().isAddressResolved();
     }
 
     /**

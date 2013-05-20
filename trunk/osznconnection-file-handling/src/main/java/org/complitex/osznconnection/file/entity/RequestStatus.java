@@ -98,9 +98,17 @@ public enum RequestStatus implements IEnumCode {
             MORE_ONE_REMOTE_CITY_CORRECTION, MORE_ONE_REMOTE_DISTRICT_CORRECTION, MORE_ONE_REMOTE_STREET_CORRECTION,
             MORE_ONE_REMOTE_BUILDING_CORRECTION));
 
+
+    /**
+     * Разрешен ли адрес.
+     * Адрес считаем разрешенным, если статус payment записи не входит в список статусов, указывающих на то что адрес не разрешен локально,
+     * не входит в список статусов, указывающих на то что адрес не разрешен в ЦН, и не равен RequestStatus.ADDRESS_CORRECTED,
+     * который указывает на то, что адрес откорректировали в UI.
+     */
     public boolean isAddressResolved() {
         return !ADDRESS_UNRESOLVED_STATUSES.contains(this);
     }
+
     private static final Set<RequestStatus> ADDRESS_UNRESOLVED_LOCALLY_STATUSES = 
             Sets.immutableEnumSet(ImmutableList.of(ADDRESS_CORRECTED,
             CITY_UNRESOLVED_LOCALLY, STREET_UNRESOLVED_LOCALLY, STREET_AND_BUILDING_UNRESOLVED_LOCALLY,
@@ -163,5 +171,15 @@ public enum RequestStatus implements IEnumCode {
     @Override
     public int getCode() {
         return code;
+    }
+
+    public boolean isNotIn(RequestStatus... statuses){
+        for (RequestStatus s : statuses){
+            if (this.equals(s)){
+                return false;
+            }
+        }
+
+        return true;
     }
 }

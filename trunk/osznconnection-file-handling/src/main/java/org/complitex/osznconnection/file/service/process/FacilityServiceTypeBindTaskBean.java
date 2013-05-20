@@ -89,7 +89,7 @@ public class FacilityServiceTypeBindTaskBean implements ITaskBean {
             log.debug("Resolving of facility service type address (id = {}) took {} sec.", facilityServiceType.getId(),
                     (System.nanoTime() - startTime) / 1000000000F);
         }
-        return addressService.isAddressResolved(facilityServiceType);
+        return facilityServiceType.getStatus().isAddressResolved();
     }
 
     private void resolveLocalAccount(FacilityServiceType facilityServiceType, CalculationContext calculationContext) {

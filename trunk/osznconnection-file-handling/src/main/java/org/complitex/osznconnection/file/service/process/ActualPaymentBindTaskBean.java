@@ -20,6 +20,9 @@ import org.complitex.osznconnection.file.service.RequestFileBean;
 import org.complitex.osznconnection.file.service.exception.AlreadyProcessingException;
 import org.complitex.osznconnection.file.service.exception.BindException;
 import org.complitex.osznconnection.file.service.exception.CanceledByUserException;
+import org.complitex.osznconnection.file.service_provider.CalculationCenterBean;
+import org.complitex.osznconnection.file.service_provider.exception.DBException;
+import org.complitex.osznconnection.file.web.pages.util.GlobalOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,9 +36,6 @@ import javax.transaction.UserTransaction;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import org.complitex.osznconnection.file.service_provider.CalculationCenterBean;
-import org.complitex.osznconnection.file.service_provider.exception.DBException;
-import org.complitex.osznconnection.file.web.pages.util.GlobalOptions;
 
 /**
  *
@@ -71,7 +71,7 @@ public class ActualPaymentBindTaskBean implements ITaskBean {
             log.debug("Resolving of actualPayment address (id = {}) took {} sec.", actualPayment.getId(),
                     (System.nanoTime() - startTime) / 1000000000F);
         }
-        return addressService.isAddressResolved(actualPayment);
+        return actualPayment.getStatus().isAddressResolved();
     }
 
     private void resolveLocalAccount(ActualPayment actualPayment, CalculationContext calculationContext) {

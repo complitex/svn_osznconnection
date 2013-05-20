@@ -33,6 +33,9 @@ import javax.transaction.UserTransaction;
 import java.util.List;
 import java.util.Map;
 
+import static org.complitex.osznconnection.file.entity.RequestStatus.ACCOUNT_NUMBER_RESOLVED;
+import static org.complitex.osznconnection.file.entity.RequestStatus.MORE_ONE_ACCOUNTS_LOCALLY;
+
 /**
  *
  * @author Artem
@@ -82,12 +85,15 @@ public class DwellingCharacteristicsBindTaskBean implements ITaskBean {
         if (log.isDebugEnabled()) {
             startTime = System.nanoTime();
         }
+
         addressService.resolveAddress(dwellingCharacteristics, calculationContext);
+
         if (log.isDebugEnabled()) {
             log.debug("Resolving of dwelling characteristics address (id = {}) took {} sec.", dwellingCharacteristics.getId(),
                     (System.nanoTime() - startTime) / 1000000000F);
         }
-        return addressService.isAddressResolved(dwellingCharacteristics);
+
+        return dwellingCharacteristics.getStatus().isAddressResolved();
     }
 
     private void resolveLocalAccount(DwellingCharacteristics dwellingCharacteristics, CalculationContext calculationContext) {
@@ -95,7 +101,9 @@ public class DwellingCharacteristicsBindTaskBean implements ITaskBean {
         if (log.isDebugEnabled()) {
             startTime = System.nanoTime();
         }
+
         personAccountService.resolveLocalAccount(dwellingCharacteristics, calculationContext);
+
         if (log.isDebugEnabled()) {
             log.debug("Resolving of dwelling characteristics (id = {}) for local account took {} sec.",
                     dwellingCharacteristics.getId(), (System.nanoTime() - startTime) / 1000000000F);
@@ -108,12 +116,14 @@ public class DwellingCharacteristicsBindTaskBean implements ITaskBean {
         if (log.isDebugEnabled()) {
             startTime = System.nanoTime();
         }
+
         personAccountService.resolveRemoteAccount(dwellingCharacteristics, calculationContext, updatePuAccount);
+
         if (log.isDebugEnabled()) {
             log.debug("Resolving of dwelling characteristics (id = {}) for remote account number took {} sec.",
                     dwellingCharacteristics.getId(), (System.nanoTime() - startTime) / 1000000000F);
         }
-        return dwellingCharacteristics.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED;
+        return dwellingCharacteristics.getStatus() == ACCOUNT_NUMBER_RESOLVED;
     }
 
     private void bind(DwellingCharacteristics dwellingCharacteristics, CalculationContext calculationContext, Boolean updatePuAccount)
@@ -124,8 +134,8 @@ public class DwellingCharacteristicsBindTaskBean implements ITaskBean {
         if (dwellingCharacteristics.getInternalStreetId() != null) { // улица найдена
             //resolve local account.
             resolveLocalAccount(dwellingCharacteristics, calculationContext);
-            if (dwellingCharacteristics.getStatus() != RequestStatus.ACCOUNT_NUMBER_RESOLVED
-                    && dwellingCharacteristics.getStatus() != RequestStatus.MORE_ONE_ACCOUNTS_LOCALLY) {
+
+            if (dwellingCharacteristics.getStatus().isNotIn(ACCOUNT_NUMBER_RESOLVED, MORE_ONE_ACCOUNTS_LOCALLY)) {
                 if (resolveAddress(dwellingCharacteristics, calculationContext)) {
                     resolveRemoteAccountNumber(dwellingCharacteristics, calculationContext, updatePuAccount);
                 }
@@ -172,7 +182,9 @@ public class DwellingCharacteristicsBindTaskBean implements ITaskBean {
                 //связать dwelling characteristics запись
                 try {
                     userTransaction.begin();
+
                     bind(dwellingCharacteristic, calculationContext, updatePuAccount);
+
                     userTransaction.commit();
                 } catch (Exception e) {
                     log.error("The dwelling characteristics item ( id = " + dwellingCharacteristic.getId() + ") was bound with error: ", e);

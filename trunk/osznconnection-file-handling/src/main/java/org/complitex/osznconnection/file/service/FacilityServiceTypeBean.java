@@ -150,22 +150,24 @@ public class FacilityServiceTypeBean extends AbstractRequestBean {
 
     @Transactional
     public void markCorrected(long fileId) {
-        markCorrected(fileId, null);
+        markCorrected(fileId, null, null);
     }
 
     @Transactional
-    public void markCorrected(long fileId, String streetCode) {
-        markCorrected(fileId, streetCode, null, null);
+    public void markCorrected(long fileId, String streetTypeCode, String streetCode) {
+        markCorrected(fileId, streetTypeCode, streetCode, null, null);
     }
 
     @Transactional
-    public void markCorrected(long fileId, String streetCode,
-            String buildingNumber, String buildingCorp) {
+    public void markCorrected(long fileId, String streetTypeCode, String streetCode, String buildingNumber, String buildingCorp) {
         Map<String, Object> params = Maps.newHashMap();
+
         params.put("fileId", fileId);
         params.put("streetCode", streetCode);
         params.put("buildingNumber", buildingNumber);
         params.put("buildingCorp", buildingCorp);
+        params.put("streetTypeCode", streetTypeCode);
+
         sqlSession().update(MAPPING_NAMESPACE + ".markCorrected", params);
     }
 
