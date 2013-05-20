@@ -5,32 +5,22 @@
 package org.complitex.osznconnection.file.service;
 
 import com.google.common.collect.Lists;
-import java.sql.SQLException;
-import org.complitex.dictionary.mybatis.Transactional;
-import org.complitex.dictionary.service.AbstractBean;
-import org.complitex.osznconnection.file.entity.PersonAccount;
-
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import java.util.List;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.wicket.util.string.Strings;
+import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.mysql.MySqlErrors;
-import org.complitex.osznconnection.file.entity.ActualPayment;
-import org.complitex.osznconnection.file.entity.ActualPaymentDBF;
-import org.complitex.osznconnection.file.entity.DwellingCharacteristics;
-import org.complitex.osznconnection.file.entity.DwellingCharacteristicsDBF;
-import org.complitex.osznconnection.file.entity.FacilityServiceType;
-import org.complitex.osznconnection.file.entity.FacilityServiceTypeDBF;
-import org.complitex.osznconnection.file.entity.Payment;
-import org.complitex.osznconnection.file.entity.PaymentDBF;
-import org.complitex.osznconnection.file.entity.Subsidy;
-import org.complitex.osznconnection.file.entity.SubsidyDBF;
+import org.complitex.dictionary.service.AbstractBean;
+import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.entity.example.PersonAccountExample;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import java.sql.SQLException;
+import java.util.List;
 
 /**
  * Класс для работы с локальной таблицей номеров л/c person_account.
@@ -100,6 +90,7 @@ public class PersonAccountLocalBean extends AbstractBean {
             String puAccountNumber, Long userOrganizationId, boolean blocking, SqlSession session) {
         PersonAccountExample example = newExample(firstName, middleName, lastName, city, street, buildingNumber,
                 buildingCorp, apartment, osznId, calculationCenterId, puAccountNumber, userOrganizationId);
+
         if (blocking) {
             return session.selectList(MAPPING_NAMESPACE + ".findAccountsLikeNameBlocking", example);
         } else {
@@ -255,17 +246,25 @@ public class PersonAccountLocalBean extends AbstractBean {
     }
 
     @Transactional
-    public String findLocalAccountNumber(DwellingCharacteristics dwellingCharacteristics, long calculationCenterId, long userOrganizationId)
-            throws MoreOneAccountException {
+    public String findLocalAccountNumber(DwellingCharacteristics dwellingCharacteristics, long calculationCenterId,
+                                         long userOrganizationId) throws MoreOneAccountException {
         List<PersonAccount> accounts = findAccountsLikeName(dwellingCharacteristics.getFirstName(),
-                dwellingCharacteristics.getMiddleName(), dwellingCharacteristics.getLastName(),
-                dwellingCharacteristics.getCity(), dwellingCharacteristics.getStreet(),
+                dwellingCharacteristics.getMiddleName(),
+                dwellingCharacteristics.getLastName(),
+                dwellingCharacteristics.getCity(),
+                dwellingCharacteristics.getStreet(),
                 dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.HOUSE),
                 dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.BUILD),
                 dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.APT),
-                dwellingCharacteristics.getOrganizationId(), calculationCenterId,
-                dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.IDCODE), userOrganizationId, false, sqlSession());
+                dwellingCharacteristics.getOrganizationId(),
+                calculationCenterId,
+                dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.IDCODE),
+                userOrganizationId,
+                false,
+                sqlSession());
+
         String currentStreetType = dwellingCharacteristics.getStreetType();
+
         if (currentStreetType != null) {
             currentStreetType = currentStreetType.toUpperCase();
         }

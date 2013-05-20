@@ -166,8 +166,10 @@
             FROM `facility_service_type` fst
                 JOIN `request_file` f ON f.`id` = fst.`request_file_id`
                 LEFT JOIN `facility_street_reference` fsr ON fst.`CDUL` = fsr.`KL_CODEUL`
+                LEFT JOIN `request_file` fsr_rf ON fsr.`request_file_id` = fsr_rf.`id`
                 LEFT JOIN `facility_street_type_reference` fstr ON fstr.`KLKUL_CODE` = fsr.`KL_CODEKUL`
             WHERE fst.`request_file_id` = #{requestFileId}
+                and f.`organization_id` = fsr_rf.`organization_id` and f.`user_organization_id` = fsr_rf.`user_organization_id`
                 <include refid="org.complitex.osznconnection.file.service.FacilityServiceTypeBean.filter"/>
                 <if test="orderByClause != null">
                     <choose>
@@ -245,11 +247,14 @@
         FROM `facility_service_type` fst
             JOIN `request_file` f ON fst.`request_file_id` = f.`id`
             LEFT JOIN `facility_street_reference` fsr ON fst.`CDUL` = fsr.`KL_CODEUL`
+            LEFT JOIN `request_file` fsr_rf ON fsr.`request_file_id` = fsr_rf.`id`
             LEFT JOIN `facility_street_type_reference` fstr ON fstr.`KLKUL_CODE` = fsr.`KL_CODEKUL`
-        WHERE fst.`request_file_id` = #{requestFileId} AND fst.`id` IN
-        <foreach collection="ids" item="id" open="(" close=")" separator=",">
-            #{id}
-        </foreach>
+        WHERE fst.`request_file_id` = #{requestFileId}
+            and f.`organization_id` = fsr_rf.`organization_id` and f.`user_organization_id` = fsr_rf.`user_organization_id`
+            AND fst.`id` IN
+            <foreach collection="ids" item="id" open="(" close=")" separator=",">
+                #{id}
+            </foreach>
     </select>
    
    <update id="clearBeforeBinding" parameterType="map">
@@ -269,15 +274,29 @@
     </update>
     
     <update id="markCorrected" parameterType="map">
-        UPDATE `facility_service_type` SET `status` = 204 WHERE `request_file_id` = #{fileId}
-        <if test="streetCode != null">
-            AND `CDUL` = #{streetCode}
+        update `facility_service_type` f
+          left join `request_file` f_rf ON f.`request_file_id` = f_rf.`id`
+          left join `facility_street_reference` r on f.`CDUL` = r.`KL_CODEUL`
+          left join `request_file` r_rf ON r.`request_file_id` = r_rf.`id`
+        set f.`status` = 204
+        where f.`request_file_id` = #{fileId}
+          and f_rf.`organization_id` = r_rf.`organization_id` and f_rf.`user_organization_id` = r_rf.`user_organization_id`
+
+        <if test="streetTypeCode != null and streetCode == null">
+            and r.`KL_CODEKUL` = #{streetTypeCode} and f.`status` = 237
         </if>
+
+        <if test="streetCode != null and buildingNumber == null">
+            and f.`CDUL` = #{streetCode} and f.`status` = 201
+        </if>
+
         <if test="buildingNumber != null">
-            AND TO_CYRILLIC(`HOUSE`) = TO_CYRILLIC(#{buildingNumber})
+            and f.`CDUL` = #{streetCode} and TO_CYRILLIC(`HOUSE`) = TO_CYRILLIC(#{buildingNumber}) and f.`status` = 202
         </if>
+
         <if test="buildingCorp != null">
-            AND TO_CYRILLIC(`BUILD`) = TO_CYRILLIC(#{buildingCorp})
+            and f.`CDUL` = #{streetCode} and TO_CYRILLIC(`HOUSE`) = TO_CYRILLIC(#{buildingNumber})
+            and TO_CYRILLIC(`BUILD`) = TO_CYRILLIC(#{buildingCorp}) and f.`status` = 202
         </if>
     </update>
     

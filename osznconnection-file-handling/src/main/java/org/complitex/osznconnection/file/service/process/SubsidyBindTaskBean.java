@@ -16,9 +16,13 @@ import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.service.AddressService;
 import org.complitex.osznconnection.file.service.PersonAccountService;
 import org.complitex.osznconnection.file.service.RequestFileBean;
+import org.complitex.osznconnection.file.service.SubsidyBean;
 import org.complitex.osznconnection.file.service.exception.AlreadyProcessingException;
 import org.complitex.osznconnection.file.service.exception.BindException;
 import org.complitex.osznconnection.file.service.exception.CanceledByUserException;
+import org.complitex.osznconnection.file.service_provider.CalculationCenterBean;
+import org.complitex.osznconnection.file.service_provider.exception.DBException;
+import org.complitex.osznconnection.file.web.pages.util.GlobalOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,10 +35,6 @@ import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import java.util.List;
 import java.util.Map;
-import org.complitex.osznconnection.file.service.SubsidyBean;
-import org.complitex.osznconnection.file.service_provider.CalculationCenterBean;
-import org.complitex.osznconnection.file.service_provider.exception.DBException;
-import org.complitex.osznconnection.file.web.pages.util.GlobalOptions;
 
 /**
  *
@@ -70,7 +70,7 @@ public class SubsidyBindTaskBean implements ITaskBean {
             log.debug("Resolving of subsidy address (id = {}) took {} sec.", subsidy.getId(),
                     (System.nanoTime() - startTime) / 1000000000F);
         }
-        return addressService.isAddressResolved(subsidy);
+        return subsidy.getStatus().isAddressResolved();
     }
 
     private void resolveLocalAccount(Subsidy subsidy, CalculationContext calculationContext) {

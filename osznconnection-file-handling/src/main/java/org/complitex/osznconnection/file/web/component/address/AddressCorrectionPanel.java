@@ -136,7 +136,7 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
 
         DomainObjectExample example = new DomainObjectExample();
         List<? extends DomainObject> streetTypes = streetTypeStrategy.find(example);
-        streetTypeModel = new Model<DomainObject>();
+        streetTypeModel = new Model<>();
         DomainObjectDisableAwareRenderer renderer = new DomainObjectDisableAwareRenderer() {
 
             @Override
@@ -144,7 +144,7 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
                 return streetTypeStrategy.displayFullName(object, getLocale());
             }
         };
-        streetTypeSelect = new DisableAwareDropDownChoice<DomainObject>("streetTypeSelect", streetTypeModel,
+        streetTypeSelect = new DisableAwareDropDownChoice<>("streetTypeSelect", streetTypeModel,
                 streetTypes, renderer);
         streetTypeSelect.add(new AjaxFormComponentUpdatingBehavior("onchange") {
 

@@ -4,18 +4,18 @@
  */
 package org.complitex.osznconnection.file.service;
 
-import java.util.Date;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.osznconnection.file.entity.*;
-
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
 import org.complitex.osznconnection.file.service.PersonAccountLocalBean.MoreOneAccountException;
 import org.complitex.osznconnection.file.service_provider.CalculationCenterBean;
 import org.complitex.osznconnection.file.service_provider.ServiceProviderAdapter;
 import org.complitex.osznconnection.file.service_provider.exception.DBException;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import java.util.Date;
 
 /**
  * Разрешает номер л/c
@@ -51,8 +51,6 @@ public class PersonAccountService extends AbstractBean {
      * Попытаться разрешить номер личного счета локально, т.е. из локальной таблицы person_account
      * Если успешно, то просиавить account number, статус в RequestStatus.ACCOUNT_NUMBER_RESOLVED и обновить account number для всех benefit записей,
      * соответствующих данному payment.
-     * @param actualPayment
-     * @param calculationCenterId
      */
     @Transactional
     public void resolveLocalAccount(Payment payment, CalculationContext calculationContext) {
@@ -100,8 +98,9 @@ public class PersonAccountService extends AbstractBean {
     @Transactional
     public void resolveLocalAccount(DwellingCharacteristics dwellingCharacteristics, CalculationContext calculationContext) {
         try {
-            String accountNumber = personAccountLocalBean.findLocalAccountNumber(dwellingCharacteristics, calculationContext.getCalculationCenterId(),
-                    calculationContext.getUserOrganizationId());
+            String accountNumber = personAccountLocalBean.findLocalAccountNumber(dwellingCharacteristics,
+                    calculationContext.getCalculationCenterId(), calculationContext.getUserOrganizationId());
+
             if (!Strings.isEmpty(accountNumber)) {
                 dwellingCharacteristics.setAccountNumber(accountNumber);
                 dwellingCharacteristics.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
@@ -130,9 +129,6 @@ public class PersonAccountService extends AbstractBean {
      * См. org.complitex.osznconnection.file.calculation.adapter.DefaultCalculationCenterAdapter.acquirePersonAccount()
      * Если успешно, то обновить account number для всех benefit записей,
      * соответствующих данному payment и записать в локальную таблицу номеров л/c(person_account) найденный номер.
-     * @param actualPayment
-     * @param calculationCenterId
-     * @param adapter
      */
     @Transactional
     public void resolveRemoteAccount(Payment payment, CalculationContext calculationContext,
@@ -187,6 +183,7 @@ public class PersonAccountService extends AbstractBean {
                 dwellingCharacteristics.getOutgoingStreet(),
                 dwellingCharacteristics.getOutgoingBuildingNumber(), dwellingCharacteristics.getOutgoingBuildingCorp(),
                 dwellingCharacteristics.getOutgoingApartment(), dwellingCharacteristics.getDate(), updatePUAccount);
+
         if (dwellingCharacteristics.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED) {
             personAccountLocalBean.saveOrUpdate(dwellingCharacteristics, calculationContext.getCalculationCenterId(),
                     calculationContext.getUserOrganizationId());
@@ -210,8 +207,6 @@ public class PersonAccountService extends AbstractBean {
 
     /**
      * Корректировать account number из UI в случае когда в ЦН больше одного человека соотвествуют номеру л/c.
-     * @param actualPayment
-     * @param accountNumber
      */
     @Transactional
     public void updateAccountNumber(Payment payment, String accountNumber, long userOrganizationId) {
