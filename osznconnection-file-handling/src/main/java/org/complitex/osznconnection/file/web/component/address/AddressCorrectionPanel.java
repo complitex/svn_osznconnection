@@ -298,7 +298,8 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
     }
 
     protected void closeDialog(AjaxRequestTarget target) {
-        container.setVisible(false);
+        //container.setVisible(false); access denied bug
+
         target.add(container);
         dialog.close(target);
     }
