@@ -191,6 +191,9 @@ public class FacilityReferenceBookBean extends AbstractBean {
                 streetTypeId = streetTypeIds.get(0);
                 streetTypeCorrection = addressCorrectionBean.createStreetTypeCorrection(streetTypeName.toUpperCase(),
                         streetTypeId, osznId, IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
+
+                streetTypeCorrection.setCode(streetTypeCode);
+
                 addressCorrectionBean.insert(streetTypeCorrection);
             } else if (streetTypeIds.size() > 1) {
                 throw new ExecuteException(
