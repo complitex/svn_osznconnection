@@ -18,8 +18,8 @@
             <result column="b_organization_id" property="organizationId"/>
             <result column="b_user_organization_id" property="userOrganizationId"/>
             <result column="b_registry" property="registry"/>
-            <result column="b_month" property="month"/>
-            <result column="b_year" property="year"/>
+            <result column="b_begin_date" property="beginDate"/>
+            <result column="b_end_date" property="endDate"/>
             <result column="b_dbf_record_count" property="dbfRecordCount"/>
             <result column="b_length" property="length"/>
             <result column="b_check_sum" property="checkSum"/>
@@ -34,8 +34,8 @@
             <result column="p_organization_id" property="organizationId"/>
             <result column="p_user_organization_id" property="userOrganizationId"/>
             <result column="p_registry" property="registry"/>
-            <result column="p_month" property="month"/>
-            <result column="p_year" property="year"/>
+            <result column="p_begin_date" property="beginDate"/>
+            <result column="p_end_date" property="endDate"/>
             <result column="p_dbf_record_count" property="dbfRecordCount"/>
             <result column="p_length" property="length"/>
             <result column="p_check_sum" property="checkSum"/>
@@ -55,7 +55,8 @@
     </update>
 
     <update id="updateStatus" parameterType="map">
-        update `request_file_group` set `status` = #{status} where `id` = (SELECT rf.`group_id` FROM `request_file` rf WHERE rf.`id` = #{fileId})
+        update `request_file_group` set `status` = #{status}
+        where `id` = (SELECT rf.`group_id` FROM `request_file` rf WHERE rf.`id` = #{fileId})
     </update>
 
     <delete id="deleteRequestFileGroup" parameterType="long">
@@ -92,8 +93,8 @@
             <if test="organization != null">and p.`organization_id` = #{organization.id}</if>
             <if test="userOrganization != null">and p.`user_organization_id` = #{userOrganization.id}</if>
             <if test="registry != null">and p.`registry` = #{registry}</if>
-            <if test="year != null">and p.`year` = #{year}</if>
-            <if test="month != null">and p.`month` = #{month}</if>
+            <if test="year != null">and YEAR(p.`begin_date`) = #{year}</if>
+            <if test="month != null">and MONTH(p.`begin_date`) = #{month}</if>
             <if test="status != null">and g.`status` = #{status}</if>
             
             <include refid="org.complitex.osznconnection.file.service.RequestFileGroupBean.permissionFilter"/>
@@ -105,14 +106,17 @@
         select
             g.id as gid,
             g.status as status,
-            b.id as b_id, b.loaded as b_loaded, b.name as b_name, b.directory as b_directory, 
+
+            b.id as b_id, b.loaded as b_loaded, b.name as b_name, b.directory as b_directory,
             b.organization_id as b_organization_id, b.`user_organization_id` as b_user_organization_id,
-            b.registry as b_registry, b.month as b_month, b.year as b_year, b.dbf_record_count as b_dbf_record_count,
+            b.registry as b_registry, b.begin_date as b_begin_date, b.end_date as b_end_date, b.dbf_record_count as b_dbf_record_count,
             b.length as b_length, b.check_sum as b_check_sum, b.type as b_type,
+
             p.id as p_id, p.loaded as p_loaded, p.name as p_name, p.directory as p_directory, 
             p.organization_id as p_organization_id, p.`user_organization_id` as p_user_organization_id,
-            p.registry as p_registry, p.month as p_month, p.year as p_year, p.dbf_record_count as p_dbf_record_count,
+            p.registry as p_registry, p.begin_date as p_begin_date, p.end_date as p_end_date, p.dbf_record_count as p_dbf_record_count,
             p.length as p_length, p.check_sum as p_check_sum, p.type as p_type,
+
             (SELECT COUNT(1) FROM `payment` WHERE `request_file_id` = p.`id`) AS loaded_record_count,
             (SELECT COUNT(1) FROM `payment` WHERE `request_file_id` = p.`id` AND `account_number` IS NOT NULL) AS binded_record_count,
             (SELECT COUNT(1) FROM `payment` WHERE `request_file_id` = p.`id` AND `status` = 215) AS filled_record_count
@@ -144,14 +148,17 @@
          select
             g.id as gid,
             g.status as status,
+
             b.id as b_id, b.loaded as b_loaded, b.name as b_name, b.directory as b_directory, 
             b.organization_id as b_organization_id,  b.`user_organization_id` as b_user_organization_id,
-            b.registry as b_registry, b.month as b_month, b.year as b_year, b.dbf_record_count as b_dbf_record_count,
+            b.registry as b_registry, b.begin_date as b_begin_date, b.end_date as b_end_date, b.dbf_record_count as b_dbf_record_count,
             b.length as b_length, b.check_sum as b_check_sum, b.type as b_type,
-            p.id as p_id, p.loaded as p_loaded, p.name as p_name, p.directory as p_directory, 
+
+            p.id as p_id, p.loaded as p_loaded, p.name as p_name, p.directory as p_directory,
             p.organization_id as p_organization_id, p.`user_organization_id` as p_user_organization_id,
-            p.registry as p_registry, p.month as p_month, p.year as p_year, p.dbf_record_count as p_dbf_record_count,
+            p.registry as p_registry, p.begin_date as p_begin_date, p.end_date as p_end_date, p.dbf_record_count as p_dbf_record_count,
             p.length as p_length, p.check_sum as p_check_sum, p.type as p_type,
+
             (SELECT COUNT(1) FROM `payment` WHERE `request_file_id` = p.`id`) AS loaded_record_count,
             (SELECT COUNT(1) FROM `payment` WHERE `request_file_id` = p.`id` AND `account_number` IS NOT NULL) AS binded_record_count,
             (SELECT COUNT(1) FROM `payment` WHERE `request_file_id` = p.`id` AND `status` = 215) AS filled_record_count

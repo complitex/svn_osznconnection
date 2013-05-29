@@ -4,31 +4,32 @@
  */
 package org.complitex.osznconnection.file.web;
 
-import java.util.Date;
-import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.ISortStateLocator;
 import org.apache.wicket.markup.html.WebPage;
-import org.apache.wicket.markup.html.form.*;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
-import org.complitex.dictionary.service.LogBean;
-import org.complitex.dictionary.web.component.*;
-import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
-import org.complitex.dictionary.web.component.scroll.ScrollListBehavior;
-import org.complitex.osznconnection.file.entity.RequestFile;
-import org.complitex.osznconnection.file.entity.RequestFileFilter;
-
-import javax.ejb.EJB;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.dictionary.entity.Log;
+import org.complitex.dictionary.service.LogBean;
+import org.complitex.dictionary.util.DateUtil;
+import org.complitex.dictionary.web.component.BookmarkablePageLinkPanel;
+import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
+import org.complitex.dictionary.web.component.scroll.ScrollListBehavior;
 import org.complitex.osznconnection.file.Module;
+import org.complitex.osznconnection.file.entity.RequestFile;
+import org.complitex.osznconnection.file.entity.RequestFileFilter;
 import org.complitex.osznconnection.file.entity.RequestFileStatus;
 import org.complitex.osznconnection.file.service.RequestFileBean;
 import org.complitex.osznconnection.file.service.file_description.RequestFileDescriptionBean;
 import org.complitex.osznconnection.file.web.component.load.RequestFileLoadPanel.MonthParameterViewMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.ejb.EJB;
+import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -143,12 +144,12 @@ public abstract class AbstractFileListPanel extends AbstractProcessableListPanel
 
     @Override
     protected int getMonth(RequestFile object) {
-        return object.getMonth();
+        return DateUtil.getMonth(object.getBeginDate()) + 1;
     }
 
     @Override
     protected int getYear(RequestFile object) {
-        return object.getYear();
+        return DateUtil.getYear(object.getBeginDate());
     }
 
     @Override

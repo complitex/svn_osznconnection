@@ -1,23 +1,23 @@
 package org.complitex.osznconnection.file.service.process;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
 import org.complitex.dictionary.entity.IExecutorObject;
 import org.complitex.dictionary.entity.Log;
 import org.complitex.dictionary.service.ConfigBean;
 import org.complitex.dictionary.service.executor.ExecuteException;
 import org.complitex.dictionary.service.executor.ITaskBean;
-import org.complitex.dictionary.util.DateUtil;
 import org.complitex.osznconnection.file.Module;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.service.FacilityServiceTypeBean;
 import org.complitex.osznconnection.file.service.RequestFileBean;
 import org.complitex.osznconnection.file.service.util.FacilityNameParser;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 @Stateless
 @TransactionManagement(TransactionManagementType.BEAN)
@@ -39,7 +39,7 @@ public class FacilityServiceTypeLoadTaskBean implements ITaskBean {
         requestFile.setStatus(RequestFileStatus.LOADING);
 
         final String defaultCity = configBean.getString(FileHandlingConfig.DEFAULT_REQUEST_FILE_CITY, true);
-        final Date facilityServiceTypeDate = DateUtil.getFirstDayOfMonth(requestFile.getYear(), requestFile.getMonth());
+        final Date facilityServiceTypeDate = requestFile.getBeginDate();
 
         boolean noSkip = loadRequestFileBean.load(requestFile, new LoadRequestFileBean.AbstractLoadRequestFile() {
 

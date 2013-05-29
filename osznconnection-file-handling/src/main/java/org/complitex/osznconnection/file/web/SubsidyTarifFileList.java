@@ -1,32 +1,11 @@
 package org.complitex.osznconnection.file.web;
 
-import org.complitex.osznconnection.file.web.component.process.ModificationManager;
-import org.complitex.osznconnection.file.web.component.process.RequestFileLoader;
-import org.complitex.osznconnection.file.web.component.process.RequestFileDeleteButton;
-import org.complitex.osznconnection.file.web.component.process.ProcessPagingNavigator;
-import org.complitex.osznconnection.file.web.component.process.RequestFileItemStatusLabel;
-import org.complitex.osznconnection.file.web.component.process.ItemOrganizationLabel;
-import org.complitex.osznconnection.file.web.component.process.ItemDateLoadedLabel;
-import org.complitex.osznconnection.file.web.component.process.ItemCheckBoxPanel;
-import org.complitex.osznconnection.file.web.component.process.RequestFileDataProvider;
-import org.complitex.osznconnection.file.web.component.process.TimerManager;
-import org.complitex.osznconnection.file.web.component.process.SelectManager;
-import org.complitex.osznconnection.file.web.component.process.RequestFileStatusFilter;
-import org.complitex.osznconnection.file.web.component.process.UserOrganizationFilter;
-import org.complitex.osznconnection.file.web.component.process.OsznFilter;
-import org.complitex.osznconnection.file.web.component.process.SelectAllCheckBoxPanel;
-import org.complitex.osznconnection.file.web.component.process.RequestFileMessagesManager;
-import org.complitex.osznconnection.file.web.component.process.RequestFileProcessingManager;
-import org.complitex.osznconnection.file.service.process.ProcessType;
-import org.complitex.osznconnection.file.entity.RequestFileStatus;
-import org.complitex.osznconnection.file.web.component.load.RequestFileLoadPanel.MonthParameterViewMode;
-import org.complitex.osznconnection.file.web.component.load.DateParameter;
-import org.complitex.osznconnection.file.web.component.load.RequestFileLoadPanel;
-import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
-import org.apache.wicket.markup.html.IHeaderResponse;
-import org.apache.wicket.ajax.markup.html.form.AjaxButton;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
+import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
@@ -35,26 +14,35 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
+import org.apache.wicket.model.ResourceModel;
 import org.complitex.dictionary.util.StringUtil;
-import org.complitex.dictionary.web.component.*;
+import org.complitex.dictionary.web.component.AjaxFeedbackPanel;
+import org.complitex.dictionary.web.component.DatePicker;
+import org.complitex.dictionary.web.component.YearDropDownChoice;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
+import org.complitex.osznconnection.file.entity.RequestFile;
+import org.complitex.osznconnection.file.entity.RequestFileFilter;
+import org.complitex.osznconnection.file.entity.RequestFileStatus;
+import org.complitex.osznconnection.file.service.file_description.RequestFileDescriptionBean;
+import org.complitex.osznconnection.file.service.process.ProcessManagerBean;
+import org.complitex.osznconnection.file.service.process.ProcessType;
+import org.complitex.osznconnection.file.web.component.LoadButton;
+import org.complitex.osznconnection.file.web.component.load.DateParameter;
+import org.complitex.osznconnection.file.web.component.load.RequestFileLoadPanel;
+import org.complitex.osznconnection.file.web.component.load.RequestFileLoadPanel.MonthParameterViewMode;
+import org.complitex.osznconnection.file.web.component.process.*;
 import org.complitex.template.web.component.toolbar.ToolbarButton;
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.TemplatePage;
-import org.complitex.osznconnection.file.entity.RequestFile;
-import org.complitex.osznconnection.file.entity.RequestFileFilter;
-import org.complitex.osznconnection.file.service.process.ProcessManagerBean;
-import org.complitex.osznconnection.file.web.component.LoadButton;
-
-import javax.ejb.EJB;
-import java.util.*;
-import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
-import org.apache.wicket.model.ResourceModel;
-import org.complitex.osznconnection.file.service.file_description.RequestFileDescriptionBean;
-import org.complitex.osznconnection.file.web.component.process.ProcessDataView;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.ejb.EJB;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
+import static org.complitex.dictionary.util.DateUtil.getYear;
 import static org.complitex.osznconnection.file.service.process.ProcessType.LOAD_SUBSIDY_TARIF;
 
 /**
@@ -207,7 +195,7 @@ public class SubsidyTarifFileList extends TemplatePage {
                 //Организация пользователя
                 item.add(new ItemOrganizationLabel("userOrganization", item.getModelObject().getUserOrganizationId()));
 
-                item.add(new Label("year", StringUtil.valueOf(item.getModelObject().getYear())));
+                item.add(new Label("year", getYear(item.getModelObject().getBeginDate()) + ""));
 
                 item.add(new Label("dbf_record_count", StringUtil.valueOf(item.getModelObject().getDbfRecordCount())));
 

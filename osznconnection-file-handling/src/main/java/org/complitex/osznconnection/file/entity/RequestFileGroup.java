@@ -1,7 +1,6 @@
 package org.complitex.osznconnection.file.entity;
 
 import org.complitex.dictionary.entity.IExecutorObject;
-import org.complitex.dictionary.entity.ILoggable;
 import org.complitex.dictionary.entity.LogChangeList;
 import org.complitex.dictionary.util.DateUtil;
 
@@ -92,14 +91,14 @@ public class RequestFileGroup implements IExecutorObject{
     }
 
     public int getMonth(){
-        if (paymentFile != null) return paymentFile.getMonth();
-        if (benefitFile != null) return benefitFile.getMonth();
+        if (paymentFile != null) return DateUtil.getMonth(paymentFile.getBeginDate()) + 1;
+        if (benefitFile != null) return DateUtil.getMonth(benefitFile.getBeginDate()) + 1;
         return 0;
     }
 
     public int getYear(){
-        if (paymentFile != null) return paymentFile.getYear();
-        if (benefitFile != null) return benefitFile.getYear();
+        if (paymentFile != null) return DateUtil.getYear(paymentFile.getBeginDate());
+        if (benefitFile != null) return DateUtil.getYear(benefitFile.getBeginDate());
         return 0;
     }
     

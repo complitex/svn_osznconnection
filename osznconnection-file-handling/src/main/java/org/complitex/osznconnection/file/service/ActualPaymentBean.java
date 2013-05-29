@@ -8,23 +8,15 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import org.complitex.dictionary.mybatis.Transactional;
+import org.complitex.osznconnection.file.entity.*;
+import org.complitex.osznconnection.file.entity.example.ActualPaymentExample;
+import org.complitex.osznconnection.service_provider_type.strategy.ServiceProviderTypeStrategy;
+
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import org.complitex.dictionary.mybatis.Transactional;
-import org.complitex.dictionary.util.DateUtil;
-import org.complitex.osznconnection.file.entity.AbstractRequest;
-import org.complitex.osznconnection.file.entity.ActualPayment;
-import org.complitex.osznconnection.file.entity.ActualPaymentDBF;
-import org.complitex.osznconnection.file.entity.RequestFile;
-import org.complitex.osznconnection.file.entity.RequestStatus;
-import org.complitex.osznconnection.file.entity.example.ActualPaymentExample;
-import org.complitex.osznconnection.service_provider_type.strategy.ServiceProviderTypeStrategy;
+import java.util.*;
 
 /**
  *
@@ -252,10 +244,7 @@ public class ActualPaymentBean extends AbstractRequestBean {
 
     public Date getFirstDay(ActualPayment actualPayment, RequestFile actualPaymentFile) {
         Date beginDate = actualPayment.getField(ActualPaymentDBF.DAT_BEG);
-        if (beginDate != null) {
-            return beginDate;
-        } else {
-            return DateUtil.getFirstDayOfMonth(actualPaymentFile.getYear(), actualPaymentFile.getMonth());
-        }
+
+        return beginDate != null ? beginDate : actualPaymentFile.getBeginDate();
     }
 }
