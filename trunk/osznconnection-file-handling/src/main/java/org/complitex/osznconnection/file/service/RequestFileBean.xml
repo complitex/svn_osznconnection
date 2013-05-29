@@ -10,8 +10,8 @@
         <result column="organization_id" property="organizationId"/>
         <result column="user_organization_id" property="userOrganizationId"/>
         <result column="registry" property="registry"/>
-        <result column="month" property="month"/>
-        <result column="year" property="year"/>
+        <result column="begin_date" property="beginDate"/>
+        <result column="end_date" property="endDate"/>
         <result column="dbf_record_count" property="dbfRecordCount"/>
         <result column="length" property="length"/>
         <result column="checkSum" property="checkSum"/>
@@ -28,11 +28,11 @@
     <insert id="insertRequestFile" parameterType="org.complitex.osznconnection.file.entity.RequestFile"
             keyProperty="id" useGeneratedKeys="true">
         insert into `request_file`
-            (`group_id`, `organization_id`, `name`, `directory`, `registry`, `month`, `year`, `dbf_record_count`, `length`, `check_sum`,
-            `type`, `loaded`, `status`, `user_organization_id`)
+            (`group_id`, `organization_id`, `name`, `directory`, `registry`, `begin_date`, `end_date`, `dbf_record_count`,
+             `length`, `check_sum`, `type`, `loaded`, `status`, `user_organization_id`)
         values
-            (#{groupId}, #{organizationId}, #{name}, #{directory}, #{registry}, #{month}, #{year}, #{dbfRecordCount}, #{length}, #{checkSum},
-                #{type}, #{loaded}, #{status}, #{userOrganizationId});
+            (#{groupId}, #{organizationId}, #{name}, #{directory}, #{registry}, #{beginDate}, #{endDate},
+             #{dbfRecordCount}, #{length}, #{checkSum}, #{type}, #{loaded}, #{status}, #{userOrganizationId});
     </insert>
 
     <update id="updateRequestFile" parameterType="org.complitex.osznconnection.file.entity.RequestFile">
@@ -68,8 +68,8 @@
             <if test="organizationId != null">and `organization_id` = #{organizationId}</if>
             <if test="userOrganization != null">and `user_organization_id` = #{userOrganization.id}</if>
             <if test="registry != null">and `registry` = #{registry}</if>
-            <if test="year != null">and `year` = #{year}</if>
-            <if test="month != null">and `month` = #{month}</if>
+            <if test="year != null">and YEAR(`begin_date`) = #{year}</if>
+            <if test="month != null">and MONTH(`begin_date`) = #{month}</if>
             <if test="dbfRecordCount != null">and `dbf_record_count` like CONCAT('%',#{dbfRecordCount},'%')</if>
             <if test="type != null">and `type` = #{type}</if>
             <if test="status != null">and `status` = #{status}</if>
@@ -203,7 +203,7 @@
             `request_file`
         where
             `name` = #{name} and organization_id = #{organizationId} and `user_organization_id` = #{userOrganizationId}
-                and `registry` = #{registry} and `month` = #{month} and `year` = #{year}
+                and `registry` = #{registry} and `begin_date` = #{beginDate} and `end_date` = #{endDate}
     </select>
 
     <select id="selectLoadedId" parameterType="org.complitex.osznconnection.file.entity.RequestFile"
@@ -212,7 +212,7 @@
         where
             `name` = #{name} and `organization_id` = #{organizationId} 
                 and `user_organization_id` = #{userOrganizationId}
-                and `registry` = #{registry} and `month` = #{month} and `year` = #{year}
+                and `registry` = #{registry} and `begin_date` = #{beginDate} and `end_date` = #{endDate}
         limit 1
     </select>
 

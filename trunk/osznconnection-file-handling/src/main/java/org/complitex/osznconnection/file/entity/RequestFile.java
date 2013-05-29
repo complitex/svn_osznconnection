@@ -1,7 +1,6 @@
 package org.complitex.osznconnection.file.entity;
 
 import org.complitex.dictionary.entity.IExecutorObject;
-import org.complitex.dictionary.entity.ILoggable;
 import org.complitex.dictionary.entity.LogChangeList;
 
 import java.io.File;
@@ -32,8 +31,8 @@ public class RequestFile implements IExecutorObject {
     private String directory;
     private Long organizationId;
     private int registry;
-    private int month;
-    private int year;
+    private Date beginDate;
+    private Date endDate;
     private Integer dbfRecordCount;
     private Long length;
     private String checkSum;
@@ -72,7 +71,16 @@ public class RequestFile implements IExecutorObject {
     public LogChangeList getLogChangeList(String collection) {
         LogChangeList logChangeList = new LogChangeList();
 
-        logChangeList.add(collection, "id", id).add(collection, "group_id", groupId).add(collection, "loaded", loaded).add(collection, "directory", directory).add(collection, "name", name).add(collection, "organizationId", organizationId).add(collection, "month", month).add(collection, "year", year).add(collection, "dbfRecordCount", dbfRecordCount).add(collection, "length", length).add(collection, "checkSum", checkSum).add(collection, "bindedRecordCount", bindedRecordCount).add(collection, "filledRecordCount", filledRecordCount);
+        logChangeList.add(collection, "id", id)
+                .add(collection, "group_id", groupId)
+                .add(collection, "loaded", loaded).add(collection, "directory", directory)
+                .add(collection, "name", name).add(collection, "organizationId", organizationId)
+                .add(collection, "beginDate", beginDate)
+                .add(collection, "endDate", endDate)
+                .add(collection, "dbfRecordCount", dbfRecordCount)
+                .add(collection, "length", length).add(collection, "checkSum", checkSum)
+                .add(collection, "bindedRecordCount", bindedRecordCount)
+                .add(collection, "filledRecordCount", filledRecordCount);
 
         return logChangeList;
     }
@@ -148,20 +156,20 @@ public class RequestFile implements IExecutorObject {
         this.registry = registry;
     }
 
-    public int getMonth() {
-        return month;
+    public Date getBeginDate() {
+        return beginDate;
     }
 
-    public void setMonth(int month) {
-        this.month = month;
+    public void setBeginDate(Date beginDate) {
+        this.beginDate = beginDate;
     }
 
-    public int getYear() {
-        return year;
+    public Date getEndDate() {
+        return endDate;
     }
 
-    public void setYear(int year) {
-        this.year = year;
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
     }
 
     public Integer getDbfRecordCount() {
@@ -246,27 +254,30 @@ public class RequestFile implements IExecutorObject {
 
     @Override
     public String toString() {
-        return "RequestFile{"
-                + "id=" + id
-                + ", groupId=" + groupId
-                + ", loaded=" + loaded
-                + ", name='" + name + '\''
-                + ", directory='" + directory + '\''
-                + ", organizationId=" + organizationId
-                + ", registry=" + registry
-                + ", month=" + month
-                + ", year=" + year
-                + ", dbfRecordCount=" + dbfRecordCount
-                + ", length=" + length
-                + ", checkSum='" + checkSum + '\''
-                + ", type=" + type
-                + ", status=" + status
-                + ", loadedRecordCount=" + loadedRecordCount
-                + ", bindedRecordCount=" + bindedRecordCount
-                + ", filledRecordCount=" + filledRecordCount
-                + ", absolutePath='" + absolutePath + '\''
-                + ", requests=" + requests
-                + '}';
+        return "RequestFile{" +
+                "id=" + id +
+                ", groupId=" + groupId +
+                ", loaded=" + loaded +
+                ", name='" + name + '\'' +
+                ", directory='" + directory + '\'' +
+                ", organizationId=" + organizationId +
+                ", registry=" + registry +
+                ", beginDate=" + beginDate +
+                ", endDate=" + endDate +
+                ", dbfRecordCount=" + dbfRecordCount +
+                ", length=" + length +
+                ", checkSum='" + checkSum + '\'' +
+                ", type=" + type +
+                ", status=" + status +
+                ", userOrganizationId=" + userOrganizationId +
+                ", loadedRecordCount=" + loadedRecordCount +
+                ", bindedRecordCount=" + bindedRecordCount +
+                ", filledRecordCount=" + filledRecordCount +
+                ", absolutePath='" + absolutePath + '\'' +
+                ", requests=" + requests +
+                ", cancel=" + cancel +
+                ", errorMessage='" + errorMessage + '\'' +
+                '}';
     }
 
     @Override

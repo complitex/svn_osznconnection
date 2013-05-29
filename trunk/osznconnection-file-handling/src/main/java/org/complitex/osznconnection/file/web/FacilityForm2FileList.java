@@ -4,7 +4,6 @@
  */
 package org.complitex.osznconnection.file.web;
 
-import javax.ejb.EJB;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
@@ -31,26 +30,13 @@ import org.complitex.osznconnection.file.entity.RequestFileStatus;
 import org.complitex.osznconnection.file.service.file_description.RequestFileDescriptionBean;
 import org.complitex.osznconnection.file.service.process.ProcessManagerBean;
 import org.complitex.osznconnection.file.service.process.ProcessType;
-import org.complitex.osznconnection.file.web.component.process.ItemCheckBoxPanel;
-import org.complitex.osznconnection.file.web.component.process.ItemOrganizationLabel;
-import org.complitex.osznconnection.file.web.component.process.ModificationManager;
-import org.complitex.osznconnection.file.web.component.process.OsznFilter;
-import org.complitex.osznconnection.file.web.component.process.ProcessDataView;
-import org.complitex.osznconnection.file.web.component.process.ProcessPagingNavigator;
-import org.complitex.osznconnection.file.web.component.process.RequestFileDataProvider;
-import org.complitex.osznconnection.file.web.component.process.RequestFileDeleteButton;
-import org.complitex.osznconnection.file.web.component.process.RequestFileItemStatusLabel;
-import org.complitex.osznconnection.file.web.component.process.RequestFileMessagesManager;
-import org.complitex.osznconnection.file.web.component.process.RequestFileProcessingManager;
-import org.complitex.osznconnection.file.web.component.process.RequestFileStatusFilter;
-import org.complitex.osznconnection.file.web.component.process.SelectAllCheckBoxPanel;
-import org.complitex.osznconnection.file.web.component.process.SelectManager;
-import org.complitex.osznconnection.file.web.component.process.TimerManager;
-import org.complitex.osznconnection.file.web.component.process.UserOrganizationFilter;
+import org.complitex.osznconnection.file.web.component.process.*;
 import org.complitex.template.web.pages.ScrollListPage;
 import org.complitex.template.web.security.SecurityRole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.ejb.EJB;
 
 /**
  *
@@ -117,7 +103,7 @@ public final class FacilityForm2FileList extends ScrollListPage {
         final IModel<RequestFileFilter> model = new CompoundPropertyModel<RequestFileFilter>(filter);
 
         //Фильтр форма
-        form = new Form<RequestFileFilter>("form", model);
+        form = new Form<>("form", model);
         form.setOutputMarkupId(true);
         add(form);
 
@@ -185,30 +171,30 @@ public final class FacilityForm2FileList extends ScrollListPage {
         final ProcessDataView<RequestFile> dataView = new ProcessDataView<RequestFile>("request_files", dataProvider) {
 
             @Override
-            protected void populateItem(final Item<RequestFile> item) {
-                final Long objectId = item.getModelObject().getId();
+            protected void populateItem(Item<RequestFile> item) {
+                final RequestFile requestFile = item.getModelObject();
 
                 //Выбор файлов
-                item.add(new ItemCheckBoxPanel<RequestFile>("itemCheckBoxPanel", processingManager, selectManager));
+                item.add(new ItemCheckBoxPanel<>("itemCheckBoxPanel", processingManager, selectManager));
 
                 //Идентификатор файла
-                item.add(new Label("id", StringUtil.valueOf(objectId)));
+                item.add(new Label("id", StringUtil.valueOf(requestFile.getId())));
 
                 //ОСЗН
-                item.add(new ItemOrganizationLabel("organization", item.getModelObject().getOrganizationId()));
+                item.add(new ItemOrganizationLabel("organization", requestFile.getOrganizationId()));
 
                 //Организация пользователя
-                item.add(new ItemOrganizationLabel("userOrganization", item.getModelObject().getUserOrganizationId()));
+                item.add(new ItemOrganizationLabel("userOrganization", requestFile.getUserOrganizationId()));
 
-                item.add(new Label("month", DateUtil.displayMonth(item.getModelObject().getMonth(), getLocale())));
-                item.add(new Label("year", StringUtil.valueOf(item.getModelObject().getYear())));
+                item.add(new Label("month", DateUtil.displayMonth(requestFile.getBeginDate(), getLocale())));
+                item.add(new Label("year", DateUtil.getYear(requestFile.getBeginDate()) + ""));
 
                 //Количество обработанных записей
                 item.add(new Label("filled_record_count", new LoadableDetachableModel<String>() {
 
                     @Override
                     protected String load() {
-                        return StringUtil.valueOf(item.getModelObject().getFilledRecordCount());
+                        return StringUtil.valueOf(requestFile.getFilledRecordCount());
                     }
                 }));
 

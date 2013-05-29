@@ -112,7 +112,7 @@
         </if>
 
         <if test="streetReference != null">
-            AND fsr.`KL_NAME` LIKE CONCAT('%', #{streetReference}, '%')
+            AND s.`KL_NAME` LIKE CONCAT('%', #{streetReference}, '%')
         </if>
 
         <if test="building != null">
@@ -148,17 +148,19 @@
                 d.`internal_city_id`, d.`internal_street_id`, d.`internal_street_type_id`, d.`internal_building_id`,
                 d.`outgoing_city`, d.`outgoing_district`, d.`outgoing_street`, d.`outgoing_street_type`, d.`outgoing_building_number`,
                 d.`outgoing_building_corp`, d.`outgoing_apartment`, d.`street_correction_id`,
-                d.`city`, d.`street`, d.`street_type`, fsr.`KL_NAME` as street_reference, fstr.`KLKUL_NAME` as street_type_reference,
-                fsr.`KL_CODEKUL` as street_type_reference_code
-
+                d.`city`, d.`street`, d.`street_type`, s.`KL_NAME` as street_reference, st.`KLKUL_NAME` as street_type_reference,
+                s.`KL_CODEKUL` as street_type_reference_code
             FROM `dwelling_characteristics` d
               JOIN `request_file` f ON f.`id` = d.`request_file_id`
-              LEFT JOIN `facility_street_reference` fsr ON d.`CDUL` = fsr.`KL_CODEUL`
-              LEFT JOIN `request_file` fsr_rf ON fsr.`request_file_id` = fsr_rf.`id`
-              LEFT JOIN `facility_street_type_reference` fstr ON fstr.`KLKUL_CODE` = fsr.`KL_CODEKUL`
+              LEFT JOIN `facility_street_reference` s ON d.`CDUL` = s.`KL_CODEUL`
+              LEFT JOIN `request_file` s_f ON s.`request_file_id` = s_f.`id`
+              LEFT JOIN `facility_street_type_reference` st ON st.`KLKUL_CODE` = s.`KL_CODEKUL`
+              LEFT JOIN `request_file` st_f ON st.`request_file_id` = st_f.`id`
             WHERE d.`request_file_id` = #{requestFileId}
-                and f.`organization_id` = fsr_rf.`organization_id` and f.`user_organization_id` = fsr_rf.`user_organization_id`
+                and f.`organization_id` = s_f.`organization_id` and f.`user_organization_id` = s_f.`user_organization_id`
+                and f.`organization_id` = st_f.`organization_id` and f.`user_organization_id` = st_f.`user_organization_id`
                 <include refid="org.complitex.osznconnection.file.service.DwellingCharacteristicsBean.filter"/>
+
                 <if test="orderByClause != null">
                     <choose>
                         <when test="orderByClause == 'IDCODE' or orderByClause == 'HOUSE' or orderByClause == 'BUILD'
@@ -230,15 +232,16 @@
             d.`internal_city_id`, d.`internal_street_id`, d.`internal_street_type_id`, d.`internal_building_id`,
             d.`outgoing_city`, d.`outgoing_district`, d.`outgoing_street`, d.`outgoing_street_type`, d.`outgoing_building_number`,
             d.`outgoing_building_corp`, d.`outgoing_apartment`, d.`street_correction_id`,
-            d.`account_number`,  fsr.`KL_NAME` as street_reference, fstr.`KLKUL_NAME` as street_type_reference,
-            fsr.`KL_CODEKUL` as street_type_reference_code
+            d.`account_number`,  s.`KL_NAME` as street_reference, st.`KLKUL_NAME` as street_type_reference,
+            s.`KL_CODEKUL` as street_type_reference_code
         FROM `dwelling_characteristics` d
             JOIN `request_file` f ON d.`request_file_id` = f.`id`
-            LEFT JOIN `facility_street_reference` fsr ON d.`CDUL` = fsr.`KL_CODEUL`
-            LEFT JOIN `request_file` fsr_rf ON fsr.`request_file_id` = fsr_rf.`id`
-            LEFT JOIN `facility_street_type_reference` fstr ON fstr.`KLKUL_CODE` = fsr.`KL_CODEKUL`
+            LEFT JOIN `facility_street_reference` s ON d.`CDUL` = s.`KL_CODEUL`
+            LEFT JOIN `request_file` s_f ON s.`request_file_id` = s_f.`id`
+            LEFT JOIN `facility_street_type_reference` st ON st.`KLKUL_CODE` = s.`KL_CODEKUL`
         WHERE d.`request_file_id` = #{requestFileId}
-          and f.`organization_id` = fsr_rf.`organization_id` and f.`user_organization_id` = fsr_rf.`user_organization_id`
+          and f.`organization_id` = s.`organization_id` and f.`user_organization_id` = s.`user_organization_id`
+          and f.`organization_id` = st.`organization_id` and f.`user_organization_id` = st.`user_organization_id`
             AND d.`id` IN
             <foreach collection="ids" item="id" open="(" close=")" separator=",">
                 #{id}

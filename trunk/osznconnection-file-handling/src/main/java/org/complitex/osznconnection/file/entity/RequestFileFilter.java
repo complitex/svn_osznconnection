@@ -1,9 +1,9 @@
 package org.complitex.osznconnection.file.entity;
 
+import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.service.AbstractFilter;
 
 import java.util.Date;
-import org.complitex.dictionary.entity.DomainObject;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru

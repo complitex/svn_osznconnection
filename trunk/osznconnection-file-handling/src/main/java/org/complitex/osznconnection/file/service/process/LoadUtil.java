@@ -1,21 +1,19 @@
 package org.complitex.osznconnection.file.service.process;
 
-import org.complitex.osznconnection.file.service.process.RequestFileStorage.RequestFiles;
 import org.complitex.dictionary.service.ConfigBean;
 import org.complitex.dictionary.util.EjbBeanLocator;
 import org.complitex.osznconnection.file.entity.FileHandlingConfig;
 import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.entity.RequestFileGroup;
 import org.complitex.osznconnection.file.service.exception.StorageNotFoundException;
+import org.complitex.osznconnection.file.service.process.RequestFileStorage.RequestFiles;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
+import static org.complitex.dictionary.util.DateUtil.newDate;
 import static org.complitex.osznconnection.file.entity.FileHandlingConfig.*;
 import static org.complitex.osznconnection.file.service.process.RequestFileDirectoryType.*;
 
@@ -160,7 +158,7 @@ public class LoadUtil {
     }
 
     private static RequestFile newPaymentBenefitRequestFile(File file, RequestFile.TYPE type, String relativeDirectory,
-            long osznId, int month, int year) {
+            long osznId, Date beginDate, Date endDate) {
         RequestFile requestFile = new RequestFile();
 
         requestFile.setName(file.getName());
@@ -169,8 +167,8 @@ public class LoadUtil {
         requestFile.setLength(file.length());
         requestFile.setAbsolutePath(file.getAbsolutePath());
         requestFile.setOrganizationId(osznId);
-        requestFile.setMonth(month);
-        requestFile.setYear(year);
+        requestFile.setBeginDate(beginDate);
+        requestFile.setEndDate(endDate);
         return requestFile;
     }
 
@@ -192,7 +190,7 @@ public class LoadUtil {
 
                 group.setPaymentFile(newPaymentBenefitRequestFile(file, RequestFile.TYPE.PAYMENT,
                         RequestFileStorage.INSTANCE.getRelativeParent(file, requestFiles.getPath()),
-                        osznId, month, year));
+                        osznId, newDate(year, month), null));
 
                 payments.remove(i);
                 i--;
@@ -200,7 +198,7 @@ public class LoadUtil {
                 Map<String, RequestFileGroup> map = requestFileGroupsMap.get(file.getParent());
 
                 if (map == null) {
-                    map = new HashMap<String, RequestFileGroup>();
+                    map = new HashMap<>();
                     requestFileGroupsMap.put(file.getParent(), map);
                 }
 
@@ -219,7 +217,7 @@ public class LoadUtil {
             for (File file : benefits) {
                 RequestFile requestFile = newPaymentBenefitRequestFile(file, RequestFile.TYPE.BENEFIT,
                         RequestFileStorage.INSTANCE.getRelativeParent(file, requestFiles.getPath()),
-                        osznId, month, year);
+                        osznId, newDate(year, month), null);
 
                 Map<String, RequestFileGroup> map = requestFileGroupsMap.get(file.getParent());
 
@@ -255,7 +253,7 @@ public class LoadUtil {
 
     public static List<RequestFile> getSubsidyTarifs(long userOrganizationId, long osznId, int month, int year)
             throws StorageNotFoundException {
-        List<RequestFile> subsidyTarifs = new ArrayList<RequestFile>();
+        List<RequestFile> subsidyTarifs = new ArrayList<>();
 
         RequestFiles requestFiles = getInputSubsidyTarifFiles(userOrganizationId, osznId, SUBSIDY_TARIF_FILENAME_MASK);
 
@@ -269,8 +267,7 @@ public class LoadUtil {
             requestFile.setAbsolutePath(file.getAbsolutePath());
             requestFile.setDirectory(RequestFileStorage.INSTANCE.getRelativeParent(file, requestFiles.getPath()));
             requestFile.setOrganizationId(osznId);
-            requestFile.setYear(year);
-            requestFile.setMonth(month);
+            requestFile.setBeginDate(newDate(year, month));
             requestFile.setType(RequestFile.TYPE.SUBSIDY_TARIF);
 
             subsidyTarifs.add(requestFile);
@@ -280,7 +277,7 @@ public class LoadUtil {
 
     public static List<RequestFile> getActualPayments(long userOrganizationId, long osznId, int monthFrom,
             int monthTo, int year) throws StorageNotFoundException {
-        List<RequestFile> actualPayments = new ArrayList<RequestFile>();
+        List<RequestFile> actualPayments = new ArrayList<>();
 
         for (int month = monthFrom; month <= monthTo; ++month) {
             RequestFiles requestFiles = getInputActualPaymentFiles(userOrganizationId, osznId, ACTUAL_PAYMENT_FILENAME_MASK, month, year);
@@ -295,8 +292,7 @@ public class LoadUtil {
                 requestFile.setAbsolutePath(file.getAbsolutePath());
                 requestFile.setDirectory(RequestFileStorage.INSTANCE.getRelativeParent(file, requestFiles.getPath()));
                 requestFile.setOrganizationId(osznId);
-                requestFile.setMonth(month);
-                requestFile.setYear(year);
+                requestFile.setBeginDate(newDate(year, month));
                 requestFile.setType(RequestFile.TYPE.ACTUAL_PAYMENT);
 
                 actualPayments.add(requestFile);
@@ -307,7 +303,7 @@ public class LoadUtil {
 
     public static List<RequestFile> getSubsidies(long userOrganizationId, long osznId, int monthFrom,
             int monthTo, int year) throws StorageNotFoundException {
-        List<RequestFile> subsidies = new ArrayList<RequestFile>();
+        List<RequestFile> subsidies = new ArrayList<>();
 
         for (int month = monthFrom; month <= monthTo; ++month) {
             RequestFiles requestFiles = getInputSubsidyFiles(userOrganizationId, osznId, SUBSIDY_FILENAME_MASK, month, year);
@@ -322,8 +318,7 @@ public class LoadUtil {
                 requestFile.setAbsolutePath(file.getAbsolutePath());
                 requestFile.setDirectory(RequestFileStorage.INSTANCE.getRelativeParent(file, requestFiles.getPath()));
                 requestFile.setOrganizationId(osznId);
-                requestFile.setMonth(month);
-                requestFile.setYear(year);
+                requestFile.setBeginDate(newDate(year, month));
                 requestFile.setType(RequestFile.TYPE.SUBSIDY);
 
                 subsidies.add(requestFile);
@@ -349,8 +344,7 @@ public class LoadUtil {
             requestFile.setAbsolutePath(file.getAbsolutePath());
             requestFile.setDirectory(RequestFileStorage.INSTANCE.getRelativeParent(file, requestFiles.getPath()));
             requestFile.setOrganizationId(osznId);
-            requestFile.setMonth(month);
-            requestFile.setYear(year);
+            requestFile.setBeginDate(newDate(year, month));
             requestFile.setType(RequestFile.TYPE.DWELLING_CHARACTERISTICS);
 
             dwellingCharacteristicsFiles.add(requestFile);
@@ -375,8 +369,7 @@ public class LoadUtil {
             requestFile.setAbsolutePath(file.getAbsolutePath());
             requestFile.setDirectory(RequestFileStorage.INSTANCE.getRelativeParent(file, requestFiles.getPath()));
             requestFile.setOrganizationId(osznId);
-            requestFile.setMonth(month);
-            requestFile.setYear(year);
+            requestFile.setBeginDate(newDate(year, month));
             requestFile.setType(RequestFile.TYPE.FACILITY_SERVICE_TYPE);
 
             facilityServiceTypeFiles.add(requestFile);
@@ -386,7 +379,7 @@ public class LoadUtil {
 
     public static List<RequestFile> getFacilityStreetTypeReferences(long userOrganizationId, long osznId, int month, int year)
             throws StorageNotFoundException {
-        List<RequestFile> streetTypeFiles = new ArrayList<RequestFile>();
+        List<RequestFile> streetTypeFiles = new ArrayList<>();
 
         RequestFiles requestFiles = getInputFacilityReferenceFiles(userOrganizationId, osznId,
                 FACILITY_STREET_TYPE_REFERENCE_FILENAME_MASK);
@@ -401,8 +394,7 @@ public class LoadUtil {
             requestFile.setAbsolutePath(file.getAbsolutePath());
             requestFile.setDirectory(RequestFileStorage.INSTANCE.getRelativeParent(file, requestFiles.getPath()));
             requestFile.setOrganizationId(osznId);
-            requestFile.setYear(year);
-            requestFile.setMonth(month);
+            requestFile.setBeginDate(newDate(year, month));
             requestFile.setType(RequestFile.TYPE.FACILITY_STREET_TYPE);
             streetTypeFiles.add(requestFile);
         }
@@ -411,7 +403,7 @@ public class LoadUtil {
 
     public static List<RequestFile> getFacilityStreetReferences(long userOrganizationId, long osznId, int month, int year)
             throws StorageNotFoundException {
-        List<RequestFile> streetFiles = new ArrayList<RequestFile>();
+        List<RequestFile> streetFiles = new ArrayList<>();
 
         RequestFiles requestFiles = getInputFacilityReferenceFiles(userOrganizationId, osznId,
                 FACILITY_STREET_REFERENCE_FILENAME_MASK);
@@ -426,8 +418,7 @@ public class LoadUtil {
             requestFile.setAbsolutePath(file.getAbsolutePath());
             requestFile.setDirectory(RequestFileStorage.INSTANCE.getRelativeParent(file, requestFiles.getPath()));
             requestFile.setOrganizationId(osznId);
-            requestFile.setYear(year);
-            requestFile.setMonth(month);
+            requestFile.setBeginDate(newDate(year, month));
             requestFile.setType(RequestFile.TYPE.FACILITY_STREET);
             streetFiles.add(requestFile);
         }
@@ -436,7 +427,7 @@ public class LoadUtil {
 
     public static List<RequestFile> getFacilityTarifReferences(long userOrganizationId, long osznId, int month, int year)
             throws StorageNotFoundException {
-        List<RequestFile> facilityTarifFiles = new ArrayList<RequestFile>();
+        List<RequestFile> facilityTarifFiles = new ArrayList<>();
 
         RequestFiles requestFiles = getInputFacilityReferenceFiles(userOrganizationId, osznId,
                 FACILITY_TARIF_REFERENCE_FILENAME_MASK);
@@ -451,8 +442,7 @@ public class LoadUtil {
             requestFile.setAbsolutePath(file.getAbsolutePath());
             requestFile.setDirectory(RequestFileStorage.INSTANCE.getRelativeParent(file, requestFiles.getPath()));
             requestFile.setOrganizationId(osznId);
-            requestFile.setYear(year);
-            requestFile.setMonth(month);
+            requestFile.setBeginDate(newDate(year, month));
             requestFile.setType(RequestFile.TYPE.FACILITY_TARIF);
             facilityTarifFiles.add(requestFile);
         }

@@ -183,29 +183,29 @@ public abstract class AbstractReferenceBookFileList extends TemplatePage {
         final ProcessDataView<RequestFile> dataView = new ProcessDataView<RequestFile>("request_files", dataProvider) {
 
             @Override
-            protected void populateItem(final Item<RequestFile> item) {
-                final Long objectId = item.getModelObject().getId();
+            protected void populateItem(Item<RequestFile> item) {
+                final RequestFile requestFile = item.getModelObject();
 
                 //Выбор файлов
                 item.add(new ItemCheckBoxPanel<>("itemCheckBoxPanel", processingManager, selectManager));
 
                 //Идентификатор файла
-                item.add(new Label("id", StringUtil.valueOf(objectId)));
+                item.add(new Label("id", StringUtil.valueOf(requestFile.getId())));
 
                 //Дата загрузки
-                item.add(new ItemDateLoadedLabel("loaded", item.getModelObject().getLoaded()));
+                item.add(new ItemDateLoadedLabel("loaded", requestFile.getLoaded()));
 
-                item.add(new BookmarkablePageLinkPanel<>("name", item.getModelObject().getFullName(), getItemsPage(),
-                        new PageParameters().set("request_file_id", objectId)));
+                item.add(new BookmarkablePageLinkPanel<>("name", requestFile.getFullName(), getItemsPage(),
+                        new PageParameters().set("request_file_id", requestFile.getId())));
 
                 //ОСЗН
-                item.add(new ItemOrganizationLabel("organization", item.getModelObject().getOrganizationId()));
+                item.add(new ItemOrganizationLabel("organization", requestFile.getOrganizationId()));
 
                 //Организация пользователя
-                item.add(new ItemOrganizationLabel("userOrganization", item.getModelObject().getUserOrganizationId()));
+                item.add(new ItemOrganizationLabel("userOrganization", requestFile.getUserOrganizationId()));
 
-                item.add(new Label("month", DateUtil.displayMonth(item.getModelObject().getMonth(), getLocale())));
-                item.add(new Label("year", StringUtil.valueOf(item.getModelObject().getYear())));
+                item.add(new Label("month", DateUtil.displayMonth(requestFile.getBeginDate(), getLocale())));
+                item.add(new Label("year", DateUtil.getYear(requestFile.getBeginDate()) + ""));
 
                 item.add(new Label("dbf_record_count", StringUtil.valueOf(item.getModelObject().getDbfRecordCount())));
 
@@ -214,7 +214,7 @@ public abstract class AbstractReferenceBookFileList extends TemplatePage {
 
                     @Override
                     protected String load() {
-                        return StringUtil.valueOf(item.getModelObject().getLoadedRecordCount());
+                        return StringUtil.valueOf(requestFile.getLoadedRecordCount());
                     }
                 }));
 
