@@ -41,8 +41,10 @@ public class FacilityStreetLoadTaskBean implements ITaskBean {
     @Override
     public boolean execute(IExecutorObject executorObject, Map commandParameters) throws ExecuteException {
         RequestFile requestFile = (RequestFile) executorObject;
-
         requestFile.setStatus(RequestFileStatus.LOADING);
+
+        //update date range
+        requestFileBean.updateDateRange(requestFile);
 
         loadRequestFileBean.load(requestFile, new LoadRequestFileBean.AbstractLoadRequestFile() {
 

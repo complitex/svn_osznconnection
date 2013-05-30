@@ -354,7 +354,7 @@ public class LoadUtil {
 
     public static List<RequestFile> getFacilityServiceTypes(long userOrganizationId, long osznId, int month, int year)
             throws StorageNotFoundException {
-        List<RequestFile> facilityServiceTypeFiles = new ArrayList<RequestFile>();
+        List<RequestFile> facilityServiceTypeFiles = new ArrayList<>();
 
         RequestFiles requestFiles = getInputFacilityServiceTypeFiles(userOrganizationId, osznId,
                 FACILITY_SERVICE_TYPE_INPUT_FILENAME_MASK);
