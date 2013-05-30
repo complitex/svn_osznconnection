@@ -2,6 +2,7 @@ package org.complitex.osznconnection.file.entity;
 
 import org.complitex.dictionary.entity.IExecutorObject;
 import org.complitex.dictionary.entity.LogChangeList;
+import org.complitex.dictionary.util.DateUtil;
 
 import java.io.File;
 import java.util.Date;
@@ -26,14 +27,14 @@ public class RequestFile implements IExecutorObject {
 
     private Long id;
     private Long groupId;
-    private Date loaded;
+    private Date loaded = DateUtil.getCurrentDate();
     private String name;
     private String directory;
     private Long organizationId;
     private int registry;
     private Date beginDate;
     private Date endDate;
-    private Integer dbfRecordCount;
+    private Integer dbfRecordCount = 0;
     private Long length;
     private String checkSum;
     private TYPE type;

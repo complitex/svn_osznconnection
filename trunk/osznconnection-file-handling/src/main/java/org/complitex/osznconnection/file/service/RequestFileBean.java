@@ -3,6 +3,8 @@ package org.complitex.osznconnection.file.service;
 import com.google.common.collect.ImmutableMap;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.AbstractBean;
+import org.complitex.dictionary.service.executor.ExecuteException;
+import org.complitex.dictionary.util.DateUtil;
 import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.entity.RequestFileFilter;
 import org.complitex.osznconnection.file.entity.RequestFileStatus;
@@ -24,7 +26,7 @@ import java.util.List;
 @Stateless
 public class RequestFileBean extends AbstractBean {
 
-    public static final String MAPPING_NAMESPACE = RequestFileBean.class.getName();
+    public static final String NS = RequestFileBean.class.getName();
     @EJB
     private OsznSessionBean osznSessionBean;
     @EJB
@@ -47,7 +49,7 @@ public class RequestFileBean extends AbstractBean {
     private FacilityReferenceBookBean facilityReferenceBookBean;
 
     public RequestFile findById(long fileId) {
-        return sqlSession().selectOne(MAPPING_NAMESPACE + ".findById", fileId);
+        return sqlSession().selectOne(NS + ".findById", fileId);
     }
 
     public List<RequestFile> getRequestFiles(RequestFileFilter filter) {
@@ -77,52 +79,52 @@ public class RequestFileBean extends AbstractBean {
     }
 
     private List<RequestFile> getActualPaymentFiles(RequestFileFilter filter) {
-        return sqlSession().selectList(MAPPING_NAMESPACE + ".selectActualPaymentFiles", filter);
+        return sqlSession().selectList(NS + ".selectActualPaymentFiles", filter);
     }
 
     private List<RequestFile> getSubsidyFiles(RequestFileFilter filter) {
-        return sqlSession().selectList(MAPPING_NAMESPACE + ".selectSubsidyFiles", filter);
+        return sqlSession().selectList(NS + ".selectSubsidyFiles", filter);
     }
 
     private List<RequestFile> getDwellingCharacteristicsFiles(RequestFileFilter filter) {
-        return sqlSession().selectList(MAPPING_NAMESPACE + ".selectDwellingCharacteristicsFiles", filter);
+        return sqlSession().selectList(NS + ".selectDwellingCharacteristicsFiles", filter);
     }
 
     private List<RequestFile> getFacilityServiceTypeFiles(RequestFileFilter filter) {
-        return sqlSession().selectList(MAPPING_NAMESPACE + ".selectFacilityServiceTypeFiles", filter);
+        return sqlSession().selectList(NS + ".selectFacilityServiceTypeFiles", filter);
     }
 
     private List<RequestFile> getFacilityForm2Files(RequestFileFilter filter) {
-        return sqlSession().selectList(MAPPING_NAMESPACE + ".selectFacilityForm2Files", filter);
+        return sqlSession().selectList(NS + ".selectFacilityForm2Files", filter);
     }
 
     private List<RequestFile> getFacilityStreetTypeFiles(RequestFileFilter filter) {
-        return sqlSession().selectList(MAPPING_NAMESPACE + ".selectFacilityStreetTypeFiles", filter);
+        return sqlSession().selectList(NS + ".selectFacilityStreetTypeFiles", filter);
     }
 
     private List<RequestFile> getFacilityStreetFiles(RequestFileFilter filter) {
-        return sqlSession().selectList(MAPPING_NAMESPACE + ".selectFacilityStreetFiles", filter);
+        return sqlSession().selectList(NS + ".selectFacilityStreetFiles", filter);
     }
 
     private List<RequestFile> getFacilityTarifFiles(RequestFileFilter filter) {
-        return sqlSession().selectList(MAPPING_NAMESPACE + ".selectFacilityTarifFiles", filter);
+        return sqlSession().selectList(NS + ".selectFacilityTarifFiles", filter);
     }
 
     private List<RequestFile> getSubsidyTarifFiles(RequestFileFilter filter) {
-        return sqlSession().selectList(MAPPING_NAMESPACE + ".selectSubsidyTarifFiles", filter);
+        return sqlSession().selectList(NS + ".selectSubsidyTarifFiles", filter);
     }
 
     public int size(RequestFileFilter filter) {
         osznSessionBean.prepareFilterForPermissionCheck(filter);
-        return sqlSession().selectOne(MAPPING_NAMESPACE + ".selectRequestFilesCount", filter);
+        return sqlSession().selectOne(NS + ".selectRequestFilesCount", filter);
     }
 
     @Transactional
     public void save(RequestFile requestFile) {
         if (requestFile.getId() == null) {
-            sqlSession().insert(MAPPING_NAMESPACE + ".insertRequestFile", requestFile);
+            sqlSession().insert(NS + ".insertRequestFile", requestFile);
         } else {
-            sqlSession().update(MAPPING_NAMESPACE + ".updateRequestFile", requestFile);
+            sqlSession().update(NS + ".updateRequestFile", requestFile);
         }
     }
 
@@ -161,11 +163,11 @@ public class RequestFileBean extends AbstractBean {
                     break;
             }
         }
-        sqlSession().delete(MAPPING_NAMESPACE + ".deleteRequestFile", requestFile.getId());
+        sqlSession().delete(NS + ".deleteRequestFile", requestFile.getId());
     }
 
     public boolean checkLoaded(RequestFile requestFile) {
-        Long id = sqlSession().selectOne(MAPPING_NAMESPACE + ".selectLoadedId", requestFile);
+        Long id = sqlSession().selectOne(NS + ".selectLoadedId", requestFile);
 
         if (id != null) {
             requestFile.setId(id);
@@ -177,7 +179,7 @@ public class RequestFileBean extends AbstractBean {
 
     @Transactional
     public void deleteSubsidyTarifFiles(Long organizationId) {
-        List<RequestFile> subsidyTarifs = sqlSession().selectList(MAPPING_NAMESPACE + ".findSubsidyTarifFiles", organizationId);
+        List<RequestFile> subsidyTarifs = sqlSession().selectList(NS + ".findSubsidyTarifFiles", organizationId);
         for (RequestFile subsidyTarif : subsidyTarifs) {
             delete(subsidyTarif);
         }
@@ -185,7 +187,7 @@ public class RequestFileBean extends AbstractBean {
 
     @Transactional
     public void deleteFacilityReferenceFiles(long osznId, long userOrganizationId, RequestFile.TYPE requestFileType) {
-        List<RequestFile> facilityReferenceFiles = sqlSession().selectList(MAPPING_NAMESPACE + ".getFacilityReferenceFiles",
+        List<RequestFile> facilityReferenceFiles = sqlSession().selectList(NS + ".getFacilityReferenceFiles",
                 ImmutableMap.of("osznId", osznId, "userOrganizationId", userOrganizationId,
                 "requestFileType", requestFileType.name()));
         for (RequestFile facilityReferenceFile : facilityReferenceFiles) {
@@ -194,13 +196,39 @@ public class RequestFileBean extends AbstractBean {
     }
 
     public RequestFileStatus getRequestFileStatus(RequestFile requestFile) {
-        return sqlSession().selectOne(MAPPING_NAMESPACE + ".selectRequestFileStatus", requestFile);
+        return sqlSession().selectOne(NS + ".selectRequestFileStatus", requestFile);
     }
 
     public void fixProcessingOnInit() {
-        sqlSession().update(MAPPING_NAMESPACE + ".fixLoadingOnInit");
-        sqlSession().update(MAPPING_NAMESPACE + ".fixBingingOnInit");
-        sqlSession().update(MAPPING_NAMESPACE + ".fixFillingOnInit");
-        sqlSession().update(MAPPING_NAMESPACE + ".fixSavingOnInit");
+        sqlSession().update(NS + ".fixLoadingOnInit");
+        sqlSession().update(NS + ".fixBingingOnInit");
+        sqlSession().update(NS + ".fixFillingOnInit");
+        sqlSession().update(NS + ".fixSavingOnInit");
+    }
+
+    public RequestFile getLastRequestFile(RequestFile requestFile){
+        return sqlSession().selectOne(NS + ".selectLastRequestFile", requestFile);
+    }
+
+    public RequestFile getFirstRequestFile(RequestFile requestFile){
+        return sqlSession().selectOne(NS + ".selectFirstRequestFile", requestFile);
+    }
+
+    public void updateDateRange(RequestFile requestFile) throws ExecuteException {
+        RequestFile last = getLastRequestFile(requestFile);
+
+        if (last != null){
+            last.setEndDate(requestFile.getBeginDate());
+
+            save(last);
+        }else {
+            RequestFile first = getFirstRequestFile(requestFile);
+
+            if (first != null){
+                requestFile.setEndDate(first.getBeginDate());
+            }else {
+                throw new ExecuteException("Файл {0} за месяц {1} уже загружен", requestFile.getFullName(), DateUtil.format(requestFile.getBeginDate()));
+            }
+        }
     }
 }

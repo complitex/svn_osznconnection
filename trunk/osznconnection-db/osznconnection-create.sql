@@ -175,7 +175,7 @@ CREATE TABLE `request_file` (
     `organization_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор организации',
     `registry` INT(2) NOT NULL COMMENT 'Номер реестра',
     `begin_date` DATE NOT NULL COMMENT 'Дата начала',
-    `end_date` DATE NOT NULL COMMENT 'Дата окончания',
+    `end_date` DATE NULL COMMENT 'Дата окончания',
     `dbf_record_count` BIGINT(20) NOT NULL DEFAULT 0 COMMENT 'Количество записей в исходном файле',
     `length` BIGINT(20) COMMENT 'Размер файла. Не используется',
     `check_sum` VARCHAR(32) COMMENT 'Контрольная сумма. Не используется',

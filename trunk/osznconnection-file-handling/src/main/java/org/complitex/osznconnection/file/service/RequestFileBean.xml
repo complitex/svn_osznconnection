@@ -242,4 +242,16 @@
     <update id="fixSavingOnInit">
         update `request_file` set `status` = 141 where `status` = 142;
     </update>
+
+    <select id="selectLastRequestFile" parameterType="org.complitex.osznconnection.file.entity.RequestFile"
+            resultMap="requestFileResultMap">
+        select * from `request_file` where `organization_id` = #{organizationId} and `user_organization_id` = #{userOrganizationId}
+          and `type` = #{type} and #{beginDate} > `begin_date` and `end_date` is null and `status` = 110
+    </select>
+
+    <select id="selectFirstRequestFile" parameterType="org.complitex.osznconnection.file.entity.RequestFile"
+            resultMap="requestFileResultMap">
+        select * from `request_file` where `organization_id` = #{organizationId} and `user_organization_id` = #{userOrganizationId}
+          and `type` = #{type} and `begin_date` > #{beginDate} and `status` = 110 order by `begin_date` desc limit 1
+    </select>
 </mapper>

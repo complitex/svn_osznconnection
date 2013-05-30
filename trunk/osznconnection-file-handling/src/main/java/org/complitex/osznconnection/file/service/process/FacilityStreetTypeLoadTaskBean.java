@@ -38,8 +38,11 @@ public class FacilityStreetTypeLoadTaskBean implements ITaskBean {
     @Override
     public boolean execute(IExecutorObject executorObject, Map commandParameters) throws ExecuteException {
         RequestFile requestFile = (RequestFile) executorObject;
-
         requestFile.setStatus(RequestFileStatus.LOADING);
+
+        //update date range
+        requestFileBean.updateDateRange(requestFile);
+
         loadRequestFileBean.load(requestFile, new LoadRequestFileBean.AbstractLoadRequestFile() {
 
             @Override
@@ -64,7 +67,9 @@ public class FacilityStreetTypeLoadTaskBean implements ITaskBean {
 
     @Override
     public void onError(IExecutorObject executorObject) {
-        requestFileBean.delete((RequestFile) executorObject);
+        RequestFile requestFile = (RequestFile) executorObject;
+        requestFile.setStatus(RequestFileStatus.LOAD_ERROR);
+        requestFileBean.save(requestFile);
     }
 
     @Override
