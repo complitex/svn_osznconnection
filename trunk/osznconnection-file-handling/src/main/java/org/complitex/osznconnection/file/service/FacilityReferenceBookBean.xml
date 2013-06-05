@@ -71,6 +71,9 @@
         <id column="id" property="id"/>
         <result column="request_file_id" property="requestFileId"/>
 
+        <result column="street_type" property="streetType"/>
+        <result column="street_type_code" property="streetTypeCode"/>
+
         <association property="dbfFields" javaType="map">
             <result column="KL_CODERN" property="KL_CODERN"/>
             <result column="KL_CODEUL" property="KL_CODEUL"/>
@@ -103,6 +106,21 @@
         select * from `facility_street_reference` s join `request_file` rf on s.`request_file_id` = rf.`id`
           where s.`KL_CODEUL` = #{streetCode} and rf.`organization_id` = #{osznId}
               and rf.`user_organization_id` = #{userOrganizationId}
+    </select>
+
+    <select id="selectFacilityStreetByRequestFile" parameterType="map" resultMap="facilityStreetResultMap">
+        select s.`KL_NAME`, st.`KLKUL_NAME` as street_type, s.`KL_CODEKUL` as street_type_code
+        from `request_file` f
+            join`facility_street_reference` s
+            left join `request_file` s_f ON s.`request_file_id` = s_f.`id`
+            left join `facility_street_type_reference` st on st.`KLKUL_CODE` = s.`KL_CODEKUL`
+            left join `request_file` st_f on st.`request_file_id` = st_f.`id`
+        where f.`id` = #{requestFileId} and s.`KL_CODEUL` = #{streetCode}
+              and f.`organization_id` = s_f.`organization_id` and f.`user_organization_id` = s_f.`user_organization_id`
+              and f.`begin_date` >= s_f.`begin_date` and (s_f.`end_date` is null or s_f.`end_date` >= f.`begin_date`)
+              and f.`organization_id` = st_f.`organization_id` and f.`user_organization_id` = st_f.`user_organization_id`
+              and f.`begin_date` >= st_f.`begin_date` and (st_f.`end_date` is null or st_f.`end_date` >= f.`begin_date`)
+        order by s_f.`begin_date` desc, st_f.`begin_date` desc limit 1;
     </select>
 
     <!--FacilityTarif-->

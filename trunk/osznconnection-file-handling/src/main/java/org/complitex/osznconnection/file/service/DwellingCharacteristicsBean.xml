@@ -30,10 +30,6 @@
         <result column="street" property="street"/>
         <result column="street_type" property="streetType"/>
 
-        <result column="street_reference" property="streetReference"/>
-        <result column="street_type_reference" property="streetTypeReference"/>
-        <result column="street_type_reference_code" property="streetTypeReferenceCode"/>
-
         <association property="dbfFields" javaType="map">
             <result column="COD" property="COD"/>
             <result column="CDPR" property="CDPR"/>
@@ -131,34 +127,33 @@
     </sql>
 
     <select id="count" resultType="int" parameterType="org.complitex.osznconnection.file.entity.example.DwellingCharacteristicsExample">
-        SELECT COUNT(1) FROM `dwelling_characteristics` d LEFT JOIN `facility_street_reference` fsr ON d.`CDUL` = fsr.`KL_CODEUL`
-          WHERE d.`request_file_id` = #{requestFileId}
+        SELECT COUNT(distinct d.`id`) FROM `dwelling_characteristics` d
+          LEFT JOIN `facility_street_reference` s ON d.`CDUL` = s.`KL_CODEUL`
+        WHERE d.`request_file_id` = #{requestFileId}
         <include refid="org.complitex.osznconnection.file.service.DwellingCharacteristicsBean.filter"/>
     </select>
+
+    <sql id="selectStreetReference">
+        (select `KL_NAME` from `facility_street_reference` where )
+    </sql>
 
     <select id="find" parameterType="org.complitex.osznconnection.file.entity.example.DwellingCharacteristicsExample"
             resultMap="dwellingCharacteristicsResultMap">
         SELECT t.*,  
-        w.`id` warning_id, w.`request_id` warning_reqiest_id, w.`request_file_type` warning_request_file_type, w.`status` warning_status,
-        p.`request_warning_id` param_request_warning_id, p.`order` param_order, p.`type` param_type, p.`value` param_value
+            w.`id` warning_id, w.`request_id` warning_reqiest_id, w.`request_file_type` warning_request_file_type, w.`status` warning_status,
+            p.`request_warning_id` param_request_warning_id, p.`order` param_order, p.`type` param_type, p.`value` param_value
         FROM (
-            SELECT d.`id`, d.`status`, d.`request_file_id`, d.`IDCODE`, d.`first_name`, d.`middle_name`, d.`last_name`, d.`FIO`,
+            SELECT DISTINCT d.`id`, d.`status`, d.`request_file_id`, d.`IDCODE`, d.`first_name`, d.`middle_name`, d.`last_name`, d.`FIO`,
                 d.`CDUL`, d.`HOUSE`, d.`BUILD`, d.`APT`, d.`date`,
                 f.`organization_id`,
                 d.`internal_city_id`, d.`internal_street_id`, d.`internal_street_type_id`, d.`internal_building_id`,
                 d.`outgoing_city`, d.`outgoing_district`, d.`outgoing_street`, d.`outgoing_street_type`, d.`outgoing_building_number`,
                 d.`outgoing_building_corp`, d.`outgoing_apartment`, d.`street_correction_id`,
-                d.`city`, d.`street`, d.`street_type`, s.`KL_NAME` as street_reference, st.`KLKUL_NAME` as street_type_reference,
-                s.`KL_CODEKUL` as street_type_reference_code
+                d.`city`, d.`street`, d.`street_type`, s.`KL_NAME` as street_reference
             FROM `dwelling_characteristics` d
               JOIN `request_file` f ON f.`id` = d.`request_file_id`
               LEFT JOIN `facility_street_reference` s ON d.`CDUL` = s.`KL_CODEUL`
-              LEFT JOIN `request_file` s_f ON s.`request_file_id` = s_f.`id`
-              LEFT JOIN `facility_street_type_reference` st ON st.`KLKUL_CODE` = s.`KL_CODEKUL`
-              LEFT JOIN `request_file` st_f ON st.`request_file_id` = st_f.`id`
             WHERE d.`request_file_id` = #{requestFileId}
-                and f.`organization_id` = s_f.`organization_id` and f.`user_organization_id` = s_f.`user_organization_id`
-                and f.`organization_id` = st_f.`organization_id` and f.`user_organization_id` = st_f.`user_organization_id`
                 <include refid="org.complitex.osznconnection.file.service.DwellingCharacteristicsBean.filter"/>
 
                 <if test="orderByClause != null">
@@ -232,16 +227,9 @@
             d.`internal_city_id`, d.`internal_street_id`, d.`internal_street_type_id`, d.`internal_building_id`,
             d.`outgoing_city`, d.`outgoing_district`, d.`outgoing_street`, d.`outgoing_street_type`, d.`outgoing_building_number`,
             d.`outgoing_building_corp`, d.`outgoing_apartment`, d.`street_correction_id`,
-            d.`account_number`,  s.`KL_NAME` as street_reference, st.`KLKUL_NAME` as street_type_reference,
-            s.`KL_CODEKUL` as street_type_reference_code
-        FROM `dwelling_characteristics` d
-            JOIN `request_file` f ON d.`request_file_id` = f.`id`
-            LEFT JOIN `facility_street_reference` s ON d.`CDUL` = s.`KL_CODEUL`
-            LEFT JOIN `request_file` s_f ON s.`request_file_id` = s_f.`id`
-            LEFT JOIN `facility_street_type_reference` st ON st.`KLKUL_CODE` = s.`KL_CODEKUL`
+            d.`account_number`
+        FROM `dwelling_characteristics` d JOIN `request_file` f ON d.`request_file_id` = f.`id`
         WHERE d.`request_file_id` = #{requestFileId}
-          and f.`organization_id` = s.`organization_id` and f.`user_organization_id` = s.`user_organization_id`
-          and f.`organization_id` = st.`organization_id` and f.`user_organization_id` = st.`user_organization_id`
             AND d.`id` IN
             <foreach collection="ids" item="id" open="(" close=")" separator=",">
                 #{id}

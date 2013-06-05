@@ -4,13 +4,13 @@
  */
 package org.complitex.osznconnection.file.service;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.entity.example.DwellingCharacteristicsExample;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -18,6 +18,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static com.google.common.collect.ImmutableMap.of;
+import static org.complitex.osznconnection.file.entity.DwellingCharacteristicsDBF.CDUL;
 
 /**
  *
@@ -27,14 +30,17 @@ import java.util.Set;
 public class DwellingCharacteristicsBean extends AbstractRequestBean {
 
     public static final String MAPPING_NAMESPACE = DwellingCharacteristicsBean.class.getName();
-    private static final Map<Long, Set<DwellingCharacteristicsDBF>> UPDATE_FIELD_MAP = ImmutableMap.of();
+    private static final Map<Long, Set<DwellingCharacteristicsDBF>> UPDATE_FIELD_MAP = of();
+
+    @EJB
+    private FacilityReferenceBookBean facilityReferenceBookBean;
 
     public enum OrderBy {
         IDCODE(DwellingCharacteristicsDBF.IDCODE.name()),
         FIRST_NAME("first_name"),
         MIDDLE_NAME("middle_name"),
         LAST_NAME("last_name"),
-        STREET_CODE(DwellingCharacteristicsDBF.CDUL.name()),
+        STREET_CODE(CDUL.name()),
         STREET_REFERENCE("street_reference"),
         BUILDING(DwellingCharacteristicsDBF.HOUSE.name()),
         CORP(DwellingCharacteristicsDBF.BUILD.name()),
@@ -72,7 +78,11 @@ public class DwellingCharacteristicsBean extends AbstractRequestBean {
 
     @Transactional
     public List<DwellingCharacteristics> find(DwellingCharacteristicsExample example) {
-        return sqlSession().selectList(MAPPING_NAMESPACE + ".find", example);
+        List<DwellingCharacteristics> list = sqlSession().selectList(MAPPING_NAMESPACE + ".find", example);;
+
+        loadFacilityStreet(list);
+
+        return list;
     }
 
     @Transactional
@@ -113,10 +123,22 @@ public class DwellingCharacteristicsBean extends AbstractRequestBean {
 
     @Transactional
     public List<DwellingCharacteristics> findForOperation(long fileId, List<Long> ids) {
-        Map<String, Object> params = Maps.newHashMap();
-        params.put("requestFileId", fileId);
-        params.put("ids", ids);
-        return sqlSession().selectList(MAPPING_NAMESPACE + ".findForOperation", params);
+        List<DwellingCharacteristics> list = sqlSession().selectList(MAPPING_NAMESPACE + ".findForOperation",
+                of("requestFileId", fileId, "ids", ids));
+
+        loadFacilityStreet(list);
+
+        return list;
+    }
+
+    public void loadFacilityStreet(List<DwellingCharacteristics> list){
+        for (DwellingCharacteristics d : list){
+            FacilityStreet facilityStreet = facilityReferenceBookBean.getFacilityStreet(d.getRequestFileId(), d.getStringField(CDUL));
+
+            d.setStreetReference(facilityStreet.getStringField(FacilityStreetDBF.KL_NAME));
+            d.setStreetTypeReference(facilityStreet.getStreetType());
+            d.setStreetTypeReferenceCode(facilityStreet.getStreetTypeCode());
+        }
     }
 
     @Transactional
@@ -130,7 +152,7 @@ public class DwellingCharacteristicsBean extends AbstractRequestBean {
         }
 
         sqlSession().update(MAPPING_NAMESPACE + ".clearBeforeBinding",
-                ImmutableMap.of("status", RequestStatus.LOADED, "fileId", fileId, "updateFieldMap", updateFieldMap));
+                of("status", RequestStatus.LOADED, "fileId", fileId, "updateFieldMap", updateFieldMap));
         clearWarnings(fileId, RequestFile.TYPE.DWELLING_CHARACTERISTICS);
     }
 

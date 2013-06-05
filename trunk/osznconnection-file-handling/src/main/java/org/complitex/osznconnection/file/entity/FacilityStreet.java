@@ -9,6 +9,9 @@ package org.complitex.osznconnection.file.entity;
  * @author Artem
  */
 public class FacilityStreet extends AbstractRequest {
+    private String streetType;
+    private String streetTypeCode;
+
     public FacilityStreet() {
     }
 
@@ -27,5 +30,21 @@ public class FacilityStreet extends AbstractRequest {
     @Override
     public RequestFile.TYPE getRequestFileType() {
         return RequestFile.TYPE.FACILITY_STREET;
+    }
+
+    public String getStreetType() {
+        return streetType;
+    }
+
+    public void setStreetType(String streetType) {
+        this.streetType = streetType;
+    }
+
+    public String getStreetTypeCode() {
+        return streetTypeCode;
+    }
+
+    public void setStreetTypeCode(String streetTypeCode) {
+        this.streetTypeCode = streetTypeCode;
     }
 }
