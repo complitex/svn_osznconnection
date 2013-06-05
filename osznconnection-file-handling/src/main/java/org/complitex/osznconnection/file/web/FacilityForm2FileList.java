@@ -100,7 +100,7 @@ public final class FacilityForm2FileList extends ScrollListPage {
 
         //Фильтр модель
         RequestFileFilter filter = (RequestFileFilter) getFilterObject(newFilter());
-        final IModel<RequestFileFilter> model = new CompoundPropertyModel<RequestFileFilter>(filter);
+        final IModel<RequestFileFilter> model = new CompoundPropertyModel<>(filter);
 
         //Фильтр форма
         form = new Form<>("form", model);

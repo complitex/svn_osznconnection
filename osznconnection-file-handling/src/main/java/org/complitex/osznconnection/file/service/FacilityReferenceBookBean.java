@@ -108,6 +108,11 @@ public class FacilityReferenceBookBean extends AbstractBean {
                 "userOrganizationId", userOrganizationId));
     }
 
+    public FacilityStreet getFacilityStreet(Long requestFileId, String streetCode){
+        return sqlSession().selectOne(NS + ".selectFacilityStreetByRequestFile", of("requestFileId", requestFileId,
+                "streetCode", streetCode));
+    }
+
     //FacilityTarif
 
     public List<FacilityTarif> getFacilityTarifs(FilterWrapper<FacilityTarif> filterWrapper){
