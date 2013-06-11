@@ -110,7 +110,7 @@ public class FacilityServiceTypeBindTaskBean implements ITaskBean {
         if (log.isDebugEnabled()) {
             startTime = System.nanoTime();
         }
-        personAccountService.resolveRemoteAccount(facilityServiceType, calculationContext, updatePuAccount);
+        personAccountService.resolveRemoteAccount(facilityServiceType, calculationContext);
         if (log.isDebugEnabled()) {
             log.debug("Resolving of facility service type (id = {}) for remote account number took {} sec.",
                     facilityServiceType.getId(), (System.nanoTime() - startTime) / 1000000000F);

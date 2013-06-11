@@ -28,6 +28,7 @@
             JOIN `request_file` rf ON st.`request_file_id` = rf.`id`
             WHERE st.`KLKUL_CODE` = #{streetTypeCode} AND rf.`organization_id` = #{osznId} 
                 AND rf.`user_organization_id` = #{userOrganizationId}
+            ORDER By rf.`begin_date` desc limit 1
     </select>
 
     <delete id="deleteFacilityReferences" parameterType="map">
@@ -106,6 +107,7 @@
         select * from `facility_street_reference` s join `request_file` rf on s.`request_file_id` = rf.`id`
           where s.`KL_CODEUL` = #{streetCode} and rf.`organization_id` = #{osznId}
               and rf.`user_organization_id` = #{userOrganizationId}
+            order by rf.`begin_date` desc limit 1
     </select>
 
     <select id="selectFacilityStreetByRequestFile" parameterType="map" resultMap="facilityStreetResultMap">
