@@ -175,14 +175,15 @@ public class PersonAccountService extends AbstractBean {
     }
 
     @Transactional
-    public void resolveRemoteAccount(DwellingCharacteristics dwellingCharacteristics, CalculationContext calculationContext,
-            Boolean updatePUAccount) throws DBException {
-        adapter.acquirePersonAccount(calculationContext, RequestFile.TYPE.DWELLING_CHARACTERISTICS, dwellingCharacteristics,
-                dwellingCharacteristics.getLastName(), dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.IDCODE),
+    public void resolveRemoteAccount(DwellingCharacteristics dwellingCharacteristics, CalculationContext calculationContext)
+            throws DBException {
+        adapter.acquireFacilityPersonAccount(calculationContext, dwellingCharacteristics,
                 dwellingCharacteristics.getOutgoingDistrict(), dwellingCharacteristics.getOutgoingStreetType(),
                 dwellingCharacteristics.getOutgoingStreet(),
                 dwellingCharacteristics.getOutgoingBuildingNumber(), dwellingCharacteristics.getOutgoingBuildingCorp(),
-                dwellingCharacteristics.getOutgoingApartment(), dwellingCharacteristics.getDate(), updatePUAccount);
+                dwellingCharacteristics.getOutgoingApartment(), dwellingCharacteristics.getDate(),
+                dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.IDPIL),
+                dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.PASPPIL));
 
         if (dwellingCharacteristics.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED) {
             personAccountLocalBean.saveOrUpdate(dwellingCharacteristics, calculationContext.getCalculationCenterId(),
@@ -191,14 +192,17 @@ public class PersonAccountService extends AbstractBean {
     }
 
     @Transactional
-    public void resolveRemoteAccount(FacilityServiceType facilityServiceType, CalculationContext calculationContext,
-            Boolean updatePUAccount) throws DBException {
-        adapter.acquirePersonAccount(calculationContext, RequestFile.TYPE.DWELLING_CHARACTERISTICS, facilityServiceType,
-                facilityServiceType.getLastName(), facilityServiceType.getStringField(FacilityServiceTypeDBF.IDCODE),
+    public void resolveRemoteAccount(FacilityServiceType facilityServiceType, CalculationContext calculationContext)
+            throws DBException {
+        adapter.acquireFacilityPersonAccount(calculationContext, facilityServiceType,
                 facilityServiceType.getOutgoingDistrict(), facilityServiceType.getOutgoingStreetType(),
                 facilityServiceType.getOutgoingStreet(),
                 facilityServiceType.getOutgoingBuildingNumber(), facilityServiceType.getOutgoingBuildingCorp(),
-                facilityServiceType.getOutgoingApartment(), facilityServiceType.getDate(), updatePUAccount);
+                facilityServiceType.getOutgoingApartment(), facilityServiceType.getDate(),
+                facilityServiceType.getStringField(FacilityServiceTypeDBF.IDPIL),
+                facilityServiceType.getStringField(FacilityServiceTypeDBF.PASPPIL));
+
+
         if (facilityServiceType.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED) {
             personAccountLocalBean.saveOrUpdate(facilityServiceType, calculationContext.getCalculationCenterId(),
                     calculationContext.getUserOrganizationId());

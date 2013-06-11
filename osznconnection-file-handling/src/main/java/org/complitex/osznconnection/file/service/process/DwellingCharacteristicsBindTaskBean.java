@@ -13,13 +13,15 @@ import org.complitex.dictionary.service.executor.ExecuteException;
 import org.complitex.dictionary.service.executor.ITaskBean;
 import org.complitex.osznconnection.file.Module;
 import org.complitex.osznconnection.file.entity.*;
-import org.complitex.osznconnection.file.service.*;
+import org.complitex.osznconnection.file.service.AddressService;
+import org.complitex.osznconnection.file.service.DwellingCharacteristicsBean;
+import org.complitex.osznconnection.file.service.PersonAccountService;
+import org.complitex.osznconnection.file.service.RequestFileBean;
 import org.complitex.osznconnection.file.service.exception.AlreadyProcessingException;
 import org.complitex.osznconnection.file.service.exception.BindException;
 import org.complitex.osznconnection.file.service.exception.CanceledByUserException;
 import org.complitex.osznconnection.file.service_provider.CalculationCenterBean;
 import org.complitex.osznconnection.file.service_provider.exception.DBException;
-import org.complitex.osznconnection.file.web.pages.util.GlobalOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,13 +113,13 @@ public class DwellingCharacteristicsBindTaskBean implements ITaskBean {
     }
 
     private boolean resolveRemoteAccountNumber(DwellingCharacteristics dwellingCharacteristics,
-            CalculationContext calculationContext, Boolean updatePuAccount) throws DBException {
+            CalculationContext calculationContext) throws DBException {
         long startTime = 0;
         if (log.isDebugEnabled()) {
             startTime = System.nanoTime();
         }
 
-        personAccountService.resolveRemoteAccount(dwellingCharacteristics, calculationContext, updatePuAccount);
+        personAccountService.resolveRemoteAccount(dwellingCharacteristics, calculationContext);
 
         if (log.isDebugEnabled()) {
             log.debug("Resolving of dwelling characteristics (id = {}) for remote account number took {} sec.",
@@ -126,7 +128,7 @@ public class DwellingCharacteristicsBindTaskBean implements ITaskBean {
         return dwellingCharacteristics.getStatus() == ACCOUNT_NUMBER_RESOLVED;
     }
 
-    private void bind(DwellingCharacteristics dwellingCharacteristics, CalculationContext calculationContext, Boolean updatePuAccount)
+    private void bind(DwellingCharacteristics dwellingCharacteristics, CalculationContext calculationContext)
             throws DBException {
         //связать до улицы.
         resolveStreet(dwellingCharacteristics, calculationContext);
@@ -137,7 +139,7 @@ public class DwellingCharacteristicsBindTaskBean implements ITaskBean {
 
             if (dwellingCharacteristics.getStatus().isNotIn(ACCOUNT_NUMBER_RESOLVED, MORE_ONE_ACCOUNTS_LOCALLY)) {
                 if (resolveAddress(dwellingCharacteristics, calculationContext)) {
-                    resolveRemoteAccountNumber(dwellingCharacteristics, calculationContext, updatePuAccount);
+                    resolveRemoteAccountNumber(dwellingCharacteristics, calculationContext);
                 }
             }
         }
@@ -156,8 +158,8 @@ public class DwellingCharacteristicsBindTaskBean implements ITaskBean {
         }
     }
 
-    private void bindDwellingCharacteristicsFile(RequestFile dwellingCharacteristicsFile, CalculationContext calculationContext,
-            Boolean updatePuAccount) throws BindException, DBException, CanceledByUserException {
+    private void bindDwellingCharacteristicsFile(RequestFile dwellingCharacteristicsFile, CalculationContext calculationContext)
+            throws BindException, DBException, CanceledByUserException {
         //извлечь из базы все id подлежащие связыванию для файла dwelling characteristics и доставать записи порциями по BATCH_SIZE штук.
         List<Long> notResolvedDwellingCharacteristicsIds = dwellingCharacteristicsBean.findIdsForBinding(dwellingCharacteristicsFile.getId());
         List<Long> batch = Lists.newArrayList();
@@ -183,7 +185,7 @@ public class DwellingCharacteristicsBindTaskBean implements ITaskBean {
                 try {
                     userTransaction.begin();
 
-                    bind(dwellingCharacteristic, calculationContext, updatePuAccount);
+                    bind(dwellingCharacteristic, calculationContext);
 
                     userTransaction.commit();
                 } catch (Exception e) {
@@ -202,8 +204,8 @@ public class DwellingCharacteristicsBindTaskBean implements ITaskBean {
     @Override
     public boolean execute(IExecutorObject executorObject, Map commandParameters) throws ExecuteException {
         // ищем в параметрах комманды опцию "Переписывать номер л/с ПУ номером л/с МН"
-        final Boolean updatePuAccount = commandParameters.containsKey(GlobalOptions.UPDATE_PU_ACCOUNT)
-                ? (Boolean) commandParameters.get(GlobalOptions.UPDATE_PU_ACCOUNT) : false;
+//        final Boolean updatePuAccount = commandParameters.containsKey(GlobalOptions.UPDATE_PU_ACCOUNT)
+//                ? (Boolean) commandParameters.get(GlobalOptions.UPDATE_PU_ACCOUNT) : false;
 
         RequestFile requestFile = (RequestFile) executorObject;
 
@@ -223,7 +225,7 @@ public class DwellingCharacteristicsBindTaskBean implements ITaskBean {
 
         //связывание файла dwelling characteristics
         try {
-            bindDwellingCharacteristicsFile(requestFile, calculationContext, updatePuAccount);
+            bindDwellingCharacteristicsFile(requestFile, calculationContext);
         } catch (DBException e) {
             throw new RuntimeException(e);
         } catch (CanceledByUserException e) {
