@@ -228,13 +228,7 @@
     </select>
     
     <select id="findForOperation" parameterType="map" resultMap="facilityServiceTypeResultMap">
-        SELECT fst.`id`, fst.`status`, fst.`request_file_id`, fst.`last_name`, fst.`first_name`, fst.`middle_name`, fst.`FIO`,
-            fst.`city`, fst.`CDUL`, fst.`street`, fst.`street_type`, fst.`HOUSE`, fst.`BUILD`, fst.`APT`, fst.`IDCODE`, fst.`date`,
-            f.`organization_id`,
-            fst.`internal_city_id`, fst.`internal_street_id`, fst.`internal_street_type_id`, fst.`internal_building_id`,
-            fst.`outgoing_city`, fst.`outgoing_district`, fst.`outgoing_street`, fst.`outgoing_street_type`, fst.`outgoing_building_number`,
-            fst.`outgoing_building_corp`, fst.`outgoing_apartment`, fst.`street_correction_id`,
-            fst.`account_number`
+        SELECT fst.*, f.`organization_id`
         FROM `facility_service_type` fst JOIN `request_file` f ON fst.`request_file_id` = f.`id`
         WHERE fst.`request_file_id` = #{requestFileId}
             AND fst.`id` IN
