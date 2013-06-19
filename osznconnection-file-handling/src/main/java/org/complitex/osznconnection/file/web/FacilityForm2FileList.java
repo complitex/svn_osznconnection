@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.osznconnection.file.web;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -27,6 +23,7 @@ import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
 import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.entity.RequestFileFilter;
 import org.complitex.osznconnection.file.entity.RequestFileStatus;
+import org.complitex.osznconnection.file.entity.RequestFileType;
 import org.complitex.osznconnection.file.service.file_description.RequestFileDescriptionBean;
 import org.complitex.osznconnection.file.service.process.ProcessManagerBean;
 import org.complitex.osznconnection.file.service.process.ProcessType;
@@ -67,12 +64,12 @@ public final class FacilityForm2FileList extends ScrollListPage {
     }
 
     private boolean hasFieldDescription() {
-        return requestFileDescriptionBean.getFileDescription(RequestFile.TYPE.FACILITY_FORM2) != null;
+        return requestFileDescriptionBean.getFileDescription(RequestFileType.FACILITY_FORM2) != null;
     }
 
     private RequestFileFilter newFilter() {
         RequestFileFilter filter = new RequestFileFilter();
-        filter.setType(RequestFile.TYPE.FACILITY_FORM2);
+        filter.setType(RequestFileType.FACILITY_FORM2);
         return filter;
     }
 

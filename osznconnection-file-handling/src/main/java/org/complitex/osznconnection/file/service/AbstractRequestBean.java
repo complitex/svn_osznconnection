@@ -7,6 +7,7 @@ package org.complitex.osznconnection.file.service;
 import javax.ejb.EJB;
 import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.osznconnection.file.entity.RequestFile;
+import org.complitex.osznconnection.file.entity.RequestFileType;
 import org.complitex.osznconnection.file.service.warning.RequestWarningBean;
 
 /**
@@ -18,7 +19,7 @@ public abstract class AbstractRequestBean extends AbstractBean {
     @EJB
     private RequestWarningBean requestWarningBean;
 
-    protected void clearWarnings(long requestFileId, RequestFile.TYPE requestFileType) {
+    protected void clearWarnings(long requestFileId, RequestFileType requestFileType) {
         requestWarningBean.delete(requestFileId, requestFileType);
     }
 }

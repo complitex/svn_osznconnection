@@ -23,6 +23,7 @@ import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
 import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.entity.RequestFileFilter;
 import org.complitex.osznconnection.file.entity.RequestFileStatus;
+import org.complitex.osznconnection.file.entity.RequestFileType;
 import org.complitex.osznconnection.file.service.file_description.RequestFileDescriptionBean;
 import org.complitex.osznconnection.file.service.process.ProcessManagerBean;
 import org.complitex.osznconnection.file.service.process.ProcessType;
@@ -65,12 +66,12 @@ public class SubsidyTarifFileList extends TemplatePage {
     }
 
     private boolean hasFieldDescription() {
-        return requestFileDescriptionBean.getFileDescription(RequestFile.TYPE.SUBSIDY_TARIF) != null;
+        return requestFileDescriptionBean.getFileDescription(RequestFileType.SUBSIDY_TARIF) != null;
     }
 
     private RequestFileFilter newFilter() {
         final RequestFileFilter filter = new RequestFileFilter();
-        filter.setType(RequestFile.TYPE.SUBSIDY_TARIF);
+        filter.setType(RequestFileType.SUBSIDY_TARIF);
         return filter;
     }
 

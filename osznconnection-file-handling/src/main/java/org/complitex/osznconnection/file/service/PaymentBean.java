@@ -68,14 +68,12 @@ public class PaymentBean extends AbstractRequestBean {
 
     @Transactional
     public int count(PaymentExample example) {
-        return (Integer) sqlSession().selectOne(MAPPING_NAMESPACE + ".count", example);
+        return sqlSession().selectOne(MAPPING_NAMESPACE + ".count", example);
     }
 
     @Transactional
     public List<Payment> find(PaymentExample example) {
-        @SuppressWarnings("unchecked")
-        List<Payment> payments = sqlSession().selectList(MAPPING_NAMESPACE + ".find", example);
-        return payments;
+        return sqlSession().selectList(MAPPING_NAMESPACE + ".find", example);
     }
 
     @Transactional
@@ -84,13 +82,12 @@ public class PaymentBean extends AbstractRequestBean {
         if (abstractRequests.isEmpty()) {
             return;
         }
+
         sqlSession().insert(MAPPING_NAMESPACE + ".insertPaymentList", abstractRequests);
     }
 
     public List<AbstractRequest> getPayments(long requestFileId) {
-        @SuppressWarnings("unchecked")
-        List<AbstractRequest> payments = sqlSession().selectList(MAPPING_NAMESPACE + ".selectPayments", requestFileId);
-        return payments;
+        return sqlSession().selectList(MAPPING_NAMESPACE + ".selectPayments", requestFileId);
     }
 
     @Transactional
@@ -108,7 +105,7 @@ public class PaymentBean extends AbstractRequestBean {
         Map<String, String> updateFieldMap = null;
         if (serviceProviderTypeIds != null && !serviceProviderTypeIds.isEmpty()) {
             updateFieldMap = Maps.newHashMap();
-            for (PaymentDBF field : getUpdateableFields(serviceProviderTypeIds)) {
+            for (PaymentDBF field : getUpdatableFields(serviceProviderTypeIds)) {
                 updateFieldMap.put(field.name(), payment.getStringField(field));
             }
         }
@@ -116,24 +113,24 @@ public class PaymentBean extends AbstractRequestBean {
         update(payment);
     }
 
-    private Set<PaymentDBF> getUpdateableFields(Set<Long> serviceProviderTypeIds) {
-        final Set<PaymentDBF> updateableFields = Sets.newHashSet();
+    private Set<PaymentDBF> getUpdatableFields(Set<Long> serviceProviderTypeIds) {
+        final Set<PaymentDBF> updatableFields = Sets.newHashSet();
 
         for (long serviceProviderTypeId : serviceProviderTypeIds) {
             Set<PaymentDBF> fields = UPDATE_FIELD_MAP.get(serviceProviderTypeId);
             if (fields != null) {
-                updateableFields.addAll(fields);
+                updatableFields.addAll(fields);
             }
         }
 
-        return Collections.unmodifiableSet(updateableFields);
+        return Collections.unmodifiableSet(updatableFields);
     }
 
     /**
      * Получить все payment записи в файле с id из списка ids
-     * @param fileId
-     * @param ids
-     * @return
+     * @param fileId fileId
+     * @param ids ids
+     * @return все payment записи в файле с id из списка ids
      */
     @Transactional
     @SuppressWarnings("unchecked")
@@ -146,8 +143,8 @@ public class PaymentBean extends AbstractRequestBean {
 
     /**
      * Получить все id payment записей в файле
-     * @param fileId
-     * @return
+     * @param fileId fileId
+     * @return все id payment записей в файле
      */
     @Transactional
     @SuppressWarnings("unchecked")
@@ -157,8 +154,8 @@ public class PaymentBean extends AbstractRequestBean {
 
     /**
      * Получить все id payment записей в файле для связывания
-     * @param fileId
-     * @return
+     * @param fileId fileId
+     * @return все id payment записей в файле для связывания
      */
     @Transactional
     public List<Long> findIdsForBinding(long fileId) {
@@ -167,8 +164,8 @@ public class PaymentBean extends AbstractRequestBean {
 
     /**
      * Получить все id payment записей в файле для обработки
-     * @param fileId
-     * @return
+     * @param fileId fileId
+     * @return все id payment записей в файле для обработки
      */
     @Transactional
     public List<Long> findIdsForProcessing(long fileId) {
@@ -177,8 +174,8 @@ public class PaymentBean extends AbstractRequestBean {
 
     /**
      * Возвращает кол-во несвязанных записей в файле.
-     * @param fileId
-     * @return
+     * @param fileId fileId
+     * @return кол-во несвязанных записей в файле.
      */
     private int unboundCount(long fileId) {
         return countByFile(fileId, RequestStatus.unboundStatuses());
@@ -186,8 +183,8 @@ public class PaymentBean extends AbstractRequestBean {
 
     /**
      * Возвращает кол-во необработанных записей
-     * @param fileId
-     * @return
+     * @param fileId fileId
+     * @return кол-во необработанных записей
      */
     private int unprocessedCount(long fileId) {
         return countByFile(fileId, RequestStatus.unprocessedStatuses());
@@ -195,19 +192,19 @@ public class PaymentBean extends AbstractRequestBean {
 
     /**
      * Возвращает кол-во записей со статусами из списка statuses
-     * @param fileId
-     * @param statuses
-     * @return
+     * @param fileId fileId
+     * @param statuses statuses
+     * @return кол-во записей со статусами из списка statuses
      */
     private int countByFile(long fileId, Set<RequestStatus> statuses) {
         Map<String, Object> params = Maps.newHashMap();
         params.put("requestFileId", fileId);
         params.put("statuses", statuses);
-        return (Integer) sqlSession().selectOne(MAPPING_NAMESPACE + ".countByFile", params);
+        return sqlSession().selectOne(MAPPING_NAMESPACE + ".countByFile", params);
     }
 
     /**
-     * @param fileId
+     * @param fileId fileId
      * @return Связан ли файл
      */
     @Transactional
@@ -217,7 +214,7 @@ public class PaymentBean extends AbstractRequestBean {
 
     /**
      *
-     * @param fileId
+     * @param fileId fileId
      * @return Обработан ли файл
      */
     @Transactional
@@ -253,48 +250,49 @@ public class PaymentBean extends AbstractRequestBean {
 
     /**
      * очищает колонки которые заполняются во время связывания и обработки для записей payment
-     * @param fileId
+     * @param fileId fileId
      */
     @Transactional
     public void clearBeforeBinding(long fileId, Set<Long> serviceProviderTypeIds) {
         Map<String, String> updateFieldMap = null;
         if (serviceProviderTypeIds != null && !serviceProviderTypeIds.isEmpty()) {
             updateFieldMap = Maps.newHashMap();
-            for (PaymentDBF field : getUpdateableFields(serviceProviderTypeIds)) {
+            for (PaymentDBF field : getUpdatableFields(serviceProviderTypeIds)) {
                 updateFieldMap.put(field.name(), null);
             }
         }
 
         sqlSession().update(MAPPING_NAMESPACE + ".clearBeforeBinding",
                 ImmutableMap.of("status", RequestStatus.LOADED, "fileId", fileId, "updateFieldMap", updateFieldMap));
-        clearWarnings(fileId, RequestFile.TYPE.PAYMENT);
+        clearWarnings(fileId, RequestFileType.PAYMENT);
     }
 
     /**
      * очищает колонки которые заполняются во время обработки для записей payment
-     * @param fileId
+     * @param fileId fileId
      */
     @Transactional
     public void clearBeforeProcessing(long fileId, Set<Long> serviceProviderTypeIds) {
         Map<String, String> updateFieldMap = null;
         if (serviceProviderTypeIds != null && !serviceProviderTypeIds.isEmpty()) {
             updateFieldMap = Maps.newHashMap();
-            for (PaymentDBF field : getUpdateableFields(serviceProviderTypeIds)) {
+            for (PaymentDBF field : getUpdatableFields(serviceProviderTypeIds)) {
                 updateFieldMap.put(field.name(), null);
             }
         }
 
         sqlSession().update(MAPPING_NAMESPACE + ".clearBeforeProcessing",
                 ImmutableMap.of("statuses", RequestStatus.unboundStatuses(), "fileId", fileId, "updateFieldMap", updateFieldMap));
-        clearWarnings(fileId, RequestFile.TYPE.PAYMENT);
+        clearWarnings(fileId, RequestFileType.PAYMENT);
     }
 
     /**
      * Получает дату из поля DAT1 в записи payment, у которой account number = accountNumber и
      * кроме того поле FROG больше 0(только benefit записи соответствующие таким payment записям нужно обрабатывать).
-     * @param accountNumber
-     * @param benefitFileId
-     * @return
+     * @param accountNumber accountNumber
+     * @param benefitFileId benefitFileId
+     * @return дату из поля DAT1 в записи payment, у которой account number = accountNumber и
+     * кроме того поле FROG больше 0
      */
     @Transactional
     public Date findDat1(String accountNumber, long benefitFileId) {

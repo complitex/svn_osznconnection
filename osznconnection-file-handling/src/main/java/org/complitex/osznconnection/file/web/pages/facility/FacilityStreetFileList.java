@@ -1,7 +1,7 @@
 package org.complitex.osznconnection.file.web.pages.facility;
 
 import org.apache.wicket.Page;
-import org.complitex.osznconnection.file.entity.RequestFile;
+import org.complitex.osznconnection.file.entity.RequestFileType;
 import org.complitex.osznconnection.file.service.process.ProcessManagerBean;
 import org.complitex.osznconnection.file.service.process.ProcessType;
 import org.complitex.osznconnection.file.web.component.load.DateParameter;
@@ -21,8 +21,8 @@ public final class FacilityStreetFileList extends AbstractReferenceBookFileList 
     }
 
     @Override
-    protected RequestFile.TYPE getRequestFileType() {
-        return RequestFile.TYPE.FACILITY_STREET;
+    protected RequestFileType getRequestFileType() {
+        return RequestFileType.FACILITY_STREET;
     }
 
     @Override

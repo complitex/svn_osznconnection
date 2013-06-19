@@ -4,52 +4,17 @@
  */
 package org.complitex.osznconnection.file.service_provider;
 
-import org.complitex.dictionary.util.DateUtil;
-import org.complitex.osznconnection.file.entity.DwellingCharacteristicsDBF;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.entity.Log.EVENT;
+import org.complitex.dictionary.oracle.OracleErrors;
 import org.complitex.dictionary.service.LocaleBean;
 import org.complitex.dictionary.service.LogBean;
 import org.complitex.dictionary.util.ResourceUtil;
 import org.complitex.osznconnection.file.Module;
-import org.complitex.osznconnection.file.entity.AbstractRequest;
-import org.complitex.osznconnection.file.entity.AccountDetail;
-import org.complitex.osznconnection.file.entity.ActualPayment;
-import org.complitex.osznconnection.file.entity.ActualPaymentDBF;
-import org.complitex.osznconnection.file.entity.ActualPaymentData;
-import org.complitex.osznconnection.file.entity.Benefit;
-import org.complitex.osznconnection.file.entity.BenefitDBF;
-import org.complitex.osznconnection.file.entity.BenefitData;
-import org.complitex.osznconnection.file.entity.CalculationContext;
-import org.complitex.osznconnection.file.entity.DwellingCharacteristics;
-import org.complitex.osznconnection.file.entity.FacilityServiceType;
-import org.complitex.osznconnection.file.entity.FacilityServiceTypeDBF;
-import org.complitex.osznconnection.file.entity.Payment;
-import org.complitex.osznconnection.file.entity.PaymentAndBenefitData;
-import org.complitex.osznconnection.file.entity.PaymentDBF;
-import org.complitex.osznconnection.file.entity.RequestFile;
-import org.complitex.osznconnection.file.entity.RequestStatus;
-import org.complitex.osznconnection.file.entity.RequestWarning;
-import org.complitex.osznconnection.file.entity.RequestWarningParameter;
-import org.complitex.osznconnection.file.entity.RequestWarningStatus;
-import org.complitex.osznconnection.file.entity.Subsidy;
-import org.complitex.osznconnection.file.entity.SubsidyDBF;
+import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.service.OwnershipCorrectionBean;
 import org.complitex.osznconnection.file.service.PrivilegeCorrectionBean;
 import org.complitex.osznconnection.file.service.SubsidyTarifBean;
@@ -58,16 +23,25 @@ import org.complitex.osznconnection.file.service.warning.WebWarningRenderer;
 import org.complitex.osznconnection.file.service_provider.exception.DBException;
 import org.complitex.osznconnection.file.service_provider.exception.ServiceProviderAccountNumberParseException;
 import org.complitex.osznconnection.file.service_provider.exception.UnknownAccountNumberTypeException;
-import org.complitex.dictionary.oracle.OracleErrors;
 import org.complitex.osznconnection.service_provider_type.strategy.ServiceProviderTypeStrategy;
-import static org.complitex.osznconnection.file.service_provider.util.ServiceProviderAccountNumberParser.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.*;
+
+import static com.google.common.collect.Iterables.filter;
+import static com.google.common.collect.Iterables.transform;
+import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Maps.newHashMap;
 import static org.complitex.dictionary.util.StringUtil.removeWhiteSpaces;
-import static com.google.common.collect.Iterables.*;
-import static com.google.common.collect.Lists.*;
-import static com.google.common.collect.Maps.*;
+import static org.complitex.osznconnection.file.service_provider.util.ServiceProviderAccountNumberParser.matches;
+import static org.complitex.osznconnection.file.service_provider.util.ServiceProviderAccountNumberParser.parse;
 
 /**
  *
@@ -276,7 +250,7 @@ public class ServiceProviderAdapter {
      *
      */
     public void acquirePersonAccount(CalculationContext calculationContext,
-                                     RequestFile.TYPE requestFileType, AbstractRequest request, String lastName,
+                                     RequestFileType requestFileType, AbstractRequest request, String lastName,
                                      String serviceProviderAccountNumber, String district, String streetType, String street, String buildingNumber,
                                      String buildingCorp, String apartment, Date date, Boolean updatePUAccount) throws DBException {
 
@@ -613,7 +587,6 @@ public class ServiceProviderAdapter {
      * поле OWN_FRM проставляется из таблицы коррекций для форм власти(ownership). На данный момент для всех форм власти в ЦН существуют коррекции,
      * поэтому ситуации с не найденной коррекцией нет.
      *
-     * @param calculationCenterId id ЦН
      * @param benefits
      */
     protected void processPaymentAndBenefitData(CalculationContext calculationContext, Payment payment,
@@ -725,7 +698,7 @@ public class ServiceProviderAdapter {
                             calculationContext.getUserOrganizationId()
                     });
 
-            RequestWarning warning = new RequestWarning(payment.getId(), RequestFile.TYPE.PAYMENT, RequestWarningStatus.SUBSIDY_TARIF_NOT_FOUND);
+            RequestWarning warning = new RequestWarning(payment.getId(), RequestFileType.PAYMENT, RequestWarningStatus.SUBSIDY_TARIF_NOT_FOUND);
             warning.addParameter(new RequestWarningParameter(0, errorTarif));
             warning.addParameter(new RequestWarningParameter(1, "organization", calculationContext.getCalculationCenterId()));
             warningBean.save(warning);
@@ -743,7 +716,7 @@ public class ServiceProviderAdapter {
                         + "and calculation center id: {}", calcCenterOwnershipCode, calculationContext.getCalculationCenterId());
 
                 for (Benefit benefit : benefits) {
-                    RequestWarning warning = new RequestWarning(benefit.getId(), RequestFile.TYPE.BENEFIT,
+                    RequestWarning warning = new RequestWarning(benefit.getId(), RequestFileType.BENEFIT,
                             RequestWarningStatus.OWNERSHIP_OBJECT_NOT_FOUND);
                     warning.addParameter(new RequestWarningParameter(0, calcCenterOwnershipCode));
                     warning.addParameter(new RequestWarningParameter(1, "organization", calculationContext.getCalculationCenterId()));
@@ -761,7 +734,7 @@ public class ServiceProviderAdapter {
                             new Object[]{internalOwnershipId, osznId, calculationContext.getUserOrganizationId()});
 
                     for (Benefit benefit : benefits) {
-                        RequestWarning warning = new RequestWarning(benefit.getId(), RequestFile.TYPE.BENEFIT,
+                        RequestWarning warning = new RequestWarning(benefit.getId(), RequestFileType.BENEFIT,
                                 RequestWarningStatus.OWNERSHIP_CODE_NOT_FOUND);
                         warning.addParameter(new RequestWarningParameter(0, "ownership", internalOwnershipId));
                         warning.addParameter(new RequestWarningParameter(1, "organization", osznId));
@@ -779,7 +752,7 @@ public class ServiceProviderAdapter {
                                 new Object[]{osznOwnershipCode, osznId, internalOwnershipId});
 
                         for (Benefit benefit : benefits) {
-                            RequestWarning warning = new RequestWarning(benefit.getId(), RequestFile.TYPE.BENEFIT,
+                            RequestWarning warning = new RequestWarning(benefit.getId(), RequestFileType.BENEFIT,
                                     RequestWarningStatus.OWNERSHIP_CODE_INVALID);
                             warning.addParameter(new RequestWarningParameter(0, osznOwnershipCode));
                             warning.addParameter(new RequestWarningParameter(1, "organization", osznId));
@@ -1141,10 +1114,9 @@ public class ServiceProviderAdapter {
      *
      * @param dat1 дата из поля DAT1 payment записи, соответствующей группе benefits записей со значением в поле FROG большим 0
      * @param benefits группа benefit записей
-     * @param calculationCenterId id ЦН
      */
-    public void processBenefit(CalculationContext calculationContext, Date dat1,
-                               List<Benefit> benefits) throws DBException {
+    public void processBenefit(CalculationContext calculationContext, Date dat1, List<Benefit> benefits)
+            throws DBException {
         String accountNumber = benefits.get(0).getAccountNumber();
 
         Map<String, Object> params = newHashMap();
@@ -1239,7 +1211,6 @@ public class ServiceProviderAdapter {
      * Наконец все записи benefits, для которых код не был проставлен в RequestStatus.BENEFIT_NOT_FOUND помечаются
      * статусом RequestStatus.PROCESSED.
      *
-     * @param calculationCenterId id ЦН
      * @param benefits Список benefit записей с одинаковым номером л/c
      * @param benefitData Список записей данных из ЦН
      */
@@ -1286,7 +1257,7 @@ public class ServiceProviderAdapter {
                 for (Benefit benefit : foundBenefits) {
                     benefit.setStatus(RequestStatus.BENEFIT_NOT_FOUND);
 
-                    RequestWarning warning = new RequestWarning(benefit.getId(), RequestFile.TYPE.BENEFIT,
+                    RequestWarning warning = new RequestWarning(benefit.getId(), RequestFileType.BENEFIT,
                             RequestWarningStatus.PRIVILEGE_OBJECT_NOT_FOUND);
                     warning.addParameter(new RequestWarningParameter(0, calcCenterBenefitCode));
                     warning.addParameter(new RequestWarningParameter(1, "organization", calculationCenterId));
@@ -1304,7 +1275,7 @@ public class ServiceProviderAdapter {
                     for (Benefit benefit : foundBenefits) {
                         benefit.setStatus(RequestStatus.BENEFIT_NOT_FOUND);
 
-                        RequestWarning warning = new RequestWarning(benefit.getId(), RequestFile.TYPE.BENEFIT,
+                        RequestWarning warning = new RequestWarning(benefit.getId(), RequestFileType.BENEFIT,
                                 RequestWarningStatus.PRIVILEGE_CODE_NOT_FOUND);
                         warning.addParameter(new RequestWarningParameter(0, "privilege", internalPrivilegeId));
                         warning.addParameter(new RequestWarningParameter(1, "organization", osznId));
@@ -1323,7 +1294,7 @@ public class ServiceProviderAdapter {
                                 + "internal privilege id: {}", new Object[]{osznBenefitCode, osznId, internalPrivilegeId});
 
                         for (Benefit benefit : foundBenefits) {
-                            RequestWarning warning = new RequestWarning(benefit.getId(), RequestFile.TYPE.BENEFIT,
+                            RequestWarning warning = new RequestWarning(benefit.getId(), RequestFileType.BENEFIT,
                                     RequestWarningStatus.PRIVILEGE_CODE_INVALID);
                             warning.addParameter(new RequestWarningParameter(0, osznBenefitCode));
                             warning.addParameter(new RequestWarningParameter(1, "organization", osznId));
@@ -1342,7 +1313,7 @@ public class ServiceProviderAdapter {
                         log.error("Couldn't transform ord fam value '{}' from calculation center to integer value.", data.getOrderFamily());
 
                         for (Benefit benefit : foundBenefits) {
-                            RequestWarning warning = new RequestWarning(RequestFile.TYPE.BENEFIT, RequestWarningStatus.ORD_FAM_INVALID);
+                            RequestWarning warning = new RequestWarning(RequestFileType.BENEFIT, RequestWarningStatus.ORD_FAM_INVALID);
                             warning.addParameter(new RequestWarningParameter(0, data.getOrderFamily()));
                             warning.addParameter(new RequestWarningParameter(1, "organization", calculationCenterId));
                             warningBean.save(warning);

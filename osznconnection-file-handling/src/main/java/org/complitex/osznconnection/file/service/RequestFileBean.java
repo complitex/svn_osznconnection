@@ -8,6 +8,7 @@ import org.complitex.dictionary.util.DateUtil;
 import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.entity.RequestFileFilter;
 import org.complitex.osznconnection.file.entity.RequestFileStatus;
+import org.complitex.osznconnection.file.entity.RequestFileType;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -186,7 +187,7 @@ public class RequestFileBean extends AbstractBean {
     }
 
     @Transactional
-    public void deleteFacilityReferenceFiles(long osznId, long userOrganizationId, RequestFile.TYPE requestFileType) {
+    public void deleteFacilityReferenceFiles(long osznId, long userOrganizationId, RequestFileType requestFileType) {
         List<RequestFile> facilityReferenceFiles = sqlSession().selectList(NS + ".getFacilityReferenceFiles",
                 ImmutableMap.of("osznId", osznId, "userOrganizationId", userOrganizationId,
                 "requestFileType", requestFileType.name()));

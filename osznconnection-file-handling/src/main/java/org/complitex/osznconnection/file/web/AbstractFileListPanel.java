@@ -21,6 +21,7 @@ import org.complitex.osznconnection.file.Module;
 import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.entity.RequestFileFilter;
 import org.complitex.osznconnection.file.entity.RequestFileStatus;
+import org.complitex.osznconnection.file.entity.RequestFileType;
 import org.complitex.osznconnection.file.service.RequestFileBean;
 import org.complitex.osznconnection.file.service.file_description.RequestFileDescriptionBean;
 import org.complitex.osznconnection.file.web.component.load.RequestFileLoadPanel.MonthParameterViewMode;
@@ -182,7 +183,7 @@ public abstract class AbstractFileListPanel extends AbstractProcessableListPanel
         return MonthParameterViewMode.RANGE;
     }
 
-    protected abstract RequestFile.TYPE getRequestFileType();
+    protected abstract RequestFileType getRequestFileType();
 
     protected abstract Class<? extends WebPage> getItemListPageClass();
 }

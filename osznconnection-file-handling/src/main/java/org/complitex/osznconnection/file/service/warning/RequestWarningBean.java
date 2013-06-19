@@ -6,15 +6,16 @@ package org.complitex.osznconnection.file.service.warning;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import java.util.List;
-import java.util.Map;
-import javax.ejb.Stateless;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.AbstractBean;
-import org.complitex.osznconnection.file.entity.RequestFile;
+import org.complitex.osznconnection.file.entity.RequestFileType;
 import org.complitex.osznconnection.file.entity.RequestWarning;
 import org.complitex.osznconnection.file.entity.RequestWarningParameter;
 import org.complitex.osznconnection.file.entity.RequestWarningStatus;
+
+import javax.ejb.Stateless;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -35,7 +36,7 @@ public class RequestWarningBean extends AbstractBean {
     }
 
     @Transactional
-    public List<RequestWarning> getWarnings(long requestId, RequestFile.TYPE requestFileType) {
+    public List<RequestWarning> getWarnings(long requestId, RequestFileType requestFileType) {
         Map<String, Object> params = Maps.newHashMap();
         params.put("requestId", requestId);
         params.put("requestFileType", requestFileType);
@@ -43,7 +44,7 @@ public class RequestWarningBean extends AbstractBean {
         return warnings;
     }
 
-    public void delete(long requestFileId, RequestFile.TYPE requestFileType) {
+    public void delete(long requestFileId, RequestFileType requestFileType) {
         List<Long> warningsIds = getWarningIdsByFile(requestFileType, requestFileId);
         for (Long warningId : warningsIds) {
             sqlSession().delete(MAPPING_NAMESPACE + ".deleteParameter", warningId);
@@ -55,7 +56,7 @@ public class RequestWarningBean extends AbstractBean {
      * Helper methods
      */
     @Transactional
-    public void save(RequestFile.TYPE requestFileType, long requestId, RequestWarningStatus warningStatus, RequestWarningParameter... parameters) {
+    public void save(RequestFileType requestFileType, long requestId, RequestWarningStatus warningStatus, RequestWarningParameter... parameters) {
         RequestWarning warning = new RequestWarning(requestId, requestFileType, warningStatus);
         if (parameters != null) {
             warning.setParameters(Lists.newArrayList(parameters));
@@ -64,7 +65,7 @@ public class RequestWarningBean extends AbstractBean {
     }
 
     @Transactional
-    protected List<Long> getWarningIdsByFile(RequestFile.TYPE requestFileType, long requestFileId) {
+    protected List<Long> getWarningIdsByFile(RequestFileType requestFileType, long requestFileId) {
         Map<String, Object> params = Maps.newHashMap();
         params.put("requestFileId", requestFileId);
         params.put("requestFileType", requestFileType);

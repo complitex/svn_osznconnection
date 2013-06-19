@@ -217,7 +217,7 @@
     </select>
 
     <select id="findSubsidyTarifFiles" parameterType="long" resultMap="requestFileResultMap">
-        SELECT * FROM `request_file` WHERE organization_id = #{organizationId} AND `type` = 'SUBSIDY_TARIF'
+        SELECT * FROM `request_file` WHERE organization_id = #{organizationId} AND `type` = 3
     </select>
     
     <select id="getFacilityReferenceFiles" parameterType="map" resultMap="requestFileResultMap">

@@ -1,11 +1,7 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.osznconnection.file.web.pages.facility;
 
 import org.apache.wicket.Page;
-import org.complitex.osznconnection.file.entity.RequestFile;
+import org.complitex.osznconnection.file.entity.RequestFileType;
 import org.complitex.osznconnection.file.service.process.ProcessManagerBean;
 import org.complitex.osznconnection.file.service.process.ProcessType;
 import org.complitex.osznconnection.file.web.component.load.DateParameter;
@@ -25,8 +21,8 @@ public final class FacilityTarifFileList extends AbstractReferenceBookFileList {
     }
 
     @Override
-    protected RequestFile.TYPE getRequestFileType() {
-        return RequestFile.TYPE.FACILITY_TARIF;
+    protected RequestFileType getRequestFileType() {
+        return RequestFileType.FACILITY_TARIF;
     }
 
     @Override

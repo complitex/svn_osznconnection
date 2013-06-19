@@ -44,21 +44,21 @@ public class RequestFileDescriptionBean extends AbstractBean {
     private static final Logger log = LoggerFactory.getLogger(RequestFileDescriptionBean.class);
     private static final String MAPPING_NAMESPACE = RequestFileDescriptionBean.class.getName();
     private static final String RESOURCE_BUNDLE = RequestFileDescriptionBean.class.getName();
-    private final static Map<RequestFile.TYPE, RequestFileDescription> cache = Collections.synchronizedMap(
-            new EnumMap<RequestFile.TYPE, RequestFileDescription>(RequestFile.TYPE.class));
-    private final static Map<RequestFile.TYPE, Class<? extends Enum<?>>> REQUEST_FILE_TYPE_MAP =
-            ImmutableMap.<RequestFile.TYPE, Class<? extends Enum<?>>>builder().
-            put(RequestFile.TYPE.ACTUAL_PAYMENT, ActualPaymentDBF.class).
-            put(RequestFile.TYPE.PAYMENT, PaymentDBF.class).
-            put(RequestFile.TYPE.BENEFIT, BenefitDBF.class).
-            put(RequestFile.TYPE.SUBSIDY, SubsidyDBF.class).
-            put(RequestFile.TYPE.SUBSIDY_TARIF, SubsidyTarifDBF.class).
-            put(RequestFile.TYPE.DWELLING_CHARACTERISTICS, DwellingCharacteristicsDBF.class).
-            put(RequestFile.TYPE.FACILITY_STREET_TYPE, FacilityStreetTypeDBF.class).
-            put(RequestFile.TYPE.FACILITY_STREET, FacilityStreetDBF.class).
-            put(RequestFile.TYPE.FACILITY_SERVICE_TYPE, FacilityServiceTypeDBF.class).
-            put(RequestFile.TYPE.FACILITY_TARIF, FacilityTarifDBF.class).
-            put(RequestFile.TYPE.FACILITY_FORM2, FacilityForm2DBF.class).
+    private final static Map<RequestFileType, RequestFileDescription> cache = Collections.synchronizedMap(
+            new EnumMap<RequestFileType, RequestFileDescription>(RequestFileType.class));
+    private final static Map<RequestFileType, Class<? extends Enum<?>>> REQUEST_FILE_TYPE_MAP =
+            ImmutableMap.<RequestFileType, Class<? extends Enum<?>>>builder().
+            put(RequestFileType.ACTUAL_PAYMENT, ActualPaymentDBF.class).
+            put(RequestFileType.PAYMENT, PaymentDBF.class).
+            put(RequestFileType.BENEFIT, BenefitDBF.class).
+            put(RequestFileType.SUBSIDY, SubsidyDBF.class).
+            put(RequestFileType.SUBSIDY_TARIF, SubsidyTarifDBF.class).
+            put(RequestFileType.DWELLING_CHARACTERISTICS, DwellingCharacteristicsDBF.class).
+            put(RequestFileType.FACILITY_STREET_TYPE, FacilityStreetTypeDBF.class).
+            put(RequestFileType.FACILITY_STREET, FacilityStreetDBF.class).
+            put(RequestFileType.FACILITY_SERVICE_TYPE, FacilityServiceTypeDBF.class).
+            put(RequestFileType.FACILITY_TARIF, FacilityTarifDBF.class).
+            put(RequestFileType.FACILITY_FORM2, FacilityForm2DBF.class).
             build();
 
     @Transactional
@@ -92,7 +92,7 @@ public class RequestFileDescriptionBean extends AbstractBean {
         }
     }
 
-    public RequestFileDescription getFileDescription(RequestFile.TYPE requestFileType) {
+    public RequestFileDescription getFileDescription(RequestFileType requestFileType) {
         synchronized (cache) {
             RequestFileDescription fileDescription = cache.get(requestFileType);
             if (fileDescription == null) {
@@ -156,7 +156,7 @@ public class RequestFileDescriptionBean extends AbstractBean {
         // transformation and validation step.
         final List<RequestFileDescription> requestFileDescriptions = Lists.newArrayList();
 
-        for (RequestFile.TYPE requestFileType : REQUEST_FILE_TYPE_MAP.keySet()) {
+        for (RequestFileType requestFileType : REQUEST_FILE_TYPE_MAP.keySet()) {
             // there are must be one and only one description for each file type.
             FileDescription fileDescription = null;
             boolean tooManyDescriptionsFound = false;
@@ -220,8 +220,8 @@ public class RequestFileDescriptionBean extends AbstractBean {
         for (FileDescription fd : fileDescriptions.getFileDescriptionList()) {
             final String fileType = fd.getType();
 
-            RequestFile.TYPE expectedRequestFileType = null;
-            for (RequestFile.TYPE requestFileType : REQUEST_FILE_TYPE_MAP.keySet()) {
+            RequestFileType expectedRequestFileType = null;
+            for (RequestFileType requestFileType : REQUEST_FILE_TYPE_MAP.keySet()) {
                 if (requestFileType.name().equals(fileType)) {
                     expectedRequestFileType = requestFileType;
                     break;

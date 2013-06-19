@@ -179,7 +179,7 @@ CREATE TABLE `request_file` (
     `dbf_record_count` BIGINT(20) NOT NULL DEFAULT 0 COMMENT 'Количество записей в исходном файле',
     `length` BIGINT(20) COMMENT 'Размер файла. Не используется',
     `check_sum` VARCHAR(32) COMMENT 'Контрольная сумма. Не используется',
-    `type` VARCHAR(50) COMMENT 'Тип файла. Возможные значения: BENEFIT, PAYMENT, TARIF, ACTUAL_PAYMENT',
+    `type` INTEGER COMMENT 'См. таблицу type_description и класс RequestFileType',
     `status` INTEGER COMMENT 'См. таблицу status_description и класс RequestFileStatus',
     `user_organization_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор организации пользователя, который загрузил текущий файл',
     PRIMARY KEY (`id`),
@@ -1095,6 +1095,20 @@ CREATE TABLE `status_description` (
 ) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Описание статутов';
 
 -- ------------------------------
+-- Type descriptions. Read only, use only for reports.
+-- ------------------------------
+
+DROP TABLE IF EXISTS `type_description`;
+
+CREATE TABLE `type_description` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Суррогатный ключ',
+  `code` INTEGER NOT NULL COMMENT 'Код описания типа',
+  `name` VARCHAR(500) NOT NULL COMMENT 'Описание типа',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_type_description` (`code`)
+) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Описание типов';
+
+-- ------------------------------
 -- Request warning
 -- ------------------------------
 
@@ -1103,7 +1117,7 @@ DROP TABLE IF EXISTS `request_warning`;
 CREATE TABLE `request_warning` (
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор предупреждения',
     `request_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор файла запроса',
-    `request_file_type` VARCHAR(50) NOT NULL COMMENT 'Типа файла запроса. Возможные значения: BENEFIT, PAYMENT, TARIF, ACTUAL_PAYMENT',
+    `request_file_type` INTEGER NOT NULL COMMENT 'Типа файла запроса. См. RequestFileType',
     `status` BIGINT(20) NOT NULL COMMENT 'Код статуса. См. класс RequestWarningStatus',
     PRIMARY KEY (`id`),
     KEY `key_request_warning__request` (`request_id`),

@@ -69,8 +69,8 @@
 
     <sql id="requestFileGroupFilterFrom">
         from `request_file_group` g
-            left join `request_file` p on g.`id` = p.`group_id` and p.`type` = 'PAYMENT'
-            left join `request_file` b on g.`id` = b.`group_id` and b.`type` = 'BENEFIT'
+            left join `request_file` p on g.`id` = p.`group_id` and p.`type` = 2
+            left join `request_file` b on g.`id` = b.`group_id` and b.`type` = 1
     </sql>
     
     <sql id="permissionFilter">
@@ -169,15 +169,15 @@
     <select id="getBenefitFileId" parameterType="map" resultType="long">
         SELECT b.`id` FROM `request_file` b
                JOIN `request_file_group` rfg ON b.`group_id` = rfg.`id`
-               JOIN `request_file` p ON (p.`group_id` = rfg.`id` AND p.`type` = 'PAYMENT')
-        WHERE b.`type` = 'BENEFIT' AND p.`id` = #{paymentFileId}
+               JOIN `request_file` p ON (p.`group_id` = rfg.`id` AND p.`type` = 2)
+        WHERE b.`type` = 1 AND p.`id` = #{paymentFileId}
     </select>
 
      <select id="getPaymentFileId" parameterType="map" resultType="long">
         SELECT p.`id` FROM `request_file` p
                JOIN `request_file_group` rfg ON p.`group_id` = rfg.`id`
-               JOIN `request_file` b ON (b.`group_id` = rfg.`id` AND b.`type` = 'BENEFIT')
-        WHERE p.`type` = 'PAYMENT' AND b.`id` = #{benefitFileId}
+               JOIN `request_file` b ON (b.`group_id` = rfg.`id` AND b.`type` = 1)
+        WHERE p.`type` = 2 AND b.`id` = #{benefitFileId}
     </select>
 
     <select id="selectGroupStatus" resultType="org.complitex.osznconnection.file.entity.RequestFileStatus"

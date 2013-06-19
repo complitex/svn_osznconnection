@@ -28,7 +28,6 @@ import static org.complitex.osznconnection.file.entity.FacilityServiceTypeDBF.CD
  */
 @Stateless
 public class FacilityServiceTypeBean extends AbstractRequestBean {
-
     public static final String NS = FacilityServiceTypeBean.class.getName();
     private static final Map<Long, Set<FacilityServiceTypeDBF>> UPDATE_FIELD_MAP = of();
 
@@ -138,26 +137,26 @@ public class FacilityServiceTypeBean extends AbstractRequestBean {
         Map<String, String> updateFieldMap = null;
         if (serviceProviderTypeIds != null && !serviceProviderTypeIds.isEmpty()) {
             updateFieldMap = Maps.newHashMap();
-            for (FacilityServiceTypeDBF field : getUpdateableFields(serviceProviderTypeIds)) {
+            for (FacilityServiceTypeDBF field : getUpdatableFields(serviceProviderTypeIds)) {
                 updateFieldMap.put(field.name(), "-1");
             }
         }
 
         sqlSession().update(NS + ".clearBeforeBinding",
                 of("status", RequestStatus.LOADED, "fileId", fileId, "updateFieldMap", updateFieldMap));
-        clearWarnings(fileId, RequestFile.TYPE.FACILITY_SERVICE_TYPE);
+        clearWarnings(fileId, RequestFileType.FACILITY_SERVICE_TYPE);
     }
 
-    private Set<FacilityServiceTypeDBF> getUpdateableFields(Set<Long> serviceProviderTypeIds) {
-        final Set<FacilityServiceTypeDBF> updateableFields = Sets.newHashSet();
+    private Set<FacilityServiceTypeDBF> getUpdatableFields(Set<Long> serviceProviderTypeIds) {
+        final Set<FacilityServiceTypeDBF> updatableFields = Sets.newHashSet();
 
         for (long serviceProviderTypeId : serviceProviderTypeIds) {
             Set<FacilityServiceTypeDBF> fields = UPDATE_FIELD_MAP.get(serviceProviderTypeId);
             if (fields != null) {
-                updateableFields.addAll(fields);
+                updatableFields.addAll(fields);
             }
         }
-        return Collections.unmodifiableSet(updateableFields);
+        return Collections.unmodifiableSet(updatableFields);
     }
 
     @Transactional

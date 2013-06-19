@@ -5,21 +5,15 @@
 package org.complitex.osznconnection.file.service.file_description;
 
 import com.google.common.collect.ImmutableMap;
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.Map;
+import org.complitex.osznconnection.file.entity.RequestFileType;
+import org.complitex.osznconnection.file.service.file_description.jaxb.*;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import org.complitex.osznconnection.file.entity.RequestFile;
-import org.complitex.osznconnection.file.service.file_description.jaxb.DatePattern;
-import org.complitex.osznconnection.file.service.file_description.jaxb.Field;
-import org.complitex.osznconnection.file.service.file_description.jaxb.FieldType;
-import org.complitex.osznconnection.file.service.file_description.jaxb.Fields;
-import org.complitex.osznconnection.file.service.file_description.jaxb.FileDescription;
-import org.complitex.osznconnection.file.service.file_description.jaxb.FileDescriptions;
-import org.complitex.osznconnection.file.service.file_description.jaxb.Formatters;
-import org.complitex.osznconnection.file.service.file_description.jaxb.ObjectFactory;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.Map;
 
 /**
  *
@@ -413,11 +407,11 @@ public class RequestFileDescriptionGenerator {
 
         Map<String, Class<? extends Enum<?>>> enumsMap =
                 ImmutableMap.<String, Class<? extends Enum<?>>>of(
-                RequestFile.TYPE.ACTUAL_PAYMENT.name(), ActualPaymentDBF.class,
-                RequestFile.TYPE.PAYMENT.name(), PaymentDBF.class,
-                RequestFile.TYPE.BENEFIT.name(), BenefitDBF.class,
-                RequestFile.TYPE.SUBSIDY.name(), SubsidyDBF.class,
-                RequestFile.TYPE.SUBSIDY_TARIF.name(), TarifDBF.class);
+                        RequestFileType.ACTUAL_PAYMENT.name(), ActualPaymentDBF.class,
+                        RequestFileType.PAYMENT.name(), PaymentDBF.class,
+                        RequestFileType.BENEFIT.name(), BenefitDBF.class,
+                        RequestFileType.SUBSIDY.name(), SubsidyDBF.class,
+                        RequestFileType.SUBSIDY_TARIF.name(), TarifDBF.class);
 
         for (String fileType : enumsMap.keySet()) {
             FileDescription fd = factory.createFileDescription();

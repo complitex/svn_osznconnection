@@ -1,8 +1,10 @@
 package org.complitex.osznconnection.file.web.pages.benefit;
 
 import com.google.common.collect.Lists;
-import java.util.Collection;
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
@@ -12,25 +14,11 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.complitex.osznconnection.file.entity.BenefitData;
-import org.complitex.osznconnection.file.entity.Benefit;
-import org.odlabs.wiquery.ui.dialog.Dialog;
-
-import javax.ejb.EJB;
-import java.util.List;
-import org.apache.wicket.Component;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
-import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.complitex.dictionary.util.StringUtil;
-import org.complitex.osznconnection.file.entity.BenefitDBF;
-import org.complitex.osznconnection.file.entity.RequestFile.TYPE;
-import org.complitex.osznconnection.file.entity.RequestStatus;
-import org.complitex.osznconnection.file.entity.RequestWarning;
-import org.complitex.osznconnection.file.entity.RequestWarningParameter;
-import org.complitex.osznconnection.file.entity.RequestWarningStatus;
+import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.service.BenefitBean;
 import org.complitex.osznconnection.file.service.StatusRenderService;
 import org.complitex.osznconnection.file.service.warning.WebWarningRenderer;
@@ -38,8 +26,13 @@ import org.complitex.osznconnection.file.service_provider.exception.DBException;
 import org.complitex.osznconnection.file.web.pages.util.AddressRenderer;
 import org.odlabs.wiquery.core.javascript.JsStatement;
 import org.odlabs.wiquery.ui.core.JsScopeUiEvent;
+import org.odlabs.wiquery.ui.dialog.Dialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.ejb.EJB;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * 
@@ -267,12 +260,12 @@ public class BenefitConnectPanel extends Panel {
         Long privilegeObjectId = benefitData.getPrivilegeObjectId();
         if (privilegeObjectId == null) {
             valid = false;
-            RequestWarning warning = new RequestWarning(TYPE.BENEFIT, RequestWarningStatus.PRIVILEGE_OBJECT_NOT_FOUND);
+            RequestWarning warning = new RequestWarning(RequestFileType.BENEFIT, RequestWarningStatus.PRIVILEGE_OBJECT_NOT_FOUND);
             warning.addParameter(new RequestWarningParameter(0, benefitData.getCode()));
             warning.addParameter(new RequestWarningParameter(1, "organization", calculationCenterId));
             error(webWarningRenderer.display(warning, getLocale()));
         } else if (osznBenefitCode == null) {
-            RequestWarning warning = new RequestWarning(TYPE.BENEFIT, RequestWarningStatus.PRIVILEGE_CODE_NOT_FOUND);
+            RequestWarning warning = new RequestWarning(RequestFileType.BENEFIT, RequestWarningStatus.PRIVILEGE_CODE_NOT_FOUND);
             warning.addParameter(new RequestWarningParameter(0, "privilege", privilegeObjectId));
             warning.addParameter(new RequestWarningParameter(1, "organization", osznId));
             error(webWarningRenderer.display(warning, getLocale()));
@@ -281,7 +274,7 @@ public class BenefitConnectPanel extends Panel {
             try {
                 Integer.valueOf(osznBenefitCode);
             } catch (NumberFormatException e) {
-                RequestWarning warning = new RequestWarning(TYPE.BENEFIT, RequestWarningStatus.PRIVILEGE_CODE_INVALID);
+                RequestWarning warning = new RequestWarning(RequestFileType.BENEFIT, RequestWarningStatus.PRIVILEGE_CODE_INVALID);
                 warning.addParameter(new RequestWarningParameter(0, osznBenefitCode));
                 warning.addParameter(new RequestWarningParameter(1, "organization", osznId));
                 warning.addParameter(new RequestWarningParameter(2, "privilege", privilegeObjectId));
@@ -292,7 +285,7 @@ public class BenefitConnectPanel extends Panel {
             try {
                 Integer.valueOf(benefitData.getOrderFamily());
             } catch (NumberFormatException e) {
-                RequestWarning warning = new RequestWarning(TYPE.BENEFIT, RequestWarningStatus.ORD_FAM_INVALID);
+                RequestWarning warning = new RequestWarning(RequestFileType.BENEFIT, RequestWarningStatus.ORD_FAM_INVALID);
                 warning.addParameter(new RequestWarningParameter(0, benefitData.getOrderFamily()));
                 warning.addParameter(new RequestWarningParameter(1, "organization", calculationCenterId));
                 error(webWarningRenderer.display(warning, getLocale()));

@@ -16,20 +16,20 @@ public class RequestWarning implements Serializable {
 
     private Long id;
     private Long requestId;
-    private RequestFile.TYPE requestFileType;
+    private RequestFileType requestFileType;
     private RequestWarningStatus status;
     private List<RequestWarningParameter> parameters = Lists.newArrayList();
 
     public RequestWarning() {
     }
 
-    public RequestWarning(Long requestId, RequestFile.TYPE requestFileType, RequestWarningStatus status) {
+    public RequestWarning(Long requestId, RequestFileType requestFileType, RequestWarningStatus status) {
         this.requestId = requestId;
         this.requestFileType = requestFileType;
         this.status = status;
     }
 
-    public RequestWarning(RequestFile.TYPE requestFileType, RequestWarningStatus status) {
+    public RequestWarning(RequestFileType requestFileType, RequestWarningStatus status) {
         this.requestFileType = requestFileType;
         this.status = status;
     }
@@ -50,11 +50,11 @@ public class RequestWarning implements Serializable {
         this.requestId = requestId;
     }
 
-    public RequestFile.TYPE getRequestFileType() {
+    public RequestFileType getRequestFileType() {
         return requestFileType;
     }
 
-    public void setRequestFileType(RequestFile.TYPE requestFileType) {
+    public void setRequestFileType(RequestFileType requestFileType) {
         this.requestFileType = requestFileType;
     }
 

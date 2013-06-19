@@ -49,14 +49,16 @@ public class PersonAccountService extends AbstractBean {
 
     /**
      * Попытаться разрешить номер личного счета локально, т.е. из локальной таблицы person_account
-     * Если успешно, то просиавить account number, статус в RequestStatus.ACCOUNT_NUMBER_RESOLVED и обновить account number для всех benefit записей,
-     * соответствующих данному payment.
+     * Если успешно, то проставить account number, статус в RequestStatus.ACCOUNT_NUMBER_RESOLVED и обновить
+     * account number для всех benefit записей, соответствующих данному payment.
      */
     @Transactional
     public void resolveLocalAccount(Payment payment, CalculationContext calculationContext) {
         try {
-            String accountNumber = personAccountLocalBean.findLocalAccountNumber(payment, calculationContext.getCalculationCenterId(),
+            String accountNumber = personAccountLocalBean.findLocalAccountNumber(payment,
+                    calculationContext.getCalculationCenterId(),
                     calculationContext.getUserOrganizationId());
+
             if (!Strings.isEmpty(accountNumber)) {
                 payment.setAccountNumber(accountNumber);
                 payment.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
@@ -70,8 +72,10 @@ public class PersonAccountService extends AbstractBean {
     @Transactional
     public void resolveLocalAccount(ActualPayment actualPayment, CalculationContext calculationContext) {
         try {
-            String accountNumber = personAccountLocalBean.findLocalAccountNumber(actualPayment, calculationContext.getCalculationCenterId(),
+            String accountNumber = personAccountLocalBean.findLocalAccountNumber(actualPayment,
+                    calculationContext.getCalculationCenterId(),
                     calculationContext.getUserOrganizationId());
+
             if (!Strings.isEmpty(accountNumber)) {
                 actualPayment.setAccountNumber(accountNumber);
                 actualPayment.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
@@ -84,8 +88,10 @@ public class PersonAccountService extends AbstractBean {
     @Transactional
     public void resolveLocalAccount(Subsidy subsidy, CalculationContext calculationContext) {
         try {
-            String accountNumber = personAccountLocalBean.findLocalAccountNumber(subsidy, calculationContext.getCalculationCenterId(),
+            String accountNumber = personAccountLocalBean.findLocalAccountNumber(subsidy,
+                    calculationContext.getCalculationCenterId(),
                     calculationContext.getUserOrganizationId());
+
             if (!Strings.isEmpty(accountNumber)) {
                 subsidy.setAccountNumber(accountNumber);
                 subsidy.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
@@ -96,7 +102,8 @@ public class PersonAccountService extends AbstractBean {
     }
 
     @Transactional
-    public void resolveLocalAccount(DwellingCharacteristics dwellingCharacteristics, CalculationContext calculationContext) {
+    public void resolveLocalAccount(DwellingCharacteristics dwellingCharacteristics,
+                                    CalculationContext calculationContext) {
         try {
             String accountNumber = personAccountLocalBean.findLocalAccountNumber(dwellingCharacteristics,
                     calculationContext.getCalculationCenterId(), calculationContext.getUserOrganizationId());
@@ -113,8 +120,10 @@ public class PersonAccountService extends AbstractBean {
     @Transactional
     public void resolveLocalAccount(FacilityServiceType facilityServiceType, CalculationContext calculationContext) {
         try {
-            String accountNumber = personAccountLocalBean.findLocalAccountNumber(facilityServiceType, calculationContext.getCalculationCenterId(),
+            String accountNumber = personAccountLocalBean.findLocalAccountNumber(facilityServiceType,
+                    calculationContext.getCalculationCenterId(),
                     calculationContext.getUserOrganizationId());
+
             if (!Strings.isEmpty(accountNumber)) {
                 facilityServiceType.setAccountNumber(accountNumber);
                 facilityServiceType.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
@@ -133,11 +142,12 @@ public class PersonAccountService extends AbstractBean {
     @Transactional
     public void resolveRemoteAccount(Payment payment, CalculationContext calculationContext,
             Boolean updatePUAccount) throws DBException {
-        adapter.acquirePersonAccount(calculationContext, RequestFile.TYPE.PAYMENT, payment,
+        adapter.acquirePersonAccount(calculationContext, RequestFileType.PAYMENT, payment,
                 payment.getStringField(PaymentDBF.SUR_NAM),
                 payment.getStringField(PaymentDBF.OWN_NUM_SR), payment.getOutgoingDistrict(), payment.getOutgoingStreetType(),
                 payment.getOutgoingStreet(), payment.getOutgoingBuildingNumber(), payment.getOutgoingBuildingCorp(),
                 payment.getOutgoingApartment(), (Date) payment.getField(PaymentDBF.DAT1), updatePUAccount);
+
         if (payment.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED) {
             benefitBean.updateAccountNumber(payment.getId(), payment.getAccountNumber());
             personAccountLocalBean.saveOrUpdate(payment, calculationContext.getCalculationCenterId(),
@@ -148,12 +158,13 @@ public class PersonAccountService extends AbstractBean {
     @Transactional
     public void resolveRemoteAccount(ActualPayment actualPayment, Date date, CalculationContext calculationContext,
             Boolean updatePUAccount) throws DBException {
-        adapter.acquirePersonAccount(calculationContext, RequestFile.TYPE.ACTUAL_PAYMENT, actualPayment,
+        adapter.acquirePersonAccount(calculationContext, RequestFileType.ACTUAL_PAYMENT, actualPayment,
                 actualPayment.getStringField(ActualPaymentDBF.SUR_NAM),
                 actualPayment.getStringField(ActualPaymentDBF.OWN_NUM), actualPayment.getOutgoingDistrict(),
                 actualPayment.getOutgoingStreetType(), actualPayment.getOutgoingStreet(),
                 actualPayment.getOutgoingBuildingNumber(), actualPayment.getOutgoingBuildingCorp(),
                 actualPayment.getOutgoingApartment(), date, updatePUAccount);
+
         if (actualPayment.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED) {
             personAccountLocalBean.saveOrUpdate(actualPayment, calculationContext.getCalculationCenterId(),
                     calculationContext.getUserOrganizationId());
@@ -163,11 +174,12 @@ public class PersonAccountService extends AbstractBean {
     @Transactional
     public void resolveRemoteAccount(Subsidy subsidy, CalculationContext calculationContext,
             Boolean updatePUAccount) throws DBException {
-        adapter.acquirePersonAccount(calculationContext, RequestFile.TYPE.SUBSIDY, subsidy,
+        adapter.acquirePersonAccount(calculationContext, RequestFileType.SUBSIDY, subsidy,
                 subsidy.getLastName(), subsidy.getStringField(SubsidyDBF.RASH),
                 subsidy.getOutgoingDistrict(), subsidy.getOutgoingStreetType(), subsidy.getOutgoingStreet(),
                 subsidy.getOutgoingBuildingNumber(), subsidy.getOutgoingBuildingCorp(),
                 subsidy.getOutgoingApartment(), (Date) subsidy.getField(SubsidyDBF.DAT1), updatePUAccount);
+
         if (subsidy.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED) {
             personAccountLocalBean.saveOrUpdate(subsidy, calculationContext.getCalculationCenterId(),
                     calculationContext.getUserOrganizationId());
@@ -210,7 +222,7 @@ public class PersonAccountService extends AbstractBean {
     }
 
     /**
-     * Корректировать account number из UI в случае когда в ЦН больше одного человека соотвествуют номеру л/c.
+     * Корректировать account number из UI в случае когда в ЦН больше одного человека соответствуют номеру л/c.
      */
     @Transactional
     public void updateAccountNumber(Payment payment, String accountNumber, long userOrganizationId) {
@@ -238,6 +250,7 @@ public class PersonAccountService extends AbstractBean {
 
         long actualPaymentFileId = actualPayment.getRequestFileId();
         RequestFile actualPaymentFile = requestFileBean.findById(actualPaymentFileId);
+
         if (actualPaymentBean.isActualPaymentFileBound(actualPaymentFileId)) {
             actualPaymentFile.setStatus(RequestFileStatus.BOUND);
             requestFileBean.save(actualPaymentFile);
@@ -256,6 +269,7 @@ public class PersonAccountService extends AbstractBean {
 
         long subsidyFileId = subsidy.getRequestFileId();
         RequestFile subsidyFile = requestFileBean.findById(subsidyFileId);
+
         if (subsidyBean.isSubsidyFileBound(subsidyFileId)) {
             subsidyFile.setStatus(RequestFileStatus.BOUND);
             requestFileBean.save(subsidyFile);
@@ -274,6 +288,7 @@ public class PersonAccountService extends AbstractBean {
 
         long dwellingCharacteristicsFileId = dwellingCharacteristics.getRequestFileId();
         RequestFile dwellingCharacteristicsFile = requestFileBean.findById(dwellingCharacteristicsFileId);
+
         if (dwellingCharacteristicsBean.isDwellingCharacteristicsFileBound(dwellingCharacteristicsFileId)) {
             dwellingCharacteristicsFile.setStatus(RequestFileStatus.BOUND);
             requestFileBean.save(dwellingCharacteristicsFile);
@@ -292,6 +307,7 @@ public class PersonAccountService extends AbstractBean {
 
         long facilityServiceTypeFileId = facilityServiceType.getRequestFileId();
         RequestFile facilityServiceTypeFile = requestFileBean.findById(facilityServiceTypeFileId);
+
         if (dwellingCharacteristicsBean.isDwellingCharacteristicsFileBound(facilityServiceTypeFileId)) {
             facilityServiceTypeFile.setStatus(RequestFileStatus.BOUND);
             requestFileBean.save(facilityServiceTypeFile);

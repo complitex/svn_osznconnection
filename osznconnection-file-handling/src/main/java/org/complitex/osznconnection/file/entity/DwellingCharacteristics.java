@@ -58,8 +58,8 @@ public class DwellingCharacteristics extends AbstractRequest {
     }
 
     @Override
-    public RequestFile.TYPE getRequestFileType() {
-        return RequestFile.TYPE.DWELLING_CHARACTERISTICS;
+    public RequestFileType getRequestFileType() {
+        return RequestFileType.DWELLING_CHARACTERISTICS;
     }
 
     public Long getInternalCityId() {
