@@ -15,16 +15,6 @@ import java.util.List;
  * Информация о файле запроса: имя, дата загрузки, организация, дата, количество записей, размер файла, статус.
  */
 public class RequestFile implements IExecutorObject {
-
-    public final static String TABLE = "request_file";
-
-    public static enum TYPE {
-
-        BENEFIT, PAYMENT, SUBSIDY_TARIF, ACTUAL_PAYMENT, SUBSIDY, DWELLING_CHARACTERISTICS, FACILITY_SERVICE_TYPE,
-        FACILITY_FORM2,
-        FACILITY_STREET_TYPE, FACILITY_STREET, FACILITY_TARIF
-    }
-
     private Long id;
     private Long groupId;
     private Date loaded = DateUtil.getCurrentDate();
@@ -37,7 +27,7 @@ public class RequestFile implements IExecutorObject {
     private Integer dbfRecordCount = 0;
     private Long length;
     private String checkSum;
-    private TYPE type;
+    private RequestFileType type;
     private RequestFileStatus status;
     private Long userOrganizationId;
     
@@ -51,14 +41,6 @@ public class RequestFile implements IExecutorObject {
     private boolean cancel = false;
 
     private String errorMessage;
-
-    public boolean isPayment() {
-        return TYPE.PAYMENT.equals(type);
-    }
-
-    public boolean isBenefit() {
-        return TYPE.BENEFIT.equals(type);
-    }
 
     @Override
     public String getLogObjectName() {
@@ -197,11 +179,11 @@ public class RequestFile implements IExecutorObject {
         this.checkSum = checkSum;
     }
 
-    public TYPE getType() {
+    public RequestFileType getType() {
         return type;
     }
 
-    public void setType(TYPE type) {
+    public void setType(RequestFileType type) {
         this.type = type;
     }
 

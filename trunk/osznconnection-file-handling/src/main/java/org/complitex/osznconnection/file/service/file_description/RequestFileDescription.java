@@ -5,10 +5,11 @@
 package org.complitex.osznconnection.file.service.file_description;
 
 import com.google.common.collect.Lists;
+import org.complitex.osznconnection.file.entity.RequestFileType;
+import org.complitex.osznconnection.file.service.file_description.convert.RequestFileTypeConverter;
+
 import java.io.Serializable;
 import java.util.List;
-import org.complitex.osznconnection.file.entity.RequestFile;
-import org.complitex.osznconnection.file.service.file_description.convert.RequestFileTypeConverter;
 
 /**
  *
@@ -40,8 +41,8 @@ public class RequestFileDescription implements Serializable {
         return fileType;
     }
 
-    public RequestFile.TYPE getRequestFileType() {
-        return RequestFile.TYPE.valueOf(fileType);
+    public RequestFileType getRequestFileType() {
+        return RequestFileType.valueOf(fileType);
     }
 
     public List<RequestFileFieldDescription> getFields() {

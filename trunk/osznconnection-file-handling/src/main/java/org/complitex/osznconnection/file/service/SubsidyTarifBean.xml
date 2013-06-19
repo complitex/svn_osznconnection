@@ -56,7 +56,7 @@
 
     <select id="getCode2" parameterType="map" resultType="string">
         SELECT DISTINCT t.`T11_CODE2` FROM `subsidy_tarif` t 
-                JOIN `request_file` f ON (f.`id` = t.`request_file_id` AND f.`type` = 'SUBSIDY_TARIF')
+                JOIN `request_file` f ON (f.`id` = t.`request_file_id` AND f.`type` = 3)
             WHERE t.`T11_CS_UNI` = #{T11_CS_UNI} AND t.`T11_CODE1` = 1 AND f.`organization_id` = #{osznId}
             AND f.`user_organization_id` = #{userOrganizationId}
         LIMIT 0,1

@@ -10,7 +10,7 @@ package org.complitex.osznconnection.file.entity;
 public class SubsidyTarif extends AbstractRequest {
 
     @Override
-    public RequestFile.TYPE getRequestFileType() {
-        return RequestFile.TYPE.SUBSIDY_TARIF;
+    public RequestFileType getRequestFileType() {
+        return RequestFileType.SUBSIDY_TARIF;
     }
 }

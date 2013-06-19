@@ -2,23 +2,18 @@ package org.complitex.osznconnection.file.service;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import java.util.Collection;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.entity.example.BenefitExample;
-
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import javax.ejb.EJB;
-import org.complitex.osznconnection.file.entity.BenefitData;
 import org.complitex.osznconnection.file.service_provider.CalculationCenterBean;
 import org.complitex.osznconnection.file.service_provider.ServiceProviderAdapter;
 import org.complitex.osznconnection.file.service_provider.exception.DBException;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import java.util.*;
 
 /**
  * Обработка записей файла запроса возмещения по льготам 
@@ -74,7 +69,7 @@ public class BenefitBean extends AbstractRequestBean {
 
     @Transactional
     public int count(BenefitExample example) {
-        return (Integer) sqlSession().selectOne(MAPPING_NAMESPACE + ".count", example);
+        return sqlSession().selectOne(MAPPING_NAMESPACE + ".count", example);
     }
 
     @Transactional
@@ -85,15 +80,15 @@ public class BenefitBean extends AbstractRequestBean {
 
     /**
      * Возвращает кол-во несвязанных записей в файле.
-     * @param fileId
-     * @return
+     * @param fileId fileId
+     * @return кол-во несвязанных записей в файле.
      */
     private int unboundCount(long fileId) {
         return countByFile(fileId, RequestStatus.unboundStatuses());
     }
 
     /**
-     * @param fileId
+     * @param fileId fileId
      * @return Связан ли файл
      */
     @Transactional
@@ -112,8 +107,7 @@ public class BenefitBean extends AbstractRequestBean {
 
     @SuppressWarnings({"unchecked"})
     public List<AbstractRequest> getBenefits(long requestFileId) {
-        List<AbstractRequest> benefits = sqlSession().selectList(MAPPING_NAMESPACE + ".selectBenefits", requestFileId);
-        return benefits;
+        return sqlSession().selectList(MAPPING_NAMESPACE + ".selectBenefits", requestFileId);
     }
 
     @Transactional
@@ -122,9 +116,9 @@ public class BenefitBean extends AbstractRequestBean {
     }
 
     /**
-     * Когда у payment записи в UI вручную меняют адрес, у этой записи и у всех соотвествующих benefit записей статус проставляется в ADDRESS_CORRECTED.
-     * Данный метод проставляет статус для benefit записей.
-     * @param paymentId
+     * Когда у payment записи в UI вручную меняют адрес, у этой записи и у всех соответствующих benefit записей
+     * статус проставляется в ADDRESS_CORRECTED.
+     * Данный метод устанавливает статус для benefit записей.
      */
     @Transactional
     public void markCorrected(long paymentFileId) {
@@ -147,8 +141,7 @@ public class BenefitBean extends AbstractRequestBean {
 
     /**
      * Обновляет статус для всех benefit записей из файла, а именно копирует статус из соответствующей payment записи.
-     * @param fileId
-     * @param statuses
+     * @param fileId fileId
      */
     @Transactional
     public void updateBindingStatus(long fileId) {
@@ -162,7 +155,7 @@ public class BenefitBean extends AbstractRequestBean {
      * Заполняет некоторые поля в benefit записях, соответствующих payment c id = paymentId.
      * Вызывается при обработке payment файла.
      * См. ProcessingRequestBean.process().
-     * @param benefit
+     * @param benefit benefit
      */
     @Transactional
     public void populateBenefit(Benefit benefit) {
@@ -171,8 +164,8 @@ public class BenefitBean extends AbstractRequestBean {
 
     /**
      * Возвращает кол-во необработанных записей
-     * @param fileId
-     * @return
+     * @param fileId fileId
+     * @return кол-во необработанных записей
      */
     private int unprocessedCount(long fileId) {
         return countByFile(fileId, RequestStatus.unprocessedStatuses());
@@ -180,7 +173,7 @@ public class BenefitBean extends AbstractRequestBean {
 
     /**
      *
-     * @param fileId
+     * @param fileId fileId
      * @return Обработан ли файл
      */
     @Transactional
@@ -190,21 +183,21 @@ public class BenefitBean extends AbstractRequestBean {
 
     /**
      * Возвращает кол-во записей со статусами из списка statuses
-     * @param fileId
-     * @param statuses
-     * @return
+     * @param fileId fileId
+     * @param statuses statuses
+     * @return кол-во записей
      */
     private int countByFile(long fileId, Set<RequestStatus> statuses) {
         Map<String, Object> params = Maps.newHashMap();
         params.put("requestFileId", fileId);
         params.put("statuses", statuses);
-        return (Integer) sqlSession().selectOne(MAPPING_NAMESPACE + ".countByFile", params);
+        return sqlSession().selectOne(MAPPING_NAMESPACE + ".countByFile", params);
     }
 
     /**
      * Получает все не null account numbers в файле.
-     * @param fileId
-     * @return
+     * @param fileId fileId
+     * @return все не null account numbers в файле
      */
     @Transactional
     @SuppressWarnings("unchecked")
@@ -214,9 +207,9 @@ public class BenefitBean extends AbstractRequestBean {
 
     /**
      * Достает все записи benefit по номеру л/c из файла.
-     * @param accountNumber
-     * @param fileId
-     * @return
+     * @param accountNumber accountNumber
+     * @param fileId fileId
+     * @return все записи benefit по номеру л/c из файла.
      */
     @Transactional
     @SuppressWarnings("unchecked")
@@ -248,7 +241,7 @@ public class BenefitBean extends AbstractRequestBean {
 
     /**
      * очищает колонки которые заполняются во время связывания и обработки для записей benefit
-     * @param fileId
+     * @param fileId fileId
      */
     @Transactional
     public void clearBeforeBinding(long fileId) {
@@ -256,12 +249,12 @@ public class BenefitBean extends AbstractRequestBean {
         params.put("status", RequestStatus.LOADED);
         params.put("fileId", fileId);
         sqlSession().update(MAPPING_NAMESPACE + ".clearBeforeBinding", params);
-        clearWarnings(fileId, RequestFile.TYPE.BENEFIT);
+        clearWarnings(fileId, RequestFileType.BENEFIT);
     }
 
     /**
      * очищает колонки которые заполняются во время обработки для записей benefit
-     * @param fileId
+     * @param fileId fileId
      */
     @Transactional
     public void clearBeforeProcessing(long fileId) {
@@ -269,7 +262,7 @@ public class BenefitBean extends AbstractRequestBean {
         params.put("statuses", RequestStatus.unboundStatuses());
         params.put("fileId", fileId);
         sqlSession().update(MAPPING_NAMESPACE + ".clearBeforeProcessing", params);
-        clearWarnings(fileId, RequestFile.TYPE.BENEFIT);
+        clearWarnings(fileId, RequestFileType.BENEFIT);
     }
 
     public Collection<BenefitData> getBenefitData(Benefit benefit) throws DBException {
@@ -294,6 +287,7 @@ public class BenefitBean extends AbstractRequestBean {
                 try {
                     benefitOrderFamAsInt = Integer.valueOf(benefitOrderFam);
                 } catch (NumberFormatException e) {
+                    //hello catch
                 }
 
                 for (Benefit benefitItem : benefits) {

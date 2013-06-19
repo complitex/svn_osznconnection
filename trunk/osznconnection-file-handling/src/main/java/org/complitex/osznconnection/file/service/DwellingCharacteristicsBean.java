@@ -78,7 +78,7 @@ public class DwellingCharacteristicsBean extends AbstractRequestBean {
 
     @Transactional
     public List<DwellingCharacteristics> find(DwellingCharacteristicsExample example) {
-        List<DwellingCharacteristics> list = sqlSession().selectList(MAPPING_NAMESPACE + ".find", example);;
+        List<DwellingCharacteristics> list = sqlSession().selectList(MAPPING_NAMESPACE + ".find", example);
 
         loadFacilityStreet(list);
 
@@ -153,7 +153,7 @@ public class DwellingCharacteristicsBean extends AbstractRequestBean {
 
         sqlSession().update(MAPPING_NAMESPACE + ".clearBeforeBinding",
                 of("status", RequestStatus.LOADED, "fileId", fileId, "updateFieldMap", updateFieldMap));
-        clearWarnings(fileId, RequestFile.TYPE.DWELLING_CHARACTERISTICS);
+        clearWarnings(fileId, RequestFileType.DWELLING_CHARACTERISTICS);
     }
 
     private Set<DwellingCharacteristicsDBF> getUpdateableFields(Set<Long> serviceProviderTypeIds) {

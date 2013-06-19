@@ -23,8 +23,8 @@ public class FacilityForm2 extends AbstractRequest {
     }
 
     @Override
-    public RequestFile.TYPE getRequestFileType() {
-        return RequestFile.TYPE.FACILITY_FORM2;
+    public RequestFileType getRequestFileType() {
+        return RequestFileType.FACILITY_FORM2;
     }
     private String lastName;
     private String firstName;

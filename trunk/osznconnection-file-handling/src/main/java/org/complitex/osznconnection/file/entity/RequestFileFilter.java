@@ -27,7 +27,7 @@ public class RequestFileFilter extends AbstractFilter {
     private String checkSum;
     private DomainObject organization;
     private DomainObject userOrganization;
-    private RequestFile.TYPE type;
+    private RequestFileType type;
     private RequestFileStatus status;
     private String userOrganizationsString;
     private String outerOrganizationsString;
@@ -145,11 +145,11 @@ public class RequestFileFilter extends AbstractFilter {
         this.organizationId = organization != null ? organization.getId() : null;
     }
 
-    public RequestFile.TYPE getType() {
+    public RequestFileType getType() {
         return type;
     }
 
-    public void setType(RequestFile.TYPE type) {
+    public void setType(RequestFileType type) {
         this.type = type;
     }
 

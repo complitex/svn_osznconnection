@@ -28,8 +28,8 @@ public class FacilityStreet extends AbstractRequest {
     }
 
     @Override
-    public RequestFile.TYPE getRequestFileType() {
-        return RequestFile.TYPE.FACILITY_STREET;
+    public RequestFileType getRequestFileType() {
+        return RequestFileType.FACILITY_STREET;
     }
 
     public String getStreetType() {

@@ -7,20 +7,17 @@ package org.complitex.osznconnection.file.service;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import org.complitex.dictionary.mybatis.Transactional;
+import org.complitex.osznconnection.file.entity.*;
+import org.complitex.osznconnection.file.entity.example.SubsidyExample;
+
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import org.complitex.dictionary.mybatis.Transactional;
-import org.complitex.osznconnection.file.entity.AbstractRequest;
-import org.complitex.osznconnection.file.entity.RequestFile;
-import org.complitex.osznconnection.file.entity.RequestStatus;
-import org.complitex.osznconnection.file.entity.Subsidy;
-import org.complitex.osznconnection.file.entity.SubsidyDBF;
-import org.complitex.osznconnection.file.entity.example.SubsidyExample;
 
 /**
  *
@@ -28,7 +25,6 @@ import org.complitex.osznconnection.file.entity.example.SubsidyExample;
  */
 @Stateless
 public class SubsidyBean extends AbstractRequestBean {
-
     public static final String MAPPING_NAMESPACE = SubsidyBean.class.getName();
     private static final Map<Long, Set<SubsidyDBF>> UPDATE_FIELD_MAP = ImmutableMap.of();
 
@@ -71,7 +67,7 @@ public class SubsidyBean extends AbstractRequestBean {
 
     @Transactional
     public int count(SubsidyExample example) {
-        return (Integer) sqlSession().selectOne(MAPPING_NAMESPACE + ".count", example);
+        return sqlSession().selectOne(MAPPING_NAMESPACE + ".count", example);
     }
 
     @Transactional
@@ -97,7 +93,7 @@ public class SubsidyBean extends AbstractRequestBean {
         Map<String, Object> params = Maps.newHashMap();
         params.put("requestFileId", fileId);
         params.put("statuses", statuses);
-        return (Integer) sqlSession().selectOne(MAPPING_NAMESPACE + ".countByFile", params);
+        return sqlSession().selectOne(MAPPING_NAMESPACE + ".countByFile", params);
     }
 
     @Transactional
@@ -128,27 +124,27 @@ public class SubsidyBean extends AbstractRequestBean {
         Map<String, String> updateFieldMap = null;
         if (serviceProviderTypeIds != null && !serviceProviderTypeIds.isEmpty()) {
             updateFieldMap = Maps.newHashMap();
-            for (SubsidyDBF field : getUpdateableFields(serviceProviderTypeIds)) {
+            for (SubsidyDBF field : getUpdatableFields(serviceProviderTypeIds)) {
                 updateFieldMap.put(field.name(), "-1");
             }
         }
 
         sqlSession().update(MAPPING_NAMESPACE + ".clearBeforeBinding",
                 ImmutableMap.of("status", RequestStatus.LOADED, "fileId", fileId, "updateFieldMap", updateFieldMap));
-        clearWarnings(fileId, RequestFile.TYPE.SUBSIDY);
+        clearWarnings(fileId, RequestFileType.SUBSIDY);
     }
 
-    private Set<SubsidyDBF> getUpdateableFields(Set<Long> serviceProviderTypeIds) {
-        final Set<SubsidyDBF> updateableFields = Sets.newHashSet();
+    private Set<SubsidyDBF> getUpdatableFields(Set<Long> serviceProviderTypeIds) {
+        final Set<SubsidyDBF> updatableFields = Sets.newHashSet();
 
         for (long serviceProviderTypeId : serviceProviderTypeIds) {
             Set<SubsidyDBF> fields = UPDATE_FIELD_MAP.get(serviceProviderTypeId);
             if (fields != null) {
-                updateableFields.addAll(fields);
+                updatableFields.addAll(fields);
             }
         }
 
-        return Collections.unmodifiableSet(updateableFields);
+        return Collections.unmodifiableSet(updatableFields);
     }
 
     @Transactional
@@ -180,7 +176,6 @@ public class SubsidyBean extends AbstractRequestBean {
     }
 
     public List<AbstractRequest> getSubsidies(long requestFileId) {
-        List<AbstractRequest> subsidies = sqlSession().selectList(MAPPING_NAMESPACE + ".selectSubsidies", requestFileId);
-        return subsidies;
+        return sqlSession().selectList(MAPPING_NAMESPACE + ".selectSubsidies", requestFileId);
     }
 }

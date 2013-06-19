@@ -42,7 +42,7 @@
             w.`id` warning_id, w.`request_id` warning_reqiest_id, w.`request_file_type` warning_request_file_type, w.`status` warning_status,
             p.`request_warning_id` param_request_warning_id, p.`order` param_order, p.`type` param_type, p.`value` param_value
         FROM `benefit` b 
-            LEFT JOIN `request_warning` w ON (w.`request_id` = b.`id` AND w.`request_file_type` = 'BENEFIT')
+            LEFT JOIN `request_warning` w ON (w.`request_id` = b.`id` AND w.`request_file_type` = 1)
             LEFT JOIN `request_warning_parameter` p ON w.`id` = p.`request_warning_id`
         WHERE b.`request_file_id` = #{id}
     </select>
@@ -149,7 +149,7 @@
         FROM
             `benefit` b
             JOIN `request_file` bf ON b.`request_file_id` = bf.`id`
-            JOIN `request_file` pf ON (pf.`group_id` = bf.`group_id` AND pf.`type` = 'PAYMENT')
+            JOIN `request_file` pf ON (pf.`group_id` = bf.`group_id` AND pf.`type` = 2)
             LEFT JOIN `payment` p ON (b.`OWN_NUM_SR` = p.`OWN_NUM_SR` AND p.`request_file_id` = pf.`id`)
         WHERE
             b.`request_file_id` = #{requestFileId}
@@ -169,7 +169,7 @@
             FROM
                 `benefit` b
                     JOIN `request_file` bf ON b.`request_file_id` = bf.`id`
-                    JOIN `request_file` pf ON (pf.`group_id` = bf.`group_id` AND pf.`type` = 'PAYMENT')
+                    JOIN `request_file` pf ON (pf.`group_id` = bf.`group_id` AND pf.`type` = 2)
                     LEFT JOIN `payment` p ON (b.`OWN_NUM_SR` = p.`OWN_NUM_SR` AND p.`request_file_id` = pf.`id`)
                 WHERE
                     b.`request_file_id` = #{requestFileId}
@@ -200,7 +200,7 @@
                         limit #{start},#{size}
                     </if>
         ) s
-        LEFT JOIN `request_warning` w ON (w.`request_id` = s.`id` AND w.`request_file_type` = 'BENEFIT')
+        LEFT JOIN `request_warning` w ON (w.`request_id` = s.`id` AND w.`request_file_type` = 1)
         LEFT JOIN `request_warning_parameter` p ON w.`id` = p.`request_warning_id`
     </select>
 
@@ -236,9 +236,9 @@
 
     <update id="markCorrected" parameterType="long">
         UPDATE `benefit` b 
-                JOIN `request_file` bf ON (b.`request_file_id` = bf.`id` AND bf.`type` = 'BENEFIT')
+                JOIN `request_file` bf ON (b.`request_file_id` = bf.`id` AND bf.`type` = 1)
                 JOIN `request_file_group` g ON g.`id` = bf.`group_id`
-                JOIN `request_file` pf ON (pf.`group_id` = g.`id` AND pf.`type` = 'PAYMENT' AND pf.`id` = #{paymentFileId})
+                JOIN `request_file` pf ON (pf.`group_id` = g.`id` AND pf.`type` = 2 AND pf.`id` = #{paymentFileId})
                 JOIN `payment` p ON (p.`request_file_id` = pf.`id` AND p.`status` = 204 AND p.`OWN_NUM_SR` = b.`OWN_NUM_SR`)
         SET b.`status` = 204
     </update>
@@ -258,7 +258,7 @@
         SELECT b.`id`, b.`status`, b.`account_number`, bf.`organization_id` organization_id, b.`request_file_id`
             FROM `benefit` b
             JOIN `request_file` bf ON b.`request_file_id` = bf.`id`
-            JOIN `request_file` pf ON (pf.`id` = #{requestFileId} AND pf.`type` = 'PAYMENT' AND pf.`group_id` = bf.`group_id`)
+            JOIN `request_file` pf ON (pf.`id` = #{requestFileId} AND pf.`type` = 2 AND pf.`group_id` = bf.`group_id`)
             WHERE b.`account_number` = #{accountNumber} AND b.`OZN` = '1'
     </select>
 

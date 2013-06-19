@@ -21,7 +21,7 @@ public class FacilityStreetType extends AbstractRequest {
     }
 
     @Override
-    public RequestFile.TYPE getRequestFileType() {
-        return RequestFile.TYPE.FACILITY_STREET_TYPE;
+    public RequestFileType getRequestFileType() {
+        return RequestFileType.FACILITY_STREET_TYPE;
     }
 }

@@ -26,8 +26,8 @@ public class FacilityServiceType extends AbstractRequest {
     }
 
     @Override
-    public RequestFile.TYPE getRequestFileType() {
-        return RequestFile.TYPE.FACILITY_SERVICE_TYPE;
+    public RequestFileType getRequestFileType() {
+        return RequestFileType.FACILITY_SERVICE_TYPE;
     }
     private Long internalCityId;
     private Long internalStreetId;

@@ -224,7 +224,7 @@ public class ActualPaymentBean extends AbstractRequestBean {
 
         sqlSession().update(MAPPING_NAMESPACE + ".clearBeforeBinding",
                 ImmutableMap.of("status", RequestStatus.LOADED, "fileId", fileId, "updateFieldMap", updateFieldMap));
-        clearWarnings(fileId, RequestFile.TYPE.ACTUAL_PAYMENT);
+        clearWarnings(fileId, RequestFileType.ACTUAL_PAYMENT);
     }
 
     @Transactional
@@ -239,7 +239,7 @@ public class ActualPaymentBean extends AbstractRequestBean {
 
         sqlSession().update(MAPPING_NAMESPACE + ".clearBeforeProcessing",
                 ImmutableMap.of("statuses", RequestStatus.unboundStatuses(), "fileId", fileId, "updateFieldMap", updateFieldMap));
-        clearWarnings(fileId, RequestFile.TYPE.ACTUAL_PAYMENT);
+        clearWarnings(fileId, RequestFileType.ACTUAL_PAYMENT);
     }
 
     public Date getFirstDay(ActualPayment actualPayment, RequestFile actualPaymentFile) {

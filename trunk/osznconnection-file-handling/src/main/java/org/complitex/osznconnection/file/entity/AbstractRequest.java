@@ -62,7 +62,7 @@ public abstract class AbstractRequest implements ILongId{
         return requestFileDescriptionBean.getFileDescription(getRequestFileType());
     }
 
-    public abstract RequestFile.TYPE getRequestFileType();
+    public abstract RequestFileType getRequestFileType();
 
     public Long getId() {
         return id;

@@ -28,6 +28,7 @@ import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
 import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.entity.RequestFileFilter;
 import org.complitex.osznconnection.file.entity.RequestFileStatus;
+import org.complitex.osznconnection.file.entity.RequestFileType;
 import org.complitex.osznconnection.file.service.file_description.RequestFileDescriptionBean;
 import org.complitex.osznconnection.file.service.process.ProcessType;
 import org.complitex.osznconnection.file.web.AbstractProcessableListPanel;
@@ -72,7 +73,7 @@ public abstract class AbstractReferenceBookFileList extends TemplatePage {
         AbstractProcessableListPanel.renderResources(response);
     }
 
-    protected abstract RequestFile.TYPE getRequestFileType();
+    protected abstract RequestFileType getRequestFileType();
 
     protected abstract void load(long userOrganizationId, long osznId, DateParameter dateParameter);
 

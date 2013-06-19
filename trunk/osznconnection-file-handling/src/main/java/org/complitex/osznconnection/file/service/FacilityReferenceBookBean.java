@@ -55,7 +55,7 @@ public class FacilityReferenceBookBean extends AbstractBean {
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void insert(List<AbstractRequest> requests) {
         if (requests != null && !requests.isEmpty()) {
-            final RequestFile.TYPE requestFileType = requests.get(0).getRequestFileType();
+            final RequestFileType requestFileType = requests.get(0).getRequestFileType();
             final String table = getTableName(requestFileType);
 
             for (AbstractRequest request : requests) {
@@ -64,7 +64,7 @@ public class FacilityReferenceBookBean extends AbstractBean {
         }
     }
 
-    public String getTableName(RequestFile.TYPE requestFileType) {
+    public String getTableName(RequestFileType requestFileType) {
         switch (requestFileType) {
             case FACILITY_STREET_TYPE:
                 return "facility_street_type_reference";
@@ -78,7 +78,7 @@ public class FacilityReferenceBookBean extends AbstractBean {
     }
 
     @Transactional
-    public void delete(long requestFileId, RequestFile.TYPE requestFileType) {
+    public void delete(long requestFileId, RequestFileType requestFileType) {
         sqlSession().delete(NS + ".deleteFacilityReferences", of("requestFileId", requestFileId, "table",
                 getTableName(requestFileType)));
     }

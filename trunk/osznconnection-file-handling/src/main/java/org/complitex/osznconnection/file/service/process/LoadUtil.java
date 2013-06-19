@@ -5,6 +5,7 @@ import org.complitex.dictionary.util.EjbBeanLocator;
 import org.complitex.osznconnection.file.entity.FileHandlingConfig;
 import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.entity.RequestFileGroup;
+import org.complitex.osznconnection.file.entity.RequestFileType;
 import org.complitex.osznconnection.file.service.exception.StorageNotFoundException;
 import org.complitex.osznconnection.file.service.process.RequestFileStorage.RequestFiles;
 
@@ -157,7 +158,7 @@ public class LoadUtil {
         return name.substring(getConfigString(prefix).length()).toLowerCase();
     }
 
-    private static RequestFile newPaymentBenefitRequestFile(File file, RequestFile.TYPE type, String relativeDirectory,
+    private static RequestFile newPaymentBenefitRequestFile(File file, RequestFileType type, String relativeDirectory,
             long osznId, Date beginDate, Date endDate) {
         RequestFile requestFile = new RequestFile();
 
@@ -188,7 +189,7 @@ public class LoadUtil {
 
                 RequestFileGroup group = new RequestFileGroup();
 
-                group.setPaymentFile(newPaymentBenefitRequestFile(file, RequestFile.TYPE.PAYMENT,
+                group.setPaymentFile(newPaymentBenefitRequestFile(file, RequestFileType.PAYMENT,
                         RequestFileStorage.INSTANCE.getRelativeParent(file, requestFiles.getPath()),
                         osznId, newDate(year, month), null));
 
@@ -215,7 +216,7 @@ public class LoadUtil {
 
             List<File> benefits = requestFiles.getFiles();
             for (File file : benefits) {
-                RequestFile requestFile = newPaymentBenefitRequestFile(file, RequestFile.TYPE.BENEFIT,
+                RequestFile requestFile = newPaymentBenefitRequestFile(file, RequestFileType.BENEFIT,
                         RequestFileStorage.INSTANCE.getRelativeParent(file, requestFiles.getPath()),
                         osznId, newDate(year, month), null);
 
@@ -268,7 +269,7 @@ public class LoadUtil {
             requestFile.setDirectory(RequestFileStorage.INSTANCE.getRelativeParent(file, requestFiles.getPath()));
             requestFile.setOrganizationId(osznId);
             requestFile.setBeginDate(newDate(year, month));
-            requestFile.setType(RequestFile.TYPE.SUBSIDY_TARIF);
+            requestFile.setType(RequestFileType.SUBSIDY_TARIF);
 
             subsidyTarifs.add(requestFile);
         }
@@ -293,7 +294,7 @@ public class LoadUtil {
                 requestFile.setDirectory(RequestFileStorage.INSTANCE.getRelativeParent(file, requestFiles.getPath()));
                 requestFile.setOrganizationId(osznId);
                 requestFile.setBeginDate(newDate(year, month));
-                requestFile.setType(RequestFile.TYPE.ACTUAL_PAYMENT);
+                requestFile.setType(RequestFileType.ACTUAL_PAYMENT);
 
                 actualPayments.add(requestFile);
             }
@@ -319,7 +320,7 @@ public class LoadUtil {
                 requestFile.setDirectory(RequestFileStorage.INSTANCE.getRelativeParent(file, requestFiles.getPath()));
                 requestFile.setOrganizationId(osznId);
                 requestFile.setBeginDate(newDate(year, month));
-                requestFile.setType(RequestFile.TYPE.SUBSIDY);
+                requestFile.setType(RequestFileType.SUBSIDY);
 
                 subsidies.add(requestFile);
             }
@@ -345,7 +346,7 @@ public class LoadUtil {
             requestFile.setDirectory(RequestFileStorage.INSTANCE.getRelativeParent(file, requestFiles.getPath()));
             requestFile.setOrganizationId(osznId);
             requestFile.setBeginDate(newDate(year, month));
-            requestFile.setType(RequestFile.TYPE.DWELLING_CHARACTERISTICS);
+            requestFile.setType(RequestFileType.DWELLING_CHARACTERISTICS);
 
             dwellingCharacteristicsFiles.add(requestFile);
         }
@@ -370,7 +371,7 @@ public class LoadUtil {
             requestFile.setDirectory(RequestFileStorage.INSTANCE.getRelativeParent(file, requestFiles.getPath()));
             requestFile.setOrganizationId(osznId);
             requestFile.setBeginDate(newDate(year, month));
-            requestFile.setType(RequestFile.TYPE.FACILITY_SERVICE_TYPE);
+            requestFile.setType(RequestFileType.FACILITY_SERVICE_TYPE);
 
             facilityServiceTypeFiles.add(requestFile);
         }
@@ -395,7 +396,7 @@ public class LoadUtil {
             requestFile.setDirectory(RequestFileStorage.INSTANCE.getRelativeParent(file, requestFiles.getPath()));
             requestFile.setOrganizationId(osznId);
             requestFile.setBeginDate(newDate(year, month));
-            requestFile.setType(RequestFile.TYPE.FACILITY_STREET_TYPE);
+            requestFile.setType(RequestFileType.FACILITY_STREET_TYPE);
             streetTypeFiles.add(requestFile);
         }
         return streetTypeFiles;
@@ -419,7 +420,7 @@ public class LoadUtil {
             requestFile.setDirectory(RequestFileStorage.INSTANCE.getRelativeParent(file, requestFiles.getPath()));
             requestFile.setOrganizationId(osznId);
             requestFile.setBeginDate(newDate(year, month));
-            requestFile.setType(RequestFile.TYPE.FACILITY_STREET);
+            requestFile.setType(RequestFileType.FACILITY_STREET);
             streetFiles.add(requestFile);
         }
         return streetFiles;
@@ -443,7 +444,7 @@ public class LoadUtil {
             requestFile.setDirectory(RequestFileStorage.INSTANCE.getRelativeParent(file, requestFiles.getPath()));
             requestFile.setOrganizationId(osznId);
             requestFile.setBeginDate(newDate(year, month));
-            requestFile.setType(RequestFile.TYPE.FACILITY_TARIF);
+            requestFile.setType(RequestFileType.FACILITY_TARIF);
             facilityTarifFiles.add(requestFile);
         }
         return facilityTarifFiles;

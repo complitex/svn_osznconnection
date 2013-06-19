@@ -2,40 +2,40 @@ package org.complitex.osznconnection.file.web;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.ISortStateLocator;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.*;
+import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
+import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.dictionary.entity.Log;
 import org.complitex.dictionary.service.LogBean;
 import org.complitex.dictionary.util.StringUtil;
-import org.complitex.dictionary.web.component.*;
+import org.complitex.dictionary.web.component.BookmarkablePageLinkPanel;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
 import org.complitex.dictionary.web.component.scroll.ScrollListBehavior;
 import org.complitex.osznconnection.file.Module;
-import org.complitex.osznconnection.file.entity.RequestFile;
-import org.complitex.osznconnection.file.entity.RequestFileGroup;
-import org.complitex.osznconnection.file.entity.RequestFileGroupFilter;
-import org.complitex.osznconnection.file.entity.RequestFileStatus;
+import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.service.RequestFileGroupBean;
+import org.complitex.osznconnection.file.service.file_description.RequestFileDescriptionBean;
 import org.complitex.osznconnection.file.service.process.ProcessManagerBean;
 import org.complitex.osznconnection.file.service.process.ProcessType;
+import org.complitex.osznconnection.file.web.component.load.DateParameter;
 import org.complitex.osznconnection.file.web.component.load.RequestFileLoadPanel.MonthParameterViewMode;
 import org.complitex.osznconnection.file.web.pages.benefit.BenefitList;
 import org.complitex.osznconnection.file.web.pages.payment.PaymentList;
 import org.complitex.template.web.component.toolbar.ToolbarButton;
-import org.complitex.template.web.security.SecurityRole;
-import javax.ejb.EJB;
-import java.util.*;
-import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
-import org.apache.wicket.markup.repeater.Item;
-import org.apache.wicket.model.ResourceModel;
-import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.complitex.osznconnection.file.service.file_description.RequestFileDescriptionBean;
-import org.complitex.osznconnection.file.web.component.load.DateParameter;
 import org.complitex.template.web.pages.ScrollListPage;
+import org.complitex.template.web.security.SecurityRole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.ejb.EJB;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -167,8 +167,8 @@ public class GroupList extends ScrollListPage {
 
         @Override
         protected boolean hasFieldDescription() {
-            return requestFileDescriptionBean.getFileDescription(RequestFile.TYPE.PAYMENT) != null
-                    && requestFileDescriptionBean.getFileDescription(RequestFile.TYPE.BENEFIT) != null;
+            return requestFileDescriptionBean.getFileDescription(RequestFileType.PAYMENT) != null
+                    && requestFileDescriptionBean.getFileDescription(RequestFileType.BENEFIT) != null;
         }
 
         @Override

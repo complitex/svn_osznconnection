@@ -25,7 +25,7 @@ public class FacilityTarif extends AbstractRequest {
     }
 
     @Override
-    public RequestFile.TYPE getRequestFileType() {
-        return RequestFile.TYPE.FACILITY_TARIF;
+    public RequestFileType getRequestFileType() {
+        return RequestFileType.FACILITY_TARIF;
     }
 }

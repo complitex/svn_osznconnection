@@ -24,7 +24,7 @@ public class RequestFileGroupFilter extends AbstractFilter {
     private String benefitName;
     private DomainObject organization;
     private DomainObject userOrganization;
-    private RequestFile.TYPE type;
+    private RequestFileType type;
     private RequestFileStatus status;
     private String userOrganizationsString;
     private String outerOrganizationsString;
@@ -125,11 +125,11 @@ public class RequestFileGroupFilter extends AbstractFilter {
         this.organization = organization;
     }
 
-    public RequestFile.TYPE getType() {
+    public RequestFileType getType() {
         return type;
     }
 
-    public void setType(RequestFile.TYPE type) {
+    public void setType(RequestFileType type) {
         this.type = type;
     }
 

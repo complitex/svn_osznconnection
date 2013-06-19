@@ -7,7 +7,7 @@ package org.complitex.osznconnection.file.web;
 import java.util.List;
 import java.util.Map;
 import org.apache.wicket.markup.html.WebPage;
-import org.complitex.osznconnection.file.entity.RequestFile.TYPE;
+import org.complitex.osznconnection.file.entity.RequestFileType;
 import org.complitex.osznconnection.file.service.process.ProcessManagerBean;
 import org.complitex.osznconnection.file.service.process.ProcessType;
 import org.complitex.template.web.security.SecurityRole;
@@ -17,7 +17,6 @@ import org.apache.wicket.authroles.authorization.strategies.role.annotations.Aut
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.web.component.load.DateParameter;
 import org.complitex.osznconnection.file.web.pages.subsidy.SubsidyList;
 import org.complitex.template.web.component.toolbar.ToolbarButton;
@@ -46,8 +45,8 @@ public final class SubsidyFileList extends ScrollListPage {
             }
 
             @Override
-            protected TYPE getRequestFileType() {
-                return RequestFile.TYPE.SUBSIDY;
+            protected RequestFileType getRequestFileType() {
+                return RequestFileType.SUBSIDY;
             }
 
             @Override

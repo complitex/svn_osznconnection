@@ -111,7 +111,7 @@
 
     <sql id="joinPaymentByAccount">
         JOIN `request_file` bf ON b.`request_file_id` = bf.`id`
-        JOIN `request_file` pf ON (bf.`group_id` = pf.`group_id` AND pf.`type` = 'PAYMENT')
+        JOIN `request_file` pf ON (bf.`group_id` = pf.`group_id` AND pf.`type` = 2)
         JOIN `payment` p ON (pf.`id` = p.`request_file_id` AND p.`OWN_NUM_SR` = b.`OWN_NUM_SR`)
     </sql>
 

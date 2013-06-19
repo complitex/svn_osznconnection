@@ -1,20 +1,20 @@
 package org.complitex.osznconnection.file.service;
 
 import com.google.common.collect.Maps;
-import java.math.BigDecimal;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.osznconnection.file.entity.AbstractRequest;
+import org.complitex.osznconnection.file.entity.RequestFileType;
+import org.complitex.osznconnection.file.service.file_description.RequestFileDescription;
+import org.complitex.osznconnection.file.service.file_description.RequestFileDescriptionBean;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
-import javax.ejb.EJB;
-import org.complitex.osznconnection.file.entity.RequestFile;
-import org.complitex.osznconnection.file.service.file_description.RequestFileDescription;
-import org.complitex.osznconnection.file.service.file_description.RequestFileDescriptionBean;
 
 /**
  * Класс для работы с тарифами субсидий.
@@ -24,7 +24,6 @@ import org.complitex.osznconnection.file.service.file_description.RequestFileDes
  */
 @Stateless
 public class SubsidyTarifBean extends AbstractBean {
-
     public static final String MAPPING_NAMESPACE = SubsidyTarifBean.class.getName();
     @EJB
     private RequestFileDescriptionBean requestFileDescriptionBean;
@@ -46,15 +45,17 @@ public class SubsidyTarifBean extends AbstractBean {
      * Получить значение поля T11_CODE2 из таблицы тарифов по коду тарифа в ЦН и ОСЗН.
      * @param T11_CS_UNI Код тарифа, который пришел из ЦН.
      * @param osznId ОСЗН
-     * @return
+     * @return значение поля T11_CODE2 из таблицы тарифов по коду тарифа в ЦН и ОСЗН
      */
     @Transactional
     public String getCode2(BigDecimal T11_CS_UNI, long osznId, long userOrganizationId) {
-        final RequestFileDescription tarifDescription = requestFileDescriptionBean.getFileDescription(RequestFile.TYPE.SUBSIDY_TARIF);
+        RequestFileDescription tarifDescription = requestFileDescriptionBean.getFileDescription(RequestFileType.SUBSIDY_TARIF);
         Map<String, Object> params = Maps.newHashMap();
+
         params.put("T11_CS_UNI", tarifDescription.getTypeConverter().toString(T11_CS_UNI));
         params.put("osznId", osznId);
         params.put("userOrganizationId", userOrganizationId);
-        return (String) sqlSession().selectOne(MAPPING_NAMESPACE + ".getCode2", params);
+
+        return sqlSession().selectOne(MAPPING_NAMESPACE + ".getCode2", params);
     }
 }
