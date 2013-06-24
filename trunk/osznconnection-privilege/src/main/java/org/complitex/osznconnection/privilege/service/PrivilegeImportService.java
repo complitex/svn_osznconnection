@@ -1,13 +1,14 @@
 package org.complitex.osznconnection.privilege.service;
 
 import au.com.bytecode.opencsv.CSVReader;
-import org.complitex.dictionary.service.AbstractImportService;
 import org.complitex.dictionary.entity.Attribute;
 import org.complitex.dictionary.entity.DomainObject;
+import org.complitex.dictionary.service.AbstractImportService;
 import org.complitex.dictionary.service.IImportListener;
 import org.complitex.dictionary.service.StringCultureBean;
 import org.complitex.dictionary.service.exception.ImportFileNotFoundException;
 import org.complitex.dictionary.service.exception.ImportFileReadException;
+import org.complitex.dictionary.util.DateUtil;
 import org.complitex.osznconnection.privilege.strategy.PrivilegeStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import java.io.IOException;
-import org.complitex.dictionary.util.DateUtil;
 
 import static org.complitex.osznconnection.privilege.entity.PrivilegeImportFile.PRIVILEGE;
 
@@ -56,7 +56,7 @@ public class PrivilegeImportService extends AbstractImportService{
                 DomainObject domainObject = privilegeStrategy.newInstance();
 
                 //PRIVILEGE_ID
-                domainObject.setExternalId(Long.parseLong(line[0].trim()));
+                domainObject.setExternalId(line[0].trim());
 
                 //Код
                 Attribute code = domainObject.getAttribute(PrivilegeStrategy.CODE);

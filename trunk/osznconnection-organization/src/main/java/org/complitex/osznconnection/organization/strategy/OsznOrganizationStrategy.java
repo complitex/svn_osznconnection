@@ -113,7 +113,7 @@ public class OsznOrganizationStrategy extends OrganizationStrategy implements IO
     @Transactional
     @Override
     public DomainObject getItselfOrganization() {
-        return findById(ITSELF_ORGANIZATION_OBJECT_ID, true);
+        return findById(MODULE_ID, true);
     }
 
     @Transactional
@@ -280,7 +280,7 @@ public class OsznOrganizationStrategy extends OrganizationStrategy implements IO
     @Transactional
     @Override
     protected void deleteChecks(long objectId, Locale locale) throws DeleteException {
-        if (ITSELF_ORGANIZATION_OBJECT_ID == objectId) {
+        if (MODULE_ID == objectId) {
             throw new DeleteException(ResourceUtil.getString(RESOURCE_BUNDLE, "delete_reserved_instance_error", locale));
         }
         super.deleteChecks(objectId, locale);

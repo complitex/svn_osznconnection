@@ -195,9 +195,9 @@ public class FacilityReferenceBookBean extends AbstractBean {
             if (streetTypeIds.size() == 1) {
                 streetTypeId = streetTypeIds.get(0);
                 streetTypeCorrection = addressCorrectionBean.createStreetTypeCorrection(streetTypeName.toUpperCase(),
-                        streetTypeId, osznId, IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
+                        streetTypeId, osznId, IOsznOrganizationStrategy.MODULE_ID, userOrganizationId);
 
-                streetTypeCorrection.setCode(streetTypeCode);
+                streetTypeCorrection.setExternalId(streetTypeCode);
 
                 addressCorrectionBean.insert(streetTypeCorrection);
             } else if (streetTypeIds.size() > 1) {
@@ -221,9 +221,9 @@ public class FacilityReferenceBookBean extends AbstractBean {
 
         if (streetCorrections.size() == 1) {
             StreetCorrection streetCorrection = streetCorrections.get(0);
-            if (!Strings.isEqual(streetCode, streetCorrection.getCode())) {
+            if (!Strings.isEqual(streetCode, streetCorrection.getExternalId())) {
                 // коды не совпадают, нужно обновить код соответствия.
-                streetCorrection.setCode(streetCode);
+                streetCorrection.setExternalId(streetCode);
 
                 addressCorrectionBean.updateStreet(streetCorrection);
             }
@@ -242,7 +242,7 @@ public class FacilityReferenceBookBean extends AbstractBean {
                 StreetCorrection streetCorrection =
                         addressCorrectionBean.createStreetCorrection(streetName.toUpperCase(), streetCode.toUpperCase(),
                         streetTypeCorrection.getId(), cityCorrection.getId(), streetId, osznId,
-                        IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID, userOrganizationId);
+                        IOsznOrganizationStrategy.MODULE_ID, userOrganizationId);
                 addressCorrectionBean.insertStreet(streetCorrection);
             } else {
                 final IStrategy cityStrategy = strategyFactory.getStrategy("city");

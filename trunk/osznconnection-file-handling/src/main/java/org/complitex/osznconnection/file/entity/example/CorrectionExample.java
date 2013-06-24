@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.osznconnection.file.entity.example;
 
 import java.io.Serializable;
@@ -11,14 +7,13 @@ import java.io.Serializable;
  * @author Artem
  */
 public class CorrectionExample implements Serializable {
-
     private String correction;
     private String internalObject;
     private Long organizationId;
     private Long userOrganizationId;
-    private Long internalOrganizationId;
+    private Long moduleId;
     private Long objectId;
-    private String code;
+    private String externalId;
     private String entity;
     private String parentEntity;
     private int start;
@@ -30,14 +25,6 @@ public class CorrectionExample implements Serializable {
     private boolean admin;
     private String outerOrganizationsString;
     private String userOrganizationsString;
-
-    public boolean isAsc() {
-        return asc;
-    }
-
-    public void setAsc(boolean asc) {
-        this.asc = asc;
-    }
 
     public String getCorrection() {
         return correction;
@@ -55,60 +42,28 @@ public class CorrectionExample implements Serializable {
         this.internalObject = internalObject;
     }
 
-    public Long getLocaleId() {
-        return localeId;
+    public Long getOrganizationId() {
+        return organizationId;
     }
 
-    public void setLocaleId(Long localeId) {
-        this.localeId = localeId;
+    public void setOrganizationId(Long organizationId) {
+        this.organizationId = organizationId;
     }
 
-    public String getOrderByClause() {
-        return orderByClause;
+    public Long getUserOrganizationId() {
+        return userOrganizationId;
     }
 
-    public void setOrderByClause(String orderByClause) {
-        this.orderByClause = orderByClause;
+    public void setUserOrganizationId(Long userOrganizationId) {
+        this.userOrganizationId = userOrganizationId;
     }
 
-    public int getSize() {
-        return size;
+    public Long getModuleId() {
+        return moduleId;
     }
 
-    public void setSize(int size) {
-        this.size = size;
-    }
-
-    public int getStart() {
-        return start;
-    }
-
-    public void setStart(int start) {
-        this.start = start;
-    }
-
-    public String getEntity() {
-        return entity;
-    }
-
-    public String getParentEntity() {
-        return parentEntity;
-    }
-
-    public void setParentEntity(String parentEntity) {
-        this.parentEntity = parentEntity;
-    }
-
-    public void setEntity(String entity) {
-        this.entity = entity;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
+    public void setModuleId(Long moduleId) {
+        this.moduleId = moduleId;
     }
 
     public Long getObjectId() {
@@ -119,20 +74,68 @@ public class CorrectionExample implements Serializable {
         this.objectId = objectId;
     }
 
-    public Long getOrganizationId() {
-        return organizationId;
+    public String getExternalId() {
+        return externalId;
     }
 
-    public void setOrganizationId(Long organizationId) {
-        this.organizationId = organizationId;
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
     }
 
-    public Long getInternalOrganizationId() {
-        return internalOrganizationId;
+    public String getEntity() {
+        return entity;
     }
 
-    public void setInternalOrganizationId(Long internalOrganizationId) {
-        this.internalOrganizationId = internalOrganizationId;
+    public void setEntity(String entity) {
+        this.entity = entity;
+    }
+
+    public String getParentEntity() {
+        return parentEntity;
+    }
+
+    public void setParentEntity(String parentEntity) {
+        this.parentEntity = parentEntity;
+    }
+
+    public int getStart() {
+        return start;
+    }
+
+    public void setStart(int start) {
+        this.start = start;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
+
+    public String getOrderByClause() {
+        return orderByClause;
+    }
+
+    public void setOrderByClause(String orderByClause) {
+        this.orderByClause = orderByClause;
+    }
+
+    public boolean isAsc() {
+        return asc;
+    }
+
+    public void setAsc(boolean asc) {
+        this.asc = asc;
+    }
+
+    public Long getLocaleId() {
+        return localeId;
+    }
+
+    public void setLocaleId(Long localeId) {
+        this.localeId = localeId;
     }
 
     public Long getParentId() {
@@ -165,13 +168,5 @@ public class CorrectionExample implements Serializable {
 
     public void setUserOrganizationsString(String userOrganizationsString) {
         this.userOrganizationsString = userOrganizationsString;
-    }
-
-    public Long getUserOrganizationId() {
-        return userOrganizationId;
-    }
-
-    public void setUserOrganizationId(Long userOrganizationId) {
-        this.userOrganizationId = userOrganizationId;
     }
 }

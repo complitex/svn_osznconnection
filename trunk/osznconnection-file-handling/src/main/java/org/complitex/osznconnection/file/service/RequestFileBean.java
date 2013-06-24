@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 25.08.2010 12:15:53
- * 
+ *
  * Работа с базой данных для файла запроса.
  * Поиск, сохранение, обновление, удаление, проверка на наличие в базе.
  * Изменение статуса при отмене процесса загрузки и сохранения.
@@ -167,15 +167,12 @@ public class RequestFileBean extends AbstractBean {
         sqlSession().delete(NS + ".deleteRequestFile", requestFile.getId());
     }
 
+    public Long getId(RequestFile requestFile) {
+        return sqlSession().selectOne(NS + ".selectLoadedId", requestFile);
+    }
+
     public boolean checkLoaded(RequestFile requestFile) {
-        Long id = sqlSession().selectOne(NS + ".selectLoadedId", requestFile);
-
-        if (id != null) {
-            requestFile.setId(id);
-            return true;
-        }
-
-        return false;
+        return sqlSession().selectOne(NS + ".selectIsLoaded", requestFile);
     }
 
     @Transactional
@@ -190,7 +187,7 @@ public class RequestFileBean extends AbstractBean {
     public void deleteFacilityReferenceFiles(long osznId, long userOrganizationId, RequestFileType requestFileType) {
         List<RequestFile> facilityReferenceFiles = sqlSession().selectList(NS + ".getFacilityReferenceFiles",
                 ImmutableMap.of("osznId", osznId, "userOrganizationId", userOrganizationId,
-                "requestFileType", requestFileType.name()));
+                        "requestFileType", requestFileType.name()));
         for (RequestFile facilityReferenceFile : facilityReferenceFiles) {
             delete(facilityReferenceFile);
         }
@@ -227,7 +224,7 @@ public class RequestFileBean extends AbstractBean {
 
             if (first != null){
                 requestFile.setEndDate(first.getBeginDate());
-            }else {
+            } else if (checkLoaded(requestFile)){
                 throw new ExecuteException("Файл {0} за месяц {1} уже загружен", requestFile.getFullName(), DateUtil.format(requestFile.getBeginDate()));
             }
         }

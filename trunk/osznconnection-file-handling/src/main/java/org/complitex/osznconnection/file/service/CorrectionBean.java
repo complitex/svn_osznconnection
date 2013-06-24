@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.osznconnection.file.service;
 
 import com.google.common.collect.Maps;
@@ -25,21 +21,22 @@ import java.util.Map;
  */
 @Stateless
 public class CorrectionBean extends AbstractBean {
+    protected static final String NS = CorrectionBean.class.getName();
 
-    protected static final String CORRECTION_BEAN_MAPPING_NAMESPACE = CorrectionBean.class.getName();
     @EJB
     protected StrategyFactory strategyFactory;
+
     @EJB
     private LocaleBean localeBean;
+
     @EJB
     private OsznSessionBean osznSessionBean;
 
     public static enum OrderBy {
-
         CORRECTION("correction"),
-        CODE("organization_code"),
+        EXTERNAL_ID("external_id"),
         ORGANIZATION("organization"),
-        INTERNAL_ORGANIZATION("internalOrganization"),
+        MODULE("module"),
         OBJECT("object"),
         USER_ORGANIZATION("userOrganization");
         private String orderBy;
@@ -56,7 +53,7 @@ public class CorrectionBean extends AbstractBean {
     @Transactional
     public List<Correction> find(CorrectionExample example) {
         osznSessionBean.prepareExampleForPermissionCheck(example);
-        List<Correction> corrections = sqlSession().selectList(CORRECTION_BEAN_MAPPING_NAMESPACE + ".find", example);
+        List<Correction> corrections = sqlSession().selectList(NS + ".find", example);
         setUpDisplayObject(corrections, example.getEntity(), example.getLocaleId());
         return corrections;
     }
@@ -80,7 +77,7 @@ public class CorrectionBean extends AbstractBean {
     @Transactional
     public int count(CorrectionExample example) {
         osznSessionBean.prepareExampleForPermissionCheck(example);
-        return (Integer) sqlSession().selectOne(CORRECTION_BEAN_MAPPING_NAMESPACE + ".count", example);
+        return sqlSession().selectOne(NS + ".count", example);
     }
 
     @Transactional
@@ -89,7 +86,7 @@ public class CorrectionBean extends AbstractBean {
         params.put("entity", entity);
         params.put("id", correctionId);
 
-        Correction correction = (Correction) sqlSession().selectOne(CORRECTION_BEAN_MAPPING_NAMESPACE + ".findById", params);
+        Correction correction = sqlSession().selectOne(NS + ".findById", params);
 
         if (correction != null) {
             correction.setEntity(entity);
@@ -106,26 +103,26 @@ public class CorrectionBean extends AbstractBean {
         params.put("organizationId", organizationId);
         params.put("internalOrganizationId", internalOrganizationId);
 
-        return (Long) sqlSession().selectOne(CORRECTION_BEAN_MAPPING_NAMESPACE + ".findByObjectId", params);
+        return sqlSession().selectOne(NS + ".findByObjectId", params);
     }
 
     @Transactional
     public void update(Correction correction) {
-        sqlSession().update(CORRECTION_BEAN_MAPPING_NAMESPACE + ".update", correction);
+        sqlSession().update(NS + ".update", correction);
     }
 
     @Transactional
     public void insert(Correction correction) {
-        sqlSession().insert(CORRECTION_BEAN_MAPPING_NAMESPACE + ".insert", correction);
+        sqlSession().insert(NS + ".insert", correction);
     }
 
     @Transactional
     public void delete(Correction correction) {
-        sqlSession().delete(CORRECTION_BEAN_MAPPING_NAMESPACE + ".delete", correction);
+        sqlSession().delete(NS + ".delete", correction);
     }
 
     @Transactional
     public boolean checkExistence(Correction correction) {
-        return (Integer) sqlSession().selectOne(CORRECTION_BEAN_MAPPING_NAMESPACE + ".checkExistence", correction) > 0;
+        return (Integer) sqlSession().selectOne(NS + ".checkExistence", correction) > 0;
     }
 }

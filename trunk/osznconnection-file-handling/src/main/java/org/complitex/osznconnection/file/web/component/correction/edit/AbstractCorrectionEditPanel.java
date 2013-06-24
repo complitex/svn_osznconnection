@@ -6,6 +6,9 @@ package org.complitex.osznconnection.file.web.component.correction.edit;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
+import org.apache.wicket.Page;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.authorization.UnauthorizedInstantiationException;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -15,33 +18,26 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.*;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
 import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
 import org.complitex.osznconnection.file.entity.Correction;
 import org.complitex.osznconnection.file.service.CorrectionBean;
 import org.complitex.osznconnection.file.service.OsznSessionBean;
+import org.complitex.osznconnection.file.web.model.OrganizationModel;
+import org.complitex.osznconnection.file.web.pages.correction.AbstractCorrectionList;
+import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
+import org.complitex.osznconnection.organization_type.strategy.OsznOrganizationTypeStrategy;
+import org.complitex.template.web.template.TemplateSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import java.util.List;
 import java.util.Locale;
-import org.apache.wicket.Page;
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
-import org.apache.wicket.model.LoadableDetachableModel;
-import org.apache.wicket.model.Model;
-import org.apache.wicket.model.StringResourceModel;
-import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.apache.wicket.util.string.Strings;
-import org.complitex.osznconnection.file.web.model.OrganizationModel;
-import org.complitex.osznconnection.file.web.pages.correction.AbstractCorrectionList;
-import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
-import org.complitex.osznconnection.organization_type.strategy.OsznOrganizationTypeStrategy;
-import org.complitex.template.web.template.TemplateSession;
 
 /**
  * Абстрактная панель для редактирования коррекций.
@@ -353,7 +349,7 @@ public abstract class AbstractCorrectionEditPanel extends Panel {
         form.add(userOrganization);
 
         if (isNew()) {
-            correction.setInternalOrganizationId(IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID);
+            correction.setModuleId(IOsznOrganizationStrategy.MODULE_ID);
         }
 
         final List<DomainObject> internalOrganizations = Lists.newArrayList(organizationStrategy.getItselfOrganization());
@@ -361,7 +357,7 @@ public abstract class AbstractCorrectionEditPanel extends Panel {
 
             @Override
             public Long getOrganizationId() {
-                return correction.getInternalOrganizationId();
+                return correction.getModuleId();
             }
 
             @Override

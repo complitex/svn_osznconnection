@@ -1,29 +1,38 @@
 package org.complitex.osznconnection.file.entity;
 
+import org.complitex.dictionary.util.DateUtil;
+
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * Объект коррекции
  * @author Artem
  */
 public class Correction implements Serializable {
-
     private Long id;
-    private String entity;
+    private Long parentId;
+    private Long objectId;
+    private String externalId;
     private String correction;
-    private String code;
+    private Date beginDate = DateUtil.MIN_BEGIN_DATE;
+    private Date endDate = DateUtil.MAX_END_DATE;
     private Long organizationId;
+    private Long userOrganizationId;
+    private Long moduleId;
+
     private String organization;
     private String userOrganization;
-    private Long objectId;
     private Long internalParentId;
-    private Long internalOrganizationId;
-    private String internalOrganization;
-    private Long parentId;
-    private Correction parent;
+
+    private String entity;
+
     private String displayObject;
-    private Long userOrganizationId;
+    private String module;
+
     private boolean editable = true;
+
+    private Correction parent;
 
     public Correction() {
     }
@@ -40,44 +49,12 @@ public class Correction implements Serializable {
         this.id = id;
     }
 
-    public String getEntity() {
-        return entity;
+    public Long getParentId() {
+        return parentId;
     }
 
-    public void setEntity(String entity) {
-        this.entity = entity;
-    }
-
-    public String getCorrection() {
-        return correction;
-    }
-
-    public void setCorrection(String correction) {
-        this.correction = correction;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public Long getOrganizationId() {
-        return organizationId;
-    }
-
-    public void setOrganizationId(Long organizationId) {
-        this.organizationId = organizationId;
-    }
-
-    public String getOrganization() {
-        return organization;
-    }
-
-    public void setOrganization(String organization) {
-        this.organization = organization;
+    public void setParentId(Long parentId) {
+        this.parentId = parentId;
     }
 
     public Long getObjectId() {
@@ -88,60 +65,76 @@ public class Correction implements Serializable {
         this.objectId = objectId;
     }
 
+    public String getExternalId() {
+        return externalId;
+    }
+
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
+    }
+
+    public String getCorrection() {
+        return correction;
+    }
+
+    public void setCorrection(String correction) {
+        this.correction = correction;
+    }
+
+    public Date getBeginDate() {
+        return beginDate;
+    }
+
+    public void setBeginDate(Date beginDate) {
+        this.beginDate = beginDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
+    public Long getOrganizationId() {
+        return organizationId;
+    }
+
+    public void setOrganizationId(Long organizationId) {
+        this.organizationId = organizationId;
+    }
+
+    public Long getModuleId() {
+        return moduleId;
+    }
+
+    public void setModuleId(Long moduleId) {
+        this.moduleId = moduleId;
+    }
+
+    public String getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(String organization) {
+        this.organization = organization;
+    }
+
+    public String getUserOrganization() {
+        return userOrganization;
+    }
+
+    public void setUserOrganization(String userOrganization) {
+        this.userOrganization = userOrganization;
+    }
+
     public Long getInternalParentId() {
         return internalParentId;
     }
 
     public void setInternalParentId(Long internalParentId) {
         this.internalParentId = internalParentId;
-    }
-
-    public Long getInternalOrganizationId() {
-        return internalOrganizationId;
-    }
-
-    public void setInternalOrganizationId(Long internalOrganizationId) {
-        this.internalOrganizationId = internalOrganizationId;
-    }
-
-    public String getInternalOrganization() {
-        return internalOrganization;
-    }
-
-    public void setInternalOrganization(String internalOrganization) {
-        this.internalOrganization = internalOrganization;
-    }
-
-    public Long getParentId() {
-        return parentId;
-    }
-
-    public void setParentId(Long parentId) {
-        this.parentId = parentId;
-    }
-
-    public Correction getParent() {
-        return parent;
-    }
-
-    public void setParent(Correction parent) {
-        this.parent = parent;
-    }
-
-    public String getDisplayObject() {
-        return displayObject;
-    }
-
-    public void setDisplayObject(String displayObject) {
-        this.displayObject = displayObject;
-    }
-
-    public boolean isEditable() {
-        return editable;
-    }
-
-    public void setEditable(boolean editable) {
-        this.editable = editable;
     }
 
     public Long getUserOrganizationId() {
@@ -152,11 +145,43 @@ public class Correction implements Serializable {
         this.userOrganizationId = userOrganizationId;
     }
 
-    public String getUserOrganization() {
-        return userOrganization;
+    public String getEntity() {
+        return entity;
     }
 
-    public void setUserOrganization(String userOrganization) {
-        this.userOrganization = userOrganization;
+    public void setEntity(String entity) {
+        this.entity = entity;
+    }
+
+    public String getDisplayObject() {
+        return displayObject;
+    }
+
+    public void setDisplayObject(String displayObject) {
+        this.displayObject = displayObject;
+    }
+
+    public String getModule() {
+        return module;
+    }
+
+    public void setModule(String module) {
+        this.module = module;
+    }
+
+    public boolean isEditable() {
+        return editable;
+    }
+
+    public void setEditable(boolean editable) {
+        this.editable = editable;
+    }
+
+    public Correction getParent() {
+        return parent;
+    }
+
+    public void setParent(Correction parent) {
+        this.parent = parent;
     }
 }

@@ -8,15 +8,16 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.SetMultimap;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.osznconnection.file.entity.CalculationContext;
 import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
 import org.complitex.osznconnection.organization.strategy.entity.ServiceAssociationList;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  *
@@ -30,7 +31,7 @@ public class CalculationCenterBean {
 
     /**
      * Figures out calculation context for calculation center with minimal object id.
-     * @param userOrganizationId
+     * @param userOrganizationId userOrganizationId
      * @return 
      */
     public CalculationContext getContextWithAnyCalculationCenter(long userOrganizationId) {
