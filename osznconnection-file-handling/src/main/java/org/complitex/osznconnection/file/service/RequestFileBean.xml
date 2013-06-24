@@ -203,7 +203,8 @@
             `request_file`
         where
             `name` = #{name} and organization_id = #{organizationId} and `user_organization_id` = #{userOrganizationId}
-                and `registry` = #{registry} and `begin_date` = #{beginDate} and `end_date` = #{endDate}
+                and `registry` = #{registry} and `begin_date` = #{beginDate}
+                  and (`end_date` = #{endDate} or `end_date` is null)
     </select>
 
     <select id="selectLoadedId" parameterType="org.complitex.osznconnection.file.entity.RequestFile"
@@ -212,7 +213,8 @@
         where
             `name` = #{name} and `organization_id` = #{organizationId} 
                 and `user_organization_id` = #{userOrganizationId}
-                and `registry` = #{registry} and `begin_date` = #{beginDate} and `end_date` = #{endDate}
+                and `registry` = #{registry} and `begin_date` = #{beginDate}
+                and (`end_date` = #{endDate} or `end_date` is null)
         limit 1
     </select>
 

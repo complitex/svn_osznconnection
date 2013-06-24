@@ -3,11 +3,11 @@ package org.complitex.osznconnection.organization.strategy;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
+import org.complitex.osznconnection.organization.strategy.entity.RemoteDataSource;
+import org.complitex.osznconnection.organization.strategy.entity.ServiceAssociationList;
 
 import java.util.List;
 import java.util.Locale;
-import org.complitex.osznconnection.organization.strategy.entity.RemoteDataSource;
-import org.complitex.osznconnection.organization.strategy.entity.ServiceAssociationList;
 
 /**
  *
@@ -85,7 +85,7 @@ public interface IOsznOrganizationStrategy extends IOrganizationStrategy {
     /**
      * Itself organization instance id.
      */
-    long ITSELF_ORGANIZATION_OBJECT_ID = 0;
+    long MODULE_ID = 0;
 
     /**
      * Figures out all outer (OSZNs and calculation centers) organizations visible to current user 

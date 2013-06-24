@@ -5,23 +5,29 @@
     <resultMap id="correction" type="org.complitex.osznconnection.file.entity.Correction">
         <result column="id" property="id"/>
         <result column="parent_id" property="parentId"/>
-        <result column="correction" property="correction"/>
+        <result column="external_id" property="externalId"/>
         <result column="object_id" property="objectId"/>
-        <result column="internal_organization_id" property="internalOrganizationId"/>
-        <result column="internalOrganization" property="internalOrganization"/>
+        <result column="correction" property="correction"/>
+        <result column="begin_date" property="beginDate"/>
+        <result column="end_date" property="endDate"/>
+
         <result column="organization_id" property="organizationId"/>
-        <result column="organization_code" property="code"/>
+        <result column="user_organization_id" property="userOrganizationId"/>
+        <result column="module_id" property="moduleId"/>
+
+        <result column="module" property="module"/>
         <result column="organization" property="organization"/>
         <result column="userOrganization" property="userOrganization"/>
-        <result column="user_organization_id" property="userOrganizationId"/>
     </resultMap>
 
     <insert id="insert" parameterType="org.complitex.osznconnection.file.entity.Correction"
             keyProperty="id" useGeneratedKeys="true">
         INSERT INTO `${entity}_correction`
-            (`organization_id`, `correction`, `object_id`, `organization_code`, `internal_organization_id`, `parent_id`, `user_organization_id`)
+            (`parent_id`, `external_id`, `object_id`, `correction`, `begin_date`, `end_date`, `organization_id`,
+              `user_organization_id`, `module_id`)
          VALUES
-            (#{organizationId}, #{correction}, #{objectId}, #{code}, #{internalOrganizationId}, #{parentId}, #{userOrganizationId})
+            (#{parentId}, #{externalId}, #{objectId}, #{correction}, #{beginDate}, #{endDate}, #{organizationId},
+              #{userOrganizationId}, #{moduleId})
     </insert>
 
     <sql id="filter">
@@ -29,23 +35,27 @@
             <if test="internalObject != null">
                 AND esc.`value` LIKE CONCAT('%', #{internalObject}, '%')
             </if>
+
             <if test="correction != null">
                 AND c.`correction` LIKE CONCAT('%', #{correction}, '%')
             </if>
 
-            <if test="code != null">
-                AND c.`organization_code` LIKE CONCAT('%', #{code}, '%')
+            <if test="externalId != null">
+                AND c.`external_id` = #{externalId}
             </if>
 
             <if test="organizationId != null">
                 and c.`organization_id` = #{organizationId}
             </if>
+
             <if test="userOrganizationId != null">
                 and c.`user_organization_id` = #{userOrganizationId}
             </if>
-            <if test="internalOrganizationId != null">
-                and c.`internal_organization_id` = #{internalOrganizationId}
+
+            <if test="moduleId != null">
+                and c.`module_id` = #{moduleId}
             </if>
+
             <if test="not admin">
                 and (c.`organization_id` in ${outerOrganizationsString})
                 and (c.`user_organization_id` is null or c.`user_organization_id` in ${userOrganizationsString})
@@ -59,7 +69,7 @@
         left join `organization_string_culture` osc on (osc.`id` = oa.`value_id` and osc.`locale_id` = #{localeId})
         LEFT JOIN `organization_string_culture` osc_sys ON (osc_sys.`id` = oa.`value_id` and osc_sys.`locale_id` = (SELECT l.`id` FROM `locales` l WHERE l.`system` = 1))
 
-        left join `organization_attribute` oa_i on (oa_i.`object_id` = c.`internal_organization_id`
+        left join `organization_attribute` oa_i on (oa_i.`object_id` = c.`module_id`
             and oa_i.`status` = 'ACTIVE' and oa_i.`attribute_type_id` = 900)
         left join `organization_string_culture` osc_i on (osc_i.`id` = oa_i.`value_id` and osc_i.`locale_id` = #{localeId})
         LEFT JOIN `organization_string_culture` osc_i_sys ON (osc_i_sys.`id` = oa_i.`value_id` and osc_i_sys.`locale_id` = (SELECT l.`id` FROM `locales` l WHERE l.`system` = 1))
@@ -87,7 +97,7 @@
 
     <sql id="find">
         SELECT
-            distinct c.*, IFNULL(osc.`value`, osc_sys.`value`) organization, IFNULL(osc_i.`value`, osc_i_sys.`value`) internalOrganization,
+            distinct c.*, IFNULL(osc.`value`, osc_sys.`value`) organization, IFNULL(osc_i.`value`, osc_i_sys.`value`) module,
             IFNULL(uosc.`value`, uosc_sys.`value`) userOrganization
         FROM `${entity}_correction` c
 
@@ -110,8 +120,8 @@
                     </if>
                     c.`correction`
                 </when>
-                <when test="orderByClause == 'organization_code'">
-                    LPAD(c.`organization_code`,15,' ')
+                <when test="orderByClause == 'external_id'">
+                    LPAD(c.`external_id`,15,' ')
                 </when>
                 <otherwise>
                     ${orderByClause}
@@ -146,14 +156,13 @@
     <select id="findByObjectId" parameterType="map" resultType="long">
         SELECT c.`id` FROM `${entity}_correction` c
         WHERE c.`object_id` = #{objectId} and `organization_id` = #{organizationId}
-            and `internal_organization_id` = #{internalOrganizationId} limit 1
+            and `module_id` = #{moduleId} limit 1
     </select>
 
     <update id="update" parameterType="org.complitex.osznconnection.file.entity.Correction">
         UPDATE `${entity}_correction` SET `organization_id` = #{organizationId}, `correction` = #{correction},
-        `object_id` = #{objectId}, `organization_code` = #{code}, `internal_organization_id` = #{internalOrganizationId},
-        `parent_id` = #{parentId},
-        `user_organization_id` = #{userOrganizationId}
+            `object_id` = #{objectId}, `external_id` = #{externalId}, `parent_id` = #{parentId},
+            `user_organization_id` = #{userOrganizationId}, `begin_date` = #{beginDate}, `end_date` = #{endDate}
         WHERE `id` = #{id}
     </update>
 
@@ -166,8 +175,7 @@
         <if test="id != null">
             `id` != #{id} AND
         </if>
-        `object_id` = #{objectId}
-        AND `internal_organization_id` = #{internalOrganizationId}
+        `object_id` = #{objectId} AND `module_id` = #{moduleId}
         AND
         <choose>
             <when test="parentId != null">
@@ -192,12 +200,11 @@
         AND
         <choose>
             <when test="code != null">
-                `organization_code` = #{code}
+                `external_id` = #{externalId}
             </when>
             <otherwise>
-                `organization_code` IS NULL
+                `external_id` IS NULL
             </otherwise>
         </choose>
     </select>
-
 </mapper>

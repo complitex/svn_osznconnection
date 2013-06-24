@@ -60,5 +60,5 @@ public enum SubsidyDBF {
     SUMMA,
     NUMM,
     SUBS,
-    KVT;
+    KVT
 }

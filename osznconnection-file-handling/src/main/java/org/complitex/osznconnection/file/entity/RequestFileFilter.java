@@ -11,7 +11,6 @@ import java.util.Date;
  *
  */
 public class RequestFileFilter extends AbstractFilter {
-
     private Long id;
     private Long groupId;
     private Date loaded;

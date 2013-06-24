@@ -539,7 +539,7 @@ public class OsznOrganizationEditComponent extends OrganizationEditComponent {
     @Override
     protected boolean isOrganizationTypeEnabled() {
         Long organizationId = getDomainObject().getId();
-        return !(organizationId != null && (organizationId == IOsznOrganizationStrategy.ITSELF_ORGANIZATION_OBJECT_ID))
+        return !(organizationId != null && (organizationId == IOsznOrganizationStrategy.MODULE_ID))
                 && super.isOrganizationTypeEnabled();
     }
 }

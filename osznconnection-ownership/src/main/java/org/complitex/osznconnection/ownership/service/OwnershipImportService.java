@@ -1,13 +1,14 @@
 package org.complitex.osznconnection.ownership.service;
 
 import au.com.bytecode.opencsv.CSVReader;
-import org.complitex.dictionary.service.AbstractImportService;
 import org.complitex.dictionary.entity.Attribute;
 import org.complitex.dictionary.entity.DomainObject;
+import org.complitex.dictionary.service.AbstractImportService;
 import org.complitex.dictionary.service.IImportListener;
 import org.complitex.dictionary.service.StringCultureBean;
 import org.complitex.dictionary.service.exception.ImportFileNotFoundException;
 import org.complitex.dictionary.service.exception.ImportFileReadException;
+import org.complitex.dictionary.util.DateUtil;
 import org.complitex.osznconnection.ownership.strategy.OwnershipStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import java.io.IOException;
-import org.complitex.dictionary.util.DateUtil;
 
 import static org.complitex.osznconnection.ownership.entity.OwnershipImportFile.OWNERSHIP;
 
@@ -57,7 +57,7 @@ public class OwnershipImportService extends AbstractImportService{
                 Attribute name = domainObject.getAttribute(OwnershipStrategy.NAME);
 
                 //OWNERSHIP_ID
-                domainObject.setExternalId(Long.parseLong(line[0].trim()));
+                domainObject.setExternalId(line[0].trim());
 
                 //Название формы собственности
                 stringCultureBean.getSystemStringCulture(name.getLocalizedValues()).setValue(line[1].trim());

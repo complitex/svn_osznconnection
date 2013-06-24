@@ -58,10 +58,10 @@ public class PrivilegeCorrectionBean extends CorrectionBean {
             long organizationId, long internalOrganizationId, long userOrganizationId) {
         Correction correction = new Correction("privilege");
         correction.setParentId(null);
-        correction.setCode(code);
+        correction.setExternalId(code);
         correction.setCorrection(privilege);
         correction.setOrganizationId(organizationId);
-        correction.setInternalOrganizationId(internalOrganizationId);
+        correction.setModuleId(internalOrganizationId);
         correction.setObjectId(ownershipObjectId);
         correction.setUserOrganizationId(userOrganizationId);
         return correction;

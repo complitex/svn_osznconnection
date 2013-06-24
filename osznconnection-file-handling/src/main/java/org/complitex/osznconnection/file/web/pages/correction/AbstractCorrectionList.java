@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.osznconnection.file.web.pages.correction;
 
 import com.google.common.collect.ImmutableList;
@@ -9,8 +5,10 @@ import com.google.common.collect.Lists;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
@@ -20,34 +18,33 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.util.string.Strings;
+import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.service.LocaleBean;
+import org.complitex.dictionary.util.StringUtil;
+import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
+import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
+import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
-import org.complitex.template.web.component.toolbar.ToolbarButton;
-import org.complitex.template.web.security.SecurityRole;
+import org.complitex.dictionary.web.component.scroll.ScrollBookmarkablePageLink;
 import org.complitex.osznconnection.file.entity.Correction;
 import org.complitex.osznconnection.file.entity.example.CorrectionExample;
 import org.complitex.osznconnection.file.service.CorrectionBean;
+import org.complitex.osznconnection.file.web.model.OrganizationModel;
+import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
+import org.complitex.template.web.component.toolbar.AddItemButton;
+import org.complitex.template.web.component.toolbar.ToolbarButton;
+import org.complitex.template.web.pages.ScrollListPage;
+import org.complitex.template.web.security.SecurityRole;
 
 import javax.ejb.EJB;
 import java.util.List;
-import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
-import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
-import org.apache.wicket.model.LoadableDetachableModel;
-import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.apache.wicket.request.resource.PackageResourceReference;
-import org.complitex.dictionary.entity.DomainObject;
-import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
-import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
-import org.complitex.dictionary.web.component.datatable.DataProvider;
-import org.complitex.dictionary.web.component.scroll.ScrollBookmarkablePageLink;
-import org.complitex.template.web.component.toolbar.AddItemButton;
-import org.complitex.osznconnection.file.web.model.OrganizationModel;
-import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
-import org.complitex.template.web.pages.ScrollListPage;
 
 /**
  * Абстрактный класс для списка коррекций.
@@ -55,12 +52,14 @@ import org.complitex.template.web.pages.ScrollListPage;
  */
 @AuthorizeInstantiation(SecurityRole.AUTHORIZED)
 public abstract class AbstractCorrectionList extends ScrollListPage {
-
     @EJB
     private CorrectionBean correctionBean;
+
     @EJB
     private LocaleBean localeBean;
+
     @EJB(name = "OsznOrganizationStrategy")
+
     private IOsznOrganizationStrategy organizationStrategy;
     private String entity;
     private IModel<CorrectionExample> example;
@@ -218,24 +217,24 @@ public abstract class AbstractCorrectionList extends ScrollListPage {
             }
         };
 
-        filterForm.add(new DisableAwareDropDownChoice<DomainObject>("userOrganizationFilter",
+        filterForm.add(new DisableAwareDropDownChoice<>("userOrganizationFilter",
                 userOrganizationModel, allUserOrganizationsModel, organizationRenderer).setNullValid(true));
 
-        filterForm.add(new TextField<String>("correctionFilter", new PropertyModel<String>(example, "correction")));
-        filterForm.add(new TextField<String>("codeFilter", new PropertyModel<String>(example, "code")));
-        filterForm.add(new TextField<String>("internalObjectFilter", new PropertyModel<String>(example, "internalObject")));
+        filterForm.add(new TextField<>("correctionFilter", new PropertyModel<String>(example, "correction")));
+        filterForm.add(new TextField<>("codeFilter", new PropertyModel<String>(example, "code")));
+        filterForm.add(new TextField<>("internalObjectFilter", new PropertyModel<String>(example, "internalObject")));
 
         final List<DomainObject> internalOrganizations = Lists.newArrayList(organizationStrategy.getItselfOrganization());
         IModel<DomainObject> internalOrganizationModel = new OrganizationModel() {
 
             @Override
             public Long getOrganizationId() {
-                return example.getObject().getInternalOrganizationId();
+                return example.getObject().getModuleId();
             }
 
             @Override
             public void setOrganizationId(Long organizationId) {
-                example.getObject().setInternalOrganizationId(organizationId);
+                example.getObject().setModuleId(organizationId);
             }
 
             @Override
@@ -244,10 +243,10 @@ public abstract class AbstractCorrectionList extends ScrollListPage {
             }
         };
 
-        filterForm.add(new DisableAwareDropDownChoice<DomainObject>("internalOrganizationFilter",
+        filterForm.add(new DisableAwareDropDownChoice<>("internalOrganizationFilter",
                 internalOrganizationModel, internalOrganizations, organizationRenderer).setNullValid(true));
 
-        AjaxLink<Void> reset = new IndicatingAjaxLink<Void>("reset") {
+        AjaxLink reset = new IndicatingAjaxLink("reset") {
 
             @Override
             public void onClick(AjaxRequestTarget target) {
@@ -279,18 +278,14 @@ public abstract class AbstractCorrectionList extends ScrollListPage {
                 item.add(new Label("organization", correction.getOrganization()));
                 item.add(new Label("correction", displayCorrection(correction)));
 
-                String code = correction.getCode();
-                if (code == null) {
-                    code = "";
-                }
-                item.add(new Label("code", code));
+                item.add(new Label("code", StringUtil.emptyOnNull(correction.getExternalId())));
 
                 item.add(new Label("internalObject", displayInternalObject(correction)));
 
                 //user organization
                 item.add(new Label("userOrganization", correction.getUserOrganization()));
 
-                item.add(new Label("internalOrganization", correction.getInternalOrganization()));
+                item.add(new Label("internalOrganization", correction.getModule()));
 
                 ScrollBookmarkablePageLink link = new ScrollBookmarkablePageLink<WebPage>("edit", getEditPage(),
                         getEditPageParams(correction.getId()), String.valueOf(correction.getId()));
@@ -303,10 +298,10 @@ public abstract class AbstractCorrectionList extends ScrollListPage {
 
         filterForm.add(new ArrowOrderByBorder("organizationHeader", CorrectionBean.OrderBy.ORGANIZATION.getOrderBy(), dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("correctionHeader", CorrectionBean.OrderBy.CORRECTION.getOrderBy(), dataProvider, data, content));
-        filterForm.add(new ArrowOrderByBorder("codeHeader", CorrectionBean.OrderBy.CODE.getOrderBy(), dataProvider, data, content));
+        filterForm.add(new ArrowOrderByBorder("codeHeader", CorrectionBean.OrderBy.EXTERNAL_ID.getOrderBy(), dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("internalObjectHeader", CorrectionBean.OrderBy.OBJECT.getOrderBy(), dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("userOrganizationHeader", CorrectionBean.OrderBy.USER_ORGANIZATION.getOrderBy(), dataProvider, data, content));
-        filterForm.add(new ArrowOrderByBorder("internalOrganizationHeader", CorrectionBean.OrderBy.INTERNAL_ORGANIZATION.getOrderBy(), dataProvider,
+        filterForm.add(new ArrowOrderByBorder("internalOrganizationHeader", CorrectionBean.OrderBy.MODULE.getOrderBy(), dataProvider,
                 data, content));
 
         content.add(new PagingNavigator("navigator", data, getPreferencesPage() + "#" + entity, content));
