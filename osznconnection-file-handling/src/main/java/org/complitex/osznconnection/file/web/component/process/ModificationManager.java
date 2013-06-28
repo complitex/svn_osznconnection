@@ -4,19 +4,20 @@
  */
 package org.complitex.osznconnection.file.web.component.process;
 
-import java.io.Serializable;
 import org.apache.wicket.Component;
+import org.complitex.dictionary.service.SessionBean;
 import org.complitex.dictionary.util.EjbBeanLocator;
 import org.complitex.dictionary.util.ResourceUtil;
 import org.complitex.dictionary.web.DictionaryFwSession;
-import org.complitex.osznconnection.file.service.OsznSessionBean;
+
+import java.io.Serializable;
+
 
 /**
  *
  * @author Artem
  */
 public final class ModificationManager implements Serializable {
-
     private static final String RESOURCE_BUNDLE = ModificationManager.class.getName();
     private final boolean modificationsAllowed;
     private final boolean hasFieldDescription;
@@ -25,7 +26,9 @@ public final class ModificationManager implements Serializable {
     public ModificationManager(Component component, boolean hasFieldDescription) {
         this.component = component;
         this.hasFieldDescription = hasFieldDescription;
-        OsznSessionBean osznSessionBean = osznSessionBean();
+
+        SessionBean osznSessionBean = sessionBean();
+
         this.modificationsAllowed =
                 //- только пользователи, принадлежащие организации или администраторы могут обрабатывать файлы.
                 (osznSessionBean.getCurrentUserOrganizationId(getSession()) != null || osznSessionBean.isAdmin())
@@ -37,8 +40,8 @@ public final class ModificationManager implements Serializable {
         return (DictionaryFwSession) component.getSession();
     }
 
-    private OsznSessionBean osznSessionBean() {
-        return EjbBeanLocator.getBean(OsznSessionBean.class);
+    private SessionBean sessionBean() {
+        return EjbBeanLocator.getBean(SessionBean.class);
     }
 
     public void reportErrorIfNecessary() {

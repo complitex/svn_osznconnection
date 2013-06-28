@@ -4,10 +4,6 @@
  */
 package org.complitex.osznconnection.file.web.pages.subsidy;
 
-import java.io.File;
-import java.util.Arrays;
-import java.util.List;
-import javax.ejb.EJB;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
@@ -28,17 +24,14 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.Strings;
+import org.complitex.address.util.AddressRenderer;
+import org.complitex.dictionary.service.SessionBean;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
-import org.complitex.osznconnection.file.entity.RequestFile;
-import org.complitex.osznconnection.file.entity.RequestStatus;
-import org.complitex.osznconnection.file.entity.StatusDetailInfo;
-import org.complitex.osznconnection.file.entity.Subsidy;
-import org.complitex.osznconnection.file.entity.SubsidyDBF;
+import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.entity.example.SubsidyExample;
 import org.complitex.osznconnection.file.service.AddressService;
-import org.complitex.osznconnection.file.service.OsznSessionBean;
 import org.complitex.osznconnection.file.service.RequestFileBean;
 import org.complitex.osznconnection.file.service.StatusRenderService;
 import org.complitex.osznconnection.file.service.SubsidyBean;
@@ -54,10 +47,13 @@ import org.complitex.osznconnection.file.web.component.DataRowHoverBehavior;
 import org.complitex.osznconnection.file.web.component.StatusDetailPanel;
 import org.complitex.osznconnection.file.web.component.StatusRenderer;
 import org.complitex.osznconnection.file.web.component.address.AddressCorrectionPanel;
-import org.complitex.osznconnection.file.web.component.address.AddressCorrectionPanel.CORRECTED_ENTITY;
-import org.complitex.osznconnection.file.web.pages.util.AddressRenderer;
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.TemplatePage;
+
+import javax.ejb.EJB;
+import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  *
@@ -65,22 +61,29 @@ import org.complitex.template.web.template.TemplatePage;
  */
 @AuthorizeInstantiation(SecurityRole.AUTHORIZED)
 public final class SubsidyList extends TemplatePage {
-
     public static final String FILE_ID = "request_file_id";
+
     @EJB
     private SubsidyBean subsidyBean;
+
     @EJB
     private RequestFileBean requestFileBean;
+
     @EJB
     private StatusRenderService statusRenderService;
+
     @EJB
     private WebWarningRenderer webWarningRenderer;
+
     @EJB
     private StatusDetailBean statusDetailBean;
+
     @EJB
     private AddressService addressService;
+
     @EJB
-    private OsznSessionBean osznSessionBean;
+    private SessionBean sessionBean;
+
     private IModel<SubsidyExample> example;
     private long fileId;
 
@@ -103,7 +106,7 @@ public final class SubsidyList extends TemplatePage {
         final RequestFile subsidyFile = requestFileBean.findById(fileId);
 
         //Проверка доступа к данным
-        if (!osznSessionBean.isAuthorized(subsidyFile.getOrganizationId(), subsidyFile.getUserOrganizationId())) {
+        if (!sessionBean.isAuthorized(subsidyFile.getOrganizationId(), subsidyFile.getUserOrganizationId())) {
             throw new UnauthorizedInstantiationException(this.getClass());
         }
 

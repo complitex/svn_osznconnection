@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.osznconnection.file.service;
 
 import com.google.common.collect.Lists;
@@ -9,6 +5,10 @@ import com.google.common.collect.Sets;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.address.strategy.building.entity.Building;
 import org.complitex.address.strategy.street.StreetStrategy;
+import org.complitex.correction.entity.BuildingCorrection;
+import org.complitex.correction.entity.Correction;
+import org.complitex.correction.entity.StreetCorrection;
+import org.complitex.correction.service.AddressCorrectionBean;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.AbstractBean;
@@ -30,7 +30,7 @@ import javax.ejb.Stateless;
 import java.util.List;
 import java.util.Set;
 
-import static org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy.MODULE_ID;
+import static org.complitex.osznconnection.organization.strategy.OsznOrganizationStrategy.MODULE_ID;
 
 /**
  * Класс разрешает адрес.

@@ -2,6 +2,8 @@ package org.complitex.osznconnection.file.service;
 
 import org.complitex.address.entity.AddressImportFile;
 import org.complitex.address.service.AddressImportService;
+import org.complitex.correction.entity.CorrectionImportFile;
+import org.complitex.correction.service.AddressCorrectionImportService;
 import org.complitex.dictionary.entity.DictionaryConfig;
 import org.complitex.dictionary.entity.IImportFile;
 import org.complitex.dictionary.entity.ImportMessage;
@@ -12,18 +14,18 @@ import org.complitex.dictionary.service.LogBean;
 import org.complitex.dictionary.service.exception.*;
 import org.complitex.dictionary.util.DateUtil;
 import org.complitex.osznconnection.file.Module;
-import org.complitex.osznconnection.file.entity.CorrectionImportFile;
-import org.complitex.osznconnection.ownership.entity.OwnershipImportFile;
-import org.complitex.osznconnection.ownership.service.OwnershipImportService;
-import org.complitex.osznconnection.privilege.entity.PrivilegeImportFile;
-import org.complitex.osznconnection.privilege.service.PrivilegeImportService;
+import org.complitex.osznconnection.file.entity.OwnershipImportFile;
+import org.complitex.osznconnection.file.entity.PrivilegeImportFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Resource;
 import javax.ejb.*;
-import javax.transaction.*;
-import java.util.*;
+import javax.transaction.SystemException;
+import javax.transaction.UserTransaction;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -36,24 +38,34 @@ public class ImportService {
 
     private final static Logger log = LoggerFactory.getLogger(ImportService.class);
     public static final long INT_ORG_ID = 0L;
+
     @Resource
     private UserTransaction userTransaction;
+
     @EJB
     private AddressImportService addressImportService;
+
     @EJB
     private AddressCorrectionImportService addressCorrectionImportService;
+
     @EJB
     private OwnershipImportService ownershipImportService;
+
     @EJB
     private PrivilegeImportService privilegeImportService;
+
     @EJB
     private OwnershipCorrectionImportService ownershipCorrectionImportService;
+
     @EJB
     private PrivilegeCorrectionImportService privilegeCorrectionImportService;
+
     @EJB
     private ConfigBean configBean;
+
     @EJB
     private LogBean logBean;
+
     private boolean processing;
     private boolean error;
     private boolean success;

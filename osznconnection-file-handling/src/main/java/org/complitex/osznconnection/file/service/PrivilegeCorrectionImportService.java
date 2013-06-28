@@ -6,7 +6,7 @@ import org.complitex.dictionary.service.IImportListener;
 import org.complitex.dictionary.service.exception.ImportFileNotFoundException;
 import org.complitex.dictionary.service.exception.ImportFileReadException;
 import org.complitex.dictionary.service.exception.ImportObjectLinkException;
-import org.complitex.osznconnection.privilege.strategy.PrivilegeStrategy;
+import org.complitex.osznconnection.file.strategy.PrivilegeStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +14,8 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import java.io.IOException;
 
-import static org.complitex.osznconnection.file.entity.CorrectionImportFile.PRIVILEGE_CORRECTION;
+import static org.complitex.correction.entity.CorrectionImportFile.PRIVILEGE_CORRECTION;
+
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru

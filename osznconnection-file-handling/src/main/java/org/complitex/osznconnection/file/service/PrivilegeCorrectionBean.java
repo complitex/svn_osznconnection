@@ -5,8 +5,9 @@
 package org.complitex.osznconnection.file.service;
 
 import com.google.common.collect.ImmutableMap;
+import org.complitex.correction.entity.Correction;
+import org.complitex.correction.service.CorrectionBean;
 import org.complitex.dictionary.mybatis.Transactional;
-import org.complitex.osznconnection.file.entity.Correction;
 
 import javax.ejb.Stateless;
 import java.util.List;

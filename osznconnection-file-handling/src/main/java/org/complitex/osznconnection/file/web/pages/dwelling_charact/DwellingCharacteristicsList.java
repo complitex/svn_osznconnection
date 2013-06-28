@@ -24,12 +24,16 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.Strings;
+import org.complitex.dictionary.service.SessionBean;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.entity.example.DwellingCharacteristicsExample;
-import org.complitex.osznconnection.file.service.*;
+import org.complitex.osznconnection.file.service.AddressService;
+import org.complitex.osznconnection.file.service.DwellingCharacteristicsBean;
+import org.complitex.osznconnection.file.service.RequestFileBean;
+import org.complitex.osznconnection.file.service.StatusRenderService;
 import org.complitex.osznconnection.file.service.exception.DublicateCorrectionException;
 import org.complitex.osznconnection.file.service.exception.MoreOneCorrectionException;
 import org.complitex.osznconnection.file.service.exception.NotFoundCorrectionException;
@@ -78,7 +82,7 @@ public final class DwellingCharacteristicsList extends TemplatePage {
     private AddressService addressService;
 
     @EJB
-    private OsznSessionBean osznSessionBean;
+    private SessionBean sessionBean;
 
     private IModel<DwellingCharacteristicsExample> example;
     private long fileId;
@@ -102,7 +106,7 @@ public final class DwellingCharacteristicsList extends TemplatePage {
         final RequestFile dwellingCharacteristicsFile = requestFileBean.findById(fileId);
 
         //Проверка доступа к данным
-        if (!osznSessionBean.isAuthorized(dwellingCharacteristicsFile.getOrganizationId(),
+        if (!sessionBean.isAuthorized(dwellingCharacteristicsFile.getOrganizationId(),
                 dwellingCharacteristicsFile.getUserOrganizationId())) {
             throw new UnauthorizedInstantiationException(this.getClass());
         }

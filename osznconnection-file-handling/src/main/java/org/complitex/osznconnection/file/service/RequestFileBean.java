@@ -3,6 +3,7 @@ package org.complitex.osznconnection.file.service;
 import com.google.common.collect.ImmutableMap;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.AbstractBean;
+import org.complitex.dictionary.service.SessionBean;
 import org.complitex.dictionary.service.executor.ExecuteException;
 import org.complitex.dictionary.util.DateUtil;
 import org.complitex.osznconnection.file.entity.RequestFile;
@@ -26,26 +27,35 @@ import java.util.List;
  */
 @Stateless
 public class RequestFileBean extends AbstractBean {
-
     public static final String NS = RequestFileBean.class.getName();
+
     @EJB
-    private OsznSessionBean osznSessionBean;
+    private SessionBean sessionBean;
+
     @EJB
     private SubsidyTarifBean subsidyTarifBean;
+
     @EJB
     private PaymentBean paymentBean;
+
     @EJB
     private BenefitBean benefitBean;
+
     @EJB
     private ActualPaymentBean actualPaymentBean;
+
     @EJB
     private SubsidyBean subsidyBean;
+
     @EJB
     private DwellingCharacteristicsBean dwellingCharacteristicsBean;
+
     @EJB
     private FacilityServiceTypeBean facilityServiceTypeBean;
+
     @EJB
     private FacilityForm2Bean facilityForm2Bean;
+
     @EJB
     private FacilityReferenceBookBean facilityReferenceBookBean;
 
@@ -54,7 +64,7 @@ public class RequestFileBean extends AbstractBean {
     }
 
     public List<RequestFile> getRequestFiles(RequestFileFilter filter) {
-        osznSessionBean.prepareFilterForPermissionCheck(filter);
+        sessionBean.prepareFilterForPermissionCheck(filter);
 
         switch (filter.getType()) {
             case ACTUAL_PAYMENT:
@@ -116,7 +126,7 @@ public class RequestFileBean extends AbstractBean {
     }
 
     public int size(RequestFileFilter filter) {
-        osznSessionBean.prepareFilterForPermissionCheck(filter);
+        sessionBean.prepareFilterForPermissionCheck(filter);
         return sqlSession().selectOne(NS + ".selectRequestFilesCount", filter);
     }
 

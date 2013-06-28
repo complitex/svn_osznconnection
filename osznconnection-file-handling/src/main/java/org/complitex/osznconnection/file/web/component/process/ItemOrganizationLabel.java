@@ -1,14 +1,11 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.osznconnection.file.web.component.process;
 
-import javax.ejb.EJB;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.Model;
 import org.complitex.dictionary.entity.DomainObject;
-import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
+import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
+
+import javax.ejb.EJB;
 
 /**
  *
@@ -16,8 +13,8 @@ import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrat
  */
 public class ItemOrganizationLabel extends Label {
 
-    @EJB(name = "OsznOrganizationStrategy")
-    private IOsznOrganizationStrategy organizationStrategy;
+    @EJB(name = "OrganizationStrategy")
+    private IOrganizationStrategy organizationStrategy;
 
     public ItemOrganizationLabel(String id, Long organizationId) {
         super(id);

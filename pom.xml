@@ -29,8 +29,6 @@
     <modules>
         <module>osznconnection-organization-type</module>
         <module>osznconnection-organization</module>
-        <module>osznconnection-ownership</module>
-        <module>osznconnection-privilege</module>
         <module>osznconnection-file-handling</module>
         <module>osznconnection-web</module>
         <module>osznconnection-address</module>
@@ -40,6 +38,7 @@
         <module>../complitex/complitex-template</module>
         <module>../complitex/complitex-admin</module>
         <module>../complitex/complitex-address</module>
+        <module>../complitex/complitex-correction</module>
         <module>../complitex/complitex-logging</module>
         <module>../complitex/complitex-resources</module>
         <module>../complitex/complitex-images</module>
@@ -83,6 +82,11 @@
             </dependency>
             <dependency>
                 <groupId>org.complitex</groupId>
+                <artifactId>complitex-correction</artifactId>
+                <version>${complitex.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.complitex</groupId>
                 <artifactId>complitex-logging</artifactId>
                 <version>${complitex.version}</version>
             </dependency>
@@ -122,16 +126,6 @@
             <dependency>
                 <groupId>org.complitex.osznconnection</groupId>
                 <artifactId>osznconnection-organization</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.complitex.osznconnection</groupId>
-                <artifactId>osznconnection-ownership</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.complitex.osznconnection</groupId>
-                <artifactId>osznconnection-privilege</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
