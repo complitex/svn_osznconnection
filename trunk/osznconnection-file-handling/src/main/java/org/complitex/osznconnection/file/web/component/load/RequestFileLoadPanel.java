@@ -1,38 +1,40 @@
 package org.complitex.osznconnection.file.web.component.load;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.feedback.ContainerFeedbackMessageFilter;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.complitex.dictionary.entity.DomainObject;
+import org.complitex.dictionary.service.SessionBean;
 import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
 import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
 import org.complitex.dictionary.web.component.YearDropDownChoice;
+import org.complitex.dictionary.web.model.OrganizationModel;
+import org.complitex.osznconnection.organization.strategy.OsznOrganizationStrategy;
+import org.complitex.template.web.template.TemplateSession;
 import org.odlabs.wiquery.ui.dialog.Dialog;
 
 import javax.ejb.EJB;
 import java.util.List;
-import org.apache.wicket.Component;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.ajax.markup.html.form.AjaxButton;
-import org.apache.wicket.feedback.ContainerFeedbackMessageFilter;
-import org.apache.wicket.markup.html.panel.EmptyPanel;
-import org.complitex.osznconnection.file.service.OsznSessionBean;
-import org.complitex.osznconnection.file.web.model.OrganizationModel;
-import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
-import org.complitex.template.web.template.TemplateSession;
 
 public final class RequestFileLoadPanel extends Panel {
 
-    @EJB(name = "OsznOrganizationStrategy")
-    private IOsznOrganizationStrategy organizationStrategy;
     @EJB
-    private OsznSessionBean osznSessionBean;
+    private OsznOrganizationStrategy organizationStrategy;
+
+    @EJB
+    private SessionBean sessionBean;
+
     private final Dialog dialog;
     private static final String MONTH_COMPONENT_ID = "monthComponent";
 
@@ -122,7 +124,7 @@ public final class RequestFileLoadPanel extends Panel {
                 "userOrganization", userOrganizationModel, userOrganizationsModel, organizationRenderer);
         userOrganization.setRequired(true);
         userOrganizationContainer.add(userOrganization);
-        Long currentUserOrganizationId = osznSessionBean.getCurrentUserOrganizationId(getSession());
+        Long currentUserOrganizationId = sessionBean.getCurrentUserOrganizationId(getSession());
         userOrganizationContainer.setVisible(currentUserOrganizationId == null);
 
         final DropDownChoice<Integer> year = new YearDropDownChoice("year", new Model<Integer>());
@@ -172,7 +174,7 @@ public final class RequestFileLoadPanel extends Panel {
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 final DomainObject oszn = osznModel.getObject();
-                Long mainUserOrganizationId = osznSessionBean.getCurrentUserOrganizationId(RequestFileLoadPanel.this.getSession());
+                Long mainUserOrganizationId = sessionBean.getCurrentUserOrganizationId(RequestFileLoadPanel.this.getSession());
                 long currentUserOrganizationId = mainUserOrganizationId != null ? mainUserOrganizationId
                         : userOrganizationModel.getOrganizationId();
 

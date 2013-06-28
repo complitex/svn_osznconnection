@@ -18,7 +18,7 @@ import org.apache.wicket.markup.html.form.RadioGroup;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import static org.complitex.dictionary.util.StringUtil.*;
-import org.complitex.osznconnection.file.web.pages.util.AddressRenderer;
+import org.complitex.address.util.AddressRenderer;
 
 /**
  * Панель для показа возможных вариантов выбора л/c по детальной информации,

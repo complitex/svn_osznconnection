@@ -52,6 +52,9 @@
         <mapper resource="org/complitex/address/strategy/city/City.xml"/>
         <mapper resource="org/complitex/address/strategy/district/District.xml"/>
 
+        <mapper resource="org/complitex/correction/service/CorrectionBean.xml"/>
+        <mapper resource="org/complitex/correction/service/AddressCorrectionBean.xml"/>
+
         <mapper resource="org/complitex/admin/service/UserBean.xml"/>
         <mapper resource="org/complitex/admin/service/UserProfileBean.xml"/>
         <mapper resource="org/complitex/logging/service/LogListBean.xml"/>
@@ -68,8 +71,6 @@
         <mapper resource="org/complitex/osznconnection/file/service/FacilityServiceTypeBean.xml"/>
         <mapper resource="org/complitex/osznconnection/file/service/FacilityForm2Bean.xml"/>
         <mapper resource="org/complitex/osznconnection/file/service/FacilityReferenceBookBean.xml"/>
-        <mapper resource="org/complitex/osznconnection/file/service/CorrectionBean.xml"/>
-        <mapper resource="org/complitex/osznconnection/file/service/AddressCorrectionBean.xml"/>
         <mapper resource="org/complitex/osznconnection/file/service/OwnershipCorrectionBean.xml"/>
         <mapper resource="org/complitex/osznconnection/file/service/PrivilegeCorrectionBean.xml"/>
         <mapper resource="org/complitex/osznconnection/file/service/RequestFileBean.xml"/>

@@ -21,6 +21,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.string.Strings;
+import org.complitex.dictionary.service.SessionBean;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
 import org.complitex.osznconnection.file.entity.*;
@@ -37,8 +38,7 @@ import org.complitex.osznconnection.file.web.ActualPaymentFileList;
 import org.complitex.osznconnection.file.web.component.StatusDetailPanel;
 import org.complitex.osznconnection.file.web.component.StatusRenderer;
 import org.complitex.osznconnection.file.web.component.address.AddressCorrectionPanel;
-import org.complitex.osznconnection.file.web.component.address.AddressCorrectionPanel.CORRECTED_ENTITY;
-import org.complitex.osznconnection.file.web.pages.util.AddressRenderer;
+import org.complitex.address.util.AddressRenderer;
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.TemplatePage;
 
@@ -58,22 +58,29 @@ import org.complitex.osznconnection.file.web.component.DataRowHoverBehavior;
  */
 @AuthorizeInstantiation(SecurityRole.AUTHORIZED)
 public final class ActualPaymentList extends TemplatePage {
-
     public static final String FILE_ID = "request_file_id";
+
     @EJB
     private ActualPaymentBean actualPaymentBean;
+
     @EJB
     private RequestFileBean requestFileBean;
+
     @EJB
     private StatusRenderService statusRenderService;
+
     @EJB
     private WebWarningRenderer webWarningRenderer;
+
     @EJB
     private StatusDetailBean statusDetailBean;
+
     @EJB
     private AddressService addressService;
+
     @EJB
-    private OsznSessionBean osznSessionBean;
+    private SessionBean sessionBean;
+
     private IModel<ActualPaymentExample> example;
     private long fileId;
 
@@ -96,7 +103,7 @@ public final class ActualPaymentList extends TemplatePage {
         final RequestFile actualPaymentFile = requestFileBean.findById(fileId);
 
         //Проверка доступа к данным
-        if (!osznSessionBean.isAuthorized(actualPaymentFile.getOrganizationId(), actualPaymentFile.getUserOrganizationId())) {
+        if (!sessionBean.isAuthorized(actualPaymentFile.getOrganizationId(), actualPaymentFile.getUserOrganizationId())) {
             throw new UnauthorizedInstantiationException(this.getClass());
         }
 

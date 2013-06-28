@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.osznconnection.file.web.pages.payment;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -24,12 +20,16 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.Strings;
+import org.complitex.dictionary.service.SessionBean;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.entity.example.PaymentExample;
-import org.complitex.osznconnection.file.service.*;
+import org.complitex.osznconnection.file.service.AddressService;
+import org.complitex.osznconnection.file.service.PaymentBean;
+import org.complitex.osznconnection.file.service.RequestFileBean;
+import org.complitex.osznconnection.file.service.StatusRenderService;
 import org.complitex.osznconnection.file.service.exception.DublicateCorrectionException;
 import org.complitex.osznconnection.file.service.exception.MoreOneCorrectionException;
 import org.complitex.osznconnection.file.service.exception.NotFoundCorrectionException;
@@ -58,20 +58,28 @@ import java.util.List;
 public final class PaymentList extends TemplatePage {
 
     public static final String FILE_ID = "request_file_id";
+
     @EJB
     private PaymentBean paymentBean;
+
     @EJB
     private RequestFileBean requestFileBean;
+
     @EJB
     private StatusRenderService statusRenderService;
+
     @EJB
     private WebWarningRenderer webWarningRenderer;
+
     @EJB
     private StatusDetailBean statusDetailBean;
+
     @EJB
     private AddressService addressService;
+
     @EJB
-    private OsznSessionBean osznSessionBean;
+    private SessionBean osznSessionBean;
+
     private IModel<PaymentExample> example;
     private long fileId;
 
@@ -110,9 +118,9 @@ public final class PaymentList extends TemplatePage {
         content.setOutputMarkupId(true);
         add(content);
 
-        final Form<Void> filterForm = new Form<Void>("filterForm");
+        final Form<Void> filterForm = new Form<>("filterForm");
         content.add(filterForm);
-        example = new Model<PaymentExample>(newExample());
+        example = new Model<>(newExample());
 
         StatusDetailPanel<PaymentExample> statusDetailPanel = new StatusDetailPanel<PaymentExample>("statusDetailsPanel", example,
                 new PaymentExampleConfigurator(), new PaymentBenefitStatusDetailRenderer(), content) {

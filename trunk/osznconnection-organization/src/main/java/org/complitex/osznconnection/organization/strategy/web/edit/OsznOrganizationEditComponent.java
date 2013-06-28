@@ -2,9 +2,6 @@ package org.complitex.osznconnection.organization.strategy.web.edit;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import java.util.List;
-import java.util.Set;
-import javax.ejb.EJB;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -28,7 +25,6 @@ import org.complitex.dictionary.web.component.DomainObjectInputPanel;
 import org.complitex.dictionary.web.component.IDisableAwareChoiceRenderer;
 import org.complitex.dictionary.web.component.list.AjaxRemovableListView;
 import org.complitex.organization.strategy.web.edit.OrganizationEditComponent;
-import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
 import org.complitex.osznconnection.organization.strategy.OsznOrganizationStrategy;
 import org.complitex.osznconnection.organization.strategy.entity.OsznOrganization;
 import org.complitex.osznconnection.organization.strategy.entity.RemoteDataSource;
@@ -37,18 +33,24 @@ import org.complitex.osznconnection.organization.strategy.entity.ServiceAssociat
 import org.complitex.osznconnection.organization_type.strategy.OsznOrganizationTypeStrategy;
 import org.complitex.osznconnection.service_provider_type.strategy.ServiceProviderTypeStrategy;
 
+import javax.ejb.EJB;
+import java.util.List;
+import java.util.Set;
+
 /**
  * 
  * @author Artem
  */
 public class OsznOrganizationEditComponent extends OrganizationEditComponent {
+    @EJB
+    private OsznOrganizationStrategy osznOrganizationStrategy;
 
-    @EJB(name = "OsznOrganizationStrategy")
-    private IOsznOrganizationStrategy osznOrganizationStrategy;
     @EJB
     private ServiceProviderTypeStrategy serviceProviderTypeStrategy;
+
     @EJB
     private StringCultureBean stringBean;
+
     private WebMarkupContainer serviceAssociationsContainer;
     private WebMarkupContainer dataSourceContainer;
     private WebMarkupContainer loadSaveDirsContainer;
@@ -253,9 +255,9 @@ public class OsznOrganizationEditComponent extends OrganizationEditComponent {
             add(dataSourceContainer);
             final IModel<String> dataSourceLabelModel = new ResourceModel("dataSourceLabel");
             dataSourceContainer.add(new Label("dataSourceLabel", dataSourceLabelModel));
-            dataSourceModel = new Model<RemoteDataSource>();
+            dataSourceModel = new Model<>();
 
-            final String currentDataSource = AttributeUtil.getStringValue(organization, IOsznOrganizationStrategy.DATA_SOURCE);
+            final String currentDataSource = AttributeUtil.getStringValue(organization, OsznOrganizationStrategy.DATA_SOURCE);
             final List<RemoteDataSource> allDataSources = osznOrganizationStrategy.findRemoteDataSources(currentDataSource);
 
             for (RemoteDataSource ds : allDataSources) {
@@ -330,7 +332,7 @@ public class OsznOrganizationEditComponent extends OrganizationEditComponent {
             edrpouContainer = new WebMarkupContainer("edrpouContainer");
             edrpouContainer.setOutputMarkupPlaceholderTag(true);
             add(edrpouContainer);
-            final long attributeTypeId = IOsznOrganizationStrategy.EDRPOU;
+            final long attributeTypeId = OsznOrganizationStrategy.EDRPOU;
             Attribute attribute = organization.getAttribute(attributeTypeId);
             if (attribute == null) {
                 attribute = new Attribute();
@@ -358,7 +360,7 @@ public class OsznOrganizationEditComponent extends OrganizationEditComponent {
             rootDirectoryContainer = new WebMarkupContainer("rootDirectoryContainer");
             rootDirectoryContainer.setOutputMarkupPlaceholderTag(true);
             add(rootDirectoryContainer);
-            final long attributeTypeId = IOsznOrganizationStrategy.ROOT_REQUEST_FILE_DIRECTORY;
+            final long attributeTypeId = OsznOrganizationStrategy.ROOT_REQUEST_FILE_DIRECTORY;
             Attribute attribute = organization.getAttribute(attributeTypeId);
             if (attribute == null) {
                 attribute = new Attribute();
@@ -511,22 +513,22 @@ public class OsznOrganizationEditComponent extends OrganizationEditComponent {
 
         if (!isUserOrganization()) {
             //service associations
-            organization.removeAttribute(IOsznOrganizationStrategy.SERVICE_ASSOCIATIONS);
+            organization.removeAttribute(OsznOrganizationStrategy.SERVICE_ASSOCIATIONS);
 
             //edrpou
-            organization.removeAttribute(IOsznOrganizationStrategy.EDRPOU);
+            organization.removeAttribute(OsznOrganizationStrategy.EDRPOU);
 
             //root directory
-            organization.removeAttribute(IOsznOrganizationStrategy.ROOT_REQUEST_FILE_DIRECTORY);
+            organization.removeAttribute(OsznOrganizationStrategy.ROOT_REQUEST_FILE_DIRECTORY);
         }
 
         if (!isCalculationCenter()) {
             //data source
-            getDomainObject().removeAttribute(IOsznOrganizationStrategy.DATA_SOURCE);
+            getDomainObject().removeAttribute(OsznOrganizationStrategy.DATA_SOURCE);
         } else {
             //data source
             String dataSource = dataSourceModel.getObject().getDataSource();
-            stringBean.getSystemStringCulture(organization.getAttribute(IOsznOrganizationStrategy.DATA_SOURCE).getLocalizedValues()).
+            stringBean.getSystemStringCulture(organization.getAttribute(OsznOrganizationStrategy.DATA_SOURCE).getLocalizedValues()).
                     setValue(new StringConverter().toString(dataSource));
         }
     }
@@ -539,7 +541,7 @@ public class OsznOrganizationEditComponent extends OrganizationEditComponent {
     @Override
     protected boolean isOrganizationTypeEnabled() {
         Long organizationId = getDomainObject().getId();
-        return !(organizationId != null && (organizationId == IOsznOrganizationStrategy.MODULE_ID))
+        return !(organizationId != null && (organizationId.equals(OsznOrganizationStrategy.MODULE_ID)))
                 && super.isOrganizationTypeEnabled();
     }
 }

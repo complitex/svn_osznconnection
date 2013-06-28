@@ -2,14 +2,13 @@ package org.complitex.osznconnection.file.service.process;
 
 import org.complitex.dictionary.util.EjbBeanLocator;
 import org.complitex.osznconnection.file.service.exception.StorageNotFoundException;
+import org.complitex.osznconnection.organization.strategy.OsznOrganizationStrategy;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
-import org.complitex.osznconnection.organization.strategy.OsznOrganizationStrategy;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -117,7 +116,7 @@ public class RequestFileStorage {
 
     public String getRequestFilesStorageDirectory(long userOrganizationId, long osznId, RequestFileDirectoryType fileDirectoryType)
             throws StorageNotFoundException {
-        IOsznOrganizationStrategy osznOrganizationStrategy =
+        OsznOrganizationStrategy osznOrganizationStrategy =
                 EjbBeanLocator.getBean(OsznOrganizationStrategy.OSZN_ORGANIZATION_STRATEGY_NAME);
 
         //root request files path:

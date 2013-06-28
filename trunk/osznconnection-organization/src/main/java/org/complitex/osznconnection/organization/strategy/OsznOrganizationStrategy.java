@@ -1,81 +1,160 @@
 package org.complitex.osznconnection.organization.strategy;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.Set;
-import org.complitex.dictionary.entity.DomainObject;
-import org.complitex.dictionary.entity.StringCulture;
-import org.complitex.dictionary.entity.example.DomainObjectExample;
-import org.complitex.dictionary.mybatis.Transactional;
-import org.complitex.dictionary.service.LocaleBean;
-import org.complitex.dictionary.strategy.DeleteException;
-import org.complitex.dictionary.strategy.web.AbstractComplexAttributesPanel;
-import org.complitex.dictionary.strategy.web.validate.IValidator;
-import org.complitex.organization.strategy.OrganizationStrategy;
-import org.complitex.osznconnection.organization.strategy.entity.RemoteDataSource;
-import org.complitex.osznconnection.organization.strategy.web.edit.OsznOrganizationEditComponent;
-import org.complitex.osznconnection.organization.strategy.web.edit.OsznOrganizationValidator;
-
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import java.util.List;
-import java.util.Locale;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NameClassPair;
-import javax.naming.NamingEnumeration;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
+import com.google.common.collect.*;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.entity.Attribute;
+import org.complitex.dictionary.entity.DomainObject;
+import org.complitex.dictionary.entity.StringCulture;
 import org.complitex.dictionary.entity.description.EntityAttributeType;
+import org.complitex.dictionary.entity.example.DomainObjectExample;
+import org.complitex.dictionary.mybatis.Transactional;
+import org.complitex.dictionary.service.LocaleBean;
 import org.complitex.dictionary.service.StringCultureBean;
+import org.complitex.dictionary.strategy.DeleteException;
+import org.complitex.dictionary.strategy.web.AbstractComplexAttributesPanel;
+import org.complitex.dictionary.strategy.web.validate.IValidator;
 import org.complitex.dictionary.util.AttributeUtil;
 import org.complitex.dictionary.util.ResourceUtil;
+import org.complitex.organization.strategy.AbstractOrganizationStrategy;
 import org.complitex.osznconnection.organization.strategy.entity.OsznOrganization;
+import org.complitex.osznconnection.organization.strategy.entity.RemoteDataSource;
 import org.complitex.osznconnection.organization.strategy.entity.ServiceAssociation;
 import org.complitex.osznconnection.organization.strategy.entity.ServiceAssociationList;
+import org.complitex.osznconnection.organization.strategy.web.edit.OsznOrganizationEditComponent;
+import org.complitex.osznconnection.organization.strategy.web.edit.OsznOrganizationValidator;
 import org.complitex.osznconnection.organization_type.strategy.OsznOrganizationTypeStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.naming.*;
+import javax.sql.DataSource;
+import java.util.*;
 
 /**
  *
  * @author Artem
  */
-@Stateless
-public class OsznOrganizationStrategy extends OrganizationStrategy implements IOsznOrganizationStrategy {
+@Stateless(name = "OrganizationStrategy")
+public class OsznOrganizationStrategy extends AbstractOrganizationStrategy {
+    public final static Long MODULE_ID = 0L;
+
+    /**
+     * Reference to jdbc data source. It is calculation center only attribute.
+     */
+    public final static long DATA_SOURCE = 913;
+
+    /**
+     * References to associations between service provider types and calculation centres. It is user organization only attribute.
+     */
+    public final static long SERVICE_ASSOCIATIONS = 914;
+
+    /**
+     * Load payments/benefits directory. It is OSZN only attribute.
+     */
+    public final static long LOAD_PAYMENT_BENEFIT_FILES_DIR = 915;
+
+    /**
+     * Save payments/benefits directory. It is OSZN only attribute.
+     */
+    public final static long SAVE_PAYMENT_BENEFIT_FILES_DIR = 916;
+
+    /**
+     * Load actual payments directory. It is OSZN only attribute.
+     */
+    public final static long LOAD_ACTUAL_PAYMENT_DIR = 917;
+
+    /**
+     * Save actual payments directory. It is OSZN only attribute.
+     */
+    public final static long SAVE_ACTUAL_PAYMENT_DIR = 918;
+
+    /**
+     * Load subsidies directory. It is OSZN only attribute.
+     */
+    public final static long LOAD_SUBSIDY_DIR = 919;
+
+    /**
+     * Save subsidies directory. It is OSZN only attribute.
+     */
+    public final static long SAVE_SUBSIDY_DIR = 920;
+
+    /**
+     * Load dwelling characteristics directory. It is OSZN only attribute.
+     */
+    public final static long LOAD_DWELLING_CHARACTERISTICS_DIR = 921;
+
+    /**
+     * Save dwelling characteristics directory. It is OSZN only attribute.
+     */
+    public final static long SAVE_DWELLING_CHARACTERISTICS_DIR = 922;
+
+    /**
+     * Load facility service type directory. It is OSZN only attribute.
+     */
+    public final static long LOAD_FACILITY_SERVICE_TYPE_DIR = 923;
+
+    /**
+     * Save facility service type directory. It is OSZN only attribute.
+     */
+    public final static long SAVE_FACILITY_SERVICE_TYPE_DIR = 924;
+
+    /**
+     * References directory. It is OSZN only attribute.
+     */
+    public final static long REFERENCES_DIR = 925;
+
+    /**
+     * EDRPOU(ЕДРПОУ). It is user organization only attribute.
+     */
+    public final static long EDRPOU = 926;
+
+    /**
+     * Root directory for loading and saving request files. It is user organization only attribute.
+     */
+    public final static long ROOT_REQUEST_FILE_DIRECTORY = 927;
+
+    /**
+     * Save facility form2 directory. It is OSZN only attribute.
+     */
+    public final static long SAVE_FACILITY_FORM2_DIR = 928;
+
+
+    /**
+     * Itself organization instance id.
+     */
+
 
     private static final Logger log = LoggerFactory.getLogger(OsznOrganizationStrategy.class);
     public static final String OSZN_ORGANIZATION_STRATEGY_NAME = OsznOrganizationStrategy.class.getSimpleName();
     private static final String RESOURCE_BUNDLE = OsznOrganizationStrategy.class.getName();
     private static final String MAPPING_NAMESPACE = OsznOrganizationStrategy.class.getPackage().getName() + ".OsznOrganization";
+
     public static final List<Long> LOAD_SAVE_FILE_DIR_ATTRIBUTES =
             ImmutableList.of(LOAD_PAYMENT_BENEFIT_FILES_DIR, SAVE_PAYMENT_BENEFIT_FILES_DIR,
             LOAD_ACTUAL_PAYMENT_DIR, SAVE_ACTUAL_PAYMENT_DIR, LOAD_SUBSIDY_DIR, SAVE_SUBSIDY_DIR, 
             LOAD_DWELLING_CHARACTERISTICS_DIR, SAVE_DWELLING_CHARACTERISTICS_DIR, REFERENCES_DIR,
             LOAD_FACILITY_SERVICE_TYPE_DIR, SAVE_FACILITY_SERVICE_TYPE_DIR, SAVE_FACILITY_FORM2_DIR);
+
     private static final List<Long> CUSTOM_ATTRIBUTE_TYPES = ImmutableList.<Long>builder().
             add(DATA_SOURCE).
             addAll(LOAD_SAVE_FILE_DIR_ATTRIBUTES).
             add(EDRPOU).
             add(ROOT_REQUEST_FILE_DIRECTORY).
             build();
+
     private static final List<Long> ATTRIBUTE_TYPES_WITH_CUSTOM_STRING_PROCESSING =
             ImmutableList.<Long>builder().
             add(DATA_SOURCE).
             addAll(LOAD_SAVE_FILE_DIR_ATTRIBUTES).
             add(ROOT_REQUEST_FILE_DIRECTORY).
             build();
+
     @EJB
     private LocaleBean localeBean;
+
     @EJB
     private StringCultureBean stringBean;
 
@@ -112,12 +191,6 @@ public class OsznOrganizationStrategy extends OrganizationStrategy implements IO
 
     @Transactional
     @Override
-    public DomainObject getItselfOrganization() {
-        return findById(MODULE_ID, true);
-    }
-
-    @Transactional
-    @Override
     public List<DomainObject> getAllOuterOrganizations(Locale locale) {
         DomainObjectExample example = new DomainObjectExample();
         if (locale != null) {
@@ -131,8 +204,19 @@ public class OsznOrganizationStrategy extends OrganizationStrategy implements IO
         return (List<DomainObject>) find(example);
     }
 
-    @Transactional
     @Override
+    public Long getModuleId() {
+        return MODULE_ID;
+    }
+
+    /**
+     * Figures out all OSZN organizations visible to current user
+     * and returns them sorted by organization's name in given {@code locale}.
+     *
+     * @param locale Locale. It is used in sorting of organizations by name.
+     * @return All OSZN organizations.
+     */
+    @Transactional
     public List<DomainObject> getAllOSZNs(Locale locale) {
         DomainObjectExample example = new DomainObjectExample();
         example.addAdditionalParam(ORGANIZATION_TYPE_PARAMETER, ImmutableList.of(OsznOrganizationTypeStrategy.OSZN));
@@ -145,8 +229,14 @@ public class OsznOrganizationStrategy extends OrganizationStrategy implements IO
         return (List<DomainObject>) find(example);
     }
 
+    /**
+     * Figures out all calculation center organizations visible to current user
+     * and returns them sorted by organization's name in given {@code locale}.
+     *
+     * @param locale Locale. It is used in sorting of organizations by name.
+     * @return All calculation center organizations.
+     */
     @Transactional
-    @Override
     public List<DomainObject> getAllCalculationCentres(Locale locale) {
         DomainObjectExample example = new DomainObjectExample();
         example.addAdditionalParam(ORGANIZATION_TYPE_PARAMETER, ImmutableList.of(OsznOrganizationTypeStrategy.CALCULATION_CENTER));
@@ -200,7 +290,9 @@ public class OsznOrganizationStrategy extends OrganizationStrategy implements IO
         if (object == null) {
             return null;
         }
+
         ServiceAssociationList serviceAssociationList = new ServiceAssociationList();
+
         if (isUserOrganization(object)) {
             serviceAssociationList = loadServiceAssociations(object);
         }
@@ -299,12 +391,22 @@ public class OsznOrganizationStrategy extends OrganizationStrategy implements IO
         deleteObject(objectId, locale);
     }
 
-    @Override
+    /**
+     * Figures out list of service associations. Each service association is link between service provider type and
+     * caluclation center.
+     *
+     * @param userOrganization User organization.
+     * @return Service associations list.
+     */
     public ServiceAssociationList getServiceAssociations(DomainObject userOrganization) {
         return loadServiceAssociations(userOrganization);
     }
 
-    @Override
+    /**
+     * Finds remote jdbc data sources.
+     * @param currentDataSource Current data source.
+     * @return Remote jdbc data sources.
+     */
     public List<RemoteDataSource> findRemoteDataSources(String currentDataSource) {
         final String JDBC_PREFIX = "jdbc";
         final String GLASSFISH_INTERNAL_SUFFIX = "__pm";
@@ -361,19 +463,33 @@ public class OsznOrganizationStrategy extends OrganizationStrategy implements IO
         return Lists.newArrayList(remoteDataSources);
     }
 
-    @Override
+    /**
+     * Figures out data source of calculation center.
+     *
+     * @param calculationCenterId Calculation center's id
+     * @return Calculation center's data source
+     */
     public String getDataSource(long calculationCenterId) {
         DomainObject calculationCenter = findById(calculationCenterId, true);
         return AttributeUtil.getStringValue(calculationCenter, DATA_SOURCE);
     }
 
-    @Override
+    /**
+     * Returns relative path to request files storage.
+     * @param osznId Oszn's id.
+     * @param fileTypeAttributeTypeId Attribute type id corresponding desired file type.
+     * @return Relative path to request files storage.
+     */
     public String getRelativeRequestFilesPath(long osznId, long fileTypeAttributeTypeId) {
         DomainObject oszn = findById(osznId, true);
         return AttributeUtil.getStringValue(oszn, fileTypeAttributeTypeId);
     }
 
-    @Override
+    /**
+     * Returns root directory to request files storage.
+     * @param userOrganizationId User organization's id.
+     * @return Root directory to request files storage.
+     */
     public String getRootRequestFilesStoragePath(long userOrganizationId) {
         DomainObject userOrganization = findById(userOrganizationId, true);
         return AttributeUtil.getStringValue(userOrganization, ROOT_REQUEST_FILE_DIRECTORY);

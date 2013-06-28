@@ -25,11 +25,8 @@ public class RequestFileFilter extends AbstractFilter {
     private Long length;
     private String checkSum;
     private DomainObject organization;
-    private DomainObject userOrganization;
     private RequestFileType type;
     private RequestFileStatus status;
-    private String userOrganizationsString;
-    private String outerOrganizationsString;
 
     public Long getId() {
         return id;
@@ -160,27 +157,4 @@ public class RequestFileFilter extends AbstractFilter {
         this.status = status;
     }
 
-    public String getUserOrganizationsString() {
-        return userOrganizationsString;
-    }
-
-    public void setUserOrganizationsString(String userOrganizationsString) {
-        this.userOrganizationsString = userOrganizationsString;
-    }
-
-    public String getOuterOrganizationsString() {
-        return outerOrganizationsString;
-    }
-
-    public void setOuterOrganizationsString(String outerOrganizationsString) {
-        this.outerOrganizationsString = outerOrganizationsString;
-    }
-
-    public DomainObject getUserOrganization() {
-        return userOrganization;
-    }
-
-    public void setUserOrganization(DomainObject userOrganization) {
-        this.userOrganization = userOrganization;
-    }
 }

@@ -1,9 +1,8 @@
 package org.complitex.osznconnection.file.web;
 
-import org.complitex.template.web.component.LocalePicker;
-import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
@@ -16,23 +15,27 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.util.time.Duration;
+import org.complitex.correction.entity.CorrectionImportFile;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.entity.IImportFile;
 import org.complitex.dictionary.entity.ImportMessage;
+import org.complitex.dictionary.service.LocaleBean;
 import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
 import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
-import org.complitex.osznconnection.file.entity.CorrectionImportFile;
+import org.complitex.osznconnection.file.entity.OwnershipImportFile;
+import org.complitex.osznconnection.file.entity.PrivilegeImportFile;
 import org.complitex.osznconnection.file.service.ImportService;
-import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
-import org.complitex.osznconnection.ownership.entity.OwnershipImportFile;
-import org.complitex.osznconnection.privilege.entity.PrivilegeImportFile;
+import org.complitex.osznconnection.organization.strategy.OsznOrganizationStrategy;
+import org.complitex.template.web.component.LocalePicker;
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.TemplatePage;
 
 import javax.ejb.EJB;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
 
-import org.complitex.dictionary.service.LocaleBean;
 import static org.complitex.address.entity.AddressImportFile.*;
 
 /**
@@ -44,11 +47,15 @@ public class ImportPage extends TemplatePage {
 
     @EJB
     private ImportService importService;
-    @EJB(name = "OsznOrganizationStrategy")
-    private IOsznOrganizationStrategy organizationStrategy;
+
     @EJB
+    private OsznOrganizationStrategy organizationStrategy;
+
+    @EJB
+
     private LocaleBean localeBean;
     private int stopTimer = 0;
+
     private final IModel<List<IImportFile>> dictionaryModel;
     private final IModel<List<IImportFile>> correctionModel;
     private final IModel<Locale> localeModel;
@@ -57,8 +64,8 @@ public class ImportPage extends TemplatePage {
         final WebMarkupContainer container = new WebMarkupContainer("container");
         add(container);
 
-        dictionaryModel = new ListModel<IImportFile>();
-        correctionModel = new ListModel<IImportFile>();
+        dictionaryModel = new ListModel<>();
+        correctionModel = new ListModel<>();
 
         container.add(new FeedbackPanel("messages"));
 
@@ -66,7 +73,7 @@ public class ImportPage extends TemplatePage {
         container.add(form);
 
         //Справочники
-        List<IImportFile> dictionaryList = new ArrayList<IImportFile>();
+        List<IImportFile> dictionaryList = new ArrayList<>();
         Collections.addAll(dictionaryList, values());
         Collections.addAll(dictionaryList, PrivilegeImportFile.values());
         Collections.addAll(dictionaryList, OwnershipImportFile.values());
@@ -86,9 +93,9 @@ public class ImportPage extends TemplatePage {
                 }));
 
         //Организация
-        final IModel<DomainObject> organizationModel = new Model<DomainObject>();
+        final IModel<DomainObject> organizationModel = new Model<>();
 
-        final DisableAwareDropDownChoice<DomainObject> organization = new DisableAwareDropDownChoice<DomainObject>("organization",
+        final DisableAwareDropDownChoice<DomainObject> organization = new DisableAwareDropDownChoice<>("organization",
                 organizationModel,
                 new LoadableDetachableModel<List<DomainObject>>() {
 
@@ -106,11 +113,11 @@ public class ImportPage extends TemplatePage {
         form.add(organization);
 
         //Коррекции
-        List<IImportFile> correctionList = new ArrayList<IImportFile>();
+        List<IImportFile> correctionList = new ArrayList<>();
         Collections.addAll(correctionList, CITY, DISTRICT, STREET_TYPE, STREET, BUILDING);
         Collections.addAll(correctionList, CorrectionImportFile.values());
 
-        form.add(new CheckBoxMultipleChoice<IImportFile>("corrections", correctionModel, correctionList,
+        form.add(new CheckBoxMultipleChoice<>("corrections", correctionModel, correctionList,
                 new IChoiceRenderer<IImportFile>() {
 
                     @Override
@@ -125,7 +132,7 @@ public class ImportPage extends TemplatePage {
                     }
                 }));
 
-        localeModel = new Model<Locale>(localeBean.getSystemLocale());
+        localeModel = new Model<>(localeBean.getSystemLocale());
         form.add(new LocalePicker("localePicker", localeModel, false));
 
         //Кнопка импортировать

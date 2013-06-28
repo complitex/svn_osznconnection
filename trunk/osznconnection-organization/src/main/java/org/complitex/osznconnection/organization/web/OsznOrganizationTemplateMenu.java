@@ -2,9 +2,9 @@ package org.complitex.osznconnection.organization.web;
 
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.complitex.dictionary.strategy.IStrategy;
+import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
 import org.complitex.dictionary.util.EjbBeanLocator;
 import org.complitex.organization.web.OrganizationMenu;
-import org.complitex.osznconnection.organization.strategy.OsznOrganizationStrategy;
 import org.complitex.template.web.security.SecurityRole;
 
 /**
@@ -16,6 +16,6 @@ public class OsznOrganizationTemplateMenu extends OrganizationMenu {
 
     @Override
     protected IStrategy getStrategy() {
-        return EjbBeanLocator.getBean(OsznOrganizationStrategy.class);
+        return EjbBeanLocator.getBean(IOrganizationStrategy.BEAN_NAME);
     }
 }

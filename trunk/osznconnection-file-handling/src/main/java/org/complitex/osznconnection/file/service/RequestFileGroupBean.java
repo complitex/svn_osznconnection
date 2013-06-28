@@ -1,16 +1,16 @@
 package org.complitex.osznconnection.file.service;
 
+import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.AbstractBean;
+import org.complitex.dictionary.service.SessionBean;
 import org.complitex.osznconnection.file.entity.RequestFileGroup;
 import org.complitex.osznconnection.file.entity.RequestFileGroupFilter;
+import org.complitex.osznconnection.file.entity.RequestFileStatus;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import java.util.HashMap;
 import java.util.List;
-
-import org.complitex.dictionary.mybatis.Transactional;
-import org.complitex.osznconnection.file.entity.RequestFileStatus;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -23,16 +23,16 @@ public class RequestFileGroupBean extends AbstractBean {
     @EJB
     private RequestFileBean requestFileBean;
     @EJB
-    private OsznSessionBean osznSessionBean;
+    private SessionBean sessionBean;
 
     @SuppressWarnings({"unchecked"})
     public List<RequestFileGroup> getRequestFileGroups(RequestFileGroupFilter filter) {
-        osznSessionBean.prepareFilterForPermissionCheck(filter);
+        sessionBean.prepareFilterForPermissionCheck(filter);
         return sqlSession().selectList(MAPPING_NAMESPACE + ".selectRequestFilesGroups", filter);
     }
 
     public int getRequestFileGroupsCount(RequestFileGroupFilter filter) {
-        osznSessionBean.prepareFilterForPermissionCheck(filter);
+        sessionBean.prepareFilterForPermissionCheck(filter);
         return (Integer) sqlSession().selectOne(MAPPING_NAMESPACE + ".selectRequestFilesGroupsCount", filter);
     }
 

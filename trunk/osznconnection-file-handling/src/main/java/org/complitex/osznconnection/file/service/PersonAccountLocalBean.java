@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.osznconnection.file.service;
 
 import com.google.common.collect.Lists;
@@ -10,6 +6,7 @@ import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.mysql.MySqlErrors;
 import org.complitex.dictionary.service.AbstractBean;
+import org.complitex.dictionary.service.SessionBean;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.entity.example.PersonAccountExample;
 import org.slf4j.Logger;
@@ -51,8 +48,9 @@ public class PersonAccountLocalBean extends AbstractBean {
             return orderBy;
         }
     }
+
     @EJB
-    private OsznSessionBean osznSessionBean;
+    private SessionBean sessionBean;
 
     private PersonAccountExample newExample(String firstName, String middleName, String lastName, String city,
             String street, String buildingNumber, String buildingCorp, String apartment, long osznId, long calculationCenterId,
@@ -853,13 +851,13 @@ public class PersonAccountLocalBean extends AbstractBean {
 
     @Transactional
     public int count(PersonAccountExample example) {
-        osznSessionBean.prepareExampleForPermissionCheck(example);
+        sessionBean.prepareFilterForPermissionCheck(example);
         return (Integer) sqlSession().selectOne(MAPPING_NAMESPACE + ".count", example);
     }
 
     @Transactional
     public List<PersonAccount> find(PersonAccountExample example) {
-        osznSessionBean.prepareExampleForPermissionCheck(example);
+        sessionBean.prepareFilterForPermissionCheck(example);
         return sqlSession().selectList(MAPPING_NAMESPACE + ".find", example);
     }
 

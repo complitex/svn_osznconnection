@@ -28,16 +28,12 @@
             <artifactId>complitex-address</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.complitex</groupId>
+            <artifactId>complitex-correction</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.complitex.osznconnection</groupId>
             <artifactId>osznconnection-organization</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.complitex.osznconnection</groupId>
-            <artifactId>osznconnection-ownership</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.complitex.osznconnection</groupId>
-            <artifactId>osznconnection-privilege</artifactId>
         </dependency>
        <dependency>
             <groupId>org.complitex.osznconnection</groupId>

@@ -1,6 +1,9 @@
 package org.complitex.osznconnection.file.service;
 
 import org.apache.wicket.util.string.Strings;
+import org.complitex.correction.entity.Correction;
+import org.complitex.correction.entity.StreetCorrection;
+import org.complitex.correction.service.AddressCorrectionBean;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.entity.Log;
@@ -16,7 +19,7 @@ import org.complitex.dictionary.util.ResourceUtil;
 import org.complitex.osznconnection.file.Module;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.service.process.FacilityStreetLoadTaskBean;
-import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
+import org.complitex.osznconnection.organization.strategy.OsznOrganizationStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -195,7 +198,7 @@ public class FacilityReferenceBookBean extends AbstractBean {
             if (streetTypeIds.size() == 1) {
                 streetTypeId = streetTypeIds.get(0);
                 streetTypeCorrection = addressCorrectionBean.createStreetTypeCorrection(streetTypeName.toUpperCase(),
-                        streetTypeId, osznId, IOsznOrganizationStrategy.MODULE_ID, userOrganizationId);
+                        streetTypeId, osznId, OsznOrganizationStrategy.MODULE_ID, userOrganizationId);
 
                 streetTypeCorrection.setExternalId(streetTypeCode);
 
@@ -242,7 +245,7 @@ public class FacilityReferenceBookBean extends AbstractBean {
                 StreetCorrection streetCorrection =
                         addressCorrectionBean.createStreetCorrection(streetName.toUpperCase(), streetCode.toUpperCase(),
                         streetTypeCorrection.getId(), cityCorrection.getId(), streetId, osznId,
-                        IOsznOrganizationStrategy.MODULE_ID, userOrganizationId);
+                        OsznOrganizationStrategy.MODULE_ID, userOrganizationId);
                 addressCorrectionBean.insertStreet(streetCorrection);
             } else {
                 final IStrategy cityStrategy = strategyFactory.getStrategy("city");

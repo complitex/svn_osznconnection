@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.osznconnection.file.service_provider;
 
 import com.google.common.collect.ImmutableList;
@@ -10,7 +6,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.SetMultimap;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.osznconnection.file.entity.CalculationContext;
-import org.complitex.osznconnection.organization.strategy.IOsznOrganizationStrategy;
+import org.complitex.osznconnection.organization.strategy.OsznOrganizationStrategy;
 import org.complitex.osznconnection.organization.strategy.entity.ServiceAssociationList;
 
 import javax.ejb.EJB;
@@ -25,9 +21,8 @@ import java.util.Set;
  */
 @Stateless
 public class CalculationCenterBean {
-
-    @EJB(name = "OsznOrganizationStrategy")
-    private IOsznOrganizationStrategy organizationStrategy;
+    @EJB
+    private OsznOrganizationStrategy organizationStrategy;
 
     /**
      * Figures out calculation context for calculation center with minimal object id.
