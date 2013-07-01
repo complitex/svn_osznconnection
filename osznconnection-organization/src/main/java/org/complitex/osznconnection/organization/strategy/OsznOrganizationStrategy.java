@@ -219,13 +219,16 @@ public class OsznOrganizationStrategy extends AbstractOrganizationStrategy {
     @Transactional
     public List<DomainObject> getAllOSZNs(Locale locale) {
         DomainObjectExample example = new DomainObjectExample();
+
         example.addAdditionalParam(ORGANIZATION_TYPE_PARAMETER, ImmutableList.of(OsznOrganizationTypeStrategy.OSZN));
         if (locale != null) {
             example.setOrderByAttributeTypeId(NAME);
             example.setLocaleId(localeBean.convert(locale).getId());
             example.setAsc(true);
         }
+
         configureExample(example, ImmutableMap.<String, Long>of(), null);
+
         return (List<DomainObject>) find(example);
     }
 

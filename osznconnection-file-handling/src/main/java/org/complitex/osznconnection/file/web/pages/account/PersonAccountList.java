@@ -17,6 +17,7 @@ import org.apache.wicket.util.string.Strings;
 import org.complitex.address.util.AddressRenderer;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.service.LocaleBean;
+import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
 import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
 import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
@@ -44,7 +45,7 @@ public class PersonAccountList extends ScrollListPage {
     @EJB
     private PersonAccountLocalBean personAccountLocalBean;
 
-    @EJB
+    @EJB(name = IOrganizationStrategy.BEAN_NAME, beanInterface = IOrganizationStrategy.class)
     private OsznOrganizationStrategy organizationStrategy;
 
     @EJB

@@ -16,6 +16,7 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.service.SessionBean;
+import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
 import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
 import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
 import org.complitex.dictionary.web.component.YearDropDownChoice;
@@ -29,7 +30,7 @@ import java.util.List;
 
 public final class RequestFileLoadPanel extends Panel {
 
-    @EJB
+    @EJB(name = IOrganizationStrategy.BEAN_NAME, beanInterface = IOrganizationStrategy.class)
     private OsznOrganizationStrategy organizationStrategy;
 
     @EJB
