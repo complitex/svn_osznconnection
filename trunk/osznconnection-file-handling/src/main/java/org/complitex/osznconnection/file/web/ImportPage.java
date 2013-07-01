@@ -20,6 +20,7 @@ import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.entity.IImportFile;
 import org.complitex.dictionary.entity.ImportMessage;
 import org.complitex.dictionary.service.LocaleBean;
+import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
 import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
 import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
 import org.complitex.osznconnection.file.entity.OwnershipImportFile;
@@ -48,7 +49,7 @@ public class ImportPage extends TemplatePage {
     @EJB
     private ImportService importService;
 
-    @EJB
+    @EJB(name = IOrganizationStrategy.BEAN_NAME, beanInterface = IOrganizationStrategy.class)
     private OsznOrganizationStrategy organizationStrategy;
 
     @EJB

@@ -2,6 +2,7 @@ package org.complitex.osznconnection.file.web.component.process;
 
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.complitex.dictionary.entity.DomainObject;
+import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
 import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
 import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
 import org.complitex.osznconnection.organization.strategy.OsznOrganizationStrategy;
@@ -14,7 +15,7 @@ import java.util.List;
  * @author Artem
  */
 public final class OsznFilter extends DisableAwareDropDownChoice<DomainObject> {
-    @EJB
+    @EJB(name = IOrganizationStrategy.BEAN_NAME, beanInterface = IOrganizationStrategy.class)
     private OsznOrganizationStrategy organizationStrategy;
 
     public OsznFilter(String id) {

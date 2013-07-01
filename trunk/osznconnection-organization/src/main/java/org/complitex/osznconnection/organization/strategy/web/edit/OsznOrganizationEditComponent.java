@@ -18,6 +18,7 @@ import org.complitex.dictionary.entity.Attribute;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.entity.description.EntityAttributeType;
 import org.complitex.dictionary.service.StringCultureBean;
+import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
 import org.complitex.dictionary.util.AttributeUtil;
 import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
 import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
@@ -42,7 +43,7 @@ import java.util.Set;
  * @author Artem
  */
 public class OsznOrganizationEditComponent extends OrganizationEditComponent {
-    @EJB
+    @EJB(name = IOrganizationStrategy.BEAN_NAME, beanInterface = IOrganizationStrategy.class)
     private OsznOrganizationStrategy osznOrganizationStrategy;
 
     @EJB

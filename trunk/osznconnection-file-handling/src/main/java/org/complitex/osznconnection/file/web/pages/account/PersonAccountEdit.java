@@ -22,6 +22,7 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.correction.web.AbstractCorrectionList;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.service.SessionBean;
+import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
 import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
 import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
 import org.complitex.dictionary.web.model.OrganizationModel;
@@ -51,7 +52,7 @@ public final class PersonAccountEdit extends FormTemplatePage {
     @EJB
     private PersonAccountLocalBean personAccountLocalBean;
 
-    @EJB
+    @EJB(name = IOrganizationStrategy.BEAN_NAME, beanInterface = IOrganizationStrategy.class)
     private OsznOrganizationStrategy organizationStrategy;
 
     @EJB
