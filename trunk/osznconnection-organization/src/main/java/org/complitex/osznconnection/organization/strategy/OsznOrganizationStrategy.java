@@ -12,6 +12,7 @@ import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.LocaleBean;
 import org.complitex.dictionary.service.StringCultureBean;
 import org.complitex.dictionary.strategy.DeleteException;
+import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
 import org.complitex.dictionary.strategy.web.AbstractComplexAttributesPanel;
 import org.complitex.dictionary.strategy.web.validate.IValidator;
 import org.complitex.dictionary.util.AttributeUtil;
@@ -37,7 +38,7 @@ import java.util.*;
  *
  * @author Artem
  */
-@Stateless(name = "OrganizationStrategy")
+@Stateless(name = IOrganizationStrategy.BEAN_NAME)
 public class OsznOrganizationStrategy extends AbstractOrganizationStrategy {
     public final static Long MODULE_ID = 0L;
 
