@@ -6,10 +6,9 @@
     <parent>
         <artifactId>osznconnection</artifactId>
         <groupId>org.complitex.osznconnection</groupId>
-        <version>2.0.1-SNAPSHOT</version>
+        <version>3.0.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.complitex.osznconnection</groupId>
     <artifactId>osznconnection-organization</artifactId>
     <name>Osznconnection - Organization</name>
 
