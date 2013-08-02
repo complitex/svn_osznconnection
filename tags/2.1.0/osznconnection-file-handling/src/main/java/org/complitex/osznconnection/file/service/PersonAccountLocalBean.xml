@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.complitex.osznconnection.file.service.PersonAccountLocalBean">
+
+    <resultMap id="personAccount" type="org.complitex.osznconnection.file.entity.PersonAccount">
+        <id property="id" column="id"/>
+        <result property="firstName" column="first_name"/>
+        <result property="middleName" column="middle_name"/>
+        <result property="lastName" column="last_name"/>
+        <result property="city" column="city"/>
+        <result property="streetType" column="street_type"/>
+        <result property="street" column="street"/>
+        <result property="buildingNumber" column="building_num"/>
+        <result property="buildingCorp" column="building_corp"/>
+        <result property="apartment" column="apartment"/>
+        <result property="accountNumber" column="account_number"/>
+        <result property="osznId" column="oszn_id"/>
+        <result property="calculationCenterId" column="calc_center_id"/>
+        <result property="oszn" column="oszn"/>
+        <result property="calculationCenter" column="calculation_center"/>
+        <result property="puAccountNumber" column="pu_account_number"/>
+        <result property="userOrganizationId" column="user_organization_id"/>
+        <result property="userOrganization" column="user_organization"/>
+    </resultMap>
+
+    <sql id="findAccountsClause">
+        SELECT pa.* FROM `person_account` pa WHERE
+             pa.`city` = #{city}
+             AND pa.`street` = #{street}
+             AND pa.`building_num` = #{buildingNumber}
+             AND pa.`building_corp` = #{buildingCorp}
+             AND pa.`apartment` = #{apartment}
+             AND pa.`first_name` = #{firstName}
+             AND pa.`middle_name` = #{middleName}
+             AND pa.`last_name` = #{lastName}
+             AND pa.`oszn_id` = #{osznId} AND pa.`calc_center_id` = #{calculationCenterId}
+             AND pa.`pu_account_number` = #{puAccountNumber}
+             AND pa.`user_organization_id` = #{userOrganizationId}
+    </sql>
+    
+    <sql id="findAccountsLikeNameClause">
+        SELECT pa.* FROM `person_account` pa WHERE
+             pa.`city` = #{city}
+             AND pa.`street` = #{street}
+             AND pa.`building_num` = #{buildingNumber}
+             AND pa.`building_corp` = #{buildingCorp}
+             AND pa.`apartment` = #{apartment}
+             AND pa.`last_name` = #{lastName}
+             AND pa.`first_name` LIKE CONCAT(#{firstName}, '%')
+             AND pa.`middle_name` LIKE CONCAT(#{middleName}, '%')
+             
+             AND pa.`oszn_id` = #{osznId} AND pa.`calc_center_id` = #{calculationCenterId}
+             AND pa.`pu_account_number` = #{puAccountNumber}
+             AND pa.`user_organization_id` = #{userOrganizationId}
+    </sql>
+
+    <select id="findAccounts" parameterType="org.complitex.osznconnection.file.entity.example.PersonAccountExample"
+                resultMap="org.complitex.osznconnection.file.service.PersonAccountLocalBean.personAccount">
+        <include refid="org.complitex.osznconnection.file.service.PersonAccountLocalBean.findAccountsClause"/>
+    </select>
+
+    <select id="findAccountsBlocking" parameterType="org.complitex.osznconnection.file.entity.example.PersonAccountExample"
+                resultMap="org.complitex.osznconnection.file.service.PersonAccountLocalBean.personAccount">
+        <include refid="org.complitex.osznconnection.file.service.PersonAccountLocalBean.findAccountsClause"/>
+        FOR UPDATE
+    </select>
+    
+    <select id="findAccountsLikeName" parameterType="org.complitex.osznconnection.file.entity.example.PersonAccountExample"
+                resultMap="org.complitex.osznconnection.file.service.PersonAccountLocalBean.personAccount">
+        <include refid="org.complitex.osznconnection.file.service.PersonAccountLocalBean.findAccountsLikeNameClause"/>
+    </select>
+
+    <select id="findAccountsLikeNameBlocking" parameterType="org.complitex.osznconnection.file.entity.example.PersonAccountExample"
+                resultMap="org.complitex.osznconnection.file.service.PersonAccountLocalBean.personAccount">
+        <include refid="org.complitex.osznconnection.file.service.PersonAccountLocalBean.findAccountsLikeNameClause"/>
+        FOR UPDATE
+    </select>
+
+    <sql id="filter">
+        <where>
+            <if test="city != null">
+                AND pa.`city` LIKE CONCAT('%', #{city}, '%')
+            </if>
+            <if test="street != null">
+                AND pa.`street` LIKE CONCAT('%', #{street}, '%')
+            </if>
+            <if test="buildingNumber != null">
+                AND pa.`building_num` LIKE CONCAT('%', #{buildingNumber}, '%')
+            </if>
+            <if test="buildingCorp != null">
+                AND pa.`building_corp` LIKE CONCAT('%', #{buildingCorp}, '%')
+            </if>
+            <if test="apartment != null">
+                AND pa.`apartment` LIKE CONCAT('%', #{apartment}, '%')
+            </if>
+            <if test="firstName != null">
+                AND pa.`first_name` LIKE CONCAT('%', #{firstName}, '%')
+            </if>
+            <if test="middleName != null">
+                AND pa.`middle_name` LIKE CONCAT('%', #{middleName}, '%')
+            </if>
+            <if test="lastName != null">
+                AND pa.`last_name` LIKE CONCAT('%', #{lastName}, '%')
+            </if>
+            <if test="accountNumber != null">
+                AND pa.`account_number` LIKE CONCAT('%', #{accountNumber}, '%')
+            </if>
+            <if test="osznId != null">
+                AND pa.`oszn_id` = #{osznId}
+            </if>
+            <if test="calculationCenterId != null">
+                AND pa.`calc_center_id` = #{calculationCenterId}
+            </if>
+            <if test="userOrganizationId != null">
+                AND pa.`user_organization_id` = #{userOrganizationId}
+            </if>
+            <if test="puAccountNumber != null">
+                AND pa.`pu_account_number` = #{puAccountNumber}
+            </if>
+             <if test="not admin">
+                AND pa.`oszn_id` IN ${outerOrganizationsString}
+                AND pa.`user_organization_id` IN ${userOrganizationsString}
+            </if>
+        </where>
+    </sql>
+
+    <insert id="insert" parameterType="org.complitex.osznconnection.file.entity.PersonAccount" keyProperty="id" useGeneratedKeys="true">
+        INSERT INTO `person_account` (`city`, `street_type`, `street`, `building_num`, `building_corp`, `apartment`,
+                `account_number`, `first_name`, `middle_name`, `last_name`, `oszn_id`, `calc_center_id`, 
+                `pu_account_number`, `user_organization_id`)
+        VALUES (UPPER(#{city}), UPPER(#{streetType}), UPPER(#{street}), UPPER(#{buildingNumber}), UPPER(#{buildingCorp}), 
+                UPPER(#{apartment}), #{accountNumber}, UPPER(#{firstName}), UPPER(#{middleName}), UPPER(#{lastName}), 
+                #{osznId}, #{calculationCenterId}, #{puAccountNumber}, #{userOrganizationId})
+    </insert>
+
+     <update id="updateAccountNumber" parameterType="org.complitex.osznconnection.file.entity.PersonAccount">
+        UPDATE `person_account` SET `account_number` = #{accountNumber}
+                WHERE `id` = #{id}
+     </update>
+     <update id="updateAccountNumberAndStreetType" parameterType="org.complitex.osznconnection.file.entity.PersonAccount">
+         UPDATE `person_account` SET `account_number` = #{accountNumber}, `street_type` = UPPER(#{streetType})
+                WHERE `id` = #{id}
+     </update>
+
+    <select id="find" parameterType="org.complitex.osznconnection.file.entity.example.PersonAccountExample"
+                resultMap="org.complitex.osznconnection.file.service.PersonAccountLocalBean.personAccount">
+        SELECT pa.*, IFNULL(oszn_value.`value`, oszn_sys_value.`value`) oszn,
+                     IFNULL(calc_value.`value`, calc_sys_value.`value`) calculation_center,
+                     IFNULL(user_value.`value`, user_sys_value.`value`) user_organization
+        FROM `person_account` pa
+            JOIN `organization_attribute` oszn_a ON (oszn_a.`object_id` = pa.`oszn_id` AND oszn_a.`status` = 'ACTIVE' AND oszn_a.`attribute_type_id` = 900)
+            LEFT JOIN `organization_string_culture` oszn_value ON (oszn_value.`id` = oszn_a.`value_id` AND oszn_value.`locale_id` = #{localeId})
+            JOIN `organization_string_culture` oszn_sys_value ON (oszn_sys_value.`id` = oszn_a.`value_id` AND oszn_sys_value.`locale_id` = (SELECT l.`id` FROM `locales` l WHERE l.`system` = 1))
+
+            JOIN `organization_attribute` calc_a ON (calc_a.`object_id` = pa.`calc_center_id` AND calc_a.`status` = 'ACTIVE' AND calc_a.`attribute_type_id` = 900)
+            LEFT JOIN `organization_string_culture` calc_value ON (calc_value.`id` = calc_a.`value_id` AND calc_value.`locale_id` = #{localeId})
+            JOIN `organization_string_culture` calc_sys_value ON (calc_sys_value.`id` = calc_a.`value_id` AND calc_sys_value.`locale_id` = (SELECT l.`id` FROM `locales` l WHERE l.`system` = 1))
+            
+            LEFT JOIN `organization_attribute` user_a ON (user_a.`object_id` = pa.`user_organization_id` AND user_a.`status` = 'ACTIVE' AND user_a.`attribute_type_id` = 900)
+            LEFT JOIN `organization_string_culture` user_value ON (user_value.`id` = user_a.`value_id` AND user_value.`locale_id` = #{localeId})
+            JOIN `organization_string_culture` user_sys_value ON (user_sys_value.`id` = user_a.`value_id` AND user_sys_value.`locale_id` = (SELECT l.`id` FROM `locales` l WHERE l.`system` = 1))
+
+        <include refid="org.complitex.osznconnection.file.service.PersonAccountLocalBean.filter"/>
+        <if test="orderByClause != null">
+            ORDER BY ${orderByClause}
+            <choose>
+                <when test="asc">
+                    ASC
+                </when>
+                <otherwise>
+                    DESC
+                </otherwise>
+            </choose>
+        </if>
+        LIMIT #{start},#{size}
+    </select>
+
+    <select id="findById" parameterType="long" resultMap="org.complitex.osznconnection.file.service.PersonAccountLocalBean.personAccount">
+        SELECT pa.* FROM `person_account` pa WHERE pa.`id` = #{id}
+    </select>
+
+    <select id="count" resultType="int" parameterType="org.complitex.osznconnection.file.entity.example.PersonAccountExample">
+        SELECT COUNT(1) FROM `person_account` pa
+        <include refid="org.complitex.osznconnection.file.service.PersonAccountLocalBean.filter"/>
+    </select>
+
+    <delete id="delete" parameterType="org.complitex.osznconnection.file.entity.PersonAccount">
+        DELETE FROM `person_account` WHERE `id` = #{id}
+    </delete>
+
+</mapper>

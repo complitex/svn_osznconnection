@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"  xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
+    <head>
+        <wicket:head>
+            <title wicket:id="title"></title>
+        </wicket:head>
+    </head>
+    <body>
+        <wicket:panel>
+            <div>
+                <h1><wicket:message key="title"/></h1>
+
+                <div wicket:id="messages"></div>
+
+                <form action="#" wicket:id="form">
+                    <table border="0" cellspacing="0" cellpadding="0" class="tbColor table_input">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th class="center" wicket:id="header.id"><wicket:message key="id"/></th>
+                                <th class="center" wicket:id="header.loaded"><wicket:message key="loaded"/></th>
+                                <th class="center" wicket:id="header.organization"><wicket:message key="organization"/></th>
+                                <th class="center" wicket:id="header.user_organization"><wicket:message key="user_organization"/></th>
+                                <th class="center" wicket:id="header.registry"><wicket:message key="registry"/></th>
+                                <th class="center" wicket:id="header.month"><wicket:message key="month"/></th>
+                                <th class="center" wicket:id="header.year"><wicket:message key="year"/></th>
+                                <th class="center" wicket:id="header.directory"><wicket:message key="directory"/></th>
+                                <th class="center" wicket:id="header.paymentName"><wicket:message key="paymentName"/></th>
+                                <th class="center" wicket:id="header.benefitName"><wicket:message key="benefitName"/></th>                    
+                                <th class="center"><wicket:message key="loaded_record_count"/></th>
+                                <th class="center"><wicket:message key="binded_record_count"/></th>
+                                <th class="center"><wicket:message key="filled_record_count"/></th>
+                                <th class="center" wicket:id="header.status"><wicket:message key="status"/></th>
+                                <th class="center">
+                                    <input class="btnSmall"  wicket:id="filter_reset" type="button" wicket:message="value:reset"/>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th><div wicket:id="selectAllCheckBoxPanel"></div></th>
+                                <th><input type="text" wicket:id="id"/></th>
+                                <th class="center">
+                                    <div class="loaded_header">
+                                        <input type="text" wicket:id="loaded"/>
+                                    </div>
+                                </th>
+                                <th class="center"><select wicket:id="organization"></select></th>
+                                <th class="center"><select wicket:id="userOrganization"></select></th>
+                                <th class="center"><input type="text" wicket:id="registry"/></th>
+                                <th class="center"><select wicket:id="month"></select></th>
+                                <th class="center"><select wicket:id="year"></select></th>
+                                <th class="center"><input type="text" wicket:id="directory"/></th>
+                                <th class="center"><input type="text" wicket:id="paymentName"/></th>
+                                <th class="center"><input type="text" wicket:id="benefitName"/></th>
+                                <th class="center"></th>
+                                <th class="center"></th>
+                                <th class="center"></th>
+                                <th class="center"><select wicket:id="status"></select></th>
+                                <th class="center">
+                                    <input wicket:id="find" class="btnSmall" type="submit" wicket:message="value:filter" tabindex="0"/>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody wicket:id="objects_container">
+                            <tr wicket:id="objects">
+                                <td>
+                                    <div wicket:id="itemCheckBoxPanel"></div>
+                                </td>
+                                <td><span wicket:id="id"></span></td>
+                                <td><span wicket:id="loaded"></span></td>
+                                <td><span wicket:id="organization"></span></td>
+                                <td><span wicket:id="userOrganization"></span></td>
+                                <td><span wicket:id="registry"></span></td>
+                                <td><span wicket:id="month"></span></td>
+                                <td><span wicket:id="year"></span></td>
+                                <td><span wicket:id="directory"></span></td>
+                                <td><span wicket:id="paymentName"></span></td>
+                                <td><span wicket:id="benefitName"></span></td>
+                                <td><span wicket:id="loaded_record_count"></span></td>
+                                <td><span wicket:id="binded_record_count"></span></td>
+                                <td><span wicket:id="filled_record_count"></span></td>
+                                <td colspan="2"><span wicket:id="status" style="white-space:nowrap"></span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div wicket:id="paging"></div>
+
+                    <div class="buttons_section">
+                        <table width="100%">
+                            <tbody>
+                                <tr>
+                                    <td valign="top">
+                                        <div wicket:id="options" align="left" class="options_section">
+                                            <label>
+                                                <input wicket:id="update_pu_account" type="checkbox"/>
+                                                <wicket:message key="update_pu_account"/>
+                                            </label>
+                                        </div>
+                                    </td>
+                                    <td valign="top">
+                                        <div align="right">
+                                            <table wicket:id="buttons">
+                                                <tr>
+                                                    <td><input type="submit" class="btnMiddle" wicket:id="load" wicket:message="value:load"/></td>
+                                                    <td><input type="submit" class="btnMiddle" wicket:id="bind" wicket:message="value:bind"/></td>
+                                                    <td><input type="submit" class="btnMiddle" wicket:id="process" wicket:message="value:process"/></td>
+                                                    <td><input type="submit" class="btnMiddle" wicket:id="save" wicket:message="value:save"/></td>
+                                                    <td><input type="submit" class="btnMiddle" wicket:id="delete" wicket:message="value:delete"/></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><input type="submit" class="btnMiddle" wicket:id="load_cancel" wicket:message="value:cancel"/></td>
+                                                    <td><input type="submit" class="btnMiddle" wicket:id="bind_cancel" wicket:message="value:cancel"/></td>
+                                                    <td><input type="submit" class="btnMiddle" wicket:id="fill_cancel" wicket:message="value:cancel"/></td>
+                                                    <td><input type="submit" class="btnMiddle" wicket:id="save_cancel" wicket:message="value:cancel"/></td>
+                                                    <td></td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </form>
+            </div>
+            <div wicket:id="load_panel"></div>
+        </wicket:panel>
+    </body>
+</html>

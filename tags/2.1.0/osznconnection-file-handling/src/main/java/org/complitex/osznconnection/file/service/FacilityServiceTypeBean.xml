@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.complitex.osznconnection.file.service.FacilityServiceTypeBean">
+
+    <resultMap id="facilityServiceTypeResultMap" type="org.complitex.osznconnection.file.entity.FacilityServiceType"
+                extends="org.complitex.osznconnection.file.service.AbstractRequestBean.abstractRequest">
+
+        <result column="internal_city_id" property="internalCityId"/>
+        <result column="internal_street_id" property="internalStreetId"/>
+        <result column="internal_street_type_id" property="internalStreetTypeId"/>
+        <result column="internal_building_id" property="internalBuildingId"/>
+
+        <result column="outgoing_city" property="outgoingCity"/>
+        <result column="outgoing_district" property="outgoingDistrict"/>
+        <result column="outgoing_street" property="outgoingStreet"/>
+        <result column="outgoing_street_type" property="outgoingStreetType"/>
+        <result column="outgoing_building_number" property="outgoingBuildingNumber"/>
+        <result column="outgoing_building_corp" property="outgoingBuildingCorp"/>
+        <result column="outgoing_apartment" property="outgoingApartment"/>
+        
+        <result column="date" property="date"/>
+        
+        <result column="street_correction_id" property="streetCorrectionId"/>
+        
+        <result column="last_name" property="lastName"/>
+        <result column="first_name" property="firstName"/>
+        <result column="middle_name" property="middleName"/>
+        
+        <result column="city" property="city"/>
+        <result column="street" property="street"/>
+        <result column="street_type" property="streetType"/>
+
+        <association property="dbfFields" javaType="map">
+            <result column="COD" property="COD"/>
+            <result column="CDPR" property="CDPR"/>
+            <result column="NCARD" property="NCARD"/>
+            <result column="IDCODE" property="IDCODE"/>
+            <result column="PASP" property="PASP"/>
+            <result column="FIO" property="FIO"/>
+            <result column="IDPIL" property="IDPIL"/>
+            <result column="PASPPIL" property="PASPPIL"/>
+            <result column="FIOPIL" property="FIOPIL"/>
+            <result column="INDEX" property="INDEX"/>
+            <result column="CDUL" property="CDUL"/>
+            <result column="HOUSE" property="HOUSE"/>
+            <result column="BUILD" property="BUILD"/>
+            <result column="APT" property="APT"/>
+            <result column="KAT" property="KAT"/>
+            <result column="LGCODE" property="LGCODE"/>
+            <result column="YEARIN" property="YEARIN"/>
+            <result column="MONTHIN" property="MONTHIN"/>
+            <result column="YEAROUT" property="YEAROUT"/>
+            <result column="MONTHOUT" property="MONTHOUT"/>
+            <result column="RAH" property="RAH"/>
+            <result column="RIZN" property="RIZN"/>
+            <result column="TARIF" property="TARIF"/>
+        </association>
+    </resultMap>
+
+
+    <insert id="insertFacilityServiceTypeList" parameterType="list">
+        INSERT INTO `facility_service_type`
+        (
+        <trim suffixOverrides=",">
+            `request_file_id`, `account_number`,
+            `internal_city_id`, `internal_street_id`, `internal_street_type_id`, `internal_building_id`,
+            `outgoing_city`, `outgoing_street`, `outgoing_street_type`, `outgoing_building_number`, `outgoing_building_corp`, `outgoing_apartment`,
+            `street_correction_id`, `status`, `date`,
+            `last_name`, `first_name`, `middle_name`,
+            `city`, `street`, `street_type`,
+            <foreach collection="list[0].dbfFields.keys" item="key">
+                `${key}`,
+            </foreach>
+        </trim>
+        )
+        values
+        <foreach collection="list" separator="," item="item">
+            (
+            <trim suffixOverrides=",">
+                #{item.requestFileId}, #{item.accountNumber},
+                #{item.internalCityId}, #{item.internalStreetId}, #{item.internalStreetTypeId}, #{item.internalBuildingId},
+                #{item.outgoingCity}, #{item.outgoingStreet}, #{item.outgoingStreetType}, #{item.outgoingBuildingNumber}, #{item.outgoingBuildingCorp},
+                #{item.outgoingApartment},
+                #{item.streetCorrectionId}, #{item.status}, #{item.date},
+                #{item.lastName}, #{item.firstName}, #{item.middleName},
+                #{item.city}, #{item.street}, #{item.streetType},
+                <foreach collection="item.dbfFields.keys" item="key">
+                    #{item.dbfFields.${key}},
+                </foreach>
+            </trim>
+            )
+        </foreach>
+    </insert>
+    
+    <sql id="filter">
+        <if test="account != null">
+            AND fst.`RAH` LIKE CONCAT('%',#{account},'%')
+        </if>
+
+        <if test="idCode != null">
+            AND fst.`IDCODE` LIKE CONCAT('%',#{idCode},'%')
+        </if>
+        
+        <if test="firstName != null">
+            AND fst.`first_name` LIKE CONCAT('%',#{firstName},'%')
+        </if>
+
+        <if test="middleName != null">
+            AND fst.`middle_name` LIKE CONCAT('%',#{middleName},'%')
+        </if>
+
+        <if test="lastName != null">
+            AND fst.`last_name` LIKE CONCAT('%',#{lastName},'%')
+        </if>
+
+        <if test="streetCode != null">
+            AND fst.`CDUL` LIKE CONCAT('%', #{streetCode}, '%')
+        </if>
+
+        <if test="streetReference != null">
+            AND  fsr.`KL_NAME` LIKE CONCAT('%', #{streetReference}, '%')
+        </if>
+
+        <if test="building != null">
+            AND fst.`HOUSE` LIKE CONCAT('%', #{building}, '%')
+        </if>
+
+        <if test="corp != null">
+            AND fst.`BUILD` LIKE CONCAT('%', #{corp}, '%')
+        </if>
+
+        <if test="apartment != null">
+            AND fst.`APT` LIKE CONCAT('%', #{apartment}, '%')
+        </if>
+
+        <if test="status != null">
+            AND fst.`status` = #{status}
+        </if>
+    </sql>
+
+    <select id="count" resultType="int" parameterType="org.complitex.osznconnection.file.entity.example.FacilityServiceTypeExample">
+        SELECT COUNT(distinct fst.`id`) FROM `facility_service_type` fst
+          LEFT JOIN `facility_street_reference` fsr ON fst.`CDUL` = fsr.`KL_CODEUL`
+        WHERE fst.`request_file_id` = #{requestFileId}
+        <include refid="org.complitex.osznconnection.file.service.FacilityServiceTypeBean.filter"/>
+    </select>
+
+    <select id="find" parameterType="org.complitex.osznconnection.file.entity.example.FacilityServiceTypeExample"
+            resultMap="facilityServiceTypeResultMap">
+        SELECT t.*,  
+        w.`id` warning_id, w.`request_id` warning_reqiest_id, w.`request_file_type` warning_request_file_type, w.`status` warning_status,
+        p.`request_warning_id` param_request_warning_id, p.`order` param_order, p.`type` param_type, p.`value` param_value
+        FROM (
+            SELECT DISTINCT fst.`id`, fst.`status`, fst.`request_file_id`, fst.`IDCODE`, fst.`first_name`, fst.`middle_name`, fst.`last_name`, fst.`FIO`,
+                fst.`CDUL`, fst.`HOUSE`, fst.`BUILD`, fst.`APT`, fst.`date`,
+                f.`organization_id`,
+                fst.`internal_city_id`, fst.`internal_street_id`, fst.`internal_street_type_id`, fst.`internal_building_id`,
+                fst.`outgoing_city`, fst.`outgoing_district`, fst.`outgoing_street`, fst.`outgoing_street_type`, fst.`outgoing_building_number`,
+                fst.`outgoing_building_corp`, fst.`outgoing_apartment`, fst.`street_correction_id`,
+                fst.`city`, fst.`street`, fst.`street_type`, fsr.`KL_NAME` as street_reference
+            FROM `facility_service_type` fst
+                JOIN `request_file` f ON f.`id` = fst.`request_file_id`
+                LEFT JOIN `facility_street_reference` fsr ON fst.`CDUL` = fsr.`KL_CODEUL`
+            WHERE fst.`request_file_id` = #{requestFileId}
+                <include refid="org.complitex.osznconnection.file.service.FacilityServiceTypeBean.filter"/>
+                <if test="orderByClause != null">
+                    <choose>
+                        <when test="orderByClause == 'IDCODE' or orderByClause == 'HOUSE' or orderByClause == 'BUILD'
+                                or orderByClause == 'APT' or orderByClause == 'RAH'">
+                            ORDER BY `${orderByClause}`+0
+                        </when>
+                        <otherwise>
+                            ORDER BY `${orderByClause}`
+                        </otherwise>
+                    </choose>
+                    <choose>
+                        <when test="asc">
+                            ASC
+                        </when>
+                        <otherwise>
+                            DESC
+                        </otherwise>
+                    </choose>
+                </if>
+                <if test="size != 0">
+                    limit #{start},#{size}
+                </if>
+        ) t
+        LEFT JOIN `request_warning` w ON (w.`request_id` = t.`id` AND w.`request_file_type` = 7)
+        LEFT JOIN `request_warning_parameter` p ON w.`id` = p.`request_warning_id`
+    </select>
+  
+    <select id="countByFile" resultType="int" parameterType="map">
+        SELECT COUNT(1) FROM `facility_service_type` fst
+        WHERE fst.`request_file_id` = #{requestFileId} AND fst.`status` IN
+        <foreach collection="statuses" item="status" open="(" close=")" separator=",">
+            #{status}
+        </foreach>
+    </select>
+    
+    <update id="update" parameterType="org.complitex.osznconnection.file.entity.FacilityServiceType">
+        UPDATE `facility_service_type` SET
+        `account_number` = #{accountNumber},
+        `internal_city_id` = #{internalCityId},
+        `internal_street_id` = #{internalStreetId}, `internal_street_type_id` = #{internalStreetTypeId},
+        `internal_building_id` = #{internalBuildingId},
+        `outgoing_city` = #{outgoingCity}, `outgoing_district` = #{outgoingDistrict},
+        `outgoing_street` = #{outgoingStreet}, `outgoing_street_type` = #{outgoingStreetType},
+        `outgoing_building_number` = #{outgoingBuildingNumber}, `outgoing_building_corp` = #{outgoingBuildingCorp},
+        `outgoing_apartment` = #{outgoingApartment},
+        `street` = #{street}, `street_type` = #{streetType}, `street_correction_id` = #{streetCorrectionId},
+        `status` = #{status}
+        <if test="updateFieldMap != null">
+            <foreach collection="updateFieldMap.entrySet()" item="item">
+                ,`${item.key}` = #{item.value}
+            </foreach>
+        </if>
+        WHERE `id` = #{id}
+    </update>
+    
+    <update id="updateAccountNumber" parameterType="org.complitex.osznconnection.file.entity.FacilityServiceType">
+        UPDATE `facility_service_type` SET `account_number` = #{accountNumber}, `status` = #{status}
+        WHERE `id` = #{id}
+    </update>
+    
+    <select id="findIdsForOperation" parameterType="long" resultType="long">
+        SELECT fst.`id` FROM `facility_service_type` fst WHERE fst.`request_file_id` = #{requestFileId}
+    </select>
+    
+    <select id="findForOperation" parameterType="map" resultMap="facilityServiceTypeResultMap">
+        SELECT fst.*, f.`organization_id`
+        FROM `facility_service_type` fst JOIN `request_file` f ON fst.`request_file_id` = f.`id`
+        WHERE fst.`request_file_id` = #{requestFileId}
+            AND fst.`id` IN
+            <foreach collection="ids" item="id" open="(" close=")" separator=",">
+                #{id}
+            </foreach>
+    </select>
+   
+   <update id="clearBeforeBinding" parameterType="map">
+        UPDATE `facility_service_type` SET
+        `account_number` = NULL,
+        `internal_city_id` = NULL, `internal_street_id` = NULL, `internal_street_type_id` = NULL, `internal_building_id` = NULL,
+        `outgoing_city` = NULL, `outgoing_district` = NULL, `outgoing_street` = NULL, `outgoing_street_type` = NULL,
+        `outgoing_building_number` = NULL, `outgoing_building_corp` = NULL, `outgoing_apartment` = NULL,
+        `street` = NULL, `street_type` = NULL, `street_correction_id` = NULL,
+        `status` = #{status}
+        <if test="updateFieldMap != null">
+            <foreach collection="updateFieldMap.entrySet()" item="item">
+                ,`${item.key}` = #{item.value}
+            </foreach>
+        </if>
+        WHERE `request_file_id` = #{fileId}
+    </update>
+    
+    <update id="markCorrected" parameterType="map">
+        update `facility_service_type` f
+          left join `request_file` f_rf ON f.`request_file_id` = f_rf.`id`
+          left join `facility_street_reference` r on f.`CDUL` = r.`KL_CODEUL`
+          left join `request_file` r_rf ON r.`request_file_id` = r_rf.`id`
+        set f.`status` = 204
+        where f.`request_file_id` = #{fileId}
+          and f_rf.`organization_id` = r_rf.`organization_id` and f_rf.`user_organization_id` = r_rf.`user_organization_id`
+
+        <if test="streetTypeCode != null and streetCode == null">
+            and r.`KL_CODEKUL` = #{streetTypeCode} and f.`status` = 237
+        </if>
+
+        <if test="streetCode != null and buildingNumber == null">
+            and f.`CDUL` = #{streetCode} and f.`status` = 201
+        </if>
+
+        <if test="buildingNumber != null">
+            and f.`CDUL` = #{streetCode} and TO_CYRILLIC(`HOUSE`) = TO_CYRILLIC(#{buildingNumber}) and f.`status` = 202
+        </if>
+
+        <if test="buildingCorp != null">
+            and f.`CDUL` = #{streetCode} and TO_CYRILLIC(`HOUSE`) = TO_CYRILLIC(#{buildingNumber})
+            and TO_CYRILLIC(`BUILD`) = TO_CYRILLIC(#{buildingCorp}) and f.`status` = 202
+        </if>
+    </update>
+    
+    <select id="selectFacilityServiceType" resultMap="facilityServiceTypeResultMap" parameterType="long">
+        SELECT fst.* FROM `facility_service_type` fst WHERE fst.`request_file_id` = #{id}
+    </select>
+    
+    <delete id="deleteFacilityServiceType" parameterType="long">
+        DELETE FROM `facility_service_type` WHERE `request_file_id` = #{id};
+    </delete>
+    
+</mapper>

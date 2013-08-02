@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="FileHandlingSuite" verbose="1" >
+    <test name="ServiceProviderAccountNumberParserTest">
+        <classes>
+            <class name="org.complitex.osznconnection.file.service_provider.util.ServiceProviderAccountNumberParserTest"/>
+        </classes>
+    </test>
+    <test name="SubsidyNameParserTest">
+        <classes>
+            <class name="org.complitex.osznconnection.file.service.util.SubsidyNameParserTest"/>
+        </classes>
+    </test>
+</suite>

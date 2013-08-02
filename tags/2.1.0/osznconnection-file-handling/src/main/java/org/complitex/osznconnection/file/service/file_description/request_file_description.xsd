@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd = "http://www.w3.org/2001/XMLSchema"
+            xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+            jxb:version="2.0">
+
+    <xsd:element name="file-descriptions">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="file-description" type="FileDescription" minOccurs="1" maxOccurs="unbounded">
+                    <xsd:annotation>
+                        <xsd:appinfo>
+                            <jxb:property name="fileDescriptionList"/>
+                        </xsd:appinfo>
+                    </xsd:annotation>
+                </xsd:element>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+    
+    <xsd:complexType name="FileDescription">
+        <xsd:sequence>
+            <xsd:element name="formatters" minOccurs="1" maxOccurs="1" type="Formatters"/>
+            <xsd:element name="fields" minOccurs="1" maxOccurs="1" type="Fields"/>
+        </xsd:sequence>
+        <xsd:attribute name="type" type="NonEmptyString" use="required"/>
+    </xsd:complexType>
+    
+    <xsd:complexType name="Formatters">
+        <xsd:sequence>
+            <xsd:element name="date-pattern" minOccurs="1" maxOccurs="1" type="DatePattern"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="DatePattern">
+        <xsd:attribute name="pattern" type="NonEmptyString" use="required"/>
+    </xsd:complexType>
+    
+    <xsd:complexType name="Fields">
+        <xsd:sequence>
+            <xsd:element name="field" type="Field" maxOccurs="unbounded">
+                <xsd:annotation>
+                    <xsd:appinfo>
+                        <jxb:property name="fieldList"/>
+                    </xsd:appinfo>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="Field">
+        <xsd:attribute name="name" type="NonEmptyString" use="required"/>
+        <xsd:attribute name="type" type="FieldType" use="required"/>
+        <xsd:attribute name="length" type="SimpleInt" use="required"/>
+        <xsd:attribute name="scale" type="SimpleInt" use="optional"/>
+    </xsd:complexType>
+    
+    <xsd:simpleType name="FieldType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="java.lang.String">
+                <xsd:annotation>
+                    <xsd:appinfo>
+                        <jxb:typesafeEnumMember name="STRING"/>
+                    </xsd:appinfo>
+                </xsd:annotation>
+            </xsd:enumeration>
+            
+            <xsd:enumeration value="java.lang.Integer">
+                <xsd:annotation>
+                    <xsd:appinfo>
+                        <jxb:typesafeEnumMember name="INTEGER"/>
+                    </xsd:appinfo>
+                </xsd:annotation>
+            </xsd:enumeration>
+            
+            <xsd:enumeration value="java.math.BigDecimal">
+                <xsd:annotation>
+                    <xsd:appinfo>
+                        <jxb:typesafeEnumMember name="BIG_DECIMAL"/>
+                    </xsd:appinfo>
+                </xsd:annotation>
+            </xsd:enumeration>
+            
+            <xsd:enumeration value="java.util.Date">
+                <xsd:annotation>
+                    <xsd:appinfo>
+                        <jxb:typesafeEnumMember name="DATE"/>
+                    </xsd:appinfo>
+                </xsd:annotation>
+            </xsd:enumeration>
+        </xsd:restriction>
+    </xsd:simpleType>
+    
+    <xsd:simpleType name="SimpleInt">
+        <xsd:restriction base="xsd:int">
+            <xsd:minExclusive value="0"/>
+            <xsd:maxExclusive value="100"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    
+    <xsd:simpleType name="NonEmptyString">
+        <xsd:restriction base="xsd:string">
+            <xsd:whiteSpace value="collapse"/>
+            <xsd:minLength value="1"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    
+</xsd:schema>
