@@ -30,6 +30,9 @@
         <result column="street" property="street"/>
         <result column="street_type" property="streetType"/>
 
+        <result column="organization_id" property="organizationId"/>
+        <result column="user_organization_id" property="userOrganizationId"/>
+
         <association property="dbfFields" javaType="map">
             <result column="COD" property="COD"/>
             <result column="CDPR" property="CDPR"/>
@@ -228,7 +231,7 @@
     </select>
     
     <select id="findForOperation" parameterType="map" resultMap="facilityServiceTypeResultMap">
-        SELECT fst.*, f.`organization_id`
+        SELECT fst.*, f.`organization_id`, f.`user_organization_id`
         FROM `facility_service_type` fst JOIN `request_file` f ON fst.`request_file_id` = f.`id`
         WHERE fst.`request_file_id` = #{requestFileId}
             AND fst.`id` IN

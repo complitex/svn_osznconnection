@@ -24,6 +24,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.Strings;
+import org.complitex.address.entity.AddressEntity;
 import org.complitex.dictionary.service.SessionBean;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
@@ -203,8 +204,8 @@ public final class FacilityServiceTypeList extends TemplatePage {
                 facilityServiceTypeFile.getUserOrganizationId(), content, statusDetailPanel) {
 
                     @Override
-                    protected void correctAddress(FacilityServiceType facilityServiceType, CORRECTED_ENTITY entity,
-                            Long cityId, Long streetTypeId, Long streetId, Long buildingId, long userOrganizationId)
+                    protected void correctAddress(FacilityServiceType facilityServiceType, AddressEntity entity,
+                            Long cityId, Long streetTypeId, Long streetId, Long buildingId, Long userOrganizationId)
                             throws DublicateCorrectionException, MoreOneCorrectionException, NotFoundCorrectionException {
                         addressService.correctLocalAddress(facilityServiceType, entity, cityId, streetTypeId, streetId, buildingId, userOrganizationId);
                     }
@@ -241,8 +242,8 @@ public final class FacilityServiceTypeList extends TemplatePage {
                 item.add(new Label("firstName", facilityServiceType.getFirstName()));
                 item.add(new Label("middleName", facilityServiceType.getMiddleName()));
                 item.add(new Label("lastName", facilityServiceType.getLastName()));
-                item.add(new Label("streetReference", emptyOnNull(facilityServiceType.getStreetTypeReference()) + " "
-                        + emptyOnNull(facilityServiceType.getStreetReference())));
+                item.add(new Label("streetReference", emptyOnNull(facilityServiceType.getStreetType()) + " "
+                        + emptyOnNull(facilityServiceType.getStreet())));
                 item.add(new Label("building", facilityServiceType.getStringField(FacilityServiceTypeDBF.HOUSE)));
                 item.add(new Label("corp", facilityServiceType.getStringField(FacilityServiceTypeDBF.BUILD)));
                 item.add(new Label("apartment", facilityServiceType.getStringField(FacilityServiceTypeDBF.APT)));
@@ -255,14 +256,10 @@ public final class FacilityServiceTypeList extends TemplatePage {
                     public void onClick(AjaxRequestTarget target) {
                         String street = facilityServiceType.getStreet() != null
                                 ? facilityServiceType.getStreet()
-                                : facilityServiceType.getStreetReference() != null
-                                ? facilityServiceType.getStreetReference()
                                 : getString("streetCodePrefix") + " " + facilityServiceType.getStringField(CDUL);
 
                         String streetType = facilityServiceType.getStreetType() != null
                                 ? facilityServiceType.getStreetType()
-                                : facilityServiceType.getStreetTypeReference() != null
-                                ? facilityServiceType.getStreetTypeReference()
                                 : getString("streetTypeNotFound");
 
 

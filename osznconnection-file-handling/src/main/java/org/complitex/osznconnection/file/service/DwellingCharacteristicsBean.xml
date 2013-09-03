@@ -221,7 +221,7 @@
     </select>
     
     <select id="findForOperation" parameterType="map" resultMap="dwellingCharacteristicsResultMap">
-        SELECT d.*, f.`organization_id`
+        SELECT d.*, f.`organization_id`, f.`user_organization_id`
         FROM `dwelling_characteristics` d JOIN `request_file` f ON d.`request_file_id` = f.`id`
         WHERE d.`request_file_id` = #{requestFileId}
             AND d.`id` IN

@@ -24,6 +24,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.Strings;
+import org.complitex.address.entity.AddressEntity;
 import org.complitex.address.util.AddressRenderer;
 import org.complitex.dictionary.service.SessionBean;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
@@ -197,8 +198,8 @@ public final class SubsidyList extends TemplatePage {
                 subsidyFile.getUserOrganizationId(), content, statusDetailPanel) {
 
             @Override
-            protected void correctAddress(Subsidy subsidy, CORRECTED_ENTITY entity, Long cityId, Long streetTypeId, Long streetId,
-                    Long buildingId, long userOrganizationId)
+            protected void correctAddress(Subsidy subsidy, AddressEntity entity, Long cityId, Long streetTypeId, Long streetId,
+                    Long buildingId, Long userOrganizationId)
                     throws DublicateCorrectionException, MoreOneCorrectionException, NotFoundCorrectionException {
                 addressService.correctLocalAddress(subsidy, entity, cityId, streetTypeId, streetId, buildingId, userOrganizationId);
             }

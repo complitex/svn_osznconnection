@@ -38,10 +38,8 @@ public class CalculationCenterBean {
         final long calculationCenterId = Collections.min(groups.keySet());
         final Set<Long> serviceProviderTypeIds = ImmutableSet.copyOf(groups.get(calculationCenterId));
 
-        final CalculationContext calculationContext = new CalculationContext(calculationCenterId,
-                organizationStrategy.getDataSource(calculationCenterId),
-                serviceProviderTypeIds, userOrganizationId);
-        return calculationContext;
+        return new CalculationContext(0L, userOrganizationId, calculationCenterId,
+                organizationStrategy.getDataSource(calculationCenterId), serviceProviderTypeIds);
     }
 
     private DomainObject checkUserOrganization(long userOrganizationId) {
@@ -62,7 +60,7 @@ public class CalculationCenterBean {
         for (long calculationCenterId : groups.keySet()) {
             final Set<Long> serviceProviderTypeIds = ImmutableSet.copyOf(groups.get(calculationCenterId));
             final String dataSource = organizationStrategy.getDataSource(calculationCenterId);
-            contexts.add(new CalculationContext(calculationCenterId, dataSource, serviceProviderTypeIds, userOrganizationId));
+            contexts.add(new CalculationContext(0L, userOrganizationId, calculationCenterId, dataSource, serviceProviderTypeIds));
         }
 
         return ImmutableList.copyOf(contexts);

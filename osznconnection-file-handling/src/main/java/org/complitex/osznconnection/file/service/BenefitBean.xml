@@ -10,7 +10,6 @@
         <result column="building_number" property="buildingNumber"/>
         <result column="building_corp" property="buildingCorp"/>
         <result column="apartment" property="apartment"/>
-        <result column="organization_id" property="organizationId"/>
 
         <association property="dbfFields" javaType="map">
             <result column="OWN_NUM" property="OWN_NUM"/>
@@ -255,7 +254,7 @@
     </update>
 
     <select id="findByOZN" parameterType="org.complitex.osznconnection.file.entity.Payment" resultMap="benefitResultMap">
-        SELECT b.`id`, b.`status`, b.`account_number`, bf.`organization_id` organization_id, b.`request_file_id`
+        SELECT b.`id`, b.`status`, b.`account_number`, b.`request_file_id`, bf.`organization_id`, bf.`user_organization_id`
             FROM `benefit` b
             JOIN `request_file` bf ON b.`request_file_id` = bf.`id`
             JOIN `request_file` pf ON (pf.`id` = #{requestFileId} AND pf.`type` = 2 AND pf.`group_id` = bf.`group_id`)
@@ -269,7 +268,7 @@
     </select>
 
     <select id="findByAccountNumber" parameterType="map" resultMap="benefitResultMap">
-        SELECT b.`id`, b.`status`, b.`account_number`, bf.`organization_id` organization_id,
+        SELECT b.`id`, b.`status`, b.`account_number`, bf.`organization_id`,  bf.`user_organization_id`,
         b.`request_file_id`,
         b.`IND_COD`,
         b.`PSP_NUM`,

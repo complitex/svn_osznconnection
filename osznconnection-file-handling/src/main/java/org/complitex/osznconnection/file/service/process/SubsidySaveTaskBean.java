@@ -1,14 +1,16 @@
 package org.complitex.osznconnection.file.service.process;
 
 import org.complitex.dictionary.service.executor.ITaskBean;
-import org.complitex.osznconnection.file.entity.*;
-import org.complitex.osznconnection.file.service.*;
+import org.complitex.osznconnection.file.entity.AbstractAccountRequest;
+import org.complitex.osznconnection.file.entity.RequestFile;
+import org.complitex.osznconnection.file.entity.SubsidyDBF;
+import org.complitex.osznconnection.file.service.SubsidyBean;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import java.util.List;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
+import java.util.List;
 
 @Stateless
 @TransactionManagement(TransactionManagementType.BEAN)
@@ -18,7 +20,7 @@ public class SubsidySaveTaskBean extends AbstractSaveTaskBean implements ITaskBe
     private SubsidyBean subsidyBean;
 
     @Override
-    protected List<AbstractRequest> getAbstractRequests(RequestFile requestFile) {
+    protected List<AbstractAccountRequest> getAbstractRequests(RequestFile requestFile) {
         return subsidyBean.getSubsidies(requestFile.getId());
     }
 

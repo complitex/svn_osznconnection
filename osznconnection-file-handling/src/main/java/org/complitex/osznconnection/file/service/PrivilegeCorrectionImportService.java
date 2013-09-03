@@ -6,6 +6,7 @@ import org.complitex.dictionary.service.IImportListener;
 import org.complitex.dictionary.service.exception.ImportFileNotFoundException;
 import org.complitex.dictionary.service.exception.ImportFileReadException;
 import org.complitex.dictionary.service.exception.ImportObjectLinkException;
+import org.complitex.osznconnection.file.entity.PrivilegeCorrection;
 import org.complitex.osznconnection.file.strategy.PrivilegeStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +15,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import java.io.IOException;
 
-import static org.complitex.correction.entity.CorrectionImportFile.PRIVILEGE_CORRECTION;
+import static org.complitex.osznconnection.file.entity.CorrectionImportFile.PRIVILEGE_CORRECTION;
 
 
 /**
@@ -52,21 +53,19 @@ public class PrivilegeCorrectionImportService extends AbstractImportService {
                 recordIndex++;
 
                 //PRIVILEGE_ID
-                Long objectId = privilegeStrategy.getObjectId(Long.parseLong(line[1].trim()));
+                Long objectId = privilegeStrategy.getObjectId(line[1].trim());
                 if (objectId == null) {
                     throw new ImportObjectLinkException(PRIVILEGE_CORRECTION.getFileName(), recordIndex, line[1].trim());
                 }
 
-                privilegeCorrectionBean.insertPrivilegeCorrection(line[2].trim(), line[3].trim(), objectId, orgId,
-                        intOrgId, null);
+                privilegeCorrectionBean.save(new PrivilegeCorrection(line[2].trim(), objectId, line[3].trim(), orgId,
+                        intOrgId, null));
 
                 listener.recordProcessed(PRIVILEGE_CORRECTION, recordIndex);
             }
 
             listener.completeImport(PRIVILEGE_CORRECTION, recordIndex);
-        } catch (IOException e) {
-            throw new ImportFileReadException(e, PRIVILEGE_CORRECTION.getFileName(), recordIndex);
-        } catch (NumberFormatException e) {
+        } catch (IOException | NumberFormatException e) {
             throw new ImportFileReadException(e, PRIVILEGE_CORRECTION.getFileName(), recordIndex);
         } finally {
             try {

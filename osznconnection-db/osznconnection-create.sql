@@ -599,8 +599,6 @@ CREATE TABLE `dwelling_characteristics` (
     `outgoing_building_corp` VARCHAR(100) COMMENT 'Корпус используемый центром начисления',
     `outgoing_apartment` VARCHAR(100) COMMENT 'Номер квартиры. Не используется',
 
-    `street_correction_id` BIGINT(20) COMMENT 'Идентификатор соответствия улицы',
-
     `date` DATE NOT NULL COMMENT 'Дата. Производное поле. Первое число месяца, который был указан при загрузке файла, содержащего данную запись.',
 
     `status` INTEGER NOT NULL DEFAULT 240 COMMENT 'См. таблицу status_description и класс RequestStatus',
@@ -620,8 +618,6 @@ CREATE TABLE `dwelling_characteristics` (
     `INDEX` VARCHAR(100) COMMENT 'Почтовый индекс',
     `city` VARCHAR(100) NOT NULL COMMENT 'Населенный пункт. Исскуственное поле(значение берется из конфигураций)',
     `CDUL` VARCHAR(100) COMMENT 'Код улицы',
-    `street` VARCHAR(100) COMMENT 'Улица. Производное поле.',
-    `street_type` VARCHAR(100) COMMENT 'Тип улицы. Производное поле.',
     `HOUSE` VARCHAR(100) COMMENT 'Номер дома',
     `BUILD` VARCHAR(100) COMMENT 'Корпус',
     `APT` VARCHAR(100) COMMENT 'Номер квартиры',
@@ -673,8 +669,6 @@ CREATE TABLE `facility_service_type` (
     `outgoing_building_corp` VARCHAR(100) COMMENT 'Корпус используемый центром начисления',
     `outgoing_apartment` VARCHAR(100) COMMENT 'Номер квартиры. Не используется',
 
-    `street_correction_id` BIGINT(20) COMMENT 'Идентификатор соответствия улицы',
-
     `date` DATE NOT NULL COMMENT 'Дата. Производное поле. Первое число месяца, который был указан при загрузке файла, содержащего данную запись.',
 
     `status` INTEGER NOT NULL DEFAULT 240 COMMENT 'См. таблицу status_description и класс RequestStatus',
@@ -694,8 +688,6 @@ CREATE TABLE `facility_service_type` (
     `INDEX` VARCHAR(100) COMMENT 'Почтовый индекс',
     `city` VARCHAR(100) NOT NULL COMMENT 'Населенный пункт. Исскуственное поле(значение берется из конфигураций)',
     `CDUL` VARCHAR(100) COMMENT 'Код улицы',
-    `street` VARCHAR(100) COMMENT 'Улица. Производное поле.',
-    `street_type` VARCHAR(100) COMMENT 'Тип улицы. Производное поле.',
     `HOUSE` VARCHAR(100) COMMENT 'Номер дома',
     `BUILD` VARCHAR(100) COMMENT 'Корпус',
     `APT` VARCHAR(100) COMMENT 'Номер квартиры',
@@ -878,7 +870,6 @@ DROP TABLE IF EXISTS `city_correction`;
 
 CREATE TABLE `city_correction` (
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор коррекции',
-    `parent_id` BIGINT(20) COMMENT 'Не используется',
     `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта населенного пункта',
     `external_id` VARCHAR(20) COMMENT 'Внешний идентификатор объекта',
     `correction` VARCHAR(100) NOT NULL COMMENT 'Название населенного пункта',
@@ -906,7 +897,6 @@ DROP TABLE IF EXISTS `city_type_correction`;
 
 CREATE TABLE `city_type_correction` (
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор коррекции',
-    `parent_id` BIGINT(20) COMMENT 'Не используется',
     `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта типа населенного пункта',
     `external_id` VARCHAR(20) COMMENT 'Внешний идентификатор объекта',
     `correction` VARCHAR(100) NOT NULL COMMENT 'Название типа населенного пункта',
@@ -934,7 +924,6 @@ DROP TABLE IF EXISTS `district_correction`;
 
 CREATE TABLE `district_correction` (
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор коррекции',
-    `parent_id` BIGINT(20) COMMENT 'Идентификатор населенного пункта',
     `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта типа населенного пункта',
     `external_id` VARCHAR(20) COMMENT 'Внешний идентификатор объекта',
     `correction` VARCHAR(100) NOT NULL COMMENT 'Название типа населенного пункта',
@@ -945,7 +934,6 @@ CREATE TABLE `district_correction` (
     `module_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор модуля',
     `status` INTEGER COMMENT 'Статус',
     PRIMARY KEY (`id`),
-    KEY `key_parent_id` (`parent_id`),
     KEY `key_object_id` (`object_id`),
     KEY `key_correction` (`correction`),
     KEY `key_begin_date` (`begin_date`),
@@ -956,7 +944,6 @@ CREATE TABLE `district_correction` (
     KEY `key_status` (`status`),
     CONSTRAINT `fk_district_correction__user_organization` FOREIGN KEY (`user_organization_id`) REFERENCES `organization` (`object_id`),
     CONSTRAINT `fk_district_correction__district` FOREIGN KEY (`object_id`) REFERENCES `district` (`object_id`),
-    CONSTRAINT `fk_district_correction__city_correction` FOREIGN KEY (`parent_id`) REFERENCES `city_correction` (`id`),
     CONSTRAINT `fk_district_correction__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`object_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Коррекция района';
 
@@ -964,7 +951,6 @@ DROP TABLE IF EXISTS `street_correction`;
 
 CREATE TABLE `street_correction` (
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор коррекции',
-    `parent_id` BIGINT(20) COMMENT 'Идентификатор коррекции населенного пункта',
     `street_type_correction_id` BIGINT(20) NULL COMMENT 'Идентификатор коррекции типа улицы',
     `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта типа населенного пункта',
     `external_id` VARCHAR(20) COMMENT 'Внешний идентификатор объекта',
@@ -976,7 +962,6 @@ CREATE TABLE `street_correction` (
     `module_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор модуля',
     `status` INTEGER COMMENT 'Статус',
     PRIMARY KEY (`id`),
-    KEY `key_parent_id` (`parent_id`),
     KEY `key_street_type_correction_id` (`street_type_correction_id`),
     KEY `key_object_id` (`object_id`),
     KEY `key_correction` (`correction`),
@@ -988,7 +973,6 @@ CREATE TABLE `street_correction` (
     KEY `key_status` (`status`),
     CONSTRAINT `fk_street_correction__user_organization` FOREIGN KEY (`user_organization_id`) REFERENCES `organization` (`object_id`),
     CONSTRAINT `fk_street_correction__street` FOREIGN KEY (`object_id`) REFERENCES `street` (`object_id`),
-    CONSTRAINT `fk_street_correction__city_correction` FOREIGN KEY (`parent_id`) REFERENCES `city_correction` (`id`),
     CONSTRAINT `fk_street_correction__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`object_id`),
     CONSTRAINT `fk_street_correction__street_type_correction` FOREIGN KEY (`street_type_correction_id`) REFERENCES `street_type_correction` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Коррекция улицы';
@@ -997,7 +981,6 @@ DROP TABLE IF EXISTS `street_type_correction`;
 
 CREATE TABLE `street_type_correction` (
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор коррекции',
-    `parent_id` BIGINT(20) COMMENT 'Не используется',
     `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта типа населенного пункта',
     `external_id` VARCHAR(20) COMMENT 'Внешний идентификатор объекта',
     `correction` VARCHAR(100) NOT NULL COMMENT 'Название типа населенного пункта',
@@ -1025,10 +1008,9 @@ DROP TABLE IF EXISTS `building_correction`;
 
 CREATE TABLE `building_correction` (
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор коррекции',
-    `parent_id` BIGINT(20) COMMENT 'Идентификатор коррекции улицы',
-    `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта типа населенного пункта',
+    `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта дом',
     `external_id` VARCHAR(20) COMMENT 'Внешний идентификатор объекта',
-    `correction` VARCHAR(100) NOT NULL COMMENT 'Название типа населенного пункта',
+    `correction` VARCHAR(100) NOT NULL COMMENT 'Номер дома',
     `correction_corp` VARCHAR(20) NOT NULL DEFAULT '' COMMENT 'Корпус дома',
     `begin_date` DATE NOT NULL DEFAULT '1970-01-01' COMMENT 'Дата начала актуальности соответствия',
     `end_date` DATE NOT NULL DEFAULT '2054-12-31' COMMENT 'Дата окончания актуальности соответствия',
@@ -1037,7 +1019,6 @@ CREATE TABLE `building_correction` (
     `module_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор модуля',
     `status` INTEGER COMMENT 'Статус',
     PRIMARY KEY (`id`),
-    KEY `key_parent_id` (`parent_id`),
     KEY `key_object_id` (`object_id`),
     KEY `key_correction` (`correction`),
     KEY `key_begin_date` (`begin_date`),
@@ -1048,7 +1029,6 @@ CREATE TABLE `building_correction` (
     KEY `key_status` (`status`),
     CONSTRAINT `fk_building_correction__user_organization` FOREIGN KEY (`user_organization_id`) REFERENCES `organization` (`object_id`),
     CONSTRAINT `fk_building_correction__building` FOREIGN KEY (`object_id`) REFERENCES `building` (`object_id`),
-    CONSTRAINT `fk_building_correction__street_correction` FOREIGN KEY (`parent_id`) REFERENCES `street_correction` (`id`),
     CONSTRAINT `fk_building_correction__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`object_id`)
 ) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Коррекция дома';
 
@@ -1056,24 +1036,21 @@ DROP TABLE IF EXISTS `ownership_correction`;
 
 CREATE TABLE `ownership_correction` (
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор коррекции',
+    `external_id` VARCHAR(20) COMMENT 'Код организации',
     `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта формы собственности',
-    `parent_id` BIGINT(20) COMMENT 'Не используется',
     `correction` VARCHAR(100) NOT NULL COMMENT 'Название формы собственности',
+    `begin_date` DATE NOT NULL DEFAULT '1970-01-01' COMMENT 'Дата начала актуальности соответствия',
+    `end_date` DATE NOT NULL DEFAULT '2054-12-31' COMMENT 'Дата окончания актуальности соответствия',
     `organization_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор организации',
-    `organization_code` VARCHAR(100) COMMENT 'Код организации',
-    `internal_organization_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор внутренней организации',
     `user_organization_id` BIGINT(20),
+    `module_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор внутренней организации',
     PRIMARY KEY (`id`),
-    UNIQUE KEY `uk_ownership_correction` (`object_id`, `correction`, `organization_id`, `user_organization_id`, 
-                `internal_organization_id`, `organization_code`),
     KEY `key_object_id` (`object_id`),
     KEY `key_correction` (`correction`),
     KEY `key_organization_id` (`organization_id`),
-    KEY `key_internal_organization_id` (`internal_organization_id`),
     KEY `key_user_organization_id` (`user_organization_id`),
     CONSTRAINT `fk_ownership_correction__user_organization` FOREIGN KEY (`user_organization_id`) REFERENCES `organization` (`object_id`),
     CONSTRAINT `fk_ownership_correction` FOREIGN KEY (`object_id`) REFERENCES `ownership` (`object_id`),
-    CONSTRAINT `fk_ownership_correction__internal_organization` FOREIGN KEY (`internal_organization_id`) REFERENCES `organization` (`object_id`),
     CONSTRAINT `fk_ownership_correction__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`object_id`)
 ) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Коррекция формы собственности';
 
@@ -1081,24 +1058,26 @@ DROP TABLE IF EXISTS `privilege_correction`;
 
 CREATE TABLE `privilege_correction` (
     `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Идентификатор коррекции',
+    `external_id` VARCHAR(20) COMMENT 'Внешний идентификатор объекта',
     `object_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор объекта льготы',
-    `parent_id` BIGINT(20) COMMENT 'Не используется',
     `correction` VARCHAR(100) NOT NULL COMMENT 'Название льготы',
+    `begin_date` DATE NOT NULL DEFAULT '1970-01-01' COMMENT 'Дата начала актуальности соответствия',
+    `end_date` DATE NOT NULL DEFAULT '2054-12-31' COMMENT 'Дата окончания актуальности соответствия',
     `organization_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор организации',
-    `organization_code` VARCHAR(100) COMMENT 'Код организации',
-    `internal_organization_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор внутренней организации',
     `user_organization_id` BIGINT(20),
+    `module_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор модуля',
+    `status` INTEGER COMMENT 'Статус',
     PRIMARY KEY (`id`),
-    UNIQUE KEY `uk_privilege_correction` (`object_id`, `correction`, `organization_id`, `user_organization_id`, 
-                    `internal_organization_id`, `organization_code`),
     KEY `key_object_id` (`object_id`),
     KEY `key_correction` (`correction`),
+    KEY `key_begin_date` (`begin_date`),
+    KEY `key_end_date` (`end_date`),
     KEY `key_organization_id` (`organization_id`),
-    KEY `key_internal_organization_id` (`internal_organization_id`),
     KEY `key_user_organization_id` (`user_organization_id`),
+    KEY `key_module_id` (`module_id`),
+    KEY `key_status` (`status`),
     CONSTRAINT `fk_privilege_correction__user_organization` FOREIGN KEY (`user_organization_id`) REFERENCES `organization` (`object_id`),
     CONSTRAINT `fk_privilege_correction` FOREIGN KEY (`object_id`) REFERENCES `privilege` (`object_id`),
-    CONSTRAINT `fk_privilege_correction__internal_organization` FOREIGN KEY (`internal_organization_id`) REFERENCES `organization` (`object_id`),
     CONSTRAINT `fk_privilege_correction__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`object_id`)
 ) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Коррекция льгот';
 

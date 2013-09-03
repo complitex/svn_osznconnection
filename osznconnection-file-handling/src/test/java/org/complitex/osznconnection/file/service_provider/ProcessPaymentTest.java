@@ -6,15 +6,11 @@ package org.complitex.osznconnection.file.service_provider;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
-import java.math.BigDecimal;
-import org.complitex.osznconnection.file.entity.Benefit;
-import org.complitex.osznconnection.file.entity.BenefitDBF;
-import org.complitex.osznconnection.file.entity.Payment;
-import org.complitex.osznconnection.file.entity.PaymentDBF;
-
-import java.util.Date;
-import org.complitex.osznconnection.file.entity.CalculationContext;
+import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.service_provider.exception.DBException;
+
+import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  *
@@ -78,7 +74,8 @@ public class ProcessPaymentTest extends AbstractTest {
         p.setOrganizationId(1L);
 
         try {
-            adapter.processPaymentAndBenefit(new CalculationContext(2, "test", ImmutableSet.of(1L), 3), p, Lists.newArrayList(b));
+            adapter.processPaymentAndBenefit(new CalculationContext(0L, 3L, 2L, "test", ImmutableSet.of(1L)), p,
+                    Lists.newArrayList(b));
         } catch (DBException e) {
             System.out.println("DB error.");
             throw new RuntimeException(e);

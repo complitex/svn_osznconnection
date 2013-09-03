@@ -15,7 +15,6 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.util.time.Duration;
-import org.complitex.correction.entity.CorrectionImportFile;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.entity.IImportFile;
 import org.complitex.dictionary.entity.ImportMessage;
@@ -23,6 +22,7 @@ import org.complitex.dictionary.service.LocaleBean;
 import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
 import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
 import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
+import org.complitex.osznconnection.file.entity.CorrectionImportFile;
 import org.complitex.osznconnection.file.entity.OwnershipImportFile;
 import org.complitex.osznconnection.file.entity.PrivilegeImportFile;
 import org.complitex.osznconnection.file.service.ImportService;
@@ -53,8 +53,8 @@ public class ImportPage extends TemplatePage {
     private OsznOrganizationStrategy organizationStrategy;
 
     @EJB
-
     private LocaleBean localeBean;
+
     private int stopTimer = 0;
 
     private final IModel<List<IImportFile>> dictionaryModel;
@@ -79,7 +79,7 @@ public class ImportPage extends TemplatePage {
         Collections.addAll(dictionaryList, PrivilegeImportFile.values());
         Collections.addAll(dictionaryList, OwnershipImportFile.values());
 
-        form.add(new CheckBoxMultipleChoice<IImportFile>("dictionary", dictionaryModel, dictionaryList,
+        form.add(new CheckBoxMultipleChoice<>("dictionary", dictionaryModel, dictionaryList,
                 new IChoiceRenderer<IImportFile>() {
 
                     @Override
@@ -123,7 +123,6 @@ public class ImportPage extends TemplatePage {
 
                     @Override
                     public Object getDisplayValue(IImportFile object) {
-
                         return object.getFileName() + getStatus(importService.getCorrectionMessage(object));
                     }
 

@@ -182,7 +182,7 @@ public class FacilityServiceTypeBean extends AbstractRequestBean {
         sqlSession().update(NS + ".markCorrected", params);
     }
 
-    public List<AbstractRequest> getFacilityServiceType(long requestFileId) {
+    public List<AbstractAccountRequest> getFacilityServiceType(long requestFileId) {
         return sqlSession().selectList(NS + ".selectFacilityServiceType", requestFileId);
     }
 
@@ -190,9 +190,9 @@ public class FacilityServiceTypeBean extends AbstractRequestBean {
         for (FacilityServiceType f : list){
             FacilityStreet facilityStreet = facilityReferenceBookBean.getFacilityStreet(f.getRequestFileId(), f.getStringField(CDUL));
 
-            f.setStreetReference(facilityStreet.getStringField(FacilityStreetDBF.KL_NAME));
-            f.setStreetTypeReference(facilityStreet.getStreetType());
-            f.setStreetTypeReferenceCode(facilityStreet.getStreetTypeCode());
+            f.setStreet(facilityStreet.getStringField(FacilityStreetDBF.KL_NAME));
+            f.setStreetType(facilityStreet.getStreetType());
+            f.setStreetTypeCode(facilityStreet.getStreetTypeCode());
         }
     }
 }

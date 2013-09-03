@@ -1,50 +1,58 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.osznconnection.file.service;
 
-import java.util.Date;
+import org.complitex.address.strategy.district.DistrictStrategy;
+import org.complitex.correction.entity.DistrictCorrection;
+import org.complitex.correction.service.AddressCorrectionBean;
+import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.AbstractBean;
-import org.complitex.osznconnection.file.entity.AccountDetail;
-import org.complitex.osznconnection.file.entity.Payment;
+import org.complitex.dictionary.service.LocaleBean;
+import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
+import org.complitex.osznconnection.file.entity.*;
+import org.complitex.osznconnection.file.service_provider.CalculationCenterBean;
+import org.complitex.osznconnection.file.service_provider.ServiceProviderAdapter;
+import org.complitex.osznconnection.file.service_provider.exception.DBException;
+import org.complitex.osznconnection.file.service_provider.exception.UnknownAccountNumberTypeException;
+import org.complitex.osznconnection.organization.strategy.OsznOrganizationStrategy;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import java.util.Date;
 import java.util.List;
-import org.complitex.osznconnection.file.entity.AbstractRequest;
-import org.complitex.osznconnection.file.entity.ActualPayment;
-import org.complitex.osznconnection.file.entity.DwellingCharacteristics;
-import org.complitex.osznconnection.file.entity.FacilityServiceType;
-import org.complitex.osznconnection.file.entity.PaymentDBF;
-import org.complitex.osznconnection.file.entity.RequestFile;
-import org.complitex.osznconnection.file.entity.RequestStatus;
-import org.complitex.osznconnection.file.entity.Subsidy;
-import org.complitex.osznconnection.file.entity.SubsidyDBF;
-import org.complitex.osznconnection.file.service_provider.CalculationCenterBean;
-import org.complitex.osznconnection.file.service_provider.ServiceProviderAdapter;
-import org.complitex.osznconnection.file.service_provider.exception.DBException;
-import org.complitex.osznconnection.file.service_provider.exception.UnknownAccountNumberTypeException;
 
 /**
  * @author Artem
  */
 @Stateless
 public class LookupBean extends AbstractBean {
-
     @EJB
     private AddressService addressService;
+
     @EJB
     private CalculationCenterBean calculationCenterBean;
+
     @EJB
     private RequestFileBean requestFileBean;
+
     @EJB
     private ActualPaymentBean actualPaymentBean;
+
     @EJB
     private ServiceProviderAdapter adapter;
+
+    @EJB
+    private AddressCorrectionBean addressCorrectionBean;
+
+    @EJB(name = IOrganizationStrategy.BEAN_NAME, beanInterface = IOrganizationStrategy.class)
+    private OsznOrganizationStrategy organizationStrategy;
+
+    @EJB
+    private DistrictStrategy districtStrategy;
+
+    @EJB
+    private LocaleBean localeBean;
 
     /**
      * Разрешить исходящий в ЦН адрес по схеме "локальная адресная база -> адрес центра начислений"
@@ -52,30 +60,8 @@ public class LookupBean extends AbstractBean {
      * @param request
      */
     @Transactional
-    public void resolveOutgoingAddress(Payment payment, long userOrganizationId) {
-        addressService.resolveOutgoingAddress(payment, calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId));
-    }
-
-    @Transactional
-    public void resolveOutgoingAddress(ActualPayment actualPayment, long userOrganizationId) {
-        addressService.resolveOutgoingAddress(actualPayment, calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId));
-    }
-
-    @Transactional
-    public void resolveOutgoingAddress(Subsidy subsidy, long userOrganizationId) {
-        addressService.resolveOutgoingAddress(subsidy, calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId));
-    }
-
-    @Transactional
-    public void resolveOutgoingAddress(DwellingCharacteristics dwellingCharacteristics, long userOrganizationId) {
-        addressService.resolveOutgoingAddress(dwellingCharacteristics,
-                calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId));
-    }
-
-    @Transactional
-    public void resolveOutgoingAddress(FacilityServiceType facilityServiceType, long userOrganizationId) {
-        addressService.resolveOutgoingAddress(facilityServiceType,
-                calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId));
+    public void resolveOutgoingAddress(AbstractAccountRequest request, long userOrganizationId) {
+        addressService.resolveOutgoingAddress(request, calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId));
     }
 
     /**
@@ -141,65 +127,31 @@ public class LookupBean extends AbstractBean {
     }
 
     @Transactional
-    public String resolveOutgoingDistrict(Payment payment, long userOrganizationId) {
-        payment.setStatus(RequestStatus.LOADED);
-        addressService.resolveOutgoingDistrict(payment, calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId));
-        if (!(payment.getStatus() == RequestStatus.DISTRICT_UNRESOLVED
-                || payment.getStatus() == RequestStatus.MORE_ONE_REMOTE_DISTRICT_CORRECTION)) {
-            return payment.getOutgoingDistrict();
-        } else {
-            return null;
-        }
-    }
+    public String resolveOutgoingDistrict(AbstractRequest request, long userOrganizationId) {
+        request.setStatus(RequestStatus.LOADED);
 
-    @Transactional
-    public String resolveOutgoingDistrict(ActualPayment actualPayment, long userOrganizationId) {
-        actualPayment.setStatus(RequestStatus.LOADED);
-        addressService.resolveOutgoingDistrict(actualPayment, calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId));
-        if (!(actualPayment.getStatus() == RequestStatus.DISTRICT_UNRESOLVED
-                || actualPayment.getStatus() == RequestStatus.MORE_ONE_REMOTE_DISTRICT_CORRECTION)) {
-            return actualPayment.getOutgoingDistrict();
-        } else {
-            return null;
-        }
-    }
+        CalculationContext calculationContext = calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId);
 
-    @Transactional
-    public String resolveOutgoingDistrict(Subsidy subsidy, long userOrganizationId) {
-        subsidy.setStatus(RequestStatus.LOADED);
-        addressService.resolveOutgoingDistrict(subsidy, calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId));
-        if (!(subsidy.getStatus() == RequestStatus.DISTRICT_UNRESOLVED
-                || subsidy.getStatus() == RequestStatus.MORE_ONE_REMOTE_DISTRICT_CORRECTION)) {
-            return subsidy.getOutgoingDistrict();
-        } else {
-            return null;
-        }
-    }
+        List<DistrictCorrection> districtCorrections = addressCorrectionBean.getDistrictCorrections(null, null,
+                calculationContext.getCalculationCenterId(), userOrganizationId);
 
-    @Transactional
-    public String resolveOutgoingDistrict(DwellingCharacteristics dwellingCharacteristics, long userOrganizationId) {
-        dwellingCharacteristics.setStatus(RequestStatus.LOADED);
-        addressService.resolveOutgoingDistrict(dwellingCharacteristics,
-                calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId));
-        if (!(dwellingCharacteristics.getStatus() == RequestStatus.DISTRICT_UNRESOLVED
-                || dwellingCharacteristics.getStatus() == RequestStatus.MORE_ONE_REMOTE_DISTRICT_CORRECTION)) {
-            return dwellingCharacteristics.getOutgoingDistrict();
-        } else {
-            return null;
-        }
-    }
+        if (districtCorrections.isEmpty()){
+            DomainObject organization = organizationStrategy.findById(request.getOrganizationId(), true);
 
-    @Transactional
-    public String resolveOutgoingDistrict(FacilityServiceType facilityServiceType, long userOrganizationId) {
-        facilityServiceType.setStatus(RequestStatus.LOADED);
-        addressService.resolveOutgoingDistrict(facilityServiceType,
-                calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId));
-        if (!(facilityServiceType.getStatus() == RequestStatus.DISTRICT_UNRESOLVED
-                || facilityServiceType.getStatus() == RequestStatus.MORE_ONE_REMOTE_DISTRICT_CORRECTION)) {
-            return facilityServiceType.getOutgoingDistrict();
-        } else {
-            return null;
+            Long districtId = organization.getAttribute(IOrganizationStrategy.DISTRICT).getValueId();
+            DomainObject district = districtStrategy.findById(districtId, true);
+
+
+
+            if (district != null){
+                return districtStrategy.displayDomainObject(district, localeBean.getSystemLocale());
+            }
+
+        } else if (districtCorrections.size() == 1) {
+            return districtCorrections.get(0).getCorrection();
         }
+
+        return null;
     }
 
     @Transactional

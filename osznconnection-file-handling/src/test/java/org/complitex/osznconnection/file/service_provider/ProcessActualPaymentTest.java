@@ -5,11 +5,12 @@
 package org.complitex.osznconnection.file.service_provider;
 
 import com.google.common.collect.ImmutableSet;
-import java.util.Date;
 import org.complitex.osznconnection.file.entity.ActualPayment;
 import org.complitex.osznconnection.file.entity.ActualPaymentDBF;
 import org.complitex.osznconnection.file.entity.CalculationContext;
 import org.complitex.osznconnection.file.service_provider.exception.DBException;
+
+import java.util.Date;
 
 /**
  *
@@ -32,7 +33,7 @@ public class ProcessActualPaymentTest extends AbstractTest {
         };
         p.setAccountNumber("1000000000");
         try {
-            adapter.processActualPayment(new CalculationContext(2, "test", ImmutableSet.of(1L), 3), p, new Date());
+            adapter.processActualPayment(new CalculationContext(0L, 3L, 2L, "test", ImmutableSet.of(1L)), p, new Date());
         } catch (DBException e) {
             System.out.println("DB error.");
             throw new RuntimeException(e);

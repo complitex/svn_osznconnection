@@ -1,14 +1,11 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.osznconnection.organization_type.strategy;
 
 import com.google.common.collect.ImmutableList;
-import java.util.Collection;
-import javax.ejb.Stateless;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.complitex.organization_type.strategy.OrganizationTypeStrategy;
+
+import javax.ejb.Stateless;
+import java.util.Collection;
 
 /**
  *

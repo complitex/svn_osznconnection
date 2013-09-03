@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.osznconnection.file.web.pages.dwelling_charact;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -24,6 +20,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.Strings;
+import org.complitex.address.entity.AddressEntity;
 import org.complitex.dictionary.service.SessionBean;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
@@ -126,7 +123,7 @@ public final class DwellingCharacteristicsList extends TemplatePage {
 
         final Form<Void> filterForm = new Form<Void>("filterForm");
         content.add(filterForm);
-        example = new Model<DwellingCharacteristicsExample>(newExample());
+        example = new Model<>(newExample());
 
         StatusDetailPanel<DwellingCharacteristicsExample> statusDetailPanel =
                 new StatusDetailPanel<DwellingCharacteristicsExample>("statusDetailsPanel", example,
@@ -200,10 +197,14 @@ public final class DwellingCharacteristicsList extends TemplatePage {
                 dwellingCharacteristicsFile.getUserOrganizationId(), content, statusDetailPanel) {
 
                     @Override
-                    protected void correctAddress(DwellingCharacteristics dwellingCharacteristics, CORRECTED_ENTITY entity,
-                            Long cityId, Long streetTypeId, Long streetId, Long buildingId, long userOrganizationId)
+                    protected void correctAddress(DwellingCharacteristics dwellingCharacteristics, AddressEntity entity,
+                            Long cityId, Long streetTypeId, Long streetId, Long buildingId, Long userOrganizationId)
                             throws DublicateCorrectionException, MoreOneCorrectionException, NotFoundCorrectionException {
-                        addressService.correctLocalAddress(dwellingCharacteristics, entity, cityId, streetTypeId, streetId, buildingId, userOrganizationId);
+
+                        addressService.correctLocalAddress(dwellingCharacteristics, entity, cityId, streetTypeId,
+                                streetId, buildingId, userOrganizationId);
+
+
                     }
 
                     @Override
@@ -237,8 +238,8 @@ public final class DwellingCharacteristicsList extends TemplatePage {
                 item.add(new Label("firstName", dwellingCharacteristics.getFirstName()));
                 item.add(new Label("middleName", dwellingCharacteristics.getMiddleName()));
                 item.add(new Label("lastName", dwellingCharacteristics.getLastName()));
-                item.add(new Label("streetReference", emptyOnNull(dwellingCharacteristics.getStreetTypeReference()) + " "
-                        + emptyOnNull(dwellingCharacteristics.getStreetReference())));
+                item.add(new Label("streetReference", emptyOnNull(dwellingCharacteristics.getStreetType()) + " "
+                        + emptyOnNull(dwellingCharacteristics.getStreet())));
                 item.add(new Label("building", dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.HOUSE)));
                 item.add(new Label("corp", dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.BUILD)));
                 item.add(new Label("apartment", dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.APT)));
@@ -251,14 +252,10 @@ public final class DwellingCharacteristicsList extends TemplatePage {
                     public void onClick(AjaxRequestTarget target) {
                         String street = dwellingCharacteristics.getStreet() != null
                                 ? dwellingCharacteristics.getStreet()
-                                : dwellingCharacteristics.getStreetReference() != null
-                                ? dwellingCharacteristics.getStreetReference()
                                 : getString("streetCodePrefix") + " " + dwellingCharacteristics.getStringField(CDUL);
 
                         String streetType = dwellingCharacteristics.getStreetType() != null
                                 ? dwellingCharacteristics.getStreetType()
-                                : dwellingCharacteristics.getStreetTypeReference() != null
-                                ? dwellingCharacteristics.getStreetTypeReference()
                                 : getString("streetTypeNotFound");
 
                         addressCorrectionPanel.open(target, dwellingCharacteristics, dwellingCharacteristics.getFirstName(),

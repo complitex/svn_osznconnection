@@ -4,10 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import org.complitex.dictionary.entity.IExecutorObject;
 import org.complitex.dictionary.util.DateUtil;
 import org.complitex.dictionary.util.ResourceUtil;
-import org.complitex.osznconnection.file.entity.AbstractRequest;
-import org.complitex.osznconnection.file.entity.PaymentDBF;
-import org.complitex.osznconnection.file.entity.RequestFileGroup;
-import org.complitex.osznconnection.file.entity.RequestStatus;
+import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.service.StatusRenderService;
 import org.complitex.osznconnection.file.service.exception.StorageNotFoundException;
 import org.complitex.osznconnection.file.service.warning.IWarningRenderer;
@@ -110,7 +107,7 @@ public final class SaveUtil {
         }
     }
 
-    private static void writeErrorStatus(List<AbstractRequest> requests, Writer fileWriter,
+    private static void writeErrorStatus(List<AbstractAccountRequest> requests, Writer fileWriter,
             IWarningRenderer warningRenderer, boolean onlyWarning) throws IOException {
         if (requests != null) {
             for (AbstractRequest request : requests) {

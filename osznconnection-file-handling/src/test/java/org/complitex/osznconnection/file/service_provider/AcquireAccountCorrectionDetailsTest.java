@@ -5,12 +5,13 @@
 package org.complitex.osznconnection.file.service_provider;
 
 import com.google.common.collect.ImmutableSet;
-import org.complitex.osznconnection.file.entity.Payment;
-import java.util.Date;
 import org.complitex.osznconnection.file.entity.CalculationContext;
+import org.complitex.osznconnection.file.entity.Payment;
 import org.complitex.osznconnection.file.entity.PaymentDBF;
 import org.complitex.osznconnection.file.service_provider.exception.DBException;
 import org.complitex.osznconnection.file.service_provider.exception.UnknownAccountNumberTypeException;
+
+import java.util.Date;
 
 /**
  *
@@ -75,6 +76,6 @@ public class AcquireAccountCorrectionDetailsTest extends AbstractTest {
 
     @Override
     protected void test(ServiceProviderAdapter adapter) throws Exception {
-        testByAddress(new CalculationContext(2, "test", ImmutableSet.of(1L), 3), adapter);
+        testByAddress(new CalculationContext(2L, 0L, 0L, "test", ImmutableSet.of(1L)), adapter);
     }
 }

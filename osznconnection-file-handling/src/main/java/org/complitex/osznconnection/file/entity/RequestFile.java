@@ -36,7 +36,7 @@ public class RequestFile implements IExecutorObject {
     private Integer filledRecordCount = 0;
     private String absolutePath;
 
-    private List<AbstractRequest> requests;
+    private List<AbstractAccountRequest> requests;
 
     private boolean cancel = false;
 
@@ -227,11 +227,11 @@ public class RequestFile implements IExecutorObject {
         this.absolutePath = absolutePath;
     }
 
-    public List<AbstractRequest> getRequests() {
+    public List<AbstractAccountRequest> getRequests() {
         return requests;
     }
 
-    public void setRequests(List<AbstractRequest> requests) {
+    public void setRequests(List<AbstractAccountRequest> requests) {
         this.requests = requests;
     }
 

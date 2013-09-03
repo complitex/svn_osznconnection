@@ -1,9 +1,14 @@
 package org.complitex.osznconnection.file.service;
 
 import org.apache.wicket.util.string.Strings;
-import org.complitex.correction.entity.Correction;
+import org.complitex.address.strategy.city.CityStrategy;
+import org.complitex.address.strategy.street.StreetStrategy;
+import org.complitex.address.strategy.street_type.StreetTypeStrategy;
+import org.complitex.correction.entity.CityCorrection;
 import org.complitex.correction.entity.StreetCorrection;
+import org.complitex.correction.entity.StreetTypeCorrection;
 import org.complitex.correction.service.AddressCorrectionBean;
+import org.complitex.dictionary.entity.Correction;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.entity.Log;
@@ -13,8 +18,6 @@ import org.complitex.dictionary.service.ConfigBean;
 import org.complitex.dictionary.service.LocaleBean;
 import org.complitex.dictionary.service.LogBean;
 import org.complitex.dictionary.service.executor.ExecuteException;
-import org.complitex.dictionary.strategy.IStrategy;
-import org.complitex.dictionary.strategy.StrategyFactory;
 import org.complitex.dictionary.util.ResourceUtil;
 import org.complitex.osznconnection.file.Module;
 import org.complitex.osznconnection.file.entity.*;
@@ -44,10 +47,19 @@ public class FacilityReferenceBookBean extends AbstractBean {
     private static final Logger log = LoggerFactory.getLogger(FacilityReferenceBookBean.class);
     @EJB
     private AddressCorrectionBean addressCorrectionBean;
+
     @EJB
     private ConfigBean configBean;
+
     @EJB
-    private StrategyFactory strategyFactory;
+    private CityStrategy cityStrategy;
+
+    @EJB
+    private StreetStrategy streetStrategy;
+
+    @EJB
+    private StreetTypeStrategy streetTypeStrategy;
+
     @EJB
     private LogBean logBean;
 
@@ -157,7 +169,9 @@ public class FacilityReferenceBookBean extends AbstractBean {
         Long cityId;
         Correction cityCorrection;
 
-        List<Correction> cityCorrections = addressCorrectionBean.findCityLocalCorrections(defaultCity, osznId, userOrganizationId);
+        List<CityCorrection> cityCorrections = addressCorrectionBean.getCityCorrections(
+                null, defaultCity, osznId, userOrganizationId);
+
         if (cityCorrections.size() == 1) {
             cityCorrection = cityCorrections.get(0);
             cityId = cityCorrection.getObjectId();
@@ -181,9 +195,9 @@ public class FacilityReferenceBookBean extends AbstractBean {
         }
 
         Long streetTypeId;
-        Correction streetTypeCorrection;
-        List<Correction> streetTypeCorrections =
-                addressCorrectionBean.findStreetTypeLocalCorrections(streetTypeName, osznId, userOrganizationId);
+        StreetTypeCorrection streetTypeCorrection;
+        List<StreetTypeCorrection> streetTypeCorrections =
+                addressCorrectionBean.getStreetTypeCorrections(null, streetTypeName, osznId, userOrganizationId);
 
         if (streetTypeCorrections.size() == 1) {
             streetTypeCorrection = streetTypeCorrections.get(0);
@@ -194,15 +208,13 @@ public class FacilityReferenceBookBean extends AbstractBean {
                     locale, printStringValue(streetTypeName, locale)));
         } else {
             // искать по внутренней базе типов улиц
-            List<Long> streetTypeIds = addressCorrectionBean.findInternalStreetTypeIds(streetTypeName);
+            List<Long> streetTypeIds = addressCorrectionBean.getStreetTypeObjectIds(streetTypeName);
             if (streetTypeIds.size() == 1) {
                 streetTypeId = streetTypeIds.get(0);
-                streetTypeCorrection = addressCorrectionBean.createStreetTypeCorrection(streetTypeName.toUpperCase(),
-                        streetTypeId, osznId, OsznOrganizationStrategy.MODULE_ID, userOrganizationId);
+                streetTypeCorrection = new StreetTypeCorrection(streetTypeCode, streetTypeId, streetTypeName.toUpperCase(),
+                         osznId, userOrganizationId, OsznOrganizationStrategy.MODULE_ID);
 
-                streetTypeCorrection.setExternalId(streetTypeCode);
-
-                addressCorrectionBean.insert(streetTypeCorrection);
+                addressCorrectionBean.save(streetTypeCorrection);
             } else if (streetTypeIds.size() > 1) {
                 throw new ExecuteException(
                         ResourceUtil.getFormatString(RESOURCE_BUNDLE, "facility_internal_street_type.too_many",
@@ -219,8 +231,8 @@ public class FacilityReferenceBookBean extends AbstractBean {
         }
 
         List<StreetCorrection> streetCorrections =
-                addressCorrectionBean.findStreetLocalCorrections(cityCorrection.getId(), streetTypeCorrection.getId(),
-                streetName, osznId, userOrganizationId);
+                addressCorrectionBean.getStreetCorrections(null, null, cityCorrection.getId(), streetTypeCorrection.getId(),
+                        streetName, osznId, userOrganizationId);
 
         if (streetCorrections.size() == 1) {
             StreetCorrection streetCorrection = streetCorrections.get(0);
@@ -228,7 +240,7 @@ public class FacilityReferenceBookBean extends AbstractBean {
                 // коды не совпадают, нужно обновить код соответствия.
                 streetCorrection.setExternalId(streetCode);
 
-                addressCorrectionBean.updateStreet(streetCorrection);
+                addressCorrectionBean.save(streetCorrection);
             }
         } else if (streetCorrections.size() > 1) {
             throw new ExecuteException(
@@ -239,19 +251,17 @@ public class FacilityReferenceBookBean extends AbstractBean {
         } else {
             // искать по внутренней базе улиц
             List<Long> streetIds =
-                    addressCorrectionBean.findInternalStreetIds(streetTypeId, streetName, cityId);
+                    streetStrategy.getStreetObjectIds(cityId, streetTypeId, streetName);
             if (streetIds.size() == 1) {
                 long streetId = streetIds.get(0);
-                StreetCorrection streetCorrection =
-                        addressCorrectionBean.createStreetCorrection(streetName.toUpperCase(), streetCode.toUpperCase(),
-                        streetTypeCorrection.getId(), cityCorrection.getId(), streetId, osznId,
-                        OsznOrganizationStrategy.MODULE_ID, userOrganizationId);
-                addressCorrectionBean.insertStreet(streetCorrection);
+                StreetCorrection streetCorrection =  new StreetCorrection(streetCode.toUpperCase(), streetId,
+                        streetName.toUpperCase(),
+                        osznId, userOrganizationId, OsznOrganizationStrategy.MODULE_ID);
+
+                addressCorrectionBean.save(streetCorrection);
             } else {
-                final IStrategy cityStrategy = strategyFactory.getStrategy("city");
                 final DomainObject internalCity = cityStrategy.findById(cityId, true);
                 final String internalCityName = cityStrategy.displayDomainObject(internalCity, locale);
-                final IStrategy streetTypeStrategy = strategyFactory.getStrategy("street_type");
                 final DomainObject internalStreetType = streetTypeStrategy.findById(streetTypeId, true);
                 final String internalStreetTypeName = streetTypeStrategy.displayDomainObject(internalStreetType, locale);
 

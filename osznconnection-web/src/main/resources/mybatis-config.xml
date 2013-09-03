@@ -52,7 +52,7 @@
         <mapper resource="org/complitex/address/strategy/city/City.xml"/>
         <mapper resource="org/complitex/address/strategy/district/District.xml"/>
 
-        <mapper resource="org/complitex/correction/service/CorrectionBean.xml"/>
+        <mapper resource="org/complitex/dictionary/entity/Correction.xml"/>
         <mapper resource="org/complitex/correction/service/AddressCorrectionBean.xml"/>
 
         <mapper resource="org/complitex/admin/service/UserBean.xml"/>
