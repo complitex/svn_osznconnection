@@ -11,19 +11,11 @@ import org.complitex.dictionary.entity.IExecutorObject;
 import org.complitex.dictionary.entity.Log;
 import org.complitex.dictionary.service.executor.ExecuteException;
 import org.complitex.osznconnection.file.Module;
-import org.complitex.osznconnection.file.entity.*;
-import org.complitex.osznconnection.file.service.*;
-import org.complitex.osznconnection.file.service.exception.AlreadyProcessingException;
-import org.complitex.osznconnection.file.service.exception.CanceledByUserException;
-import org.complitex.osznconnection.file.service.exception.SaveException;
-import org.complitex.osznconnection.file.service.exception.SqlSessionException;
-import javax.ejb.EJB;
-import java.io.File;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import org.complitex.osznconnection.file.service.exception.FieldNotFoundException;
-import org.complitex.osznconnection.file.service.exception.StorageNotFoundException;
+import org.complitex.osznconnection.file.entity.AbstractAccountRequest;
+import org.complitex.osznconnection.file.entity.RequestFile;
+import org.complitex.osznconnection.file.entity.RequestFileStatus;
+import org.complitex.osznconnection.file.service.RequestFileBean;
+import org.complitex.osznconnection.file.service.exception.*;
 import org.complitex.osznconnection.file.service.file_description.RequestFileDescription;
 import org.complitex.osznconnection.file.service.file_description.RequestFileDescriptionBean;
 import org.complitex.osznconnection.file.service.file_description.RequestFileFieldDescription;
@@ -32,6 +24,12 @@ import org.complitex.osznconnection.file.service.file_description.convert.DBFFie
 import org.complitex.osznconnection.file.web.pages.util.GlobalOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.ejb.EJB;
+import java.io.File;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -98,7 +96,7 @@ public abstract class AbstractSaveTaskBean {
         return field;
     }
 
-    protected abstract List<AbstractRequest> getAbstractRequests(RequestFile requestFile);
+    protected abstract List<AbstractAccountRequest> getAbstractRequests(RequestFile requestFile);
 
     protected abstract String getPuAccountFieldName();
 
@@ -142,7 +140,7 @@ public abstract class AbstractSaveTaskBean {
             writer.setFields(fields);
 
             //Сохранение строк
-            List<AbstractRequest> rows;
+            List<AbstractAccountRequest> rows;
             try {
                 rows = getAbstractRequests(requestFile);
                 requestFile.setRequests(rows);
@@ -150,7 +148,7 @@ public abstract class AbstractSaveTaskBean {
                 throw new SqlSessionException(e);
             }
 
-            for (AbstractRequest request : rows) {
+            for (AbstractAccountRequest request : rows) {
                 if (requestFile.isCanceled()) {
                     throw new CanceledByUserException();
                 }
@@ -159,7 +157,7 @@ public abstract class AbstractSaveTaskBean {
 
                 for (int i = 0; i < fields.length; ++i) {
                     final String fieldName = fields[i].getName();
-                    final String stringValue = request.getDbfFields().get(fieldName);
+                    final String stringValue = request.getDbfFields().get(fieldName).toString();
 
                     final RequestFileFieldDescription fieldDescription = description.getField(fieldName);
                     if (fieldDescription == null) {

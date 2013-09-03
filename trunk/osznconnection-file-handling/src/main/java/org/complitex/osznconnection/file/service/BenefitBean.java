@@ -105,8 +105,7 @@ public class BenefitBean extends AbstractRequestBean {
         sqlSession().insert(MAPPING_NAMESPACE + ".insertBenefitList", abstractRequests);
     }
 
-    @SuppressWarnings({"unchecked"})
-    public List<AbstractRequest> getBenefits(long requestFileId) {
+    public List<AbstractAccountRequest> getBenefits(long requestFileId) {
         return sqlSession().selectList(MAPPING_NAMESPACE + ".selectBenefits", requestFileId);
     }
 

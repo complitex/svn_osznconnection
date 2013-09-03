@@ -4,12 +4,14 @@
  */
 package org.complitex.osznconnection.file.service;
 
-import java.util.List;
+import org.complitex.dictionary.mybatis.Transactional;
+import org.complitex.osznconnection.file.entity.AbstractAccountRequest;
+import org.complitex.osznconnection.file.entity.AbstractRequest;
+
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import org.complitex.dictionary.mybatis.Transactional;
-import org.complitex.osznconnection.file.entity.AbstractRequest;
+import java.util.List;
 
 /**
  *
@@ -34,7 +36,7 @@ public class FacilityForm2Bean extends AbstractRequestBean {
         sqlSession().insert(MAPPING_NAMESPACE + ".insertFacilityForm2List", abstractRequests);
     }
 
-    public List<AbstractRequest> getFacilityForm2(long requestFileId) {
+    public List<AbstractAccountRequest> getFacilityForm2(long requestFileId) {
         return sqlSession().selectList(MAPPING_NAMESPACE + ".selectFacilityForm2", requestFileId);
     }
 }

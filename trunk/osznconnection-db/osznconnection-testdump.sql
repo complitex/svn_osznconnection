@@ -107,21 +107,21 @@ INSERT INTO `street_type_correction`(`id`, `object_id`, `correction`, `organizat
 (13,10012,UPPER('УЛ'),2,'1',0), (14,10013,UPPER('ШОССЕ'),2,'1',0), (15,10014,UPPER('НАБ'),2,'1',0), (16,10015,UPPER('В-Д'),2,'1',0), (17,10016,UPPER('СТ'),2,'1',0);
 
 insert into city_correction(id, organization_id, correction, object_id, module_id) values (1,2,UPPER('Новосибирск'),1,0);
-insert into street_correction(id, organization_id, correction, object_id, module_id, parent_id, street_type_correction_id) values (1,2,UPPER('Терешковой'),1,0,1,13);
-insert into building_correction(organization_id, correction, correction_corp, object_id, module_id, parent_id) values (2,UPPER('10'),UPPER('1'),3,0,1);
+insert into street_correction(id, organization_id, correction, object_id, module_id, street_type_correction_id) values (1,2,UPPER('Терешковой'),1,0,13);
+insert into building_correction(organization_id, correction, correction_corp, object_id, module_id) values (2,UPPER('10'),UPPER('1'),3,0);
 
 insert into city_correction(id, organization_id, correction, object_id, module_id) values (2,2,UPPER('Харьков'),3,0);
-insert into street_correction(id, organization_id, correction, object_id, module_id, parent_id, street_type_correction_id) values (2,2,UPPER('Косиора'),4,0,2,13);
-insert into building_correction(organization_id, correction, correction_corp, object_id, module_id, parent_id) values (2,UPPER('154А'),UPPER(''),6,0,2);
+insert into street_correction(id, organization_id, correction, object_id, module_id, street_type_correction_id) values (2,2,UPPER('Косиора'),4,0,13);
+insert into building_correction(organization_id, correction, correction_corp, object_id, module_id) values (2,UPPER('154А'),UPPER(''),6,0);
 
-insert into street_correction(id, organization_id, correction, object_id, module_id, parent_id, street_type_correction_id) 
-    values (3,2,UPPER('ФРАНТИШЕКА КРАЛА'),5,0,2,13);
-insert into building_correction(organization_id, correction, correction_corp, object_id, module_id, parent_id) values (2,UPPER('25А'),UPPER(''),7,0,3);
-insert into street_correction(id, organization_id, correction, object_id, module_id, parent_id, street_type_correction_id) 
-    values (4,2,UPPER('ФРАНТИШЕКА КРАЛА'),5,0,2,13);
-insert into building_correction(organization_id, correction, correction_corp, object_id, module_id, parent_id) values (2,UPPER('23'),UPPER(''),8,0,4);
+insert into street_correction(id, organization_id, correction, object_id, module_id, street_type_correction_id)
+    values (3,2,UPPER('ФРАНТИШЕКА КРАЛА'),5,0,13);
+insert into building_correction(organization_id, correction, correction_corp, object_id, module_id) values (2,UPPER('25А'),UPPER(''),7,0);
+insert into street_correction(id, organization_id, correction, object_id, module_id,street_type_correction_id)
+    values (4,2,UPPER('ФРАНТИШЕКА КРАЛА'),5,0,13);
+insert into building_correction(organization_id, correction, correction_corp, object_id, module_id) values (2,UPPER('23'),UPPER(''),8,0);
 
-insert into district_correction(organization_id, correction, object_id, module_id, parent_id) values (2,UPPER('Центральный'),3,0,2);
+insert into district_correction(organization_id, correction, object_id, module_id) values (2,UPPER('Центральный'),3,0);
 
 -- OSZN corrections
 -- INSERT INTO `street_type_correction`(`id`, `object_id`, `correction`, `organization_id`, `module_id`, `user_organization_id`) VALUES
@@ -143,14 +143,14 @@ insert into district_correction(organization_id, correction, object_id, module_i
 
 
 -- Ownership corrections
-insert into ownership_correction(organization_id, correction, object_id, organization_code, internal_organization_id, user_organization_id) values
+insert into ownership_correction(organization_id, correction, object_id, external_id, module_id, user_organization_id) values
 (1,UPPER('мiсцевих Рад'),1,UPPER('1'),0,3), (2,UPPER('ГОС'),1,UPPER('1'),0,null),
 (1,UPPER('кооперативна'),2,UPPER('1'),0,3), (2,UPPER('КООП'),2,UPPER('2'),0,null),
 (1,UPPER('приватна'),5,UPPER('5'),0,3), (2,UPPER('ВЫК'),5,UPPER('5'),0,null),
 (1,UPPER('приватизована'),6,UPPER('6'),0,3), (2,UPPER('ЧАС'),6,UPPER('6'),0,null);
 
 -- Privileges corrections
-insert into privilege_correction(organization_id, correction, object_id, organization_code, internal_organization_id, user_organization_id) values
+insert into privilege_correction(organization_id, correction, object_id, external_id, module_id, user_organization_id) values
 (2,UPPER('ПЕНСИОНЕР ПО ВОЗРАСТУ'),15,UPPER('34'),0,null),
 (1,UPPER('ПЕНСИОНЕР ПО ВОЗРАСТУ'),15,UPPER('100'),0,3);
 

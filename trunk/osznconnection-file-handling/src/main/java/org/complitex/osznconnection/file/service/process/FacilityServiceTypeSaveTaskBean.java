@@ -1,15 +1,18 @@
 package org.complitex.osznconnection.file.service.process;
 
+import org.complitex.dictionary.service.ConfigBean;
 import org.complitex.dictionary.service.executor.ITaskBean;
-import org.complitex.osznconnection.file.entity.*;
-import org.complitex.osznconnection.file.service.*;
+import org.complitex.osznconnection.file.entity.AbstractAccountRequest;
+import org.complitex.osznconnection.file.entity.FacilityServiceTypeDBF;
+import org.complitex.osznconnection.file.entity.FileHandlingConfig;
+import org.complitex.osznconnection.file.entity.RequestFile;
+import org.complitex.osznconnection.file.service.FacilityServiceTypeBean;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import java.util.List;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
-import org.complitex.dictionary.service.ConfigBean;
+import java.util.List;
 
 @Stateless
 @TransactionManagement(TransactionManagementType.BEAN)
@@ -21,7 +24,7 @@ public class FacilityServiceTypeSaveTaskBean extends AbstractSaveTaskBean implem
     private ConfigBean configBean;
 
     @Override
-    protected List<AbstractRequest> getAbstractRequests(RequestFile requestFile) {
+    protected List<AbstractAccountRequest> getAbstractRequests(RequestFile requestFile) {
         return facilityServiceTypeBean.getFacilityServiceType(requestFile.getId());
     }
 

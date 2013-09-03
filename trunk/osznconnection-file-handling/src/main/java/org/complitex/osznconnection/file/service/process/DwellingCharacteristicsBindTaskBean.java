@@ -68,19 +68,6 @@ public class DwellingCharacteristicsBindTaskBean implements ITaskBean {
     @EJB
     private RequestFileBean requestFileBean;
 
-    private void resolveStreet(DwellingCharacteristics dwellingCharacteristics, CalculationContext cc) {
-        long startTime = 0;
-        if (log.isDebugEnabled()) {
-            startTime = System.nanoTime();
-        }
-
-        addressService.resolveLocalStreet(dwellingCharacteristics, cc.getUserOrganizationId());
-
-        if (log.isDebugEnabled()) {
-            log.debug("Resolving of dwelling characteristics street (id = {}) took {} sec.", dwellingCharacteristics.getId(),
-                    (System.nanoTime() - startTime) / 1000000000F);
-        }
-    }
 
     private boolean resolveAddress(DwellingCharacteristics dwellingCharacteristics, CalculationContext calculationContext) {
         long startTime = 0;
@@ -130,17 +117,12 @@ public class DwellingCharacteristicsBindTaskBean implements ITaskBean {
 
     private void bind(DwellingCharacteristics dwellingCharacteristics, CalculationContext calculationContext)
             throws DBException {
-        //связать до улицы.
-        resolveStreet(dwellingCharacteristics, calculationContext);
+        //resolve local account.
+        resolveLocalAccount(dwellingCharacteristics, calculationContext);
 
-        if (dwellingCharacteristics.getInternalStreetId() != null) { // улица найдена
-            //resolve local account.
-            resolveLocalAccount(dwellingCharacteristics, calculationContext);
-
-            if (dwellingCharacteristics.getStatus().isNotIn(ACCOUNT_NUMBER_RESOLVED, MORE_ONE_ACCOUNTS_LOCALLY)) {
-                if (resolveAddress(dwellingCharacteristics, calculationContext)) {
-                    resolveRemoteAccountNumber(dwellingCharacteristics, calculationContext);
-                }
+        if (dwellingCharacteristics.getStatus().isNotIn(ACCOUNT_NUMBER_RESOLVED, MORE_ONE_ACCOUNTS_LOCALLY)) {
+            if (resolveAddress(dwellingCharacteristics, calculationContext)) {
+                resolveRemoteAccountNumber(dwellingCharacteristics, calculationContext);
             }
         }
 

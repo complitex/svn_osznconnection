@@ -19,15 +19,26 @@ import java.util.Map;
  * Абстрактное представление записи файла запроса.
  * Используется <code>Map<String, Object></code> для хранения названий и значений полей.
  */
-public abstract class AbstractRequest implements ILongId{
-
+public abstract class AbstractRequest<E extends Enum> implements ILongId{
     private Long id;
     private Long requestFileId;
     private Long organizationId;
+    private Long userOrganizationId;
+
     private RequestStatus status;
-    private String accountNumber;
+
     private List<RequestWarning> warnings = Lists.newArrayList();
     protected Map<String, String> dbfFields = new HashMap<String, String>();
+
+    private Map<String, String> updateFieldMap;
+
+    public Map<String, String> getUpdateFieldMap() {
+        return updateFieldMap;
+    }
+
+    public void setUpdateFieldMap(Map<String, String> updateFieldMap) {
+        this.updateFieldMap = updateFieldMap;
+    }
 
     @SuppressWarnings({"unchecked"})
     protected <T> T getField(String fieldName) {
@@ -54,6 +65,18 @@ public abstract class AbstractRequest implements ILongId{
     protected void setField(String fieldName, Object object) {
         final RequestFileDescription description = getDescription();
         dbfFields.put(fieldName, description.getTypeConverter().toString(object));
+    }
+
+    public <T> T getField(E e) {
+        return getField(e.name());
+    }
+
+    public String getStringField(E e) {
+        return dbfFields.get(e.name());
+    }
+
+    public void setField(E e, Object object) {
+        setField(e.name(), object);
     }
 
     //todo wtf
@@ -88,20 +111,20 @@ public abstract class AbstractRequest implements ILongId{
         this.organizationId = organizationId;
     }
 
+    public Long getUserOrganizationId() {
+        return userOrganizationId;
+    }
+
+    public void setUserOrganizationId(Long userOrganizationId) {
+        this.userOrganizationId = userOrganizationId;
+    }
+
     public RequestStatus getStatus() {
         return status;
     }
 
     public void setStatus(RequestStatus status) {
         this.status = status;
-    }
-
-    public String getAccountNumber() {
-        return accountNumber;
-    }
-
-    public void setAccountNumber(String accountNumber) {
-        this.accountNumber = accountNumber;
     }
 
     public Map<String, String> getDbfFields() {

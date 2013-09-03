@@ -11,13 +11,15 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.complitex.correction.entity.Correction;
 import org.complitex.correction.web.component.AbstractCorrectionEditPanel;
+import org.complitex.dictionary.entity.Correction;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.web.component.ShowMode;
 import org.complitex.dictionary.web.component.search.ISearchCallback;
 import org.complitex.dictionary.web.component.search.SearchComponentState;
 import org.complitex.dictionary.web.component.search.WiQuerySearchComponent;
+import org.complitex.osznconnection.file.entity.PrivilegeCorrection;
+import org.complitex.osznconnection.file.service.PrivilegeCorrectionBean;
 import org.complitex.osznconnection.file.strategy.PrivilegeStrategy;
 import org.complitex.template.web.component.toolbar.DeleteItemButton;
 import org.complitex.template.web.component.toolbar.ToolbarButton;
@@ -36,11 +38,13 @@ import java.util.Map;
  */
 @AuthorizeInstantiation(SecurityRole.AUTHORIZED)
 public final class PrivilegeCorrectionEdit extends FormTemplatePage {
-
     public static final String CORRECTION_ID = "correction_id";
 
     @EJB
     private PrivilegeStrategy privilegeStrategy;
+
+    @EJB
+    private PrivilegeCorrectionBean privilegeCorrectionBean;
 
     private class PrivilegeCallback implements ISearchCallback, Serializable {
 
@@ -63,7 +67,17 @@ public final class PrivilegeCorrectionEdit extends FormTemplatePage {
     public PrivilegeCorrectionEdit(PageParameters params) {
         Long correctionId = params.get(CORRECTION_ID).toOptionalLong();
 
-        add(correctionEditPanel = new AbstractCorrectionEditPanel("correctionEditPanel", privilegeStrategy.getEntityTable(), correctionId) {
+        add(correctionEditPanel = new AbstractCorrectionEditPanel<PrivilegeCorrection>("correctionEditPanel", correctionId) {
+
+            @Override
+            protected PrivilegeCorrection getCorrection(Long correctionId) {
+                return privilegeCorrectionBean.getPrivilegeCorrection(correctionId);
+            }
+
+            @Override
+            protected PrivilegeCorrection newCorrection() {
+                return new PrivilegeCorrection();
+            }
 
             @Override
             protected IModel<String> internalObjectLabel(Locale locale) {
@@ -73,7 +87,7 @@ public final class PrivilegeCorrectionEdit extends FormTemplatePage {
             @Override
             protected Panel internalObjectPanel(String id) {
                 SearchComponentState componentState = new SearchComponentState();
-                Correction correction = getModel();
+                Correction correction = getCorrection();
                 if (!isNew()) {
                     componentState.put(privilegeStrategy.getEntityTable(), findPrivilege(correction.getObjectId()));
                 }
@@ -85,6 +99,11 @@ public final class PrivilegeCorrectionEdit extends FormTemplatePage {
             @Override
             protected String getNullObjectErrorMessage() {
                 return getString("privilege_required");
+            }
+
+            @Override
+            protected boolean validateExistence() {
+                return false;  //To change body of implemented methods use File | Settings | File Templates.
             }
 
             private DomainObject findPrivilege(long privilegeId) {
@@ -104,6 +123,16 @@ public final class PrivilegeCorrectionEdit extends FormTemplatePage {
             @Override
             protected PageParameters getBackPageParameters() {
                 return new PageParameters();
+            }
+
+            @Override
+            protected void save() {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            protected void delete() {
+                //To change body of implemented methods use File | Settings | File Templates.
             }
 
             @Override

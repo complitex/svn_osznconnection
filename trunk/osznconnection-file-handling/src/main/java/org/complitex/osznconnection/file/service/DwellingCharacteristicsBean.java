@@ -135,9 +135,9 @@ public class DwellingCharacteristicsBean extends AbstractRequestBean {
         for (DwellingCharacteristics d : list){
             FacilityStreet facilityStreet = facilityReferenceBookBean.getFacilityStreet(d.getRequestFileId(), d.getStringField(CDUL));
 
-            d.setStreetReference(facilityStreet.getStringField(FacilityStreetDBF.KL_NAME));
-            d.setStreetTypeReference(facilityStreet.getStreetType());
-            d.setStreetTypeReferenceCode(facilityStreet.getStreetTypeCode());
+            d.setStreet(facilityStreet.getStringField(FacilityStreetDBF.KL_NAME));
+            d.setStreetType(facilityStreet.getStreetType());
+            d.setStreetTypeCode(facilityStreet.getStreetTypeCode());
         }
     }
 
@@ -192,7 +192,7 @@ public class DwellingCharacteristicsBean extends AbstractRequestBean {
         sqlSession().update(MAPPING_NAMESPACE + ".markCorrected", params);
     }
 
-    public List<AbstractRequest> getDwellingCharacteristics(long requestFileId) {
+    public List<AbstractAccountRequest> getDwellingCharacteristics(long requestFileId) {
         return sqlSession().selectList(MAPPING_NAMESPACE + ".selectDwellingCharacteristics", requestFileId);
     }
 }

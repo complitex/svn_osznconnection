@@ -9,14 +9,14 @@ import org.complitex.osznconnection.file.service.PaymentBean;
 import org.complitex.osznconnection.file.service.RequestFileGroupBean;
 import org.complitex.osznconnection.file.service.exception.AlreadyProcessingException;
 import org.complitex.osznconnection.file.service.exception.SaveException;
+import org.complitex.osznconnection.file.web.pages.util.GlobalOptions;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import java.util.List;
-import java.util.Map;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
-import org.complitex.osznconnection.file.web.pages.util.GlobalOptions;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -73,7 +73,7 @@ public class GroupSaveTaskBean extends AbstractSaveTaskBean implements ITaskBean
     }
 
     @Override
-    protected List<AbstractRequest> getAbstractRequests(RequestFile requestFile) {
+    protected List<AbstractAccountRequest> getAbstractRequests(RequestFile requestFile) {
         switch (requestFile.getType()) {
             case BENEFIT:
                 return benefitBean.getBenefits(requestFile.getId());

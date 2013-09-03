@@ -12,6 +12,9 @@ import org.complitex.osznconnection.file.service.*;
 import org.complitex.osznconnection.file.service.exception.AlreadyProcessingException;
 import org.complitex.osznconnection.file.service.exception.BindException;
 import org.complitex.osznconnection.file.service.exception.CanceledByUserException;
+import org.complitex.osznconnection.file.service_provider.CalculationCenterBean;
+import org.complitex.osznconnection.file.service_provider.exception.DBException;
+import org.complitex.osznconnection.file.web.pages.util.GlobalOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,9 +27,6 @@ import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import java.util.List;
 import java.util.Map;
-import org.complitex.osznconnection.file.service_provider.CalculationCenterBean;
-import org.complitex.osznconnection.file.service_provider.exception.DBException;
-import org.complitex.osznconnection.file.web.pages.util.GlobalOptions;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -139,6 +139,7 @@ public class GroupBindTaskBean implements ITaskBean {
      */
     private boolean resolveAddress(Payment payment, CalculationContext calculationContext) {
         addressService.resolveAddress(payment, calculationContext);
+
         return payment.getStatus().isAddressResolved();
     }
 

@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.osznconnection.file.service;
 
 import com.google.common.collect.ImmutableMap;
@@ -175,7 +171,7 @@ public class SubsidyBean extends AbstractRequestBean {
         sqlSession().update(MAPPING_NAMESPACE + ".markCorrected", params);
     }
 
-    public List<AbstractRequest> getSubsidies(long requestFileId) {
+    public List<AbstractAccountRequest> getSubsidies(long requestFileId) {
         return sqlSession().selectList(MAPPING_NAMESPACE + ".selectSubsidies", requestFileId);
     }
 }

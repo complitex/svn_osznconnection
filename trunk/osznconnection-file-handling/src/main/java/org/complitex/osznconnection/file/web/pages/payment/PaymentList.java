@@ -20,6 +20,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.Strings;
+import org.complitex.address.entity.AddressEntity;
 import org.complitex.dictionary.service.SessionBean;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
@@ -193,8 +194,8 @@ public final class PaymentList extends TemplatePage {
                 paymentFile.getUserOrganizationId(), content, statusDetailPanel) {
 
             @Override
-            protected void correctAddress(Payment payment, CORRECTED_ENTITY entity, Long cityId, Long streetTypeId, Long streetId,
-                    Long buildingId, long userOrganizationId)
+            protected void correctAddress(Payment payment, AddressEntity entity, Long cityId, Long streetTypeId, Long streetId,
+                    Long buildingId, Long userOrganizationId)
                     throws DublicateCorrectionException, MoreOneCorrectionException, NotFoundCorrectionException {
                 addressService.correctLocalAddress(payment, entity, cityId, streetTypeId, streetId, buildingId, userOrganizationId);
             }

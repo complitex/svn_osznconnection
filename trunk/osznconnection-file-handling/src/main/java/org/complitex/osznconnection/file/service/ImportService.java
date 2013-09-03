@@ -2,7 +2,6 @@ package org.complitex.osznconnection.file.service;
 
 import org.complitex.address.entity.AddressImportFile;
 import org.complitex.address.service.AddressImportService;
-import org.complitex.correction.entity.CorrectionImportFile;
 import org.complitex.correction.service.AddressCorrectionImportService;
 import org.complitex.dictionary.entity.DictionaryConfig;
 import org.complitex.dictionary.entity.IImportFile;
@@ -14,6 +13,7 @@ import org.complitex.dictionary.service.LogBean;
 import org.complitex.dictionary.service.exception.*;
 import org.complitex.dictionary.util.DateUtil;
 import org.complitex.osznconnection.file.Module;
+import org.complitex.osznconnection.file.entity.CorrectionImportFile;
 import org.complitex.osznconnection.file.entity.OwnershipImportFile;
 import org.complitex.osznconnection.file.entity.PrivilegeImportFile;
 import org.slf4j.Logger;

@@ -1,14 +1,10 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.osznconnection.file.service;
 
-import javax.ejb.EJB;
 import org.complitex.dictionary.service.AbstractBean;
-import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.entity.RequestFileType;
 import org.complitex.osznconnection.file.service.warning.RequestWarningBean;
+
+import javax.ejb.EJB;
 
 /**
  *

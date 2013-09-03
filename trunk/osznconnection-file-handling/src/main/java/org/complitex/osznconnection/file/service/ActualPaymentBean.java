@@ -8,6 +8,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import org.complitex.address.entity.AddressEntity;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.entity.example.ActualPaymentExample;
@@ -87,11 +88,8 @@ public class ActualPaymentBean extends AbstractRequestBean {
         sqlSession().insert(MAPPING_NAMESPACE + ".insertActualPaymentList", abstractRequests);
     }
 
-    public List<AbstractRequest> getActualPayments(long requestFileId) {
-        @SuppressWarnings("unchecked")
-        List<AbstractRequest> payments = sqlSession().selectList(MAPPING_NAMESPACE + ".selectActualPayments",
-                requestFileId);
-        return payments;
+    public List<AbstractAccountRequest> getActualPayments(long requestFileId) {
+        return sqlSession().selectList(MAPPING_NAMESPACE + ".selectActualPayments", requestFileId);
     }
 
     @Transactional
@@ -181,29 +179,23 @@ public class ActualPaymentBean extends AbstractRequestBean {
     }
 
     @Transactional
-    public void markCorrected(long fileId, String city) {
-        markCorrected(fileId, city, null, null, null, null);
-    }
-
-    @Transactional
-    public void markCorrected(long fileId, String city, String streetType) {
-        markCorrected(fileId, city, streetType, null, null, null);
-    }
-
-    @Transactional
-    public void markCorrected(long fileId, String city, String streetType, String streetCode) {
-        markCorrected(fileId, city, streetType, streetCode, null, null);
-    }
-
-    @Transactional
-    public void markCorrected(long fileId, String city, String streetType, String streetCode, String buildingNumber, String buildingCorp) {
+    public void markCorrected(ActualPayment actualPayment, AddressEntity addressEntity) {
         Map<String, Object> params = Maps.newHashMap();
-        params.put("fileId", fileId);
-        params.put("city", city);
-        params.put("streetType", streetType);
-        params.put("streetCode", streetCode);
-        params.put("buildingNumber", buildingNumber);
-        params.put("buildingCorp", buildingCorp);
+
+        params.put("fileId", actualPayment.getRequestFileId());
+
+        switch (addressEntity) {
+            case BUILDING:
+                params.put("buildingNumber", actualPayment.getBuildingNumber());
+                params.put("buildingCorp", actualPayment.getBuildingCorp());
+            case STREET:
+                params.put("streetCode", actualPayment.getStreetCode());
+            case STREET_TYPE:
+                params.put("streetType", actualPayment.getStreetType());
+            case CITY:
+                params.put("city", actualPayment.getCity());
+        }
+
         sqlSession().update(MAPPING_NAMESPACE + ".markCorrected", params);
     }
 

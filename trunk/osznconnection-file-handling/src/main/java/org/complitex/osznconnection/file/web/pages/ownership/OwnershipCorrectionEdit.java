@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.osznconnection.file.web.pages.ownership;
 
 import com.google.common.base.Predicate;
@@ -15,11 +11,14 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.complitex.correction.entity.Correction;
 import org.complitex.correction.web.component.AbstractCorrectionEditPanel;
+import org.complitex.dictionary.entity.Correction;
 import org.complitex.dictionary.entity.DomainObject;
+import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
 import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
+import org.complitex.osznconnection.file.entity.OwnershipCorrection;
+import org.complitex.osznconnection.file.service.OwnershipCorrectionBean;
 import org.complitex.osznconnection.file.strategy.OwnershipStrategy;
 import org.complitex.template.web.component.toolbar.DeleteItemButton;
 import org.complitex.template.web.component.toolbar.ToolbarButton;
@@ -36,8 +35,10 @@ import java.util.Locale;
  */
 @AuthorizeInstantiation(SecurityRole.AUTHORIZED)
 public final class OwnershipCorrectionEdit extends FormTemplatePage {
-
     public static final String CORRECTION_ID = "correction_id";
+
+    @EJB
+    private OwnershipCorrectionBean ownershipCorrectionBean;
 
     private class OwnershipCorrectionEditPanel extends Panel {
 
@@ -87,7 +88,17 @@ public final class OwnershipCorrectionEdit extends FormTemplatePage {
 
     public OwnershipCorrectionEdit(PageParameters params) {
         Long correctionId = params.get(CORRECTION_ID).toOptionalLong();
-        add(correctionEditPanel = new AbstractCorrectionEditPanel("correctionEditPanel", "ownership", correctionId) {
+        add(correctionEditPanel = new AbstractCorrectionEditPanel<OwnershipCorrection>("correctionEditPanel", correctionId) {
+
+            @Override
+            protected OwnershipCorrection getCorrection(Long correctionId) {
+                return ownershipCorrectionBean.getOwnershipCorrection(correctionId);
+            }
+
+            @Override
+            protected OwnershipCorrection newCorrection() {
+                return new OwnershipCorrection();
+            }
 
             @Override
             protected IModel<String> internalObjectLabel(Locale locale) {
@@ -96,12 +107,17 @@ public final class OwnershipCorrectionEdit extends FormTemplatePage {
 
             @Override
             protected Panel internalObjectPanel(String id) {
-                return new OwnershipCorrectionEditPanel(id, getModel());
+                return new OwnershipCorrectionEditPanel(id, getCorrection());
             }
 
             @Override
             protected String getNullObjectErrorMessage() {
                 return getString("ownership_required");
+            }
+
+            @Override
+            protected boolean validateExistence() {
+                return ownershipCorrectionBean.getOwnershipCorrectionsCount(FilterWrapper.of(getCorrection())) > 0;
             }
 
             @Override
@@ -117,6 +133,16 @@ public final class OwnershipCorrectionEdit extends FormTemplatePage {
             @Override
             protected PageParameters getBackPageParameters() {
                 return new PageParameters();
+            }
+
+            @Override
+            protected void save() {
+                ownershipCorrectionBean.save(getCorrection());
+            }
+
+            @Override
+            protected void delete() {
+                ownershipCorrectionBean.delete(getCorrection().getId());
             }
 
             @Override

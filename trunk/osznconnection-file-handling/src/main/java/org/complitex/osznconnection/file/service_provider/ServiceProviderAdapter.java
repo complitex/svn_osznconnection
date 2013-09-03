@@ -39,7 +39,6 @@ import static com.google.common.collect.Iterables.filter;
 import static com.google.common.collect.Iterables.transform;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
-import static org.complitex.dictionary.util.StringUtil.removeWhiteSpaces;
 import static org.complitex.osznconnection.file.service_provider.util.ServiceProviderAccountNumberParser.matches;
 import static org.complitex.osznconnection.file.service_provider.util.ServiceProviderAccountNumberParser.parse;
 
@@ -71,168 +70,7 @@ public class ServiceProviderAdapter {
     @EJB
     private WebWarningRenderer webWarningRenderer;
 
-    /**
-     * Группа методов для проставления "внешнего адреса", т.е. адреса для ЦН, по полному названию и коду коррекции
-     * элемента адреса, полученному из таблиц коррекций.
-     */
-    public void prepareCity(Payment payment, String city, String cityCode) {
-        payment.setOutgoingCity(city);
-    }
 
-    public void prepareDistrict(Payment payment, String district, String districtCode) {
-        payment.setOutgoingDistrict(district);
-    }
-
-    public void prepareStreet(Payment payment, String street, String streetCode) {
-        payment.setOutgoingStreet(street);
-    }
-
-    public void prepareStreetType(Payment payment, String streetType, String streetTypeCode) {
-        payment.setOutgoingStreetType(streetType);
-    }
-
-    public void prepareBuilding(Payment payment, String buildingNumber, String buildingCorp, String buildingCode) {
-        payment.setOutgoingBuildingNumber(buildingNumber);
-        payment.setOutgoingBuildingCorp(buildingCorp);
-    }
-
-    /**
-     * Для квартиры номер проставляется напрямую из ОСЗН адреса, с обрезанием начальных и конечных пробелов.
-     * @param apartment
-     * @param apartmentCode
-     */
-    public void prepareApartment(Payment payment, String apartment, String apartmentCode) {
-        String flat = payment.getStringField(PaymentDBF.FLAT);
-        payment.setOutgoingApartment(removeWhiteSpaces(flat));
-    }
-
-    public void prepareCity(ActualPayment actualPayment, String city, String cityCode) {
-        actualPayment.setOutgoingCity(city);
-    }
-
-    public void prepareDistrict(ActualPayment actualPayment, String district, String districtCode) {
-        actualPayment.setOutgoingDistrict(district);
-    }
-
-    public void prepareStreet(ActualPayment actualPayment, String street, String streetCode) {
-        actualPayment.setOutgoingStreet(street);
-    }
-
-    public void prepareStreetType(ActualPayment actualPayment, String streetType, String streetTypeCode) {
-        actualPayment.setOutgoingStreetType(streetType);
-    }
-
-    public void prepareBuilding(ActualPayment actualPayment, String buildingNumber, String buildingCorp, String buildingCode) {
-        actualPayment.setOutgoingBuildingNumber(buildingNumber);
-        actualPayment.setOutgoingBuildingCorp(buildingCorp);
-    }
-
-    /**
-     * Для квартиры номер проставляется напрямую из ОСЗН адреса, с обрезанием начальных и конечных пробелов.
-     * @param actualPayment
-     * @param apartment
-     * @param apartmentCode
-     */
-    public void prepareApartment(ActualPayment actualPayment, String apartment, String apartmentCode) {
-        String flat = actualPayment.getStringField(ActualPaymentDBF.FLAT);
-        actualPayment.setOutgoingApartment(removeWhiteSpaces(flat));
-    }
-
-    public void prepareCity(Subsidy subsidy, String city, String cityCode) {
-        subsidy.setOutgoingCity(city);
-    }
-
-    public void prepareDistrict(Subsidy subsidy, String district, String districtCode) {
-        subsidy.setOutgoingDistrict(district);
-    }
-
-    public void prepareStreet(Subsidy subsidy, String street, String streetCode) {
-        subsidy.setOutgoingStreet(street);
-    }
-
-    public void prepareStreetType(Subsidy subsidy, String streetType, String streetTypeCode) {
-        subsidy.setOutgoingStreetType(streetType);
-    }
-
-    public void prepareBuilding(Subsidy subsidy, String buildingNumber, String buildingCorp, String buildingCode) {
-        subsidy.setOutgoingBuildingNumber(buildingNumber);
-        subsidy.setOutgoingBuildingCorp(buildingCorp);
-    }
-
-    /**
-     * Для квартиры номер проставляется напрямую из ОСЗН адреса, с обрезанием начальных и конечных пробелов.
-     * @param subsidy
-     * @param apartment
-     * @param apartmentCode
-     */
-    public void prepareApartment(Subsidy subsidy, String apartment, String apartmentCode) {
-        String flat = subsidy.getStringField(SubsidyDBF.FLAT);
-        subsidy.setOutgoingApartment(removeWhiteSpaces(flat));
-    }
-
-    public void prepareCity(DwellingCharacteristics dwellingCharacteristics, String city, String cityCode) {
-        dwellingCharacteristics.setOutgoingCity(city);
-    }
-
-    public void prepareDistrict(DwellingCharacteristics dwellingCharacteristics, String district, String districtCode) {
-        dwellingCharacteristics.setOutgoingDistrict(district);
-    }
-
-    public void prepareStreet(DwellingCharacteristics dwellingCharacteristics, String street, String streetCode) {
-        dwellingCharacteristics.setOutgoingStreet(street);
-    }
-
-    public void prepareStreetType(DwellingCharacteristics dwellingCharacteristics, String streetType, String streetTypeCode) {
-        dwellingCharacteristics.setOutgoingStreetType(streetType);
-    }
-
-    public void prepareBuilding(DwellingCharacteristics dwellingCharacteristics, String buildingNumber, String buildingCorp, String buildingCode) {
-        dwellingCharacteristics.setOutgoingBuildingNumber(buildingNumber);
-        dwellingCharacteristics.setOutgoingBuildingCorp(buildingCorp);
-    }
-
-    /**
-     * Для квартиры номер проставляется напрямую из ОСЗН адреса, с обрезанием начальных и конечных пробелов.
-     * @param dwellingCharacteristics
-     * @param apartment
-     * @param apartmentCode
-     */
-    public void prepareApartment(DwellingCharacteristics dwellingCharacteristics, String apartment, String apartmentCode) {
-        String flat = dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.APT);
-        dwellingCharacteristics.setOutgoingApartment(removeWhiteSpaces(flat));
-    }
-
-    public void prepareCity(FacilityServiceType facilityServiceType, String city, String cityCode) {
-        facilityServiceType.setOutgoingCity(city);
-    }
-
-    public void prepareDistrict(FacilityServiceType facilityServiceType, String district, String districtCode) {
-        facilityServiceType.setOutgoingDistrict(district);
-    }
-
-    public void prepareStreet(FacilityServiceType facilityServiceType, String street, String streetCode) {
-        facilityServiceType.setOutgoingStreet(street);
-    }
-
-    public void prepareStreetType(FacilityServiceType facilityServiceType, String streetType, String streetTypeCode) {
-        facilityServiceType.setOutgoingStreetType(streetType);
-    }
-
-    public void prepareBuilding(FacilityServiceType facilityServiceType, String buildingNumber, String buildingCorp, String buildingCode) {
-        facilityServiceType.setOutgoingBuildingNumber(buildingNumber);
-        facilityServiceType.setOutgoingBuildingCorp(buildingCorp);
-    }
-
-    /**
-     * Для квартиры номер проставляется напрямую из ОСЗН адреса, с обрезанием начальных и конечных пробелов.
-     * @param facilityServiceType
-     * @param apartment
-     * @param apartmentCode
-     */
-    public void prepareApartment(FacilityServiceType facilityServiceType, String apartment, String apartmentCode) {
-        String flat = facilityServiceType.getStringField(FacilityServiceTypeDBF.APT);
-        facilityServiceType.setOutgoingApartment(removeWhiteSpaces(flat));
-    }
 
     /**
      * Получить номер личного счета в ЦН.
@@ -250,7 +88,7 @@ public class ServiceProviderAdapter {
      *
      */
     public void acquirePersonAccount(CalculationContext calculationContext,
-                                     RequestFileType requestFileType, AbstractRequest request, String lastName,
+                                     RequestFileType requestFileType, AbstractAccountRequest request, String lastName,
                                      String serviceProviderAccountNumber, String district, String streetType, String street, String buildingNumber,
                                      String buildingCorp, String apartment, Date date, Boolean updatePUAccount) throws DBException {
 
@@ -350,7 +188,7 @@ public class ServiceProviderAdapter {
         }
     }
 
-    public void acquireFacilityPersonAccount(CalculationContext calculationContext, AbstractRequest request,
+    public void acquireFacilityPersonAccount(CalculationContext calculationContext, AbstractAccountRequest request,
                                              String district, String streetType, String street, String buildingNumber,
                                              String buildingCorp, String apartment, Date date, String inn,
                                              String passport) throws DBException {

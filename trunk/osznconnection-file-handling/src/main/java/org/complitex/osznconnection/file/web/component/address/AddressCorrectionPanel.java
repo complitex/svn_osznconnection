@@ -16,8 +16,10 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.complitex.address.entity.AddressEntity;
 import org.complitex.address.strategy.street.StreetStrategy;
 import org.complitex.address.strategy.street_type.StreetTypeStrategy;
+import org.complitex.address.util.AddressRenderer;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.entity.example.DomainObjectExample;
 import org.complitex.dictionary.strategy.IStrategy;
@@ -27,13 +29,12 @@ import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
 import org.complitex.dictionary.web.component.ShowMode;
 import org.complitex.dictionary.web.component.search.SearchComponentState;
 import org.complitex.dictionary.web.component.search.WiQuerySearchComponent;
-import org.complitex.osznconnection.file.entity.AbstractRequest;
+import org.complitex.osznconnection.file.entity.AbstractAccountRequest;
 import org.complitex.osznconnection.file.entity.RequestStatus;
 import org.complitex.osznconnection.file.service.StatusRenderService;
 import org.complitex.osznconnection.file.service.exception.DublicateCorrectionException;
 import org.complitex.osznconnection.file.service.exception.MoreOneCorrectionException;
 import org.complitex.osznconnection.file.service.exception.NotFoundCorrectionException;
-import org.complitex.address.util.AddressRenderer;
 import org.odlabs.wiquery.core.javascript.JsStatement;
 import org.odlabs.wiquery.ui.core.JsScopeUiEvent;
 import org.odlabs.wiquery.ui.dialog.Dialog;
@@ -47,21 +48,16 @@ import java.util.List;
  * Панель для корректировки адреса вручную, когда нет соответствующей коррекции и поиск по локальной адресной базе не дал результатов.
  * @author Artem
  */
-public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends Panel {
-
+public abstract class AddressCorrectionPanel<T extends AbstractAccountRequest> extends Panel {
     private static final Logger log = LoggerFactory.getLogger(AddressCorrectionPanel.class);
 
-    public enum CORRECTED_ENTITY {
-
-        CITY, STREET, STREET_TYPE, BUILDING;
-    }
     @EJB
     private StrategyFactory strategyFactory;
     @EJB
     private StatusRenderService statusRenderService;
     @EJB
     private StreetTypeStrategy streetTypeStrategy;
-    private CORRECTED_ENTITY correctedEntity;
+    private AddressEntity correctedEntity;
     private Dialog dialog;
     private WiQuerySearchComponent searchComponent;
     private SearchComponentState componentState;
@@ -161,7 +157,7 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
             public void onClick(AjaxRequestTarget target) {
                 if (validate(componentState)) {
                     try {
-                        if (correctedEntity != CORRECTED_ENTITY.STREET_TYPE) {
+                        if (correctedEntity != AddressEntity.STREET_TYPE) {
                             correctAddress(request, correctedEntity, getObjectId(componentState.get("city")),
                                     getStreetTypeId(componentState.get("street")), getObjectId(componentState.get("street")),
                                     getObjectId(componentState.get("building")), userOrganizationId);
@@ -217,8 +213,8 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
         return streetObject == null ? null : StreetStrategy.getStreetType(streetObject);
     }
 
-    protected abstract void correctAddress(T request, CORRECTED_ENTITY entity, Long cityId, Long streetTypeId,
-            Long streetId, Long buildingId, long userOrganizationId)
+    protected abstract void correctAddress(T request, AddressEntity entity, Long cityId, Long streetTypeId,
+            Long streetId, Long buildingId, Long userOrganizationId)
             throws DublicateCorrectionException, MoreOneCorrectionException, NotFoundCorrectionException;
 
     protected boolean validate(SearchComponentState componentState) {
@@ -283,18 +279,18 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
 
     protected void initCorrectedEntity(boolean ignoreStreetType) {
         if (cityId == null) {
-            correctedEntity = CORRECTED_ENTITY.CITY;
+            correctedEntity = AddressEntity.CITY;
             return;
         }
         if (streetTypeId == null && !ignoreStreetType) {
-            correctedEntity = CORRECTED_ENTITY.STREET_TYPE;
+            correctedEntity = AddressEntity.STREET_TYPE;
             return;
         }
         if (streetId == null) {
-            correctedEntity = CORRECTED_ENTITY.STREET;
+            correctedEntity = AddressEntity.STREET;
             return;
         }
-        correctedEntity = CORRECTED_ENTITY.BUILDING;
+        correctedEntity = AddressEntity.BUILDING;
     }
 
     protected void closeDialog(AjaxRequestTarget target) {
@@ -371,7 +367,7 @@ public abstract class AddressCorrectionPanel<T extends AbstractRequest> extends 
         this.buildingId = buildingId;
 
         initCorrectedEntity(!streetTypeEnabled);
-        if (correctedEntity != CORRECTED_ENTITY.STREET_TYPE) {
+        if (correctedEntity != AddressEntity.STREET_TYPE) {
             initSearchComponentState(componentState);
             WiQuerySearchComponent newSearchComponent = 
                     new WiQuerySearchComponent("searchComponent", componentState, initFilters(), null, ShowMode.ACTIVE, true);

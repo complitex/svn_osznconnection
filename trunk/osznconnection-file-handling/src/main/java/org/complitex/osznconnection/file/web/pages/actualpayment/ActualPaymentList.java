@@ -8,7 +8,9 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.authorization.UnauthorizedInstantiationException;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -20,13 +22,20 @@ import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.Strings;
+import org.complitex.address.entity.AddressEntity;
+import org.complitex.address.util.AddressRenderer;
 import org.complitex.dictionary.service.SessionBean;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
+import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.entity.example.ActualPaymentExample;
-import org.complitex.osznconnection.file.service.*;
+import org.complitex.osznconnection.file.service.ActualPaymentBean;
+import org.complitex.osznconnection.file.service.AddressService;
+import org.complitex.osznconnection.file.service.RequestFileBean;
+import org.complitex.osznconnection.file.service.StatusRenderService;
 import org.complitex.osznconnection.file.service.exception.DublicateCorrectionException;
 import org.complitex.osznconnection.file.service.exception.MoreOneCorrectionException;
 import org.complitex.osznconnection.file.service.exception.NotFoundCorrectionException;
@@ -35,10 +44,10 @@ import org.complitex.osznconnection.file.service.status.details.ActualPaymentSta
 import org.complitex.osznconnection.file.service.status.details.StatusDetailBean;
 import org.complitex.osznconnection.file.service.warning.WebWarningRenderer;
 import org.complitex.osznconnection.file.web.ActualPaymentFileList;
+import org.complitex.osznconnection.file.web.component.DataRowHoverBehavior;
 import org.complitex.osznconnection.file.web.component.StatusDetailPanel;
 import org.complitex.osznconnection.file.web.component.StatusRenderer;
 import org.complitex.osznconnection.file.web.component.address.AddressCorrectionPanel;
-import org.complitex.address.util.AddressRenderer;
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.TemplatePage;
 
@@ -46,11 +55,6 @@ import javax.ejb.EJB;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
-import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
-import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
-import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.complitex.dictionary.web.component.datatable.DataProvider;
-import org.complitex.osznconnection.file.web.component.DataRowHoverBehavior;
 
 /**
  *
@@ -194,10 +198,13 @@ public final class ActualPaymentList extends TemplatePage {
                 actualPaymentFile.getUserOrganizationId(), content, statusDetailPanel) {
 
             @Override
-            protected void correctAddress(ActualPayment actualPayment, CORRECTED_ENTITY entity, Long cityId, Long streetTypeId, Long streetId,
-                    Long buildingId, long userOrganizationId)
+            protected void correctAddress(ActualPayment actualPayment, AddressEntity addressEntity, Long cityId,
+                                          Long streetTypeId, Long streetId, Long buildingId, Long userOrganizationId)
                     throws DublicateCorrectionException, MoreOneCorrectionException, NotFoundCorrectionException {
-                addressService.correctLocalAddress(actualPayment, entity, cityId, streetTypeId, streetId, buildingId, userOrganizationId);
+                addressService.correctLocalAddress(actualPayment, addressEntity, cityId, streetTypeId, streetId, buildingId,
+                        userOrganizationId);
+
+                actualPaymentBean.markCorrected(actualPayment, addressEntity);
             }
 
             @Override

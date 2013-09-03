@@ -66,19 +66,6 @@ public class FacilityServiceTypeBindTaskBean implements ITaskBean {
     @EJB
     private RequestFileBean requestFileBean;
 
-    private void resolveStreet(FacilityServiceType facilityServiceType, CalculationContext calculationContext) {
-        long startTime = 0;
-        if (log.isDebugEnabled()) {
-            startTime = System.nanoTime();
-        }
-        addressService.resolveLocalStreet(facilityServiceType, calculationContext.getUserOrganizationId());
-
-        if (log.isDebugEnabled()) {
-            log.debug("Resolving of facility service type street (id = {}) took {} sec.", facilityServiceType.getId(),
-                    (System.nanoTime() - startTime) / 1000000000F);
-        }
-    }
-
     private boolean resolveAddress(FacilityServiceType facilityServiceType, CalculationContext calculationContext) {
         long startTime = 0;
         if (log.isDebugEnabled()) {
@@ -120,17 +107,13 @@ public class FacilityServiceTypeBindTaskBean implements ITaskBean {
 
     private void bind(FacilityServiceType facilityServiceType, CalculationContext calculationContext, Boolean updatePuAccount)
             throws DBException {
-        //связать до улицы.
-        resolveStreet(facilityServiceType, calculationContext);
 
-        if (facilityServiceType.getInternalStreetId() != null) { // улица найдена
-            //resolve local account.
-            resolveLocalAccount(facilityServiceType, calculationContext);
-            if (facilityServiceType.getStatus() != RequestStatus.ACCOUNT_NUMBER_RESOLVED
-                    && facilityServiceType.getStatus() != RequestStatus.MORE_ONE_ACCOUNTS_LOCALLY) {
-                if (resolveAddress(facilityServiceType, calculationContext)) {
-                    resolveRemoteAccountNumber(facilityServiceType, calculationContext, updatePuAccount);
-                }
+        //resolve local account.
+        resolveLocalAccount(facilityServiceType, calculationContext);
+        if (facilityServiceType.getStatus() != RequestStatus.ACCOUNT_NUMBER_RESOLVED
+                && facilityServiceType.getStatus() != RequestStatus.MORE_ONE_ACCOUNTS_LOCALLY) {
+            if (resolveAddress(facilityServiceType, calculationContext)) {
+                resolveRemoteAccountNumber(facilityServiceType, calculationContext, updatePuAccount);
             }
         }
 

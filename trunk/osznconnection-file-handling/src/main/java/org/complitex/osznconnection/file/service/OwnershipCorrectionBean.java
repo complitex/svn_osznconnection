@@ -1,13 +1,11 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.osznconnection.file.service;
 
 import com.google.common.collect.ImmutableMap;
-import org.complitex.correction.entity.Correction;
-import org.complitex.correction.service.CorrectionBean;
+import org.complitex.dictionary.entity.Correction;
+import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.mybatis.Transactional;
+import org.complitex.dictionary.service.AbstractBean;
+import org.complitex.osznconnection.file.entity.OwnershipCorrection;
 
 import javax.ejb.Stateless;
 import java.util.List;
@@ -18,9 +16,9 @@ import java.util.Map;
  * @author Artem
  */
 @Stateless
-public class OwnershipCorrectionBean extends CorrectionBean {
-
-    private static final String MAPPING_NAMESPACE = OwnershipCorrectionBean.class.getName();
+public class OwnershipCorrectionBean extends AbstractBean {
+    private static final String NS = OwnershipCorrectionBean.class.getName();
+    private static final String NS_CORRECTION = Correction.class.getName();
 
     /**
      * Найти id внутреннего объекта системы(форму власти) в таблице коррекций форм власти по коррекции(correction) и организации(organizationId)
@@ -31,7 +29,7 @@ public class OwnershipCorrectionBean extends CorrectionBean {
     @Transactional
     public Long findInternalOwnership(String correction, long calculationCenterId) {
         Map<String, Object> params = ImmutableMap.<String, Object>of("correction", correction, "organizationId", calculationCenterId);
-        List<Long> ids = sqlSession().selectList(MAPPING_NAMESPACE + ".findInternalOwnership", params);
+        List<Long> ids = sqlSession().selectList(NS + ".findInternalOwnership", params);
         if (ids != null && !ids.isEmpty()) {
             return ids.get(0);
         }
@@ -48,29 +46,34 @@ public class OwnershipCorrectionBean extends CorrectionBean {
     public String findOwnershipCode(long objectId, long osznId, long userOrganizationId) {
         Map<String, Long> params = ImmutableMap.of("objectId", objectId, "organizationId", osznId,
                 "userOrganizationId", userOrganizationId);
-        List<String> codes = sqlSession().selectList(MAPPING_NAMESPACE + ".findOwnershipCode", params);
+        List<String> codes = sqlSession().selectList(NS + ".findOwnershipCode", params);
         if (codes != null && !codes.isEmpty()) {
             return codes.get(0);
         }
         return null;
     }
 
-    private Correction createOwnershipCorrection(String code, String ownership, long ownershipObjectId,
-            long organizationId, long internalOrganizationId, long userOrganizationId) {
-        Correction correction = new Correction("ownership");
-        correction.setParentId(null);
-        correction.setExternalId(code);
-        correction.setCorrection(ownership);
-        correction.setOrganizationId(organizationId);
-        correction.setModuleId(internalOrganizationId);
-        correction.setObjectId(ownershipObjectId);
-        correction.setUserOrganizationId(userOrganizationId);
-        return correction;
+    public OwnershipCorrection getOwnershipCorrection(Long id){
+        return sqlSession().selectOne(NS + ".selectOwnershipCorrection", id);
     }
 
-    public void insertOwnershipCorrection(String code, String ownership, long ownershipObjectId, long organizationId,
-            long internalOrganizationId, Long userOrganizationId) {
-        insert(createOwnershipCorrection(code, ownership, ownershipObjectId, organizationId, internalOrganizationId,
-                userOrganizationId));
+    public void save(OwnershipCorrection ownershipCorrection) {
+        if (ownershipCorrection.getId() == null) {
+            sqlSession().insert(NS_CORRECTION + ".insertCorrection", ownershipCorrection);
+        }else {
+            sqlSession().update(NS_CORRECTION + ".updateCorrection", ownershipCorrection);
+        }
+    }
+
+    public void delete(Long id){
+        sqlSession().delete(NS_CORRECTION + ".deleteCorrection", id);
+    }
+
+    public List<OwnershipCorrection> getOwnershipCorrections(FilterWrapper<OwnershipCorrection> filterWrapper){
+        return sqlSession().selectList(NS + ".selectOwnershipCorrections", filterWrapper);
+    }
+
+    public Integer getOwnershipCorrectionsCount(FilterWrapper<OwnershipCorrection> filterWrapper){
+        return sqlSession().selectOne(NS + ".selectOwnershipCorrectionsCount", filterWrapper);
     }
 }
