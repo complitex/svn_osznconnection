@@ -28,7 +28,7 @@ public abstract class AbstractRequest<E extends Enum> implements ILongId{
     private RequestStatus status;
 
     private List<RequestWarning> warnings = Lists.newArrayList();
-    protected Map<String, String> dbfFields = new HashMap<String, String>();
+    private Map<String, String> dbfFields = new HashMap<String, String>();
 
     private Map<String, String> updateFieldMap;
 
@@ -41,7 +41,7 @@ public abstract class AbstractRequest<E extends Enum> implements ILongId{
     }
 
     @SuppressWarnings({"unchecked"})
-    protected <T> T getField(String fieldName) {
+    public <T> T getField(String fieldName) {
         final String stringValue = dbfFields.get(fieldName);
         final RequestFileDescription description = getDescription();
         final RequestFileFieldDescription fieldDescription = description.getField(fieldName);
@@ -62,7 +62,7 @@ public abstract class AbstractRequest<E extends Enum> implements ILongId{
         }
     }
 
-    protected void setField(String fieldName, Object object) {
+    public void setField(String fieldName, Object object) {
         final RequestFileDescription description = getDescription();
         dbfFields.put(fieldName, description.getTypeConverter().toString(object));
     }
