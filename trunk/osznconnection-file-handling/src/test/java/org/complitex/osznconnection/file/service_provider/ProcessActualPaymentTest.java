@@ -27,8 +27,8 @@ public class ProcessActualPaymentTest extends AbstractTest {
         ActualPayment p = new ActualPayment() {
 
             @Override
-            protected void setField(String fieldName, Object object) {
-                dbfFields.put(fieldName, object != null ? object.toString() : null);
+            public void setField(String fieldName, Object object) {
+                super.getDbfFields().put(fieldName, object != null ? object.toString() : null);
             }
         };
         p.setAccountNumber("1000000000");

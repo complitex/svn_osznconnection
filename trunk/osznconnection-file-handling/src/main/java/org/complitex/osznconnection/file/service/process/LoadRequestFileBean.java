@@ -216,9 +216,7 @@ public class LoadRequestFileBean {
         }
 
         //проверить длину поля.
-        if (expectedFieldType == Date.class) {
-            //для значений типа Date проверять не надо.
-        } else {
+        if (!expectedFieldType.equals(Date.class)) {
             final int realFieldLength = dBFField.getFieldLength();
             final int expectedFieldLength = fieldDescription.getLength();
             if (realFieldLength > expectedFieldLength) {
@@ -239,6 +237,7 @@ public class LoadRequestFileBean {
             }
         }
     }
+
 
     private void setField(String fieldName, RequestFileTypeConverter typeConverter, AbstractRequest request, Object value) {
         String stringValue = typeConverter.toString(value);

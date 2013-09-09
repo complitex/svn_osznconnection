@@ -45,8 +45,8 @@ public class ProcessBenefitTest extends AbstractTest {
         Benefit b = new Benefit() {
 
             @Override
-            protected void setField(String fieldName, Object object) {
-                dbfFields.put(fieldName, object != null ? object.toString() : null);
+            public void setField(String fieldName, Object object) {
+                getDbfFields().put(fieldName, object != null ? object.toString() : null);
             }
 
             @Override

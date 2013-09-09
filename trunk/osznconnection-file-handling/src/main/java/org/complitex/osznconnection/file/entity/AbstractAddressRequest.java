@@ -18,6 +18,7 @@ public abstract class AbstractAddressRequest<E extends Enum> extends AbstractReq
     private Long internalStreetId;
     private Long internalStreetTypeId;
     private Long internalBuildingId;
+    private Long internalApartmentId;
 
     private String outgoingCity;
     private String outgoingDistrict;
@@ -122,6 +123,14 @@ public abstract class AbstractAddressRequest<E extends Enum> extends AbstractReq
 
     public void setInternalBuildingId(Long internalBuildingId) {
         this.internalBuildingId = internalBuildingId;
+    }
+
+    public Long getInternalApartmentId() {
+        return internalApartmentId;
+    }
+
+    public void setInternalApartmentId(Long internalApartmentId) {
+        this.internalApartmentId = internalApartmentId;
     }
 
     public String getOutgoingCity() {
