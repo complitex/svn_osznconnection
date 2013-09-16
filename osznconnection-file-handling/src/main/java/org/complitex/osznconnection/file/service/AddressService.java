@@ -66,7 +66,7 @@ public class AddressService extends AbstractBean {
     @EJB
     private FacilityReferenceBookBean facilityReferenceBookBean;
 
-    @EJB(name = IOrganizationStrategy.BEAN_NAME, beanInterface = IOrganizationStrategy.class)
+    @EJB
     private OsznOrganizationStrategy organizationStrategy;
 
     /**

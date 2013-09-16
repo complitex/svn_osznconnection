@@ -45,7 +45,7 @@ public class LookupBean extends AbstractBean {
     @EJB
     private AddressCorrectionBean addressCorrectionBean;
 
-    @EJB(name = IOrganizationStrategy.BEAN_NAME, beanInterface = IOrganizationStrategy.class)
+    @EJB
     private OsznOrganizationStrategy organizationStrategy;
 
     @EJB
