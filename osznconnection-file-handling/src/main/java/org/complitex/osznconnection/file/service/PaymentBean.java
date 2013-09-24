@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import org.complitex.address.entity.AddressEntity;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.entity.example.PaymentExample;
@@ -223,23 +224,20 @@ public class PaymentBean extends AbstractRequestBean {
     }
 
     @Transactional
-    public void markCorrected(long fileId, String city) {
-        markCorrected(fileId, city, null, null, null);
-    }
-
-    @Transactional
-    public void markCorrected(long fileId, String city, String street) {
-        markCorrected(fileId, city, street, null, null);
-    }
-
-    @Transactional
-    public void markCorrected(long fileId, String city, String street, String buildingNumber, String buildingCorp) {
+    public void markCorrected(Payment payment, AddressEntity entity) {
         Map<String, Object> params = Maps.newHashMap();
-        params.put("fileId", fileId);
-        params.put("city", city);
-        params.put("street", street);
-        params.put("buildingNumber", buildingNumber);
-        params.put("buildingCorp", buildingCorp);
+        params.put("fileId", payment.getRequestFileId());
+
+        switch (entity){
+            case BUILDING:
+                params.put("buildingNumber", payment.getBuildingNumber());
+                params.put("buildingCorp", payment.getBuildingCorp());
+            case STREET:
+                params.put("street", payment.getStreet());
+            case CITY:
+                params.put("city", payment.getCity());
+        }
+
         sqlSession().update(MAPPING_NAMESPACE + ".markCorrected", params);
     }
 

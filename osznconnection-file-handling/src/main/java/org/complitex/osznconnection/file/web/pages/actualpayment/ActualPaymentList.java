@@ -36,7 +36,7 @@ import org.complitex.osznconnection.file.service.ActualPaymentBean;
 import org.complitex.osznconnection.file.service.AddressService;
 import org.complitex.osznconnection.file.service.RequestFileBean;
 import org.complitex.osznconnection.file.service.StatusRenderService;
-import org.complitex.osznconnection.file.service.exception.DublicateCorrectionException;
+import org.complitex.osznconnection.file.service.exception.DuplicateCorrectionException;
 import org.complitex.osznconnection.file.service.exception.MoreOneCorrectionException;
 import org.complitex.osznconnection.file.service.exception.NotFoundCorrectionException;
 import org.complitex.osznconnection.file.service.status.details.ActualPaymentExampleConfigurator;
@@ -200,7 +200,7 @@ public final class ActualPaymentList extends TemplatePage {
             @Override
             protected void correctAddress(ActualPayment actualPayment, AddressEntity addressEntity, Long cityId,
                                           Long streetTypeId, Long streetId, Long buildingId, Long userOrganizationId)
-                    throws DublicateCorrectionException, MoreOneCorrectionException, NotFoundCorrectionException {
+                    throws DuplicateCorrectionException, MoreOneCorrectionException, NotFoundCorrectionException {
                 addressService.correctLocalAddress(actualPayment, addressEntity, cityId, streetTypeId, streetId, buildingId,
                         userOrganizationId);
 

@@ -12,14 +12,13 @@ import org.complitex.address.strategy.street.StreetStrategy;
 import org.complitex.address.strategy.street_type.StreetTypeStrategy;
 import org.complitex.correction.entity.*;
 import org.complitex.correction.service.AddressCorrectionBean;
-import org.complitex.dictionary.entity.Correction;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.dictionary.service.LocaleBean;
 import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
 import org.complitex.osznconnection.file.entity.*;
-import org.complitex.osznconnection.file.service.exception.DublicateCorrectionException;
+import org.complitex.osznconnection.file.service.exception.DuplicateCorrectionException;
 import org.complitex.osznconnection.file.service.exception.MoreOneCorrectionException;
 import org.complitex.osznconnection.file.service.exception.NotFoundCorrectionException;
 import org.complitex.osznconnection.file.service_provider.ServiceProviderAdapter;
@@ -528,23 +527,23 @@ public class AddressService extends AbstractBean {
      * @param streetTypeId Откорректированный тип улицы
      * @param buildingId Откорректированный дом
      */
-    // todo mark corrected
     @Transactional
     public void correctLocalAddress(AbstractAccountRequest request, AddressEntity entity, Long cityId, Long streetTypeId,
                                     Long streetId, Long buildingId, Long userOrganizationId)
-            throws DublicateCorrectionException, MoreOneCorrectionException, NotFoundCorrectionException {
+            throws DuplicateCorrectionException, MoreOneCorrectionException, NotFoundCorrectionException {
         Long osznId = request.getOrganizationId();
 
         switch (entity) {
             case CITY: {
                 List<CityCorrection> cityCorrections = addressCorrectionBean.getCityCorrections(null, request.getCity(),
                         osznId, userOrganizationId);
-                if (cityCorrections.size() > 0) {
-                    throw new DublicateCorrectionException();
-                } else {
+
+                if (cityCorrections.isEmpty()) {
                     CityCorrection cityCorrection = new CityCorrection(null, cityId, request.getCity().toUpperCase(),
                             osznId, userOrganizationId, MODULE_ID);
                     addressCorrectionBean.save(cityCorrection);
+                } else {
+                    throw new DuplicateCorrectionException();
                 }
             }
             break;
@@ -552,113 +551,54 @@ public class AddressService extends AbstractBean {
             case STREET_TYPE: {
                 List<StreetTypeCorrection> streetTypeCorrections = addressCorrectionBean.getStreetTypeCorrections(
                         null, request.getStreetType(), osznId, userOrganizationId);
-                if (streetTypeCorrections.size() > 0) {
-                    throw new DublicateCorrectionException();
-                } else {
+
+                if (streetTypeCorrections.isEmpty()) {
                     StreetTypeCorrection streetTypeCorrection = new StreetTypeCorrection(request.getStreetTypeCode(),
                             streetTypeId,
                             request.getStreetType().toUpperCase(),
                             osznId, userOrganizationId, MODULE_ID);
                     addressCorrectionBean.save(streetTypeCorrection);
-                }
-            }
-            break;
-
-            case STREET: {
-                List<CityCorrection> cityCorrections = addressCorrectionBean.getCityCorrections(null, request.getCity(),
-                        osznId, userOrganizationId);
-                if (cityCorrections.size() == 1) {
-                    Correction cityCorrection = cityCorrections.get(0);
-
-                    //find or create street type correction at first
-                    DomainObject streetTypeObject = streetTypeStrategy.findById(streetTypeId, true);
-                    String streetType = streetTypeStrategy.displayDomainObject(streetTypeObject, localeBean.getSystemLocale());
-                    StreetTypeCorrection streetTypeCorrection;
-                    List<StreetTypeCorrection> streetTypeCorrections = addressCorrectionBean.getStreetTypeCorrections(
-                            null, streetType, osznId, userOrganizationId);
-
-                    if (streetTypeCorrections.size() == 1) {
-                        streetTypeCorrection = streetTypeCorrections.get(0);
-                    } else if (streetTypeCorrections.size() > 1) {
-                        throw new MoreOneCorrectionException("street_type");
-                    } else {
-                        streetTypeCorrection = new StreetTypeCorrection(null, streetTypeId, streetType.toUpperCase(),
-                                osznId, userOrganizationId, MODULE_ID);
-                        addressCorrectionBean.save(streetTypeCorrection);
-                    }
-
-                    List<StreetCorrection> streetCorrections = addressCorrectionBean.getStreetCorrections(
-                            null, null, cityCorrection.getId(), streetTypeCorrection.getId(), request.getStreet(),
-                            osznId, userOrganizationId);
-                    if (streetCorrections.size() > 0) {
-                        throw new DublicateCorrectionException();
-                    } else {
-                        StreetCorrection streetCorrection = new StreetCorrection(request.getStreetCode(), streetId,
-                                request.getStreet().toUpperCase(),
-                                osznId, userOrganizationId, MODULE_ID);
-
-                        addressCorrectionBean.save(streetCorrection);
-                    }
-                } else if (cityCorrections.size() > 1) {
-                    throw new MoreOneCorrectionException("city");
                 } else {
-                    throw new NotFoundCorrectionException("city");
+                    throw new DuplicateCorrectionException();
                 }
             }
             break;
 
-            case BUILDING: {
-                List<CityCorrection> cityCorrections = addressCorrectionBean.getCityCorrections(null, request.getCity(),
-                        osznId, userOrganizationId);
-                if (cityCorrections.size() == 1) {
-                    Correction cityCorrection = cityCorrections.get(0);
+            case STREET:
+                List<StreetCorrection> streetCorrections = addressCorrectionBean.getStreetCorrections(
+                        null, null, cityId, streetTypeId, request.getStreet(), osznId, userOrganizationId);
 
-                    long streetTypeObjectId = request.getInternalStreetTypeId();
-                    DomainObject streetTypeObject = streetTypeStrategy.findById(streetTypeObjectId, true);
-                    String streetType = streetTypeStrategy.displayDomainObject(streetTypeObject, localeBean.getSystemLocale());
-                    List<StreetTypeCorrection> streetTypeCorrections = addressCorrectionBean.getStreetTypeCorrections(
-                            null, streetType, osznId, userOrganizationId);
-                    if (streetTypeCorrections.size() == 1) {
-                        Correction streetTypeCorrection = streetTypeCorrections.get(0);
+                if (streetCorrections.isEmpty()) {
+                    StreetCorrection streetCorrection = new StreetCorrection(request.getStreetCode(), streetId,
+                            request.getStreet().toUpperCase(),
+                            osznId, userOrganizationId, MODULE_ID);
 
-                        List<StreetCorrection> streetCorrections = addressCorrectionBean.getStreetCorrections(
-                                null, null, cityCorrection.getId(), streetTypeCorrection.getId(),request.getStreet(),
-                                osznId, userOrganizationId);
-                        if (streetCorrections.size() == 1) {
-                            StreetCorrection streetCorrection = streetCorrections.get(0);
-
-                            List<BuildingCorrection> buildingCorrections = addressCorrectionBean.getBuildingCorrections(
-                                    streetCorrection.getId(), null, request.getBuildingNumber(), request.getBuildingCorp(),
-                                    osznId, userOrganizationId);
-                            if (buildingCorrections.size() > 0) {
-                                throw new DublicateCorrectionException();
-                            } else {
-                                BuildingCorrection buildingCorrection = new BuildingCorrection(null,
-                                        buildingId,
-                                        request.getBuildingNumber().toUpperCase(),
-                                        request.getBuildingCorp() != null ? request.getBuildingCorp().toUpperCase() : null,
-                                        osznId,
-                                        userOrganizationId, MODULE_ID);
-
-                                addressCorrectionBean.save(buildingCorrection);
-                            }
-                        } else if (streetCorrections.size() > 1) {
-                            throw new MoreOneCorrectionException("street");
-                        } else {
-                            throw new NotFoundCorrectionException("street");
-                        }
-                    } else if (streetTypeCorrections.size() > 1) {
-                        throw new MoreOneCorrectionException("street_type");
-                    } else {
-                        throw new NotFoundCorrectionException("street_type");
-                    }
-                } else if (cityCorrections.size() > 1) {
-                    throw new MoreOneCorrectionException("city");
+                    addressCorrectionBean.save(streetCorrection);
                 } else {
-                    throw new NotFoundCorrectionException("city");
+                    throw new DuplicateCorrectionException();
                 }
-            }
-            break;
+
+                break;
+
+            case BUILDING:
+                List<BuildingCorrection> buildingCorrections = addressCorrectionBean.getBuildingCorrections(
+                        streetId, null, request.getBuildingNumber(), request.getBuildingCorp(),
+                        osznId, userOrganizationId);
+
+                if (buildingCorrections.isEmpty()) {
+                    BuildingCorrection buildingCorrection = new BuildingCorrection(null,
+                            buildingId,
+                            request.getBuildingNumber().toUpperCase(),
+                            request.getBuildingCorp() != null ? request.getBuildingCorp().toUpperCase() : null,
+                            osznId,
+                            userOrganizationId, MODULE_ID);
+
+                    addressCorrectionBean.save(buildingCorrection);
+                } else {
+                    throw new DuplicateCorrectionException();
+                }
+
+                break;
         }
     }
 }
