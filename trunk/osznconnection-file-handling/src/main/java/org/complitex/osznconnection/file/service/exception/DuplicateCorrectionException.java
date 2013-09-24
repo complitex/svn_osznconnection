@@ -8,5 +8,5 @@ package org.complitex.osznconnection.file.service.exception;
  *
  * @author Artem
  */
-public class DublicateCorrectionException extends Exception {
+public class DuplicateCorrectionException extends Exception {
 }

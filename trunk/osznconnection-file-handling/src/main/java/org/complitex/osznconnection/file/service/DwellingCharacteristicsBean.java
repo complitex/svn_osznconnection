@@ -1,11 +1,8 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.osznconnection.file.service;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import org.complitex.address.entity.AddressEntity;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.entity.example.DwellingCharacteristicsExample;
@@ -135,9 +132,11 @@ public class DwellingCharacteristicsBean extends AbstractRequestBean {
         for (DwellingCharacteristics d : list){
             FacilityStreet facilityStreet = facilityReferenceBookBean.getFacilityStreet(d.getRequestFileId(), d.getStringField(CDUL));
 
-            d.setStreet(facilityStreet.getStringField(FacilityStreetDBF.KL_NAME));
-            d.setStreetType(facilityStreet.getStreetType());
-            d.setStreetTypeCode(facilityStreet.getStreetTypeCode());
+            if (facilityStreet != null) {
+                d.setStreet(facilityStreet.getStringField(FacilityStreetDBF.KL_NAME));
+                d.setStreetType(facilityStreet.getStreetType());
+                d.setStreetTypeCode(facilityStreet.getStreetTypeCode());
+            }
         }
     }
 
@@ -170,24 +169,20 @@ public class DwellingCharacteristicsBean extends AbstractRequestBean {
     }
 
     @Transactional
-    public void markCorrected(long fileId) {
-        markCorrected(fileId, null, null, null, null);
-    }
-
-    @Transactional
-    public void markCorrected(long fileId, String streetTypeCode, String streetCode) {
-        markCorrected(fileId, streetTypeCode, streetCode, null, null);
-    }
-
-    @Transactional
-    public void markCorrected(long fileId, String streetTypeCode, String streetCode, String buildingNumber, String buildingCorp) {
+    public void markCorrected(DwellingCharacteristics dwellingCharacteristics, AddressEntity addressEntity) {
         Map<String, Object> params = Maps.newHashMap();
 
-        params.put("fileId", fileId);
-        params.put("streetTypeCode", streetTypeCode);
-        params.put("streetCode", streetCode);
-        params.put("buildingNumber", buildingNumber);
-        params.put("buildingCorp", buildingCorp);
+        params.put("fileId", dwellingCharacteristics.getRequestFileId());
+
+        switch (addressEntity){
+            case BUILDING:
+                params.put("buildingNumber", dwellingCharacteristics.getBuildingNumber());
+                params.put("buildingCorp", dwellingCharacteristics.getBuildingCorp());
+           case STREET:
+               params.put("streetCode", dwellingCharacteristics.getStreetCode());
+            case STREET_TYPE:
+                params.put("streetTypeCode", dwellingCharacteristics.getStreetTypeCode());
+        }
 
         sqlSession().update(MAPPING_NAMESPACE + ".markCorrected", params);
     }

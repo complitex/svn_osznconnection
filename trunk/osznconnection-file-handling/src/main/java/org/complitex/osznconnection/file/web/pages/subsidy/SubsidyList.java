@@ -36,7 +36,7 @@ import org.complitex.osznconnection.file.service.AddressService;
 import org.complitex.osznconnection.file.service.RequestFileBean;
 import org.complitex.osznconnection.file.service.StatusRenderService;
 import org.complitex.osznconnection.file.service.SubsidyBean;
-import org.complitex.osznconnection.file.service.exception.DublicateCorrectionException;
+import org.complitex.osznconnection.file.service.exception.DuplicateCorrectionException;
 import org.complitex.osznconnection.file.service.exception.MoreOneCorrectionException;
 import org.complitex.osznconnection.file.service.exception.NotFoundCorrectionException;
 import org.complitex.osznconnection.file.service.status.details.StatusDetailBean;
@@ -200,8 +200,9 @@ public final class SubsidyList extends TemplatePage {
             @Override
             protected void correctAddress(Subsidy subsidy, AddressEntity entity, Long cityId, Long streetTypeId, Long streetId,
                     Long buildingId, Long userOrganizationId)
-                    throws DublicateCorrectionException, MoreOneCorrectionException, NotFoundCorrectionException {
+                    throws DuplicateCorrectionException, MoreOneCorrectionException, NotFoundCorrectionException {
                 addressService.correctLocalAddress(subsidy, entity, cityId, streetTypeId, streetId, buildingId, userOrganizationId);
+                subsidyBean.markCorrected(subsidy, entity);
             }
 
             @Override

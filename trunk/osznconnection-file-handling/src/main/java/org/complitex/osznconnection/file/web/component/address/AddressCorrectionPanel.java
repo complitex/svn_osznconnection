@@ -32,7 +32,7 @@ import org.complitex.dictionary.web.component.search.WiQuerySearchComponent;
 import org.complitex.osznconnection.file.entity.AbstractAccountRequest;
 import org.complitex.osznconnection.file.entity.RequestStatus;
 import org.complitex.osznconnection.file.service.StatusRenderService;
-import org.complitex.osznconnection.file.service.exception.DublicateCorrectionException;
+import org.complitex.osznconnection.file.service.exception.DuplicateCorrectionException;
 import org.complitex.osznconnection.file.service.exception.MoreOneCorrectionException;
 import org.complitex.osznconnection.file.service.exception.NotFoundCorrectionException;
 import org.odlabs.wiquery.core.javascript.JsStatement;
@@ -173,8 +173,8 @@ public abstract class AddressCorrectionPanel<T extends AbstractAccountRequest> e
                         }
                         closeDialog(target);
                         return;
-                    } catch (DublicateCorrectionException e) {
-                        error(getString("dublicate_correction_error"));
+                    } catch (DuplicateCorrectionException e) {
+                        error(getString("duplicate_correction_error"));
                     } catch (MoreOneCorrectionException e) {
                         if ("city".equals(e.getEntity())) {
                             error(statusRenderService.displayStatus(RequestStatus.MORE_ONE_LOCAL_CITY_CORRECTION, getLocale()));
@@ -215,7 +215,7 @@ public abstract class AddressCorrectionPanel<T extends AbstractAccountRequest> e
 
     protected abstract void correctAddress(T request, AddressEntity entity, Long cityId, Long streetTypeId,
             Long streetId, Long buildingId, Long userOrganizationId)
-            throws DublicateCorrectionException, MoreOneCorrectionException, NotFoundCorrectionException;
+            throws DuplicateCorrectionException, MoreOneCorrectionException, NotFoundCorrectionException;
 
     protected boolean validate(SearchComponentState componentState) {
         boolean validated = true;
@@ -300,46 +300,12 @@ public abstract class AddressCorrectionPanel<T extends AbstractAccountRequest> e
         dialog.close(target);
     }
 
-    /**
-     * Only for non-street-type requests.
-     * @param target
-     * @param request
-     * @param firstName
-     * @param middleName
-     * @param lastName
-     * @param city
-     * @param street
-     * @param buildingNumber
-     * @param buildingCorp
-     * @param apartment
-     * @param cityId
-     * @param streetId
-     * @param buildingId
-     */
     public void open(AjaxRequestTarget target, T request, String firstName, String middleName, String lastName, String city,
             String street, String buildingNumber, String buildingCorp, String apartment, Long cityId, Long streetId, Long buildingId) {
         open(target, request, firstName, middleName, lastName, city, null, street, buildingNumber, buildingCorp,
                 apartment, cityId, null, streetId, buildingId, false);
     }
 
-    /**
-     * Only for street-type-enabled requests.
-     * @param target
-     * @param request
-     * @param firstName
-     * @param middleName
-     * @param lastName
-     * @param city
-     * @param streetType
-     * @param street
-     * @param buildingNumber
-     * @param buildingCorp
-     * @param apartment
-     * @param cityId
-     * @param streetTypeId
-     * @param streetId
-     * @param buildingId
-     */
     public void open(AjaxRequestTarget target, T request, String firstName, String middleName, String lastName, String city,
             String streetType, String street, String buildingNumber, String buildingCorp, String apartment, Long cityId, Long streetTypeId,
             Long streetId, Long buildingId) {

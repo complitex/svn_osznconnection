@@ -298,7 +298,7 @@ values
 -- Dwelling characteristics
 insert into `dwelling_characteristics`(`IDCODE`, `FIO`, `first_name`, `middle_name`, `last_name`, `date`, `city`, `CDUL`, `HOUSE`, `BUILD`, `APT`, `request_file_id`)
 values
-    ('107374638','Матвеев Матвей Матвеевич', 'Матвей', 'Матвеевич', 'Матвеев', '2012-01-02', 'Харьков', '123', '25А','','19', 7);
+    ('107374638','Матвеев Матвей Матвеевич', 'Матвей', 'Матвеевич', 'Матвеев', '2012-01-02', 'Харьков', '20', '25А','','19', 7);
 --    ('107374638','Матвеев2 Матвей2 Матвеевич2', 'Матвей2', 'Матвеевич2', 'Матвеев2', '2012-01-02', 'Харьков', '124', '25А','','19', 7);
 
 -- Facility service types
@@ -310,46 +310,23 @@ values
 -- VALUES(UPPER('Матвей'),UPPER('Матвеевич'),UPPER('Матвеев'),UPPER('Харьков'),UPPER('ФРАНТИШЕКА КРАЛА'),UPPER('УЛ'),UPPER('25-/А'),'',UPPER('19'),'1000001109','107374638',1,2,4);
 
 -- Address corrections
--- Calculation center's corrections
-INSERT INTO `street_type_correction`(`id`, `object_id`, `correction`, `organization_id`, `external_id`, `module_id`) VALUES
-(1,10000,UPPER('Б-Р'),2,'1',0), (2,10001,UPPER('М'),2,'1',0), (3,10002,UPPER('М-Н'),2,'1',0), (4,10003,UPPER('ПЕР'),2,'1',0), (5,10004,UPPER('ПЛ'),2,'1',0), (6,10005,UPPER('П'),2,'1',0),
-(7,10006,UPPER('ПОС'),2,'1',0), (8,10007,UPPER('ПР-Д'),2,'1',0), (9,10008,UPPER('ПРОСП'),2,'1',0), (10,10009,UPPER('СП'),2,'1',0), (11,10010,UPPER('Т'),2,'1',0), (12,10011,UPPER('ТУП'),2,'1',0),
-(13,10012,UPPER('УЛ'),2,'1',0), (14,10013,UPPER('ШОССЕ'),2,'1',0), (15,10014,UPPER('НАБ'),2,'1',0), (16,10015,UPPER('В-Д'),2,'1',0), (17,10016,UPPER('СТ'),2,'1',0);
 
 insert into city_correction(id, organization_id, correction, object_id, module_id) values (1,2,UPPER('Новосибирск'),1,0);
-insert into street_correction(id, organization_id, correction, object_id, module_id, street_type_correction_id) values (1,2,UPPER('Терешковой'),1,0,13);
+insert into street_correction(id, organization_id, correction, object_id, module_id) values (1,2,UPPER('Терешковой'),1,0);
 insert into building_correction(organization_id, correction, correction_corp, object_id, module_id) values (2,UPPER('10'),UPPER('1'),3,0);
 
 insert into city_correction(id, organization_id, correction, object_id, module_id) values (2,2,UPPER('Харьков'),3,0);
-insert into street_correction(id, organization_id, correction, object_id, module_id, street_type_correction_id) values (2,2,UPPER('Косиора'),4,0,13);
+insert into street_correction(id, organization_id, correction, object_id, module_id) values (2,2,UPPER('Косиора'),4,0);
 insert into building_correction(organization_id, correction, correction_corp, object_id, module_id) values (2,UPPER('154А'),UPPER(''),6,0);
 
-insert into street_correction(id, organization_id, correction, object_id, module_id, street_type_correction_id)
-    values (3,2,UPPER('ФРАНТИШЕКА КРАЛА'),5,0,13);
+insert into street_correction(id, organization_id, correction, object_id, module_id)
+    values (3,2,UPPER('ФРАНТИШЕКА КРАЛА'),5,0);
 insert into building_correction(organization_id, correction, correction_corp, object_id, module_id) values (2,UPPER('25А'),UPPER(''),7,0);
-insert into street_correction(id, organization_id, correction, object_id, module_id,street_type_correction_id)
-    values (4,2,UPPER('ФРАНТИШЕКА КРАЛА'),5,0,13);
+insert into street_correction(id, organization_id, correction, object_id, module_id)
+    values (4,2,UPPER('ФРАНТИШЕКА КРАЛА'),5,0);
 insert into building_correction(organization_id, correction, correction_corp, object_id, module_id) values (2,UPPER('23'),UPPER(''),8,0);
 
 insert into district_correction(organization_id, correction, object_id, module_id) values (2,UPPER('Центральный'),3,0);
-
--- OSZN corrections
--- INSERT INTO `street_type_correction`(`id`, `object_id`, `correction`, `organization_id`, `module_id`, `user_organization_id`) VALUES
--- (18,10012,UPPER('УЛ'),1,0,4);
--- insert into city_correction(id, organization_id, correction, object_id, module_id, user_organization_id) values (3,1,UPPER('Харьков'),3,0,4);
--- insert into street_correction(id, organization_id, correction, object_id, module_id, user_organization_id, parent_id, street_type_correction_id, external_id)
---    values (5,1,UPPER('ФРАНТИШЕКА КРАЛА'),5,0,4,3,18,111);
-
--- insert into district_correction(organization_id, correction, object_id, module_id, parent_id) values (2,UPPER('Центральный123'),3,0,2);
-
--- insert into city_correction(id, organization_id, correction, object_id, module_id) values (3,1,UPPER('Харьков'),3,0);
--- insert into street_correction(id, organization_id, correction, object_id, module_id, parent_id) values (4,1,UPPER('ФРАНТИШЕКА КРАЛА1'),5,0,3);
-
-/* Corrections for testing situations where correction's building belongs another street than local address base' building */
-
--- insert into city_correction(id, organization_id, correction, object_id, module_id) values (3,1,UPPER('Новосибирск'),1,0);
--- insert into street_correction(id, organization_id, correction, object_id, module_id, parent_id) values (4,1,UPPER('Терешковой'),1,0,3);
--- insert into building_correction(organization_id, correction, correction_corp, object_id, module_id, parent_id) values (1,'25','',7,0,4);
 
 
 -- Ownership corrections
@@ -368,8 +345,8 @@ insert into privilege_correction(organization_id, correction, object_id, externa
 INSERT INTO `subsidy_tarif`(`T11_CS_UNI`, `T11_CODE2`, `request_file_id`, `T11_CODE1`) values ('0','123',3,'1');
 
 -- config test
-INSERT INTO `config`(`name`, `value`) VALUES ('FACILITY_STREET_TYPE_REFERENCE_FILENAME_MASK', 'KLKATUL\.DBF');
-INSERT INTO `config`(`name`, `value`) VALUES ('FACILITY_STREET_REFERENCE_FILENAME_MASK', 'KLUL\.DBF');
+-- INSERT INTO `config`(`name`, `value`) VALUES ('FACILITY_STREET_TYPE_REFERENCE_FILENAME_MASK', 'KLKATUL\.DBF');
+-- INSERT INTO `config`(`name`, `value`) VALUES ('FACILITY_STREET_REFERENCE_FILENAME_MASK', 'KLUL\.DBF');
 -- insert into config(`name`, `value`) values ('ADDRESS_IMPORT_FILE_STORAGE_DIR', 'D:\\Artem\\Projects\\org.complitex\\storage\\import');
 
 -- test users

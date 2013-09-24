@@ -19,9 +19,7 @@
         <result column="outgoing_apartment" property="outgoingApartment"/>
         
         <result column="date" property="date"/>
-        
-        <result column="street_correction_id" property="streetCorrectionId"/>
-        
+
         <result column="last_name" property="lastName"/>
         <result column="first_name" property="firstName"/>
         <result column="middle_name" property="middleName"/>
@@ -58,10 +56,10 @@
         <trim suffixOverrides=",">
             `request_file_id`, `account_number`,
             `internal_city_id`, `internal_street_id`, `internal_street_type_id`, `internal_building_id`,
-            `outgoing_city`, `outgoing_street`, `outgoing_street_type`, `outgoing_building_number`, `outgoing_building_corp`, `outgoing_apartment`,
-            `street_correction_id`, `status`, `date`,
+            `outgoing_city`, `outgoing_street`, `outgoing_street_type`, `outgoing_building_number`,
+            `outgoing_building_corp`, `outgoing_apartment`, `status`, `date`,
             `last_name`, `first_name`, `middle_name`,
-            `city`, `street`, `street_type`,
+            `city`
             <foreach collection="list[0].dbfFields.keys" item="key">
                 `${key}`,
             </foreach>
@@ -73,11 +71,11 @@
             <trim suffixOverrides=",">
                 #{item.requestFileId}, #{item.accountNumber},
                 #{item.internalCityId}, #{item.internalStreetId}, #{item.internalStreetTypeId}, #{item.internalBuildingId},
-                #{item.outgoingCity}, #{item.outgoingStreet}, #{item.outgoingStreetType}, #{item.outgoingBuildingNumber}, #{item.outgoingBuildingCorp},
-                #{item.outgoingApartment},
-                #{item.streetCorrectionId}, #{item.status}, #{item.date},
+                #{item.outgoingCity}, #{item.outgoingStreet}, #{item.outgoingStreetType},
+                #{item.outgoingBuildingNumber}, #{item.outgoingBuildingCorp},
+                #{item.outgoingApartment}, #{item.status}, #{item.date},
                 #{item.lastName}, #{item.firstName}, #{item.middleName},
-                #{item.city}, #{item.street}, #{item.streetType},
+                #{item.city},
                 <foreach collection="item.dbfFields.keys" item="key">
                     #{item.dbfFields.${key}},
                 </foreach>
@@ -133,10 +131,6 @@
         <include refid="org.complitex.osznconnection.file.service.DwellingCharacteristicsBean.filter"/>
     </select>
 
-    <sql id="selectStreetReference">
-        (select `KL_NAME` from `facility_street_reference` where )
-    </sql>
-
     <select id="find" parameterType="org.complitex.osznconnection.file.entity.example.DwellingCharacteristicsExample"
             resultMap="dwellingCharacteristicsResultMap">
         SELECT t.*,  
@@ -148,8 +142,8 @@
                 f.`organization_id`,
                 d.`internal_city_id`, d.`internal_street_id`, d.`internal_street_type_id`, d.`internal_building_id`,
                 d.`outgoing_city`, d.`outgoing_district`, d.`outgoing_street`, d.`outgoing_street_type`, d.`outgoing_building_number`,
-                d.`outgoing_building_corp`, d.`outgoing_apartment`, d.`street_correction_id`,
-                d.`city`, d.`street`, d.`street_type`, s.`KL_NAME` as street_reference
+                d.`outgoing_building_corp`, d.`outgoing_apartment`,
+                d.`city`, s.`KL_NAME` as street
             FROM `dwelling_characteristics` d
               JOIN `request_file` f ON f.`id` = d.`request_file_id`
               LEFT JOIN `facility_street_reference` s ON d.`CDUL` = s.`KL_CODEUL`
@@ -200,9 +194,7 @@
         `outgoing_city` = #{outgoingCity}, `outgoing_district` = #{outgoingDistrict},
         `outgoing_street` = #{outgoingStreet}, `outgoing_street_type` = #{outgoingStreetType},
         `outgoing_building_number` = #{outgoingBuildingNumber}, `outgoing_building_corp` = #{outgoingBuildingCorp},
-        `outgoing_apartment` = #{outgoingApartment},
-        `street` = #{street}, `street_type` = #{streetType}, `street_correction_id` = #{streetCorrectionId},
-        `status` = #{status}
+        `outgoing_apartment` = #{outgoingApartment}, `status` = #{status}
         <if test="updateFieldMap != null">
             <foreach collection="updateFieldMap.entrySet()" item="item">
                 ,`${item.key}` = #{item.value}
@@ -221,8 +213,10 @@
     </select>
     
     <select id="findForOperation" parameterType="map" resultMap="dwellingCharacteristicsResultMap">
-        SELECT d.*, f.`organization_id`, f.`user_organization_id`
-        FROM `dwelling_characteristics` d JOIN `request_file` f ON d.`request_file_id` = f.`id`
+        SELECT d.*, f.`organization_id`, f.`user_organization_id`, s.`KL_NAME` as street
+        FROM `dwelling_characteristics` d
+          JOIN `request_file` f ON d.`request_file_id` = f.`id`
+          LEFT JOIN `facility_street_reference` s ON d.`CDUL` = s.`KL_CODEUL`
         WHERE d.`request_file_id` = #{requestFileId}
             AND d.`id` IN
             <foreach collection="ids" item="id" open="(" close=")" separator=",">
@@ -236,7 +230,6 @@
         `internal_city_id` = NULL, `internal_street_id` = NULL, `internal_street_type_id` = NULL, `internal_building_id` = NULL,
         `outgoing_city` = NULL, `outgoing_district` = NULL, `outgoing_street` = NULL, `outgoing_street_type` = NULL,
         `outgoing_building_number` = NULL, `outgoing_building_corp` = NULL, `outgoing_apartment` = NULL,
-        `street` = NULL, `street_type` = NULL, `street_correction_id` = NULL,
         `status` = #{status}
         <if test="updateFieldMap != null">
             <foreach collection="updateFieldMap.entrySet()" item="item">

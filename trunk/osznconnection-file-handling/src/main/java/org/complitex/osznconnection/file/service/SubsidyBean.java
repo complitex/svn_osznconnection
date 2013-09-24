@@ -3,6 +3,7 @@ package org.complitex.osznconnection.file.service;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import org.complitex.address.entity.AddressEntity;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.entity.example.SubsidyExample;
@@ -144,30 +145,23 @@ public class SubsidyBean extends AbstractRequestBean {
     }
 
     @Transactional
-    public void markCorrected(long fileId, String city) {
-        markCorrected(fileId, city, null, null, null, null);
-    }
-
-    @Transactional
-    public void markCorrected(long fileId, String city, String streetType) {
-        markCorrected(fileId, city, streetType, null, null, null);
-    }
-
-    @Transactional
-    public void markCorrected(long fileId, String city, String streetType, String streetCode) {
-        markCorrected(fileId, city, streetType, streetCode, null, null);
-    }
-
-    @Transactional
-    public void markCorrected(long fileId, String city, String streetType, String streetCode,
-            String buildingNumber, String buildingCorp) {
+    public void markCorrected(Subsidy subsidy, AddressEntity entity) {
         Map<String, Object> params = Maps.newHashMap();
-        params.put("fileId", fileId);
-        params.put("city", city);
-        params.put("streetType", streetType);
-        params.put("streetCode", streetCode);
-        params.put("buildingNumber", buildingNumber);
-        params.put("buildingCorp", buildingCorp);
+
+        params.put("fileId", subsidy.getRequestFileId());
+
+        switch (entity){
+            case BUILDING:
+                params.put("buildingNumber", subsidy.getBuildingNumber());
+                params.put("buildingCorp", subsidy.getBuildingCorp());
+            case STREET:
+                params.put("streetCode", subsidy.getStreetCode());
+            case STREET_TYPE:
+                params.put("streetType", subsidy.getStreetType());
+            case CITY:
+                params.put("city", subsidy.getCity());
+        }
+
         sqlSession().update(MAPPING_NAMESPACE + ".markCorrected", params);
     }
 
