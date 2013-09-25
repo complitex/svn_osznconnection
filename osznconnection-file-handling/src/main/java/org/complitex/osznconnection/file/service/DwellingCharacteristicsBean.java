@@ -130,7 +130,7 @@ public class DwellingCharacteristicsBean extends AbstractRequestBean {
 
     public void loadFacilityStreet(List<DwellingCharacteristics> list){
         for (DwellingCharacteristics d : list){
-            FacilityStreet facilityStreet = facilityReferenceBookBean.getFacilityStreet(d.getRequestFileId(), d.getStringField(CDUL));
+            FacilityStreet facilityStreet = facilityReferenceBookBean.getFacilityStreet(d.getRequestFileId(), d.getStreetCode());
 
             if (facilityStreet != null) {
                 d.setStreet(facilityStreet.getStringField(FacilityStreetDBF.KL_NAME));
