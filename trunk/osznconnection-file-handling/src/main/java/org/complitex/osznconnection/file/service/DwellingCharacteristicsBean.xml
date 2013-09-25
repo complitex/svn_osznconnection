@@ -27,6 +27,7 @@
         <result column="city" property="city"/>
         <result column="street" property="street"/>
         <result column="street_type" property="streetType"/>
+        <result column="CDUL" property="streetCode"/>
 
         <association property="dbfFields" javaType="map">
             <result column="COD" property="COD"/>
