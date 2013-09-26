@@ -30,4 +30,9 @@ public class FacilityServiceType extends AbstractAccountRequest<FacilityServiceT
     public String getBuildingNumber() {
         return getStringField(FacilityServiceTypeDBF.HOUSE);
     }
+
+    @Override
+    public String getApartment() {
+        return getStringField(FacilityServiceTypeDBF.APT);
+    }
 }

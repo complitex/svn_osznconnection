@@ -34,4 +34,9 @@ public class Payment extends AbstractAccountRequest<PaymentDBF> {
     public String getBuildingCorp() {
         return getStringField(PaymentDBF.CORP_NUM);
     }
+
+    @Override
+    public String getApartment() {
+        return getStringField(PaymentDBF.FLAT);
+    }
 }

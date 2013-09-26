@@ -30,5 +30,5 @@ public enum BenefitDBF {
     OZN_SQ_ADD, //18    OZN_SQ_ADD	NUMERIC 	1	0	Признак учета дополнительной площади
     OZN_ABS, //19    OZN_ABS	    NUMERIC 	1	0	Признак отсутствия данных в базе ЖЭО
     RESERV1, //20    RESERV1	    NUMERIC	    10	2	Резерв
-    RESERV2;         //21    RESERV2	    CHARACTER	10		Резерв
+    RESERV2;         //21    RESERV2	    CHARACTER	10		Резер
 }
