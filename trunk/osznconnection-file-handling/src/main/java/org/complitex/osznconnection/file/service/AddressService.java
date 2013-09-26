@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import static org.complitex.dictionary.util.StringUtil.removeWhiteSpaces;
@@ -327,6 +328,8 @@ public class AddressService extends AbstractBean {
         Long calcId = calculationContext.getCalculationCenterId();
         Long userOrganizationId = calculationContext.getUserOrganizationId();
 
+        Locale locale = localeBean.getSystemLocale();
+
         List<CityCorrection> cityCorrections = addressCorrectionBean.getCityCorrections(request.getInternalCityId(),
                 null, calcId, userOrganizationId);
 
@@ -334,7 +337,7 @@ public class AddressService extends AbstractBean {
             DomainObject city = cityStrategy.findById(request.getInternalCityId(), true);
 
             if (city != null){
-                request.setOutgoingCity(cityStrategy.displayDomainObject(city, localeBean.getSystemLocale()));
+                request.setOutgoingCity(cityStrategy.getName(city, locale));
             }else {
                 request.setStatus(RequestStatus.CITY_UNRESOLVED);
 
@@ -359,7 +362,7 @@ public class AddressService extends AbstractBean {
             DomainObject district = districtStrategy.findById(districtId, true);
 
             if (district != null){
-                request.setOutgoingDistrict(districtStrategy.displayDomainObject(district, localeBean.getSystemLocale()));
+                request.setOutgoingDistrict(districtStrategy.displayDomainObject(district, locale));
             }else {
                 request.setStatus(RequestStatus.DISTRICT_UNRESOLVED);
 
@@ -382,7 +385,7 @@ public class AddressService extends AbstractBean {
             DomainObject street = streetStrategy.findById(request.getInternalStreetId(), true);
 
             if (street != null){
-                request.setOutgoingStreet(streetStrategy.displayDomainObject(street, localeBean.getSystemLocale()));
+                request.setOutgoingStreet(streetStrategy.getName(street, locale));
             }else {
                 request.setStatus(RequestStatus.STREET_UNRESOLVED);
 
@@ -411,7 +414,7 @@ public class AddressService extends AbstractBean {
             DomainObject streetType = streetTypeStrategy.findById(request.getInternalStreetTypeId(), true);
 
             if (streetType != null){
-                request.setOutgoingStreetType(streetTypeStrategy.displayDomainObject(streetType, localeBean.getSystemLocale()));
+                request.setOutgoingStreetType(streetTypeStrategy.getShortName(streetType, locale));
             }else{
                 request.setStatus(RequestStatus.STREET_TYPE_UNRESOLVED);
 
@@ -432,8 +435,8 @@ public class AddressService extends AbstractBean {
             Building building = buildingStrategy.findById(request.getInternalBuildingId(), true);
 
             if (building != null){
-                request.setOutgoingBuildingNumber(building.getAccompaniedNumber(localeBean.getSystemLocale()));
-                request.setOutgoingBuildingCorp(building.getAccompaniedCorp(localeBean.getSystemLocale()));
+                request.setOutgoingBuildingNumber(building.getAccompaniedNumber(locale));
+                request.setOutgoingBuildingCorp(building.getAccompaniedCorp(locale));
             }else {
                 request.setStatus(RequestStatus.BUILDING_UNRESOLVED);
 

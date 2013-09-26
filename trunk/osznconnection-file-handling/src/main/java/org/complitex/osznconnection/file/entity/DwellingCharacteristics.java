@@ -30,4 +30,9 @@ public class DwellingCharacteristics extends AbstractAccountRequest<DwellingChar
     public String getBuildingCorp() {
         return getStringField(DwellingCharacteristicsDBF.BUILD);
     }
+
+    @Override
+    public String getApartment() {
+        return getStringField(DwellingCharacteristicsDBF.APT);
+    }
 }
