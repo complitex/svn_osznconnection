@@ -214,8 +214,8 @@
         `street` = #{street}, `street_type` = #{streetType}, `street_correction_id` = #{streetCorrectionId},
         `status` = #{status}
         <if test="updateFieldMap != null">
-            <foreach collection="updateFieldMap.entrySet()" item="item">
-                ,`${item.key}` = #{item.value}
+            <foreach collection="updateFieldMap.entrySet()" item="item" index="key">
+                ,`${key}` = #{item}
             </foreach>
         </if>
         WHERE `id` = #{id}
@@ -249,8 +249,8 @@
         `street` = NULL, `street_type` = NULL, `street_correction_id` = NULL,
         `status` = #{status}
         <if test="updateFieldMap != null">
-            <foreach collection="updateFieldMap.entrySet()" item="item">
-                ,`${item.key}` = #{item.value}
+            <foreach collection="updateFieldMap.entrySet()" item="item" index="key">
+                ,`${key}` = #{item}
             </foreach>
         </if>
         WHERE `request_file_id` = #{fileId}

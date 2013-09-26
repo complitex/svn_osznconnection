@@ -274,8 +274,8 @@
         `OPP` = #{dbfFields.OPP},
         `status` = #{status}
         <if test="updateFieldMap != null">
-            <foreach collection="updateFieldMap.entrySet()" item="item">
-                ,`${item.key}` = #{item.value}
+            <foreach collection="updateFieldMap.entrySet()" item="item" index="key">
+                ,`${key}` = #{item}
             </foreach>
         </if>
         WHERE `id` = #{id}
@@ -352,8 +352,8 @@
         `OPP` = NULL,
         `status` = #{status}
         <if test="updateFieldMap != null">
-            <foreach collection="updateFieldMap.entrySet()" item="item">
-                ,`${item.key}` = #{item.value}
+            <foreach collection="updateFieldMap.entrySet()" item="item" index="key">
+                ,`${key}` = #{item}
             </foreach>
         </if>
         WHERE `request_file_id` = #{fileId}
@@ -377,8 +377,8 @@
                      END
                      
         <if test="updateFieldMap != null">
-            <foreach collection="updateFieldMap.entrySet()" item="item">
-                ,`${item.key}` = #{item.value}
+            <foreach collection="updateFieldMap.entrySet()" item="item" index="key">
+                ,`${key}` = #{item}
             </foreach>
         </if>
         WHERE `request_file_id` = #{fileId}

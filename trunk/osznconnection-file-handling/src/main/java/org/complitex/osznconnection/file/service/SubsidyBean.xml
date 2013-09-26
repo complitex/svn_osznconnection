@@ -214,8 +214,8 @@
         `outgoing_apartment` = #{outgoingApartment},
         `status` = #{status}
         <if test="updateFieldMap != null">
-            <foreach collection="updateFieldMap.entrySet()" item="item">
-                ,`${item.key}` = #{item.value}
+            <foreach collection="updateFieldMap.entrySet()" item="item" index="key">
+                ,`${key}` = #{item}
             </foreach>
         </if>
         WHERE `id` = #{id}
@@ -250,8 +250,8 @@
         `outgoing_building_number` = NULL, `outgoing_building_corp` = NULL, `outgoing_apartment` = NULL,
         `status` = #{status}
         <if test="updateFieldMap != null">
-            <foreach collection="updateFieldMap.entrySet()" item="item">
-                ,`${item.key}` = #{item.value}
+            <foreach collection="updateFieldMap.entrySet()" item="item" index="key">
+                ,`${key}` = #{item}
             </foreach>
         </if>
         WHERE `request_file_id` = #{fileId}

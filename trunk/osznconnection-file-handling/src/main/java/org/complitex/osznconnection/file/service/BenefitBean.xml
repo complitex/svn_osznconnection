@@ -211,6 +211,7 @@
         </foreach>
     </select>
 
+    <!--todo WFT with status?-->
     <update id="updateBindingStatus" parameterType="map">
         UPDATE `benefit` b SET b.`status` =
         CASE IFNULL(
