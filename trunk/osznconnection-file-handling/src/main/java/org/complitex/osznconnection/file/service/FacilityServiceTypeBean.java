@@ -6,6 +6,7 @@ package org.complitex.osznconnection.file.service;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import org.complitex.address.entity.AddressEntity;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.entity.example.FacilityServiceTypeExample;
@@ -160,24 +161,20 @@ public class FacilityServiceTypeBean extends AbstractRequestBean {
     }
 
     @Transactional
-    public void markCorrected(long fileId) {
-        markCorrected(fileId, null, null);
-    }
-
-    @Transactional
-    public void markCorrected(long fileId, String streetTypeCode, String streetCode) {
-        markCorrected(fileId, streetTypeCode, streetCode, null, null);
-    }
-
-    @Transactional
-    public void markCorrected(long fileId, String streetTypeCode, String streetCode, String buildingNumber, String buildingCorp) {
+    public void markCorrected(FacilityServiceType facilityServiceType, AddressEntity addressEntity) {
         Map<String, Object> params = Maps.newHashMap();
 
-        params.put("fileId", fileId);
-        params.put("streetCode", streetCode);
-        params.put("buildingNumber", buildingNumber);
-        params.put("buildingCorp", buildingCorp);
-        params.put("streetTypeCode", streetTypeCode);
+        params.put("fileId", facilityServiceType.getRequestFileId());
+
+        switch (addressEntity){
+            case BUILDING:
+                params.put("buildingNumber", facilityServiceType.getBuildingNumber());
+                params.put("buildingCorp", facilityServiceType.getBuildingCorp());
+            case STREET:
+                params.put("streetCode", facilityServiceType.getStreetCode());
+            case STREET_TYPE:
+                params.put("streetTypeCode", facilityServiceType.getStreetTypeCode());
+        }
 
         sqlSession().update(NS + ".markCorrected", params);
     }

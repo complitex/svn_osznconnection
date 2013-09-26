@@ -208,6 +208,7 @@ public final class FacilityServiceTypeList extends TemplatePage {
                             Long cityId, Long streetTypeId, Long streetId, Long buildingId, Long userOrganizationId)
                             throws DuplicateCorrectionException, MoreOneCorrectionException, NotFoundCorrectionException {
                         addressService.correctLocalAddress(facilityServiceType, entity, cityId, streetTypeId, streetId, buildingId, userOrganizationId);
+                        facilityServiceTypeBean.markCorrected(facilityServiceType, entity);
                     }
 
                     @Override
