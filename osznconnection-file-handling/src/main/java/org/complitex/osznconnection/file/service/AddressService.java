@@ -124,8 +124,9 @@ public class AddressService extends AbstractBean {
         //Связывание типа улицы
         //todo street type by name vs by street
         if(request.getStreetType() != null){
-            List<StreetTypeCorrection> streetTypeCorrections =
-                    addressCorrectionBean.getStreetTypeCorrections(null, request.getStreetType(), osznId, userOrganizationId);
+            List<StreetTypeCorrection> streetTypeCorrections = addressCorrectionBean.getStreetTypeCorrections(null,
+                    request.getStreetType(), osznId, userOrganizationId);
+
             if (streetTypeCorrections.size() == 1) {
                 request.setInternalStreetTypeId(streetTypeCorrections.get(0).getObjectId());
             } else if (streetTypeCorrections.size() > 1) {
@@ -232,7 +233,7 @@ public class AddressService extends AbstractBean {
             }
         } else { // в коррекциях не нашли ни одного соответствия на внутренние объекты улиц
             // ищем по внутреннему справочнику улиц
-            List<Long> streetIds = streetStrategy.getStreetObjectIds(request.getInternalCityId(), null, request.getStreet());
+            List<Long> streetIds = streetStrategy.getStreetObjectIds(request.getInternalCityId(), request.getInternalStreetTypeId(), request.getStreet());
 
             if (streetIds.size() == 1) { // нашли ровно одну улицу
                 Long streetId = streetIds.get(0);
