@@ -123,9 +123,9 @@ public final class ActualPaymentList extends TemplatePage {
         content.setOutputMarkupId(true);
         add(content);
 
-        final Form<Void> filterForm = new Form<Void>("filterForm");
+        final Form filterForm = new Form("filterForm");
         content.add(filterForm);
-        example = new Model<ActualPaymentExample>(newExample());
+        example = new Model<>(newExample());
 
         StatusDetailPanel<ActualPaymentExample> statusDetailPanel = new StatusDetailPanel<ActualPaymentExample>("statusDetailsPanel", example,
                 new ActualPaymentExampleConfigurator(), new ActualPaymentStatusDetailRenderer(), content) {
@@ -158,16 +158,16 @@ public final class ActualPaymentList extends TemplatePage {
         };
         dataProvider.setSort("", SortOrder.ASCENDING);
 
-        filterForm.add(new TextField<String>("ownNumFilter", new PropertyModel<String>(example, "ownNum")));
-        filterForm.add(new TextField<String>("firstNameFilter", new PropertyModel<String>(example, "firstName")));
-        filterForm.add(new TextField<String>("middleNameFilter", new PropertyModel<String>(example, "middleName")));
-        filterForm.add(new TextField<String>("lastNameFilter", new PropertyModel<String>(example, "lastName")));
-        filterForm.add(new TextField<String>("cityFilter", new PropertyModel<String>(example, "city")));
-        filterForm.add(new TextField<String>("streetFilter", new PropertyModel<String>(example, "street")));
-        filterForm.add(new TextField<String>("buildingFilter", new PropertyModel<String>(example, "building")));
-        filterForm.add(new TextField<String>("corpFilter", new PropertyModel<String>(example, "corp")));
-        filterForm.add(new TextField<String>("apartmentFilter", new PropertyModel<String>(example, "apartment")));
-        filterForm.add(new DropDownChoice<RequestStatus>("statusFilter", new PropertyModel<RequestStatus>(example, "status"),
+        filterForm.add(new TextField<>("ownNumFilter", new PropertyModel<String>(example, "ownNum")));
+        filterForm.add(new TextField<>("firstNameFilter", new PropertyModel<String>(example, "firstName")));
+        filterForm.add(new TextField<>("middleNameFilter", new PropertyModel<String>(example, "middleName")));
+        filterForm.add(new TextField<>("lastNameFilter", new PropertyModel<String>(example, "lastName")));
+        filterForm.add(new TextField<>("cityFilter", new PropertyModel<String>(example, "city")));
+        filterForm.add(new TextField<>("streetFilter", new PropertyModel<String>(example, "street")));
+        filterForm.add(new TextField<>("buildingFilter", new PropertyModel<String>(example, "building")));
+        filterForm.add(new TextField<>("corpFilter", new PropertyModel<String>(example, "corp")));
+        filterForm.add(new TextField<>("apartmentFilter", new PropertyModel<String>(example, "apartment")));
+        filterForm.add(new DropDownChoice<>("statusFilter", new PropertyModel<RequestStatus>(example, "status"),
                 Arrays.asList(RequestStatus.values()), new StatusRenderer()).setNullValid(true));
 
         AjaxLink<Void> reset = new AjaxLink<Void>("reset") {

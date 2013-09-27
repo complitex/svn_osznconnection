@@ -156,16 +156,18 @@ public abstract class AbstractSaveTaskBean {
                 Object[] rowData = new Object[fields.length];
 
                 for (int i = 0; i < fields.length; ++i) {
-                    final String fieldName = fields[i].getName();
-                    final String stringValue = request.getDbfFields().get(fieldName).toString();
+                    String fieldName = fields[i].getName();
+                    Object value = request.getDbfFields().get(fieldName);
 
-                    final RequestFileFieldDescription fieldDescription = description.getField(fieldName);
+                    final String stringValue = value != null ? value.toString() : null;
+
+                    RequestFileFieldDescription fieldDescription = description.getField(fieldName);
                     if (fieldDescription == null) {
                         log.error("Couldn't find field description. Request file type: {}, request id: '{}', field name: '{}'.",
                                 new Object[]{request.getRequestFileType().name(), request.getId(), fieldName});
                         throw new SaveException(new FieldNotFoundException(fieldName), requestFile);
                     }
-                    final Class<?> expectedType = fieldDescription.getFieldType();
+                    Class<?> expectedType = fieldDescription.getFieldType();
 
                     try {
                         rowData[i] = description.getTypeConverter().toObject(stringValue, expectedType);
