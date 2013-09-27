@@ -122,7 +122,6 @@ public class AddressService extends AbstractBean {
         }
 
         //Связывание типа улицы
-        //todo street type by name vs by street
         if(request.getStreetType() != null){
             List<StreetTypeCorrection> streetTypeCorrections = addressCorrectionBean.getStreetTypeCorrections(null,
                     request.getStreetType(), osznId, userOrganizationId);
@@ -135,6 +134,7 @@ public class AddressService extends AbstractBean {
                 return;
             } else {
                 List<Long> streetTypeIds = addressCorrectionBean.getStreetTypeObjectIds(request.getStreetType());
+
                 if (streetTypeIds.size() == 1) {
                     request.setInternalStreetTypeId(streetTypeIds.get(0));
                 } else if (streetTypeIds.size() > 1) {
@@ -331,6 +331,7 @@ public class AddressService extends AbstractBean {
 
         Locale locale = localeBean.getSystemLocale();
 
+        //город
         List<CityCorrection> cityCorrections = addressCorrectionBean.getCityCorrections(request.getInternalCityId(),
                 null, calcId, userOrganizationId);
 
@@ -352,7 +353,7 @@ public class AddressService extends AbstractBean {
             return;
         }
 
-        //поиск района
+        // район
         List<DistrictCorrection> districtCorrections = addressCorrectionBean.getDistrictCorrections(null, null,
                 calcId, userOrganizationId);
 
@@ -378,7 +379,31 @@ public class AddressService extends AbstractBean {
             return;
         }
 
-        //поиск улицы
+        //тип улицы
+        if (request.getInternalStreetTypeId() != null) {
+            List<StreetTypeCorrection> streetTypeCorrections = addressCorrectionBean.getStreetTypeCorrections(
+                    request.getInternalStreetTypeId(), null, calcId, userOrganizationId);
+
+            if (streetTypeCorrections.isEmpty()){
+                DomainObject streetType = streetTypeStrategy.findById(request.getInternalStreetTypeId(), true);
+
+                if (streetType != null){
+                    request.setOutgoingStreetType(streetTypeStrategy.getShortName(streetType, locale));
+                }else{
+                    request.setStatus(RequestStatus.STREET_TYPE_UNRESOLVED);
+
+                    return;
+                }
+            }else if (streetTypeCorrections.size() == 1){
+                request.setOutgoingStreetType(streetTypeCorrections.get(0).getCorrection());
+            }else {
+                request.setStatus(RequestStatus.MORE_ONE_REMOTE_STREET_CORRECTION); //todo add status
+
+                return;
+            }
+        }
+
+        //улица
         List<StreetCorrection> streetCorrections = addressCorrectionBean.getStreetCorrections(null,
                 request.getInternalStreetId(), null, null, null, calcId, userOrganizationId);
 
@@ -407,29 +432,7 @@ public class AddressService extends AbstractBean {
             }
         }
 
-        //поиск типа улицы
-        List<StreetTypeCorrection> streetTypeCorrections = addressCorrectionBean.getStreetTypeCorrections(
-                request.getInternalStreetTypeId(), null, calcId, userOrganizationId);
-
-        if (streetTypeCorrections.isEmpty()){
-            DomainObject streetType = streetTypeStrategy.findById(request.getInternalStreetTypeId(), true);
-
-            if (streetType != null){
-                request.setOutgoingStreetType(streetTypeStrategy.getShortName(streetType, locale));
-            }else{
-                request.setStatus(RequestStatus.STREET_TYPE_UNRESOLVED);
-
-                return;
-            }
-        }else if (streetTypeCorrections.size() == 1){
-            request.setOutgoingStreetType(streetTypeCorrections.get(0).getCorrection());
-        }else {
-            request.setStatus(RequestStatus.MORE_ONE_REMOTE_STREET_CORRECTION); //todo add status
-
-            return;
-        }
-
-        //поиск дома
+        //дом
         List<BuildingCorrection> buildingCorrections = addressCorrectionBean.getBuildingCorrections(null,
                 request.getInternalBuildingId(), null, null, calculationContext.getCalculationCenterId(), null);
         if (buildingCorrections.isEmpty()){
@@ -453,7 +456,7 @@ public class AddressService extends AbstractBean {
             return;
         }
 
-        //квартиры не ищем, а доставляем напрямую, обрезая пробелы.
+        //квартира
         request.setOutgoingApartment(removeWhiteSpaces(request.getApartment()));
 
         request.setStatus(RequestStatus.ACCOUNT_NUMBER_NOT_FOUND);

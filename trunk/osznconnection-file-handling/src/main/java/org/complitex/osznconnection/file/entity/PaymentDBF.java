@@ -66,5 +66,5 @@ public enum PaymentDBF {
     CODE3_8, //54	CODE3_8	    NUMERIC	    6	0	Код тарифа - водоотведение
     OPP_SERV, //55	OPP_SERV	CHARACTER	8		Резерв
     RESERV1, //60	RESERV1	    NUMERIC	    10	0	Резерв
-    RESERV2;        //61	RESERV2	    CHARACTER	10		Резерв
+    RESERV2        //61	RESERV2	    CHARACTER	10		Резерв
 }
