@@ -231,8 +231,8 @@ public class FacilityReferenceBookBean extends AbstractBean {
         }
 
         List<StreetCorrection> streetCorrections =
-                addressCorrectionBean.getStreetCorrections(null, null, cityCorrection.getId(), streetTypeCorrection.getId(),
-                        streetName, osznId, userOrganizationId);
+                addressCorrectionBean.getStreetCorrections(cityCorrection.getObjectId(), streetTypeCorrection.getObjectId(),
+                        null, null, streetName, osznId, userOrganizationId);
 
         if (streetCorrections.size() == 1) {
             StreetCorrection streetCorrection = streetCorrections.get(0);
@@ -250,12 +250,13 @@ public class FacilityReferenceBookBean extends AbstractBean {
                             printStringValue(streetName, locale)));
         } else {
             // искать по внутренней базе улиц
-            List<Long> streetIds =
-                    streetStrategy.getStreetObjectIds(cityId, streetTypeId, streetName);
+            List<Long> streetIds = streetStrategy.getStreetObjectIds(cityId, streetTypeId, streetName);
+
             if (streetIds.size() == 1) {
-                long streetId = streetIds.get(0);
-                StreetCorrection streetCorrection =  new StreetCorrection(streetCode.toUpperCase(), streetId,
-                        streetName.toUpperCase(),
+                long streetId = streetIds.get(0); //todo locate and update from address base
+
+                StreetCorrection streetCorrection =  new StreetCorrection(cityId, streetTypeId,
+                        streetCode.toUpperCase(), streetId, streetName.toUpperCase(),
                         osznId, userOrganizationId, OsznOrganizationStrategy.MODULE_ID);
 
                 addressCorrectionBean.save(streetCorrection);
