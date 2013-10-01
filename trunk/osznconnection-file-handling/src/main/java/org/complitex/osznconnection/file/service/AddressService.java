@@ -150,8 +150,8 @@ public class AddressService extends AbstractBean {
         }
 
         //Связывание улицы
-        List<StreetCorrection> streetCorrections = addressCorrectionBean.getStreetCorrections(request.getStreetCode(),
-                null, request.getInternalCityId(), request.getInternalStreetTypeId(), request.getStreet(),
+        List<StreetCorrection> streetCorrections = addressCorrectionBean.getStreetCorrections(request.getInternalCityId(),
+                request.getInternalStreetTypeId(), request.getStreetCode(), null,  request.getStreet(),
                 osznId, userOrganizationId);
 
         if (streetCorrections.size() >= 1) {
@@ -354,8 +354,8 @@ public class AddressService extends AbstractBean {
         }
 
         // район
-        List<DistrictCorrection> districtCorrections = addressCorrectionBean.getDistrictCorrections(null, null,
-                calcId, userOrganizationId);
+        List<DistrictCorrection> districtCorrections = addressCorrectionBean.getDistrictCorrections(request.getInternalCityId(),
+                null,null, null, calcId, userOrganizationId);
 
         if (districtCorrections.isEmpty()){
             DomainObject organization = organizationStrategy.findById(request.getOrganizationId(), true);
@@ -529,14 +529,15 @@ public class AddressService extends AbstractBean {
      * Алгоритм аналогичен для других составляющих адреса.
      *
      * @param request AbstractAccountRequest
-     * @param cityId Откорректированный город
-     * @param streetId Откорректированная улица
-     * @param streetTypeId Откорректированный тип улицы
-     * @param buildingId Откорректированный дом
+     * @param cityObjectId Откорректированный город
+     * @param streetObjectId Откорректированная улица
+     * @param streetTypeObjectId Откорректированный тип улицы
+     * @param buildingObjectId Откорректированный дом
      */
     @Transactional
-    public void correctLocalAddress(AbstractAccountRequest request, AddressEntity entity, Long cityId, Long streetTypeId,
-                                    Long streetId, Long buildingId, Long userOrganizationId)
+    public void correctLocalAddress(AbstractAccountRequest request, AddressEntity entity, Long cityObjectId,
+                                    Long streetTypeObjectId, Long streetObjectId, Long buildingObjectId,
+                                    Long userOrganizationId)
             throws DuplicateCorrectionException, MoreOneCorrectionException, NotFoundCorrectionException {
         Long osznId = request.getOrganizationId();
 
@@ -546,7 +547,7 @@ public class AddressService extends AbstractBean {
                         osznId, userOrganizationId);
 
                 if (cityCorrections.isEmpty()) {
-                    CityCorrection cityCorrection = new CityCorrection(null, cityId, request.getCity().toUpperCase(),
+                    CityCorrection cityCorrection = new CityCorrection(null, cityObjectId, request.getCity().toUpperCase(),
                             osznId, userOrganizationId, MODULE_ID);
                     addressCorrectionBean.save(cityCorrection);
                 } else {
@@ -561,7 +562,7 @@ public class AddressService extends AbstractBean {
 
                 if (streetTypeCorrections.isEmpty()) {
                     StreetTypeCorrection streetTypeCorrection = new StreetTypeCorrection(request.getStreetTypeCode(),
-                            streetTypeId,
+                            streetTypeObjectId,
                             request.getStreetType().toUpperCase(),
                             osznId, userOrganizationId, MODULE_ID);
                     addressCorrectionBean.save(streetTypeCorrection);
@@ -573,11 +574,11 @@ public class AddressService extends AbstractBean {
 
             case STREET:
                 List<StreetCorrection> streetCorrections = addressCorrectionBean.getStreetCorrections(
-                        null, null, cityId, streetTypeId, request.getStreet(), osznId, userOrganizationId);
+                        cityObjectId, streetTypeObjectId, null, null, request.getStreet(), osznId, userOrganizationId);
 
                 if (streetCorrections.isEmpty()) {
-                    StreetCorrection streetCorrection = new StreetCorrection(request.getStreetCode(), streetId,
-                            request.getStreet().toUpperCase(),
+                    StreetCorrection streetCorrection = new StreetCorrection(cityObjectId, streetTypeObjectId,
+                            request.getStreetCode(), streetObjectId, request.getStreet().toUpperCase(),
                             osznId, userOrganizationId, MODULE_ID);
 
                     addressCorrectionBean.save(streetCorrection);
@@ -589,12 +590,12 @@ public class AddressService extends AbstractBean {
 
             case BUILDING:
                 List<BuildingCorrection> buildingCorrections = addressCorrectionBean.getBuildingCorrections(
-                        streetId, null, request.getBuildingNumber(), request.getBuildingCorp(),
+                        streetObjectId, null, request.getBuildingNumber(), request.getBuildingCorp(),
                         osznId, userOrganizationId);
 
                 if (buildingCorrections.isEmpty()) {
-                    BuildingCorrection buildingCorrection = new BuildingCorrection(null,
-                            buildingId,
+                    BuildingCorrection buildingCorrection = new BuildingCorrection(streetObjectId, null,
+                            buildingObjectId,
                             request.getBuildingNumber().toUpperCase(),
                             request.getBuildingCorp() != null ? request.getBuildingCorp().toUpperCase() : null,
                             osznId,

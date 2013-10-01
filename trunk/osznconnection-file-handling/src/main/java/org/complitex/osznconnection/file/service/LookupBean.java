@@ -132,7 +132,7 @@ public class LookupBean extends AbstractBean {
 
         CalculationContext calculationContext = calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId);
 
-        List<DistrictCorrection> districtCorrections = addressCorrectionBean.getDistrictCorrections(null, null,
+        List<DistrictCorrection> districtCorrections = addressCorrectionBean.getDistrictCorrections(null, null, null, null,
                 calculationContext.getCalculationCenterId(), userOrganizationId);
 
         if (districtCorrections.isEmpty()){
@@ -140,8 +140,6 @@ public class LookupBean extends AbstractBean {
 
             Long districtId = organization.getAttribute(IOrganizationStrategy.DISTRICT).getValueId();
             DomainObject district = districtStrategy.findById(districtId, true);
-
-
 
             if (district != null){
                 return districtStrategy.displayDomainObject(district, localeBean.getSystemLocale());
