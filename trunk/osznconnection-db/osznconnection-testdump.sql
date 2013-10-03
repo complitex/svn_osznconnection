@@ -312,26 +312,26 @@ values
 -- Address corrections
 
 insert into city_correction(id, organization_id, correction, object_id, module_id)
-  values (1,2,UPPER('Новосибирск'),1,0);
+  values (1,2,UPPER('Новосибирск Соответствие'),1,0);
 insert into street_correction(id, city_object_id, street_type_object_id, organization_id, correction, object_id, module_id)
-  values (1,1, 10012, 2,UPPER('Терешковой'),1,0);
+  values (1,1, 10012, 2,UPPER('Терешковой Соответствие'),1,0);
 insert into building_correction(street_object_id, organization_id, correction, correction_corp, object_id, module_id)
   values (2, 1, UPPER('10'),UPPER('1'),3,0);
 
 insert into city_correction(id, organization_id, correction, object_id, module_id)
-  values (2,2,UPPER('Харьков'),3,0);
+  values (2,2,UPPER('Харьков Соответствие'),3,0);
 insert into street_correction(id, city_object_id, street_type_object_id, organization_id, correction, object_id, module_id)
-  values (2,1, 10012, 2,UPPER('Косиора'),4,0);
+  values (2,3, 10012, 2,UPPER('Косиора Соответствие'),4,0);
 insert into building_correction(street_object_id, organization_id, correction, correction_corp, object_id, module_id)
   values (2, 4, UPPER('154А'),UPPER(''),6,0);
 
 insert into street_correction(id, city_object_id, street_type_object_id, organization_id, correction, object_id, module_id)
-    values (3, 1, 10012, 2,UPPER('ФРАНТИШЕКА КРАЛА'),5,0);
+    values (3, 3, 10012, 2,UPPER('ФРАНТИШЕКА КРАЛА Соответствие'),5,0);
 insert into building_correction(street_object_id, organization_id, correction, correction_corp, object_id, module_id)
   values (5, 2,UPPER('25А'),UPPER(''),7,0);
 
 insert into street_correction(id, city_object_id, street_type_object_id, organization_id, correction, object_id, module_id)
-    values (4,1, 10012, 2,UPPER('ФРАНТИШЕКА КРАЛА'),5,0);
+    values (4,3, 10012, 2,UPPER('ФРАНТИШЕКА КРАЛА Соответствие'),5,0);
 insert into building_correction(street_object_id, organization_id, correction, correction_corp, object_id, module_id)
   values (5, 2, UPPER('23'),UPPER(''),8,0);
 
