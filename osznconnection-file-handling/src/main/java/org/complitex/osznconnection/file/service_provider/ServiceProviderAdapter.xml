@@ -11,7 +11,7 @@
 
     <select id="acquireAccountDetailsByAddress" statementType="CALLABLE" parameterType="map">
         <![CDATA[
-         {#{resultCode, mode=OUT, javaType=int, jdbcType=NUMERIC} = call COMP.Z$RUNTIME_SZ_UTL.GETACCATTRS(
+         #{resultCode, mode=OUT, javaType=int, jdbcType=NUMERIC} = call COMP.Z$RUNTIME_SZ_UTL.GETACCATTRS(
             #{pDistrName, mode=IN, javaType=string, jdbcType=VARCHAR},
             #{pStSortName, mode=IN, javaType=string, jdbcType=VARCHAR},
             #{pStreetName, mode=IN, javaType=string, jdbcType=VARCHAR},
@@ -20,7 +20,7 @@
             #{pFlatNum, mode=IN, javaType=string, jdbcType=VARCHAR},
             #{date, mode=IN, javaType=date, jdbcType=DATE},
             #{details, mode=OUT, jdbcType=CURSOR, resultMap=accountDetailMap})
-        }
+
         ]]>
     </select>
 
