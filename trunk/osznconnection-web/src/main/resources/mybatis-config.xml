@@ -2,6 +2,10 @@
 
 <!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
+    <settings>
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+    </settings>
+
     <typeAliases>
         <typeAlias type="org.complitex.dictionary.entity.Locale" alias="Locale"/>
         <typeAlias type="org.complitex.dictionary.entity.StringCulture" alias="StringCulture"/>
@@ -27,6 +31,13 @@
             <transactionManager type="MANAGED"/>
             <dataSource type="JNDI">
                 <property name="data_source" value="jdbc/osznconnectionResource"/>
+            </dataSource>
+        </environment>
+
+        <environment id="remote">
+            <transactionManager type="MANAGED"/>
+            <dataSource type="JNDI">
+                <property name="data_source" value="${remoteDataSource}"/>
             </dataSource>
         </environment>
     </environments>
@@ -82,5 +93,9 @@
         <mapper resource="org/complitex/osznconnection/file/service/warning/RequestWarningBean.xml"/>
         
         <mapper resource="org/complitex/osznconnection/file/service/file_description/RequestFileDescriptionBean.xml"/>
+
+        <!--remote mappers-->
+        <mapper resource="org/complitex/osznconnection/file/service_provider/ServiceProviderAdapter.xml"/>
+        <mapper resource="org/complitex/osznconnection/file/service_provider/ServiceProviderSync.xml"/>
     </mappers>
 </configuration>
