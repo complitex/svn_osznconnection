@@ -1,5 +1,6 @@
 package org.complitex.osznconnection.file.service_provider;
 
+import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.osznconnection.file.entity.CalculationContext;
 import org.complitex.osznconnection.file.service_provider.entity.BuildingSync;
 import org.complitex.osznconnection.file.service_provider.entity.DistrictSync;
@@ -8,21 +9,20 @@ import org.complitex.osznconnection.file.service_provider.entity.StreetTypeSync;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 04.10.13 15:43
  */
 @Stateless
-public class ServiceProviderSync {
+public class ServiceProviderSync extends AbstractBean{
     private final static String NS = ServiceProviderSync.class.getName();
     private final static Logger log = LoggerFactory.getLogger(ServiceProviderSync.class);
-
-    @EJB
-    private ServiceProviderSqlSessionFactoryBean sqlSessionFactoryBean;
 
     /**
      * function z$runtime_sz_utl.getDistricts(
@@ -46,8 +46,7 @@ public class ServiceProviderSync {
         param.put("date", date);
 
         try {
-            sqlSessionFactoryBean.getSqlSessionManager(calculationContext.getDataSource())
-                    .selectOne(NS + ".selectDistrictSyncs", param);
+            sqlSession(calculationContext.getDataSource()).selectOne(NS + ".selectDistrictSyncs", param);
         } catch (Exception e) {
             log.error("Ошибка удаленной функции получения списка районов", e);
         }
@@ -70,8 +69,7 @@ public class ServiceProviderSync {
         Map<String, Object> param = new HashMap<>();
 
         try {
-            sqlSessionFactoryBean.getSqlSessionManager(calculationContext.getDataSource())
-                    .selectOne(NS + ".selectStreetTypeSyncs", param);
+            sqlSession(calculationContext.getDataSource()).selectOne(NS + ".selectStreetTypeSyncs", param);
         } catch (Exception e) {
             log.error("Ошибка удаленной функции получения списка типов улиц", e);
         }
@@ -102,8 +100,7 @@ public class ServiceProviderSync {
         param.put("date", date);
 
         try {
-            sqlSessionFactoryBean.getSqlSessionManager(calculationContext.getDataSource())
-                    .selectOne(NS + ".selectStreetSyncs", param);
+            sqlSession(calculationContext.getDataSource()).selectOne(NS + ".selectStreetSyncs", param);
         } catch (Exception e) {
             log.error("Ошибка удаленной функции получения списка улиц", e);
         }
@@ -136,10 +133,8 @@ public class ServiceProviderSync {
         param.put("streetTypeName", streetTypeName);
         param.put("date", date);
 
-
         try {
-            sqlSessionFactoryBean.getSqlSessionManager(calculationContext.getDataSource())
-                    .selectOne(NS + ".selectBuildingSyncs", param);
+            sqlSession(calculationContext.getDataSource()).selectOne(NS + ".selectBuildingSyncs", param);
         } catch (Exception e) {
             log.error("Ошибка удаленной функции получения списка домов", e);
         }

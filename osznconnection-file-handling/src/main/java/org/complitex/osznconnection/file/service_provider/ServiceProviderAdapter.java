@@ -2,10 +2,10 @@ package org.complitex.osznconnection.file.service_provider;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
-import org.apache.ibatis.session.SqlSession;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.entity.Log.EVENT;
 import org.complitex.dictionary.oracle.OracleErrors;
+import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.dictionary.service.LocaleBean;
 import org.complitex.dictionary.service.LogBean;
 import org.complitex.dictionary.util.ResourceUtil;
@@ -44,13 +44,12 @@ import static org.complitex.osznconnection.file.service_provider.util.ServicePro
  */
 @Stateless
 @TransactionManagement(TransactionManagementType.BEAN)
-public class ServiceProviderAdapter {
+public class ServiceProviderAdapter extends AbstractBean {
 
     private static final Logger log = LoggerFactory.getLogger(ServiceProviderAdapter.class);
     private static final String RESOURCE_BUNDLE = ServiceProviderAdapter.class.getName();
     private static final String MAPPING_NAMESPACE = ServiceProviderAdapter.class.getName();
-    @EJB
-    private ServiceProviderSqlSessionFactoryBean sqlSessionFactoryBean;
+
     @EJB
     private OwnershipCorrectionBean ownershipCorrectionBean;
     @EJB
@@ -1419,9 +1418,5 @@ public class ServiceProviderAdapter {
             actualPayment.setField(ActualPaymentDBF.N8, data.getDrainageTarif());
         }
         actualPayment.setStatus(RequestStatus.PROCESSED);
-    }
-
-    protected SqlSession sqlSession(String dataSource) {
-        return sqlSessionFactoryBean.getSqlSessionManager(dataSource);
     }
 }

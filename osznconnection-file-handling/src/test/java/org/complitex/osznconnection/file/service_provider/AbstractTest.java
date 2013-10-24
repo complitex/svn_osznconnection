@@ -11,25 +11,15 @@ import org.apache.ibatis.session.SqlSession;
  * @author Artem
  */
 public abstract class AbstractTest {
-
-    private ServiceProviderSqlSessionFactoryBean sqlSessionFactoryBean;
-
     protected class ServiceProviderTestAdapter extends ServiceProviderAdapter {
 
         @Override
         protected SqlSession sqlSession(String dataSource) {
-            return sqlSessionFactoryBean.getSqlSessionManager(dataSource).openSession(false);
+            return null;
         }
     }
 
     protected AbstractTest() {
-        sqlSessionFactoryBean = new ServiceProviderSqlSessionFactoryBean() {
-
-            @Override
-            protected String getConfigurationFileName() {
-                return "mybatis-remote-config-test.xml";
-            }
-        };
     }
 
     protected ServiceProviderAdapter newAdapter() {
