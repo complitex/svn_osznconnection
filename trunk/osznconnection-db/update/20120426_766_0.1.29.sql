@@ -4,7 +4,7 @@
 CREATE TABLE `temp_oszns_0_1_29` (
    `oszn_id` BIGINT(20) NOT NULL,
     PRIMARY KEY(`oszn_id`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Fill temp oszns table.
 INSERT INTO `temp_oszns_0_1_29` (`oszn_id`) 

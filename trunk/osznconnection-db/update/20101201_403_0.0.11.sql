@@ -120,7 +120,7 @@ CREATE TABLE `locales` (
   `system` TINYINT(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_key_locale` (`locale`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 INSERT INTO `locales`(`id`, `locale`, `system`) VALUES (1, 'ru', 1);
 INSERT INTO `locales`(`id`, `locale`, `system`) VALUES (2, 'uk', 0);

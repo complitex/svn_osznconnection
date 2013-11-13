@@ -129,7 +129,7 @@ BEGIN
 	  KEY `key_permission_id` (`permission_id`),
 	  CONSTRAINT `fk_service_provider_type__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
 	  CONSTRAINT `fk_service_provider_type__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
-	) ENGINE=INNODB DEFAULT  CHARSET=utf8 COMMENT 'Типы поставщиков услуг';
+	) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Типы поставщиков услуг';
 
 	DROP TABLE IF EXISTS `service_provider_type_attribute`;
 
@@ -157,7 +157,7 @@ BEGIN
 	    REFERENCES `entity_attribute_type` (`id`),
 	  CONSTRAINT `fk_service_provider_type_attribute__entity_attribute_value_type` FOREIGN KEY (`value_type_id`)
 	    REFERENCES `entity_attribute_value_type` (`id`)
-	) ENGINE=INNODB DEFAULT  CHARSET=utf8 COMMENT 'Атрибуты объекта типа поставщика услуг';
+	) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты объекта типа поставщика услуг';
 
 	DROP TABLE IF EXISTS `service_provider_type_string_culture`;
 
@@ -171,7 +171,7 @@ BEGIN
 	  KEY `key_locale` (`locale_id`),
 	  KEY `key_value` (`value`),
 	  CONSTRAINT `fk_service_provider_type_string_culture__locales` FOREIGN KEY (`locale_id`) REFERENCES `locales` (`id`)
-	) ENGINE=INNODB DEFAULT  CHARSET=utf8 COMMENT 'Локализация атрибутов типа поставщика услуг';
+	) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Локализация атрибутов типа поставщика услуг';
 
 	INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (1600, 1, 'Тип услуги'), (1600, 2, 'Тип услуги');
 	INSERT INTO `entity`(`id`, `entity_table`, `entity_name_id`, `strategy_factory`) VALUES (1600, 'service_provider_type', 1600, '');

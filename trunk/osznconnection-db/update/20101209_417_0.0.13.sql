@@ -8,7 +8,7 @@ CREATE TABLE `request_warning` (
     `request_file_type` VARCHAR(50) NOT NULL,
     `status` BIGINT(20) NOT NULL,
     PRIMARY KEY (`id`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 DROP TABLE IF EXISTS `request_warning_parameter`;
 
@@ -21,7 +21,7 @@ CREATE TABLE `request_warning_parameter` (
     PRIMARY KEY (`id`),
     UNIQUE KEY `uk_request_warning_parameter` (`request_warning_id`, `order`),
     CONSTRAINT `fk_request_warning_parameter__request_warning` FOREIGN KEY (`request_warning_id`) REFERENCES `request_warning` (`id`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 INSERT INTO `status_description`(`code`, `name`) VALUES (300, 'Тариф не найден'), (301, 'Объект формы собственности не найден в таблице коррекций для ц.н.'),
 (302, 'Код формы собственности не найден в таблице коррекций для ОСЗН'), (303, 'Не числовой код формы собственности в коррекции для ОСЗН'),

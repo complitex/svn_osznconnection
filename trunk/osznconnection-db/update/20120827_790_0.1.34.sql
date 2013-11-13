@@ -81,7 +81,7 @@ CREATE TABLE `dwelling_characteristics` (
     CONSTRAINT `fk_dwelling_characteristics__street` FOREIGN KEY (`internal_street_id`) REFERENCES `street` (`object_id`),
     CONSTRAINT `fk_dwelling_characteristics__street_type` FOREIGN KEY (`internal_street_type_id`) REFERENCES `street_type` (`object_id`),
     CONSTRAINT `fk_dwelling_characteristics__building` FOREIGN KEY (`internal_building_id`) REFERENCES `building` (`object_id`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8 COMMENT 'Файлы-запросы характеристик жилья';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Файлы-запросы характеристик жилья';
 
 -- Load dwelling characteristics directory. It is OSZN only attribute. --
 INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (922, 1, UPPER('Директория входящих файлов характеристик жилья')), (922, 2, UPPER('Директория входящих файлов характеристик жилья'));
@@ -122,7 +122,7 @@ CREATE TABLE `facility_street_type_reference` (
     `KLKUL_NAME` VARCHAR(100) COMMENT 'Наименование типа улицы',
 
     PRIMARY KEY (`id`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8 COMMENT 'Файлы-справочники типов улиц';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Файлы-справочники типов улиц';
 
 -- File description
 INSERT INTO `request_file_description`(`request_file_type`,`date_pattern`) VALUES ('FACILITY_STREET_TYPE','dd.MM.yyyy');
@@ -148,7 +148,7 @@ CREATE TABLE `facility_street_reference` (
     `KL_CODEKUL` VARCHAR(100) COMMENT 'Код типа улицы',
 
     PRIMARY KEY (`id`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8 COMMENT 'Файлы-справочники улиц';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Файлы-справочники улиц';
 
 -- File description
 INSERT INTO `request_file_description`(`request_file_type`,`date_pattern`) VALUES ('FACILITY_STREET','dd.MM.yyyy');
@@ -235,7 +235,7 @@ CREATE TABLE `facility_service_type` (
     CONSTRAINT `fk_facility_service_type__street` FOREIGN KEY (`internal_street_id`) REFERENCES `street` (`object_id`),
     CONSTRAINT `fk_facility_service_type__street_type` FOREIGN KEY (`internal_street_type_id`) REFERENCES `street_type` (`object_id`),
     CONSTRAINT `fk_facility_service_type__building` FOREIGN KEY (`internal_building_id`) REFERENCES `building` (`object_id`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8 COMMENT 'Файлы-запросы видов услуг';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Файлы-запросы видов услуг';
 
 -- Load facility service type directory. It is OSZN only attribute. --
 INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (924, 1, UPPER('Директория входящих файлов-запросов видов услуг')), (924, 2, UPPER('Директория входящих файлов-запросов видов услуг'));
@@ -295,7 +295,7 @@ CREATE TABLE `facility_tarif_reference` (
     `TAR_PRIV` VARCHAR(100) COMMENT '',
  
     PRIMARY KEY (`id`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8 COMMENT 'Файлы-справочники тарифов для запросов по льготам';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Файлы-справочники тарифов для запросов по льготам';
 
 -- File description
 INSERT INTO `request_file_description`(`request_file_type`,`date_pattern`) VALUES ('FACILITY_TARIF','dd.MM.yyyy');
@@ -350,7 +350,7 @@ CREATE TABLE `facility_form2` (
     KEY `key_account_number` (`account_number`),
     KEY `key_status` (`status`),
     CONSTRAINT `fk_facility_form2__request_file` FOREIGN KEY (`request_file_id`) REFERENCES `request_file` (`id`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8 COMMENT 'Файлы форма-2 льгота';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Файлы форма-2 льгота';
 
 -- Save facility form2 directory. It is OSZN only attribute. --
 INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (929, 1, UPPER('Директория исходящих файлов форма-2 льгота')), (929, 2, UPPER('Директория исходящих файлов форма-2 льгота'));

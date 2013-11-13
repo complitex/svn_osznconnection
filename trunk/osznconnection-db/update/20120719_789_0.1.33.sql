@@ -39,7 +39,7 @@ INSERT INTO `entity_attribute_value_type`(`id`, `attribute_type_id`, `attribute_
 CREATE TABLE `temp_user_organizations_0_1_33` (
 	`user_organization_id` BIGINT(20) NOT NULL,
 	PRIMARY KEY(`user_organization_id`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Fill temp user organizations table.
 INSERT INTO `temp_user_organizations_0_1_33` (`user_organization_id`) 

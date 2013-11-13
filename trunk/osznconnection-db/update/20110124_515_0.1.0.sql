@@ -85,7 +85,7 @@ CREATE TABLE `actual_payment` (
     CONSTRAINT `fk_actual_payment__street` FOREIGN KEY (`internal_street_id`) REFERENCES `street` (`object_id`),
     CONSTRAINT `fk_actual_payment__street_type` FOREIGN KEY (`internal_street_type_id`) REFERENCES `street_type` (`object_id`),
     CONSTRAINT `fk_actual_payment__building` FOREIGN KEY (`internal_building_id`) REFERENCES `building` (`object_id`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 ALTER TABLE `person_account` DROP KEY `person_account_unique_key`, ADD COLUMN `street_type` VARCHAR(20) NULL AFTER `city`,
 ADD COLUMN `street_code` VARCHAR(10) NULL AFTER `street`, MODIFY COLUMN `own_num_sr` VARCHAR(15) NULL;

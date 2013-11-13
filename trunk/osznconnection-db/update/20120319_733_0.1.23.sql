@@ -45,7 +45,7 @@ CREATE TABLE `service_association` (
   KEY `key_calculation_center_id` (`calculation_center_id`),
   CONSTRAINT `fk_service_association__service_provider_type` FOREIGN KEY (`service_provider_type_id`) REFERENCES `service_provider_type` (`object_id`),
   CONSTRAINT `fk_service_association__calculation_center` FOREIGN KEY (`calculation_center_id`) REFERENCES `organization` (`object_id`)
-) ENGINE=INNODB DEFAULT  CHARSET=utf8 COMMENT 'Пары ассоциаций: тип услуги - модуль начислений';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Пары ассоциаций: тип услуги - модуль начислений';
 
 -- Reference to `service_association` helper table. It is user organization only attribute. --
 INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (915, 1, UPPER('Ассоцияции тип услуги - модуль начислений')), (915, 2, UPPER('Ассоцияции тип услуги - модуль начислений'));

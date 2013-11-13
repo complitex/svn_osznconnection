@@ -6,7 +6,7 @@ CREATE TABLE `street_dublicate`(
     `id1` BIGINT(20) NOT NULL,
     `id2` BIGINT(20) NOT NULL,
     PRIMARY KEY (`id1`, `id2`)
-)ENGINE=INNODB DEFAULT CHARSET=utf8;
+)ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 INSERT INTO `street_dublicate`(`id1`,`id2`) SELECT s1.`object_id`, s2.`object_id` 
 	FROM `street` s1
@@ -62,7 +62,7 @@ CREATE TABLE `building_address_dublicate`(
     `id1` BIGINT(20) NOT NULL,
     `id2` BIGINT(20) NOT NULL,
     PRIMARY KEY (`id1`, `id2`)
-)ENGINE=INNODB DEFAULT CHARSET=utf8;
+)ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 INSERT INTO `building_address_dublicate`(`id1`,`id2`) SELECT ad1.`object_id`, ad2.`object_id`
 	FROM `building_address` ad1

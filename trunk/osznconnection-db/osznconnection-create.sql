@@ -1,4 +1,4 @@
-/*!40101 SET NAMES utf8 */;
+/*!40101 SET NAMES 'utf8' */;
 
 /*!40101 SET SQL_MODE=''*/;
 
@@ -34,7 +34,7 @@ CREATE TABLE `ownership` (
   KEY `key_permission_id` (`permission_id`),
   CONSTRAINT `fk_ownership__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
   CONSTRAINT `fk_ownership__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
-) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Форма собственности';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Форма собственности';
 
 DROP TABLE IF EXISTS `ownership_attribute`;
 
@@ -62,7 +62,7 @@ CREATE TABLE `ownership_attribute` (
     REFERENCES `entity_attribute_type` (`id`),
   CONSTRAINT `fk_ownership_attribute__entity_attribute_value_type` FOREIGN KEY (`value_type_id`)
     REFERENCES `entity_attribute_value_type` (`id`)
-) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Атрибуты объекта формы собственности';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты объекта формы собственности';
 
 DROP TABLE IF EXISTS `ownership_string_culture`;
 
@@ -76,7 +76,7 @@ CREATE TABLE `ownership_string_culture` (
   KEY `key_locale` (`locale_id`),
   KEY `key_value` (`value`),
   CONSTRAINT `fk_ownership_string_culture__locales` FOREIGN KEY (`locale_id`) REFERENCES `locales` (`id`)
-) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Локализированное значение атрибута формы собственности';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Локализированное значение атрибута формы собственности';
 
 -- ------------------------------
 -- Privileges
@@ -105,7 +105,7 @@ CREATE TABLE `privilege` (
   KEY `key_permission_id` (`permission_id`),
   CONSTRAINT `fk_privilege__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
   CONSTRAINT `fk_privilege__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
-) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Привилегия';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Привилегия';
 
 DROP TABLE IF EXISTS `privilege_attribute`;
 
@@ -133,7 +133,7 @@ CREATE TABLE `privilege_attribute` (
     REFERENCES `entity_attribute_type` (`id`),
   CONSTRAINT `fk_privilege_attribute__entity_attribute_value_type` FOREIGN KEY (`value_type_id`)
     REFERENCES `entity_attribute_value_type` (`id`)
-) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Атрибуты объекта привилегии';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты объекта привилегии';
 
 DROP TABLE IF EXISTS `privilege_string_culture`;
 
@@ -147,7 +147,7 @@ CREATE TABLE `privilege_string_culture` (
   KEY `key_locale` (`locale_id`),
   KEY `key_value` (`value`),
   CONSTRAINT `fk_privilege_string_culture__locales` FOREIGN KEY (`locale_id`) REFERENCES `locales` (`id`)
-) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Локализированное значение атрибута привилегий';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Локализированное значение атрибута привилегий';
 
 -- ------------------------------
 -- Request File Group
@@ -159,7 +159,7 @@ CREATE TABLE `request_file_group` (
     `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Дата создания',
     `status` INTEGER COMMENT 'Код статуса. См. таблицу status_description и класс RequestFileStatus',
     PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Группа файлов запросов (начисления + льготы)';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Группа файлов запросов (начисления + льготы)';
 
 -- ------------------------------
 -- Request File
@@ -196,7 +196,7 @@ CREATE TABLE `request_file` (
     CONSTRAINT `fk_request_file__user_organization` FOREIGN KEY (`user_organization_id`) REFERENCES `organization` (`object_id`),
     CONSTRAINT `fk_request_file__request_file_group` FOREIGN KEY (`group_id`) REFERENCES `request_file_group` (`id`),
     CONSTRAINT `fk_request_file__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`object_id`)
-) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Файл запросов';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Файл запросов';
 
 -- ------------------------------
 -- Payment
@@ -304,7 +304,7 @@ CREATE TABLE `payment` (
     CONSTRAINT `fk_payment__street_type` FOREIGN KEY (`internal_street_type_id`) REFERENCES `street_type` (`object_id`),
     CONSTRAINT `fk_payment__building` FOREIGN KEY (`internal_building_id`) REFERENCES `building` (`object_id`),
     CONSTRAINT `fk_payment__apartment` FOREIGN KEY (`internal_apartment_id`) REFERENCES `apartment` (`object_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Начисления';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Начисления';
 
 -- ------------------------------
 -- Benefit
@@ -347,7 +347,7 @@ CREATE TABLE `benefit` (
     KEY `key_SUR_NAM` (`SUR_NAM`),   
     KEY `key_OWN_NUM_SR` (`OWN_NUM_SR`),
     CONSTRAINT `fk_benefit__request_file` FOREIGN KEY (`request_file_id`) REFERENCES `request_file` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Льготы';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Льготы';
 
 -- ------------------------------
 -- Subsudy Tarif
@@ -379,7 +379,7 @@ CREATE TABLE `subsidy_tarif` (
     `T11_NRM_MA` VARCHAR(100) COMMENT '',
     `T11_K_NADL` VARCHAR(100) COMMENT '',
      PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Тарифы';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Тарифы';
 
 -- ------------------------------
 -- Actual payment
@@ -466,7 +466,7 @@ CREATE TABLE `actual_payment` (
     CONSTRAINT `fk_actual_payment__street` FOREIGN KEY (`internal_street_id`) REFERENCES `street` (`object_id`),
     CONSTRAINT `fk_actual_payment__street_type` FOREIGN KEY (`internal_street_type_id`) REFERENCES `street_type` (`object_id`),
     CONSTRAINT `fk_actual_payment__building` FOREIGN KEY (`internal_building_id`) REFERENCES `building` (`object_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Фактические начисления';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Фактические начисления';
 
 -- ------------------------------
 -- Subsidy
@@ -573,7 +573,7 @@ CREATE TABLE `subsidy` (
     CONSTRAINT `fk_subsidy__street` FOREIGN KEY (`internal_street_id`) REFERENCES `street` (`object_id`),
     CONSTRAINT `fk_subsidy__street_type` FOREIGN KEY (`internal_street_type_id`) REFERENCES `street_type` (`object_id`),
     CONSTRAINT `fk_subsidy__building` FOREIGN KEY (`internal_building_id`) REFERENCES `building` (`object_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Файлы субсидий';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Файлы субсидий';
 
 -- ------------------------------
 -- Dwelling characteristic
@@ -643,7 +643,7 @@ CREATE TABLE `dwelling_characteristics` (
     CONSTRAINT `fk_dwelling_characteristics__street` FOREIGN KEY (`internal_street_id`) REFERENCES `street` (`object_id`),
     CONSTRAINT `fk_dwelling_characteristics__street_type` FOREIGN KEY (`internal_street_type_id`) REFERENCES `street_type` (`object_id`),
     CONSTRAINT `fk_dwelling_characteristics__building` FOREIGN KEY (`internal_building_id`) REFERENCES `building` (`object_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Файлы-запросы характеристик жилья';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Файлы-запросы характеристик жилья';
 
 -- ------------------------------
 -- Facility Service Type
@@ -719,7 +719,7 @@ CREATE TABLE `facility_service_type` (
     CONSTRAINT `fk_facility_service_type__street` FOREIGN KEY (`internal_street_id`) REFERENCES `street` (`object_id`),
     CONSTRAINT `fk_facility_service_type__street_type` FOREIGN KEY (`internal_street_type_id`) REFERENCES `street_type` (`object_id`),
     CONSTRAINT `fk_facility_service_type__building` FOREIGN KEY (`internal_building_id`) REFERENCES `building` (`object_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Файлы-запросы видов услуг';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Файлы-запросы видов услуг';
 
 -- ------------------------------
 -- Facility Form-2
@@ -760,7 +760,7 @@ CREATE TABLE `facility_form2` (
     KEY `key_account_number` (`account_number`),
     KEY `key_status` (`status`),
     CONSTRAINT `fk_facility_form2__request_file` FOREIGN KEY (`request_file_id`) REFERENCES `request_file` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Файлы форма-2 льгота';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Файлы форма-2 льгота';
 
 -- ------------------------------
 -- Facility street type reference
@@ -777,7 +777,7 @@ CREATE TABLE `facility_street_type_reference` (
     `KLKUL_NAME` VARCHAR(100) COMMENT 'Наименование типа улицы',
 
     PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Файлы-справочники типов улиц';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Файлы-справочники типов улиц';
 
 -- ------------------------------
 -- Facility street reference
@@ -796,7 +796,7 @@ CREATE TABLE `facility_street_reference` (
     `KL_CODEKUL` VARCHAR(100) COMMENT 'Код типа улицы',
 
     PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Файлы-справочники улиц';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Файлы-справочники улиц';
 
 -- ------------------------------
 -- Facility tarif reference
@@ -829,7 +829,7 @@ CREATE TABLE `facility_tarif_reference` (
     `TAR_PRIV` VARCHAR(100) COMMENT '',
  
     PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Файлы-справочники тарифов для запросов по льготам';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Файлы-справочники тарифов для запросов по льготам';
 
 -- ------------------------------
 -- Person account
@@ -861,7 +861,7 @@ CREATE TABLE `person_account` (
     CONSTRAINT `fk_person_account__user_organization` FOREIGN KEY (`user_organization_id`) REFERENCES `organization` (`object_id`),
     CONSTRAINT `fk_person_account__osnz_organization` FOREIGN KEY (`oszn_id`) REFERENCES `organization` (`object_id`),
     CONSTRAINT `fk_person_account__calc_center_organization` FOREIGN KEY (`calc_center_id`) REFERENCES `organization` (`object_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT 'Счет абонента';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Счет абонента';
 
 DROP TABLE IF EXISTS `ownership_correction`;
 
@@ -883,7 +883,7 @@ CREATE TABLE `ownership_correction` (
     CONSTRAINT `fk_ownership_correction__user_organization` FOREIGN KEY (`user_organization_id`) REFERENCES `organization` (`object_id`),
     CONSTRAINT `fk_ownership_correction` FOREIGN KEY (`object_id`) REFERENCES `ownership` (`object_id`),
     CONSTRAINT `fk_ownership_correction__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`object_id`)
-) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Коррекция формы собственности';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Коррекция формы собственности';
 
 DROP TABLE IF EXISTS `privilege_correction`;
 
@@ -910,7 +910,7 @@ CREATE TABLE `privilege_correction` (
     CONSTRAINT `fk_privilege_correction__user_organization` FOREIGN KEY (`user_organization_id`) REFERENCES `organization` (`object_id`),
     CONSTRAINT `fk_privilege_correction` FOREIGN KEY (`object_id`) REFERENCES `privilege` (`object_id`),
     CONSTRAINT `fk_privilege_correction__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`object_id`)
-) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Коррекция льгот';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Коррекция льгот';
 
 -- ------------------------------
 -- Status descriptions. Read only, use only for reports.
@@ -924,7 +924,7 @@ CREATE TABLE `status_description` (
     `name` VARCHAR(500) NOT NULL COMMENT 'Описание статуса',
     PRIMARY KEY (`id`),
     UNIQUE KEY `uk_status_description` (`code`)
-) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Описание статутов';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Описание статутов';
 
 -- ------------------------------
 -- Type descriptions. Read only, use only for reports.
@@ -938,7 +938,7 @@ CREATE TABLE `type_description` (
   `name` VARCHAR(500) NOT NULL COMMENT 'Описание типа',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_type_description` (`code`)
-) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Описание типов';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Описание типов';
 
 -- ------------------------------
 -- Request warning
@@ -954,7 +954,7 @@ CREATE TABLE `request_warning` (
     PRIMARY KEY (`id`),
     KEY `key_request_warning__request` (`request_id`),
     KEY `key_request_warning__request_file` (`request_file_type`)
-) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Расширенные сообщения предупреждений обработки файлов запросов';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Расширенные сообщения предупреждений обработки файлов запросов';
 
 DROP TABLE IF EXISTS `request_warning_parameter`;
 
@@ -967,7 +967,7 @@ CREATE TABLE `request_warning_parameter` (
     PRIMARY KEY (`id`),
     UNIQUE KEY `uk_request_warning_parameter` (`request_warning_id`, `order`),
     CONSTRAINT `fk_request_warning_parameter__request_warning` FOREIGN KEY (`request_warning_id`) REFERENCES `request_warning` (`id`)
-) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Параметры предупреждений';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Параметры предупреждений';
 
 -- ------------------------------
 -- Service provider types
@@ -996,7 +996,7 @@ CREATE TABLE `service_provider_type` (
   KEY `key_permission_id` (`permission_id`),
   CONSTRAINT `fk_service_provider_type__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
   CONSTRAINT `fk_service_provider_type__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
-) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Типы поставщиков услуг';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Типы поставщиков услуг';
 
 DROP TABLE IF EXISTS `service_provider_type_attribute`;
 
@@ -1024,7 +1024,7 @@ CREATE TABLE `service_provider_type_attribute` (
     REFERENCES `entity_attribute_type` (`id`),
   CONSTRAINT `fk_service_provider_type_attribute__entity_attribute_value_type` FOREIGN KEY (`value_type_id`)
     REFERENCES `entity_attribute_value_type` (`id`)
-) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Атрибуты объекта типа поставщика услуг';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Атрибуты объекта типа поставщика услуг';
 
 DROP TABLE IF EXISTS `service_provider_type_string_culture`;
 
@@ -1038,7 +1038,7 @@ CREATE TABLE `service_provider_type_string_culture` (
   KEY `key_locale` (`locale_id`),
   KEY `key_value` (`value`),
   CONSTRAINT `fk_service_provider_type_string_culture__locales` FOREIGN KEY (`locale_id`) REFERENCES `locales` (`id`)
-) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Локализация атрибутов типа поставщика услуг';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Локализация атрибутов типа поставщика услуг';
 
 -- ------------------------------
 -- Service association
@@ -1054,7 +1054,7 @@ CREATE TABLE `service_association` (
   KEY `key_calculation_center_id` (`calculation_center_id`),
   CONSTRAINT `fk_service_association__service_provider_type` FOREIGN KEY (`service_provider_type_id`) REFERENCES `service_provider_type` (`object_id`),
   CONSTRAINT `fk_service_association__calculation_center` FOREIGN KEY (`calculation_center_id`) REFERENCES `organization` (`object_id`)
-) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Пары ассоциаций: тип услуги - модуль начислений';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Пары ассоциаций: тип услуги - модуль начислений';
 
 -- ------------------------------
 -- Request file description
@@ -1067,7 +1067,7 @@ CREATE TABLE `request_file_description` (
   `date_pattern` VARCHAR(50) NOT NULL COMMENT 'Шаблон значений типа дата',
   PRIMARY KEY (`id`),
   KEY `key_request_file_type` (`request_file_type`)
-) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Описание структуры файлов запросов';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Описание структуры файлов запросов';
 
 DROP TABLE IF EXISTS `request_file_field_description`;
 
@@ -1081,7 +1081,7 @@ CREATE TABLE `request_file_field_description` (
   PRIMARY KEY (`id`),
   KEY `key_request_file_description_id` (`request_file_description_id`),
   CONSTRAINT `fk_request_file_field_description__request_file_description_id` FOREIGN KEY (`request_file_description_id`) REFERENCES `request_file_description` (`id`)
-) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Описание структуры поля файла запросов';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Описание структуры поля файла запросов';
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

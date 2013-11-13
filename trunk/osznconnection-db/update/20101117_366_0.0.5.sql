@@ -20,7 +20,7 @@ CREATE TABLE `building_address` (
   KEY `key_status` (`status`),
   CONSTRAINT `fk_building_address__entity_type` FOREIGN KEY (`entity_type_id`) REFERENCES `entity_type` (`id`),
   CONSTRAINT `fk_building_address__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 DROP TABLE IF EXISTS `building_address_attribute`;
 
@@ -48,7 +48,7 @@ CREATE TABLE `building_address_attribute` (
     REFERENCES `entity_attribute_type` (`id`),
   CONSTRAINT `fk_building_address_attribute__entity_attribute_value_type` FOREIGN KEY (`value_type_id`)
     REFERENCES `entity_attribute_value_type` (`id`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 DROP TABLE IF EXISTS `building_address_string_culture`;
 
@@ -62,7 +62,7 @@ CREATE TABLE `building_address_string_culture` (
   KEY `key_locale` (`locale`),
   KEY `key_value` (`value`),
   CONSTRAINT `fk_building_address_string_culture__locales` FOREIGN KEY (`locale`) REFERENCES `locales` (`locale`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 INSERT INTO `string_culture`(`id`, `locale`, `value`) VALUES (1500, 'ru', 'Адрес здания'), (1500, 'uk', 'Адрес здания');
 INSERT INTO `entity`(`id`, `entity_table`, `entity_name_id`, `strategy_factory`) VALUES (1500, 'building_address', 1500, '');
