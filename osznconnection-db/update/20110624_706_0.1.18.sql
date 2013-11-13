@@ -30,7 +30,7 @@ CREATE TABLE `organization_type` (
   CONSTRAINT `fk_organization_type__entity_type` FOREIGN KEY (`entity_type_id`) REFERENCES `entity_type` (`id`),
   CONSTRAINT `fk_organization_type__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`),
   CONSTRAINT `fk_organization_type__permission` FOREIGN KEY (`permission_id`) REFERENCES `permission` (`permission_id`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 DROP TABLE IF EXISTS `organization_type_attribute`;
 
@@ -58,7 +58,7 @@ CREATE TABLE `organization_type_attribute` (
     REFERENCES `entity_attribute_type` (`id`),
   CONSTRAINT `fk_organization_type_attribute__entity_attribute_value_type` FOREIGN KEY (`value_type_id`)
     REFERENCES `entity_attribute_value_type` (`id`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 DROP TABLE IF EXISTS `organization_type_string_culture`;
 
@@ -72,7 +72,7 @@ CREATE TABLE `organization_type_string_culture` (
   KEY `key_locale` (`locale_id`),
   KEY `key_value` (`value`),
   CONSTRAINT `fk_organization_type_string_culture__locales` FOREIGN KEY (`locale_id`) REFERENCES `locales` (`id`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Common orgainization type: user organization type. --
 INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (2300, 1, 'Тип организации'), (2300, 2, 'Тип организации');

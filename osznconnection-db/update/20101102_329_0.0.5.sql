@@ -18,7 +18,7 @@ CREATE TABLE `city_type` (
   KEY `key_status` (`status`),
   CONSTRAINT `fk_city_type__entity_type` FOREIGN KEY (`entity_type_id`) REFERENCES `entity_type` (`id`),
   CONSTRAINT `fk_city_type__entity` FOREIGN KEY (`parent_entity_id`) REFERENCES `entity` (`id`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `city_type_attribute` (
   `pk_id` BIGINT(20) NOT NULL AUTO_INCREMENT,
@@ -44,7 +44,7 @@ CREATE TABLE `city_type_attribute` (
     REFERENCES `entity_attribute_type` (`id`),
   CONSTRAINT `fk_city_type_attribute__entity_attribute_value_type` FOREIGN KEY (`value_type_id`)
     REFERENCES `entity_attribute_value_type` (`id`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `city_type_string_culture` (
   `pk_id` BIGINT(20) NOT NULL AUTO_INCREMENT,
@@ -56,7 +56,7 @@ CREATE TABLE `city_type_string_culture` (
   KEY `key_locale` (`locale`),
   KEY `key_value` (`value`),
   CONSTRAINT `fk_city_type_string_culture__locales` FOREIGN KEY (`locale`) REFERENCES `locales` (`locale`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 INSERT INTO `string_culture`(`id`, `locale`, `value`) VALUES (1300, 'ru', 'Тип населенного пункта'), (1300, 'uk', 'Тип населенного пункта');
 INSERT INTO `entity`(`id`, `entity_table`, `entity_name_id`, `strategy_factory`) VALUES (1300, 'city_type', 1300, '');
@@ -104,7 +104,7 @@ CREATE TABLE `city_type_correction` (
     CONSTRAINT `fk_city_type_correction__city_type` FOREIGN KEY (`object_id`) REFERENCES `city_type` (`object_id`),
     CONSTRAINT `fk_city_type_correction__internal_organization` FOREIGN KEY (`internal_organization_id`) REFERENCES `organization` (`object_id`),
     CONSTRAINT `fk_city_type_correction__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`object_id`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 INSERT INTO `city_attribute`(`attribute_id`, `object_id`, `attribute_type_id`, `value_id`, `value_type_id`) VALUES (1,10000,401,10000,401);
 INSERT INTO `update` (`version`) VALUE ('20101102_329');

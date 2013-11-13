@@ -105,6 +105,6 @@ CREATE TABLE `subsidy` (
     CONSTRAINT `fk_subsidy__street` FOREIGN KEY (`internal_street_id`) REFERENCES `street` (`object_id`),
     CONSTRAINT `fk_subsidy__street_type` FOREIGN KEY (`internal_street_type_id`) REFERENCES `street_type` (`object_id`),
     CONSTRAINT `fk_subsidy__building` FOREIGN KEY (`internal_building_id`) REFERENCES `building` (`object_id`)
-) ENGINE=INNODB DEFAULT  CHARSET=utf8 COMMENT 'Файлы субсидий';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Файлы субсидий';
 
 INSERT INTO `update` (`version`) VALUE ('20120403_741_0.1.27');

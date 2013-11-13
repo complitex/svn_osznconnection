@@ -20,7 +20,7 @@ CREATE TABLE `building_code` (
   KEY `key_building_id` (`building_id`),
   CONSTRAINT `fk_building_code__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`object_id`),
   CONSTRAINT `fk_building_code__building` FOREIGN KEY (`building_id`) REFERENCES `building` (`object_id`)
-) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Код дома';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Код дома';
 
 -- ------------------------------
 -- Building Import
@@ -35,7 +35,7 @@ CREATE TABLE `building_import` (
   `processed` TINYINT(1) NOT NULL default 0 COMMENT 'Индикатор импорта',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_building_import` (`street_id`, `num`, `part`)
-) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Вспомогательная таблица для импорта домов';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Вспомогательная таблица для импорта домов';
 
 CREATE TABLE `building_segment_import` (
   `id` BIGINT(20) NOT NULL COMMENT 'ID части дома',
@@ -45,7 +45,7 @@ CREATE TABLE `building_segment_import` (
   PRIMARY KEY (`id`),
   KEY `key_building_import_id` (`building_import_id`),
   CONSTRAINT `fk_building_segment_import__building_import` FOREIGN KEY (`building_import_id`) REFERENCES `building_import` (`id`)
-) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Вспомогательная таблица для импорта домов';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Вспомогательная таблица для импорта домов';
 
 -- Update DB version
 INSERT INTO `update` (`version`) VALUE ('20131112_872_0.2.6');

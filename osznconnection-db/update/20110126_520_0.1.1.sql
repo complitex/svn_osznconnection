@@ -14,7 +14,7 @@ CREATE TABLE `permission` (
     KEY `key_table` (`table`),
     KEY `key_entity` (`entity`),
     KEY `key_object_id` (`object_id`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 INSERT INTO `permission` (`permission_id`, `table`, `entity`, `object_id`) VALUE (0, 'ALL', 'ALL', 0);
 INSERT INTO `sequence` (`sequence_name`, `sequence_value`) VALUES ('permission', 1);
@@ -29,7 +29,7 @@ CREATE TABLE `user_organization` (
     CONSTRAINT `fk_user_organization__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`),
     CONSTRAINT `fk_user_organization__organization` FOREIGN KEY (`organization_object_id`)
       REFERENCES `organization` (`object_id`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 INSERT INTO `string_culture`(`id`, `locale_id`, `value`) VALUES (907, 1, UPPER('Принадлежит')), (907, 2, UPPER('Принадлежит'));
 INSERT INTO `entity_attribute_type`(`id`, `entity_id`, `mandatory`, `attribute_type_name_id`, `system`) VALUES (903, 900, 0, 907, 1);

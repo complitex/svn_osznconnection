@@ -85,7 +85,7 @@ CREATE TABLE `temp_payment` (
     `RESERV1` INT(10),
     `RESERV2` VARCHAR(10),
     PRIMARY KEY (`id`)    
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- ------------------------------
 -- Temp Benefit
@@ -118,7 +118,7 @@ CREATE TABLE `temp_benefit` (
     `RESERV1` DECIMAL(10,2),
     `RESERV2` VARCHAR(10),
     PRIMARY KEY (`id`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- ------------------------------
 -- Temp Actual payment
@@ -183,7 +183,7 @@ CREATE TABLE `temp_actual_payment` (
     `N8` DECIMAL(10,4),
 
     PRIMARY KEY (`id`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- ------------------------------
 -- Temp Subsidy
@@ -269,7 +269,7 @@ CREATE TABLE `temp_subsidy` (
     `KVT` INT(3),
 
     PRIMARY KEY (`id`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- ------------------------------
 -- Temp Tarif
@@ -299,7 +299,7 @@ CREATE TABLE `temp_tarif` (
     `T11_NRM_MA` DECIMAL (19, 10),
     `T11_K_NADL` DECIMAL (19, 10),
      PRIMARY KEY (`id`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- 2. Copy all data to temporal tables.
 INSERT INTO `temp_payment` SELECT * FROM `payment`;
@@ -423,7 +423,7 @@ CREATE TABLE `payment` (
     CONSTRAINT `fk_payment__street_type` FOREIGN KEY (`internal_street_type_id`) REFERENCES `street_type` (`object_id`),
     CONSTRAINT `fk_payment__building` FOREIGN KEY (`internal_building_id`) REFERENCES `building` (`object_id`),
     CONSTRAINT `fk_payment__apartment` FOREIGN KEY (`internal_apartment_id`) REFERENCES `apartment` (`object_id`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8 COMMENT 'Начисления';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Начисления';
 
 -- ------------------------------
 -- Benefit
@@ -466,7 +466,7 @@ CREATE TABLE `benefit` (
     KEY `key_SUR_NAM` (`SUR_NAM`),   
     KEY `key_OWN_NUM_SR` (`OWN_NUM_SR`),
     CONSTRAINT `fk_benefit__request_file` FOREIGN KEY (`request_file_id`) REFERENCES `request_file` (`id`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8 COMMENT 'Льготы';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Льготы';
 
 -- ------------------------------
 -- Tarif
@@ -498,7 +498,7 @@ CREATE TABLE `tarif` (
     `T11_NRM_MA` VARCHAR(100) COMMENT '',
     `T11_K_NADL` VARCHAR(100) COMMENT '',
      PRIMARY KEY (`id`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8 COMMENT 'Тарифы';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Тарифы';
 
 -- ------------------------------
 -- Actual payment
@@ -585,7 +585,7 @@ CREATE TABLE `actual_payment` (
     CONSTRAINT `fk_actual_payment__street` FOREIGN KEY (`internal_street_id`) REFERENCES `street` (`object_id`),
     CONSTRAINT `fk_actual_payment__street_type` FOREIGN KEY (`internal_street_type_id`) REFERENCES `street_type` (`object_id`),
     CONSTRAINT `fk_actual_payment__building` FOREIGN KEY (`internal_building_id`) REFERENCES `building` (`object_id`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8 COMMENT 'Фактические начисления';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Фактические начисления';
 
 -- ------------------------------
 -- Subsidy
@@ -692,7 +692,7 @@ CREATE TABLE `subsidy` (
     CONSTRAINT `fk_subsidy__street` FOREIGN KEY (`internal_street_id`) REFERENCES `street` (`object_id`),
     CONSTRAINT `fk_subsidy__street_type` FOREIGN KEY (`internal_street_type_id`) REFERENCES `street_type` (`object_id`),
     CONSTRAINT `fk_subsidy__building` FOREIGN KEY (`internal_building_id`) REFERENCES `building` (`object_id`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8 COMMENT 'Файлы субсидий';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Файлы субсидий';
 
 -- 5. Copy all data from temporal tables to new data tables converting data to string representation.
 INSERT INTO `payment` 
@@ -1219,7 +1219,7 @@ CREATE TABLE `request_file_description` (
   `date_pattern` VARCHAR(50) NOT NULL COMMENT 'Шаблон значений типа дата',
   PRIMARY KEY (`id`),
   KEY `key_request_file_type` (`request_file_type`)
-) ENGINE=INNODB DEFAULT  CHARSET=utf8 COMMENT 'Описание структуры файлов запросов';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Описание структуры файлов запросов';
 
 DROP TABLE IF EXISTS `request_file_field_description`;
 
@@ -1233,6 +1233,6 @@ CREATE TABLE `request_file_field_description` (
   PRIMARY KEY (`id`),
   KEY `key_request_file_description_id` (`request_file_description_id`),
   CONSTRAINT `fk_request_file_field_description__request_file_description_id` FOREIGN KEY (`request_file_description_id`) REFERENCES `request_file_description` (`id`)
-) ENGINE=INNODB DEFAULT  CHARSET=utf8 COMMENT 'Описание структуры поля файла запросов';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Описание структуры поля файла запросов';
 
 INSERT INTO `update` (`version`) VALUE ('20120420_757_0.1.28');

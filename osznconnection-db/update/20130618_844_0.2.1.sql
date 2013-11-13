@@ -6,7 +6,7 @@ CREATE TABLE `type_description` (
   `name` VARCHAR(500) NOT NULL COMMENT 'Описание типа',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_type_description` (`code`)
-) ENGINE=InnoDB DEFAULT  CHARSET=utf8 COMMENT 'Описание типов';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Описание типов';
 
 INSERT INTO `type_description`(`code`, `name`) VALUES
 (1, 'Льгота запроса на субсидию'), (2, 'Начисление запроса на субсидию'), (3, 'Тариф запроса на субсидию'),

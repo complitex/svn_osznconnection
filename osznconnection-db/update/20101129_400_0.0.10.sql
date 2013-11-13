@@ -7,6 +7,6 @@ CREATE TABLE `preference` (
     PRIMARY KEY (`id`),
     KEY `key_user_id` (`user_id`),
     CONSTRAINT `fk_preference__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 INSERT INTO `update` (`version`) VALUE ('20101129_400');

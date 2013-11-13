@@ -3,7 +3,7 @@ CREATE TABLE `update` (
     `version` VARCHAR(64) NOT NULL,
     `date` TIMESTAMP NOT NULL DEFAULT NOW(),
     PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 INSERT INTO `update` (`version`) value ('20101020_300');
 
