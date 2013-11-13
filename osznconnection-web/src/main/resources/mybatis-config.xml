@@ -63,6 +63,8 @@
         <mapper resource="org/complitex/address/strategy/city/City.xml"/>
         <mapper resource="org/complitex/address/strategy/district/District.xml"/>
 
+        <mapper resource="org/complitex/address/strategy/building/BuildingImportBean.xml"/>
+
         <mapper resource="org/complitex/dictionary/entity/Correction.xml"/>
         <mapper resource="org/complitex/correction/service/AddressCorrectionBean.xml"/>
 
