@@ -12,6 +12,9 @@ import org.complitex.dictionary.service.IImportListener;
 import org.complitex.dictionary.service.LogBean;
 import org.complitex.dictionary.service.exception.*;
 import org.complitex.dictionary.util.DateUtil;
+import org.complitex.organization.entity.OrganizationImportFile;
+import org.complitex.organization.service.OrganizationImportService;
+import org.complitex.organization.service.exception.RootOrganizationNotFound;
 import org.complitex.osznconnection.file.Module;
 import org.complitex.osznconnection.file.entity.CorrectionImportFile;
 import org.complitex.osznconnection.file.entity.OwnershipImportFile;
@@ -61,6 +64,9 @@ public class ImportService {
     private PrivilegeCorrectionImportService privilegeCorrectionImportService;
 
     @EJB
+    private OrganizationImportService organizationImportService;
+
+    @EJB
     private ConfigBean configBean;
 
     @EJB
@@ -70,8 +76,8 @@ public class ImportService {
     private boolean error;
     private boolean success;
     private String errorMessage;
-    private Map<IImportFile, ImportMessage> dictionaryMap = new LinkedHashMap<IImportFile, ImportMessage>();
-    private Map<IImportFile, ImportMessage> correctionMap = new LinkedHashMap<IImportFile, ImportMessage>();
+    private Map<IImportFile, ImportMessage> dictionaryMap = new LinkedHashMap<>();
+    private Map<IImportFile, ImportMessage> correctionMap = new LinkedHashMap<>();
     private IImportListener dictionaryListener = new IImportListener() {
 
         @Override
@@ -151,13 +157,15 @@ public class ImportService {
     }
 
     private <T extends IImportFile> void processDictionary(T importFile, long localeId) throws ImportFileNotFoundException,
-            ImportObjectLinkException, ImportFileReadException, ImportDuplicateException {
+            ImportObjectLinkException, ImportFileReadException, ImportDuplicateException, RootOrganizationNotFound {
         if (importFile instanceof AddressImportFile) { //Address
             addressImportService.process(importFile, dictionaryListener, localeId, DateUtil.getCurrentDate());
         } else if (importFile instanceof OwnershipImportFile) { // Ownership
             ownershipImportService.process(dictionaryListener);
         } else if (importFile instanceof PrivilegeImportFile) { //Privilege
             privilegeImportService.process(dictionaryListener);
+        } else if (importFile instanceof OrganizationImportFile){ //Organization
+            organizationImportService.process(dictionaryListener, localeId, DateUtil.getCurrentDate());
         }
     }
 
