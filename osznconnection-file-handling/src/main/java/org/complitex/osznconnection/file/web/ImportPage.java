@@ -15,6 +15,7 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.util.time.Duration;
+import org.complitex.address.entity.AddressImportFile;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.entity.IImportFile;
 import org.complitex.dictionary.entity.ImportMessage;
@@ -22,6 +23,7 @@ import org.complitex.dictionary.service.LocaleBean;
 import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
 import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
 import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
+import org.complitex.organization.entity.OrganizationImportFile;
 import org.complitex.osznconnection.file.entity.CorrectionImportFile;
 import org.complitex.osznconnection.file.entity.OwnershipImportFile;
 import org.complitex.osznconnection.file.entity.PrivilegeImportFile;
@@ -75,10 +77,12 @@ public class ImportPage extends TemplatePage {
 
         //Справочники
         List<IImportFile> dictionaryList = new ArrayList<>();
-        Collections.addAll(dictionaryList, values());
+        Collections.addAll(dictionaryList, OrganizationImportFile.values());
+        Collections.addAll(dictionaryList, AddressImportFile.values());
         Collections.addAll(dictionaryList, PrivilegeImportFile.values());
         Collections.addAll(dictionaryList, OwnershipImportFile.values());
 
+        //Справочники
         form.add(new CheckBoxMultipleChoice<>("dictionary", dictionaryModel, dictionaryList,
                 new IChoiceRenderer<IImportFile>() {
 

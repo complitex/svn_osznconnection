@@ -2,6 +2,17 @@
 <template xmlns="http://www.complitex.org/web/template"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://www.complitex.org/web/template http://www.complitex.org/web/template/complitex-template.xsd">
+    <web-components>
+        <domain-object-permission-panel>
+            org.complitex.organization.web.component.DomainObjectPermissionPanel
+        </domain-object-permission-panel>
+        <organization-permission-panel>
+            org.complitex.organization.web.component.OrganizationPermissionPanel
+        </organization-permission-panel>
+        <user-organization-picker>
+            org.complitex.organization.web.component.UserOrganizationPicker
+        </user-organization-picker>
+    </web-components>
     <sidebar>
         <menu class="org.complitex.osznconnection.file.web.AdminTemplateMenu"/>
         <menu class="org.complitex.osznconnection.file.web.menu.SubsidyRequestMenu"/>
