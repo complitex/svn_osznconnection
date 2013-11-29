@@ -8,7 +8,7 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 -- ------------------------------
--- Forms of ownership
+-- Forms of Ownership
 -- ------------------------------
 DROP TABLE IF EXISTS `ownership`;
 
@@ -382,7 +382,7 @@ CREATE TABLE `subsidy_tarif` (
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Тарифы';
 
 -- ------------------------------
--- Actual payment
+-- Actual Payment
 -- ------------------------------
 
 DROP TABLE IF EXISTS `actual_payment`;
@@ -576,7 +576,7 @@ CREATE TABLE `subsidy` (
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Файлы субсидий';
 
 -- ------------------------------
--- Dwelling characteristic
+-- Dwelling Characteristic
 -- ------------------------------
 
 DROP TABLE IF EXISTS `dwelling_characteristics`;
@@ -763,7 +763,7 @@ CREATE TABLE `facility_form2` (
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Файлы форма-2 льгота';
 
 -- ------------------------------
--- Facility street type reference
+-- Facility Street Type Reference
 -- ------------------------------
 
 DROP TABLE IF EXISTS `facility_street_type_reference`;
@@ -780,7 +780,7 @@ CREATE TABLE `facility_street_type_reference` (
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Файлы-справочники типов улиц';
 
 -- ------------------------------
--- Facility street reference
+-- Facility Street Reference
 -- ------------------------------
 
 DROP TABLE IF EXISTS `facility_street_reference`;
@@ -799,7 +799,7 @@ CREATE TABLE `facility_street_reference` (
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Файлы-справочники улиц';
 
 -- ------------------------------
--- Facility tarif reference
+-- Facility Tarif Reference
 -- ------------------------------
 
 DROP TABLE IF EXISTS `facility_tarif_reference`;
@@ -832,7 +832,7 @@ CREATE TABLE `facility_tarif_reference` (
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Файлы-справочники тарифов для запросов по льготам';
 
 -- ------------------------------
--- Person account
+-- Person Account
 -- ------------------------------
 DROP TABLE IF EXISTS `person_account`;
 
@@ -913,7 +913,7 @@ CREATE TABLE `privilege_correction` (
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Коррекция льгот';
 
 -- ------------------------------
--- Status descriptions. Read only, use only for reports.
+-- Status Descriptions. Read only, use only for reports.
 -- ------------------------------
 
 DROP TABLE IF EXISTS `status_description`;
@@ -927,7 +927,7 @@ CREATE TABLE `status_description` (
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Описание статутов';
 
 -- ------------------------------
--- Type descriptions. Read only, use only for reports.
+-- Type Descriptions. Read only, use only for reports.
 -- ------------------------------
 
 DROP TABLE IF EXISTS `type_description`;
@@ -941,7 +941,7 @@ CREATE TABLE `type_description` (
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Описание типов';
 
 -- ------------------------------
--- Request warning
+-- Request Warning
 -- ------------------------------
 
 DROP TABLE IF EXISTS `request_warning`;
@@ -970,7 +970,7 @@ CREATE TABLE `request_warning_parameter` (
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Параметры предупреждений';
 
 -- ------------------------------
--- Service provider types
+-- Service Provider Types
 -- ------------------------------
 DROP TABLE IF EXISTS `service_provider_type`;
 
@@ -1041,7 +1041,7 @@ CREATE TABLE `service_provider_type_string_culture` (
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Локализация атрибутов типа поставщика услуг';
 
 -- ------------------------------
--- Service association
+-- Service Association
 -- ------------------------------
 DROP TABLE IF EXISTS `service_association`;
 
@@ -1057,7 +1057,7 @@ CREATE TABLE `service_association` (
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Пары ассоциаций: тип услуги - модуль начислений';
 
 -- ------------------------------
--- Request file description
+-- Request File Description
 -- ------------------------------
 DROP TABLE IF EXISTS `request_file_description`;
 

@@ -67,6 +67,7 @@
 
         <mapper resource="org/complitex/dictionary/entity/Correction.xml"/>
         <mapper resource="org/complitex/correction/service/AddressCorrectionBean.xml"/>
+        <mapper resource="org/complitex/correction/service/OrganizationCorrectionBean.xml"/>
 
         <mapper resource="org/complitex/admin/service/UserBean.xml"/>
         <mapper resource="org/complitex/admin/service/UserProfileBean.xml"/>

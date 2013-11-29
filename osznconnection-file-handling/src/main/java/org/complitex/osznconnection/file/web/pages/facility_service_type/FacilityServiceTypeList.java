@@ -205,9 +205,11 @@ public final class FacilityServiceTypeList extends TemplatePage {
 
                     @Override
                     protected void correctAddress(FacilityServiceType facilityServiceType, AddressEntity entity,
-                            Long cityId, Long streetTypeId, Long streetId, Long buildingId, Long userOrganizationId)
-                            throws DuplicateCorrectionException, MoreOneCorrectionException, NotFoundCorrectionException {
-                        addressService.correctLocalAddress(facilityServiceType, entity, cityId, streetTypeId, streetId, buildingId, userOrganizationId);
+                            Long cityId, Long streetTypeId, Long streetId, Long buildingId, Long apartmentId,
+                            Long userOrganizationId) throws DuplicateCorrectionException, MoreOneCorrectionException,
+                            NotFoundCorrectionException {
+                        addressService.correctLocalAddress(facilityServiceType, entity, cityId, streetTypeId, streetId,
+                                buildingId, userOrganizationId);
                         facilityServiceTypeBean.markCorrected(facilityServiceType, entity);
                     }
 
@@ -273,7 +275,8 @@ public final class FacilityServiceTypeList extends TemplatePage {
                                 facilityServiceType.getInternalCityId(),
                                 facilityServiceType.getInternalStreetTypeId(),
                                 facilityServiceType.getInternalStreetId(),
-                                facilityServiceType.getInternalBuildingId());
+                                facilityServiceType.getInternalBuildingId(),
+                                null);
                     }
                 };
                 addressCorrectionLink.setVisible(facilityServiceType.getStatus().isAddressCorrectable());

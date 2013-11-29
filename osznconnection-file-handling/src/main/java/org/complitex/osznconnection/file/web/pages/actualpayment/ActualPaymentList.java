@@ -199,7 +199,8 @@ public final class ActualPaymentList extends TemplatePage {
 
             @Override
             protected void correctAddress(ActualPayment actualPayment, AddressEntity addressEntity, Long cityId,
-                                          Long streetTypeId, Long streetId, Long buildingId, Long userOrganizationId)
+                                          Long streetTypeId, Long streetId, Long buildingId, Long apartmentId,
+                                          Long userOrganizationId)
                     throws DuplicateCorrectionException, MoreOneCorrectionException, NotFoundCorrectionException {
                 addressService.correctLocalAddress(actualPayment, addressEntity, cityId, streetTypeId, streetId, buildingId,
                         userOrganizationId);
@@ -256,7 +257,7 @@ public final class ActualPaymentList extends TemplatePage {
                                 actualPayment.getStringField(ActualPaymentDBF.VUL_NAME), actualPayment.getStringField(ActualPaymentDBF.BLD_NUM),
                                 actualPayment.getStringField(ActualPaymentDBF.CORP_NUM), actualPayment.getStringField(ActualPaymentDBF.FLAT),
                                 actualPayment.getInternalCityId(), actualPayment.getInternalStreetTypeId(), actualPayment.getInternalStreetId(),
-                                actualPayment.getInternalBuildingId());
+                                actualPayment.getInternalBuildingId(), null);
                     }
                 };
                 addressCorrectionLink.setVisible(actualPayment.getStatus().isAddressCorrectable());
