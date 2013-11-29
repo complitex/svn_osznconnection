@@ -199,7 +199,7 @@ public final class SubsidyList extends TemplatePage {
 
             @Override
             protected void correctAddress(Subsidy subsidy, AddressEntity entity, Long cityId, Long streetTypeId, Long streetId,
-                    Long buildingId, Long userOrganizationId)
+                    Long buildingId, Long apartmentId, Long userOrganizationId)
                     throws DuplicateCorrectionException, MoreOneCorrectionException, NotFoundCorrectionException {
                 addressService.correctLocalAddress(subsidy, entity, cityId, streetTypeId, streetId, buildingId, userOrganizationId);
                 subsidyBean.markCorrected(subsidy, entity);
@@ -254,7 +254,7 @@ public final class SubsidyList extends TemplatePage {
                                 subsidy.getStringField(SubsidyDBF.NAME_V), subsidy.getStringField(SubsidyDBF.BLD),
                                 subsidy.getStringField(SubsidyDBF.CORP), subsidy.getStringField(SubsidyDBF.FLAT),
                                 subsidy.getInternalCityId(), subsidy.getInternalStreetTypeId(), subsidy.getInternalStreetId(),
-                                subsidy.getInternalBuildingId());
+                                subsidy.getInternalBuildingId(), null);
                     }
                 };
                 addressCorrectionLink.setVisible(subsidy.getStatus().isAddressCorrectable());

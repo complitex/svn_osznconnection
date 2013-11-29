@@ -198,8 +198,9 @@ public final class DwellingCharacteristicsList extends TemplatePage {
 
                     @Override
                     protected void correctAddress(DwellingCharacteristics dwellingCharacteristics, AddressEntity entity,
-                            Long cityId, Long streetTypeId, Long streetId, Long buildingId, Long userOrganizationId)
-                            throws DuplicateCorrectionException, MoreOneCorrectionException, NotFoundCorrectionException {
+                            Long cityId, Long streetTypeId, Long streetId, Long buildingId, Long apartmentId,
+                            Long userOrganizationId) throws DuplicateCorrectionException, MoreOneCorrectionException,
+                            NotFoundCorrectionException {
 
                         addressService.correctLocalAddress(dwellingCharacteristics, entity, cityId, streetTypeId,
                                 streetId, buildingId, userOrganizationId);
@@ -267,7 +268,7 @@ public final class DwellingCharacteristicsList extends TemplatePage {
                                 dwellingCharacteristics.getInternalCityId(),
                                 dwellingCharacteristics.getInternalStreetTypeId(),
                                 dwellingCharacteristics.getInternalStreetId(),
-                                dwellingCharacteristics.getInternalBuildingId());
+                                dwellingCharacteristics.getInternalBuildingId(), null);
                     }
                 };
                 addressCorrectionLink.setVisible(dwellingCharacteristics.getStatus().isAddressCorrectable());
