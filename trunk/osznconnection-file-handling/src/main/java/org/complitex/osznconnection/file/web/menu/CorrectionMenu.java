@@ -32,6 +32,29 @@ public class CorrectionMenu extends ResourceTemplateMenu {
 
             @Override
             public String getLabel(Locale locale) {
+                return getString(CorrectionMenu.class, locale, "organization");
+            }
+
+            @Override
+            public Class<? extends Page> getPage() {
+                return OrganizationCorrectionList.class;
+            }
+
+            @Override
+            public PageParameters getParameters() {
+                return new PageParameters();
+            }
+
+            @Override
+            public String getTagId() {
+                return "organization_correction_item";
+            }
+        });
+
+        links.add(new ITemplateLink() {
+
+            @Override
+            public String getLabel(Locale locale) {
                 return getString(CorrectionMenu.class, locale, "city_correction");
             }
 
