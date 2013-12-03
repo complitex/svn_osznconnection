@@ -30,6 +30,8 @@ import org.complitex.dictionary.web.component.MonthDropDownChoice;
 import org.complitex.dictionary.web.component.YearDropDownChoice;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
+import org.complitex.organization.web.component.OrganizationPicker;
+import org.complitex.organization_type.strategy.OrganizationTypeStrategy;
 import org.complitex.osznconnection.file.entity.RequestFileStatus;
 import org.complitex.osznconnection.file.service.process.ProcessManagerBean;
 import org.complitex.osznconnection.file.service.process.ProcessType;
@@ -307,7 +309,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
         form.add(new OsznFilter("organization"));
 
         // Организация пользователя
-        form.add(new UserOrganizationFilter("userOrganization"));
+        form.add(new OrganizationPicker("userOrganization", null, OrganizationTypeStrategy.USER_ORGANIZATION_TYPE));
 
         //Месяц
         form.add(new MonthDropDownChoice("month").setNullValid(true));

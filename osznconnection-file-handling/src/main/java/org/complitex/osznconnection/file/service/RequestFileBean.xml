@@ -70,9 +70,12 @@
             <if test="registry != null">and `registry` = #{registry}</if>
             <if test="year != null">and YEAR(`begin_date`) = #{year}</if>
             <if test="month != null">and MONTH(`begin_date`) = #{month}</if>
-            <if test="dbfRecordCount != null">and `dbf_record_count` like CONCAT('%',#{dbfRecordCount},'%')</if>
+            <if test="dbfRecordCount != null">and `dbf_record_count` like concat('%',#{dbfRecordCount},'%')</if>
             <if test="type != null">and `type` = #{type}</if>
             <if test="status != null">and `status` = #{status}</if>
+            <if test="servicingOrganization != null">
+                and `name` like concat('${servicingOrganization.getAttribute(901).localizedValues[0].value}', '%')
+            </if>
             <include refid="org.complitex.osznconnection.file.service.RequestFileBean.permissionFilter"/>
         </where>
     </sql>
@@ -163,7 +166,19 @@
     
     <sql id="fromFilterSort">
         FROM `request_file` rf
-            <include refid="org.complitex.osznconnection.file.service.RequestFileBean.requestFilesFilterWhere"/>
+            <if test="sortProperty == 'servicing_organization'">
+              left join `organization_string_culture` sc on (sc.`value` = SUBSTRING(rf.`name`, 1, LENGTH(rf.`name`)-8))
+              left join `organization_attribute` oa on  sc.`id` = oa.`value_id`
+              left join `organization_attribute` oa_name on oa_name.`object_id` = oa.`object_id`
+              left join `organization_string_culture` sc_name on sc_name.`id` = oa_name.`value_id`
+            </if>
+
+        <include refid="org.complitex.osznconnection.file.service.RequestFileBean.requestFilesFilterWhere"/>
+            <if test="sortProperty == 'servicing_organization'">
+              and (oa.`value_type_id` = 901 or oa.`value_type_id` is null)
+              and (oa_name.`value_type_id` = 900 or oa_name.`value_type_id` is null)
+            </if>
+
             <if test="sortProperty != null">
                 <choose>
                     <when test="sortProperty == 'name'">
@@ -178,8 +193,15 @@
                                 <otherwise>DESC</otherwise>
                             </choose>
                     </when>
+                    <when test="sortProperty == 'servicing_organization'">
+                        order by sc_name.`value`
+                        <choose>
+                            <when test="ascending">asc</when>
+                            <otherwise>desc</otherwise>
+                        </choose>
+                    </when>
                     <otherwise>
-                        ORDER BY `${sortProperty}` 
+                        ORDER BY rf.`${sortProperty}`
                         <choose>
                             <when test="ascending">ASC</when>
                             <otherwise>DESC</otherwise>

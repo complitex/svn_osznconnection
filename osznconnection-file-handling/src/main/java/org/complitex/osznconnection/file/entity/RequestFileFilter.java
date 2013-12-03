@@ -27,6 +27,7 @@ public class RequestFileFilter extends AbstractFilter {
     private DomainObject organization;
     private RequestFileType type;
     private RequestFileStatus status;
+    private DomainObject servicingOrganization;
 
     public Long getId() {
         return id;
@@ -157,4 +158,11 @@ public class RequestFileFilter extends AbstractFilter {
         this.status = status;
     }
 
+    public DomainObject getServicingOrganization() {
+        return servicingOrganization;
+    }
+
+    public void setServicingOrganization(DomainObject servicingOrganization) {
+        this.servicingOrganization = servicingOrganization;
+    }
 }
