@@ -4,12 +4,15 @@ import org.apache.wicket.Component;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.ISortStateLocator;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
-import org.apache.wicket.model.Model;
+import org.complitex.correction.entity.OrganizationCorrection;
+import org.complitex.correction.service.OrganizationCorrectionBean;
+import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
+import org.complitex.organization.web.component.OrganizationPicker;
+import org.complitex.organization_type.strategy.OrganizationTypeStrategy;
 import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.entity.RequestFileType;
 import org.complitex.osznconnection.file.service.process.ProcessManagerBean;
@@ -36,6 +39,9 @@ public class SubsidyFileListPanel extends AbstractFileListPanel {
     @EJB(name = IOrganizationStrategy.BEAN_NAME, beanInterface = IOrganizationStrategy.class)
     private OsznOrganizationStrategy organizationStrategy;
 
+    @EJB
+    private OrganizationCorrectionBean organizationCorrectionBean;
+
     public SubsidyFileListPanel(String id) {
         super(id);
 
@@ -47,14 +53,25 @@ public class SubsidyFileListPanel extends AbstractFileListPanel {
 
             @Override
             public Component filter() {
-                return new TextField<>("servicing_organization", new Model<>(""));
+                return new OrganizationPicker("servicingOrganization", null, OrganizationTypeStrategy.SERVICING_ORGANIZATION);
             }
 
             @Override
             public Component field(Item<RequestFile> item) {
-                String fileName = item.getModelObject().getName();
-                String code = fileName.substring(0, fileName.length()-4);
+                RequestFile rf = item.getModelObject();
+                String fileName = rf.getName();
+                String code = fileName.substring(0, fileName.length()-8);
                 Long organizationId = organizationStrategy.getObjectIdByCode(code);
+
+                if (organizationId == null){
+                    List<OrganizationCorrection> list = organizationCorrectionBean.getOrganizationCorrections(
+                            FilterWrapper.of(new OrganizationCorrection(null, null, code, rf.getOrganizationId(),
+                                    rf.getUserOrganizationId(), null)));
+
+                    if (!list.isEmpty()){
+                        organizationId = list.get(0).getObjectId();
+                    }
+                }
 
                 String name = "";
 

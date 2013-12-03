@@ -152,7 +152,7 @@
             <field length="7" type="java.lang.String" name="BLD"/>
             <field length="2" type="java.lang.String" name="CORP"/>
             <field length="9" type="java.lang.String" name="FLAT"/>
-            <field length="14" type="java.lang.String" name="RASH"/>
+            <field length="15" type="java.lang.String" name="RASH"/>
             <field length="8" type="java.lang.String" name="NUMB"/>
             <field length="8" type="java.util.Date" name="DAT1"/>
             <field length="8" type="java.util.Date" name="DAT2"/>
