@@ -7,7 +7,6 @@ import org.complitex.dictionary.entity.Attribute;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.entity.StringCulture;
 import org.complitex.dictionary.entity.description.EntityAttributeType;
-import org.complitex.dictionary.entity.example.DomainObjectExample;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.LocaleBean;
 import org.complitex.dictionary.service.StringCultureBean;
@@ -24,7 +23,6 @@ import org.complitex.osznconnection.organization.strategy.entity.ServiceAssociat
 import org.complitex.osznconnection.organization.strategy.entity.ServiceAssociationList;
 import org.complitex.osznconnection.organization.strategy.web.edit.OsznOrganizationEditComponent;
 import org.complitex.osznconnection.organization.strategy.web.edit.OsznOrganizationValidator;
-import org.complitex.osznconnection.organization_type.strategy.OsznOrganizationTypeStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,12 +32,14 @@ import javax.naming.*;
 import javax.sql.DataSource;
 import java.util.*;
 
+import static org.complitex.osznconnection.organization_type.strategy.OsznOrganizationTypeStrategy.*;
+
 /**
  *
  * @author Artem
  */
 @Stateless(name = IOrganizationStrategy.BEAN_NAME)
-public class OsznOrganizationStrategy extends AbstractOrganizationStrategy {
+public class OsznOrganizationStrategy extends AbstractOrganizationStrategy<DomainObject> {
     public final static Long MODULE_ID = 0L;
 
     /**
@@ -190,75 +190,31 @@ public class OsznOrganizationStrategy extends AbstractOrganizationStrategy {
         return pageParameters;
     }
 
-    @Transactional
-    @Override
-    public List<DomainObject> getAllOuterOrganizations(Locale locale) {
-        DomainObjectExample example = new DomainObjectExample();
-        if (locale != null) {
-            example.setOrderByAttributeTypeId(NAME);
-            example.setLocaleId(localeBean.convert(locale).getId());
-            example.setAsc(true);
-        }
-        example.addAdditionalParam(ORGANIZATION_TYPE_PARAMETER, ImmutableList.of(OsznOrganizationTypeStrategy.OSZN,
-                OsznOrganizationTypeStrategy.CALCULATION_CENTER));
-        configureExample(example, ImmutableMap.<String, Long>of(), null);
-        return (List<DomainObject>) find(example);
-    }
-
     @Override
     public Long getModuleId() {
         return MODULE_ID;
     }
 
-    /**
-     * Figures out all OSZN organizations visible to current user
-     * and returns them sorted by organization's name in given {@code locale}.
-     *
-     * @param locale Locale. It is used in sorting of organizations by name.
-     * @return All OSZN organizations.
-     */
     @Transactional
-    public List<DomainObject> getAllOSZNs(Locale locale) {
-        DomainObjectExample example = new DomainObjectExample();
-
-        example.addAdditionalParam(ORGANIZATION_TYPE_PARAMETER, ImmutableList.of(OsznOrganizationTypeStrategy.OSZN));
-        if (locale != null) {
-            example.setOrderByAttributeTypeId(NAME);
-            example.setLocaleId(localeBean.convert(locale).getId());
-            example.setAsc(true);
-        }
-
-        configureExample(example, ImmutableMap.<String, Long>of(), null);
-
-        return (List<DomainObject>) find(example);
+    @Override
+    public List<DomainObject> getAllOuterOrganizations(Locale locale) {
+        return getOrganizations(Arrays.asList(OSZN, CALCULATION_CENTER, SERVICING_ORGANIZATION), locale);
     }
 
-    /**
-     * Figures out all calculation center organizations visible to current user
-     * and returns them sorted by organization's name in given {@code locale}.
-     *
-     * @param locale Locale. It is used in sorting of organizations by name.
-     * @return All calculation center organizations.
-     */
     @Transactional
-    public List<DomainObject> getAllCalculationCentres(Locale locale) {
-        DomainObjectExample example = new DomainObjectExample();
-        example.addAdditionalParam(ORGANIZATION_TYPE_PARAMETER, ImmutableList.of(OsznOrganizationTypeStrategy.CALCULATION_CENTER));
-        if (locale != null) {
-            example.setOrderByAttributeTypeId(NAME);
-            example.setLocaleId(localeBean.convert(locale).getId());
-            example.setAsc(true);
-        }
-        configureExample(example, ImmutableMap.<String, Long>of(), null);
-        return (List<DomainObject>) find(example);
+    public List<DomainObject> getAllOSZNs(Locale locale) {
+        return getOrganizations(Arrays.asList(OSZN), locale);
+    }
+
+    @Transactional
+      public List<DomainObject> getAllCalculationCentres(Locale locale) {
+        return getOrganizations(Arrays.asList(CALCULATION_CENTER), locale);
     }
 
     @Override
     public boolean isSimpleAttributeType(EntityAttributeType entityAttributeType) {
-        if (CUSTOM_ATTRIBUTE_TYPES.contains(entityAttributeType.getId())) {
-            return false;
-        }
-        return super.isSimpleAttributeType(entityAttributeType);
+        return !CUSTOM_ATTRIBUTE_TYPES.contains(entityAttributeType.getId())
+                && super.isSimpleAttributeType(entityAttributeType);
     }
 
     @Override
