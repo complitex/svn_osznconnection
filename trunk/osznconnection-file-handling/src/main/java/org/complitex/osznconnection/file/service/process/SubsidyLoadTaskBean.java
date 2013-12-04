@@ -1,11 +1,5 @@
 package org.complitex.osznconnection.file.service.process;
 
-import java.util.List;
-import java.util.Map;
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
 import org.complitex.dictionary.entity.IExecutorObject;
 import org.complitex.dictionary.entity.Log;
 import org.complitex.dictionary.service.executor.ExecuteException;
@@ -15,6 +9,17 @@ import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.service.RequestFileBean;
 import org.complitex.osznconnection.file.service.SubsidyBean;
 import org.complitex.osznconnection.file.service.util.SubsidyNameParser;
+import org.complitex.osznconnection.organization.strategy.OsznOrganizationStrategy;
+import org.complitex.osznconnection.organization.strategy.entity.OsznOrganization;
+import org.complitex.osznconnection.organization.strategy.entity.ServiceAssociation;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionManagement;
+import javax.ejb.TransactionManagementType;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 
 @Stateless
 @TransactionManagement(TransactionManagementType.BEAN)
@@ -22,14 +27,19 @@ public class SubsidyLoadTaskBean implements ITaskBean {
 
     @EJB
     private RequestFileBean requestFileBean;
+
     @EJB
     private LoadRequestFileBean loadRequestFileBean;
+
     @EJB
     private SubsidyBean subsidyBean;
 
+    @EJB
+    private OsznOrganizationStrategy organizationStrategy;
+
     @Override
     public boolean execute(IExecutorObject executorObject, Map commandParameters) throws ExecuteException {
-        RequestFile requestFile = (RequestFile) executorObject;
+        final RequestFile requestFile = (RequestFile) executorObject;
 
         requestFile.setStatus(RequestFileStatus.LOADING);
 
@@ -47,6 +57,30 @@ public class SubsidyLoadTaskBean implements ITaskBean {
 
             @Override
             public void save(List<AbstractRequest> batch) {
+                //check sum
+                for (AbstractRequest request : batch) {
+                    OsznOrganization organization = organizationStrategy.findById(request.getUserOrganizationId(), true);
+
+                    BigDecimal nSum = new BigDecimal(0);
+                    BigDecimal sbSum = new BigDecimal(0);
+
+                    for (ServiceAssociation sa : organization.getServiceAssociationList()) {
+                        nSum = nSum.add((BigDecimal) request.getField("P" + sa.getServiceProviderTypeId()));
+                        sbSum = sbSum.add((BigDecimal) request.getField("SB" + sa.getServiceProviderTypeId()));
+                    }
+
+                    Long numm = (Long)request.getField("NUMM");
+                    BigDecimal summa = (BigDecimal) request.getField("SUMMA");
+                    BigDecimal subs = (BigDecimal) request.getField("SUBS");
+
+                    if (!request.getField("NM_PAY").equals(nSum.setScale(2))
+                            || !summa.equals(sbSum.setScale(2))
+                            || (numm != 0 && !summa.equals(subs.multiply(new BigDecimal(numm))))) {
+                        request.setStatus(RequestStatus.SUBSIDY_NM_PAY_ERROR);
+                        requestFile.setStatus(RequestFileStatus.LOAD_ERROR);
+                    }
+                }
+
                 subsidyBean.insert(batch);
             }
 
@@ -63,7 +97,10 @@ public class SubsidyLoadTaskBean implements ITaskBean {
             return false; //skip - file already loaded
         }
 
-        requestFile.setStatus(RequestFileStatus.LOADED);
+        if (!requestFile.getStatus().equals(RequestFileStatus.LOAD_ERROR)) {
+            requestFile.setStatus(RequestFileStatus.LOADED);
+        }
+
         requestFileBean.save(requestFile);
 
         return true;

@@ -15,7 +15,7 @@ public final class HighlightManager {
     private HighlightManager() {
     }
 
-    public static void highlightProcessed(AjaxRequestTarget target, long objectId) {
+    public static void highlightProcessed(AjaxRequestTarget target, Long objectId) {
         if (target != null) {
             target.appendJavaScript("$('#" + ProcessDataView.ITEM_ID_PREFIX + objectId + "')"
                     + ".animate({ backgroundColor: 'lightgreen' }, 300)"
@@ -23,7 +23,7 @@ public final class HighlightManager {
         }
     }
 
-    public static void highlightError(AjaxRequestTarget target, long objectId) {
+    public static void highlightError(AjaxRequestTarget target, Long objectId) {
         if (target != null) {
             target.appendJavaScript("$('#" + ProcessDataView.ITEM_ID_PREFIX + objectId + "')"
                     + ".animate({ backgroundColor: 'darksalmon' }, 300)"

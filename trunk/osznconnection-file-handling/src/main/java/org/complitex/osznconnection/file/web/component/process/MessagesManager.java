@@ -4,11 +4,6 @@
  */
 package org.complitex.osznconnection.file.web.component.process;
 
-import java.io.Serializable;
-import java.text.MessageFormat;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.complitex.dictionary.entity.IExecutorObject;
@@ -16,6 +11,12 @@ import org.complitex.dictionary.util.EjbBeanLocator;
 import org.complitex.osznconnection.file.entity.RequestFileStatus;
 import org.complitex.osznconnection.file.service.process.ProcessManagerBean;
 import org.complitex.osznconnection.file.service.process.ProcessType;
+
+import java.io.Serializable;
+import java.text.MessageFormat;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -41,7 +42,9 @@ public abstract class MessagesManager<M extends IExecutorObject> implements Seri
 
         for (M object : list) {
             if (RequestFileStatus.SKIPPED.equals(getStatus(object))) {
-                HighlightManager.highlightProcessed(target, object.getId());
+                if (object.getId() != null) {
+                    HighlightManager.highlightProcessed(target, object.getId());
+                }
                 component.info(getString(keyPrefix + ".skipped", getFullName(object)));
             } else if (processedStatus.equals(getStatus(object))) {
                 HighlightManager.highlightProcessed(target, object.getId());

@@ -1,5 +1,6 @@
 package org.complitex.osznconnection.file.service.process;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.complitex.dictionary.service.ConfigBean;
 import org.complitex.dictionary.util.EjbBeanLocator;
 import org.complitex.osznconnection.file.entity.FileHandlingConfig;
@@ -11,6 +12,8 @@ import org.complitex.osznconnection.file.service.process.RequestFileStorage.Requ
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -321,6 +324,12 @@ public class LoadUtil {
                 requestFile.setOrganizationId(osznId);
                 requestFile.setBeginDate(newDate(year, month));
                 requestFile.setType(RequestFileType.SUBSIDY);
+                try {
+                    requestFile.setCheckSum(DigestUtils.md5Hex(new FileInputStream(file)));
+                } catch (IOException e) {
+                    //md5
+                }
+
 
                 subsidies.add(requestFile);
             }

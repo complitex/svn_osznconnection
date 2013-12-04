@@ -177,7 +177,7 @@ public class RequestFileBean extends AbstractBean {
         sqlSession().delete(NS + ".deleteRequestFile", requestFile.getId());
     }
 
-    public Long getId(RequestFile requestFile) {
+    public Long getLoadedId(RequestFile requestFile) {
         return sqlSession().selectOne(NS + ".selectLoadedId", requestFile);
     }
 
