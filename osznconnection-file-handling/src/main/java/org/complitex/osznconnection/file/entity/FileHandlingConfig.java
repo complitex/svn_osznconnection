@@ -12,7 +12,7 @@ public enum FileHandlingConfig implements IConfig {
     PAYMENT_BENEFIT_FILENAME_SUFFIX("\\d{4}{MM}\\.DBF", "mask"),
     
     ACTUAL_PAYMENT_FILENAME_MASK(".*{MM}{YY}\\.DBF", "mask"),
-    SUBSIDY_FILENAME_MASK("J.*{MM}\\.DBF", "mask"),
+    SUBSIDY_FILENAME_MASK(".*{MM}{YY}\\.DBF", "mask"),
     
     DWELLING_CHARACTERISTICS_INPUT_FILENAME_MASK("\\d{8}\\.a\\d{2}", "mask"),
     DWELLING_CHARACTERISTICS_OUTPUT_FILE_EXTENSION_PREFIX("c", "mask"),

@@ -24,4 +24,4 @@ CREATE TABLE `organization_correction` (
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Коррекция организации';
 
 -- Update DB version
-INSERT INTO `update` (`version`) VALUE ('20131126_878_0.2.7');
+INSERT INTO `update` (`version`) VALUE ('20131128_879_0.2.8');
