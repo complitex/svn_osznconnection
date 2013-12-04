@@ -3,6 +3,7 @@ package org.complitex.osznconnection.file.entity;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.service.AbstractFilter;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -28,6 +29,7 @@ public class RequestFileFilter extends AbstractFilter {
     private RequestFileType type;
     private RequestFileStatus status;
     private DomainObject servicingOrganization;
+    private BigDecimal sum;
 
     public Long getId() {
         return id;
@@ -164,5 +166,13 @@ public class RequestFileFilter extends AbstractFilter {
 
     public void setServicingOrganization(DomainObject servicingOrganization) {
         this.servicingOrganization = servicingOrganization;
+    }
+
+    public BigDecimal getSum() {
+        return sum;
+    }
+
+    public void setSum(BigDecimal sum) {
+        this.sum = sum;
     }
 }

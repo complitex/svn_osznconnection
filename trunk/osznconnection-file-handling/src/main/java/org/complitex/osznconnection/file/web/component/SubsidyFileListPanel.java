@@ -4,6 +4,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.ISortStateLocator;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.complitex.correction.entity.OrganizationCorrection;
@@ -24,6 +25,7 @@ import org.complitex.osznconnection.file.web.pages.subsidy.SubsidyList;
 import org.complitex.osznconnection.organization.strategy.OsznOrganizationStrategy;
 
 import javax.ejb.EJB;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Map;
 
@@ -82,6 +84,24 @@ public class SubsidyFileListPanel extends AbstractFileListPanel {
 
                 return new Label("servicing_organization", name);
             }
+        });
+
+        addColumn(new Column() {
+                @Override
+                public Component head(ISortStateLocator stateLocator, DataView<?> dataView, Component refresh) {
+                    return new ArrowOrderByBorder("header.sum", "sum", stateLocator, dataView, refresh);
+                }
+
+                @Override
+                public Component filter() {
+                    return new TextField<>("sum");
+                }
+
+                @Override
+                public Component field(Item<RequestFile> item) {
+                    return new Label("sum", item.getModelObject().getSum() != null
+                            ? item.getModelObject().getSum().setScale(2, RoundingMode.HALF_UP).toString() : "");
+                }
         });
     }
 
