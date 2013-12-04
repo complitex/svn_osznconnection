@@ -5,6 +5,7 @@ import org.complitex.dictionary.entity.LogChangeList;
 import org.complitex.dictionary.util.DateUtil;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -41,6 +42,8 @@ public class RequestFile implements IExecutorObject {
     private boolean cancel = false;
 
     private String errorMessage;
+
+    private BigDecimal sum;
 
     @Override
     public String getLogObjectName() {
@@ -233,6 +236,14 @@ public class RequestFile implements IExecutorObject {
 
     public void setRequests(List<AbstractAccountRequest> requests) {
         this.requests = requests;
+    }
+
+    public BigDecimal getSum() {
+        return sum;
+    }
+
+    public void setSum(BigDecimal sum) {
+        this.sum = sum;
     }
 
     @Override

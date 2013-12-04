@@ -19,6 +19,7 @@
         <result column="loaded_record_count" property="loadedRecordCount"/>
         <result column="binded_record_count" property="bindedRecordCount"/>
         <result column="filled_record_count" property="filledRecordCount"/>
+        <result column="sum" property="sum"/>
     </resultMap>
 
     <select id="selectAll" resultMap="requestFileResultMap">
@@ -95,7 +96,9 @@
             (SELECT COUNT(1) FROM `subsidy` WHERE `request_file_id` = rf.`id` AND `account_number` IS NOT NULL)
                 as binded_record_count,
             (SELECT COUNT(1) FROM `subsidy` WHERE `request_file_id` = rf.`id` AND `status` = 215)
-                as filled_record_count
+                as filled_record_count,
+            (SELECT SUM(`SUMMA`) FROM `subsidy` WHERE `request_file_id` = rf.`id`)
+              as `sum`
         <include refid="org.complitex.osznconnection.file.service.RequestFileBean.fromFilterSort"/>
     </select>
     
@@ -195,6 +198,13 @@
                     </when>
                     <when test="sortProperty == 'servicing_organization'">
                         order by sc_name.`value`
+                        <choose>
+                            <when test="ascending">asc</when>
+                            <otherwise>desc</otherwise>
+                        </choose>
+                    </when>
+                    <when test="sortProperty == 'sum'">
+                        order by `sum`
                         <choose>
                             <when test="ascending">asc</when>
                             <otherwise>desc</otherwise>

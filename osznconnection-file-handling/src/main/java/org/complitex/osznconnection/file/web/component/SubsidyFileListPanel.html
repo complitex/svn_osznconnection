@@ -20,12 +20,13 @@
                     <th></th>
                     <th class="center" wicket:id="header.id"><wicket:message key="id"/></th>
                     <th class="center" wicket:id="header.loaded"><wicket:message key="loaded"/></th>
+                    <th class="center" wicket:id="header.servicing_organization"><wicket:message key="servicing_organization"/></th>
                     <th class="center" wicket:id="header.name"><wicket:message key="name"/></th>
                     <th class="center" wicket:id="header.organization"><wicket:message key="organization"/></th>
                     <th class="center" wicket:id="header.user_organization"><wicket:message key="user_organization"/></th>
-                    <th class="center" wicket:id="header.servicing_organization"><wicket:message key="servicing_organization"/></th>
                     <th class="center" wicket:id="header.month"><wicket:message key="month"/></th>
                     <th class="center" wicket:id="header.year"><wicket:message key="year"/></th>
+                    <th class="center" wicket:id="header.sum"><wicket:message key="sum"/></th>
                     <th class="center"><wicket:message key="loaded_record_count"/></th>
                     <th class="center"><wicket:message key="binded_record_count"/></th>
                     <th class="center"><wicket:message key="filled_record_count"/></th>
@@ -42,12 +43,13 @@
                             <input type="text" wicket:id="loaded"/>
                         </div>
                     </th>
+                    <th class="center"><div type="text" wicket:id="servicingOrganization"></div></th>
                     <th class="center"><input type="text" wicket:id="name" size="8"/></th>
                     <th class="center"><select wicket:id="organization"></select></th>
                     <th class="center"><div wicket:id="userOrganization"></div></th>
-                    <th class="center"><div type="text" wicket:id="servicingOrganization"></div></th>
                     <th class="center"><select wicket:id="month"></select></th>
                     <th class="center"><select wicket:id="year"></select></th>
+                    <th class="center"><input type="text" wicket:id="sum" size="5"/></th>
                     <th class="center"></th>
                     <th class="center"></th>
                     <th class="center"></th>
@@ -64,12 +66,13 @@
                     </td>
                     <td><span wicket:id="id"></span></td>
                     <td><span wicket:id="loaded"></span></td>
+                    <td><span wicket:id="servicing_organization"></span></td>
                     <td><span wicket:id="name"></span></td>
                     <td><span wicket:id="organization"></span></td>
                     <td><span wicket:id="userOrganization"></span></td>
-                    <td><span wicket:id="servicing_organization"></span></td>
                     <td><span wicket:id="month"></span></td>
                     <td><span wicket:id="year"></span></td>
+                    <td><span wicket:id="sum"></span></td>
                     <td><span wicket:id="loaded_record_count"></span></td>
                     <td><span wicket:id="binded_record_count"></span></td>
                     <td><span wicket:id="filled_record_count"></span></td>
