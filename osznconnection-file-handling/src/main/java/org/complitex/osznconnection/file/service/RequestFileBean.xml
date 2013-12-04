@@ -14,7 +14,7 @@
         <result column="end_date" property="endDate"/>
         <result column="dbf_record_count" property="dbfRecordCount"/>
         <result column="length" property="length"/>
-        <result column="checkSum" property="checkSum"/>
+        <result column="check_sum" property="checkSum"/>
         <result column="type" property="type"/>
         <result column="loaded_record_count" property="loadedRecordCount"/>
         <result column="binded_record_count" property="bindedRecordCount"/>
@@ -237,16 +237,16 @@
             `name` = #{name} and organization_id = #{organizationId} and `user_organization_id` = #{userOrganizationId}
                 and `registry` = #{registry} and `begin_date` = #{beginDate}
                   and (`end_date` = #{endDate} or `end_date` is null)
+            and `check_sum` = #{checkSum}
     </select>
 
     <select id="selectLoadedId" parameterType="org.complitex.osznconnection.file.entity.RequestFile"
             resultType="long">
-        select id from `request_file`
-        where
-            `name` = #{name} and `organization_id` = #{organizationId} 
-                and `user_organization_id` = #{userOrganizationId}
-                and `registry` = #{registry} and `begin_date` = #{beginDate}
-                and (`end_date` = #{endDate} or `end_date` is null)
+        select id from `request_file` where `name` = #{name} and `organization_id` = #{organizationId}
+            and `user_organization_id` = #{userOrganizationId}
+            and `registry` = #{registry} and `begin_date` = #{beginDate}
+            and (`end_date` = #{endDate} or `end_date` is null)
+            and (`check_sum` = #{checkSum} or `check_sum` is null)
         limit 1
     </select>
 

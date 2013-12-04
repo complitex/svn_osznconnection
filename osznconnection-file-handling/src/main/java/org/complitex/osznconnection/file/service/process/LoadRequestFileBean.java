@@ -79,7 +79,7 @@ public class LoadRequestFileBean {
 
             //обработка строк файла.
             Object[] rowObjects;
-            List<AbstractRequest> batch = new ArrayList<AbstractRequest>();
+            List<AbstractRequest> batch = new ArrayList<>();
 
             while ((rowObjects = reader.nextRecord()) != null) {
                 if (requestFile.isCanceled()) {
@@ -113,6 +113,8 @@ public class LoadRequestFileBean {
                 }
 
                 AbstractRequest request = loadRequestFile.newObject();
+                request.setOrganizationId(requestFile.getOrganizationId());
+                request.setUserOrganizationId(requestFile.getUserOrganizationId());
 
                 //Заполнение колонок записи
                 for (int i = 0; i < rowObjects.length; ++i) {
@@ -134,7 +136,10 @@ public class LoadRequestFileBean {
                 //обработка первой строки
                 if (index == 0) {
                     //проверка загружен ли файл
-                    if (requestFileBean.checkLoaded(requestFile)) {
+                    Long loadedId = requestFileBean.getLoadedId(requestFile);
+                    if (loadedId != null) {
+                        request.setId(loadedId);
+
                         return false;
                     }
 
