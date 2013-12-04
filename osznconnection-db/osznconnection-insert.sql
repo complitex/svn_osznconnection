@@ -396,21 +396,22 @@ INSERT INTO `entity_attribute_value_type`(`id`, `attribute_type_id`, `attribute_
 -- Predefined service provider types
 -- --------------------------------
 -- Some service provider types are commented. Uncomment them as the need is arising.
-INSERT INTO `service_provider_type`(`object_id`) VALUES (1),(7); 
--- (2),(3),(4),(5),(6),(8);
+-- квартплата/скраплений газ (1), опалення/вугілля (2), гаряча вода/дрова (3), холодна вода (4), газ (5),
+-- електроенергія (6), вивіз сміття (7), вивіз нечистот (8 ).
+INSERT INTO `service_provider_type`(`object_id`) VALUES (1),(2),(3),(4),(5),(6),(7),(8);
 INSERT INTO `service_provider_type_string_culture`(`id`, `locale_id`, `value`) VALUES 
-(1, 1, UPPER('квартплата')), (1, 2,UPPER('оплата житла')),
--- (2, 1, UPPER('отопление')), (2, 2, UPPER('опалення')),
--- (3, 1, UPPER('горячее водоснабжение')), (3, 2, UPPER('гаряче водопостачання')),
--- (4, 1, UPPER('холодное водоснабжение')), (4, 2, UPPER('холодне водопостачання')),
--- (5, 1, UPPER('газоснабжение')), (5, 2, UPPER('газопостачання')),
--- (6, 1, UPPER('электроэнергия')), (6, 2, UPPER('електроенергія')),
-(7, 1, UPPER('вывоз мусора')), (7, 2, UPPER('вивезення сміття'));
--- (8, 1, UPPER('водоотведение')), (8, 2, UPPER('водовідведення'));
+(1, 1, UPPER('квартплата / сжиженный газ')), (1, 2,UPPER('квартплата / скраплений газ')),
+(2, 1, UPPER('отопление / уголь')), (2, 2, UPPER('опалення / вугілля')),
+(3, 1, UPPER('горячая вода / дрова')), (3, 2, UPPER('гаряча вода/дрова')),
+(4, 1, UPPER('холодная вода')), (4, 2, UPPER('холодна вода')),
+(5, 1, UPPER('газ')), (5, 2, UPPER('газ')),
+(6, 1, UPPER('электроэнергия')), (6, 2, UPPER('електроенергія')),
+(7, 1, UPPER('вывоз мусора')), (7, 2, UPPER('вивіз сміття')),
+(8, 1, UPPER('водоотведение')), (8, 2, UPPER('вивіз нечистот'));
 
-INSERT INTO `service_provider_type_attribute`(`attribute_id`, `object_id`, `attribute_type_id`, `value_id`, `value_type_id`) VALUES
-(1,1,1600,1,1600),(1,7,1600,7,1600);
--- ,(1,2,1600,2,1600),(1,3,1600,3,1600),(1,4,1600,4,1600),(1,5,1600,5,1600),(1,6,1600,6,1600),(1,8,1600,8,1600);
+INSERT INTO `service_provider_type_attribute`(`attribute_id`, `object_id`, `attribute_type_id`, `value_id`, `value_type_id`)
+  VALUES (1,1,1600,1,1600),(1,2,1600,2,1600),(1,3,1600,3,1600),(1,4,1600,4,1600),(1,5,1600,5,1600),(1,6,1600,6,1600),
+    (1,7,1600,7,1600),(1,8,1600,8,1600);
 
 -- Itself organization
 INSERT INTO `organization`(`object_id`) VALUES (0);

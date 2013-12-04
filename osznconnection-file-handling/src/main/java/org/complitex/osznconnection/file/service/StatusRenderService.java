@@ -1,20 +1,13 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.osznconnection.file.service;
 
-import java.util.Locale;
-import javax.ejb.ConcurrencyManagement;
-import javax.ejb.ConcurrencyManagementType;
-import javax.ejb.Singleton;
 import org.complitex.dictionary.util.ResourceUtil;
 import org.complitex.osznconnection.file.entity.RequestStatus;
 
-/**
- *
- * @author Artem
- */
+import javax.ejb.ConcurrencyManagement;
+import javax.ejb.ConcurrencyManagementType;
+import javax.ejb.Singleton;
+import java.util.Locale;
+
 @Singleton
 @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 public class StatusRenderService {

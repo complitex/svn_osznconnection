@@ -1,20 +1,7 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.osznconnection.service_provider_type.strategy;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import javax.annotation.PostConstruct;
-import javax.ejb.Stateless;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.Strings;
@@ -26,10 +13,11 @@ import org.complitex.dictionary.util.AttributeUtil;
 import org.complitex.template.strategy.TemplateStrategy;
 import org.complitex.template.web.security.SecurityRole;
 
-/**
- *
- * @author Artem
- */
+import javax.annotation.PostConstruct;
+import javax.ejb.Stateless;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
 @Stateless
 public class ServiceProviderTypeStrategy extends TemplateStrategy {
 
@@ -49,9 +37,9 @@ public class ServiceProviderTypeStrategy extends TemplateStrategy {
     public static final long GARBAGE_DISPOSAL = 7;
     public static final long DRAINAGE = 8;
     public static final Set<Long> RESERVED_SERVICE_PROVIDER_TYPES =
-            ImmutableSet.of(APARTMENT_FEE, GARBAGE_DISPOSAL);
-    // uncomment when these service provider types will enabled.
-            /* HEATING, HOT_WATER_SUPPLY, COLD_WATER_SUPPLY, GAS_SUPPLY, POWER_SUPPLY, DRAINAGE);*/
+            ImmutableSet.of(APARTMENT_FEE, HEATING, HOT_WATER_SUPPLY, COLD_WATER_SUPPLY, GAS_SUPPLY, POWER_SUPPLY,
+                    GARBAGE_DISPOSAL, DRAINAGE);
+
     private static final Map<Long, DomainObject> reservedServiceProviderTypeMap = new ConcurrentHashMap<Long, DomainObject>();
 
     @PostConstruct
