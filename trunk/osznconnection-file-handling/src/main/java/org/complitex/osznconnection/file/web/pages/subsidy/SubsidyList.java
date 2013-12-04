@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.osznconnection.file.web.pages.subsidy;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -56,10 +52,6 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- *
- * @author Artem
- */
 @AuthorizeInstantiation(SecurityRole.AUTHORIZED)
 public final class SubsidyList extends TemplatePage {
     public static final String FILE_ID = "request_file_id";
@@ -125,7 +117,7 @@ public final class SubsidyList extends TemplatePage {
 
         final Form<Void> filterForm = new Form<Void>("filterForm");
         content.add(filterForm);
-        example = new Model<SubsidyExample>(newExample());
+        example = new Model<>(newExample());
 
         StatusDetailPanel<SubsidyExample> statusDetailPanel = new StatusDetailPanel<SubsidyExample>("statusDetailsPanel", example,
                 new SubsidyExampleConfigurator(), new SubsidyStatusDetailRenderer(), content) {
@@ -158,16 +150,16 @@ public final class SubsidyList extends TemplatePage {
         };
         dataProvider.setSort("", SortOrder.ASCENDING);
 
-        filterForm.add(new TextField<String>("rashFilter", new PropertyModel<String>(example, "rash")));
-        filterForm.add(new TextField<String>("firstNameFilter", new PropertyModel<String>(example, "firstName")));
-        filterForm.add(new TextField<String>("middleNameFilter", new PropertyModel<String>(example, "middleName")));
-        filterForm.add(new TextField<String>("lastNameFilter", new PropertyModel<String>(example, "lastName")));
-        filterForm.add(new TextField<String>("cityFilter", new PropertyModel<String>(example, "city")));
-        filterForm.add(new TextField<String>("streetFilter", new PropertyModel<String>(example, "street")));
-        filterForm.add(new TextField<String>("buildingFilter", new PropertyModel<String>(example, "building")));
-        filterForm.add(new TextField<String>("corpFilter", new PropertyModel<String>(example, "corp")));
-        filterForm.add(new TextField<String>("apartmentFilter", new PropertyModel<String>(example, "apartment")));
-        filterForm.add(new DropDownChoice<RequestStatus>("statusFilter", new PropertyModel<RequestStatus>(example, "status"),
+        filterForm.add(new TextField<>("rashFilter", new PropertyModel<String>(example, "rash")));
+        filterForm.add(new TextField<>("firstNameFilter", new PropertyModel<String>(example, "firstName")));
+        filterForm.add(new TextField<>("middleNameFilter", new PropertyModel<String>(example, "middleName")));
+        filterForm.add(new TextField<>("lastNameFilter", new PropertyModel<String>(example, "lastName")));
+        filterForm.add(new TextField<>("cityFilter", new PropertyModel<String>(example, "city")));
+        filterForm.add(new TextField<>("streetFilter", new PropertyModel<String>(example, "street")));
+        filterForm.add(new TextField<>("buildingFilter", new PropertyModel<String>(example, "building")));
+        filterForm.add(new TextField<>("corpFilter", new PropertyModel<String>(example, "corp")));
+        filterForm.add(new TextField<>("apartmentFilter", new PropertyModel<String>(example, "apartment")));
+        filterForm.add(new DropDownChoice<>("statusFilter", new PropertyModel<RequestStatus>(example, "status"),
                 Arrays.asList(RequestStatus.values()), new StatusRenderer()).setNullValid(true));
 
         AjaxLink<Void> reset = new AjaxLink<Void>("reset") {
