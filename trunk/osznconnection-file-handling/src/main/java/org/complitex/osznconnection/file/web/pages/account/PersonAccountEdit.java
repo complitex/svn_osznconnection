@@ -46,7 +46,7 @@ import java.util.List;
 @AuthorizeInstantiation(SecurityRole.AUTHORIZED)
 public final class PersonAccountEdit extends FormTemplatePage {
 
-    private static final Logger log = LoggerFactory.getLogger(PersonAccountEdit.class);
+    private final Logger log = LoggerFactory.getLogger(PersonAccountEdit.class);
     public static final String CORRECTION_ID = "correction_id";
 
     @EJB

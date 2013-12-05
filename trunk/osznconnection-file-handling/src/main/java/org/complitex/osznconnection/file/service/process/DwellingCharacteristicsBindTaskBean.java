@@ -45,7 +45,7 @@ import static org.complitex.osznconnection.file.entity.RequestStatus.MORE_ONE_AC
 @Stateless
 @TransactionManagement(TransactionManagementType.BEAN)
 public class DwellingCharacteristicsBindTaskBean implements ITaskBean {
-    private static final Logger log = LoggerFactory.getLogger(DwellingCharacteristicsBindTaskBean.class);
+    private final Logger log = LoggerFactory.getLogger(DwellingCharacteristicsBindTaskBean.class);
 
     @Resource
     private UserTransaction userTransaction;

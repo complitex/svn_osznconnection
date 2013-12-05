@@ -44,7 +44,7 @@ import java.util.Map;
 @TransactionManagement(TransactionManagementType.BEAN)
 public class SubsidyBindTaskBean implements ITaskBean {
 
-    private static final Logger log = LoggerFactory.getLogger(SubsidyBindTaskBean.class);
+    private final Logger log = LoggerFactory.getLogger(SubsidyBindTaskBean.class);
     @Resource
     private UserTransaction userTransaction;
     @EJB

@@ -44,7 +44,7 @@ public class FacilityReferenceBookBean extends AbstractBean {
 
     private static final String RESOURCE_BUNDLE = FacilityReferenceBookBean.class.getName();
     private static final String NS = FacilityReferenceBookBean.class.getName();
-    private static final Logger log = LoggerFactory.getLogger(FacilityReferenceBookBean.class);
+    private final Logger log = LoggerFactory.getLogger(FacilityReferenceBookBean.class);
     @EJB
     private AddressCorrectionBean addressCorrectionBean;
 

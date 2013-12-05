@@ -37,7 +37,7 @@ import static org.complitex.osznconnection.organization.strategy.OsznOrganizatio
 
 @Stateless(name = "AddressService")
 public class AddressService extends AbstractBean {
-    private static final Logger log = LoggerFactory.getLogger(AddressService.class);
+    private final Logger log = LoggerFactory.getLogger(AddressService.class);
 
     @EJB
     private AddressCorrectionBean addressCorrectionBean;

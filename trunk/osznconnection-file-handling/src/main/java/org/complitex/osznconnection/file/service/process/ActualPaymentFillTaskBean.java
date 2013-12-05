@@ -42,7 +42,7 @@ import org.complitex.osznconnection.file.service_provider.exception.DBException;
 @TransactionManagement(TransactionManagementType.BEAN)
 public class ActualPaymentFillTaskBean implements ITaskBean {
 
-    private static final Logger log = LoggerFactory.getLogger(ActualPaymentFillTaskBean.class);
+    private final Logger log = LoggerFactory.getLogger(ActualPaymentFillTaskBean.class);
     @Resource
     private UserTransaction userTransaction;
     @EJB

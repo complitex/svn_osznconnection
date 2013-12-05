@@ -46,7 +46,7 @@ import static org.complitex.osznconnection.file.service_provider.util.ServicePro
 @TransactionManagement(TransactionManagementType.BEAN)
 public class ServiceProviderAdapter extends AbstractBean {
 
-    private static final Logger log = LoggerFactory.getLogger(ServiceProviderAdapter.class);
+    private final Logger log = LoggerFactory.getLogger(ServiceProviderAdapter.class);
     private static final String RESOURCE_BUNDLE = ServiceProviderAdapter.class.getName();
     private static final String MAPPING_NAMESPACE = ServiceProviderAdapter.class.getName();
 

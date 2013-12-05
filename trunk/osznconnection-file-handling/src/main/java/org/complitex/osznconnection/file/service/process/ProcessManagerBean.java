@@ -38,7 +38,7 @@ import static org.complitex.osznconnection.file.service.process.ProcessType.SAVE
 @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 public class ProcessManagerBean {
 
-    private static final Logger log = LoggerFactory.getLogger(ProcessManagerBean.class);
+    private final Logger log = LoggerFactory.getLogger(ProcessManagerBean.class);
     @Resource
     private SessionContext sessionContext;
     @EJB

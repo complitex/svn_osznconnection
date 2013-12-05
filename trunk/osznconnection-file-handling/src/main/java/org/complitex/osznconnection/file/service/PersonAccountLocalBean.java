@@ -26,7 +26,7 @@ import java.util.List;
 @Stateless(name = "PersonAccountLocalBean")
 public class PersonAccountLocalBean extends AbstractBean {
 
-    private static final Logger log = LoggerFactory.getLogger(PersonAccountLocalBean.class);
+    private final Logger log = LoggerFactory.getLogger(PersonAccountLocalBean.class);
     private static final String MAPPING_NAMESPACE = PersonAccountLocalBean.class.getName();
 
     public static class MoreOneAccountException extends Exception {

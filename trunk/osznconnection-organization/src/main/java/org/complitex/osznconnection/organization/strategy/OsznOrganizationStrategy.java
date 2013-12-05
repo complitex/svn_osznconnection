@@ -128,7 +128,7 @@ public class OsznOrganizationStrategy extends AbstractOrganizationStrategy<Domai
      */
 
 
-    private static final Logger log = LoggerFactory.getLogger(OsznOrganizationStrategy.class);
+    private final Logger log = LoggerFactory.getLogger(OsznOrganizationStrategy.class);
     public static final String OSZN_ORGANIZATION_STRATEGY_NAME = IOrganizationStrategy.BEAN_NAME;
     private static final String RESOURCE_BUNDLE = OsznOrganizationStrategy.class.getName();
     private static final String MAPPING_NAMESPACE = OsznOrganizationStrategy.class.getPackage().getName() + ".OsznOrganization";

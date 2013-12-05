@@ -45,7 +45,7 @@ import java.util.Map;
 @TransactionManagement(TransactionManagementType.BEAN)
 public class ActualPaymentBindTaskBean implements ITaskBean {
 
-    private static final Logger log = LoggerFactory.getLogger(ActualPaymentBindTaskBean.class);
+    private final Logger log = LoggerFactory.getLogger(ActualPaymentBindTaskBean.class);
     @Resource
     private UserTransaction userTransaction;
     @EJB

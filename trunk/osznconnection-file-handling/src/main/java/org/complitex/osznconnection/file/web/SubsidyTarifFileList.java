@@ -52,7 +52,7 @@ import static org.complitex.osznconnection.file.service.process.ProcessType.LOAD
 public class SubsidyTarifFileList extends TemplatePage {
 
     private static final int AJAX_TIMER = 4;
-    private static final Logger log = LoggerFactory.getLogger(SubsidyTarifFileList.class);
+    private final Logger log = LoggerFactory.getLogger(SubsidyTarifFileList.class);
     @EJB
     private ProcessManagerBean processManagerBean;
     @EJB

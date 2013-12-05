@@ -36,7 +36,7 @@ import java.util.Map;
 @TransactionManagement(TransactionManagementType.BEAN)
 public class GroupBindTaskBean implements ITaskBean {
 
-    private static final Logger log = LoggerFactory.getLogger(GroupBindTaskBean.class);
+    private final Logger log = LoggerFactory.getLogger(GroupBindTaskBean.class);
     @Resource
     private UserTransaction userTransaction;
     @EJB

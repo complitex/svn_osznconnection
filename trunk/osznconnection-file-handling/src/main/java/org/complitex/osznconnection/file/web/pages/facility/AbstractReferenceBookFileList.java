@@ -55,7 +55,7 @@ import java.util.List;
 @AuthorizeInstantiation(SecurityRole.AUTHORIZED)
 public abstract class AbstractReferenceBookFileList extends TemplatePage {
 
-    private static final Logger log = LoggerFactory.getLogger(AbstractReferenceBookFileList.class);
+    private final Logger log = LoggerFactory.getLogger(AbstractReferenceBookFileList.class);
     private static final int AJAX_TIMER = 4;
     @EJB
     private RequestFileDescriptionBean requestFileDescriptionBean;

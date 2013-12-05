@@ -36,7 +36,7 @@ import java.util.*;
 @TransactionManagement(TransactionManagementType.BEAN)
 public class LoadRequestFileBean {
 
-    private static final Logger log = LoggerFactory.getLogger(LoadRequestFileBean.class);
+    private final Logger log = LoggerFactory.getLogger(LoadRequestFileBean.class);
     @EJB
     private ConfigBean configBean;
     @EJB

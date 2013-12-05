@@ -24,7 +24,7 @@ import static org.complitex.osznconnection.file.entity.CorrectionImportFile.OWNE
 @Stateless
 public class OwnershipCorrectionImportService extends AbstractImportService {
 
-    private final static Logger log = LoggerFactory.getLogger(OwnershipCorrectionImportService.class);
+    private final Logger log = LoggerFactory.getLogger(OwnershipCorrectionImportService.class);
     @EJB
     private OwnershipStrategy ownershipStrategy;
     @EJB
