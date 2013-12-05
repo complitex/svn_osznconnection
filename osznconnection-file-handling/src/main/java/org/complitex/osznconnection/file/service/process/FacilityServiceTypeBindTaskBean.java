@@ -43,7 +43,7 @@ import java.util.Map;
 @Stateless
 @TransactionManagement(TransactionManagementType.BEAN)
 public class FacilityServiceTypeBindTaskBean implements ITaskBean {
-    private static final Logger log = LoggerFactory.getLogger(FacilityServiceTypeBindTaskBean.class);
+    private final Logger log = LoggerFactory.getLogger(FacilityServiceTypeBindTaskBean.class);
 
     @Resource
     private UserTransaction userTransaction;

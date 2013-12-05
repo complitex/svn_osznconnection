@@ -25,7 +25,7 @@ import static org.complitex.osznconnection.file.entity.PrivilegeImportFile.PRIVI
  */
 @Stateless
 public class PrivilegeImportService extends AbstractImportService{
-    private final static Logger log = LoggerFactory.getLogger(PrivilegeImportService.class);
+    private final Logger log = LoggerFactory.getLogger(PrivilegeImportService.class);
 
     @EJB
     private PrivilegeStrategy privilegeStrategy;

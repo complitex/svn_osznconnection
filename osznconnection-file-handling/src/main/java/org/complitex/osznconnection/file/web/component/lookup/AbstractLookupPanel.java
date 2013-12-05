@@ -1,11 +1,5 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.osznconnection.file.web.component.lookup;
 
-import org.complitex.osznconnection.file.service_provider.exception.DBException;
-import org.complitex.osznconnection.file.service_provider.exception.UnknownAccountNumberTypeException;
 import com.google.common.collect.ImmutableList;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -17,6 +11,7 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.util.string.Strings;
 import org.complitex.address.strategy.street.StreetStrategy;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.strategy.IStrategy;
@@ -30,6 +25,8 @@ import org.complitex.osznconnection.file.entity.AccountDetail;
 import org.complitex.osznconnection.file.entity.RequestStatus;
 import org.complitex.osznconnection.file.service.LookupBean;
 import org.complitex.osznconnection.file.service.StatusRenderService;
+import org.complitex.osznconnection.file.service_provider.exception.DBException;
+import org.complitex.osznconnection.file.service_provider.exception.UnknownAccountNumberTypeException;
 import org.complitex.osznconnection.file.web.component.account.AccountNumberPickerPanel;
 import org.odlabs.wiquery.core.javascript.JsStatement;
 import org.odlabs.wiquery.ui.accordion.Accordion;
@@ -43,16 +40,11 @@ import org.slf4j.LoggerFactory;
 import javax.ejb.EJB;
 import java.util.List;
 
-import org.apache.wicket.util.string.Strings;
 import static org.apache.wicket.util.string.Strings.isEmpty;
 
-/**
- * 
- * @author Artem
- */
 public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Panel {
+    private final Logger log = LoggerFactory.getLogger(AbstractLookupPanel.class);
 
-    private static final Logger log = LoggerFactory.getLogger(AbstractLookupPanel.class);
     @EJB
     private StrategyFactory strategyFactory;
     @EJB

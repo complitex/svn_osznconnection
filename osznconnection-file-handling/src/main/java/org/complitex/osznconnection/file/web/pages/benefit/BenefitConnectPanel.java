@@ -40,7 +40,7 @@ import java.util.List;
  */
 public class BenefitConnectPanel extends Panel {
 
-    private static final Logger log = LoggerFactory.getLogger(BenefitConnectPanel.class);
+    private final Logger log = LoggerFactory.getLogger(BenefitConnectPanel.class);
     @EJB
     private BenefitBean benefitBean;
     @EJB

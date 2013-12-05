@@ -41,7 +41,7 @@ import static org.complitex.dictionary.util.ResourceUtil.getString;
 @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 public class RequestFileDescriptionBean extends AbstractBean {
 
-    private static final Logger log = LoggerFactory.getLogger(RequestFileDescriptionBean.class);
+    private final Logger log = LoggerFactory.getLogger(RequestFileDescriptionBean.class);
     private static final String MAPPING_NAMESPACE = RequestFileDescriptionBean.class.getName();
     private static final String RESOURCE_BUNDLE = RequestFileDescriptionBean.class.getName();
     private final static Map<RequestFileType, RequestFileDescription> cache = Collections.synchronizedMap(

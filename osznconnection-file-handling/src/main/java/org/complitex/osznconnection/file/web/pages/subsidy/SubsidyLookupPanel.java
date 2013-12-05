@@ -1,11 +1,5 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.osznconnection.file.web.pages.subsidy;
 
-import java.util.List;
-import javax.ejb.EJB;
 import org.apache.wicket.Component;
 import org.complitex.osznconnection.file.entity.AccountDetail;
 import org.complitex.osznconnection.file.entity.Subsidy;
@@ -15,10 +9,9 @@ import org.complitex.osznconnection.file.service.PersonAccountService;
 import org.complitex.osznconnection.file.service_provider.exception.DBException;
 import org.complitex.osznconnection.file.web.component.lookup.AbstractLookupPanel;
 
-/**
- *
- * @author Artem
- */
+import javax.ejb.EJB;
+import java.util.List;
+
 public class SubsidyLookupPanel extends AbstractLookupPanel<Subsidy> {
 
     @EJB

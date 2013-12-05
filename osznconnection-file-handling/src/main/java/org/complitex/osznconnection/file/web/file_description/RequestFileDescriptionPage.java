@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 @AuthorizeInstantiation(SecurityRole.ADMIN_MODULE_EDIT)
 public final class RequestFileDescriptionPage extends TemplatePage {
 
-    private static final Logger log = LoggerFactory.getLogger(RequestFileDescriptionPage.class);
+    private final Logger log = LoggerFactory.getLogger(RequestFileDescriptionPage.class);
     @EJB
     private RequestFileDescriptionBean fileDescriptionBean;
 

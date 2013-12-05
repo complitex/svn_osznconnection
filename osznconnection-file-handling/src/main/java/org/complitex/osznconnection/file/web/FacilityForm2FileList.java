@@ -42,7 +42,7 @@ import javax.ejb.EJB;
 @AuthorizeInstantiation(SecurityRole.AUTHORIZED)
 public final class FacilityForm2FileList extends ScrollListPage {
 
-    private static final Logger log = LoggerFactory.getLogger(FacilityForm2FileList.class);
+    private final Logger log = LoggerFactory.getLogger(FacilityForm2FileList.class);
     private static final int AJAX_TIMER = 4;
     @EJB
     private ProcessManagerBean processManagerBean;

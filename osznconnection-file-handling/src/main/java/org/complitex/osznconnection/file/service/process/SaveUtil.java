@@ -21,9 +21,9 @@ import java.util.*;
  */
 public final class SaveUtil {
 
-    private SaveUtil() {
-    }
-    private final static Logger log = LoggerFactory.getLogger(SaveUtil.class);
+    private SaveUtil() {      }
+    private final Logger log = LoggerFactory.getLogger(SaveUtil.class);
+
     private final static String FILE_ENCODING = "cp1251";
     private final static String RESULT_FILE_NAME = "Result";
     private final static String RESULT_FILE_EXT = "txt";
@@ -95,13 +95,13 @@ public final class SaveUtil {
                 writer.close();
             }
         } catch (IOException e) {
-            log.error("Ошибка сохранения файла Result.txt", e);
+            LoggerFactory.getLogger(SaveUtil.class).error("Ошибка сохранения файла Result.txt", e);
         } finally {
             if (writer != null) {
                 try {
                     writer.close();
                 } catch (IOException e) {
-                    log.error("Ошибка закрытия файла Result.txt", e);
+                    LoggerFactory.getLogger(SaveUtil.class).error("Ошибка закрытия файла Result.txt", e);
                 }
             }
         }
