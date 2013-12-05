@@ -97,7 +97,7 @@
                 as binded_record_count,
             (SELECT COUNT(1) FROM `subsidy` WHERE `request_file_id` = rf.`id` AND `status` = 215)
                 as filled_record_count,
-            (SELECT SUM(`SUMMA`) FROM `subsidy` WHERE `request_file_id` = rf.`id`)
+            (SELECT SUM(CAST(`SUMMA` AS DECIMAL(15,2))) FROM `subsidy` WHERE `request_file_id` = rf.`id`)
               as `sum`
         <include refid="org.complitex.osznconnection.file.service.RequestFileBean.fromFilterSort"/>
     </select>
@@ -181,6 +181,10 @@
               and (oa.`value_type_id` = 901 or oa.`value_type_id` is null)
               and (oa_name.`value_type_id` = 900 or oa_name.`value_type_id` is null)
             </if>
+
+        <if test="sum != null">
+            group by `sum` having `sum` = #{sum}
+        </if>
 
             <if test="sortProperty != null">
                 <choose>
