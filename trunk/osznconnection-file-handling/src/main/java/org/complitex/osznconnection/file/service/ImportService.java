@@ -34,7 +34,7 @@ import java.util.Map;
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 28.02.11 18:05
  */
-@Singleton
+@Singleton(name = "OsznImportService")
 @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 @TransactionManagement(TransactionManagementType.BEAN)
 public class ImportService {
