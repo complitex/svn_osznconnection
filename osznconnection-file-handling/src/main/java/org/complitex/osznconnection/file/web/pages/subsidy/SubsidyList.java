@@ -217,6 +217,9 @@ public final class SubsidyList extends TemplatePage {
         };
         add(lookupPanel);
 
+        final  SubsidyEditPanel editPanel = new SubsidyEditPanel("edit_panel", content);
+        add(editPanel);
+
         DataView<Subsidy> data = new DataView<Subsidy>("data", dataProvider, 1) {
 
             @Override
@@ -263,6 +266,15 @@ public final class SubsidyList extends TemplatePage {
                     }
                 };
                 item.add(lookup);
+
+                AjaxLink edit = new IndicatingAjaxLink("edit") {
+
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        editPanel.open(target, subsidy);
+                    }
+                };
+                item.add(edit);
             }
         };
         filterForm.add(data);
