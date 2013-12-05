@@ -73,19 +73,18 @@ public class SubsidyLoadTaskBean implements ITaskBean {
                      */
 
                     for (ServiceAssociation sa : organization.getServiceAssociationList()) {
-                        nSum = nSum.add((BigDecimal) request.getField("P" + sa.getServiceProviderTypeId()));
-                        sbSum = sbSum.add((BigDecimal) request.getField("SB" + sa.getServiceProviderTypeId()));
-                        smSum = smSum.add((BigDecimal) request.getField("SM" + sa.getServiceProviderTypeId()));
+                        nSum = nSum.add((BigDecimal) request.getField("P" + sa.getServiceProviderTypeId())).setScale(2);
+                        sbSum = sbSum.add((BigDecimal) request.getField("SB" + sa.getServiceProviderTypeId())).setScale(2);
+                        smSum = smSum.add((BigDecimal) request.getField("SM" + sa.getServiceProviderTypeId())).setScale(2);
                     }
 
                     Long numm = (Long)request.getField("NUMM");
                     BigDecimal summa = (BigDecimal) request.getField("SUMMA");
                     BigDecimal subs = (BigDecimal) request.getField("SUBS");
 
-                    if (!request.getField("NM_PAY").equals(nSum.setScale(2))
-                            || (numm != 0 && !summa.equals(subs.multiply(new BigDecimal(numm)))
-                                && !summa.equals(sbSum.setScale(2)))
-                            || (numm == 0 && !summa.equals(smSum.setScale(2)))) {
+                    if (!request.getField("NM_PAY").equals(nSum)
+                            || (numm != 0 && !summa.equals(subs.multiply(new BigDecimal(numm))) && !summa.equals(sbSum))
+                            || (numm == 0 && !summa.equals(smSum))) {
                         request.setStatus(RequestStatus.SUBSIDY_NM_PAY_ERROR);
                         requestFile.setStatus(RequestFileStatus.LOAD_ERROR);
                     }
