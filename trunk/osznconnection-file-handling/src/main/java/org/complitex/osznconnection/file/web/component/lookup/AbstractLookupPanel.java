@@ -168,7 +168,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
         accordion.add(addressSearchComponent);
 
         //lookup by account number
-        accountNumberModel = new Model<String>();
+        accountNumberModel = new Model<>();
         TextField<String> accountNumber = new TextField<String>("accountNumber", accountNumberModel);
         accountNumber.add(new AjaxFormComponentUpdatingBehavior("onchange") {
 
