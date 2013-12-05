@@ -7,6 +7,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.complitex.correction.entity.OrganizationCorrection;
 import org.complitex.correction.service.OrganizationCorrectionBean;
 import org.complitex.dictionary.entity.FilterWrapper;
@@ -98,9 +99,15 @@ public class SubsidyFileListPanel extends AbstractFileListPanel {
                 }
 
                 @Override
-                public Component field(Item<RequestFile> item) {
-                    return new Label("sum", item.getModelObject().getSum() != null
-                            ? item.getModelObject().getSum().setScale(2, RoundingMode.HALF_UP).toString() : "");
+                public Component field(final Item<RequestFile> item) {
+                    return new Label("sum", new LoadableDetachableModel<String>(){
+
+                        @Override
+                        protected String load() {
+                            return item.getModelObject(). getSum() != null
+                                ? item.getModelObject().getSum().setScale(2, RoundingMode.HALF_UP).toString() : "";
+                        }
+                    });
                 }
         });
     }
