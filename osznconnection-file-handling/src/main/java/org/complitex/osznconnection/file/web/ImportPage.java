@@ -48,7 +48,7 @@ import static org.complitex.address.entity.AddressImportFile.*;
 @AuthorizeInstantiation(SecurityRole.ADMIN_MODULE_EDIT)
 public class ImportPage extends TemplatePage {
 
-    @EJB
+    @EJB(name = "OsznImportService")
     private ImportService importService;
 
     @EJB(name = IOrganizationStrategy.BEAN_NAME, beanInterface = IOrganizationStrategy.class)
