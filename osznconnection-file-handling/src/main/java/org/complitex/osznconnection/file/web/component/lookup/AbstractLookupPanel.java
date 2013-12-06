@@ -34,7 +34,6 @@ import org.odlabs.wiquery.ui.accordion.AccordionActive;
 import org.odlabs.wiquery.ui.accordion.AccordionAnimated;
 import org.odlabs.wiquery.ui.core.JsScopeUiEvent;
 import org.odlabs.wiquery.ui.dialog.Dialog;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
@@ -43,7 +42,6 @@ import java.util.List;
 import static org.apache.wicket.util.string.Strings.isEmpty;
 
 public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Panel {
-    private final Logger log = LoggerFactory.getLogger(AbstractLookupPanel.class);
 
     @EJB
     private StrategyFactory strategyFactory;
@@ -126,7 +124,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
                         outgoingAddressResolved = true;
                     } catch (Exception e) {
                         error(getString("db_error"));
-                        log.error("", e);
+                        LoggerFactory.getLogger(getClass()).error("", e);
                     }
                     if (outgoingAddressResolved) {
                         if (request.getStatus() == RequestStatus.ACCOUNT_NUMBER_NOT_FOUND) {
@@ -142,7 +140,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
                                 }
                             } catch (DBException e) {
                                 error(getString("remote_db_error"));
-                                log.error("", e);
+                                LoggerFactory.getLogger(getClass()).error("", e);
                             }
                         } else {
                             error(statusRenderService.displayStatus(request.getStatus(), getLocale()));
@@ -192,7 +190,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
                     try {
                         outgoingDistrict = resolveOutgoingDistrict(request, userOrganizationId);
                     } catch (Exception e) {
-                        log.error("", e);
+                        LoggerFactory.getLogger(getClass()).error("", e);
                         error(getString("db_error"));
                     }
                     if (!isEmpty(outgoingDistrict)) {
@@ -209,7 +207,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
                             }
                         } catch (DBException e) {
                             error(getString("remote_db_error"));
-                            log.error("", e);
+                            LoggerFactory.getLogger(getClass()).error("", e);
                         } catch (UnknownAccountNumberTypeException e) {
                             error(getString("unknown_account_number_type"));
                         }
@@ -253,7 +251,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
                         closeDialog(target);
                     } catch (Exception e) {
                         error(getString("db_error"));
-                        log.error("", e);
+                        LoggerFactory.getLogger(getClass()).error("", e);
                         target.add(messages);
                     }
                 } else {

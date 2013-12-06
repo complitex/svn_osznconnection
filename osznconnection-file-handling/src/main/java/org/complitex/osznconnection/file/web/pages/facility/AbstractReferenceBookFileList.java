@@ -40,8 +40,6 @@ import org.complitex.osznconnection.file.web.component.process.*;
 import org.complitex.template.web.component.toolbar.ToolbarButton;
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.TemplatePage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import java.util.Arrays;
@@ -55,8 +53,7 @@ import java.util.List;
 @AuthorizeInstantiation(SecurityRole.AUTHORIZED)
 public abstract class AbstractReferenceBookFileList extends TemplatePage {
 
-    private final Logger log = LoggerFactory.getLogger(AbstractReferenceBookFileList.class);
-    private static final int AJAX_TIMER = 4;
+    private static final int AJAX_TIMER = 1;
     @EJB
     private RequestFileDescriptionBean requestFileDescriptionBean;
     private RequestFileLoadPanel requestFileLoadPanel;
@@ -266,13 +263,13 @@ public abstract class AbstractReferenceBookFileList extends TemplatePage {
 
             @Override
             protected void logSuccess(RequestFile requestFile) {
-                log.info("Request file of type {} (ID : {}, full name: '{}') has been deleted.",
+                log().info("Request file of type {} (ID : {}, full name: '{}') has been deleted.",
                         new Object[]{getRequestFileType(), requestFile.getId(), requestFile.getFullName()});
             }
 
             @Override
             protected void logError(RequestFile requestFile, Exception e) {
-                log.error("Couldn't delete request file of type " + getRequestFileType()
+                log().error("Couldn't delete request file of type " + getRequestFileType()
                         + " (ID: " + requestFile.getId() + ", full name: '" + requestFile.getFullName() + "').", e);
             }
         });

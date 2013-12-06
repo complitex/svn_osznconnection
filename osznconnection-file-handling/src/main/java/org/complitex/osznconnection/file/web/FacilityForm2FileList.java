@@ -30,8 +30,6 @@ import org.complitex.osznconnection.file.service.process.ProcessType;
 import org.complitex.osznconnection.file.web.component.process.*;
 import org.complitex.template.web.pages.ScrollListPage;
 import org.complitex.template.web.security.SecurityRole;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 
@@ -42,7 +40,6 @@ import javax.ejb.EJB;
 @AuthorizeInstantiation(SecurityRole.AUTHORIZED)
 public final class FacilityForm2FileList extends ScrollListPage {
 
-    private final Logger log = LoggerFactory.getLogger(FacilityForm2FileList.class);
     private static final int AJAX_TIMER = 4;
     @EJB
     private ProcessManagerBean processManagerBean;
@@ -256,13 +253,13 @@ public final class FacilityForm2FileList extends ScrollListPage {
 
             @Override
             protected void logSuccess(RequestFile requestFile) {
-                log.info("Request file (ID : {}, full name: '{}') has been deleted.", requestFile.getId(),
+                log().info("Request file (ID : {}, full name: '{}') has been deleted.", requestFile.getId(),
                         requestFile.getFullName());
             }
 
             @Override
             protected void logError(RequestFile requestFile, Exception e) {
-                log.error("Cannot delete request file (ID : " + requestFile.getId() + ", full name: '"
+                log().error("Cannot delete request file (ID : " + requestFile.getId() + ", full name: '"
                         + requestFile.getFullName() + "').", e);
             }
         });

@@ -4,8 +4,6 @@
  */
 package org.complitex.osznconnection.file.web.file_description;
 
-import java.util.List;
-import javax.ejb.EJB;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
@@ -23,8 +21,9 @@ import org.complitex.osznconnection.file.service.file_description.RequestFileDes
 import org.complitex.osznconnection.file.service.file_description.RequestFileDescriptionValidateException.ValidationError;
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.TemplatePage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import javax.ejb.EJB;
+import java.util.List;
 
 /**
  *
@@ -33,7 +32,6 @@ import org.slf4j.LoggerFactory;
 @AuthorizeInstantiation(SecurityRole.ADMIN_MODULE_EDIT)
 public final class RequestFileDescriptionPage extends TemplatePage {
 
-    private final Logger log = LoggerFactory.getLogger(RequestFileDescriptionPage.class);
     @EJB
     private RequestFileDescriptionBean fileDescriptionBean;
 
@@ -82,7 +80,7 @@ public final class RequestFileDescriptionPage extends TemplatePage {
                         fileDescriptionBean.update(fileDescriptions);
                         info(getString("descriptions_saved"));
                     } catch (Exception e) {
-                        log.error("", e);
+                        log().error("", e);
                         error(getString("db_error"));
                     }
                 }
