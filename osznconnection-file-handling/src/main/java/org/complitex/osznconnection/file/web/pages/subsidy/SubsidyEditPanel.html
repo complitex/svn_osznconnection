@@ -8,16 +8,21 @@
 
 <body>
 <wicket:panel>
-    <div wicket:id="dialog">
-        <div wicket:id="container">
+    <div wicket:id="dialog" wicket:message="title:title">
+        <form wicket:id="form">
             <div wicket:id="messages"></div>
-            <table>
-                <tr wicket:id="fields">
-                    <td wicket:id="name">:</td>
-                    <td><input wicket:id="field"/></td>
-                </tr>
-            </table>
-        </div>
+            <div>
+                <div wicket:id="fields" style="float: left">
+                    <span wicket:id="name">:</span>
+                    <input wicket:id="field"/>
+                </div>
+            </div>
+
+            <div style="clear: left; padding-top: 20px">
+                <input type="button" wicket:message="value:save" wicket:id="save" class="btnMiddle"/>
+                <input type="button" wicket:message="value:cancel" wicket:id="cancel" class="btnMiddle"/>
+            </div>
+        </form>
     </div>
 </wicket:panel>
 </body>

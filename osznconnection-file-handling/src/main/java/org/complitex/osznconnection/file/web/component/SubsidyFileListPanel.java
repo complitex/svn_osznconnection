@@ -10,6 +10,7 @@ import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.complitex.correction.entity.OrganizationCorrection;
 import org.complitex.correction.service.OrganizationCorrectionBean;
+import org.complitex.dictionary.converter.BigDecimalConverter;
 import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
@@ -26,7 +27,6 @@ import org.complitex.osznconnection.file.web.pages.subsidy.SubsidyList;
 import org.complitex.osznconnection.organization.strategy.OsznOrganizationStrategy;
 
 import javax.ejb.EJB;
-import java.math.RoundingMode;
 import java.util.List;
 import java.util.Map;
 
@@ -35,6 +35,7 @@ import java.util.Map;
  *         Date: 03.12.13 18:51
  */
 public class SubsidyFileListPanel extends AbstractFileListPanel {
+    private BigDecimalConverter bigDecimalConverter = new BigDecimalConverter(2);
 
     @EJB
     private ProcessManagerBean processManagerBean;
@@ -104,8 +105,7 @@ public class SubsidyFileListPanel extends AbstractFileListPanel {
 
                         @Override
                         protected String load() {
-                            return item.getModelObject(). getSum() != null
-                                ? item.getModelObject().getSum().setScale(2, RoundingMode.HALF_UP).toString() : "";
+                            return bigDecimalConverter.convertToString(item.getModelObject(). getSum(), getLocale());
                         }
                     });
                 }
