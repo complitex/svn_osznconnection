@@ -36,6 +36,24 @@ public abstract class AbstractRequest<E extends Enum> implements ILongId{
         return updateFieldMap;
     }
 
+    private Map<String, Object> convertedFields = new HashMap<String, Object>(){
+        @Override
+        public Object get(Object key) {
+            return getField(key.toString());
+        }
+
+        @Override
+        public Object put(String key, Object value) {
+            setField(key, value);
+
+            return null;
+        }
+    };
+
+    public Map<String, Object> getConvertedFields() {
+        return convertedFields;
+    }
+
     public void setUpdateFieldMap(Map<String, String> updateFieldMap) {
         this.updateFieldMap = updateFieldMap;
     }

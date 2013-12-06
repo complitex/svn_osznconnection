@@ -13,6 +13,7 @@ import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.Link;
+import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.IModel;
@@ -114,6 +115,8 @@ public final class SubsidyList extends TemplatePage {
         final WebMarkupContainer content = new WebMarkupContainer("content");
         content.setOutputMarkupId(true);
         add(content);
+
+        content.add(new FeedbackPanel("messages"));
 
         final Form<Void> filterForm = new Form<Void>("filterForm");
         content.add(filterForm);
