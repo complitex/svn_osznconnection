@@ -17,17 +17,16 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.complitex.address.util.AddressRenderer;
 import org.complitex.dictionary.util.StringUtil;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.service.BenefitBean;
 import org.complitex.osznconnection.file.service.StatusRenderService;
 import org.complitex.osznconnection.file.service.warning.WebWarningRenderer;
 import org.complitex.osznconnection.file.service_provider.exception.DBException;
-import org.complitex.address.util.AddressRenderer;
 import org.odlabs.wiquery.core.javascript.JsStatement;
 import org.odlabs.wiquery.ui.core.JsScopeUiEvent;
 import org.odlabs.wiquery.ui.dialog.Dialog;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
@@ -40,7 +39,6 @@ import java.util.List;
  */
 public class BenefitConnectPanel extends Panel {
 
-    private final Logger log = LoggerFactory.getLogger(BenefitConnectPanel.class);
     @EJB
     private BenefitBean benefitBean;
     @EJB
@@ -61,7 +59,7 @@ public class BenefitConnectPanel extends Panel {
                 }
             } catch (DBException e) {
                 error(getString("db_error"));
-                log.error("", e);
+                LoggerFactory.getLogger(getClass()).error("", e);
             }
 
             switch (benefit.getStatus()) {
@@ -223,7 +221,7 @@ public class BenefitConnectPanel extends Panel {
                         }
                     } catch (DBException e) {
                         error(getString("db_error"));
-                        log.error("", e);
+                        LoggerFactory.getLogger(getClass()).error("", e);
                     }
                 }
                 target.add(messages);

@@ -33,8 +33,6 @@ import org.complitex.template.web.component.toolbar.DeleteItemButton;
 import org.complitex.template.web.component.toolbar.ToolbarButton;
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.FormTemplatePage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import java.util.List;
@@ -46,7 +44,6 @@ import java.util.List;
 @AuthorizeInstantiation(SecurityRole.AUTHORIZED)
 public final class PersonAccountEdit extends FormTemplatePage {
 
-    private final Logger log = LoggerFactory.getLogger(PersonAccountEdit.class);
     public static final String CORRECTION_ID = "correction_id";
 
     @EJB
@@ -79,7 +76,7 @@ public final class PersonAccountEdit extends FormTemplatePage {
             back(true);
         } catch (Exception e) {
             error(getString("db_error"));
-            log.error("", e);
+            log().error("", e);
         }
     }
 
@@ -89,7 +86,7 @@ public final class PersonAccountEdit extends FormTemplatePage {
             back(false);
         } catch (Exception e) {
             error(getString("db_error"));
-            log.error("", e);
+            log().error("", e);
         }
     }
 
