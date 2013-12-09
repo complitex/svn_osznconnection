@@ -16,16 +16,16 @@
     <sidebar>
         <menu class="org.complitex.osznconnection.file.web.AdminTemplateMenu"/>
         <menu class="org.complitex.osznconnection.file.web.menu.SubsidyRequestMenu"/>
-        <menu class="org.complitex.osznconnection.file.web.menu.FacilityRequestMenu"/>
+        <!--<menu class="org.complitex.osznconnection.file.web.menu.FacilityRequestMenu"/>-->
         <menu class="org.complitex.address.menu.AddressMenu"/>
         <menu class="org.complitex.osznconnection.file.web.menu.CorrectionMenu"/>
         <menu class="org.complitex.osznconnection.organization.web.OsznOrganizationTemplateMenu"/>
         <menu class="org.complitex.osznconnection.organization_type.menu.OsznOrganizationTypeMenu"/>
-        <menu class="org.complitex.osznconnection.file.web.pages.ownership.OwnershipTemplateMenu"/>
-        <menu class="org.complitex.osznconnection.file.web.pages.privilege.PrivilegeTemplateMenu"/>
+        <!--<menu class="org.complitex.osznconnection.file.web.pages.ownership.OwnershipTemplateMenu"/>-->
+        <!--<menu class="org.complitex.osznconnection.file.web.pages.privilege.PrivilegeTemplateMenu"/>-->
         <menu class="org.complitex.address.menu.AddressDescriptionMenu"/>
         <menu class="org.complitex.organization.web.OrganizationDescriptionTemplateMenu"/>
-        <menu class="org.complitex.osznconnection.file.web.pages.ownership.OwnershipDescriptionTemplateMenu"/>
-        <menu class="org.complitex.osznconnection.file.web.pages.privilege.PrivilegeDescriptionTemplateMenu"/>
+        <!--<menu class="org.complitex.osznconnection.file.web.pages.ownership.OwnershipDescriptionTemplateMenu"/>-->
+        <!--<menu class="org.complitex.osznconnection.file.web.pages.privilege.PrivilegeDescriptionTemplateMenu"/>-->
     </sidebar>
 </template>
