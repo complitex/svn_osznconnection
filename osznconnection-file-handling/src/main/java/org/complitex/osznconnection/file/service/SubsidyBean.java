@@ -36,6 +36,12 @@ public class SubsidyBean extends AbstractRequestBean {
         BUILDING(SubsidyDBF.BLD.name()),
         CORP(SubsidyDBF.CORP.name()),
         APARTMENT(SubsidyDBF.FLAT.name()),
+        DAT1(SubsidyDBF.DAT1.name()),
+        DAT2(SubsidyDBF.DAT2.name()),
+        NUMM(SubsidyDBF.NUMM.name()),
+        NM_PAY(SubsidyDBF.NM_PAY.name()),
+        SUMMA(SubsidyDBF.SUMMA.name()),
+        SUBS(SubsidyDBF.SUBS.name()),
         STATUS("status");
         private String orderBy;
 

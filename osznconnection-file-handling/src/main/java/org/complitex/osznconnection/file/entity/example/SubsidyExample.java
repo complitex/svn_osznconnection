@@ -1,5 +1,8 @@
 package org.complitex.osznconnection.file.entity.example;
 
+import java.math.BigDecimal;
+import java.util.Date;
+
 /**
  *
  * @author Artem
@@ -19,6 +22,10 @@ public class SubsidyExample extends AbstractRequestExample {
     private int size;
     private String orderByClause;
     private boolean asc;
+
+    private Date DAT1, DAT2;
+    private Integer NUMM;
+    private BigDecimal NM_PAY, SUMMA, SUBS;
 
     public String getRash() {
         return rash;
@@ -122,5 +129,53 @@ public class SubsidyExample extends AbstractRequestExample {
 
     public void setAsc(boolean asc) {
         this.asc = asc;
+    }
+
+    public Date getDAT1() {
+        return DAT1;
+    }
+
+    public void setDAT1(Date DAT1) {
+        this.DAT1 = DAT1;
+    }
+
+    public Date getDAT2() {
+        return DAT2;
+    }
+
+    public void setDAT2(Date DAT2) {
+        this.DAT2 = DAT2;
+    }
+
+    public Integer getNUMM() {
+        return NUMM;
+    }
+
+    public void setNUMM(Integer NUMM) {
+        this.NUMM = NUMM;
+    }
+
+    public BigDecimal getNM_PAY() {
+        return NM_PAY;
+    }
+
+    public void setNM_PAY(BigDecimal NM_PAY) {
+        this.NM_PAY = NM_PAY;
+    }
+
+    public BigDecimal getSUMMA() {
+        return SUMMA;
+    }
+
+    public void setSUMMA(BigDecimal SUMMA) {
+        this.SUMMA = SUMMA;
+    }
+
+    public BigDecimal getSUBS() {
+        return SUBS;
+    }
+
+    public void setSUBS(BigDecimal SUBS) {
+        this.SUBS = SUBS;
     }
 }

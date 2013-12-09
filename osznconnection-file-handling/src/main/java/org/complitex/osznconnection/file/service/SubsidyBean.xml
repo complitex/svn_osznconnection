@@ -111,34 +111,25 @@
     </insert>
     
     <sql id="filter">
-        <if test="rash != null">
-            AND s.`RASH` LIKE CONCAT('%',#{rash},'%')
-        </if>
-        <if test="firstName != null">
-            AND s.`first_name` LIKE CONCAT('%',#{firstName},'%')
-        </if>
-        <if test="middleName != null">
-            AND s.`middle_name` LIKE CONCAT('%',#{middleName},'%')
-        </if>
-        <if test="lastName != null">
-            AND s.`last_name` LIKE CONCAT('%',#{lastName},'%')
-        </if>
+        <if test="rash != null">AND s.`RASH` LIKE CONCAT('%',#{rash},'%')</if>
+        <if test="firstName != null">AND s.`first_name` LIKE CONCAT('%',#{firstName},'%')</if>
+        <if test="middleName != null">AND s.`middle_name` LIKE CONCAT('%',#{middleName},'%')</if>
+        <if test="lastName != null">AND s.`last_name` LIKE CONCAT('%',#{lastName},'%')</if>
 
-        <if test="city != null">
-            AND s.`NP_NAME` LIKE CONCAT('%', #{city}, '%')
-        </if>
-        <if test="street != null">
-            AND s.`NAME_V` LIKE CONCAT('%', #{street}, '%')
-        </if>
-        <if test="building != null">
-            AND s.`BLD` LIKE CONCAT('%', #{building}, '%')
-        </if>
-        <if test="corp != null">
-            AND s.`CORP` LIKE CONCAT('%', #{corp}, '%')
-        </if>
-        <if test="apartment != null">
-            AND s.`FLAT` LIKE CONCAT('%', #{apartment}, '%')
-        </if>
+        <if test="city != null">AND s.`NP_NAME` LIKE CONCAT('%', #{city}, '%')</if>
+        <if test="street != null">AND s.`NAME_V` LIKE CONCAT('%', #{street}, '%')</if>
+        <if test="building != null">AND s.`BLD` LIKE CONCAT('%', #{building}, '%'</if>
+        <if test="corp != null">AND s.`CORP` LIKE CONCAT('%', #{corp}, '%')</if>
+        <if test="apartment != null">AND s.`FLAT` LIKE CONCAT('%', #{apartment}, '%')</if>
+
+        <if test="apartment != null">AND s.`FLAT` LIKE CONCAT('%', #{apartment}, '%')</if>
+
+        <if test="DAT1 != null">AND s.`DAT1`  = #{DAT1}</if>
+        <if test="DAT2 != null">AND s.`DAT2`  = #{DAT2}</if>
+        <if test="NUMM != null">AND s.`NUMM`  = #{NUMM}</if>
+        <if test="NM_PAY != null">AND s.`NM_PAY`  = #{NM_PAY}</if>
+        <if test="SUMMA != null">AND s.`SUMMA`  = #{SUMMA}</if>
+        <if test="SUBS != null">AND s.`SUBS`  = #{SUBS}</if>
 
         <if test="status != null">
             AND s.`status` = #{status}
