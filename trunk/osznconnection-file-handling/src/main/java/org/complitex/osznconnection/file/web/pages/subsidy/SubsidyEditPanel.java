@@ -129,6 +129,7 @@ public class SubsidyEditPanel extends Panel {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 dialog.close(target);
+                target.add(toUpdate);
             }
         });
 
@@ -178,10 +179,10 @@ public class SubsidyEditPanel extends Panel {
                 ? "background-color: lightpink;" : ""));
 
         if (numm != 0){
-            boolean check = !summa.equals(subs.multiply(new BigDecimal(numm))) && !summa.equals(subsidySum.getSbSum());
+            boolean check = summa.equals(subs.multiply(new BigDecimal(numm))) && summa.equals(subsidySum.getSbSum());
 
-            summaTextField.add(new AttributeModifier("style", check ? "background-color: lightpink;" : ""));
-            subsTextField.add(new AttributeModifier("style", check ? "background-color: lightpink;" : ""));
+            summaTextField.add(new AttributeModifier("style", !check ? "background-color: lightpink;" : ""));
+            subsTextField.add(new AttributeModifier("style", !check ? "background-color: lightpink;" : ""));
         }else {
             summaTextField.add(new AttributeModifier("style", (!summa.equals(subsidySum.getSmSum()))
                     ? "background-color: lightpink;" : ""));
