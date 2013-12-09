@@ -23,6 +23,10 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.address.entity.AddressEntity;
 import org.complitex.address.util.AddressRenderer;
+import org.complitex.correction.service.exception.DuplicateCorrectionException;
+import org.complitex.correction.service.exception.MoreOneCorrectionException;
+import org.complitex.correction.service.exception.NotFoundCorrectionException;
+import org.complitex.correction.web.component.AddressCorrectionPanel;
 import org.complitex.dictionary.service.SessionBean;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
@@ -33,9 +37,6 @@ import org.complitex.osznconnection.file.service.AddressService;
 import org.complitex.osznconnection.file.service.RequestFileBean;
 import org.complitex.osznconnection.file.service.StatusRenderService;
 import org.complitex.osznconnection.file.service.SubsidyBean;
-import org.complitex.correction.service.exception.DuplicateCorrectionException;
-import org.complitex.correction.service.exception.MoreOneCorrectionException;
-import org.complitex.correction.service.exception.NotFoundCorrectionException;
 import org.complitex.osznconnection.file.service.status.details.StatusDetailBean;
 import org.complitex.osznconnection.file.service.status.details.SubsidyExampleConfigurator;
 import org.complitex.osznconnection.file.service.status.details.SubsidyStatusDetailRenderer;
@@ -44,14 +45,17 @@ import org.complitex.osznconnection.file.web.SubsidyFileList;
 import org.complitex.osznconnection.file.web.component.DataRowHoverBehavior;
 import org.complitex.osznconnection.file.web.component.StatusDetailPanel;
 import org.complitex.osznconnection.file.web.component.StatusRenderer;
-import org.complitex.correction.web.component.AddressCorrectionPanel;
 import org.complitex.template.web.security.SecurityRole;
 import org.complitex.template.web.template.TemplatePage;
 
 import javax.ejb.EJB;
 import java.io.File;
+import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+
+import static org.complitex.dictionary.util.StringUtil.decimal;
 
 @AuthorizeInstantiation(SecurityRole.AUTHORIZED)
 public final class SubsidyList extends TemplatePage {
@@ -162,6 +166,14 @@ public final class SubsidyList extends TemplatePage {
         filterForm.add(new TextField<>("buildingFilter", new PropertyModel<String>(example, "building")));
         filterForm.add(new TextField<>("corpFilter", new PropertyModel<String>(example, "corp")));
         filterForm.add(new TextField<>("apartmentFilter", new PropertyModel<String>(example, "apartment")));
+
+        filterForm.add(new TextField<>("DAT1", new PropertyModel<Date>(example, "DAT1")));
+        filterForm.add(new TextField<>("DAT2", new PropertyModel<Date>(example, "DAT2")));
+        filterForm.add(new TextField<>("NUMM", new PropertyModel<Integer>(example, "NUMM")));
+        filterForm.add(new TextField<>("NM_PAY", new PropertyModel<BigDecimal>(example, "NM_PAY")));
+        filterForm.add(new TextField<>("SUMMA", new PropertyModel<BigDecimal>(example, "SUMMA")));
+        filterForm.add(new TextField<>("SUBS", new PropertyModel<BigDecimal>(example, "SUBS")));
+
         filterForm.add(new DropDownChoice<>("statusFilter", new PropertyModel<RequestStatus>(example, "status"),
                 Arrays.asList(RequestStatus.values()), new StatusRenderer()).setNullValid(true));
 
@@ -239,6 +251,13 @@ public final class SubsidyList extends TemplatePage {
                 item.add(new Label("building", subsidy.getStringField(SubsidyDBF.BLD)));
                 item.add(new Label("corp", subsidy.getStringField(SubsidyDBF.CORP)));
                 item.add(new Label("apartment", subsidy.getStringField(SubsidyDBF.FLAT)));
+                item.add(new Label("DAT1", subsidy.getStringField(SubsidyDBF.DAT1)));
+                item.add(new Label("DAT2", subsidy.getStringField(SubsidyDBF.DAT2)));
+                item.add(new Label("NUMM", subsidy.getStringField(SubsidyDBF.NUMM)));
+                item.add(new Label("NM_PAY", decimal(subsidy.getStringField(SubsidyDBF.NM_PAY))));
+                item.add(new Label("SUMMA", decimal(subsidy.getStringField(SubsidyDBF.SUMMA))));
+                item.add(new Label("SUBS", decimal(subsidy.getStringField(SubsidyDBF.SUBS))));
+
                 item.add(new Label("status", statusRenderService.displayStatus(subsidy.getStatus(), getLocale())));
                 item.add(new Label("statusDetails", webWarningRenderer.display(subsidy.getWarnings(), getLocale())));
 
@@ -291,6 +310,14 @@ public final class SubsidyList extends TemplatePage {
         filterForm.add(new ArrowOrderByBorder("buildingHeader", SubsidyBean.OrderBy.BUILDING.getOrderBy(), dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("corpHeader", SubsidyBean.OrderBy.CORP.getOrderBy(), dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("apartmentHeader", SubsidyBean.OrderBy.APARTMENT.getOrderBy(), dataProvider, data, content));
+
+        filterForm.add(new ArrowOrderByBorder("DAT1_header", SubsidyBean.OrderBy.DAT1.getOrderBy(), dataProvider, data, content));
+        filterForm.add(new ArrowOrderByBorder("DAT2_header", SubsidyBean.OrderBy.DAT2.getOrderBy(), dataProvider, data, content));
+        filterForm.add(new ArrowOrderByBorder("NUMM_header", SubsidyBean.OrderBy.NUMM.getOrderBy(), dataProvider, data, content));
+        filterForm.add(new ArrowOrderByBorder("NM_PAY_header", SubsidyBean.OrderBy.NM_PAY.getOrderBy(), dataProvider, data, content));
+        filterForm.add(new ArrowOrderByBorder("SUMMA_header", SubsidyBean.OrderBy.SUMMA.getOrderBy(), dataProvider, data, content));
+        filterForm.add(new ArrowOrderByBorder("SUBS_header", SubsidyBean.OrderBy.SUBS.getOrderBy(), dataProvider, data, content));
+
         filterForm.add(new ArrowOrderByBorder("statusHeader", SubsidyBean.OrderBy.STATUS.getOrderBy(), dataProvider, data, content));
 
         Link<Void> back = new Link<Void>("back") {
