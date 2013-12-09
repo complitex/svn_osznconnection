@@ -105,7 +105,7 @@ public class SubsidyFileListPanel extends AbstractFileListPanel {
 
                         @Override
                         protected String load() {
-                            return bigDecimalConverter.convertToString(item.getModelObject(). getSum(), getLocale());
+                            return bigDecimalConverter.convertToString(item.getModelObject().getSum(), getLocale());
                         }
                     });
                 }
