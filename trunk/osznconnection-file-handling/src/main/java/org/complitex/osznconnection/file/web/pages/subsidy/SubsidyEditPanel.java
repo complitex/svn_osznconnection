@@ -3,28 +3,33 @@ package org.complitex.osznconnection.file.web.pages.subsidy;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
-import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.PropertyModel;
+import org.complitex.dictionary.web.component.LabelTextField;
 import org.complitex.osznconnection.file.entity.RequestFileType;
 import org.complitex.osznconnection.file.entity.Subsidy;
 import org.complitex.osznconnection.file.entity.SubsidyDBF;
+import org.complitex.osznconnection.file.entity.SubsidySum;
 import org.complitex.osznconnection.file.service.SubsidyBean;
+import org.complitex.osznconnection.file.service.SubsidyService;
 import org.complitex.osznconnection.file.service.file_description.RequestFileDescription;
 import org.complitex.osznconnection.file.service.file_description.RequestFileDescriptionBean;
 import org.complitex.osznconnection.file.service.file_description.RequestFileFieldDescription;
 import org.odlabs.wiquery.ui.dialog.Dialog;
 
 import javax.ejb.EJB;
+import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -38,17 +43,22 @@ public class SubsidyEditPanel extends Panel {
     @EJB
     private SubsidyBean subsidyBean;
 
+    @EJB
+    private SubsidyService subsidyService;
+
     private Dialog dialog;
     private Subsidy subsidy = new Subsidy();
     private Form form;
     private ListView listView;
+
+    private Map<String, LabelTextField> textFieldMap = new HashMap<>();
 
     public SubsidyEditPanel(String id, final Component toUpdate) {
         super(id);
 
         dialog = new Dialog("dialog");
         dialog.setModal(true);
-        dialog.setWidth(540);
+        dialog.setWidth(600);
         dialog.setCloseOnEscape(false);
         add(dialog);
 
@@ -67,18 +77,31 @@ public class SubsidyEditPanel extends Panel {
             protected void populateItem(final ListItem<RequestFileFieldDescription> item) {
                 final RequestFileFieldDescription fileFieldDescription = item.getModelObject();
                 item.add(new Label("name", fileFieldDescription.getName()));
-                item.add(new TextField<Object>("field", new PropertyModel<>(subsidy, "convertedFields[" + fileFieldDescription.getName() + "]")) {
-                    @Override
-                    protected void onComponentTag(ComponentTag tag) {
-                        super.onComponentTag(tag);
 
-                        tag.put("size", fileFieldDescription.getLength() + "");
-                    }
-                }.setType(fileFieldDescription.getFieldType()));
+                LabelTextField textField = new LabelTextField<>("field", fileFieldDescription.getLength(),
+                        new PropertyModel<>(subsidy, "convertedFields[" + fileFieldDescription.getName() + "]"));
+                textField.setType(fileFieldDescription.getFieldType());
+                textField.setOutputMarkupId(true);
+
+                if (item.getIndex() > 11){
+                    textField.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+                        @Override
+                        protected void onUpdate(AjaxRequestTarget target) {
+                            validate(target);
+                        }
+                    });
+                }else {
+                    textField.setEnabled(false);
+                }
+
+                textFieldMap.put(fileFieldDescription.getName(), textField);
+
+                item.add(textField);
+
 
                 String name = fileFieldDescription.getName();
 
-                if (Arrays.asList("P1", "SM1", "SB1", "OB1", "SUMMA").contains(name)) {
+                if (Arrays.asList("DAT1", "P1", "SM1", "SB1", "OB1", "SUMMA").contains(name)) {
                     item.add(AttributeModifier.replace("style", "float:left; clear:left"));
                 }
             }
@@ -108,6 +131,27 @@ public class SubsidyEditPanel extends Panel {
                 dialog.close(target);
             }
         });
+
+        form.add(new AjaxLink("recalculate") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                SubsidySum subsidySum = subsidyService.getSubsidySum(subsidy);
+
+                subsidy.setField(SubsidyDBF.NM_PAY, subsidySum.getNSum());
+
+                Long numm = subsidy.getField("NUMM");
+
+                if (numm != 0){
+                    subsidy.setField(SubsidyDBF.SUMMA, subsidySum.getSbSum());
+                    subsidy.setField(SubsidyDBF.SUBS, ((BigDecimal)subsidy.getField(SubsidyDBF.SUMMA))
+                            .divide(new BigDecimal(numm)));
+                }else {
+                    subsidy.setField(SubsidyDBF.SUMMA, subsidySum.getSmSum());
+                }
+
+                validate(target);
+            }
+        });
     }
 
     public void open(AjaxRequestTarget target, Subsidy subsidy){
@@ -117,5 +161,35 @@ public class SubsidyEditPanel extends Panel {
 
         target.add(form);
         dialog.open(target);
+    }
+
+    private void validate(final AjaxRequestTarget target){
+        SubsidySum subsidySum = subsidyService.getSubsidySum(subsidy);
+
+        Long numm = subsidy.getField("NUMM");
+        BigDecimal summa =  subsidy.getField("SUMMA");
+        BigDecimal subs = subsidy.getField("SUBS");
+
+        LabelTextField nmPayTextField = textFieldMap.get("NM_PAY");
+        LabelTextField summaTextField = textFieldMap.get("SUMMA");
+        LabelTextField subsTextField = textFieldMap.get("SUBS");
+
+        nmPayTextField.add(new AttributeModifier("style", !subsidy.getField("NM_PAY").equals(subsidySum.getNSum())
+                ? "background-color: lightpink;" : ""));
+
+        if (numm != 0){
+            boolean check = !summa.equals(subs.multiply(new BigDecimal(numm))) && !summa.equals(subsidySum.getSbSum());
+
+            summaTextField.add(new AttributeModifier("style", check ? "background-color: lightpink;" : ""));
+            subsTextField.add(new AttributeModifier("style", check ? "background-color: lightpink;" : ""));
+        }else {
+            summaTextField.add(new AttributeModifier("style", (!summa.equals(subsidySum.getSmSum()))
+                    ? "background-color: lightpink;" : ""));
+            subsTextField.add(new AttributeModifier("style", ""));
+        }
+
+        target.add(nmPayTextField);
+        target.add(summaTextField);
+        target.add(subsTextField);
     }
 }

@@ -7,6 +7,7 @@
         <result column="account_number" property="accountNumber"/>
         <result column="status" property="status"/>
         <result column="organization_id" property="organizationId"/>
+        <result column="user_organization_id" property="userOrganizationId"/>
 
         <collection property="warnings" ofType="org.complitex.osznconnection.file.entity.RequestWarning"
                 resultMap="org.complitex.osznconnection.file.service.warning.RequestWarningBean.requestWarning"/>
