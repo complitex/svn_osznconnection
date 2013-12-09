@@ -1,5 +1,6 @@
 package org.complitex.osznconnection.file.web.pages.subsidy;
 
+import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
@@ -289,14 +290,12 @@ public final class SubsidyList extends TemplatePage {
                 };
                 item.add(lookup);
 
-                AjaxLink edit = new IndicatingAjaxLink("edit") {
-
+                item.add(new AjaxEventBehavior("onclick") {
                     @Override
-                    public void onClick(AjaxRequestTarget target) {
+                    protected void onEvent(AjaxRequestTarget target) {
                         editPanel.open(target, subsidy);
                     }
-                };
-                item.add(edit);
+                });
             }
         };
         filterForm.add(data);

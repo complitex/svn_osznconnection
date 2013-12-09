@@ -14,10 +14,9 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.PropertyModel;
 import org.complitex.dictionary.web.component.LabelTextField;
-import org.complitex.osznconnection.file.entity.RequestFileType;
-import org.complitex.osznconnection.file.entity.Subsidy;
-import org.complitex.osznconnection.file.entity.SubsidyDBF;
-import org.complitex.osznconnection.file.entity.SubsidySum;
+import org.complitex.osznconnection.file.entity.*;
+import org.complitex.osznconnection.file.entity.example.SubsidyExample;
+import org.complitex.osznconnection.file.service.RequestFileBean;
 import org.complitex.osznconnection.file.service.SubsidyBean;
 import org.complitex.osznconnection.file.service.SubsidyService;
 import org.complitex.osznconnection.file.service.file_description.RequestFileDescription;
@@ -45,6 +44,9 @@ public class SubsidyEditPanel extends Panel {
 
     @EJB
     private SubsidyService subsidyService;
+
+    @EJB
+    private RequestFileBean requestFileBean;
 
     private Dialog dialog;
     private Subsidy subsidy = new Subsidy();
@@ -105,18 +107,65 @@ public class SubsidyEditPanel extends Panel {
                     item.add(AttributeModifier.replace("style", "float:left; clear:left"));
                 }
             }
+
+            @Override
+            protected void onBeforeRender() {
+                super.onBeforeRender();
+
+                if (subsidy.getUserOrganizationId() != null) {
+                    validate(null);
+                }
+            }
         }.setReuseItems(true));
 
         form.add(new AjaxSubmitLink("save") {
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                subsidy.setUpdateFieldMap(subsidy.getDbfFields());
-                subsidyBean.update(subsidy);
+                RequestFile requestFile = requestFileBean.findById(subsidy.getRequestFileId());
+
+                if (!subsidyService.validate(subsidy)){
+                    subsidy.setStatus(RequestStatus.SUBSIDY_NM_PAY_ERROR);
+
+                    //save
+                    subsidy.setUpdateFieldMap(subsidy.getDbfFields());
+                    subsidyBean.update(subsidy);
+
+                    if (!RequestFileStatus.LOAD_ERROR.equals(requestFile.getStatus())){
+                        requestFile.setStatus(RequestFileStatus.LOAD_ERROR);
+
+                        requestFileBean.save(requestFile);
+                    }
+                }else if (RequestStatus.SUBSIDY_NM_PAY_ERROR.equals(subsidy.getStatus())){
+                    subsidy.setStatus(RequestStatus.LOADED);
+
+                    //save
+                    subsidy.setUpdateFieldMap(subsidy.getDbfFields());
+                    subsidyBean.update(subsidy);
+
+                    //update request file status
+                    if (RequestFileStatus.LOAD_ERROR.equals(requestFile.getStatus())){
+                        SubsidyExample loaded = new SubsidyExample();
+                        loaded.setRequestFileId(subsidy.getRequestFileId());
+                        loaded.setStatus(RequestStatus.LOADED);
+
+                        SubsidyExample all = new SubsidyExample();
+                        all.setRequestFileId(subsidy.getRequestFileId());
+
+                        if (subsidyBean.count(loaded) == subsidyBean.count(all)){
+                            requestFile.setStatus(RequestFileStatus.LOADED);
+
+                            requestFileBean.save(requestFile);
+                        }
+                    }
+                }
+
                 dialog.close(target);
 
                 getSession().info(subsidy.getField(SubsidyDBF.RASH) +" " + subsidy.getField(SubsidyDBF.FIO) + ": "
                         + getString("info_updated"));
                 target.add(toUpdate);
+
+
             }
 
             @Override
@@ -170,27 +219,31 @@ public class SubsidyEditPanel extends Panel {
         Long numm = subsidy.getField("NUMM");
         BigDecimal summa =  subsidy.getField("SUMMA");
         BigDecimal subs = subsidy.getField("SUBS");
+        BigDecimal nmPay = subsidy.getField("NM_PAY");
 
         LabelTextField nmPayTextField = textFieldMap.get("NM_PAY");
         LabelTextField summaTextField = textFieldMap.get("SUMMA");
         LabelTextField subsTextField = textFieldMap.get("SUBS");
 
-        nmPayTextField.add(new AttributeModifier("style", !subsidy.getField("NM_PAY").equals(subsidySum.getNSum())
+        nmPayTextField.add(new AttributeModifier("style", nmPay.compareTo(subsidySum.getNSum()) != 0
                 ? "background-color: lightpink;" : ""));
 
         if (numm != 0){
-            boolean check = summa.equals(subs.multiply(new BigDecimal(numm))) && summa.equals(subsidySum.getSbSum());
+            boolean check = summa.compareTo(subs.multiply(new BigDecimal(numm))) == 0
+                    && summa.compareTo(subsidySum.getSbSum()) == 0;
 
             summaTextField.add(new AttributeModifier("style", !check ? "background-color: lightpink;" : ""));
             subsTextField.add(new AttributeModifier("style", !check ? "background-color: lightpink;" : ""));
         }else {
-            summaTextField.add(new AttributeModifier("style", (!summa.equals(subsidySum.getSmSum()))
+            summaTextField.add(new AttributeModifier("style", (summa.compareTo(subsidySum.getSmSum()) != 0)
                     ? "background-color: lightpink;" : ""));
             subsTextField.add(new AttributeModifier("style", ""));
         }
 
-        target.add(nmPayTextField);
-        target.add(summaTextField);
-        target.add(subsTextField);
+        if (target != null) {
+            target.add(nmPayTextField);
+            target.add(summaTextField);
+            target.add(subsTextField);
+        }
     }
 }

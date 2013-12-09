@@ -8,16 +8,13 @@ import org.complitex.osznconnection.file.Module;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.service.RequestFileBean;
 import org.complitex.osznconnection.file.service.SubsidyBean;
+import org.complitex.osznconnection.file.service.SubsidyService;
 import org.complitex.osznconnection.file.service.util.SubsidyNameParser;
-import org.complitex.osznconnection.organization.strategy.OsznOrganizationStrategy;
-import org.complitex.osznconnection.organization.strategy.entity.OsznOrganization;
-import org.complitex.osznconnection.organization.strategy.entity.ServiceAssociation;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +32,7 @@ public class SubsidyLoadTaskBean implements ITaskBean {
     private SubsidyBean subsidyBean;
 
     @EJB
-    private OsznOrganizationStrategy organizationStrategy;
+    private SubsidyService subsidyService;
 
     @Override
     public boolean execute(IExecutorObject executorObject, Map commandParameters) throws ExecuteException {
@@ -59,32 +56,7 @@ public class SubsidyLoadTaskBean implements ITaskBean {
             public void save(List<AbstractRequest> batch) {
                 //check sum
                 for (AbstractRequest request : batch) {
-                    OsznOrganization organization = organizationStrategy.findById(request.getUserOrganizationId(), true);
-
-                    BigDecimal nSum = new BigDecimal(0);
-                    BigDecimal sbSum = new BigDecimal(0);
-                    BigDecimal smSum = new BigDecimal(0);
-
-                    /*
-                       Если поле NUMM != 0, то нужно выполнять проверку SUMMA == SUBS * NUMM и SUMMA должен быть
-                       вточности равен сумме полей SBN, где N - коды услуг, разрешенных для организации пользователей.
-                       Если поле NUMM == 0, то нужно выполнять проверку SUMMA должен быть вточности равен сумме полей SMN,
-                       где N - коды услуг, разрешенных для организации пользователей.
-                     */
-
-                    for (ServiceAssociation sa : organization.getServiceAssociationList()) {
-                        nSum = nSum.add((BigDecimal) request.getField("P" + sa.getServiceProviderTypeId())).setScale(2);
-                        sbSum = sbSum.add((BigDecimal) request.getField("SB" + sa.getServiceProviderTypeId())).setScale(2);
-                        smSum = smSum.add((BigDecimal) request.getField("SM" + sa.getServiceProviderTypeId())).setScale(2);
-                    }
-
-                    Long numm = (Long)request.getField("NUMM");
-                    BigDecimal summa = (BigDecimal) request.getField("SUMMA");
-                    BigDecimal subs = (BigDecimal) request.getField("SUBS");
-
-                    if (!request.getField("NM_PAY").equals(nSum)
-                            || (numm != 0 && !summa.equals(subs.multiply(new BigDecimal(numm))) && !summa.equals(sbSum))
-                            || (numm == 0 && !summa.equals(smSum))) {
+                    if (!subsidyService.validate(request)){
                         request.setStatus(RequestStatus.SUBSIDY_NM_PAY_ERROR);
                         requestFile.setStatus(RequestFileStatus.LOAD_ERROR);
                     }
