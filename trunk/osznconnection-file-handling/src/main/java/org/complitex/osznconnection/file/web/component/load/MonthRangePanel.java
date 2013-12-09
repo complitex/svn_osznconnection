@@ -4,6 +4,8 @@
  */
 package org.complitex.osznconnection.file.web.component.load;
 
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
@@ -25,12 +27,23 @@ public final class MonthRangePanel extends FormComponentPanel<MonthRange> {
 
         //Период
         from = new MonthDropDownChoice("from", new PropertyModel<Integer>(this, "monthFrom"));
+        from.setOutputMarkupId(true);
         from.setRequired(true);
         add(from);
 
         to = new MonthDropDownChoice("to", new PropertyModel<Integer>(this, "monthTo"));
+        to.setOutputMarkupId(true);
         to.setRequired(true);
         add(to);
+
+        from.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                to.setModelObject(from.getModelObject());
+
+                target.add(to);
+            }
+        });
     }
 
     @Override
