@@ -93,6 +93,8 @@
         <mapper resource="org/complitex/osznconnection/file/service/BenefitBean.xml"/>
         <mapper resource="org/complitex/osznconnection/file/service/SubsidyTarifBean.xml"/>
         <mapper resource="org/complitex/osznconnection/file/service/PersonAccountLocalBean.xml"/>
+        <mapper resource="org/complitex/osznconnection/file/service/RequestFileHistoryBean.xml"/>
+
         <mapper resource="org/complitex/osznconnection/file/service/status/details/StatusDetailBean.xml"/>
         <mapper resource="org/complitex/osznconnection/file/service/warning/RequestWarningBean.xml"/>
         
