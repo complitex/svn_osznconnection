@@ -43,7 +43,7 @@ public class SubsidyService {
         BigDecimal nmPay = (BigDecimal) request.getField("NM_PAY");
 
         return nmPay.compareTo(subsidySum.getNSum()) == 0
-                && (numm == 0 || summa.compareTo(subs.multiply(new BigDecimal(numm))) == 0 || summa.compareTo(subsidySum.getSbSum()) == 0)
-                && (numm != 0 || summa.compareTo(subsidySum.getSmSum()) == 0);
+                && ((numm != 0 && summa.compareTo(subs.multiply(new BigDecimal(numm))) == 0 && summa.compareTo(subsidySum.getSbSum()) == 0)
+                || (numm == 0 && summa.compareTo(subsidySum.getSmSum()) == 0));
     }
 }
