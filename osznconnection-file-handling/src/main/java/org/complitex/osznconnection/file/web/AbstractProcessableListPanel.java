@@ -32,10 +32,12 @@ import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.organization.web.component.OrganizationPicker;
 import org.complitex.organization_type.strategy.OrganizationTypeStrategy;
+import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.entity.RequestFileStatus;
 import org.complitex.osznconnection.file.service.process.ProcessManagerBean;
 import org.complitex.osznconnection.file.service.process.ProcessType;
 import org.complitex.osznconnection.file.web.component.LoadButton;
+import org.complitex.osznconnection.file.web.component.RequestFileHistoryPanel;
 import org.complitex.osznconnection.file.web.component.load.DateParameter;
 import org.complitex.osznconnection.file.web.component.load.RequestFileLoadPanel;
 import org.complitex.osznconnection.file.web.component.load.RequestFileLoadPanel.MonthParameterViewMode;
@@ -70,6 +72,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
     @EJB
     private ProcessManagerBean processManagerBean;
     private RequestFileLoadPanel requestFileLoadPanel;
+    private RequestFileHistoryPanel requestFileHistoryPanel;
     private final ModificationManager modificationManager;
     private final ProcessingManager<M> processingManager;
     private final MessagesManager<M> messagesManager;
@@ -209,6 +212,8 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
     protected abstract M getById(long id);
 
     protected abstract void delete(M object);
+
+    protected abstract RequestFile getRequestFile(M object);
 
     protected void logSuccessfulDeletion(M object) {
     }
@@ -417,7 +422,16 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
                 }));
 
                 //Статус
-                item.add(new ItemStatusLabel<M>("status", processingManager, timerManager) {
+                AjaxLink history = new AjaxLink("history") {
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        requestFileHistoryPanel.open(target, getRequestFile(item.getModelObject()));
+
+                    }
+                };
+                item.add(history);
+
+                history.add(new ItemStatusLabel<M>("status", processingManager, timerManager) {
 
                     @Override
                     protected RequestFileStatus getStatus(M object) {
@@ -627,6 +641,8 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
                     }
                 }, getLoadMonthParameterViewMode());
         add(requestFileLoadPanel);
+
+        add(requestFileHistoryPanel = new RequestFileHistoryPanel("history_panel"));
 
         //Запуск таймера
         timerManager.startTimer();

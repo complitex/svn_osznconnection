@@ -6,10 +6,7 @@ import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.dictionary.service.SessionBean;
 import org.complitex.dictionary.service.executor.ExecuteException;
 import org.complitex.dictionary.util.DateUtil;
-import org.complitex.osznconnection.file.entity.RequestFile;
-import org.complitex.osznconnection.file.entity.RequestFileFilter;
-import org.complitex.osznconnection.file.entity.RequestFileStatus;
-import org.complitex.osznconnection.file.entity.RequestFileType;
+import org.complitex.osznconnection.file.entity.*;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -58,6 +55,9 @@ public class RequestFileBean extends AbstractBean {
 
     @EJB
     private FacilityReferenceBookBean facilityReferenceBookBean;
+
+    @EJB
+    private RequestFileHistoryBean requestFileHistoryBean;
 
     public RequestFile findById(long fileId) {
         return sqlSession().selectOne(NS + ".findById", fileId);
@@ -134,8 +134,19 @@ public class RequestFileBean extends AbstractBean {
     public void save(RequestFile requestFile) {
         if (requestFile.getId() == null) {
             sqlSession().insert(NS + ".insertRequestFile", requestFile);
+
+            //history
+            requestFileHistoryBean.save(new RequestFileHistory(requestFile.getId(), requestFile.getStatus(), DateUtil.getCurrentDate()));
         } else {
             sqlSession().update(NS + ".updateRequestFile", requestFile);
+
+            //history
+            RequestFileHistory last = requestFileHistoryBean.getLastRequestFileHistory(requestFile.getId());
+
+            if (last != null && !last.getStatus().equals(requestFile.getStatus())){
+                requestFileHistoryBean.save(new RequestFileHistory(requestFile.getId(), requestFile.getStatus(), DateUtil.getCurrentDate()));
+            }
+
         }
     }
 

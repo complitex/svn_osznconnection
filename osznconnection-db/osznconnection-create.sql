@@ -1083,6 +1083,25 @@ CREATE TABLE `request_file_field_description` (
   CONSTRAINT `fk_request_file_field_description__request_file_description_id` FOREIGN KEY (`request_file_description_id`) REFERENCES `request_file_description` (`id`)
 ) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Описание структуры поля файла запросов';
 
+-- ------------------------------
+-- Request File Status
+-- ------------------------------
+
+DROP TABLE IF EXISTS `request_file_history`;
+
+CREATE TABLE `request_file_history` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Суррогатный ключ',
+  `request_file_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор файла запроса',
+  `status` INTEGER NOT NULL COMMENT 'Статус файла запроса',
+  `date` TIMESTAMP NOT NULL COMMENT 'Дата утановки статуса',
+  PRIMARY KEY (`id`),
+  KEY `key_request_file_id` (`request_file_id`),
+  KEY `status` (`status`),
+  KEY `date` (`date`),
+  CONSTRAINT `fk_request_file_history__request_file` FOREIGN KEY (`request_file_id`) REFERENCES `request_file` (`id`)
+    ON DELETE CASCADE
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'История файла запроса';
+
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;

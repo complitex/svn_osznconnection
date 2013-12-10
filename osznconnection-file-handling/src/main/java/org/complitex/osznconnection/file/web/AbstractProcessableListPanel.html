@@ -67,7 +67,11 @@
                                 <td><span wicket:id="loaded_record_count"></span></td>
                                 <td><span wicket:id="binded_record_count"></span></td>
                                 <td><span wicket:id="filled_record_count"></span></td>
-                                <td colspan="2"><span wicket:id="status" style="white-space:nowrap"></span></td>
+                                <td colspan="2">
+                                    <a wicket:id="history">
+                                        <span wicket:id="status" style="white-space:nowrap"></span>
+                                    </a>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -113,6 +117,7 @@
                 </form>
             </div>
             <div wicket:id="load_panel"></div>
+            <div wicket:id="history_panel"></div>
         </wicket:panel>
     </body>
 </html>

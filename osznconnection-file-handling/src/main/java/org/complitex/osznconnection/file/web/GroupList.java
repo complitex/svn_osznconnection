@@ -298,6 +298,11 @@ public class GroupList extends ScrollListPage {
         }
 
         @Override
+        protected RequestFile getRequestFile(RequestFileGroup object) {
+            return object.getPaymentFile();
+        }
+
+        @Override
         protected void logSuccessfulDeletion(RequestFileGroup group) {
             logger().info("Request file group (ID : {}, full name: '{}') has been deleted.", group.getId(), getFullName(group));
             logBean.info(Module.NAME, GroupList.class, RequestFileGroup.class, null, group.getId(),

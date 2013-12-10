@@ -179,6 +179,11 @@ public abstract class AbstractFileListPanel extends AbstractProcessableListPanel
     }
 
     @Override
+    protected RequestFile getRequestFile(RequestFile object) {
+        return object;
+    }
+
+    @Override
     protected MonthParameterViewMode getLoadMonthParameterViewMode() {
         return MonthParameterViewMode.RANGE;
     }
