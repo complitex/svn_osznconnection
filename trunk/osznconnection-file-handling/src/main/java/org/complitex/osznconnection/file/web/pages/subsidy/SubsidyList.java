@@ -2,11 +2,11 @@ package org.complitex.osznconnection.file.web.pages.subsidy;
 
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.IAjaxCallDecorator;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.authorization.UnauthorizedInstantiationException;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
-import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -29,6 +29,7 @@ import org.complitex.correction.service.exception.MoreOneCorrectionException;
 import org.complitex.correction.service.exception.NotFoundCorrectionException;
 import org.complitex.correction.web.component.AddressCorrectionPanel;
 import org.complitex.dictionary.service.SessionBean;
+import org.complitex.dictionary.web.component.AjaxCancelEventBubbleCallDecorator;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
@@ -262,7 +263,7 @@ public final class SubsidyList extends TemplatePage {
                 item.add(new Label("status", statusRenderService.displayStatus(subsidy.getStatus(), getLocale())));
                 item.add(new Label("statusDetails", webWarningRenderer.display(subsidy.getWarnings(), getLocale())));
 
-                AjaxLink addressCorrectionLink = new IndicatingAjaxLink("addressCorrectionLink") {
+                AjaxLink addressCorrectionLink = new AjaxLink("addressCorrectionLink") {
 
                     @Override
                     public void onClick(AjaxRequestTarget target) {
@@ -274,11 +275,16 @@ public final class SubsidyList extends TemplatePage {
                                 subsidy.getInternalCityId(), subsidy.getInternalStreetTypeId(), subsidy.getInternalStreetId(),
                                 subsidy.getInternalBuildingId(), null);
                     }
+
+                    @Override
+                    protected IAjaxCallDecorator getAjaxCallDecorator() {
+                        return new AjaxCancelEventBubbleCallDecorator();
+                    }
                 };
                 addressCorrectionLink.setVisible(subsidy.getStatus().isAddressCorrectable());
                 item.add(addressCorrectionLink);
 
-                AjaxLink lookup = new IndicatingAjaxLink("lookup") {
+                AjaxLink lookup = new AjaxLink("lookup") {
 
                     @Override
                     public void onClick(AjaxRequestTarget target) {
@@ -286,6 +292,11 @@ public final class SubsidyList extends TemplatePage {
                                 subsidy.getInternalBuildingId(), subsidy.getStringField(SubsidyDBF.FLAT),
                                 subsidy.getStringField(SubsidyDBF.RASH),
                                 subsidy.getStatus().isImmediatelySearchByAddress());
+                    }
+
+                    @Override
+                    protected IAjaxCallDecorator getAjaxCallDecorator() {
+                        return new AjaxCancelEventBubbleCallDecorator();
                     }
                 };
                 item.add(lookup);
