@@ -17,6 +17,8 @@ public class AccountDetail implements Serializable {
     private String ownerINN;
     private String megabankAccountNumber;
     private String serviceProviderAccountNumberInfo;
+    private String serviceProviderCode;
+    private String serviceProviderAccountNumber;
     private String street;
     private String streetType;
     private String buildingNumber;
@@ -85,6 +87,22 @@ public class AccountDetail implements Serializable {
 
     public void setServiceProviderAccountNumberInfo(String serviceProviderAccountNumberInfo) {
         this.serviceProviderAccountNumberInfo = serviceProviderAccountNumberInfo;
+    }
+
+    public String getServiceProviderCode() {
+        return serviceProviderCode;
+    }
+
+    public void setServiceProviderCode(String serviceProviderCode) {
+        this.serviceProviderCode = serviceProviderCode;
+    }
+
+    public String getServiceProviderAccountNumber() {
+        return serviceProviderAccountNumber;
+    }
+
+    public void setServiceProviderAccountNumber(String serviceProviderAccountNumber) {
+        this.serviceProviderAccountNumber = serviceProviderAccountNumber;
     }
 
     public String getStreet() {

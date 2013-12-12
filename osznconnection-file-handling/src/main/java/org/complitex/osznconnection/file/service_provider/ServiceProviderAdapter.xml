@@ -3,10 +3,12 @@
 <mapper namespace="org.complitex.osznconnection.file.service_provider.ServiceProviderAdapter">
     <resultMap id="accountDetailMap" type="org.complitex.osznconnection.file.entity.AccountDetail">
         <result column="acc_code" property="accountNumber"/>
+        <result column="erc_code" property="megabankAccountNumber"/>
+        <result column="erc_zheu_code" property="serviceProviderAccountNumberInfo"/>
+        <result column="zheu_code" property="serviceProviderAccountNumber"/>
         <result column="owner_fio" property="ownerName"/>
         <result column="owner_inn" property="ownerINN"/>
-        <result column="erc_zheu_code" property="serviceProviderAccountNumberInfo"/>
-        <result column="erc_code" property="megabankAccountNumber"/>
+        <result column="zheu" property="serviceProviderCode"/>
     </resultMap>
 
     <select id="acquireAccountDetailsByAddress" statementType="CALLABLE" parameterType="map">
