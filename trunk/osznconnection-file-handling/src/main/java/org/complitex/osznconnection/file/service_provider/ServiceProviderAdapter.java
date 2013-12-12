@@ -32,7 +32,6 @@ import java.util.*;
 import static com.google.common.collect.Iterables.filter;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
-import static org.complitex.osznconnection.file.service_provider.util.ServiceProviderAccountNumberParser.matches;
 
 /**
  *
@@ -79,51 +78,58 @@ public class ServiceProviderAdapter extends AbstractBean {
      *
      */
     public void acquirePersonAccount(CalculationContext calculationContext,
-                                     RequestFileType requestFileType, AbstractAccountRequest request, String lastName,
-                                     String serviceProviderAccountNumber, String district, String streetType,
+                                     AbstractAccountRequest request, String lastName,
+                                     String spAccountNumber, String district, String streetType,
                                      String street, String buildingNumber, String buildingCorp, String apartment,
                                      Date date, Boolean updatePUAccount) throws DBException {
-        if (Strings.isEmpty(serviceProviderAccountNumber)) {
-            serviceProviderAccountNumber = "0";
+        if (Strings.isEmpty(spAccountNumber)) {
+            spAccountNumber = "0";
         }
 
-        serviceProviderAccountNumber = serviceProviderAccountNumber.trim();
+        spAccountNumber = spAccountNumber.trim();
 
         //1. Из номера л/с из записи исключаются лидирующие нули.
-        serviceProviderAccountNumber = serviceProviderAccountNumber.replaceFirst("^0+(?!$)", "");
+        spAccountNumber = spAccountNumber.replaceFirst("^0+(?!$)", "");
 
         //z$runtime_sz_utl.getAccAttrs()
         List<AccountDetail> accountDetails = acquireAccountDetailsByAddress(calculationContext, request,
                 district, streetType, street, buildingNumber, buildingCorp, apartment, date);
 
-        if (accountDetails == null || accountDetails.isEmpty()) { //todo change to throw exception
+        if (accountDetails == null || accountDetails.isEmpty()) {
             return;
         }
 
         for (AccountDetail accountDetail : accountDetails) {
-            if (serviceProviderAccountNumber.length() < accountDetail.getServiceProviderAccountNumber().length()) {
-                continue;
-            }
-
-            if (serviceProviderAccountNumber.equals(accountDetail.getServiceProviderAccountNumber())
-                    || matches(serviceProviderAccountNumber, accountDetail.getServiceProviderAccountNumber())
-                    || matches(serviceProviderAccountNumber, accountDetail.getServiceProviderCode(),
-                    accountDetail.getServiceProviderAccountNumber())
-                    || matches(serviceProviderAccountNumber, lastName,
-                    accountDetail.getServiceProviderAccountNumber(), accountDetail.getOwnerName())
-                    || isMegabankAccount(serviceProviderAccountNumber, accountDetail.getMegabankAccountNumber())
-                    || isCalcCenterAccount(serviceProviderAccountNumber, accountDetail.getAccountNumber())) {
+            if (spAccountNumber.equals(accountDetail.getServiceProviderAccountNumber())){
                 request.setAccountNumber(accountDetail.getAccountNumber());
                 request.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
 
                 return;
+            }
+
+            if (spAccountNumber.length() > accountDetail.getServiceProviderAccountNumber().length()) {
+                int diff = spAccountNumber.length() - accountDetail.getServiceProviderAccountNumber().length();
+                String spAccountNumberEnd = spAccountNumber.substring(diff);
+                String spAccountNumberBegin = spAccountNumber.substring(0, diff);
+
+                if (spAccountNumberEnd.equals(accountDetail.getServiceProviderAccountNumber())){
+                    if (spAccountNumberBegin.contains(accountDetail.getServiceProviderCode())
+                            || accountDetail.getOwnerName().toUpperCase().startsWith(lastName.toUpperCase())
+                            || spAccountNumber.equals(accountDetail.getMegabankAccountNumber())
+                            || spAccountNumber.equals(accountDetail.getAccountNumber())){
+                        request.setAccountNumber(accountDetail.getAccountNumber());
+                        request.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
+
+                        return;
+                    }
+                }
             }
         }
 
         if (accountDetails.size() == 1) {
             // если установлена опция перезаписи номера л/с ПУ номером л/с МН и номер л/с ПУ в файле запроса равен 0
             // и получена только одна запись из МН для данного адреса, то запись считаем связанной
-            if (updatePUAccount && 0 == Integer.valueOf(serviceProviderAccountNumber)) {
+            if (updatePUAccount && 0 == Integer.valueOf(spAccountNumber)) {
 
                 request.setAccountNumber(accountDetails.get(0).getAccountNumber());
                 request.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
