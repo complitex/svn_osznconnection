@@ -142,7 +142,7 @@ public class PersonAccountService extends AbstractBean {
     @Transactional
     public void resolveRemoteAccount(Payment payment, CalculationContext calculationContext,
             Boolean updatePUAccount) throws DBException {
-        adapter.acquirePersonAccount(calculationContext, RequestFileType.PAYMENT, payment,
+        adapter.acquirePersonAccount(calculationContext,payment,
                 payment.getStringField(PaymentDBF.SUR_NAM),
                 payment.getStringField(PaymentDBF.OWN_NUM_SR), payment.getOutgoingDistrict(), payment.getOutgoingStreetType(),
                 payment.getOutgoingStreet(), payment.getOutgoingBuildingNumber(), payment.getOutgoingBuildingCorp(),
@@ -158,7 +158,7 @@ public class PersonAccountService extends AbstractBean {
     @Transactional
     public void resolveRemoteAccount(ActualPayment actualPayment, Date date, CalculationContext calculationContext,
             Boolean updatePUAccount) throws DBException {
-        adapter.acquirePersonAccount(calculationContext, RequestFileType.ACTUAL_PAYMENT, actualPayment,
+        adapter.acquirePersonAccount(calculationContext, actualPayment,
                 actualPayment.getStringField(ActualPaymentDBF.SUR_NAM),
                 actualPayment.getStringField(ActualPaymentDBF.OWN_NUM), actualPayment.getOutgoingDistrict(),
                 actualPayment.getOutgoingStreetType(), actualPayment.getOutgoingStreet(),
@@ -174,7 +174,7 @@ public class PersonAccountService extends AbstractBean {
     @Transactional
     public void resolveRemoteAccount(Subsidy subsidy, CalculationContext calculationContext,
             Boolean updatePUAccount) throws DBException {
-        adapter.acquirePersonAccount(calculationContext, RequestFileType.SUBSIDY, subsidy,
+        adapter.acquirePersonAccount(calculationContext, subsidy,
                 subsidy.getLastName(), subsidy.getStringField(SubsidyDBF.RASH),
                 subsidy.getOutgoingDistrict(), subsidy.getOutgoingStreetType(), subsidy.getOutgoingStreet(),
                 subsidy.getOutgoingBuildingNumber(), subsidy.getOutgoingBuildingCorp(),

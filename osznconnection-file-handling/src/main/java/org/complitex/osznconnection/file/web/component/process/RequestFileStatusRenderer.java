@@ -1,12 +1,9 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.osznconnection.file.web.component.process;
 
-import java.util.Locale;
 import org.complitex.dictionary.util.ResourceUtil;
 import org.complitex.osznconnection.file.entity.RequestFileStatus;
+
+import java.util.Locale;
 
 /**
  *
