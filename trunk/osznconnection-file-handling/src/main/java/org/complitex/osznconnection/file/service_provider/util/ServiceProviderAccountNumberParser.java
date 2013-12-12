@@ -23,23 +23,29 @@ public final class ServiceProviderAccountNumberParser {
         if (serviceProviderAccountNumberInfo == null) {
             throw new ServiceProviderAccountNumberParseException();
         }
+
         serviceProviderAccountNumberInfo = serviceProviderAccountNumberInfo.trim();
+
         String[] parts = serviceProviderAccountNumberInfo.split("\\.");
-        if (parts == null || parts.length != 2) {
+        if (parts.length != 2) {
             throw new ServiceProviderAccountNumberParseException();
         }
+
         String serviceProviderId = parts[0];
         if (serviceProviderId != null) {
             serviceProviderId = serviceProviderId.trim();
         }
+
         String serviceProviderAccountNumber = parts[1];
         if (serviceProviderAccountNumber != null) {
             serviceProviderAccountNumber = serviceProviderAccountNumber.trim();
         }
+
         if (isEmpty(serviceProviderId) || isEmpty(serviceProviderAccountNumber)
                 || !isNumeric(serviceProviderId) || !isNumeric(serviceProviderAccountNumber)) {
             throw new ServiceProviderAccountNumberParseException();
         }
+
         return new ServiceProviderAccountNumberInfo(serviceProviderId, serviceProviderAccountNumber);
     }
 

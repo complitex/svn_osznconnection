@@ -1,6 +1,5 @@
 package org.complitex.osznconnection.file.service_provider;
 
-import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.entity.Log.EVENT;
@@ -17,7 +16,6 @@ import org.complitex.osznconnection.file.service.SubsidyTarifBean;
 import org.complitex.osznconnection.file.service.warning.RequestWarningBean;
 import org.complitex.osznconnection.file.service.warning.WebWarningRenderer;
 import org.complitex.osznconnection.file.service_provider.exception.DBException;
-import org.complitex.osznconnection.file.service_provider.exception.ServiceProviderAccountNumberParseException;
 import org.complitex.osznconnection.file.service_provider.exception.UnknownAccountNumberTypeException;
 import org.complitex.osznconnection.service_provider_type.strategy.ServiceProviderTypeStrategy;
 import org.slf4j.Logger;
@@ -32,11 +30,9 @@ import java.math.BigDecimal;
 import java.util.*;
 
 import static com.google.common.collect.Iterables.filter;
-import static com.google.common.collect.Iterables.transform;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 import static org.complitex.osznconnection.file.service_provider.util.ServiceProviderAccountNumberParser.matches;
-import static org.complitex.osznconnection.file.service_provider.util.ServiceProviderAccountNumberParser.parse;
 
 /**
  *
@@ -84,42 +80,37 @@ public class ServiceProviderAdapter extends AbstractBean {
      */
     public void acquirePersonAccount(CalculationContext calculationContext,
                                      RequestFileType requestFileType, AbstractAccountRequest request, String lastName,
-                                     String serviceProviderAccountNumber, String district, String streetType, String street, String buildingNumber,
-                                     String buildingCorp, String apartment, Date date, Boolean updatePUAccount) throws DBException {
-
+                                     String serviceProviderAccountNumber, String district, String streetType,
+                                     String street, String buildingNumber, String buildingCorp, String apartment,
+                                     Date date, Boolean updatePUAccount) throws DBException {
         if (Strings.isEmpty(serviceProviderAccountNumber)) {
             serviceProviderAccountNumber = "0";
         }
 
         serviceProviderAccountNumber = serviceProviderAccountNumber.trim();
 
+        //1. Из номера л/с из записи исключаются лидирующие нули.
+        serviceProviderAccountNumber = serviceProviderAccountNumber.replaceFirst("^0+(?!$)", "");
+
+        //z$runtime_sz_utl.getAccAttrs()
         List<AccountDetail> accountDetails = acquireAccountDetailsByAddress(calculationContext, request,
                 district, streetType, street, buildingNumber, buildingCorp, apartment, date);
-        if (accountDetails == null || accountDetails.isEmpty()) {
+
+        if (accountDetails == null || accountDetails.isEmpty()) { //todo change to throw exception
             return;
         }
 
-        Collection<AccountDetail> errorDetails = newArrayList();
         for (AccountDetail accountDetail : accountDetails) {
-            ServiceProviderAccountNumberInfo serviceProviderAccountNumberInfo;
-
-            try {
-                serviceProviderAccountNumberInfo = parse(accountDetail.getServiceProviderAccountNumberInfo());
-            } catch (ServiceProviderAccountNumberParseException e) {
-                errorDetails.add(accountDetail);
+            if (serviceProviderAccountNumber.length() < accountDetail.getServiceProviderAccountNumber().length()) {
                 continue;
             }
 
-            if (serviceProviderAccountNumber.length() < serviceProviderAccountNumberInfo.getServiceProviderAccountNumber().length()) {
-                continue;
-            }
-
-            if (serviceProviderAccountNumber.equals(serviceProviderAccountNumberInfo.getServiceProviderAccountNumber())
-                    || matches(serviceProviderAccountNumber, serviceProviderAccountNumberInfo.getServiceProviderAccountNumber())
-                    || matches(serviceProviderAccountNumber, serviceProviderAccountNumberInfo.getServiceProviderId(),
-                    serviceProviderAccountNumberInfo.getServiceProviderAccountNumber())
+            if (serviceProviderAccountNumber.equals(accountDetail.getServiceProviderAccountNumber())
+                    || matches(serviceProviderAccountNumber, accountDetail.getServiceProviderAccountNumber())
+                    || matches(serviceProviderAccountNumber, accountDetail.getServiceProviderCode(),
+                    accountDetail.getServiceProviderAccountNumber())
                     || matches(serviceProviderAccountNumber, lastName,
-                    serviceProviderAccountNumberInfo.getServiceProviderAccountNumber(), accountDetail.getOwnerName())
+                    accountDetail.getServiceProviderAccountNumber(), accountDetail.getOwnerName())
                     || isMegabankAccount(serviceProviderAccountNumber, accountDetail.getMegabankAccountNumber())
                     || isCalcCenterAccount(serviceProviderAccountNumber, accountDetail.getAccountNumber())) {
                 request.setAccountNumber(accountDetail.getAccountNumber());
@@ -130,51 +121,13 @@ public class ServiceProviderAdapter extends AbstractBean {
         }
 
         if (accountDetails.size() == 1) {
-
             // если установлена опция перезаписи номера л/с ПУ номером л/с МН и номер л/с ПУ в файле запроса равен 0
             // и получена только одна запись из МН для данного адреса, то запись считаем связанной
-            if (updatePUAccount && 0 == Integer.valueOf(serviceProviderAccountNumber) && errorDetails.isEmpty()) {
+            if (updatePUAccount && 0 == Integer.valueOf(serviceProviderAccountNumber)) {
 
                 request.setAccountNumber(accountDetails.get(0).getAccountNumber());
                 request.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
 
-            } else if (!errorDetails.isEmpty()) {
-                log.error("acquirePersonAccount. Parsing of service provider account number was failed for following account details: {}. "
-                        + "Request id: {}, request class: {}, calculation center: {}",
-                        new Object[]{errorDetails, request.getId(), request.getClass(), calculationContext});
-
-                List<String> errorServiceProviderAccountNumbers = newArrayList(transform(errorDetails, new Function<AccountDetail, String>() {
-
-                    @Override
-                    public String apply(AccountDetail errorDetail) {
-                        return errorDetail.getServiceProviderAccountNumberInfo();
-                    }
-                }));
-                List<String> accountNumbers = newArrayList(transform(errorDetails, new Function<AccountDetail, String>() {
-
-                    @Override
-                    public String apply(AccountDetail errorDetail) {
-                        return errorDetail.getAccountNumber();
-                    }
-                }));
-                Object errorServiceProviderAccountNumbersParam = errorServiceProviderAccountNumbers.size() == 1
-                        ? errorServiceProviderAccountNumbers.get(0) : errorServiceProviderAccountNumbers;
-                Object accountNumbersParam = accountNumbers.size() == 1 ? accountNumbers.get(0) : accountNumbers;
-                errorServiceProviderAccountNumbersParam = errorServiceProviderAccountNumbersParam == null
-                        ? "null" : errorServiceProviderAccountNumbersParam;
-                accountNumbersParam = accountNumbersParam == null ? "null" : accountNumbersParam;
-
-                RequestWarning warning = new RequestWarning(request.getId(), requestFileType,
-                        RequestWarningStatus.PU_ACCOUNT_NUMBER_INVALID_FORMAT);
-                warning.addParameter(new RequestWarningParameter(0, errorServiceProviderAccountNumbersParam));
-                warning.addParameter(new RequestWarningParameter(1, accountNumbersParam));
-                warningBean.save(warning);
-
-                logBean.error(Module.NAME, getClass(), request.getClass(), request.getId(), EVENT.GETTING_DATA,
-                        ResourceUtil.getFormatString(RESOURCE_BUNDLE, "service_provider_account_number_parsing_error",
-                                localeBean.getSystemLocale(),
-                                errorServiceProviderAccountNumbersParam, accountNumbersParam, calculationContext));
-                request.setStatus(RequestStatus.BINDING_INVALID_FORMAT);
             } else {
                 request.setStatus(RequestStatus.ACCOUNT_NUMBER_MISMATCH);
             }
@@ -226,12 +179,14 @@ public class ServiceProviderAdapter extends AbstractBean {
      * в ЦН по причине того что курсор в этом случае закрыт,
      * и драйвер в соответствии со стандартом JDBC рассматривает закрытый курсор как ошибку и выбрасывает исключение.
      *
-     * @return
+     * @return AccountDetails
      */
+    @SuppressWarnings("unchecked")
     public List<AccountDetail> acquireAccountDetailsByAddress(CalculationContext calculationContext,
-                                                              AbstractRequest request, String district, String streetType, String street,
-                                                              String buildingNumber, String buildingCorp, String apartment, Date date) throws DBException {
-        List<AccountDetail> accountCorrectionDetails = null;
+                                                              AbstractRequest request, String district, String streetType,
+                                                              String street, String buildingNumber, String buildingCorp,
+                                                              String apartment, Date date) throws DBException {
+        List<AccountDetail> accountDetails;
 
         Map<String, Object> params = newHashMap();
         params.put("pDistrName", district);
@@ -254,6 +209,7 @@ public class ServiceProviderAdapter extends AbstractBean {
             }
         } finally {
             log.info("acquireAccountDetailsByAddress. Calculation center: {}, parameters : {}", calculationContext, params);
+
             if (log.isDebugEnabled()) {
                 log.debug("acquireAccountDetailsByAddress. Time of operation: {} sec.", (System.nanoTime() - startTime) / 1000000000F);
             }
@@ -270,17 +226,19 @@ public class ServiceProviderAdapter extends AbstractBean {
         } else {
             switch (resultCode) {
                 case 1:
-                    accountCorrectionDetails = (List<AccountDetail>) params.get("details");
-                    if (accountCorrectionDetails == null || accountCorrectionDetails.isEmpty()) {
-                        log.error("acquireAccountDetailsByAddress. Result code is 1 but account details data is null or empty. Request id: {}, "
-                                + "request class: {}, calculation center: {}",
+                    accountDetails = (List<AccountDetail>) params.get("details");
+
+                    if (accountDetails == null || accountDetails.isEmpty()) {
+                        log.error("acquireAccountDetailsByAddress. Result code is 1 but account details data is null " +
+                                "or empty. Request id: {}, request class: {}, calculation center: {}",
                                 new Object[]{request.getId(), request.getClass(), calculationContext});
                         logBean.error(Module.NAME, getClass(), request.getClass(), request.getId(), EVENT.GETTING_DATA,
                                 ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_inconsistent", localeBean.getSystemLocale(),
                                         "GETACCATTRS", calculationContext));
                         request.setStatus(RequestStatus.BINDING_INVALID_FORMAT);
                     }
-                    break;
+
+                    return accountDetails;
                 case 0:
                     request.setStatus(RequestStatus.ACCOUNT_NUMBER_NOT_FOUND);
                     break;
@@ -312,7 +270,8 @@ public class ServiceProviderAdapter extends AbstractBean {
                     request.setStatus(RequestStatus.BINDING_INVALID_FORMAT);
             }
         }
-        return accountCorrectionDetails;
+
+        return null;
     }
 
     /**

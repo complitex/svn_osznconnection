@@ -78,7 +78,9 @@ public class SubsidyBindTaskBean implements ITaskBean {
         if (log.isDebugEnabled()) {
             startTime = System.nanoTime();
         }
+
         personAccountService.resolveLocalAccount(subsidy, calculationContext);
+
         if (log.isDebugEnabled()) {
             log.debug("Resolving of subsidy (id = {}) for local account took {} sec.", subsidy.getId(),
                     (System.nanoTime() - startTime) / 1000000000F);
@@ -91,7 +93,9 @@ public class SubsidyBindTaskBean implements ITaskBean {
         if (log.isDebugEnabled()) {
             startTime = System.nanoTime();
         }
+
         personAccountService.resolveRemoteAccount(subsidy, calculationContext, updatePuAccount);
+
         if (log.isDebugEnabled()) {
             log.debug("Resolving of subsidy (id = {}) for remote account number took {} sec.", subsidy.getId(),
                     (System.nanoTime() - startTime) / 1000000000F);
