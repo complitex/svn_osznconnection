@@ -82,6 +82,8 @@ public class ServiceProviderAdapter extends AbstractBean {
                                      String spAccountNumber, String district, String streetType,
                                      String street, String buildingNumber, String buildingCorp, String apartment,
                                      Date date, Boolean updatePUAccount) throws DBException {
+        request.setStatus(RequestStatus.ACCOUNT_NUMBER_MISMATCH);
+
         if (Strings.isEmpty(spAccountNumber)) {
             spAccountNumber = "0";
         }
