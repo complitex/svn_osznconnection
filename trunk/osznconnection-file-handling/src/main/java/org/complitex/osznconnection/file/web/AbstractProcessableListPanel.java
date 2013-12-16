@@ -36,6 +36,7 @@ import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.entity.RequestFileStatus;
 import org.complitex.osznconnection.file.service.process.ProcessManagerBean;
 import org.complitex.osznconnection.file.service.process.ProcessType;
+import org.complitex.osznconnection.file.web.component.DataRowHoverBehavior;
 import org.complitex.osznconnection.file.web.component.LoadButton;
 import org.complitex.osznconnection.file.web.component.RequestFileHistoryPanel;
 import org.complitex.osznconnection.file.web.component.load.DateParameter;
@@ -83,6 +84,9 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
 
     public AbstractProcessableListPanel(String id) {
         super(id);
+
+        add(new DataRowHoverBehavior());
+
         this.modificationManager = new ModificationManager(this, hasFieldDescription());
         this.processingManager = new ProcessingManager<M>() {
 
