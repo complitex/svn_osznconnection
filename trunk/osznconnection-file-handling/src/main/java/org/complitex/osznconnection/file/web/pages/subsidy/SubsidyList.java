@@ -136,7 +136,7 @@ public final class SubsidyList extends TemplatePage {
                 return statusDetailBean.getSubsidyStatusDetails(fileId);
             }
         };
-        add(statusDetailPanel);
+        content.add(statusDetailPanel);
 
         final DataProvider<Subsidy> dataProvider = new DataProvider<Subsidy>() {
 

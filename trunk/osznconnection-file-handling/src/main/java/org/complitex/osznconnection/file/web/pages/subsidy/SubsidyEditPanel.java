@@ -52,6 +52,8 @@ public class SubsidyEditPanel extends Panel {
 
     private Map<String, LabelTextField> textFieldMap = new HashMap<>();
 
+    private AjaxSubmitLink link;
+
     public SubsidyEditPanel(String id, final Component toUpdate) {
         super(id);
 
@@ -103,26 +105,26 @@ public class SubsidyEditPanel extends Panel {
             form.add(textField);
         }
 
-        form.add(new AjaxSubmitLink("save") {
+        form.add(link = new AjaxSubmitLink("save") {
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 Subsidy subsidy = subsidyModel.getObject();
 
                 RequestFile requestFile = requestFileBean.findById(subsidy.getRequestFileId());
 
-                if (!subsidyService.validate(subsidy)){
+                if (!subsidyService.validate(subsidy)) {
                     subsidy.setStatus(RequestStatus.SUBSIDY_NM_PAY_ERROR);
 
                     //save
                     subsidy.setUpdateFieldMap(subsidy.getDbfFields());
                     subsidyBean.update(subsidy);
 
-                    if (!RequestFileStatus.LOAD_ERROR.equals(requestFile.getStatus())){
+                    if (!RequestFileStatus.LOAD_ERROR.equals(requestFile.getStatus())) {
                         requestFile.setStatus(RequestFileStatus.LOAD_ERROR);
 
                         requestFileBean.save(requestFile);
                     }
-                }else if (RequestStatus.SUBSIDY_NM_PAY_ERROR.equals(subsidy.getStatus())){
+                } else if (RequestStatus.SUBSIDY_NM_PAY_ERROR.equals(subsidy.getStatus())) {
                     subsidy.setStatus(RequestStatus.LOADED);
 
                     //save
@@ -130,7 +132,7 @@ public class SubsidyEditPanel extends Panel {
                     subsidyBean.update(subsidy);
 
                     //update request file status
-                    if (RequestFileStatus.LOAD_ERROR.equals(requestFile.getStatus())){
+                    if (RequestFileStatus.LOAD_ERROR.equals(requestFile.getStatus())) {
                         SubsidyExample loaded = new SubsidyExample();
                         loaded.setRequestFileId(subsidy.getRequestFileId());
                         loaded.setStatus(RequestStatus.LOADED);
@@ -138,7 +140,7 @@ public class SubsidyEditPanel extends Panel {
                         SubsidyExample all = new SubsidyExample();
                         all.setRequestFileId(subsidy.getRequestFileId());
 
-                        if (subsidyBean.count(loaded) == subsidyBean.count(all)){
+                        if (subsidyBean.count(loaded) == subsidyBean.count(all)) {
                             requestFile.setStatus(RequestFileStatus.LOADED);
 
                             requestFileBean.save(requestFile);
@@ -148,11 +150,9 @@ public class SubsidyEditPanel extends Panel {
 
                 dialog.close(target);
 
-                getSession().info(subsidy.getField(SubsidyDBF.RASH) +" " + subsidy.getField(SubsidyDBF.FIO) + ": "
+                getSession().info(subsidy.getField(SubsidyDBF.RASH) + " " + subsidy.getField(SubsidyDBF.FIO) + ": "
                         + getString("info_updated"));
                 target.add(toUpdate);
-
-
             }
 
             @Override
@@ -160,6 +160,7 @@ public class SubsidyEditPanel extends Panel {
                 target.add(messages);
             }
         });
+        link.setOutputMarkupId(true);
 
         form.add(new AjaxLink("cancel") {
             @Override
@@ -207,20 +208,31 @@ public class SubsidyEditPanel extends Panel {
         LabelTextField subsTextField = textFieldMap.get("SUBS");
         LabelTextField nummTextField = textFieldMap.get("NUMM");
 
-        nmPayTextField.add(new AttributeModifier("style", nmPay.compareTo(subsidySum.getNSum()) != 0
+        boolean nummCheck =  numm <= 0 || summa.compareTo(subs.multiply(new BigDecimal(numm))) == 0;
+
+        nmPayTextField.add(AttributeModifier.replace("style", nmPay.compareTo(subsidySum.getNSum()) != 0
                 ? "background-color: lightpink;" : ""));
-        summaTextField.add(new AttributeModifier("style", summa.compareTo(subsidySum.getSmSum()) != 0
+        summaTextField.add(AttributeModifier.replace("style", !nummCheck || summa.compareTo(subsidySum.getSmSum()) != 0
                 ? "background-color: lightpink;" : ""));
-        subsTextField.add(new AttributeModifier("style", subs.compareTo(subsidySum.getSbSum()) != 0
+        subsTextField.add(AttributeModifier.replace("style", !nummCheck || subs.compareTo(subsidySum.getSbSum()) != 0
                 ? "background-color: lightpink;" : ""));
-        nummTextField.add(new AttributeModifier("style", numm > 0 && summa.compareTo(subs.multiply(new BigDecimal(numm))) != 0
+        nummTextField.add(AttributeModifier.replace("style", !nummCheck
                 ? "background-color: lightpink;" : ""));
+
+
+        //save
+        boolean enabled = subsidyModel.getObject().getUserOrganizationId() == null
+                || subsidyService.validate(subsidyModel.getObject());
+        link.add(AttributeModifier.replace("style", "opacity:" + (enabled ? "1" : "0.5")));
+        link.setEnabled(enabled);
+
 
         if (target != null) {
             target.add(nmPayTextField);
             target.add(summaTextField);
             target.add(subsTextField);
             target.add(nummTextField);
+            target.add(link);
         }
     }
 }
