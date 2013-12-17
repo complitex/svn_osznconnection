@@ -8,16 +8,14 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.LoadableDetachableModel;
-import org.complitex.correction.entity.OrganizationCorrection;
-import org.complitex.correction.service.OrganizationCorrectionBean;
 import org.complitex.dictionary.converter.BigDecimalConverter;
-import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
 import org.complitex.organization.web.component.OrganizationPicker;
 import org.complitex.organization_type.strategy.OrganizationTypeStrategy;
 import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.entity.RequestFileType;
+import org.complitex.osznconnection.file.service.SubsidyService;
 import org.complitex.osznconnection.file.service.process.ProcessManagerBean;
 import org.complitex.osznconnection.file.service.process.ProcessType;
 import org.complitex.osznconnection.file.web.AbstractFileListPanel;
@@ -44,7 +42,7 @@ public class SubsidyFileListPanel extends AbstractFileListPanel {
     private OsznOrganizationStrategy organizationStrategy;
 
     @EJB
-    private OrganizationCorrectionBean organizationCorrectionBean;
+    private SubsidyService subsidyService;
 
     public SubsidyFileListPanel(String id) {
         super(id);
@@ -62,20 +60,7 @@ public class SubsidyFileListPanel extends AbstractFileListPanel {
 
             @Override
             public Component field(Item<RequestFile> item) {
-                RequestFile rf = item.getModelObject();
-                String fileName = rf.getName();
-                String code = fileName.substring(0, fileName.length()-8);
-                Long organizationId = organizationStrategy.getObjectIdByCode(code);
-
-                if (organizationId == null){
-                    List<OrganizationCorrection> list = organizationCorrectionBean.getOrganizationCorrections(
-                            FilterWrapper.of(new OrganizationCorrection(null, null, code, rf.getOrganizationId(),
-                                    rf.getUserOrganizationId(), null)));
-
-                    if (!list.isEmpty()){
-                        organizationId = list.get(0).getObjectId();
-                    }
-                }
+                Long organizationId = subsidyService.getServicingOrganizationId(item.getModelObject());
 
                 String name = "";
 

@@ -35,7 +35,7 @@ import java.util.Set;
 import static org.complitex.dictionary.util.StringUtil.removeWhiteSpaces;
 import static org.complitex.osznconnection.organization.strategy.OsznOrganizationStrategy.MODULE_ID;
 
-@Stateless(name = "AddressService")
+@Stateless(name = "OsznAddressService")
 public class AddressService extends AbstractBean {
     private final Logger log = LoggerFactory.getLogger(AddressService.class);
 

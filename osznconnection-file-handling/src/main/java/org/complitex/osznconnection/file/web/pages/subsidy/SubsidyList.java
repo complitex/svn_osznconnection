@@ -78,7 +78,7 @@ public final class SubsidyList extends TemplatePage {
     @EJB
     private StatusDetailBean statusDetailBean;
 
-    @EJB
+    @EJB(name = "OsznAddressService")
     private AddressService addressService;
 
     @EJB

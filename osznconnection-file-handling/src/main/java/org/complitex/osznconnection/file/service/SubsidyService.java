@@ -1,5 +1,8 @@
 package org.complitex.osznconnection.file.service;
 
+import org.complitex.correction.entity.OrganizationCorrection;
+import org.complitex.correction.service.OrganizationCorrectionBean;
+import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.organization.strategy.OsznOrganizationStrategy;
 import org.complitex.osznconnection.organization.strategy.entity.OsznOrganization;
@@ -8,6 +11,7 @@ import org.complitex.osznconnection.organization.strategy.entity.ServiceAssociat
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * @author Anatoly Ivanov java@inheaven.ru
@@ -17,6 +21,12 @@ import java.math.BigDecimal;
 public class SubsidyService {
     @EJB
     private OsznOrganizationStrategy organizationStrategy;
+
+    @EJB
+    private OrganizationCorrectionBean organizationCorrectionBean;
+
+    @EJB
+    private RequestFileBean requestFileBean;
 
     public SubsidySum getSubsidySum(AbstractRequest request){
         OsznOrganization organization = organizationStrategy.findById(request.getUserOrganizationId(), true);
@@ -46,5 +56,29 @@ public class SubsidyService {
                 && summa.compareTo(subsidySum.getSmSum()) == 0
                 && subs.compareTo(subsidySum.getSbSum()) == 0
                 && (numm <= 0 || summa.compareTo(subs.multiply(new BigDecimal(numm))) == 0);
+    }
+
+    public Long getServicingOrganizationId(RequestFile subsidyRequestFile){
+        String fileName = subsidyRequestFile.getName();
+        String code = fileName.substring(0, fileName.length()-8);
+
+        List<OrganizationCorrection> list = organizationCorrectionBean.getOrganizationCorrections(
+                FilterWrapper.of(new OrganizationCorrection(null, null, code, subsidyRequestFile.getOrganizationId(),
+                        subsidyRequestFile.getUserOrganizationId(), null)));
+
+        return !list.isEmpty() ?  list.get(0).getObjectId() : organizationStrategy.getObjectIdByCode(code);
+    }
+
+    public String getServicingOrganizationCode(Long requestFileId){
+        RequestFile requestFile = requestFileBean.findById(requestFileId);
+
+        String fileName = requestFile.getName();
+        String code = fileName.substring(0, fileName.length()-8);
+
+        List<OrganizationCorrection> list = organizationCorrectionBean.getOrganizationCorrections(
+                FilterWrapper.of(new OrganizationCorrection(null, null, code, requestFile.getOrganizationId(),
+                        requestFile.getUserOrganizationId(), null)));
+
+        return !list.isEmpty() ? organizationStrategy.getUniqueCode(list.get(0).getObjectId()) : code;
     }
 }

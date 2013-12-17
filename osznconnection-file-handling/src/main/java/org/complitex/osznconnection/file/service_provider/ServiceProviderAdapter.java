@@ -77,7 +77,7 @@ public class ServiceProviderAdapter extends AbstractBean {
      * остальное - номер л/с
      *
      */
-    public void acquirePersonAccount(CalculationContext calculationContext,
+    public AccountDetail acquirePersonAccount(CalculationContext calculationContext,
                                      AbstractAccountRequest request, String lastName,
                                      String spAccountNumber, String district, String streetType,
                                      String street, String buildingNumber, String buildingCorp, String apartment,
@@ -98,7 +98,7 @@ public class ServiceProviderAdapter extends AbstractBean {
                 district, streetType, street, buildingNumber, buildingCorp, apartment, date);
 
         if (accountDetails == null || accountDetails.isEmpty()) {
-            return;
+            return null;
         }
 
         for (AccountDetail accountDetail : accountDetails) {
@@ -106,7 +106,7 @@ public class ServiceProviderAdapter extends AbstractBean {
                 request.setAccountNumber(accountDetail.getAccountNumber());
                 request.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
 
-                return;
+                return accountDetail;
             }
 
             if (spAccountNumber.length() > accountDetail.getServiceProviderAccountNumber().length()) {
@@ -122,7 +122,7 @@ public class ServiceProviderAdapter extends AbstractBean {
                         request.setAccountNumber(accountDetail.getAccountNumber());
                         request.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
 
-                        return;
+                        return accountDetail;
                     }
                 }
             }
@@ -136,12 +136,15 @@ public class ServiceProviderAdapter extends AbstractBean {
                 request.setAccountNumber(accountDetails.get(0).getAccountNumber());
                 request.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
 
+                return accountDetails.get(0);
             } else {
                 request.setStatus(RequestStatus.ACCOUNT_NUMBER_MISMATCH);
             }
         } else {
             request.setStatus(RequestStatus.MORE_ONE_ACCOUNTS);
         }
+
+        return null;
     }
 
     public void acquireFacilityPersonAccount(CalculationContext calculationContext, AbstractAccountRequest request,
