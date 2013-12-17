@@ -47,16 +47,22 @@ public class SubsidyBindTaskBean implements ITaskBean {
     private final Logger log = LoggerFactory.getLogger(SubsidyBindTaskBean.class);
     @Resource
     private UserTransaction userTransaction;
+
     @EJB
     protected ConfigBean configBean;
-    @EJB
+
+    @EJB(name = "OsznAddressService")
     private AddressService addressService;
+
     @EJB
     private PersonAccountService personAccountService;
+
     @EJB
     private CalculationCenterBean calculationCenterBean;
+
     @EJB
     private SubsidyBean subsidyBean;
+
     @EJB
     private RequestFileBean requestFileBean;
 
@@ -100,14 +106,16 @@ public class SubsidyBindTaskBean implements ITaskBean {
             log.debug("Resolving of subsidy (id = {}) for remote account number took {} sec.", subsidy.getId(),
                     (System.nanoTime() - startTime) / 1000000000F);
         }
+
         return subsidy.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED;
     }
 
     private void bind(Subsidy subsidy, CalculationContext calculationContext, Boolean updatePuAccount)
             throws DBException {
-        //resolve local account.
+        //resolve local account
         resolveLocalAccount(subsidy, calculationContext);
 
+        //resolve remote account
         if (subsidy.getStatus() != RequestStatus.ACCOUNT_NUMBER_RESOLVED
                 && subsidy.getStatus() != RequestStatus.MORE_ONE_ACCOUNTS_LOCALLY) {
             if (resolveAddress(subsidy, calculationContext)) {
