@@ -90,7 +90,7 @@ public class ServiceProviderAdapter extends AbstractBean {
 
         spAccountNumber = spAccountNumber.trim();
 
-        //1. Из номера л/с из записи исключаются лидирующие нули.
+        //из номера л/с из записи исключаются лидирующие нули
         spAccountNumber = spAccountNumber.replaceFirst("^0+(?!$)", "");
 
         //z$runtime_sz_utl.getAccAttrs()
@@ -204,7 +204,7 @@ public class ServiceProviderAdapter extends AbstractBean {
         params.put("pStSortName", streetType);
         params.put("pStreetName", street);
         params.put("pHouseNum", buildingNumber);
-        params.put("pHousePart", buildingCorp);
+        params.put("pHousePart", buildingCorp != null ? buildingCorp : "");
         params.put("pFlatNum", apartment);
         params.put("date", date);
 
