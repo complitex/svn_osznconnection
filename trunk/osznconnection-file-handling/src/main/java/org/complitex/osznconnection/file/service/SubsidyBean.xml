@@ -22,6 +22,8 @@
         <result column="first_name" property="firstName"/>
         <result column="middle_name" property="middleName"/>
 
+        <result column="begin_date" property="date"/>
+
         <association property="dbfFields" javaType="map">
             <result column="FIO" property="FIO"/>
             <result column="ID_RAJ" property="ID_RAJ"/>
@@ -214,7 +216,7 @@
         SELECT s.`id`, s.`status`, s.`request_file_id`, s.`last_name`, s.`first_name`, s.`middle_name`, s.`FIO`,
         s.`NP_NAME`, s.`CAT_V`, s.`NAME_V`, s.`VULCOD`, s.`BLD`, s.`CORP`, s.`FLAT`, s.`DAT1`,
         s.`RASH`,
-        f.`organization_id`, f.`user_organization_id`,
+        f.`organization_id`, f.`user_organization_id`, f.`begin_date`,
         s.`internal_city_id`, s.`internal_street_id`, s.`internal_street_type_id`, s.`internal_building_id`,
         s.`outgoing_city`, s.`outgoing_district`, s.`outgoing_street`, s.`outgoing_street_type`, s.`outgoing_building_number`,
         s.`outgoing_building_corp`, s.`outgoing_apartment`,

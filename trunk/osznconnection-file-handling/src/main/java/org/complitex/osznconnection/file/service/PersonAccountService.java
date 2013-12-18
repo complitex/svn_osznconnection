@@ -159,7 +159,7 @@ public class PersonAccountService extends AbstractBean {
                 payment.getStringField(PaymentDBF.SUR_NAM),
                 payment.getStringField(PaymentDBF.OWN_NUM_SR), payment.getOutgoingDistrict(), payment.getOutgoingStreetType(),
                 payment.getOutgoingStreet(), payment.getOutgoingBuildingNumber(), payment.getOutgoingBuildingCorp(),
-                payment.getOutgoingApartment(), (Date) payment.getField(PaymentDBF.DAT1), updatePUAccount);
+                payment.getOutgoingApartment(), payment.getDate(), updatePUAccount);
 
         if (payment.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED) {
             benefitBean.updateAccountNumber(payment.getId(), payment.getAccountNumber());
@@ -191,7 +191,7 @@ public class PersonAccountService extends AbstractBean {
                 subsidy.getLastName(), subsidy.getStringField(SubsidyDBF.RASH),
                 subsidy.getOutgoingDistrict(), subsidy.getOutgoingStreetType(), subsidy.getOutgoingStreet(),
                 subsidy.getOutgoingBuildingNumber(), subsidy.getOutgoingBuildingCorp(),
-                subsidy.getOutgoingApartment(), (Date) subsidy.getField(SubsidyDBF.DAT1), updatePUAccount);
+                subsidy.getOutgoingApartment(), subsidy.getDate(), updatePUAccount);
 
         if (subsidy.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED) {
             //check servicing organization
