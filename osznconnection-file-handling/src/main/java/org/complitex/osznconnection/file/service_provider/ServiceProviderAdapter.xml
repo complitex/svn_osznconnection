@@ -4,7 +4,7 @@
     <resultMap id="accountDetailMap" type="org.complitex.osznconnection.file.entity.AccountDetail">
         <result column="acc_code" property="accountNumber"/>
         <result column="erc_code" property="megabankAccountNumber"/>
-        <result column="erc_zheu_code" property="serviceProviderAccountNumber"/>
+        <result column="zheu_code" property="serviceProviderAccountNumber"/>
         <result column="owner_fio" property="ownerName"/>
         <result column="owner_inn" property="ownerINN"/>
         <result column="zheu" property="serviceProviderCode"/>
