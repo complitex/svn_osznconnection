@@ -149,7 +149,23 @@
         w.`id` warning_id, w.`request_id` warning_reqiest_id, w.`request_file_type` warning_request_file_type, w.`status` warning_status,
         p.`request_warning_id` param_request_warning_id, p.`order` param_order, p.`type` param_type, p.`value` param_value
         FROM (
-            SELECT s.*, f.`organization_id`, f.`user_organization_id`
+            SELECT s.id, s.`status`, s.`request_file_id`,
+              TO_CYRILLIC(s.`last_name`) last_name, TO_CYRILLIC(s.`first_name`) first_name,
+              TO_CYRILLIC(s.`middle_name`) middle_name, TO_CYRILLIC(s.`FIO`) FIO,
+              TO_CYRILLIC(s.`NP_NAME`) NP_NAME, TO_CYRILLIC(s.`CAT_V`) CAT_V, TO_CYRILLIC(s.`NAME_V`) NAME_V,
+              TO_CYRILLIC(s.`BLD`) BLD, TO_CYRILLIC(s.`CORP`) CORP, TO_CYRILLIC(s.`FLAT`) FLAT,
+              s.ID_RAJ, s.NP_CODE, s.VULCOD, s.RASH, s.NUMB,
+              s.DAT1, s.DAT2, s.NM_PAY,
+              s.P1, s.P2, s.P3, s.P4, s.P5, s.P6, s.P7, s.P8,
+              s.SM1, s.SM2, s.SM3, s.SM4, s.SM5, s.SM6, s.SM7, s.SM8,
+              s.SB1, s.SB2, s.SB3, s.SB4, s.SB5, s.SB6, s.SB7, s.SB8,
+              s.OB1, s.OB2, s.OB3, s.OB4, s.OB5, s.OB6, s.OB7, s.OB8,
+              s.SUMMA, s.NUMM, s.SUBS, s.KVT,
+              f.`organization_id`, f.`user_organization_id`,
+              f.`begin_date`,
+              s.`internal_city_id`, s.`internal_street_id`, s.`internal_street_type_id`, s.`internal_building_id`,
+              s.`outgoing_city`, s.`outgoing_district`, s.`outgoing_street`, s.`outgoing_street_type`, s.`outgoing_building_number`,
+              s.`outgoing_building_corp`, s.`outgoing_apartment`, s.`account_number`
             FROM `subsidy` s
             JOIN `request_file` f ON f.`id` = s.`request_file_id`
                 WHERE s.`request_file_id` = #{requestFileId}
@@ -213,9 +229,13 @@
     </select>
     
     <select id="findForOperation" parameterType="map" resultMap="subsidyResultMap">
-        SELECT s.`id`, s.`status`, s.`request_file_id`, s.`last_name`, s.`first_name`, s.`middle_name`, s.`FIO`,
-        s.`NP_NAME`, s.`CAT_V`, s.`NAME_V`, s.`VULCOD`, s.`BLD`, s.`CORP`, s.`FLAT`, s.`DAT1`,
-        s.`RASH`,
+        SELECT s.`id`, s.`status`, s.`request_file_id`,
+        TO_CYRILLIC(s.`last_name`) last_name, TO_CYRILLIC(s.`first_name`) first_name,
+        TO_CYRILLIC(s.`middle_name`) middle_name, TO_CYRILLIC(s.`FIO`) FIO,
+        TO_CYRILLIC(s.`NP_NAME`) NP_NAME, TO_CYRILLIC(s.`CAT_V`) CAT_V, TO_CYRILLIC(s.`NAME_V`) NAME_V,
+        s.`VULCOD`,
+        TO_CYRILLIC(s.`BLD`) BLD, TO_CYRILLIC(s.`CORP`) CORP, TO_CYRILLIC(s.`FLAT`) FLAT,
+        s.`DAT1`, s.`RASH`,
         f.`organization_id`, f.`user_organization_id`, f.`begin_date`,
         s.`internal_city_id`, s.`internal_street_id`, s.`internal_street_type_id`, s.`internal_building_id`,
         s.`outgoing_city`, s.`outgoing_district`, s.`outgoing_street`, s.`outgoing_street_type`, s.`outgoing_building_number`,
