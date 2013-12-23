@@ -1,5 +1,6 @@
 package org.complitex.osznconnection.file.web.pages.subsidy;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.IAjaxCallDecorator;
@@ -305,6 +306,11 @@ public final class SubsidyList extends TemplatePage {
                     @Override
                     protected void onEvent(AjaxRequestTarget target) {
                         editPanel.open(target, subsidy);
+                    }
+
+                    @Override
+                    public boolean isEnabled(Component component) {
+                        return RequestStatus.SUBSIDY_NM_PAY_ERROR.equals(subsidy.getStatus());
                     }
                 });
             }

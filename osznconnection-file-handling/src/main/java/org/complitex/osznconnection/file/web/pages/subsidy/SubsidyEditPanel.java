@@ -80,7 +80,7 @@ public class SubsidyEditPanel extends Panel {
         messages.setOutputMarkupId(true);
         form.add(messages);
 
-        RequestFileDescription description = requestFileDescriptionBean.getFileDescription (RequestFileType.SUBSIDY);
+        final RequestFileDescription description = requestFileDescriptionBean.getFileDescription (RequestFileType.SUBSIDY);
 
         int index = 0;
         for (RequestFileFieldDescription d : description.getFields()){
@@ -112,23 +112,19 @@ public class SubsidyEditPanel extends Panel {
 
                 RequestFile requestFile = requestFileBean.findById(subsidy.getRequestFileId());
 
-                if (!subsidyService.validate(subsidy)) {
-                    subsidy.setStatus(RequestStatus.SUBSIDY_NM_PAY_ERROR);
-
-                    //save
-                    subsidy.setUpdateFieldMap(subsidy.getDbfFields());
-                    subsidyBean.update(subsidy);
-
-                    if (!RequestFileStatus.LOAD_ERROR.equals(requestFile.getStatus())) {
-                        requestFile.setStatus(RequestFileStatus.LOAD_ERROR);
-
-                        requestFileBean.save(requestFile);
-                    }
-                } else if (RequestStatus.SUBSIDY_NM_PAY_ERROR.equals(subsidy.getStatus())) {
+                if (RequestStatus.SUBSIDY_NM_PAY_ERROR.equals(subsidy.getStatus())) {
                     subsidy.setStatus(RequestStatus.LOADED);
 
                     //save
-                    subsidy.setUpdateFieldMap(subsidy.getDbfFields());
+                    Map<String, String> updateFields = new HashMap<>();
+                    int index = 0;
+                    for (RequestFileFieldDescription d : description.getFields()){
+                        if (++index > 11){
+                            updateFields.put(d.getName(), subsidy.getDbfFields().get(d.getName()));
+                        }
+                    }
+                    subsidy.setUpdateFieldMap(updateFields);
+
                     subsidyBean.update(subsidy);
 
                     //update request file status
