@@ -290,7 +290,7 @@ public class BenefitBean extends AbstractRequestBean {
                 }
 
                 for (Benefit benefitItem : benefits) {
-                    Integer benefitItemOrderFam = benefitItem.getField(BenefitDBF.ORD_FAM);
+                    Integer benefitItemOrderFam = (Integer) benefitItem.getField(BenefitDBF.ORD_FAM);
                     if (benefitItemOrderFam != null && benefitItemOrderFam.equals(benefitOrderFamAsInt)) {
                         suitable = false;
                     }

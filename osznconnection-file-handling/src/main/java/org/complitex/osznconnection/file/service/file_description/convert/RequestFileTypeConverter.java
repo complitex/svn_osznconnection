@@ -4,6 +4,7 @@
  */
 package org.complitex.osznconnection.file.service.file_description.convert;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -14,7 +15,7 @@ import java.util.Date;
  *
  * @author Artem
  */
-public final class RequestFileTypeConverter {
+public final class RequestFileTypeConverter implements Serializable {
 
     private final String datePattern;
 

@@ -54,11 +54,11 @@ public class AcquireAccountCorrectionDetailsTest extends AbstractTest {
         Payment p = new Payment() {
 
             @Override
-            public <T> T getField(PaymentDBF paymentDBF) {
+            public Object getField(PaymentDBF paymentDBF) {
                 if (paymentDBF == PaymentDBF.DAT1) {
-                    return (T) new Date();
+                    return new Date();
                 } else if (paymentDBF == PaymentDBF.OWN_NUM_SR) {
-                    return (T) "1234567";
+                    return "1234567";
                 } else {
                     throw new IllegalStateException();
                 }

@@ -2,11 +2,6 @@ package org.complitex.osznconnection.file.entity;
 
 import com.google.common.collect.Lists;
 import org.complitex.dictionary.entity.ILongId;
-import org.complitex.dictionary.util.EjbBeanLocator;
-import org.complitex.osznconnection.file.service.file_description.RequestFileDescription;
-import org.complitex.osznconnection.file.service.file_description.RequestFileDescriptionBean;
-import org.complitex.osznconnection.file.service.file_description.RequestFileFieldDescription;
-import org.complitex.osznconnection.file.service.file_description.convert.ConversionException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -28,79 +23,38 @@ public abstract class AbstractRequest<E extends Enum> implements ILongId{
     private RequestStatus status;
 
     private List<RequestWarning> warnings = Lists.newArrayList();
-    private Map<String, String> dbfFields = new HashMap<String, String>();
+    private Map<String, Object> dbfFields = new HashMap<>();
 
-    private Map<String, String> updateFieldMap;
+    private Map<String, Object> updateFieldMap;
 
-    public Map<String, String> getUpdateFieldMap() {
+    public Map<String, Object> getUpdateFieldMap() {
         return updateFieldMap;
     }
 
-    private Map<String, Object> convertedFields = new HashMap<String, Object>(){
-        @Override
-        public Object get(Object key) {
-            return getField(key.toString());
-        }
-
-        @Override
-        public Object put(String key, Object value) {
-            setField(key, value);
-
-            return null;
-        }
-    };
-
-    public Map<String, Object> getConvertedFields() {
-        return convertedFields;
-    }
-
-    public void setUpdateFieldMap(Map<String, String> updateFieldMap) {
+    public void setUpdateFieldMap(Map<String, Object> updateFieldMap) {
         this.updateFieldMap = updateFieldMap;
     }
 
-    @SuppressWarnings({"unchecked"})
-    public <T> T getField(String fieldName) {
-        final String stringValue = dbfFields.get(fieldName);
-        final RequestFileDescription description = getDescription();
-        final RequestFileFieldDescription fieldDescription = description.getField(fieldName);
-        if (fieldDescription == null) {
-            throw new IllegalStateException("Couldn't find field description. "
-                    + "Request file type: " + getRequestFileType().name() + ", request id: '" + getId()
-                    + "', field name: '" + fieldName + "'.");
-        }
-        final Class<?> expectedType = fieldDescription.getFieldType();
-        try {
-            return (T) description.getTypeConverter().toObject(stringValue, expectedType);
-        } catch (ConversionException e) {
-            throw new IllegalStateException("Couldn't perform type conversion. "
-                    + "Request file type: " + getRequestFileType().name() + ", request id: '" + getId()
-                    + "', field name: '" + fieldName
-                    + "', string value of field: '" + stringValue
-                    + "', expected java type a field value to be converted to: " + expectedType+".", e);
-        }
+    public Object getField(String fieldName) {
+        return dbfFields.get(fieldName);
     }
 
     public void setField(String fieldName, Object object) {
-        final RequestFileDescription description = getDescription();
-        dbfFields.put(fieldName, description.getTypeConverter().toString(object));
+        dbfFields.put(fieldName, object);
     }
 
-    public <T> T getField(E e) {
+    public Object getField(E e) {
         return getField(e.name());
     }
 
     public String getStringField(E e) {
-        return dbfFields.get(e.name());
+        Object o = dbfFields.get(e.name());
+
+        return o != null ? o.toString() : null;
     }
 
     public void setField(E e, Object object) {
         setField(e.name(), object);
-    }
-
-    //todo wtf
-    protected RequestFileDescription getDescription() {
-        RequestFileDescriptionBean requestFileDescriptionBean = EjbBeanLocator.getBean(RequestFileDescriptionBean.class);
-        return requestFileDescriptionBean.getFileDescription(getRequestFileType());
     }
 
     public abstract RequestFileType getRequestFileType();
@@ -145,11 +99,11 @@ public abstract class AbstractRequest<E extends Enum> implements ILongId{
         this.status = status;
     }
 
-    public Map<String, String> getDbfFields() {
+    public Map<String, Object> getDbfFields() {
         return dbfFields;
     }
 
-    public void setDbfFields(Map<String, String> dbfFields) {
+    public void setDbfFields(Map<String, Object> dbfFields) {
         this.dbfFields = dbfFields;
     }
 

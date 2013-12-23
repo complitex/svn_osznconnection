@@ -47,7 +47,7 @@ public class SubsidyService {
     public boolean validate(AbstractRequest request){
         SubsidySum subsidySum = getSubsidySum(request);
 
-        Long numm = (Long)request.getField("NUMM");
+        int numm = ((Number)request.getField("NUMM")).intValue();
         BigDecimal summa = (BigDecimal) request.getField("SUMMA");
         BigDecimal subs = (BigDecimal) request.getField("SUBS");
         BigDecimal nmPay = (BigDecimal) request.getField("NM_PAY");

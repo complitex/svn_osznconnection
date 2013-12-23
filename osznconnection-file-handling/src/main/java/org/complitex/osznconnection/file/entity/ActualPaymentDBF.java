@@ -1,13 +1,5 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.osznconnection.file.entity;
 
-/**
- *
- * @author Artem
- */
 public enum ActualPaymentDBF {
 
     SUR_NAM, //Фамилия
@@ -47,5 +39,5 @@ public enum ActualPaymentDBF {
     P7, //фактическое начисление за вывоз мусора
     N7, //фактический тариф за вывоз мусора
     P8, //фактическое начисление за водоотведение
-    N8; //фактический тариф за водоотведение
+    N8  //фактический тариф за водоотведение
 }

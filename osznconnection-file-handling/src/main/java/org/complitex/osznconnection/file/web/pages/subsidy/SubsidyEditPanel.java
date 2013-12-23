@@ -85,7 +85,7 @@ public class SubsidyEditPanel extends Panel {
         int index = 0;
         for (RequestFileFieldDescription d : description.getFields()){
             LabelTextField textField = new LabelTextField<>(d.getName(), d.getLength(),
-                    new PropertyModel<>(subsidyModel, "convertedFields[" + d.getName() + "]"));
+                    new PropertyModel<>(subsidyModel, "dbfFields[" + d.getName() + "]"));
             textField.setType(d.getFieldType());
             textField.setOutputMarkupId(true);
 
@@ -116,7 +116,7 @@ public class SubsidyEditPanel extends Panel {
                     subsidy.setStatus(RequestStatus.LOADED);
 
                     //save
-                    Map<String, String> updateFields = new HashMap<>();
+                    Map<String, Object> updateFields = new HashMap<>();
                     int index = 0;
                     for (RequestFileFieldDescription d : description.getFields()){
                         if (++index > 11){
@@ -194,10 +194,10 @@ public class SubsidyEditPanel extends Panel {
 
         SubsidySum subsidySum = subsidyService.getSubsidySum(subsidy);
 
-        Long numm = subsidy.getField("NUMM");
-        BigDecimal summa =  subsidy.getField("SUMMA");
-        BigDecimal subs = subsidy.getField("SUBS");
-        BigDecimal nmPay = subsidy.getField("NM_PAY");
+        int numm = ((Number)subsidy.getField("NUMM")).intValue();
+        BigDecimal summa = (BigDecimal) subsidy.getField("SUMMA");
+        BigDecimal subs = (BigDecimal) subsidy.getField("SUBS");
+        BigDecimal nmPay = (BigDecimal) subsidy.getField("NM_PAY");
 
         LabelTextField nmPayTextField = textFieldMap.get("NM_PAY");
         LabelTextField summaTextField = textFieldMap.get("SUMMA");

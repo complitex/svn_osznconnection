@@ -74,7 +74,7 @@ public class GroupLoadTaskBean implements ITaskBean {
                 if (rowNumber == 0) {
                     Payment payment = (Payment) request;
 
-                    Long registry = payment.getField(PaymentDBF.REE_NUM);
+                    Long registry = (Long) payment.getField(PaymentDBF.REE_NUM);
 
                     if (registry != null) {
                         paymentFile.setRegistry(registry.intValue());
@@ -108,7 +108,7 @@ public class GroupLoadTaskBean implements ITaskBean {
                     if (rowNumber == 0) {
                         Benefit benefit = (Benefit) request;
 
-                        Long registry = benefit.getField(BenefitDBF.REE_NUM);
+                        Long registry = (Long) benefit.getField(BenefitDBF.REE_NUM);
 
                         if (registry != null) {
                             benefitFile.setRegistry(registry.intValue());

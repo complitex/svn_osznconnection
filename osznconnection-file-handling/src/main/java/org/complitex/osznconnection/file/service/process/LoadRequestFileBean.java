@@ -15,7 +15,6 @@ import org.complitex.osznconnection.file.service.file_description.RequestFileDes
 import org.complitex.osznconnection.file.service.file_description.RequestFileDescriptionBean;
 import org.complitex.osznconnection.file.service.file_description.RequestFileFieldDescription;
 import org.complitex.osznconnection.file.service.file_description.convert.DBFFieldTypeConverter;
-import org.complitex.osznconnection.file.service.file_description.convert.RequestFileTypeConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -127,7 +126,8 @@ public class LoadRequestFileBean {
 
                     DBFField field = reader.getField(i);
                     currentFieldName = field.getName();
-                    setField(currentFieldName, description.getTypeConverter(), request, value);
+
+                    request.setField(currentFieldName, value);
                 }
 
                 //post processing after filling all fields of request
@@ -241,11 +241,5 @@ public class LoadRequestFileBean {
                 throw new FieldWrongSizeException(fieldName);
             }
         }
-    }
-
-
-    private void setField(String fieldName, RequestFileTypeConverter typeConverter, AbstractRequest request, Object value) {
-        String stringValue = typeConverter.toString(value);
-        request.getDbfFields().put(fieldName, stringValue);
     }
 }
