@@ -50,9 +50,9 @@ public class ProcessBenefitTest extends AbstractTest {
             }
 
             @Override
-            public <T> T getField(BenefitDBF benefitDBF) {
+            public Object getField(BenefitDBF benefitDBF) {
                 if (benefitDBF == BenefitDBF.IND_COD) {
-                    return (T) "2142426432";
+                    return "2142426432";
                 }
                 throw new IllegalStateException();
             }

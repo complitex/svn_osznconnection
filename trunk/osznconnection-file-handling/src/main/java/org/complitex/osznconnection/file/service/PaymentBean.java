@@ -103,7 +103,7 @@ public class PaymentBean extends AbstractRequestBean {
 
     @Transactional
     public void update(Payment payment, Set<Long> serviceProviderTypeIds) {
-        Map<String, String> updateFieldMap = null;
+        Map<String, Object> updateFieldMap = null;
         if (serviceProviderTypeIds != null && !serviceProviderTypeIds.isEmpty()) {
             updateFieldMap = Maps.newHashMap();
             for (PaymentDBF field : getUpdatableFields(serviceProviderTypeIds)) {

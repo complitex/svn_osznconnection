@@ -125,7 +125,7 @@ public final class SubsidyList extends TemplatePage {
 
         content.add(new FeedbackPanel("messages"));
 
-        final Form<Void> filterForm = new Form<Void>("filterForm");
+        final Form<Void> filterForm = new Form<>("filterForm");
         content.add(filterForm);
         example = new Model<>(newExample());
 
