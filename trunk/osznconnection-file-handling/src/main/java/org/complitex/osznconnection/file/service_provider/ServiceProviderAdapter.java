@@ -215,7 +215,7 @@ public class ServiceProviderAdapter extends AbstractBean {
         try {
             sqlSession(calculationContext.getDataSource()).selectOne(MAPPING_NAMESPACE + ".acquireAccountDetailsByAddress", params);
         } catch (Exception e) {
-            if (!OracleErrors.isCursorClosedError(e)) {
+            if (!OracleErrors.isCursorClosedError(e) && !(e.getCause() instanceof NullPointerException)) {
                 throw new DBException(e);
             }
         } finally {
