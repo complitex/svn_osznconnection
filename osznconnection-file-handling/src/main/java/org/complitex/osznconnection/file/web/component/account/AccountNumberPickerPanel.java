@@ -6,19 +6,20 @@ package org.complitex.osznconnection.file.web.component.account;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormChoiceComponentUpdatingBehavior;
-import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.util.string.Strings;
-import org.complitex.osznconnection.file.entity.AccountDetail;
-
-import java.util.List;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Radio;
 import org.apache.wicket.markup.html.form.RadioGroup;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
-import static org.complitex.dictionary.util.StringUtil.*;
+import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.util.string.Strings;
 import org.complitex.address.util.AddressRenderer;
+import org.complitex.osznconnection.file.entity.AccountDetail;
+
+import java.util.List;
+
+import static org.complitex.dictionary.util.StringUtil.valueOf;
 
 /**
  * Панель для показа возможных вариантов выбора л/c по детальной информации,
@@ -53,8 +54,9 @@ public class AccountNumberPickerPanel extends Panel {
             @Override
             protected void populateItem(ListItem<AccountDetail> item) {
                 AccountDetail detail = item.getModelObject();
-                item.add(new Radio<AccountDetail>("radio", item.getModel(), radioGroup).setEnabled(!Strings.isEmpty(detail.getAccountNumber())));
+                item.add(new Radio<>("radio", item.getModel(), radioGroup).setEnabled(!Strings.isEmpty(detail.getAccountNumber())));
                 item.add(new Label("accountNumber", valueOf(detail.getAccountNumber())));
+                item.add(new Label("serviceProviderCode", valueOf(detail.getServiceProviderCode())));
                 item.add(new Label("name", valueOf(detail.getOwnerName())));
                 item.add(new Label("address", displayAddress(detail)));
                 item.add(new Label("megabankAccount", valueOf(detail.getMegabankAccountNumber())));
