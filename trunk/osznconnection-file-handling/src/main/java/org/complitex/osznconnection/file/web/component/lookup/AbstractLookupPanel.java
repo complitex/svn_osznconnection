@@ -37,6 +37,7 @@ import org.odlabs.wiquery.ui.dialog.Dialog;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.apache.wicket.util.string.Strings.isEmpty;
@@ -73,7 +74,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
     private void init(final Component... toUpdate) {
         dialog = new Dialog("dialog");
         dialog.setModal(true);
-        dialog.setWidth(680);
+        dialog.setWidth(720);
         dialog.setOpenEvent(JsScopeUiEvent.quickScope(new JsStatement().self().chain("parents", "'.ui-dialog:first'").
                 chain("find", "'.ui-dialog-titlebar-close'").
                 chain("hide").render()));
@@ -92,7 +93,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
 
         //lookup by address
         addressSearchComponentState = new SearchComponentState();
-        apartmentModel = new Model<String>();
+        apartmentModel = new Model<>();
         TextField<String> apartment = new TextField<String>("apartment", apartmentModel);
         apartment.setOutputMarkupId(true);
         apartment.add(new AjaxFormComponentUpdatingBehavior("onchange") {
@@ -229,7 +230,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
         accordion.add(lookupByAccount);
 
         //account number picker panel
-        accountDetailModel = new Model<AccountDetail>();
+        accountDetailModel = new Model<>();
         accountDetailsModel = Model.ofList(null);
         accountNumberPickerPanel = new AccountNumberPickerPanel("accountNumberPickerPanel", accountDetailsModel, accountDetailModel);
         accountNumberPickerPanel.setOutputMarkupPlaceholderTag(true);
