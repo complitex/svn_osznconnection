@@ -37,7 +37,6 @@ import org.odlabs.wiquery.ui.dialog.Dialog;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.apache.wicket.util.string.Strings.isEmpty;
