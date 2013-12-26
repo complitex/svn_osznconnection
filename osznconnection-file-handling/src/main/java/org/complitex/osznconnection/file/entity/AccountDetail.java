@@ -24,6 +24,8 @@ public class AccountDetail implements Serializable {
     private String buildingNumber;
     private String buildingCorp;
     private String apartment;
+    private String houseCode;
+    private String districtCode;
 
     public String getAccountNumber() {
         return accountNumber;
@@ -119,6 +121,22 @@ public class AccountDetail implements Serializable {
 
     public void setStreetType(String streetType) {
         this.streetType = streetType;
+    }
+
+    public String getHouseCode() {
+        return houseCode;
+    }
+
+    public void setHouseCode(String houseCode) {
+        this.houseCode = houseCode;
+    }
+
+    public String getDistrictCode() {
+        return districtCode;
+    }
+
+    public void setDistrictCode(String districtCode) {
+        this.districtCode = districtCode;
     }
 
     @Override

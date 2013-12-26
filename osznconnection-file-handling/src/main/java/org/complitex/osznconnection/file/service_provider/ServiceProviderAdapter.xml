@@ -25,6 +25,33 @@
         ]]>
     </select>
 
+    <resultMap id="accountDetailResultMap" type="org.complitex.osznconnection.file.entity.AccountDetail">
+        <result column="acc_code" property="accountNumber" />
+        <result column="erc_code" property="megabankAccountNumber"/>
+        <result column="zheu_code" property="serviceProviderAccountNumberInfo"/>
+        <result column="street_sort" property="streetType"/>
+        <result column="street_name" property="street"/>
+        <result column="house_name" property="buildingNumber"/>
+        <result column="house_part" property="buildingCorp"/>
+        <result column="flat" property="apartment"/>
+        <result column="owner_fio" property="ownerName"/>
+        <result column="owner_inn" property="ownerINN"/>
+        <result column="house_code" property="houseCode"/>
+        <result column="district_code" property="districtCode"/>
+        <result column="zheu" property="serviceProviderCode"/>
+    </resultMap>
+
+    <select id="getAttrsByAccCode" statementType="CALLABLE" parameterType="map">
+        <![CDATA[
+        {#{resultCode, mode=OUT, javaType=int, jdbcType=NUMERIC} = call COMP.Z$RUNTIME_SZ_UTL.GETATTRSBYACCCODE(
+        #{pDistrName, mode=IN, javaType=string, jdbcType=VARCHAR},
+        #{pAccCode, mode=IN, javaType=string, jdbcType=VARCHAR},
+        #{pAccCodeType, mode=IN, javaType=int, jdbcType=INTEGER},
+        #{details, mode=OUT, jdbcType=CURSOR, resultMap=accountDetailResultMap})
+        }
+        ]]>
+    </select>
+
     <resultMap id="paymentAndBenefitDataResultMap" type="org.complitex.osznconnection.file.entity.PaymentAndBenefitData">
         <result property="lodgerCount" column="lodg_cnt"/>
         <result property="userCount" column="usr_cnt"/>
@@ -92,28 +119,6 @@
         <include refid="org.complitex.osznconnection.file.service_provider.ServiceProviderAdapter.getPrivs"/>
     </select>
 
-    <resultMap id="accountDetailResultMap" type="org.complitex.osznconnection.file.entity.AccountDetail">
-        <result property="accountNumber" column="mn_code"/>
-        <result property="ownerName" column="FIO"/>
-        <result property="megabankAccountNumber" column="ERC_CODE"/>
-        <result property="serviceProviderAccountNumberInfo" column="zheu_code"/>
-        <result property="streetType" column="STREET_SORT"/>
-        <result property="street" column="STREET_NAME"/>
-        <result property="buildingNumber" column="HOUSE_NAME"/>
-        <result property="buildingCorp" column="HOUSE_PART"/>
-        <result property="apartment" column="FLAT"/>
-    </resultMap>
-
-    <select id="getAttrsByAccCode" statementType="CALLABLE" parameterType="map">
-        <![CDATA[
-         {#{resultCode, mode=OUT, javaType=int, jdbcType=NUMERIC} = call COMP.Z$RUNTIME_SZ_UTL.GETATTRSBYACCCODE(
-            #{pDistrName, mode=IN, javaType=string, jdbcType=VARCHAR},
-            #{pAccCode, mode=IN, javaType=string, jdbcType=VARCHAR},
-            #{pAccCodeType, mode=IN, javaType=int, jdbcType=INTEGER},
-            #{details, mode=OUT, jdbcType=CURSOR, resultMap=accountDetailResultMap})
-        }
-        ]]>
-    </select>
 
     <resultMap id="actualPaymentDataResultMap" type="org.complitex.osznconnection.file.entity.ActualPaymentData">
         <result property="apartmentFeeCharge" column="fact_charge"/>

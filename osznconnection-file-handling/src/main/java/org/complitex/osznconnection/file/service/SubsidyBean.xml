@@ -230,12 +230,10 @@
     
     <select id="findForOperation" parameterType="map" resultMap="subsidyResultMap">
         SELECT s.`id`, s.`status`, s.`request_file_id`,
-        TO_CYRILLIC(s.`last_name`) last_name, TO_CYRILLIC(s.`first_name`) first_name,
-        TO_CYRILLIC(s.`middle_name`) middle_name, TO_CYRILLIC(s.`FIO`) FIO,
-        TO_CYRILLIC(s.`NP_NAME`) NP_NAME, TO_CYRILLIC(s.`CAT_V`) CAT_V, TO_CYRILLIC(s.`NAME_V`) NAME_V,
-        s.`VULCOD`,
+        s.`last_name`, s.`first_name`, s.`middle_name`,
+        TO_CYRILLIC(s.`FIO`) FIO, TO_CYRILLIC(s.`NP_NAME`) NP_NAME, TO_CYRILLIC(s.`CAT_V`) CAT_V, TO_CYRILLIC(s.`NAME_V`) NAME_V,
         TO_CYRILLIC(s.`BLD`) BLD, TO_CYRILLIC(s.`CORP`) CORP, TO_CYRILLIC(s.`FLAT`) FLAT,
-        s.`DAT1`, s.`RASH`,
+        s.`VULCOD`, s.`DAT1`, s.`RASH`,
         f.`organization_id`, f.`user_organization_id`, f.`begin_date`,
         s.`internal_city_id`, s.`internal_street_id`, s.`internal_street_type_id`, s.`internal_building_id`,
         s.`outgoing_city`, s.`outgoing_district`, s.`outgoing_street`, s.`outgoing_street_type`, s.`outgoing_building_number`,
