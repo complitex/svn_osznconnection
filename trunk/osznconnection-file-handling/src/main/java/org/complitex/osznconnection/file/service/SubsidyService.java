@@ -59,8 +59,7 @@ public class SubsidyService {
     }
 
     public Long getServicingOrganizationId(RequestFile subsidyRequestFile){
-        String fileName = subsidyRequestFile.getName();
-        String code = fileName.substring(0, fileName.length()-8);
+        String code = subsidyRequestFile.getName().substring(0, subsidyRequestFile.getName().length()-8);
 
         List<OrganizationCorrection> list = organizationCorrectionBean.getOrganizationCorrections(
                 FilterWrapper.of(new OrganizationCorrection(null, null, code, subsidyRequestFile.getOrganizationId(),
