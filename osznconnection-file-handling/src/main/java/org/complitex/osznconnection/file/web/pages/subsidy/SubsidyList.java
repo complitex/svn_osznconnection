@@ -30,7 +30,7 @@ import org.complitex.correction.service.exception.MoreOneCorrectionException;
 import org.complitex.correction.service.exception.NotFoundCorrectionException;
 import org.complitex.correction.web.component.AddressCorrectionPanel;
 import org.complitex.dictionary.service.SessionBean;
-import org.complitex.dictionary.web.component.AjaxCancelEventBubbleCallDecorator;
+import org.complitex.dictionary.web.component.ajax.AjaxCancelEventBubbleCallDecorator;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;

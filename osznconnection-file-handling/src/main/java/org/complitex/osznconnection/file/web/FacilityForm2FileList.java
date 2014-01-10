@@ -16,7 +16,7 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.ResourceModel;
 import org.complitex.dictionary.util.DateUtil;
 import org.complitex.dictionary.util.StringUtil;
-import org.complitex.dictionary.web.component.AjaxFeedbackPanel;
+import org.complitex.dictionary.web.component.ajax.AjaxFeedbackPanel;
 import org.complitex.dictionary.web.component.MonthDropDownChoice;
 import org.complitex.dictionary.web.component.YearDropDownChoice;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;

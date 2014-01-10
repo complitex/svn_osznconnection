@@ -24,7 +24,7 @@ import org.complitex.dictionary.entity.PreferenceKey;
 import org.complitex.dictionary.service.AbstractFilter;
 import org.complitex.dictionary.util.DateUtil;
 import org.complitex.dictionary.util.StringUtil;
-import org.complitex.dictionary.web.component.AjaxFeedbackPanel;
+import org.complitex.dictionary.web.component.ajax.AjaxFeedbackPanel;
 import org.complitex.dictionary.web.component.DatePicker;
 import org.complitex.dictionary.web.component.MonthDropDownChoice;
 import org.complitex.dictionary.web.component.YearDropDownChoice;
@@ -81,6 +81,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
     private ProcessDataView<M> dataView;
     private DataProvider<M> dataProvider;
     private final List<Column> columns = new ArrayList<Column>();
+    private WebMarkupContainer dataViewContainer;
 
     public AbstractProcessableListPanel(String id) {
         super(id);
@@ -367,7 +368,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
         dataProvider.setSort("loaded", SortOrder.DESCENDING);
 
         //Контейнер для ajax
-        final WebMarkupContainer dataViewContainer = new WebMarkupContainer("objects_container");
+        dataViewContainer = new WebMarkupContainer("objects_container");
         dataViewContainer.setOutputMarkupId(true);
         form.add(dataViewContainer);
 
@@ -686,5 +687,9 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
                 requestFileLoadPanel.open(target);
             }
         });
+    }
+
+    public WebMarkupContainer getDataViewContainer() {
+        return dataViewContainer;
     }
 }
