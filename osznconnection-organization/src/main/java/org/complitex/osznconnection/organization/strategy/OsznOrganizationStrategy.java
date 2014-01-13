@@ -198,7 +198,7 @@ public class OsznOrganizationStrategy extends AbstractOrganizationStrategy<Domai
     @Transactional
     @Override
     public List<DomainObject> getAllOuterOrganizations(Locale locale) {
-        return getOrganizations(Arrays.asList(OSZN, CALCULATION_CENTER, SERVICING_ORGANIZATION), locale);
+        return getOrganizations(Arrays.asList(OSZN, CALCULATION_CENTER, SERVICING_ORGANIZATION_TYPE), locale);
     }
 
     @Transactional
