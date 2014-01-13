@@ -173,7 +173,7 @@
                 <if test="orderByClause != null">
                     <choose>
                         <when test="orderByClause == 'RASH' or orderByClause == 'BLD' or orderByClause == 'CORP'
-                                or orderByClause == 'FLAT'">
+                                or orderByClause == 'FLAT' or orderByClause == 'id'">
                             ORDER BY `${orderByClause}`+0
                         </when>
                         <otherwise>
