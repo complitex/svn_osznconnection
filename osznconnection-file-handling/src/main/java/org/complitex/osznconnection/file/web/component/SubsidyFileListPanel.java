@@ -9,7 +9,6 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.LoadableDetachableModel;
-import org.apache.wicket.model.Model;
 import org.complitex.correction.web.component.OrganizationCorrectionDialog;
 import org.complitex.dictionary.converter.BigDecimalConverter;
 import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
@@ -69,24 +68,33 @@ public class SubsidyFileListPanel extends AbstractFileListPanel {
 
             @Override
             public Component field(Item<RequestFile> item) {
-                Long organizationId = subsidyService.getServicingOrganizationId(item.getModelObject());
+                final RequestFile rf = item.getModelObject();
+                final String code = rf.getName().substring(0, rf.getName().length() - 8);
 
-                if (organizationId != null){
-                    String name = organizationStrategy.displayShortNameAndCode(organizationStrategy.findById(organizationId, true),
-                            getLocale());
+                return new AjaxLinkPanel("servicing_organization", new LoadableDetachableModel<String>() {
+                    @Override
+                    protected String load() {
+                        Long organizationId = subsidyService.getServicingOrganizationId(rf);
 
-                    return new Label("servicing_organization", name);
-                }else {
-                    final RequestFile rf = item.getModelObject();
-                    final String name = rf.getName().substring(0, rf.getName().length() - 8);
-
-                    return new AjaxLinkPanel("servicing_organization", Model.of(name)) {
-                        @Override
-                        public void onClick(AjaxRequestTarget target) {
-                            dialog.open(target, name, rf.getOrganizationId(), rf.getUserOrganizationId(), MODULE_ID);
+                        if (organizationId != null){
+                            return organizationStrategy.displayShortNameAndCode(organizationStrategy.findById(organizationId, true),
+                                    getLocale());
+                        }else {
+                            return code;
                         }
-                    };
-                }
+                    }
+                }) {
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        dialog.open(target, code, rf.getOrganizationId(), rf.getUserOrganizationId(), MODULE_ID);
+                    }
+
+                    @Override
+                    public boolean isEnabled() {
+                        return subsidyService.getServicingOrganizationId(rf) == null;
+                    }
+                };
+
             }
         });
 

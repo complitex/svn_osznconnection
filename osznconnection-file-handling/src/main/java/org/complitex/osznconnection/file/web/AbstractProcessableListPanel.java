@@ -270,12 +270,9 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
         final AjaxFeedbackPanel messages = new AjaxFeedbackPanel("messages");
         add(messages);
 
-        //Preference page
-        final String preferencePage = getPreferencePage();
-
         //Фильтр модель
-        F filter = (F) getSession().getPreferenceObject(preferencePage, PreferenceKey.FILTER_OBJECT, newFilter());
-        final IModel<F> model = new CompoundPropertyModel<F>(filter);
+        F filter = getSession().getPreferenceObject(getPreferencePage(), PreferenceKey.FILTER_OBJECT, newFilter());
+        final IModel<F> model = new CompoundPropertyModel<>(filter);
 
         //Фильтр форма
         form = new Form<F>("form", model);
@@ -344,7 +341,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
                 {
                     filter.setAscending(false);
                     filter.setSortProperty(null);
-                    getSession().putPreferenceObject(preferencePage, PreferenceKey.FILTER_OBJECT, filter);
+                    getSession().putPreferenceObject(getPreferencePage(), PreferenceKey.FILTER_OBJECT, filter);
                 }
 
                 //prepare filter object
@@ -453,7 +450,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
         dataViewContainer.add(dataView);
 
         //Постраничная навигация
-        ProcessPagingNavigator pagingNavigator = new ProcessPagingNavigator("paging", dataView, preferencePage,
+        ProcessPagingNavigator pagingNavigator = new ProcessPagingNavigator("paging", dataView, getPreferencePage(),
                 selectManager, form);
         form.add(pagingNavigator);
 
