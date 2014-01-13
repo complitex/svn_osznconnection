@@ -63,7 +63,7 @@ public class SubsidyFileListPanel extends AbstractFileListPanel {
 
             @Override
             public Component filter() {
-                return new OrganizationPicker("servicingOrganization", null, OrganizationTypeStrategy.SERVICING_ORGANIZATION);
+                return new OrganizationPicker("servicingOrganization", null, OrganizationTypeStrategy.SERVICING_ORGANIZATION_TYPE);
             }
 
             @Override
