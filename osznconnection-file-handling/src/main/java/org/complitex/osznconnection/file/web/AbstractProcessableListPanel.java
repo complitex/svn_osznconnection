@@ -24,10 +24,10 @@ import org.complitex.dictionary.entity.PreferenceKey;
 import org.complitex.dictionary.service.AbstractFilter;
 import org.complitex.dictionary.util.DateUtil;
 import org.complitex.dictionary.util.StringUtil;
-import org.complitex.dictionary.web.component.ajax.AjaxFeedbackPanel;
 import org.complitex.dictionary.web.component.DatePicker;
 import org.complitex.dictionary.web.component.MonthDropDownChoice;
 import org.complitex.dictionary.web.component.YearDropDownChoice;
+import org.complitex.dictionary.web.component.ajax.AjaxFeedbackPanel;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.organization.web.component.OrganizationPicker;
@@ -82,6 +82,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
     private DataProvider<M> dataProvider;
     private final List<Column> columns = new ArrayList<Column>();
     private WebMarkupContainer dataViewContainer;
+    private AjaxFeedbackPanel messages;
 
     public AbstractProcessableListPanel(String id) {
         super(id);
@@ -267,7 +268,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
     }
 
     private void init() {
-        final AjaxFeedbackPanel messages = new AjaxFeedbackPanel("messages");
+        messages = new AjaxFeedbackPanel("messages");
         add(messages);
 
         //Фильтр модель
@@ -688,5 +689,9 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
 
     public WebMarkupContainer getDataViewContainer() {
         return dataViewContainer;
+    }
+
+    public AjaxFeedbackPanel getMessages() {
+        return messages;
     }
 }
