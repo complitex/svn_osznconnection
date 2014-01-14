@@ -26,5 +26,5 @@ public enum SubsidyTarifDBF {
     T11_NORM,
     T11_NRM_DO,
     T11_NRM_MA,
-    T11_K_NADL;
+    T11_K_NADL
 }

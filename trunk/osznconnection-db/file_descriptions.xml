@@ -45,6 +45,7 @@
             <field scale="4" length="10" type="java.math.BigDecimal" name="N8"/>
         </fields>
     </file-description>
+
     <file-description type="PAYMENT">
         <formatters>
             <date-pattern pattern="dd.MM.yyyy"/>
@@ -109,6 +110,7 @@
             <field length="10" type="java.lang.String" name="RESERV2"/>
         </fields>
     </file-description>
+
     <file-description type="BENEFIT">
         <formatters>
             <date-pattern pattern="dd.MM.yyyy"/>
@@ -137,6 +139,7 @@
             <field length="10" type="java.lang.String" name="RESERV2"/>
         </fields>
     </file-description>
+
     <file-description type="SUBSIDY">
         <formatters>
             <date-pattern pattern="dd.MM.yyyy"/>
@@ -195,6 +198,7 @@
             <field length="3" type="java.lang.Integer" name="KVT"/>
         </fields>
     </file-description>
+
     <file-description type="SUBSIDY_TARIF">
         <formatters>
             <date-pattern pattern="dd.MM.yyyy"/>
@@ -320,6 +324,7 @@
             <field length="10" type="java.lang.Integer" name="TAR_PRIV"/>
         </fields>
     </file-description>
+
     <file-description type="FACILITY_FORM2">
         <formatters>
             <date-pattern pattern="dd.MM.yyyy"/>

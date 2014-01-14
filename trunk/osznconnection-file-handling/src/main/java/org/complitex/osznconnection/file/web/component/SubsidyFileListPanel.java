@@ -28,6 +28,7 @@ import org.complitex.osznconnection.file.web.pages.subsidy.SubsidyList;
 import org.complitex.osznconnection.organization.strategy.OsznOrganizationStrategy;
 
 import javax.ejb.EJB;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -52,7 +53,8 @@ public class SubsidyFileListPanel extends AbstractFileListPanel {
     public SubsidyFileListPanel(String id) {
         super(id);
 
-        final OrganizationCorrectionDialog dialog = new OrganizationCorrectionDialog("dialog", getDataViewContainer());
+        final OrganizationCorrectionDialog dialog = new OrganizationCorrectionDialog("dialog",
+                Arrays.asList(getDataViewContainer(), getMessages()));
         add(dialog);
 
         addColumn(new Column() {
