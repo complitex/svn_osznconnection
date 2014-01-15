@@ -15,7 +15,7 @@ import java.util.List;
  *
  * Информация о файле запроса: имя, дата загрузки, организация, дата, количество записей, размер файла, статус.
  */
-public class RequestFile implements IExecutorObject {
+public class RequestFile<T extends AbstractAccountRequest> implements IExecutorObject {
     private Long id;
     private Long groupId;
     private Date loaded = DateUtil.getCurrentDate();
@@ -37,7 +37,7 @@ public class RequestFile implements IExecutorObject {
     private Integer filledRecordCount = 0;
     private String absolutePath;
 
-    private List<AbstractAccountRequest> requests;
+    private List<T> requests;
 
     private boolean cancel = false;
 
@@ -230,11 +230,11 @@ public class RequestFile implements IExecutorObject {
         this.absolutePath = absolutePath;
     }
 
-    public List<AbstractAccountRequest> getRequests() {
+    public List<T> getRequests() {
         return requests;
     }
 
-    public void setRequests(List<AbstractAccountRequest> requests) {
+    public void setRequests(List<T> requests) {
         this.requests = requests;
     }
 

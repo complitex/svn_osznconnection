@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.complitex.osznconnection.file.service.SubsidyMasterDataBean">
+    <resultMap id="subsidyMasterDataRequestMap" type="org.complitex.osznconnection.file.entity.SubsidyMasterData">
+        <id property="id"/>
+
+        <association property="dbfFields" javaType="map">
+            <result property="DOM"/>
+            <result property="REG"/>
+            <result property="LS"/>
+            <result property="DELO"/>
+            <result property="TOT"/>
+            <result property="PERIOD"/>
+            <result property="FIO"/>
+            <result property="ADRES"/>
+            <result property="NKW"/>
+            <result property="KWART"/>
+            <result property="OTOPL"/>
+            <result property="PODOGR"/>
+            <result property="WODA"/>
+            <result property="GAZ"/>
+            <result property="ELEKTR"/>
+            <result property="STOKI"/>
+            <result property="TOT_O"/>
+            <result property="KWART_O"/>
+            <result property="OTOPL_O"/>
+            <result property="GORWODA_O"/>
+            <result property="WODA_O"/>
+            <result property="GAZ_O"/>
+            <result property="ELEKTR_O"/>
+            <result property="STOKI_O"/>
+            <result property="BEGIN0"/>
+            <result property="END0"/>
+            <result property="PR_KV"/>
+        </association>
+    </resultMap>
+
+    <insert id="insertSubsidyMasterData" parameterType="org.complitex.osznconnection.file.entity.SubsidyMasterData">
+        insert into `subsidy_master_data`
+            (<foreach collection="dbfFields.keys" item="key" separator=",">
+                `${key}`
+            </foreach>)
+        values
+            (<foreach collection="dbfFields.keys" item="key" separator=",">
+                #{dbfFields.${key}}
+            </foreach>)
+    </insert>
+
+    <update id="updateSubsidyMasterData" parameterType="org.complitex.osznconnection.file.entity.SubsidyMasterData">
+        update `subsidy_master_data` set
+            <foreach collection="dbfFieldMap.entrySet()" item="item" index="key" separator=",">
+                `${key}` = #{item}
+            </foreach>
+        where `id` = #{id}
+    </update>
+
+    <select id="selectSubsidyMasterDataList" resultMap="subsidyMasterDataRequestMap" parameterType="long">
+        select * from `subsidy_master_data` s
+          left join `subsidy_master_data_part` p on p.`subsidy_master_data_id` = s.`id`
+        where p.`subsidy_id` = #{subsidyId}
+
+        <if test="size != 0">
+            limit #{start},#{size}
+        </if>
+    </select>
+
+    <delete id="deleteSubsidyMasterDataList" parameterType="long">
+        delete s, p from `subsidy_master_data` s
+            left join `subsidy_master_data_part` p on p.`subsidy_master_data_id` = s.`id`
+        where p.`subsidy_id` = #{subsidyId}
+    </delete>
+</mapper>

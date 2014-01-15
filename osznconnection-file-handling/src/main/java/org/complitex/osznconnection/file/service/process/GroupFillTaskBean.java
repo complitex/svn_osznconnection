@@ -3,7 +3,6 @@ package org.complitex.osznconnection.file.service.process;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import java.util.Collection;
 import org.complitex.dictionary.entity.IExecutorObject;
 import org.complitex.dictionary.entity.Log;
 import org.complitex.dictionary.service.ConfigBean;
@@ -17,6 +16,9 @@ import org.complitex.osznconnection.file.service.RequestFileGroupBean;
 import org.complitex.osznconnection.file.service.exception.AlreadyProcessingException;
 import org.complitex.osznconnection.file.service.exception.CanceledByUserException;
 import org.complitex.osznconnection.file.service.exception.FillException;
+import org.complitex.osznconnection.file.service_provider.CalculationCenterBean;
+import org.complitex.osznconnection.file.service_provider.ServiceProviderAdapter;
+import org.complitex.osznconnection.file.service_provider.exception.DBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,13 +29,7 @@ import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import org.complitex.osznconnection.file.service_provider.CalculationCenterBean;
-import org.complitex.osznconnection.file.service_provider.ServiceProviderAdapter;
-import org.complitex.osznconnection.file.service_provider.exception.DBException;
+import java.util.*;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -42,20 +38,26 @@ import org.complitex.osznconnection.file.service_provider.exception.DBException;
 @Stateless
 @TransactionManagement(TransactionManagementType.BEAN)
 public class GroupFillTaskBean implements ITaskBean {
-
     private final Logger log = LoggerFactory.getLogger(GroupFillTaskBean.class);
+
     @Resource
     private UserTransaction userTransaction;
+
     @EJB
     protected ConfigBean configBean;
+
     @EJB
     private PaymentBean paymentBean;
+
     @EJB
     private BenefitBean benefitBean;
+
     @EJB
     private CalculationCenterBean calculationCenterBean;
+
     @EJB
     private RequestFileGroupBean requestFileGroupBean;
+
     @EJB
     private ServiceProviderAdapter adapter;
 

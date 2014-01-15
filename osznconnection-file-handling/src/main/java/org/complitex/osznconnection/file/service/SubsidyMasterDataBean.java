@@ -15,17 +15,28 @@ import java.util.List;
 public class SubsidyMasterDataBean extends AbstractBean {
     public final static String NS = SubsidyMasterDataBean.class.getName();
 
+    public void save(SubsidyMasterData subsidyMasterData){
+        if (subsidyMasterData.getId() == null){
+            //todo add part
+            sqlSession().insert(NS + ".insertSubsidyMasterData", subsidyMasterData);
+        }else {
+            sqlSession().update(NS + ".updateSubsidyMasterData", subsidyMasterData);
+        }
+    }
+
     public SubsidyMasterData getSubsidyMasterData(Long id){
         return sqlSession().selectOne(NS + ".selectSubsidyMasterData", id);
     }
 
-    public List<SubsidyMasterData> getSubsidyMasterDataList(FilterWrapper<SubsidyMasterData> filterWrapper){
-        return sqlSession().selectList(NS + ".selectSubsidyMasterDataList", filterWrapper);
+    public List<SubsidyMasterData> getSubsidyMasterDataList(Long subsidyId){
+        return sqlSession().selectList(NS + ".selectSubsidyMasterDataList", subsidyId);
     }
 
     public Integer getSubsidyMasterDataListCount(FilterWrapper<SubsidyMasterData> filterWrapper){
         return sqlSession().selectOne(NS + ".selectSubsidyMasterDataListCount", filterWrapper);
     }
 
-
+    public void clearSubsidyMasterDataList(Long subsidyId){
+        sqlSession().delete(NS + ".deleteSubsidyMasterDataList", subsidyId);
+    }
 }

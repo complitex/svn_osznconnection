@@ -166,6 +166,7 @@ public class SubsidyFileListPanel extends AbstractFileListPanel {
 
     @Override
     protected void fill(List<Long> selectedFileIds, Map<Enum<?>, Object> commandParameters) {
+        processManagerBean.fillSubsidy(selectedFileIds, commandParameters);
     }
 
     @Override
