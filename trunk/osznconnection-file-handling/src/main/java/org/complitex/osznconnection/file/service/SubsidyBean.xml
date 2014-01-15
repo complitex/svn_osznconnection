@@ -79,7 +79,6 @@
         </association>
     </resultMap>
 
-
     <insert id="insertSubsidyList" parameterType="list">
         INSERT INTO `subsidy`
         (

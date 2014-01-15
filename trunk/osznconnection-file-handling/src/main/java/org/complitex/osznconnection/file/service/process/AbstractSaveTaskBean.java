@@ -35,7 +35,7 @@ import java.util.Map;
  *
  * @author Artem
  */
-public abstract class AbstractSaveTaskBean {
+public abstract class AbstractSaveTaskBean<T extends AbstractAccountRequest> {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
     @EJB
@@ -96,7 +96,7 @@ public abstract class AbstractSaveTaskBean {
         return field;
     }
 
-    protected abstract List<AbstractAccountRequest> getAbstractRequests(RequestFile requestFile);
+    protected abstract List<T> getAbstractRequests(RequestFile requestFile);
 
     protected abstract String getPuAccountFieldName();
 
@@ -119,7 +119,7 @@ public abstract class AbstractSaveTaskBean {
         return inputFileName;
     }
 
-    protected final void save(RequestFile requestFile, boolean updatePuAccount) throws SaveException {
+    protected final void save(RequestFile<T> requestFile, boolean updatePuAccount) throws SaveException {
         final RequestFileDescription description = requestFileDescriptionBean.getFileDescription(requestFile.getType());
 
         DBFWriter writer = null;
@@ -140,7 +140,7 @@ public abstract class AbstractSaveTaskBean {
             writer.setFields(fields);
 
             //Сохранение строк
-            List<AbstractAccountRequest> rows;
+            List<T> rows;
             try {
                 rows = getAbstractRequests(requestFile);
                 requestFile.setRequests(rows);

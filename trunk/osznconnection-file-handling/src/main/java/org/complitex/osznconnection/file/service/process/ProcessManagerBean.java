@@ -417,6 +417,12 @@ public class ProcessManagerBean {
     }
 
     @Asynchronous
+    public void fillSubsidy(List<Long> ids, Map processParameters) {
+        execute(FILL_SUBSIDY, SubsidyFillTaskBean.class, getSubsidyFiles(ids), null, FILL_THREAD_SIZE,
+                FILL_MAX_ERROR_COUNT, processParameters);
+    }
+
+    @Asynchronous
     public void saveSubsidy(List<Long> ids, Map processParameters) {
         execute(SAVE_SUBSIDY, SubsidySaveTaskBean.class, getSubsidyFiles(ids), null, SAVE_THREAD_SIZE,
                 SAVE_MAX_ERROR_COUNT, processParameters);

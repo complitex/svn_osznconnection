@@ -83,13 +83,16 @@ public class SubsidyBean extends AbstractRequestBean {
         sqlSession().update(MAPPING_NAMESPACE + ".updateAccountNumberForSimislarSubs", subsidy);
     }
 
-    @Transactional
     public boolean isSubsidyFileBound(long fileId) {
         return unboundCount(fileId) == 0;
     }
 
     private int unboundCount(long fileId) {
         return countByFile(fileId, RequestStatus.unboundStatuses());
+    }
+
+    public boolean isSubsidyFileFilled(Long requestFileId){
+        return countByFile(requestFileId, RequestStatus.unprocessedStatuses()) == 0;
     }
 
     private int countByFile(long fileId, Set<RequestStatus> statuses) {
@@ -171,7 +174,7 @@ public class SubsidyBean extends AbstractRequestBean {
         sqlSession().update(MAPPING_NAMESPACE + ".markCorrected", params);
     }
 
-    public List<AbstractAccountRequest> getSubsidies(long requestFileId) {
+    public List<Subsidy> getSubsidies(long requestFileId) {
         return sqlSession().selectList(MAPPING_NAMESPACE + ".selectSubsidies", requestFileId);
     }
 }
