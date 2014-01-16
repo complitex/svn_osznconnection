@@ -111,6 +111,8 @@ public class SubsidyFillTaskBean implements ITaskBean{
 
         SubsidyMasterData subsidyMasterData = new SubsidyMasterData();
 
+        subsidyMasterData.setSubsidyId(subsidy.getId());
+
         subsidyMasterData.putField(SubsidyMasterDataDBF.DELO, subsidy.getField(SubsidyDBF.NUMB));
         subsidyMasterData.putField(SubsidyMasterDataDBF.FIO, subsidy.getField(SubsidyDBF.FIO));
         subsidyMasterData.putField(SubsidyMasterDataDBF.NKW, subsidy.getField(SubsidyDBF.FLAT));
@@ -130,6 +132,8 @@ public class SubsidyFillTaskBean implements ITaskBean{
         subsidyMasterData.putField(SubsidyMasterDataDBF.STOKI_O, subsidy.getField(SubsidyDBF.OB8));
 
         subsidyMasterDataBean.save(subsidyMasterData);
+
+        subsidy.setStatus(RequestStatus.PROCESSED);
     }
 
     @Override

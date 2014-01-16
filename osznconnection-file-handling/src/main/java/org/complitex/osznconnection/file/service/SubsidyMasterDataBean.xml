@@ -35,7 +35,8 @@
         </association>
     </resultMap>
 
-    <insert id="insertSubsidyMasterData" parameterType="org.complitex.osznconnection.file.entity.SubsidyMasterData">
+    <insert id="insertSubsidyMasterData" parameterType="org.complitex.osznconnection.file.entity.SubsidyMasterData"
+            keyProperty="id" useGeneratedKeys="true">
         insert into `subsidy_master_data`
             (<foreach collection="dbfFields.keys" item="key" separator=",">
                 `${key}`
@@ -44,6 +45,11 @@
             (<foreach collection="dbfFields.keys" item="key" separator=",">
                 #{dbfFields.${key}}
             </foreach>)
+    </insert>
+
+    <insert id="insertSubsidyMasterDataPart" parameterType="org.complitex.osznconnection.file.entity.SubsidyMasterData">
+        insert into `subsidy_master_data_part` (`subsidy_id`, `subsidy_master_data_id`)
+          values (#{subsidyId}, #{id})
     </insert>
 
     <update id="updateSubsidyMasterData" parameterType="org.complitex.osznconnection.file.entity.SubsidyMasterData">
