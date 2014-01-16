@@ -17,8 +17,8 @@ public class SubsidyMasterDataBean extends AbstractBean {
 
     public void save(SubsidyMasterData subsidyMasterData){
         if (subsidyMasterData.getId() == null){
-            //todo add part
             sqlSession().insert(NS + ".insertSubsidyMasterData", subsidyMasterData);
+            sqlSession().insert(NS + ".insertSubsidyMasterDataPart", subsidyMasterData);
         }else {
             sqlSession().update(NS + ".updateSubsidyMasterData", subsidyMasterData);
         }

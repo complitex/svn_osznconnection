@@ -627,6 +627,7 @@ CREATE TABLE `subsidy_master_data_part` (
   PRIMARY KEY (`id`),
   KEY `key_subsidy_id` (`subsidy_id`),
   KEY `key_subsidy_master_data_id` (`subsidy_master_data_id`),
+  UNIQUE KEY `key_unique` (`subsidy_id`, subsidy_master_data_id),
   CONSTRAINT `fk_subsidy_master_data_part__subsidy` FOREIGN KEY (`subsidy_id`)
     REFERENCES `subsidy` (`id`),
   CONSTRAINT `fk_subsidy_master_data_part__subsidy_master_data` FOREIGN KEY (`subsidy_master_data_id`)

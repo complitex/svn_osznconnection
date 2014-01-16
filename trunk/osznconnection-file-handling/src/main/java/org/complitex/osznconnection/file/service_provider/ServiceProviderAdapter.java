@@ -78,10 +78,10 @@ public class ServiceProviderAdapter extends AbstractBean {
      *
      */
     public AccountDetail acquirePersonAccount(CalculationContext calculationContext,
-                                     AbstractAccountRequest request, String lastName,
-                                     String spAccountNumber, String district, String streetType,
-                                     String street, String buildingNumber, String buildingCorp, String apartment,
-                                     Date date, Boolean updatePUAccount) throws DBException {
+                                              AbstractAccountRequest request, String lastName,
+                                              String spAccountNumber, String district, String streetType,
+                                              String street, String buildingNumber, String buildingCorp, String apartment,
+                                              Date date, Boolean updatePUAccount) throws DBException {
         request.setStatus(RequestStatus.ACCOUNT_NUMBER_MISMATCH);
 
         if (Strings.isEmpty(spAccountNumber)) {
@@ -1189,8 +1189,10 @@ public class ServiceProviderAdapter extends AbstractBean {
     private static final int MEGABANK_ACCOUNT_TYPE = 1;
     private static final int CALCULATION_CENTER_ACCOUNT_TYPE = 2;
 
-    public List<AccountDetail> acquireAccountDetailsByAccount(CalculationContext calculationCenterInfo, AbstractRequest request,
-                                                              String district, String account) throws DBException, UnknownAccountNumberTypeException {
+    @SuppressWarnings("unchecked")
+    public List<AccountDetail> acquireAccountDetailsByAccount(CalculationContext calculationCenterInfo,
+                                                              AbstractRequest request, String district, String account)
+            throws DBException, UnknownAccountNumberTypeException {
 
         int accountType = determineAccountType(account);
         List<AccountDetail> accountCorrectionDetails = null;
@@ -1207,7 +1209,7 @@ public class ServiceProviderAdapter extends AbstractBean {
         try {
             sqlSession(calculationCenterInfo.getDataSource()).selectOne(MAPPING_NAMESPACE + ".getAttrsByAccCode", params);
         } catch (Exception e) {
-            if (!OracleErrors.isCursorClosedError(e)) {
+            if (!OracleErrors.isCursorClosedError(e) && !(e.getCause() instanceof NullPointerException)) {
                 throw new DBException(e);
             }
         } finally {
@@ -1229,13 +1231,14 @@ public class ServiceProviderAdapter extends AbstractBean {
             switch (resultCode) {
                 case 1:
                     accountCorrectionDetails = (List<AccountDetail>) params.get("details");
+
                     if (accountCorrectionDetails == null || accountCorrectionDetails.isEmpty()) {
                         log.error("acquireAccountDetailsByAccount. Result code is 1 but account details data is null or empty. "
                                 + "Request id: {}, request class: {}, calculation center: {}",
                                 new Object[]{request.getId(), request.getClass(), calculationCenterInfo});
                         logBean.error(Module.NAME, getClass(), request.getClass(), request.getId(), EVENT.GETTING_DATA,
-                                ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_inconsistent", localeBean.getSystemLocale(),
-                                        "GETATTRSBYACCCODE", calculationCenterInfo));
+                                ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_inconsistent",
+                                        localeBean.getSystemLocale(), "GETATTRSBYACCCODE", calculationCenterInfo));
                         request.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
                     }
                     break;
@@ -1264,6 +1267,7 @@ public class ServiceProviderAdapter extends AbstractBean {
                     request.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
             }
         }
+
         return accountCorrectionDetails;
     }
 
