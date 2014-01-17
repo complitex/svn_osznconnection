@@ -245,7 +245,7 @@ public class OsznOrganizationStrategy extends AbstractOrganizationStrategy<Domai
 
     @Transactional
     @Override
-    public OsznOrganization findById(long id, boolean runAsAdmin) {
+    public OsznOrganization findById(Long id, boolean runAsAdmin) {
         DomainObject object = super.findById(id, runAsAdmin);
         if (object == null) {
             return null;

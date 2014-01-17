@@ -77,7 +77,7 @@ public class ServiceProviderAdapter extends AbstractBean {
      * остальное - номер л/с
      *
      */
-    public AccountDetail acquirePersonAccount(CalculationContext calculationContext,
+    public AccountDetail acquireAccountDetail(CalculationContext calculationContext,
                                               AbstractAccountRequest request, String lastName,
                                               String spAccountNumber, String district, String streetType,
                                               String street, String buildingNumber, String buildingCorp, String apartment,
@@ -169,14 +169,6 @@ public class ServiceProviderAdapter extends AbstractBean {
         }
 
         request.setStatus(RequestStatus.ACCOUNT_NUMBER_MISMATCH);
-    }
-
-    private boolean isMegabankAccount(String realPuAccountNumber, String megabankAccount) {
-        return (realPuAccountNumber.length() == 9) && realPuAccountNumber.equals(megabankAccount);
-    }
-
-    private boolean isCalcCenterAccount(String realPuAccountNumber, String calcCenterAccount) {
-        return (realPuAccountNumber.length() == 10) && realPuAccountNumber.equals(calcCenterAccount);
     }
 
     /**
@@ -283,6 +275,92 @@ public class ServiceProviderAdapter extends AbstractBean {
         }
 
         return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<AccountDetail> acquireAccountDetailsByAccount(CalculationContext calculationCenterInfo,
+                                                              AbstractRequest request, String district,
+                                                              String account)
+            throws DBException, UnknownAccountNumberTypeException {
+
+        int accountType = determineAccountType(account);
+        List<AccountDetail> accountCorrectionDetails = null;
+
+        Map<String, Object> params = newHashMap();
+        params.put("pDistrName", district);
+        params.put("pAccCode", account);
+        params.put("pAccCodeType", accountType);
+
+        long startTime = 0;
+
+        if (log.isDebugEnabled()) {
+            startTime = System.nanoTime();
+        }
+
+        try {
+            sqlSession(calculationCenterInfo.getDataSource()).selectOne(MAPPING_NAMESPACE + ".getAttrsByAccCode", params);
+        } catch (Exception e) {
+            if (!OracleErrors.isCursorClosedError(e) && !(e.getCause() instanceof NullPointerException)) {
+                throw new DBException(e);
+            }
+        } finally {
+            log.info("acquireAccountDetailsByAccount. Calculation center: {}, parameters : {}", calculationCenterInfo, params);
+            if (log.isDebugEnabled()) {
+                log.debug("acquireAccountDetailsByAccount. Time of operation: {} sec.", (System.nanoTime() - startTime) / 1000000000F);
+            }
+        }
+
+        Integer resultCode = (Integer) params.get("resultCode");
+
+        if (resultCode == null) {
+            log.error("acquireAccountDetailsByAccount. Result code is null. Request id: {}, request class: {}, calculation center: {}",
+                    new Object[]{request.getId(), request.getClass(), calculationCenterInfo});
+            logBean.error(Module.NAME, getClass(), request.getClass(), request.getId(), EVENT.GETTING_DATA,
+                    ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_unexpected", localeBean.getSystemLocale(),
+                            "GETATTRSBYACCCODE", "null", calculationCenterInfo));
+            request.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
+        } else {
+            switch (resultCode) {
+                case 1:
+                    accountCorrectionDetails = (List<AccountDetail>) params.get("details");
+
+                    if (accountCorrectionDetails == null || accountCorrectionDetails.isEmpty()) {
+                        log.error("acquireAccountDetailsByAccount. Result code is 1 but account details data is null or empty. "
+                                + "Request id: {}, request class: {}, calculation center: {}",
+                                new Object[]{request.getId(), request.getClass(), calculationCenterInfo});
+                        logBean.error(Module.NAME, getClass(), request.getClass(), request.getId(), EVENT.GETTING_DATA,
+                                ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_inconsistent",
+                                        localeBean.getSystemLocale(), "GETATTRSBYACCCODE", calculationCenterInfo));
+                        request.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
+                    }
+                    break;
+                case 0:
+                    request.setStatus(RequestStatus.ACCOUNT_NUMBER_NOT_FOUND);
+                    break;
+                case -1:
+                    log.error("acquireAccountDetailsByAccount. Result code is -1 but account type code is {}. Request id: {}, request class: {}"
+                            + ", calculation center: {}",
+                            new Object[]{accountType, request.getId(), request.getClass(), calculationCenterInfo});
+                    logBean.error(Module.NAME, getClass(), request.getClass(), request.getId(), EVENT.GETTING_DATA,
+                            ResourceUtil.getFormatString(RESOURCE_BUNDLE, "wrong_account_type_code", localeBean.getSystemLocale(),
+                                    "GETATTRSBYACCCODE", accountType, calculationCenterInfo));
+                    request.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
+                    break;
+                case -2:
+                    request.setStatus(RequestStatus.DISTRICT_NOT_FOUND);
+                    break;
+                default:
+                    log.error("acquireAccountDetailsByAccount. Unexpected result code: {}. Request id: {}, request class: {}"
+                            + ", calculation center: {}",
+                            new Object[]{resultCode, request.getId(), request.getClass(), calculationCenterInfo});
+                    logBean.error(Module.NAME, getClass(), request.getClass(), request.getId(), EVENT.GETTING_DATA,
+                            ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_unexpected", localeBean.getSystemLocale(),
+                                    "GETATTRSBYACCCODE", resultCode, calculationCenterInfo));
+                    request.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
+            }
+        }
+
+        return accountCorrectionDetails;
     }
 
     /**
@@ -1189,88 +1267,6 @@ public class ServiceProviderAdapter extends AbstractBean {
     private static final int MEGABANK_ACCOUNT_TYPE = 1;
     private static final int CALCULATION_CENTER_ACCOUNT_TYPE = 2;
 
-    @SuppressWarnings("unchecked")
-    public List<AccountDetail> acquireAccountDetailsByAccount(CalculationContext calculationCenterInfo,
-                                                              AbstractRequest request, String district, String account)
-            throws DBException, UnknownAccountNumberTypeException {
-
-        int accountType = determineAccountType(account);
-        List<AccountDetail> accountCorrectionDetails = null;
-
-        Map<String, Object> params = newHashMap();
-        params.put("pDistrName", district);
-        params.put("pAccCode", account);
-        params.put("pAccCodeType", accountType);
-
-        long startTime = 0;
-        if (log.isDebugEnabled()) {
-            startTime = System.nanoTime();
-        }
-        try {
-            sqlSession(calculationCenterInfo.getDataSource()).selectOne(MAPPING_NAMESPACE + ".getAttrsByAccCode", params);
-        } catch (Exception e) {
-            if (!OracleErrors.isCursorClosedError(e) && !(e.getCause() instanceof NullPointerException)) {
-                throw new DBException(e);
-            }
-        } finally {
-            log.info("acquireAccountDetailsByAccount. Calculation center: {}, parameters : {}", calculationCenterInfo, params);
-            if (log.isDebugEnabled()) {
-                log.debug("acquireAccountDetailsByAccount. Time of operation: {} sec.", (System.nanoTime() - startTime) / 1000000000F);
-            }
-        }
-
-        Integer resultCode = (Integer) params.get("resultCode");
-        if (resultCode == null) {
-            log.error("acquireAccountDetailsByAccount. Result code is null. Request id: {}, request class: {}, calculation center: {}",
-                    new Object[]{request.getId(), request.getClass(), calculationCenterInfo});
-            logBean.error(Module.NAME, getClass(), request.getClass(), request.getId(), EVENT.GETTING_DATA,
-                    ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_unexpected", localeBean.getSystemLocale(),
-                            "GETATTRSBYACCCODE", "null", calculationCenterInfo));
-            request.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
-        } else {
-            switch (resultCode) {
-                case 1:
-                    accountCorrectionDetails = (List<AccountDetail>) params.get("details");
-
-                    if (accountCorrectionDetails == null || accountCorrectionDetails.isEmpty()) {
-                        log.error("acquireAccountDetailsByAccount. Result code is 1 but account details data is null or empty. "
-                                + "Request id: {}, request class: {}, calculation center: {}",
-                                new Object[]{request.getId(), request.getClass(), calculationCenterInfo});
-                        logBean.error(Module.NAME, getClass(), request.getClass(), request.getId(), EVENT.GETTING_DATA,
-                                ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_inconsistent",
-                                        localeBean.getSystemLocale(), "GETATTRSBYACCCODE", calculationCenterInfo));
-                        request.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
-                    }
-                    break;
-                case 0:
-                    request.setStatus(RequestStatus.ACCOUNT_NUMBER_NOT_FOUND);
-                    break;
-                case -1:
-                    log.error("acquireAccountDetailsByAccount. Result code is -1 but account type code is {}. Request id: {}, request class: {}"
-                            + ", calculation center: {}",
-                            new Object[]{accountType, request.getId(), request.getClass(), calculationCenterInfo});
-                    logBean.error(Module.NAME, getClass(), request.getClass(), request.getId(), EVENT.GETTING_DATA,
-                            ResourceUtil.getFormatString(RESOURCE_BUNDLE, "wrong_account_type_code", localeBean.getSystemLocale(),
-                                    "GETATTRSBYACCCODE", accountType, calculationCenterInfo));
-                    request.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
-                    break;
-                case -2:
-                    request.setStatus(RequestStatus.DISTRICT_NOT_FOUND);
-                    break;
-                default:
-                    log.error("acquireAccountDetailsByAccount. Unexpected result code: {}. Request id: {}, request class: {}"
-                            + ", calculation center: {}",
-                            new Object[]{resultCode, request.getId(), request.getClass(), calculationCenterInfo});
-                    logBean.error(Module.NAME, getClass(), request.getClass(), request.getId(), EVENT.GETTING_DATA,
-                            ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_unexpected", localeBean.getSystemLocale(),
-                                    "GETATTRSBYACCCODE", resultCode, calculationCenterInfo));
-                    request.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
-            }
-        }
-
-        return accountCorrectionDetails;
-    }
-
     protected int determineAccountType(String accountNumber) throws UnknownAccountNumberTypeException {
         if (Strings.isEmpty(accountNumber)) {
             throw new UnknownAccountNumberTypeException();
@@ -1392,5 +1388,13 @@ public class ServiceProviderAdapter extends AbstractBean {
             actualPayment.setField(ActualPaymentDBF.N8, data.getDrainageTarif());
         }
         actualPayment.setStatus(RequestStatus.PROCESSED);
+    }
+
+    private boolean isMegabankAccount(String realPuAccountNumber, String megabankAccount) {
+        return (realPuAccountNumber.length() == 9) && realPuAccountNumber.equals(megabankAccount);
+    }
+
+    private boolean isCalcCenterAccount(String realPuAccountNumber, String calcCenterAccount) {
+        return (realPuAccountNumber.length() == 10) && realPuAccountNumber.equals(calcCenterAccount);
     }
 }

@@ -4,8 +4,6 @@
  */
 package org.complitex.osznconnection.file.web.pages.actualpayment;
 
-import java.util.List;
-import javax.ejb.EJB;
 import org.apache.wicket.Component;
 import org.complitex.osznconnection.file.entity.AccountDetail;
 import org.complitex.osznconnection.file.entity.ActualPayment;
@@ -15,6 +13,9 @@ import org.complitex.osznconnection.file.service.PersonAccountService;
 import org.complitex.osznconnection.file.service_provider.exception.DBException;
 import org.complitex.osznconnection.file.web.component.lookup.AbstractLookupPanel;
 
+import javax.ejb.EJB;
+import java.util.List;
+
 /**
  *
  * @author Artem
@@ -23,6 +24,7 @@ public class ActualPaymentLookupPanel extends AbstractLookupPanel<ActualPayment>
 
     @EJB
     private LookupBean lookupBean;
+
     @EJB
     private PersonAccountService personAccountService;
 
@@ -60,10 +62,5 @@ public class ActualPaymentLookupPanel extends AbstractLookupPanel<ActualPayment>
     @Override
     protected void updateAccountNumber(ActualPayment actualPayment, String accountNumber, long userOrganizationId) {
         personAccountService.updateAccountNumber(actualPayment, accountNumber, userOrganizationId);
-    }
-
-    @Override
-    protected String resolveOutgoingDistrict(ActualPayment actualPayment, long userOrganizationId) {
-        return lookupBean.resolveOutgoingDistrict(actualPayment, userOrganizationId);
     }
 }

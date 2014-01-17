@@ -620,4 +620,22 @@ public class AddressService extends AbstractBean {
                 break;
         }
     }
+
+    public String resolveOutgoingDistrict(Long organizationId, Long userOrganizationId) {
+        DomainObject organization = organizationStrategy.findById(organizationId, true);
+        Long districtId = organization.getAttribute(IOrganizationStrategy.DISTRICT).getValueId();
+
+        String districtName = districtStrategy.displayDomainObject(districtId, localeBean.getSystemLocale());
+
+        if (districtName != null){
+            List<DistrictCorrection> districtCorrections = addressCorrectionBean.getDistrictCorrections(null, null, null,
+                    districtName, organizationId, userOrganizationId);
+
+            return !districtCorrections.isEmpty()
+                    ? districtStrategy.displayDomainObject(districtCorrections.get(0).getObjectId(), localeBean.getSystemLocale())
+                    : districtName;
+        }
+
+        return null;
+    }
 }

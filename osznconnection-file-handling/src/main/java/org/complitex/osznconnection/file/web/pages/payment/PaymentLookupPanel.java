@@ -4,17 +4,17 @@
  */
 package org.complitex.osznconnection.file.web.pages.payment;
 
+import org.apache.wicket.Component;
 import org.complitex.osznconnection.file.entity.AccountDetail;
 import org.complitex.osznconnection.file.entity.Payment;
 import org.complitex.osznconnection.file.entity.PaymentDBF;
 import org.complitex.osznconnection.file.service.LookupBean;
-
-import javax.ejb.EJB;
-import java.util.List;
-import org.apache.wicket.Component;
 import org.complitex.osznconnection.file.service.PersonAccountService;
 import org.complitex.osznconnection.file.service_provider.exception.DBException;
 import org.complitex.osznconnection.file.web.component.lookup.AbstractLookupPanel;
+
+import javax.ejb.EJB;
+import java.util.List;
 
 /**
  * Панель для поиска номера л/c по различным параметрам: по адресу, по номеру лиц. счета, по номеру в мегабанке.
@@ -24,8 +24,11 @@ public class PaymentLookupPanel extends AbstractLookupPanel<Payment> {
 
     @EJB
     private LookupBean lookupBean;
+
     @EJB
     private PersonAccountService personAccountService;
+
+
 
     public PaymentLookupPanel(String id, long userOrganizationId, Component... toUpdate) {
         super(id, userOrganizationId, toUpdate);
@@ -60,10 +63,5 @@ public class PaymentLookupPanel extends AbstractLookupPanel<Payment> {
     @Override
     protected List<AccountDetail> acquireAccountDetailsByAddress(Payment payment, long userOrganizationId) throws DBException {
         return lookupBean.acquireAccountDetailsByAddress(payment, userOrganizationId);
-    }
-
-    @Override
-    protected String resolveOutgoingDistrict(Payment payment, long userOrganizationId) {
-        return lookupBean.resolveOutgoingDistrict(payment, userOrganizationId);
     }
 }

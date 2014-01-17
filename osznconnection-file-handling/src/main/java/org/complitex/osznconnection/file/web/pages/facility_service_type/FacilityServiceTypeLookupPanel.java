@@ -4,8 +4,6 @@
  */
 package org.complitex.osznconnection.file.web.pages.facility_service_type;
 
-import java.util.List;
-import javax.ejb.EJB;
 import org.apache.wicket.Component;
 import org.complitex.osznconnection.file.entity.AccountDetail;
 import org.complitex.osznconnection.file.entity.FacilityServiceType;
@@ -15,6 +13,9 @@ import org.complitex.osznconnection.file.service.PersonAccountService;
 import org.complitex.osznconnection.file.service_provider.exception.DBException;
 import org.complitex.osznconnection.file.web.component.lookup.AbstractLookupPanel;
 
+import javax.ejb.EJB;
+import java.util.List;
+
 /**
  *
  * @author Artem
@@ -23,6 +24,7 @@ public class FacilityServiceTypeLookupPanel extends AbstractLookupPanel<Facility
 
     @EJB
     private LookupBean lookupBean;
+
     @EJB
     private PersonAccountService personAccountService;
 
@@ -62,10 +64,5 @@ public class FacilityServiceTypeLookupPanel extends AbstractLookupPanel<Facility
     protected void updateAccountNumber(FacilityServiceType facilityServiceType, String accountNumber,
             long userOrganizationId) {
         personAccountService.updateAccountNumber(facilityServiceType, accountNumber, userOrganizationId);
-    }
-
-    @Override
-    protected String resolveOutgoingDistrict(FacilityServiceType facilityServiceType, long userOrganizationId) {
-        return lookupBean.resolveOutgoingDistrict(facilityServiceType, userOrganizationId);
     }
 }

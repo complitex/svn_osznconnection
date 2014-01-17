@@ -16,6 +16,7 @@ public class SubsidyLookupPanel extends AbstractLookupPanel<Subsidy> {
 
     @EJB
     private LookupBean lookupBean;
+
     @EJB
     private PersonAccountService personAccountService;
 
@@ -53,10 +54,5 @@ public class SubsidyLookupPanel extends AbstractLookupPanel<Subsidy> {
     @Override
     protected void updateAccountNumber(Subsidy subsidy, String accountNumber, long userOrganizationId) {
         personAccountService.updateAccountNumber(subsidy, accountNumber, userOrganizationId);
-    }
-
-    @Override
-    protected String resolveOutgoingDistrict(Subsidy subsidy, long userOrganizationId) {
-        return lookupBean.resolveOutgoingDistrict(subsidy, userOrganizationId);
     }
 }

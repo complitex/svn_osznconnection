@@ -1,13 +1,10 @@
 package org.complitex.osznconnection.file.service;
 
 import org.complitex.address.strategy.district.DistrictStrategy;
-import org.complitex.correction.entity.DistrictCorrection;
 import org.complitex.correction.service.AddressCorrectionBean;
-import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.dictionary.service.LocaleBean;
-import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.service_provider.CalculationCenterBean;
 import org.complitex.osznconnection.file.service_provider.ServiceProviderAdapter;
@@ -124,32 +121,6 @@ public class LookupBean extends AbstractBean {
                 facilityServiceType.getOutgoingStreet(), facilityServiceType.getOutgoingBuildingNumber(),
                 facilityServiceType.getOutgoingBuildingCorp(),
                 facilityServiceType.getOutgoingApartment(), facilityServiceType.getDate(), userOrganizationId);
-    }
-
-    @Transactional
-    public String resolveOutgoingDistrict(AbstractRequest request, long userOrganizationId) {
-        request.setStatus(RequestStatus.LOADED);
-
-        CalculationContext calculationContext = calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId);
-
-        List<DistrictCorrection> districtCorrections = addressCorrectionBean.getDistrictCorrections(null, null, null, null,
-                calculationContext.getCalculationCenterId(), userOrganizationId);
-
-        if (districtCorrections.isEmpty()){
-            DomainObject organization = organizationStrategy.findById(request.getOrganizationId(), true);
-
-            Long districtId = organization.getAttribute(IOrganizationStrategy.DISTRICT).getValueId();
-            DomainObject district = districtStrategy.findById(districtId, true);
-
-            if (district != null){
-                return districtStrategy.displayDomainObject(district, localeBean.getSystemLocale());
-            }
-
-        } else if (districtCorrections.size() == 1) {
-            return districtCorrections.get(0).getCorrection();
-        }
-
-        return null;
     }
 
     @Transactional
