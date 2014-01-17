@@ -20,9 +20,8 @@ import org.complitex.dictionary.util.CloneUtil;
 import org.complitex.dictionary.web.component.ShowMode;
 import org.complitex.dictionary.web.component.search.SearchComponentState;
 import org.complitex.dictionary.web.component.search.WiQuerySearchComponent;
-import org.complitex.osznconnection.file.entity.AbstractRequest;
-import org.complitex.osznconnection.file.entity.AccountDetail;
-import org.complitex.osznconnection.file.entity.RequestStatus;
+import org.complitex.osznconnection.file.entity.*;
+import org.complitex.osznconnection.file.service.AddressService;
 import org.complitex.osznconnection.file.service.LookupBean;
 import org.complitex.osznconnection.file.service.StatusRenderService;
 import org.complitex.osznconnection.file.service_provider.exception.DBException;
@@ -45,10 +44,17 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
 
     @EJB
     private StrategyFactory strategyFactory;
+
     @EJB
     private StatusRenderService statusRenderService;
+
     @EJB
     private LookupBean lookupBean;
+
+
+    @EJB(name = "OsznAddressService")
+    private AddressService addressService;
+
     private IModel<String> apartmentModel;
     private IModel<List<? extends AccountDetail>> accountDetailsModel;
     private IModel<AccountDetail> accountDetailModel;
@@ -352,5 +358,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
 
     protected abstract void updateAccountNumber(T request, String accountNumber, long userOrganizationId);
 
-    protected abstract String resolveOutgoingDistrict(T request, long userOrganizationId);
+    protected String resolveOutgoingDistrict(T request, long userOrganizationId) {
+        return addressService.resolveOutgoingDistrict(request.getOrganizationId(), userOrganizationId);
+    }
 }

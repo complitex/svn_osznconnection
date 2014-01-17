@@ -284,10 +284,11 @@
     </update>
     
     <select id="selectSubsidies" resultMap="subsidyResultMap" parameterType="long">
-        SELECT s.*,
+        SELECT s.*, f.`organization_id`, f.`user_organization_id`, f.`begin_date`,
             w.`id` warning_id, w.`request_id` warning_reqiest_id, w.`request_file_type` warning_request_file_type, w.`status` warning_status,
             p.`request_warning_id` param_request_warning_id, p.`order` param_order, p.`type` param_type, p.`value` param_value
         FROM `subsidy` s
+            left join `request_file` f ON s.`request_file_id` = f.`id`
             LEFT JOIN `request_warning` w ON (w.`request_id` = s.`id` AND w.`request_file_type` = 5)
             LEFT JOIN `request_warning_parameter` p ON w.`id` = p.`request_warning_id`
         WHERE s.`request_file_id` = #{id}

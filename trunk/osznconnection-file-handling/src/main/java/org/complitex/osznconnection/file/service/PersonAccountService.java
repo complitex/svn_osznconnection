@@ -148,14 +148,14 @@ public class PersonAccountService extends AbstractBean {
 
     /**
      * Попытаться разрешить номер л/с в ЦН.
-     * См. org.complitex.osznconnection.file.calculation.adapter.DefaultCalculationCenterAdapter.acquirePersonAccount()
+     * См. org.complitex.osznconnection.file.calculation.adapter.DefaultCalculationCenterAdapter.acquireAccountDetail()
      * Если успешно, то обновить account number для всех benefit записей,
      * соответствующих данному payment и записать в локальную таблицу номеров л/c(person_account) найденный номер.
      */
     @Transactional
     public void resolveRemoteAccount(Payment payment, CalculationContext calculationContext,
                                      Boolean updatePUAccount) throws DBException {
-        adapter.acquirePersonAccount(calculationContext,payment,
+        adapter.acquireAccountDetail(calculationContext, payment,
                 payment.getStringField(PaymentDBF.SUR_NAM),
                 payment.getStringField(PaymentDBF.OWN_NUM_SR), payment.getOutgoingDistrict(), payment.getOutgoingStreetType(),
                 payment.getOutgoingStreet(), payment.getOutgoingBuildingNumber(), payment.getOutgoingBuildingCorp(),
@@ -171,7 +171,7 @@ public class PersonAccountService extends AbstractBean {
     @Transactional
     public void resolveRemoteAccount(ActualPayment actualPayment, Date date, CalculationContext calculationContext,
                                      Boolean updatePUAccount) throws DBException {
-        adapter.acquirePersonAccount(calculationContext, actualPayment,
+        adapter.acquireAccountDetail(calculationContext, actualPayment,
                 actualPayment.getStringField(ActualPaymentDBF.SUR_NAM),
                 actualPayment.getStringField(ActualPaymentDBF.OWN_NUM), actualPayment.getOutgoingDistrict(),
                 actualPayment.getOutgoingStreetType(), actualPayment.getOutgoingStreet(),
@@ -187,7 +187,7 @@ public class PersonAccountService extends AbstractBean {
     @Transactional
     public void resolveRemoteAccount(Subsidy subsidy, CalculationContext calculationContext, Boolean updatePUAccount)
             throws DBException {
-        AccountDetail accountDetail = adapter.acquirePersonAccount(calculationContext, subsidy,
+        AccountDetail accountDetail = adapter.acquireAccountDetail(calculationContext, subsidy,
                 subsidy.getLastName(), subsidy.getStringField(SubsidyDBF.RASH),
                 subsidy.getOutgoingDistrict(), subsidy.getOutgoingStreetType(), subsidy.getOutgoingStreet(),
                 subsidy.getOutgoingBuildingNumber(), subsidy.getOutgoingBuildingCorp(),

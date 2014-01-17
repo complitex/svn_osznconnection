@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.osznconnection.file.entity;
 
 import java.io.Serializable;
@@ -11,7 +7,6 @@ import java.io.Serializable;
  * @author Artem
  */
 public class AccountDetail implements Serializable {
-
     private String accountNumber;
     private String ownerName;
     private String ownerINN;

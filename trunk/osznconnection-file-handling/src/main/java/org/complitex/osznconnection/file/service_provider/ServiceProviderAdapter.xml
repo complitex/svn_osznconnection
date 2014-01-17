@@ -28,7 +28,7 @@
     <resultMap id="accountDetailResultMap" type="org.complitex.osznconnection.file.entity.AccountDetail">
         <result column="acc_code" property="accountNumber" />
         <result column="erc_code" property="megabankAccountNumber"/>
-        <result column="zheu_code" property="serviceProviderAccountNumberInfo"/>
+        <result column="zheu_code" property="serviceProviderAccountNumber"/>
         <result column="street_sort" property="streetType"/>
         <result column="street_name" property="street"/>
         <result column="house_name" property="buildingNumber"/>
