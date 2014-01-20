@@ -6,7 +6,7 @@ insert into organization(object_id) values (1),(2);
 insert into organization_string_culture(id, locale_id, value) values 
 (3, 1, UPPER('ОСЗН 1')), (3,2,UPPER('ОСЗН 1')), (4,@system_locale_id, UPPER('1')),
 (5, 1, UPPER('Модуль начислений №1')), (5, 2, UPPER('Модуль начислений №1')), (6,@system_locale_id, UPPER('2')),
-(7,@system_locale_id, 'jdbc/osznconnection_remote_resource');
+(7,@system_locale_id, 'jdbc/osznconnectionRemoteResource');
 -- Request files paths attribute values:
 insert into organization_string_culture(id, locale_id, value) values 
 (8,@system_locale_id,'in\\subs_reqs'),(9,@system_locale_id,'out\\subs_reqs'),

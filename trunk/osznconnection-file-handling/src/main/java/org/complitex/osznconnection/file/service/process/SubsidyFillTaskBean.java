@@ -4,6 +4,7 @@ import org.complitex.dictionary.entity.IExecutorObject;
 import org.complitex.dictionary.entity.Log;
 import org.complitex.dictionary.service.executor.ExecuteException;
 import org.complitex.dictionary.service.executor.ITaskBean;
+import org.complitex.dictionary.util.DateUtil;
 import org.complitex.osznconnection.file.Module;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.service.AddressService;
@@ -27,6 +28,7 @@ import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -120,54 +122,69 @@ public class SubsidyFillTaskBean implements ITaskBean{
      к которому относится данная запись мастер-данных.
      */
     private void fill(Subsidy subsidy) throws DBException, UnknownAccountNumberTypeException {
-        SubsidyMasterData subsidyMasterData = new SubsidyMasterData();
-
         //получаем информацию о текущем контексте вычислений
         CalculationContext calculationContext = calculationCenterBean.getContextWithAnyCalculationCenter(subsidy.getUserOrganizationId());
 
         String districtName = addressService.resolveOutgoingDistrict(subsidy.getOrganizationId(), subsidy.getUserOrganizationId());
 
-        subsidy.setStatus(RequestStatus.PROCESSED);
-
         List<AccountDetail> accountDetails = serviceProviderAdapter.acquireAccountDetailsByAccount(calculationContext,
                 subsidy, districtName, subsidy.getAccountNumber() + "");
 
-        //todo update status
-        subsidyBean.update(subsidy);
-
         if (!accountDetails.isEmpty()){
-            AccountDetail accountDetail = accountDetails.get(0);
-
-            subsidyMasterData.putField(SubsidyMasterDataDBF.LS, accountDetail.getServiceProviderCode());
-            subsidyMasterData.putField(SubsidyMasterDataDBF.DOM, accountDetail.getHouseCode());
-            subsidyMasterData.putField(SubsidyMasterDataDBF.REG, accountDetail.getDistrictCode());
-
             //clear
             subsidyMasterDataBean.clearSubsidyMasterDataList(subsidy.getId());
 
-            //copy from subsidy
-            subsidyMasterData.setSubsidyId(subsidy.getId());
+            AccountDetail accountDetail = accountDetails.get(0);
 
-            subsidyMasterData.putField(SubsidyMasterDataDBF.DELO, subsidy.getField(SubsidyDBF.NUMB));
-            subsidyMasterData.putField(SubsidyMasterDataDBF.FIO, subsidy.getField(SubsidyDBF.FIO));
-            subsidyMasterData.putField(SubsidyMasterDataDBF.NKW, subsidy.getField(SubsidyDBF.FLAT));
-            subsidyMasterData.putField(SubsidyMasterDataDBF.KWART, subsidy.getField(SubsidyDBF.SB1));
-            subsidyMasterData.putField(SubsidyMasterDataDBF.OTOPL, subsidy.getField(SubsidyDBF.SB2));
-            subsidyMasterData.putField(SubsidyMasterDataDBF.PODOGR, subsidy.getField(SubsidyDBF.SB3));
-            subsidyMasterData.putField(SubsidyMasterDataDBF.WODA, subsidy.getField(SubsidyDBF.SB4));
-            subsidyMasterData.putField(SubsidyMasterDataDBF.GAZ, subsidy.getField(SubsidyDBF.SB5));
-            subsidyMasterData.putField(SubsidyMasterDataDBF.ELEKTR, subsidy.getField(SubsidyDBF.SB6));
-            subsidyMasterData.putField(SubsidyMasterDataDBF.STOKI, subsidy.getField(SubsidyDBF.SB8));
-            subsidyMasterData.putField(SubsidyMasterDataDBF.KWART_O, subsidy.getField(SubsidyDBF.OB1));
-            subsidyMasterData.putField(SubsidyMasterDataDBF.OTOPL_O, subsidy.getField(SubsidyDBF.OB2));
-            subsidyMasterData.putField(SubsidyMasterDataDBF.GORWODA_O, subsidy.getField(SubsidyDBF.OB3));
-            subsidyMasterData.putField(SubsidyMasterDataDBF.WODA_O, subsidy.getField(SubsidyDBF.OB4));
-            subsidyMasterData.putField(SubsidyMasterDataDBF.GAZ_O, subsidy.getField(SubsidyDBF.OB5));
-            subsidyMasterData.putField(SubsidyMasterDataDBF.ELEKTR_O, subsidy.getField(SubsidyDBF.OB6));
-            subsidyMasterData.putField(SubsidyMasterDataDBF.STOKI_O, subsidy.getField(SubsidyDBF.OB8));
+            Integer numm = (Integer) subsidy.getField(SubsidyDBF.NUMM);
 
-            subsidyMasterDataBean.save(subsidyMasterData);
+            for (int i=0; i < numm; ++i){
+                Date date = DateUtil.addMonth(subsidy.getDate(), -i);
+
+                addSubsidyMasterData(subsidy, accountDetail, date);
+            }
+
+            subsidy.setStatus(RequestStatus.PROCESSED);
         }
+
+        subsidyBean.update(subsidy);
+    }
+
+    private void addSubsidyMasterData(Subsidy subsidy, AccountDetail accountDetail, Date date){
+        SubsidyMasterData subsidyMasterData = new SubsidyMasterData();
+
+        //fill from remote call
+        subsidyMasterData.putField(SubsidyMasterDataDBF.LS, accountDetail.getServiceProviderCode());
+        subsidyMasterData.putField(SubsidyMasterDataDBF.DOM, accountDetail.getHouseCode());
+        subsidyMasterData.putField(SubsidyMasterDataDBF.REG, accountDetail.getDistrictCode());
+
+        //copy from subsidy
+        subsidyMasterData.setSubsidyId(subsidy.getId());
+
+        subsidyMasterData.putField(SubsidyMasterDataDBF.DELO, subsidy.getField(SubsidyDBF.NUMB));
+        subsidyMasterData.putField(SubsidyMasterDataDBF.FIO, subsidy.getField(SubsidyDBF.FIO));
+        subsidyMasterData.putField(SubsidyMasterDataDBF.NKW, subsidy.getField(SubsidyDBF.FLAT));
+        subsidyMasterData.putField(SubsidyMasterDataDBF.KWART, subsidy.getField(SubsidyDBF.SB1));
+        subsidyMasterData.putField(SubsidyMasterDataDBF.OTOPL, subsidy.getField(SubsidyDBF.SB2));
+        subsidyMasterData.putField(SubsidyMasterDataDBF.PODOGR, subsidy.getField(SubsidyDBF.SB3));
+        subsidyMasterData.putField(SubsidyMasterDataDBF.WODA, subsidy.getField(SubsidyDBF.SB4));
+        subsidyMasterData.putField(SubsidyMasterDataDBF.GAZ, subsidy.getField(SubsidyDBF.SB5));
+        subsidyMasterData.putField(SubsidyMasterDataDBF.ELEKTR, subsidy.getField(SubsidyDBF.SB6));
+        subsidyMasterData.putField(SubsidyMasterDataDBF.STOKI, subsidy.getField(SubsidyDBF.SB8));
+        subsidyMasterData.putField(SubsidyMasterDataDBF.KWART_O, subsidy.getField(SubsidyDBF.OB1));
+        subsidyMasterData.putField(SubsidyMasterDataDBF.OTOPL_O, subsidy.getField(SubsidyDBF.OB2));
+        subsidyMasterData.putField(SubsidyMasterDataDBF.GORWODA_O, subsidy.getField(SubsidyDBF.OB3));
+        subsidyMasterData.putField(SubsidyMasterDataDBF.WODA_O, subsidy.getField(SubsidyDBF.OB4));
+        subsidyMasterData.putField(SubsidyMasterDataDBF.GAZ_O, subsidy.getField(SubsidyDBF.OB5));
+        subsidyMasterData.putField(SubsidyMasterDataDBF.ELEKTR_O, subsidy.getField(SubsidyDBF.OB6));
+        subsidyMasterData.putField(SubsidyMasterDataDBF.STOKI_O, subsidy.getField(SubsidyDBF.OB8));
+
+        //date
+        subsidyMasterData.putField(SubsidyMasterDataDBF.PR_KV, DateUtil.isSameMonth(subsidy.getDate(), date));
+        subsidyMasterData.putField(SubsidyMasterDataDBF.BEGIN0, DateUtil.getFirstDayOfMonth(date));
+        subsidyMasterData.putField(SubsidyMasterDataDBF.END0, DateUtil.getLastDayOfMonth(date));
+
+        subsidyMasterDataBean.save(subsidyMasterData);
     }
 
     @Override
