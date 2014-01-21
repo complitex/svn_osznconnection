@@ -1,6 +1,5 @@
 package org.complitex.osznconnection.file.service;
 
-import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.osznconnection.file.entity.SubsidyMasterData;
 
@@ -30,10 +29,6 @@ public class SubsidyMasterDataBean extends AbstractBean {
 
     public List<SubsidyMasterData> getSubsidyMasterDataList(Long subsidyId){
         return sqlSession().selectList(NS + ".selectSubsidyMasterDataList", subsidyId);
-    }
-
-    public Integer getSubsidyMasterDataListCount(FilterWrapper<SubsidyMasterData> filterWrapper){
-        return sqlSession().selectOne(NS + ".selectSubsidyMasterDataListCount", filterWrapper);
     }
 
     public void clearSubsidyMasterDataList(Long subsidyId){

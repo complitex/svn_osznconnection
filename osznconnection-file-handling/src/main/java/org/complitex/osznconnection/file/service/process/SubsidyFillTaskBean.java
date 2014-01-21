@@ -7,10 +7,7 @@ import org.complitex.dictionary.service.executor.ITaskBean;
 import org.complitex.dictionary.util.DateUtil;
 import org.complitex.osznconnection.file.Module;
 import org.complitex.osznconnection.file.entity.*;
-import org.complitex.osznconnection.file.service.AddressService;
-import org.complitex.osznconnection.file.service.RequestFileBean;
-import org.complitex.osznconnection.file.service.SubsidyBean;
-import org.complitex.osznconnection.file.service.SubsidyMasterDataBean;
+import org.complitex.osznconnection.file.service.*;
 import org.complitex.osznconnection.file.service.exception.AlreadyProcessingException;
 import org.complitex.osznconnection.file.service.exception.CanceledByUserException;
 import org.complitex.osznconnection.file.service.exception.FillException;
@@ -61,6 +58,9 @@ public class SubsidyFillTaskBean implements ITaskBean{
 
     @EJB
     private CalculationCenterBean calculationCenterBean;
+
+    @EJB
+    private SubsidyService subsidyService;
 
     @Override
     public boolean execute(IExecutorObject object, Map commandParameters) throws ExecuteException {
@@ -183,6 +183,9 @@ public class SubsidyFillTaskBean implements ITaskBean{
         subsidyMasterData.putField(SubsidyMasterDataDBF.PR_KV, DateUtil.isSameMonth(subsidy.getDate(), date));
         subsidyMasterData.putField(SubsidyMasterDataDBF.BEGIN0, DateUtil.getFirstDayOfMonth(date));
         subsidyMasterData.putField(SubsidyMasterDataDBF.END0, DateUtil.getLastDayOfMonth(date));
+
+        //servicing organization
+        subsidyMasterData.setServicingOrganizationId(subsidyService.getServicingOrganizationId(subsidy.getRequestFileId()));
 
         subsidyMasterDataBean.save(subsidyMasterData);
     }

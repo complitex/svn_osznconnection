@@ -11,6 +11,8 @@ import java.util.Map;
  */
 public class SubsidyMasterData implements ILongId{
     private Long id;
+    private Long servicingOrganizationId;
+
     private Long subsidyId;
 
     private Map<String, Object> dbfFields = new HashMap<>();
@@ -28,6 +30,14 @@ public class SubsidyMasterData implements ILongId{
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getServicingOrganizationId() {
+        return servicingOrganizationId;
+    }
+
+    public void setServicingOrganizationId(Long servicingOrganizationId) {
+        this.servicingOrganizationId = servicingOrganizationId;
     }
 
     public Long getSubsidyId() {

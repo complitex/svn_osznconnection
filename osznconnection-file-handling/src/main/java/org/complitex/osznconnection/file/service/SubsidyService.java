@@ -58,6 +58,10 @@ public class SubsidyService {
                 && (numm <= 0 || summa.compareTo(subs.multiply(new BigDecimal(numm))) == 0);
     }
 
+    public Long getServicingOrganizationId(Long subsidyRequestFileId){
+        return getServicingOrganizationId(requestFileBean.findById(subsidyRequestFileId));
+    }
+
     public Long getServicingOrganizationId(RequestFile subsidyRequestFile){
         String code = subsidyRequestFile.getName().substring(0, subsidyRequestFile.getName().length()-8);
 
