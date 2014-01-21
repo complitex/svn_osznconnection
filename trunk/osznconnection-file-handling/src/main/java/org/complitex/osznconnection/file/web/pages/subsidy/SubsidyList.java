@@ -302,6 +302,20 @@ public final class SubsidyList extends TemplatePage {
                 };
                 item.add(lookup);
 
+                item.add(new AjaxLink("master_data") {
+
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        setResponsePage(SubsidyMasterDataList.class, new PageParameters()
+                                .add("subsidy_id", subsidy.getId()).add("request_file_id", subsidy.getRequestFileId()));
+                    }
+
+                    @Override
+                    protected IAjaxCallDecorator getAjaxCallDecorator() {
+                        return new AjaxCancelEventBubbleCallDecorator();
+                    }
+                });
+
                 item.add(new AjaxEventBehavior("onclick") {
                     @Override
                     protected void onEvent(AjaxRequestTarget target) {

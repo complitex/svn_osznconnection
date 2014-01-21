@@ -584,6 +584,7 @@ DROP TABLE IF EXISTS `subsidy_master_data`;
 
 CREATE TABLE `subsidy_master_data` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'Суррогатный ключ',
+  `servicing_organization_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор обслуживающей организации',
   `DOM` INTEGER(3) COMMENT 'код дома (заполняется при обработке)',
   `REG` INTEGER(3) COMMENT 'код района (заполняется при обработке)',
   `LS`  INTEGER(6) COMMENT 'лицевой счет (заполняется при обработке)',
