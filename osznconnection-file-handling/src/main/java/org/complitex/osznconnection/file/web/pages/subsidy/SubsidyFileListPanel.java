@@ -1,4 +1,4 @@
-package org.complitex.osznconnection.file.web.component;
+package org.complitex.osznconnection.file.web.pages.subsidy;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -24,7 +24,6 @@ import org.complitex.osznconnection.file.service.process.ProcessType;
 import org.complitex.osznconnection.file.web.AbstractFileListPanel;
 import org.complitex.osznconnection.file.web.SubsidyFileList;
 import org.complitex.osznconnection.file.web.component.load.DateParameter;
-import org.complitex.osznconnection.file.web.pages.subsidy.SubsidyList;
 import org.complitex.osznconnection.organization.strategy.OsznOrganizationStrategy;
 
 import javax.ejb.EJB;
@@ -50,12 +49,16 @@ public class SubsidyFileListPanel extends AbstractFileListPanel {
     @EJB
     private SubsidyService subsidyService;
 
+    private OrganizationCorrectionDialog organizationCorrectionDialog;
+    private SubsidyExportDialog subsidyExportDialog;
+
     public SubsidyFileListPanel(String id) {
         super(id);
 
-        final OrganizationCorrectionDialog dialog = new OrganizationCorrectionDialog("dialog",
-                Arrays.asList(getDataViewContainer(), getMessages()));
-        add(dialog);
+        add(organizationCorrectionDialog = new OrganizationCorrectionDialog("organization_correction_dialog",
+                Arrays.asList(getDataViewContainer(), getMessages())));
+
+        add(subsidyExportDialog = new SubsidyExportDialog("subsidy_export_dialog"));
 
         addColumn(new Column() {
             @Override
@@ -88,7 +91,8 @@ public class SubsidyFileListPanel extends AbstractFileListPanel {
                 }) {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
-                        dialog.open(target, code, rf.getOrganizationId(), rf.getUserOrganizationId(), MODULE_ID);
+                        organizationCorrectionDialog.open(target, code, rf.getOrganizationId(),
+                                rf.getUserOrganizationId(), MODULE_ID);
                     }
 
                     @Override
@@ -160,6 +164,17 @@ public class SubsidyFileListPanel extends AbstractFileListPanel {
     }
 
     @Override
+    protected ProcessType getExportProcessType() {
+        return ProcessType.EXPORT_SUBSIDY;
+    }
+
+    @Override
+    protected void load(long userOrganizationId, long osznId, DateParameter dateParameter) {
+        processManagerBean.loadSubsidy(userOrganizationId, osznId,
+                dateParameter.getMonthFrom(), dateParameter.getMonthTo(), dateParameter.getYear());
+    }
+
+    @Override
     protected void bind(List<Long> selectedFileIds, Map<Enum<?>, Object> commandParameters) {
         processManagerBean.bindSubsidy(selectedFileIds, commandParameters);
     }
@@ -175,8 +190,12 @@ public class SubsidyFileListPanel extends AbstractFileListPanel {
     }
 
     @Override
-    protected void load(long userOrganizationId, long osznId, DateParameter dateParameter) {
-        processManagerBean.loadSubsidy(userOrganizationId, osznId,
-                dateParameter.getMonthFrom(), dateParameter.getMonthTo(), dateParameter.getYear());
+    protected void export(AjaxRequestTarget target, List<Long> selectedFileIds) {
+        subsidyExportDialog.open(target);
+    }
+
+    @Override
+    protected boolean isExportVisible() {
+        return false;
     }
 }

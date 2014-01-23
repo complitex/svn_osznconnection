@@ -66,7 +66,7 @@ public class ProcessManagerBean {
         if (map != null) {
             process = map.get(processType);
         } else {
-            map = new EnumMap<ProcessType, Process>(ProcessType.class);
+            map = new EnumMap<>(ProcessType.class);
             processStatusMap.put(principalName, map);
         }
 
