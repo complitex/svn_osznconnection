@@ -84,6 +84,9 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
     private WebMarkupContainer dataViewContainer;
     private AjaxFeedbackPanel messages;
 
+    private SelectManager selectManager;
+    private TimerManager timerManager;
+
     public AbstractProcessableListPanel(String id) {
         super(id);
 
@@ -125,11 +128,14 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
                         RequestFileStatus.FILLED, RequestFileStatus.FILL_ERROR);
                 addMessages("save_process", target, getSaveProcessType(),
                         RequestFileStatus.SAVED, RequestFileStatus.SAVE_ERROR);
+                addMessages("export_process", target, getExportProcessType(),
+                        RequestFileStatus.EXPORTED, RequestFileStatus.EXPORT_ERROR);
 
                 addCompetedMessages("load_process", getLoadProcessType());
                 addCompetedMessages("bind_process", getBindProcessType());
                 addCompetedMessages("fill_process", getFillProcessType());
                 addCompetedMessages("save_process", getSaveProcessType());
+                addCompetedMessages("export_process", getExportProcessType());
 
                 AbstractProcessableListPanel.this.showMessages(target);
             }
@@ -156,11 +162,19 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
 
     protected abstract void load(long userOrganizationId, long osznId, DateParameter dateParameter);
 
-    protected abstract MonthParameterViewMode getLoadMonthParameterViewMode();
-
-    protected Class<M> getModelClass() {
-        return (Class<M>) (findParameterizedSuperclass()).getActualTypeArguments()[0];
+    protected void export(AjaxRequestTarget target, List<Long> selectedFileIds){
+        //override me
     }
+
+    protected boolean isExportVisible(){
+        return false;
+    }
+
+    protected ProcessType getExportProcessType(){
+        return ProcessType.EXPORT_SUBSIDY;
+    }
+
+    protected abstract MonthParameterViewMode getLoadMonthParameterViewMode();
 
     protected Class<F> getFilterClass() {
         return (Class<F>) (findParameterizedSuperclass()).getActualTypeArguments()[1];
@@ -329,7 +343,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
         form.add(new RequestFileStatusFilter("status"));
 
         //Модель выбранных элементов списка.
-        final SelectManager selectManager = new SelectManager();
+        selectManager = new SelectManager();
 
         //Модель данных списка
         dataProvider = new DataProvider<M>() {
@@ -370,7 +384,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
         dataViewContainer.setOutputMarkupId(true);
         form.add(dataViewContainer);
 
-        final TimerManager timerManager = new TimerManager(AJAX_TIMER, messagesManager, processingManager, form, dataViewContainer);
+        timerManager = new TimerManager(AJAX_TIMER, messagesManager, processingManager, form, dataViewContainer);
         timerManager.addUpdateComponent(messages);
 
         //Таблица файлов запросов
@@ -540,6 +554,20 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
             }
         });
 
+        //Выгрузить
+        buttons.add(new AjaxLink<Void>("export") {
+
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                export(target, selectManager.getSelectedFileIds());
+            }
+
+            @Override
+            public boolean isVisible() {
+                return isExportVisible();
+            }
+        });
+
         //Удалить
         buttons.add(new DeleteButton("delete") {
 
@@ -633,6 +661,22 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
             }
         });
 
+        //Отменить экспорт
+        buttons.add(new AjaxLink<Void>("export_cancel") {
+
+            @Override
+            public boolean isVisible() {
+                return processManagerBean.isProcessing(getExportProcessType());
+            }
+
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                processManagerBean.cancel(getExportProcessType());
+                info(getString("export_process.canceling"));
+                target.add(form);
+            }
+        });
+
         //Диалог загрузки
         requestFileLoadPanel = new RequestFileLoadPanel("load_panel",
                 new ResourceModel("load_panel_title"),
@@ -685,6 +729,15 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
                 requestFileLoadPanel.open(target);
             }
         });
+    }
+
+    protected void startTimer(AjaxRequestTarget target){
+        messagesManager.resetCompletedStatus(getExportProcessType());
+
+        selectManager.clearSelection();
+        timerManager.addTimer();
+        target.add(form);
+
     }
 
     public WebMarkupContainer getDataViewContainer() {
