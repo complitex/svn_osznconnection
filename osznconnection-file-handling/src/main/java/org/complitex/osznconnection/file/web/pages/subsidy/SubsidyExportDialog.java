@@ -9,6 +9,7 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.complitex.dictionary.web.component.DatePicker;
 import org.odlabs.wiquery.ui.dialog.Dialog;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -19,7 +20,7 @@ import java.util.Date;
 public class SubsidyExportDialog extends Panel {
     private Dialog dialog;
 
-    private class ExportParameter{
+    private class ExportParameter implements Serializable{
         private int step = 0;
         private Date date;
         private String type;
