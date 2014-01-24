@@ -267,19 +267,19 @@
             WHERE
                 `request_file_id` = #{fileId}
                 <if test="city != null">
-                    AND TO_CYRILLIC(`NP_NAME`) = TO_CYRILLIC(#{city})
+                    AND TO_CYRILLIC(`NP_NAME`) = #{city}
                 </if>
                 <if test="streetCode != null">
                     AND `VULCOD` = #{streetCode}
                 </if>
                 <if test="streetType != null">
-                    AND TO_CYRILLIC(`CAT_V`) = TO_CYRILLIC(#{streetType})
+                    AND TO_CYRILLIC(`CAT_V`) = #{streetType}
                 </if>
                 <if test="buildingNumber != null">
-                    AND TO_CYRILLIC(`BLD`) = TO_CYRILLIC(#{buildingNumber})
+                    AND TO_CYRILLIC(`BLD`) = #{buildingNumber}
                 </if>
                 <if test="buildingCorp != null">
-                    AND TO_CYRILLIC(`CORP`) = TO_CYRILLIC(#{buildingCorp})
+                    AND TO_CYRILLIC(`CORP`) = #{buildingCorp}
                 </if>
     </update>
     
@@ -302,11 +302,11 @@
         UPDATE `subsidy` SET `account_number` = #{accountNumber}, `status` = #{status}
         WHERE `request_file_id` = #{requestFileId} 
             AND `RASH` = #{dbfFields.RASH}
-            AND TO_CYRILLIC(`NP_NAME`) = TO_CYRILLIC(#{dbfFields.NP_NAME})
+            AND TO_CYRILLIC(`NP_NAME`) = #{dbfFields.NP_NAME}
             AND `VULCOD` = #{dbfFields.VULCOD}
-            AND TO_CYRILLIC(`CAT_V`) = TO_CYRILLIC(#{dbfFields.CAT_V})
-            AND TO_CYRILLIC(`BLD`) = TO_CYRILLIC(#{dbfFields.BLD})
-            AND TO_CYRILLIC(`CORP`) = TO_CYRILLIC(#{dbfFields.CORP})
+            AND TO_CYRILLIC(`CAT_V`) = #{dbfFields.CAT_V}
+            AND TO_CYRILLIC(`BLD`) = #{dbfFields.BLD}
+            AND TO_CYRILLIC(`CORP`) = #{dbfFields.CORP}
             AND `FLAT` = #{dbfFields.FLAT}
             AND `first_name` = #{firstName} AND `middle_name` = #{middleName} AND `last_name` = #{lastName}
     </select>
