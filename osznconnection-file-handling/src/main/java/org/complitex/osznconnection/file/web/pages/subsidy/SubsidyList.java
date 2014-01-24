@@ -248,12 +248,12 @@ public final class SubsidyList extends TemplatePage {
                 item.add(new Label("firstName", subsidy.getFirstName()));
                 item.add(new Label("middleName", subsidy.getMiddleName()));
                 item.add(new Label("lastName", subsidy.getLastName()));
-                item.add(new Label("city", subsidy.getStringField(SubsidyDBF.NP_NAME)));
-                item.add(new Label("street", AddressRenderer.displayStreet(subsidy.getStringField(SubsidyDBF.CAT_V),
-                        subsidy.getStringField(SubsidyDBF.NAME_V), getLocale())));
-                item.add(new Label("building", subsidy.getStringField(SubsidyDBF.BLD)));
-                item.add(new Label("corp", subsidy.getStringField(SubsidyDBF.CORP)));
-                item.add(new Label("apartment", subsidy.getStringField(SubsidyDBF.FLAT)));
+                item.add(new Label("city", subsidy.getStringField(SubsidyDBF.NP_NAME, "_CYR")));
+                item.add(new Label("street", AddressRenderer.displayStreet(subsidy.getStringField(SubsidyDBF.CAT_V, "_CYR"),
+                        subsidy.getStringField(SubsidyDBF.NAME_V, "_CYR"), getLocale())));
+                item.add(new Label("building", subsidy.getStringField(SubsidyDBF.BLD, "_CYR")));
+                item.add(new Label("corp", subsidy.getStringField(SubsidyDBF.CORP, "_CYR")));
+                item.add(new Label("apartment", subsidy.getStringField(SubsidyDBF.FLAT, "_CYR")));
                 item.add(new Label("DAT1", subsidy.getStringField(SubsidyDBF.DAT1)));
                 item.add(new Label("DAT2", subsidy.getStringField(SubsidyDBF.DAT2)));
                 item.add(new Label("NUMM", subsidy.getStringField(SubsidyDBF.NUMM)));
@@ -270,9 +270,9 @@ public final class SubsidyList extends TemplatePage {
                     public void onClick(AjaxRequestTarget target) {
                         addressCorrectionPanel.open(target, subsidy, subsidy.getFirstName(),
                                 subsidy.getMiddleName(), subsidy.getLastName(),
-                                subsidy.getStringField(SubsidyDBF.NP_NAME_CYR), subsidy.getStringField(SubsidyDBF.CAT_V_CYR),
-                                subsidy.getStringField(SubsidyDBF.NAME_V_CYR), subsidy.getStringField(SubsidyDBF.BLD_CYR),
-                                subsidy.getStringField(SubsidyDBF.CORP_CYR), subsidy.getStringField(SubsidyDBF.FLAT_CYR),
+                                subsidy.getStringField(SubsidyDBF.NP_NAME,"_CYR"), subsidy.getStringField(SubsidyDBF.CAT_V,"_CYR"),
+                                subsidy.getStringField(SubsidyDBF.NAME_V,"_CYR"), subsidy.getStringField(SubsidyDBF.BLD,"_CYR"),
+                                subsidy.getStringField(SubsidyDBF.CORP,"_CYR"), subsidy.getStringField(SubsidyDBF.FLAT,"_CYR"),
                                 subsidy.getInternalCityId(), subsidy.getInternalStreetTypeId(), subsidy.getInternalStreetId(),
                                 subsidy.getInternalBuildingId(), null);
                     }

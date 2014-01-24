@@ -12,12 +12,12 @@ public class Subsidy extends AbstractAccountRequest<SubsidyDBF> {
 
     @Override
     public String getCity() {
-        return getStringField(SubsidyDBF.NP_NAME_CYR);
+        return getStringField(SubsidyDBF.NP_NAME, "_CYR");
     }
 
     @Override
     public String getStreetType() {
-        return getStringField(SubsidyDBF.CAT_V_CYR);
+        return getStringField(SubsidyDBF.CAT_V, "_CYR");
     }
 
     @Override
@@ -27,21 +27,21 @@ public class Subsidy extends AbstractAccountRequest<SubsidyDBF> {
 
     @Override
     public String getStreet() {
-        return getStringField(SubsidyDBF.NAME_V_CYR);
+        return getStringField(SubsidyDBF.NAME_V, "_CYR");
     }
 
     @Override
     public String getBuildingNumber() {
-        return getStringField(SubsidyDBF.BLD_CYR);
+        return getStringField(SubsidyDBF.BLD, "_CYR");
     }
 
     @Override
     public String getBuildingCorp() {
-        return getStringField(SubsidyDBF.CORP_CYR);
+        return getStringField(SubsidyDBF.CORP, "_CYR");
     }
 
     @Override
     public String getApartment() {
-        return getStringField(SubsidyDBF.FLAT_CYR);
+        return getStringField(SubsidyDBF.FLAT, "_CYR");
     }
 }
