@@ -25,6 +25,14 @@
         <result column="begin_date" property="date"/>
 
         <association property="dbfFields" javaType="map">
+            <result column="FIO_CYR" property="FIO_CYR"/>
+            <result column="NP_NAME_CYR" property="NP_NAME_CYR"/>
+            <result column="CAT_V_CYR" property="CAT_V_CYR"/>
+            <result column="NAME_V_CYR" property="NAME_V_CYR"/>
+            <result column="BLD_CYR" property="BLD_CYR"/>
+            <result column="CORP_CYR" property="CORP_CYR"/>
+            <result column="FLAT_CYR" property="FLAT_CYR"/>
+
             <result column="FIO" property="FIO"/>
             <result column="ID_RAJ" property="ID_RAJ"/>
             <result column="NP_CODE" property="NP_CODE"/>
@@ -149,10 +157,14 @@
         p.`request_warning_id` param_request_warning_id, p.`order` param_order, p.`type` param_type, p.`value` param_value
         FROM (
             SELECT s.id, s.`status`, s.`request_file_id`,
-              TO_CYRILLIC(s.`last_name`) last_name, TO_CYRILLIC(s.`first_name`) first_name,
-              TO_CYRILLIC(s.`middle_name`) middle_name, TO_CYRILLIC(s.`FIO`) FIO,
-              TO_CYRILLIC(s.`NP_NAME`) NP_NAME, TO_CYRILLIC(s.`CAT_V`) CAT_V, TO_CYRILLIC(s.`NAME_V`) NAME_V,
-              TO_CYRILLIC(s.`BLD`) BLD, TO_CYRILLIC(s.`CORP`) CORP, TO_CYRILLIC(s.`FLAT`) FLAT,
+              s.`last_name`, s.`first_name`, s.`middle_name`,
+
+              TO_CYRILLIC(s.`FIO`) FIO_CYR, TO_CYRILLIC(s.`NP_NAME`) NP_NAME_CYR, TO_CYRILLIC(s.`CAT_V`) CAT_V_CYR,
+              TO_CYRILLIC(s.`NAME_V`) NAME_V_CYR, TO_CYRILLIC(s.`BLD`) BLD_CYR, TO_CYRILLIC(s.`CORP`) CORP_CYR,
+              TO_CYRILLIC(s.`FLAT`) FLAT_CYR,
+
+              s.`FIO`, s.`NP_NAME`, s.`CAT_V`, s.`NAME_V`, s.`BLD`, s.`CORP`, s.`FLAT`,
+
               s.ID_RAJ, s.NP_CODE, s.VULCOD, s.RASH, s.NUMB,
               s.DAT1, s.DAT2, s.NM_PAY,
               s.P1, s.P2, s.P3, s.P4, s.P5, s.P6, s.P7, s.P8,
@@ -229,9 +241,14 @@
     
     <select id="findForOperation" parameterType="map" resultMap="subsidyResultMap">
         SELECT s.`id`, s.`status`, s.`request_file_id`,
+
+        TO_CYRILLIC(s.`FIO`) FIO_CYR, TO_CYRILLIC(s.`NP_NAME`) NP_NAME_CYR, TO_CYRILLIC(s.`CAT_V`) CAT_V_CYR,
+        TO_CYRILLIC(s.`NAME_V`) NAME_V_CYR, TO_CYRILLIC(s.`BLD`) BLD_CYR, TO_CYRILLIC(s.`CORP`) CORP_CYR,
+        TO_CYRILLIC(s.`FLAT`) FLAT_CYR,
+
+        s.`FIO`, s.`NP_NAME`, s.`CAT_V`, s.`NAME_V`, s.`BLD`, s.`CORP`, s.`FLAT`,
+
         s.`last_name`, s.`first_name`, s.`middle_name`,
-        TO_CYRILLIC(s.`FIO`) FIO, TO_CYRILLIC(s.`NP_NAME`) NP_NAME, TO_CYRILLIC(s.`CAT_V`) CAT_V, TO_CYRILLIC(s.`NAME_V`) NAME_V,
-        TO_CYRILLIC(s.`BLD`) BLD, TO_CYRILLIC(s.`CORP`) CORP, TO_CYRILLIC(s.`FLAT`) FLAT,
         s.`VULCOD`, s.`DAT1`, s.`RASH`,
         f.`organization_id`, f.`user_organization_id`, f.`begin_date`,
         s.`internal_city_id`, s.`internal_street_id`, s.`internal_street_type_id`, s.`internal_building_id`,
@@ -302,13 +319,15 @@
         UPDATE `subsidy` SET `account_number` = #{accountNumber}, `status` = #{status}
         WHERE `request_file_id` = #{requestFileId} 
             AND `RASH` = #{dbfFields.RASH}
-            AND TO_CYRILLIC(`NP_NAME`) = #{dbfFields.NP_NAME}
+            AND `NP_NAME` = #{dbfFields.NP_NAME}
             AND `VULCOD` = #{dbfFields.VULCOD}
-            AND TO_CYRILLIC(`CAT_V`) = #{dbfFields.CAT_V}
-            AND TO_CYRILLIC(`BLD`) = #{dbfFields.BLD}
-            AND TO_CYRILLIC(`CORP`) = #{dbfFields.CORP}
+            AND `CAT_V` = #{dbfFields.CAT_V}
+            AND `BLD` = #{dbfFields.BLD}
+            AND `CORP` = #{dbfFields.CORP}
             AND `FLAT` = #{dbfFields.FLAT}
-            AND `first_name` = #{firstName} AND `middle_name` = #{middleName} AND `last_name` = #{lastName}
+            AND `first_name` = #{firstName}
+            AND `middle_name` = #{middleName}
+            AND `last_name` = #{lastName}
     </select>
 
 </mapper>

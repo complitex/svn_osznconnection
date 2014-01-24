@@ -9,6 +9,12 @@ package org.complitex.osznconnection.file.entity;
  * @author Artem
  */
 public enum SubsidyDBF {
+    NP_NAME_CYR,
+    CAT_V_CYR,
+    NAME_V_CYR,
+    BLD_CYR,
+    CORP_CYR,
+    FLAT_CYR,
 
     FIO, // ФИО
     ID_RAJ, // Код района
