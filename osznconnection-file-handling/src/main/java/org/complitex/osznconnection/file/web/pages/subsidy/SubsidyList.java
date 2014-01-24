@@ -270,9 +270,9 @@ public final class SubsidyList extends TemplatePage {
                     public void onClick(AjaxRequestTarget target) {
                         addressCorrectionPanel.open(target, subsidy, subsidy.getFirstName(),
                                 subsidy.getMiddleName(), subsidy.getLastName(),
-                                subsidy.getStringField(SubsidyDBF.NP_NAME), subsidy.getStringField(SubsidyDBF.CAT_V),
-                                subsidy.getStringField(SubsidyDBF.NAME_V), subsidy.getStringField(SubsidyDBF.BLD),
-                                subsidy.getStringField(SubsidyDBF.CORP), subsidy.getStringField(SubsidyDBF.FLAT),
+                                subsidy.getStringField(SubsidyDBF.NP_NAME_CYR), subsidy.getStringField(SubsidyDBF.CAT_V_CYR),
+                                subsidy.getStringField(SubsidyDBF.NAME_V_CYR), subsidy.getStringField(SubsidyDBF.BLD_CYR),
+                                subsidy.getStringField(SubsidyDBF.CORP_CYR), subsidy.getStringField(SubsidyDBF.FLAT_CYR),
                                 subsidy.getInternalCityId(), subsidy.getInternalStreetTypeId(), subsidy.getInternalStreetId(),
                                 subsidy.getInternalBuildingId(), null);
                     }
