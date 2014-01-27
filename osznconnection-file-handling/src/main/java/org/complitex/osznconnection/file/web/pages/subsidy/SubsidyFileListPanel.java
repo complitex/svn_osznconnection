@@ -196,6 +196,6 @@ public class SubsidyFileListPanel extends AbstractFileListPanel {
 
     @Override
     protected boolean isExportVisible() {
-        return false;
+        return true;
     }
 }
