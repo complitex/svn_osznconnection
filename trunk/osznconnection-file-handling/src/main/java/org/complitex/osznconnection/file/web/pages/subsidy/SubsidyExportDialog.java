@@ -3,14 +3,13 @@ package org.complitex.osznconnection.file.web.pages.subsidy;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.RadioChoice;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.complitex.dictionary.web.component.DatePicker;
+import org.odlabs.wiquery.ui.datepicker.scope.DefaultJsScopeUiDatePickerDateTextEvent;
 import org.odlabs.wiquery.ui.dialog.Dialog;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Date;
 
 /**
@@ -40,12 +39,12 @@ public class SubsidyExportDialog extends Panel {
         structureContainer.setOutputMarkupId(true);
         form.add(structureContainer);
 
-        structureContainer.add(new DatePicker<Date>("date"));
-        structureContainer.add(new RadioChoice<>("type", Arrays.asList("j_file")));
-
-
-
-
+        structureContainer.add(new DatePicker<>("date")
+                .setChangeMonth(true)
+                .setOnSelectEvent(new DefaultJsScopeUiDatePickerDateTextEvent(
+                        "var month=$(\"#ui-datepicker-div .ui-datepicker-month :selected\").val();" +
+                        "var year = $(\"#ui-datepicker-div .ui-datepicker-year :selected\").val();" +
+                        "$(this).datepicker('setDate', new Date(year, month, 1));")));
 
     }
 
