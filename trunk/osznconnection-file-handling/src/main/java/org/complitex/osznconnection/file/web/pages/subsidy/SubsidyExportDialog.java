@@ -1,10 +1,16 @@
 package org.complitex.osznconnection.file.web.pages.subsidy;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LoadableDetachableModel;
+import org.apache.wicket.model.ResourceModel;
 import org.complitex.dictionary.web.component.DatePicker;
 import org.odlabs.wiquery.ui.datepicker.scope.DefaultJsScopeUiDatePickerDateTextEvent;
 import org.odlabs.wiquery.ui.dialog.Dialog;
@@ -19,24 +25,66 @@ import java.util.Date;
 public class SubsidyExportDialog extends Panel {
     private Dialog dialog;
 
-    private class ExportParameter implements Serializable{
+    private static class ExportParameter implements Serializable{
         private int step = 0;
+        private int exportType = 0;
         private Date date;
         private String type;
+
+        public int getStep() {
+            return step;
+        }
+
+        public void setStep(int step) {
+            this.step = step;
+        }
+
+        public int getExportType() {
+            return exportType;
+        }
+
+        public void setExportType(int exportType) {
+            this.exportType = exportType;
+        }
+
+        public Date getDate() {
+            return date;
+        }
+
+        public void setDate(Date date) {
+            this.date = date;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public void setType(String type) {
+            this.type = type;
+        }
     }
 
     public SubsidyExportDialog(String id) {
         super(id);
 
         dialog = new Dialog("dialog");
+        dialog.setTitle(new ResourceModel("export_title"));
+        dialog.setWidth(400);
         add(dialog);
 
-        Form<ExportParameter> form = new Form<>("form", new CompoundPropertyModel<>(new ExportParameter()));
+        final IModel<ExportParameter> model = new CompoundPropertyModel<>(new ExportParameter());
+
+        final Form<ExportParameter> form = new Form<>("form", model);
         form.setOutputMarkupId(true);
         dialog.add(form);
 
-        WebMarkupContainer structureContainer = new WebMarkupContainer("structure_container");
-        structureContainer.setOutputMarkupId(true);
+        //Дата и тип файла
+        WebMarkupContainer structureContainer = new WebMarkupContainer("structure_container"){
+            @Override
+            public boolean isVisible() {
+                return model.getObject().getStep() == 0;
+            }
+        };
         form.add(structureContainer);
 
         structureContainer.add(new DatePicker<>("date")
@@ -46,6 +94,101 @@ public class SubsidyExportDialog extends Panel {
                         "var year = $(\"#ui-datepicker-div .ui-datepicker-year :selected\").val();" +
                         "$(this).datepicker('setDate', new Date(year, month, 1));")));
 
+        WebMarkupContainer actionContainer = new WebMarkupContainer("action_container");
+        structureContainer.setOutputMarkupId(true);
+        form.add(actionContainer);
+
+        //Вариант выгрузки
+        WebMarkupContainer exportTypeContainer = new WebMarkupContainer("export_type_container"){
+            @Override
+            public boolean isVisible() {
+                return model.getObject().getStep() == 1;
+            }
+        };
+        form.add(exportTypeContainer);
+
+        //Выгрузка
+        WebMarkupContainer exportContainer = new WebMarkupContainer("export_container"){
+            @Override
+            public boolean isVisible() {
+                return model.getObject().getStep() == 2;
+            }
+        };
+        form.add(exportContainer);
+
+        //Район
+        WebMarkupContainer districtContainer = new WebMarkupContainer("district_container"){
+            @Override
+            public boolean isVisible() {
+                return model.getObject().getExportType() == 0;
+            }
+        };
+        exportContainer.add(districtContainer);
+
+        //Организация
+        WebMarkupContainer organizationContainer = new WebMarkupContainer("organization_container"){
+            @Override
+            public boolean isVisible() {
+                return model.getObject().getExportType() == 1;
+            }
+        };
+        exportContainer.add(organizationContainer);
+
+        //Балансодержатель
+        WebMarkupContainer holderContainer = new WebMarkupContainer("holder_container"){
+            @Override
+            public boolean isVisible() {
+                return model.getObject().getExportType() == 2;
+            }
+        };
+        exportContainer.add(holderContainer);
+
+
+        actionContainer.add(new AjaxLink("back") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                int step = model.getObject().getStep();
+
+                if (step > 0) {
+                    model.getObject().setStep(step - 1);
+                }else {
+                    dialog.close(target);
+                }
+
+                target.add(form);
+            }
+        }.add(AttributeModifier.replace("value", new LoadableDetachableModel<String>() {
+            @Override
+            protected String load() {
+                return model.getObject().getStep() > 0 ? getString("back") : getString("cancel");
+            }
+        })));
+
+        actionContainer.add(new AjaxLink("next") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                model.getObject().setStep(model.getObject().getStep() + 1);
+
+                target.add(form);
+            }
+
+            @Override
+            public boolean isVisible() {
+                return model.getObject().getStep() < 2;
+            }
+        });
+
+        actionContainer.add(new AjaxButton("export") {
+            @Override
+            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+
+            }
+
+            @Override
+            public boolean isVisible() {
+                return model.getObject().getStep() == 2;
+            }
+        });
     }
 
     public void open(AjaxRequestTarget target){
