@@ -4,18 +4,20 @@ import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.RadioChoice;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.CompoundPropertyModel;
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.LoadableDetachableModel;
-import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.model.*;
 import org.complitex.dictionary.web.component.DatePicker;
+import org.complitex.organization.web.component.OrganizationPickerPanel;
 import org.odlabs.wiquery.ui.datepicker.scope.DefaultJsScopeUiDatePickerDateTextEvent;
 import org.odlabs.wiquery.ui.dialog.Dialog;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Date;
 
 /**
@@ -27,7 +29,7 @@ public class SubsidyExportDialog extends Panel {
 
     private static class ExportParameter implements Serializable{
         private int step = 0;
-        private int exportType = 0;
+        private Integer exportType = 0;
         private Date date;
         private String type;
 
@@ -39,11 +41,11 @@ public class SubsidyExportDialog extends Panel {
             this.step = step;
         }
 
-        public int getExportType() {
+        public Integer getExportType() {
             return exportType;
         }
 
-        public void setExportType(int exportType) {
+        public void setExportType(Integer exportType) {
             this.exportType = exportType;
         }
 
@@ -67,7 +69,9 @@ public class SubsidyExportDialog extends Panel {
     public SubsidyExportDialog(String id) {
         super(id);
 
-        dialog = new Dialog("dialog");
+        dialog = new Dialog("dialog"){
+            {getOptions().putLiteral("width", "auto");}
+        };
         dialog.setTitle(new ResourceModel("export_title"));
         dialog.setWidth(400);
         add(dialog);
@@ -107,6 +111,24 @@ public class SubsidyExportDialog extends Panel {
         };
         form.add(exportTypeContainer);
 
+        exportTypeContainer.add(new RadioChoice<>("exportType", Arrays.asList(0,1,2), new IChoiceRenderer<Integer>() {
+            @Override
+            public Object getDisplayValue(Integer object) {
+                switch (object){
+                    case 0: return getString("export_type_holder");
+                    case 1: return getString("export_type_district");
+                    case 2: return getString("export_type_organization");
+                }
+
+                return null;
+            }
+
+            @Override
+            public String getIdValue(Integer object, int index) {
+                return object.toString();
+            }
+        }));
+
         //Выгрузка
         WebMarkupContainer exportContainer = new WebMarkupContainer("export_container"){
             @Override
@@ -116,11 +138,22 @@ public class SubsidyExportDialog extends Panel {
         };
         form.add(exportContainer);
 
+        //Балансодержатель
+        WebMarkupContainer holderContainer = new WebMarkupContainer("holder_container"){
+            @Override
+            public boolean isVisible() {
+                return model.getObject().getExportType() == 0;
+            }
+        };
+        exportContainer.add(holderContainer);
+
+        holderContainer.add(new OrganizationPickerPanel("organization_picker", Model.of(1l), Arrays.asList(0l,1l,2l)));
+
         //Район
         WebMarkupContainer districtContainer = new WebMarkupContainer("district_container"){
             @Override
             public boolean isVisible() {
-                return model.getObject().getExportType() == 0;
+                return model.getObject().getExportType() == 1;
             }
         };
         exportContainer.add(districtContainer);
@@ -129,20 +162,10 @@ public class SubsidyExportDialog extends Panel {
         WebMarkupContainer organizationContainer = new WebMarkupContainer("organization_container"){
             @Override
             public boolean isVisible() {
-                return model.getObject().getExportType() == 1;
-            }
-        };
-        exportContainer.add(organizationContainer);
-
-        //Балансодержатель
-        WebMarkupContainer holderContainer = new WebMarkupContainer("holder_container"){
-            @Override
-            public boolean isVisible() {
                 return model.getObject().getExportType() == 2;
             }
         };
-        exportContainer.add(holderContainer);
-
+        exportContainer.add(organizationContainer);
 
         actionContainer.add(new AjaxLink("back") {
             @Override
@@ -164,9 +187,9 @@ public class SubsidyExportDialog extends Panel {
             }
         })));
 
-        actionContainer.add(new AjaxLink("next") {
+        actionContainer.add(new AjaxSubmitLink("next") {
             @Override
-            public void onClick(AjaxRequestTarget target) {
+            public void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 model.getObject().setStep(model.getObject().getStep() + 1);
 
                 target.add(form);
