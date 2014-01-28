@@ -13,6 +13,30 @@
                     </tr>
                 </table>
             </div>
+
+            <div wicket:id="export_type_container">
+
+            </div>
+
+            <div wicket:id="export_container">
+                <div wicket:id="district_container">
+
+                </div>
+
+                <div wicket:id="organization_container">
+
+                </div>
+
+                <div wicket:id="holder_container">
+
+                </div>
+            </div>
+
+            <div wicket:id="action_container" style="margin-top: 20px">
+                <input type="button" wicket:id="back" class="btnMiddle"/>
+                <input type="button" wicket:id="next" class="btnMiddle" wicket:message="value:next"/>
+                <input type="submit" wicket:id="export" class="btnBig" wicket:message="value:export"/>
+            </div>
         </form>
     </div>
 </wicket:panel>
