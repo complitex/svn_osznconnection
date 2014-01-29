@@ -1,5 +1,6 @@
 package org.complitex.osznconnection.file.web.pages.subsidy;
 
+import com.google.common.collect.ImmutableMap;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -9,62 +10,29 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.RadioChoice;
+import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.*;
+import org.apache.wicket.util.template.PackageTextTemplate;
+import org.apache.wicket.util.template.TextTemplate;
+import org.complitex.address.web.component.DistrictSelectPanel;
 import org.complitex.dictionary.web.component.DatePicker;
 import org.complitex.organization.web.component.OrganizationPickerPanel;
+import org.complitex.organization_type.strategy.OrganizationTypeStrategy;
 import org.odlabs.wiquery.ui.datepicker.scope.DefaultJsScopeUiDatePickerDateTextEvent;
 import org.odlabs.wiquery.ui.dialog.Dialog;
 
-import java.io.Serializable;
 import java.util.Arrays;
-import java.util.Date;
+import java.util.List;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 22.01.14 20:06
  */
 public class SubsidyExportDialog extends Panel {
+    private static final TextTemplate CENTER_DIALOG_JS = new PackageTextTemplate(OrganizationPickerPanel.class, "CenterDialog.js");
+
     private Dialog dialog;
-
-    private static class ExportParameter implements Serializable{
-        private int step = 0;
-        private Integer exportType = 0;
-        private Date date;
-        private String type;
-
-        public int getStep() {
-            return step;
-        }
-
-        public void setStep(int step) {
-            this.step = step;
-        }
-
-        public Integer getExportType() {
-            return exportType;
-        }
-
-        public void setExportType(Integer exportType) {
-            this.exportType = exportType;
-        }
-
-        public Date getDate() {
-            return date;
-        }
-
-        public void setDate(Date date) {
-            this.date = date;
-        }
-
-        public String getType() {
-            return type;
-        }
-
-        public void setType(String type) {
-            this.type = type;
-        }
-    }
 
     public SubsidyExportDialog(String id) {
         super(id);
@@ -73,14 +41,18 @@ public class SubsidyExportDialog extends Panel {
             {getOptions().putLiteral("width", "auto");}
         };
         dialog.setTitle(new ResourceModel("export_title"));
-        dialog.setWidth(400);
+        dialog.setWidth(600);
         add(dialog);
 
-        final IModel<ExportParameter> model = new CompoundPropertyModel<>(new ExportParameter());
+        final IModel<SubsidyExportParameter> model = new CompoundPropertyModel<>(new SubsidyExportParameter());
 
-        final Form<ExportParameter> form = new Form<>("form", model);
+        final Form<SubsidyExportParameter> form = new Form<>("form", model);
         form.setOutputMarkupId(true);
         dialog.add(form);
+
+        final FeedbackPanel feedbackPanel = new FeedbackPanel("messages");
+        feedbackPanel.setOutputMarkupId(true);
+        form.add(feedbackPanel);
 
         //Дата и тип файла
         WebMarkupContainer structureContainer = new WebMarkupContainer("structure_container"){
@@ -95,8 +67,8 @@ public class SubsidyExportDialog extends Panel {
                 .setChangeMonth(true)
                 .setOnSelectEvent(new DefaultJsScopeUiDatePickerDateTextEvent(
                         "var month=$(\"#ui-datepicker-div .ui-datepicker-month :selected\").val();" +
-                        "var year = $(\"#ui-datepicker-div .ui-datepicker-year :selected\").val();" +
-                        "$(this).datepicker('setDate', new Date(year, month, 1));")));
+                                "var year = $(\"#ui-datepicker-div .ui-datepicker-year :selected\").val();" +
+                                "$(this).datepicker('setDate', new Date(year, month, 1));")));
 
         WebMarkupContainer actionContainer = new WebMarkupContainer("action_container");
         structureContainer.setOutputMarkupId(true);
@@ -139,33 +111,37 @@ public class SubsidyExportDialog extends Panel {
         form.add(exportContainer);
 
         //Балансодержатель
-        WebMarkupContainer holderContainer = new WebMarkupContainer("holder_container"){
+        exportContainer.add(new OrganizationPickerPanel("balance_holder",
+                new PropertyModel<Long>(model, "organizationId"),
+                Arrays.asList(OrganizationTypeStrategy.USER_ORGANIZATION_TYPE)){
+            @Override
+            protected boolean isBalanceHolder() {
+                return true;
+            }
+
             @Override
             public boolean isVisible() {
                 return model.getObject().getExportType() == 0;
             }
-        };
-        exportContainer.add(holderContainer);
-
-        holderContainer.add(new OrganizationPickerPanel("organization_picker", Model.of(1l), Arrays.asList(0l,1l,2l)));
+        });
 
         //Район
-        WebMarkupContainer districtContainer = new WebMarkupContainer("district_container"){
+        exportContainer.add(new DistrictSelectPanel("districts", new PropertyModel<List<Long>>(model, "districts")){
             @Override
             public boolean isVisible() {
                 return model.getObject().getExportType() == 1;
             }
-        };
-        exportContainer.add(districtContainer);
+        });
 
         //Организация
-        WebMarkupContainer organizationContainer = new WebMarkupContainer("organization_container"){
+        exportContainer.add(new OrganizationPickerPanel("organization",
+                new PropertyModel<Long>(model, "organizationId"),
+                Arrays.asList(OrganizationTypeStrategy.SERVICING_ORGANIZATION_TYPE)){
             @Override
             public boolean isVisible() {
                 return model.getObject().getExportType() == 2;
             }
-        };
-        exportContainer.add(organizationContainer);
+        });
 
         actionContainer.add(new AjaxLink("back") {
             @Override
@@ -193,6 +169,13 @@ public class SubsidyExportDialog extends Panel {
                 model.getObject().setStep(model.getObject().getStep() + 1);
 
                 target.add(form);
+
+                target.appendJavaScript(CENTER_DIALOG_JS.asString(ImmutableMap.of("dialogId", dialog.getMarkupId())));
+            }
+
+            @Override
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
+                target.add(feedbackPanel);
             }
 
             @Override
@@ -205,6 +188,11 @@ public class SubsidyExportDialog extends Panel {
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
 
+            }
+
+            @Override
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
+                target.add(feedbackPanel);
             }
 
             @Override
