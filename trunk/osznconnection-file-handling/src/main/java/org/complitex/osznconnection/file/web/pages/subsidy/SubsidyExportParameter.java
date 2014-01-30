@@ -17,10 +17,10 @@ class SubsidyExportParameter implements Serializable {
     private Integer exportType = 0;
     private Date date = DateUtil.getFirstDayOfCurrentMonth();
     private String type;
-    private Long organizationId;
-    private List<Long> districts = new ArrayList<>();
 
     private List<DomainObject> balanceHolders = new ArrayList<>();
+    private List<Long> districts = new ArrayList<>();
+    private List<DomainObject> organizations = new ArrayList<>();
 
     public int getStep() {
         return step;
@@ -54,12 +54,12 @@ class SubsidyExportParameter implements Serializable {
         this.type = type;
     }
 
-    public Long getOrganizationId() {
-        return organizationId;
+    public List<DomainObject> getBalanceHolders() {
+        return balanceHolders;
     }
 
-    public void setOrganizationId(Long organizationId) {
-        this.organizationId = organizationId;
+    public void setBalanceHolders(List<DomainObject> balanceHolders) {
+        this.balanceHolders = balanceHolders;
     }
 
     public List<Long> getDistricts() {
@@ -70,11 +70,11 @@ class SubsidyExportParameter implements Serializable {
         this.districts = districts;
     }
 
-    public List<DomainObject> getBalanceHolders() {
-        return balanceHolders;
+    public List<DomainObject> getOrganizations() {
+        return organizations;
     }
 
-    public void setBalanceHolders(List<DomainObject> balanceHolders) {
-        this.balanceHolders = balanceHolders;
+    public void setOrganizations(List<DomainObject> organizations) {
+        this.organizations = organizations;
     }
 }

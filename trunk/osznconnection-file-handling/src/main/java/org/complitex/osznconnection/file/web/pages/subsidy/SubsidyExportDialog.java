@@ -16,8 +16,10 @@ import org.apache.wicket.model.*;
 import org.apache.wicket.util.template.PackageTextTemplate;
 import org.apache.wicket.util.template.TextTemplate;
 import org.complitex.address.web.component.DistrictSelectPanel;
+import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.web.component.DatePicker;
-import org.complitex.organization.web.component.OrganizationPickerPanel;
+import org.complitex.organization.web.component.OrganizationMultiselectPanel;
+import org.complitex.organization.web.component.OrganizationPicker;
 import org.complitex.organization_type.strategy.OrganizationTypeStrategy;
 import org.odlabs.wiquery.ui.datepicker.scope.DefaultJsScopeUiDatePickerDateTextEvent;
 import org.odlabs.wiquery.ui.dialog.Dialog;
@@ -30,7 +32,7 @@ import java.util.List;
  *         Date: 22.01.14 20:06
  */
 public class SubsidyExportDialog extends Panel {
-    private static final TextTemplate CENTER_DIALOG_JS = new PackageTextTemplate(OrganizationPickerPanel.class, "CenterDialog.js");
+    private static final TextTemplate CENTER_DIALOG_JS = new PackageTextTemplate(OrganizationPicker.class, "CenterDialog.js");
 
     private Dialog dialog;
 
@@ -41,7 +43,7 @@ public class SubsidyExportDialog extends Panel {
             {getOptions().putLiteral("width", "auto");}
         };
         dialog.setTitle(new ResourceModel("export_title"));
-        dialog.setWidth(600);
+        dialog.setWidth(650);
         add(dialog);
 
         final IModel<SubsidyExportParameter> model = new CompoundPropertyModel<>(new SubsidyExportParameter());
@@ -111,13 +113,9 @@ public class SubsidyExportDialog extends Panel {
         form.add(exportContainer);
 
         //Балансодержатель
-        exportContainer.add(new OrganizationPickerPanel("balance_holder",
-                new PropertyModel<Long>(model, "organizationId"),
+        exportContainer.add(new OrganizationMultiselectPanel("balance_holder",
+                new PropertyModel<List<DomainObject>>(model, "balanceHolders"),
                 Arrays.asList(OrganizationTypeStrategy.USER_ORGANIZATION_TYPE)){
-            @Override
-            protected boolean isBalanceHolder() {
-                return true;
-            }
 
             @Override
             public boolean isVisible() {
@@ -134,8 +132,8 @@ public class SubsidyExportDialog extends Panel {
         });
 
         //Организация
-        exportContainer.add(new OrganizationPickerPanel("organization",
-                new PropertyModel<Long>(model, "organizationId"),
+        exportContainer.add(new OrganizationMultiselectPanel("organization",
+                new PropertyModel<List<DomainObject>>(model, "organizations"),
                 Arrays.asList(OrganizationTypeStrategy.SERVICING_ORGANIZATION_TYPE)){
             @Override
             public boolean isVisible() {
