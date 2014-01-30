@@ -1,5 +1,6 @@
 package org.complitex.osznconnection.file.web.pages.subsidy;
 
+import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.util.DateUtil;
 
 import java.io.Serializable;
@@ -18,6 +19,8 @@ class SubsidyExportParameter implements Serializable {
     private String type;
     private Long organizationId;
     private List<Long> districts = new ArrayList<>();
+
+    private List<DomainObject> balanceHolders = new ArrayList<>();
 
     public int getStep() {
         return step;
@@ -65,5 +68,13 @@ class SubsidyExportParameter implements Serializable {
 
     public void setDistricts(List<Long> districts) {
         this.districts = districts;
+    }
+
+    public List<DomainObject> getBalanceHolders() {
+        return balanceHolders;
+    }
+
+    public void setBalanceHolders(List<DomainObject> balanceHolders) {
+        this.balanceHolders = balanceHolders;
     }
 }
