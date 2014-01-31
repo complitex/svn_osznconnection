@@ -196,7 +196,10 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
     protected F newFilter() {
         try {
             F filter = getFilterClass().newInstance();
+            filter.setSortProperty("loaded");
+
             initFilter(filter);
+
             return filter;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -352,12 +355,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
             protected Iterable<M> getData(int first, int count) {
                 final F filter = model.getObject();
 
-                //store preference, but before clear data order related properties.
-                {
-                    filter.setAscending(false);
-                    filter.setSortProperty(null);
-                    getSession().putPreferenceObject(getPreferencePage(), PreferenceKey.FILTER_OBJECT, filter);
-                }
+                getSession().putPreferenceObject(getPreferencePage(), PreferenceKey.FILTER_OBJECT, filter);
 
                 //prepare filter object
                 filter.setFirst(first);
@@ -377,7 +375,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
                 return AbstractProcessableListPanel.this.getSize(model.getObject());
             }
         };
-        dataProvider.setSort("loaded", SortOrder.DESCENDING);
+        dataProvider.setSort(filter.getSortProperty(), SortOrder.DESCENDING);
 
         //Контейнер для ajax
         dataViewContainer = new WebMarkupContainer("objects_container");
