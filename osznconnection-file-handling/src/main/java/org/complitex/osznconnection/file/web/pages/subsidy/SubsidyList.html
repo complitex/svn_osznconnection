@@ -10,8 +10,9 @@
         <wicket:extend>
             <h2 wicket:id="label" style="margin-bottom: 20px;"></h2>
 
+            <div wicket:id="statusDetailsPanel"></div>
+
             <div wicket:id="content">
-                <div wicket:id="statusDetailsPanel"></div>
                 <div wicket:id="messages"></div>
 
                 <form action="#" wicket:id="filterForm">
@@ -69,7 +70,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr wicket:id="data" class="data-row" style="cursor: pointer">
+                            <tr wicket:id="data" class="data-row">
                                 <td><span wicket:id="rash"></span></td>
                                 <td><span wicket:id="lastName"></span></td>
                                 <td><span wicket:id="firstName"></span></td>
@@ -108,6 +109,9 @@
                                     </a>
                                     <a class="data-row-link" wicket:id="master_data">
                                         <wicket:message key="master_data"/>
+                                    </a>
+                                    <a class="data-row-link" wicket:id="edit">
+                                        <wicket:message key="edit"/>
                                     </a>
                                 </td>
                             </tr>
