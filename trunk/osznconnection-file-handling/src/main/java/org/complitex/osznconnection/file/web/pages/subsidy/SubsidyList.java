@@ -1,9 +1,6 @@
 package org.complitex.osznconnection.file.web.pages.subsidy;
 
-import org.apache.wicket.Component;
-import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.IAjaxCallDecorator;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.authorization.UnauthorizedInstantiationException;
@@ -30,7 +27,6 @@ import org.complitex.correction.service.exception.MoreOneCorrectionException;
 import org.complitex.correction.service.exception.NotFoundCorrectionException;
 import org.complitex.correction.web.component.AddressCorrectionPanel;
 import org.complitex.dictionary.service.SessionBean;
-import org.complitex.dictionary.web.component.ajax.AjaxCancelEventBubbleCallDecorator;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
@@ -137,7 +133,7 @@ public final class SubsidyList extends TemplatePage {
                 return statusDetailBean.getSubsidyStatusDetails(fileId);
             }
         };
-        content.add(statusDetailPanel);
+        add(statusDetailPanel);
 
         final DataProvider<Subsidy> dataProvider = new DataProvider<Subsidy>() {
 
@@ -235,6 +231,7 @@ public final class SubsidyList extends TemplatePage {
         };
         add(lookupPanel);
 
+        //Диалог редактирования
         final  SubsidyEditPanel editPanel = new SubsidyEditPanel("edit_panel", content);
         add(editPanel);
 
@@ -276,11 +273,6 @@ public final class SubsidyList extends TemplatePage {
                                 subsidy.getInternalCityId(), subsidy.getInternalStreetTypeId(), subsidy.getInternalStreetId(),
                                 subsidy.getInternalBuildingId(), null);
                     }
-
-                    @Override
-                    protected IAjaxCallDecorator getAjaxCallDecorator() {
-                        return new AjaxCancelEventBubbleCallDecorator();
-                    }
                 };
                 addressCorrectionLink.setVisible(subsidy.getStatus().isAddressCorrectable());
                 item.add(addressCorrectionLink);
@@ -294,11 +286,6 @@ public final class SubsidyList extends TemplatePage {
                                 subsidy.getStringField(SubsidyDBF.RASH),
                                 subsidy.getStatus().isImmediatelySearchByAddress());
                     }
-
-                    @Override
-                    protected IAjaxCallDecorator getAjaxCallDecorator() {
-                        return new AjaxCancelEventBubbleCallDecorator();
-                    }
                 };
                 item.add(lookup);
 
@@ -309,21 +296,16 @@ public final class SubsidyList extends TemplatePage {
                         setResponsePage(SubsidyMasterDataList.class, new PageParameters()
                                 .add("subsidy_id", subsidy.getId()).add("request_file_id", subsidy.getRequestFileId()));
                     }
-
-                    @Override
-                    protected IAjaxCallDecorator getAjaxCallDecorator() {
-                        return new AjaxCancelEventBubbleCallDecorator();
-                    }
                 });
 
-                item.add(new AjaxEventBehavior("onclick") {
+                item.add(new AjaxLink("edit") {
                     @Override
-                    protected void onEvent(AjaxRequestTarget target) {
+                    public void onClick(AjaxRequestTarget target) {
                         editPanel.open(target, subsidy);
                     }
 
                     @Override
-                    public boolean isEnabled(Component component) {
+                    public boolean isVisible() {
                         return RequestStatus.SUBSIDY_NM_PAY_ERROR.equals(subsidy.getStatus());
                     }
                 });
