@@ -17,6 +17,7 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
@@ -253,7 +254,7 @@ public final class SubsidyList extends TemplatePage {
                 item.add(new Label("corp", subsidy.getStringField(SubsidyDBF.CORP, "_CYR")));
                 item.add(new Label("apartment", subsidy.getStringField(SubsidyDBF.FLAT, "_CYR")));
                 item.add(DateLabel.forShortStyle("DAT1", Model.of((Date)subsidy.getField(SubsidyDBF.DAT1))));
-                item.add(DateLabel.forShortStyle("DAT2", Model.of((Date)subsidy.getField(SubsidyDBF.DAT2))));
+                item.add(DateLabel.forShortStyle("DAT2", Model.of((Date) subsidy.getField(SubsidyDBF.DAT2))));
                 item.add(new Label("NUMM", subsidy.getStringField(SubsidyDBF.NUMM)));
                 item.add(new Label("NM_PAY", decimal(subsidy.getStringField(SubsidyDBF.NM_PAY))));
                 item.add(new Label("SUMMA", decimal(subsidy.getStringField(SubsidyDBF.SUMMA))));
@@ -299,17 +300,21 @@ public final class SubsidyList extends TemplatePage {
                     }
                 });
 
-                item.add(new AjaxLink("edit") {
+                AjaxLink edit = new AjaxLink("edit") {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         editPanel.open(target, subsidy);
                     }
+                };
+                item.add(edit);
 
+                edit.add(new Label("editLabel", new LoadableDetachableModel<String>() {
                     @Override
-                    public boolean isVisible() {
-                        return RequestStatus.SUBSIDY_NM_PAY_ERROR.equals(subsidy.getStatus());
+                    protected String load() {
+                        return RequestStatus.SUBSIDY_NM_PAY_ERROR.equals(subsidy.getStatus())
+                                ? getString("edit") : getString("view");
                     }
-                });
+                }));
             }
         };
         filterForm.add(data);

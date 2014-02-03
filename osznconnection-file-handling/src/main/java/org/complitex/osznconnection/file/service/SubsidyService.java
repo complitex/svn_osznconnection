@@ -11,6 +11,7 @@ import org.complitex.osznconnection.organization.strategy.entity.ServiceAssociat
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 /**
@@ -40,6 +41,10 @@ public class SubsidyService {
             sbSum = sbSum.add((BigDecimal) request.getField("SB" + sa.getServiceProviderTypeId()));
             smSum = smSum.add((BigDecimal) request.getField("SM" + sa.getServiceProviderTypeId()));
         }
+
+        //round Pn
+        nSum = nSum.setScale(2, RoundingMode.HALF_UP);
+
 
         return new SubsidySum(nSum, sbSum, smSum);
     }
