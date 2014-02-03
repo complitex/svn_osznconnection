@@ -5,6 +5,7 @@ import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.authorization.UnauthorizedInstantiationException;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
+import org.apache.wicket.datetime.markup.html.basic.DateLabel;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -251,8 +252,8 @@ public final class SubsidyList extends TemplatePage {
                 item.add(new Label("building", subsidy.getStringField(SubsidyDBF.BLD, "_CYR")));
                 item.add(new Label("corp", subsidy.getStringField(SubsidyDBF.CORP, "_CYR")));
                 item.add(new Label("apartment", subsidy.getStringField(SubsidyDBF.FLAT, "_CYR")));
-                item.add(new Label("DAT1", subsidy.getStringField(SubsidyDBF.DAT1)));
-                item.add(new Label("DAT2", subsidy.getStringField(SubsidyDBF.DAT2)));
+                item.add(DateLabel.forShortStyle("DAT1", Model.of((Date)subsidy.getField(SubsidyDBF.DAT1))));
+                item.add(DateLabel.forShortStyle("DAT2", Model.of((Date)subsidy.getField(SubsidyDBF.DAT2))));
                 item.add(new Label("NUMM", subsidy.getStringField(SubsidyDBF.NUMM)));
                 item.add(new Label("NM_PAY", decimal(subsidy.getStringField(SubsidyDBF.NM_PAY))));
                 item.add(new Label("SUMMA", decimal(subsidy.getStringField(SubsidyDBF.SUMMA))));
