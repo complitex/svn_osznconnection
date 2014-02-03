@@ -10,7 +10,7 @@
     </select>
 
     <select id="findOwnershipCode" resultType="string" parameterType="map">
-        SELECT oc.`organization_code` FROM `ownership_correction` oc WHERE 
+        SELECT oc.`external_id` FROM `ownership_correction` oc WHERE
             oc.`organization_id` = #{organizationId} AND oc.`object_id` = #{objectId}
             AND oc.`user_organization_id` = #{userOrganizationId}
     </select>
@@ -21,12 +21,12 @@
 
     <select id="selectOwnershipCorrections" parameterType="org.complitex.dictionary.entity.FilterWrapper"
             resultMap="ownershipCorrectionResultMap">
-        select * from `ownership_correction`
+        select * from `ownership_correction` c
         <include refid="org.complitex.dictionary.entity.Correction.selectCorrectionWhere"/>
     </select>
 
     <select id="selectOwnershipCorrectionsCount" parameterType="long" resultType="int">
-        select count(*) from `ownership_correction`
+        select count(*) from `ownership_correction` c
         <include refid="org.complitex.dictionary.entity.Correction.selectCorrectionWhere"/>
     </select>
 </mapper>
