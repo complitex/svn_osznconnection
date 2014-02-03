@@ -6,6 +6,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -53,6 +54,8 @@ public class SubsidyEditPanel extends Panel {
     private Form form;
 
     private Map<String, LabelTextField> textFieldMap = new HashMap<>();
+
+    private Label nmPayDiff, summaDiff, subsDiff;
 
     private AjaxSubmitLink link;
 
@@ -111,6 +114,16 @@ public class SubsidyEditPanel extends Panel {
 
             form.add(textField);
         }
+
+        //Diffs
+        form.add(nmPayDiff = new Label("nmPayDiff", Model.of("")));
+        nmPayDiff.setOutputMarkupId(true).setOutputMarkupPlaceholderTag(true);
+
+        form.add(summaDiff = new Label("summaDiff", Model.of("")));
+        summaDiff.setOutputMarkupId(true).setOutputMarkupPlaceholderTag(true);
+
+        form.add(subsDiff = new Label("subsDiff", Model.of("")));
+        subsDiff.setOutputMarkupId(true).setOutputMarkupPlaceholderTag(true);
 
         form.add(link = new AjaxSubmitLink("save") {
             @Override
@@ -223,15 +236,31 @@ public class SubsidyEditPanel extends Panel {
 
         boolean nummCheck =  numm <= 0 || summa.compareTo(subs.multiply(new BigDecimal(numm))) == 0;
 
-        nmPayTextField.add(AttributeModifier.replace("style", nmPay.compareTo(subsidySum.getNSum()) != 0
-                ? "background-color: lightpink;" : ""));
-        summaTextField.add(AttributeModifier.replace("style", !nummCheck || summa.compareTo(subsidySum.getSmSum()) != 0
-                ? "background-color: lightpink;" : ""));
-        subsTextField.add(AttributeModifier.replace("style", !nummCheck || subs.compareTo(subsidySum.getSbSum()) != 0
-                ? "background-color: lightpink;" : ""));
-        nummTextField.add(AttributeModifier.replace("style", !nummCheck
-                ? "background-color: lightpink;" : ""));
+        if (nmPay.compareTo(subsidySum.getNSum()) != 0){
+            nmPayTextField.add(AttributeModifier.replace("style", "background-color: lightpink;"));
+            nmPayDiff.setDefaultModelObject("(" + nmPay.subtract(subsidySum.getNSum()) + ")");
+        }else{
+            nmPayTextField.add(AttributeModifier.replace("style", ""));
+            nmPayDiff.setDefaultModelObject("");
+        }
 
+        if (!nummCheck || summa.compareTo(subsidySum.getSmSum()) != 0){
+            summaTextField.add(AttributeModifier.replace("style", "background-color: lightpink;"));
+            summaDiff.setDefaultModelObject("(" + summa.subtract(subsidySum.getSmSum()) + ")");
+        }else {
+            summaTextField.add(AttributeModifier.replace("style", ""));
+            summaDiff.setDefaultModelObject("");
+        }
+
+        if (!nummCheck || subs.compareTo(subsidySum.getSbSum()) != 0){
+            subsTextField.add(AttributeModifier.replace("style", "background-color: lightpink;"));
+            subsDiff.setDefaultModelObject("(" + subs.subtract(subsidySum.getSbSum()) + ")");
+        }else{
+            subsTextField.add(AttributeModifier.replace("style", ""));
+            subsDiff.setDefaultModelObject("");
+        }
+
+        nummTextField.add(AttributeModifier.replace("style", !nummCheck ? "background-color: lightpink;" : ""));
 
         //save
         boolean enabled = subsidyModel.getObject().getUserOrganizationId() == null
@@ -241,6 +270,9 @@ public class SubsidyEditPanel extends Panel {
 
 
         if (target != null) {
+            target.add(nmPayDiff);
+            target.add(summaDiff);
+            target.add(subsDiff);
             target.add(nmPayTextField);
             target.add(summaTextField);
             target.add(subsTextField);
