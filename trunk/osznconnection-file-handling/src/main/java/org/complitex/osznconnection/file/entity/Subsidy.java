@@ -22,7 +22,7 @@ public class Subsidy extends AbstractAccountRequest<SubsidyDBF> {
 
     @Override
     public String getStreetCode() {
-        return getStringField(SubsidyDBF.VULCOD);
+        return null; //code is not used for correction
     }
 
     @Override

@@ -286,8 +286,8 @@
                 <if test="city != null">
                     AND TO_CYRILLIC(`NP_NAME`) = #{city}
                 </if>
-                <if test="streetCode != null">
-                    AND `VULCOD` = #{streetCode}
+                <if test="street != null">
+                    AND TO_CYRILLIC(`NAME_V`) = #{street}
                 </if>
                 <if test="streetType != null">
                     AND TO_CYRILLIC(`CAT_V`) = #{streetType}
