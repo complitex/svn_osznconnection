@@ -42,6 +42,6 @@ public class Subsidy extends AbstractAccountRequest<SubsidyDBF> {
 
     @Override
     public String getApartment() {
-        return getStringField(SubsidyDBF.FLAT);
+        return getStringField(SubsidyDBF.FLAT, "_CYR");
     }
 }

@@ -28,6 +28,8 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.complitex.osznconnection.file.entity.RequestStatus.SUBSIDY_NM_PAY_ERROR;
+
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -82,22 +84,27 @@ public class SubsidyEditPanel extends Panel {
 
         final RequestFileDescription description = requestFileDescriptionBean.getFileDescription (RequestFileType.SUBSIDY);
 
-        int index = 0;
+        int index = -1;
         for (RequestFileFieldDescription d : description.getFields()){
-            LabelTextField textField = new LabelTextField<>(d.getName(), d.getLength(),
-                    new PropertyModel<>(subsidyModel, "dbfFields[" + d.getName() + "]"));
+            index++;
+
+            LabelTextField textField = new LabelTextField<Object>(d.getName(), d.getLength(),
+                    new PropertyModel<>(subsidyModel, "dbfFields[" + d.getName() + "]"), index){
+                @Override
+                public boolean isEnabled() {
+                    return getIndex() > 11 && SUBSIDY_NM_PAY_ERROR.equals(subsidyModel.getObject().getStatus());
+                }
+            };
             textField.setType(d.getFieldType());
             textField.setOutputMarkupId(true);
 
-            if (++index > 11){
+            if (index > 11){
                 textField.add(new AjaxFormComponentUpdatingBehavior("onchange") {
                     @Override
                     protected void onUpdate(AjaxRequestTarget target) {
                         validate(target);
                     }
                 });
-            }else {
-                textField.setEnabled(false);
             }
 
             textFieldMap.put(d.getName(), textField);
@@ -112,7 +119,7 @@ public class SubsidyEditPanel extends Panel {
 
                 RequestFile requestFile = requestFileBean.findById(subsidy.getRequestFileId());
 
-                if (RequestStatus.SUBSIDY_NM_PAY_ERROR.equals(subsidy.getStatus())) {
+                if (SUBSIDY_NM_PAY_ERROR.equals(subsidy.getStatus())) {
                     subsidy.setStatus(RequestStatus.LOADED);
 
                     //save
@@ -155,6 +162,11 @@ public class SubsidyEditPanel extends Panel {
             protected void onError(AjaxRequestTarget target, Form<?> form) {
                 target.add(messages);
             }
+
+            @Override
+            public boolean isVisible() {
+                return SUBSIDY_NM_PAY_ERROR.equals(subsidyModel.getObject().getStatus());
+            }
         });
         link.setOutputMarkupId(true);
 
@@ -178,6 +190,11 @@ public class SubsidyEditPanel extends Panel {
                 subsidy.setField(SubsidyDBF.SUBS, subsidySum.getSbSum());
 
                 validate(target);
+            }
+
+            @Override
+            public boolean isVisible() {
+                return SUBSIDY_NM_PAY_ERROR.equals(subsidyModel.getObject().getStatus());
             }
         });
     }
