@@ -1,6 +1,9 @@
 package org.complitex.osznconnection.file.web.pages.subsidy;
 
+import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.IAjaxCallDecorator;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.authorization.UnauthorizedInstantiationException;
@@ -17,7 +20,6 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
@@ -29,6 +31,7 @@ import org.complitex.correction.service.exception.MoreOneCorrectionException;
 import org.complitex.correction.service.exception.NotFoundCorrectionException;
 import org.complitex.correction.web.component.AddressCorrectionPanel;
 import org.complitex.dictionary.service.SessionBean;
+import org.complitex.dictionary.web.component.ajax.AjaxCancelEventBubbleCallDecorator;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
@@ -240,8 +243,18 @@ public final class SubsidyList extends TemplatePage {
         DataView<Subsidy> data = new DataView<Subsidy>("data", dataProvider, 1) {
 
             @Override
-            protected void populateItem(Item<Subsidy> item) {
+            protected void populateItem(final Item<Subsidy> item) {
                 final Subsidy subsidy = item.getModelObject();
+                item.setOutputMarkupId(true);
+
+                item.add(new AjaxEventBehavior("onclick") {
+                    @Override
+                    protected void onEvent(AjaxRequestTarget target) {
+                        editPanel.open(target, subsidy);
+
+                        target.add(item.add(AttributeModifier.append("class", "data-row-hover")));
+                    }
+                });
 
                 item.add(new Label("rash", subsidy.getStringField(SubsidyDBF.RASH)));
                 item.add(new Label("firstName", subsidy.getFirstName()));
@@ -274,7 +287,15 @@ public final class SubsidyList extends TemplatePage {
                                 subsidy.getStringField(SubsidyDBF.CORP,"_CYR"), subsidy.getStringField(SubsidyDBF.FLAT,"_CYR"),
                                 subsidy.getInternalCityId(), subsidy.getInternalStreetTypeId(), subsidy.getInternalStreetId(),
                                 subsidy.getInternalBuildingId(), null);
+
+                        target.add(item.add(AttributeModifier.append("class", "data-row-hover")));
                     }
+
+                    @Override
+                    protected IAjaxCallDecorator getAjaxCallDecorator() {
+                        return new AjaxCancelEventBubbleCallDecorator();
+                    }
+
                 };
                 addressCorrectionLink.setVisible(subsidy.getStatus().isAddressCorrectable());
                 item.add(addressCorrectionLink);
@@ -287,6 +308,13 @@ public final class SubsidyList extends TemplatePage {
                                 subsidy.getInternalBuildingId(), subsidy.getStringField(SubsidyDBF.FLAT),
                                 subsidy.getStringField(SubsidyDBF.RASH),
                                 subsidy.getStatus().isImmediatelySearchByAddress());
+
+                        target.add(item.add(AttributeModifier.append("class", "data-row-hover")));
+                    }
+
+                    @Override
+                    protected IAjaxCallDecorator getAjaxCallDecorator() {
+                        return new AjaxCancelEventBubbleCallDecorator();
                     }
                 };
                 item.add(lookup);
@@ -298,23 +326,12 @@ public final class SubsidyList extends TemplatePage {
                         setResponsePage(SubsidyMasterDataList.class, new PageParameters()
                                 .add("subsidy_id", subsidy.getId()).add("request_file_id", subsidy.getRequestFileId()));
                     }
+
+                    @Override
+                    protected IAjaxCallDecorator getAjaxCallDecorator() {
+                        return new AjaxCancelEventBubbleCallDecorator();
+                    }
                 });
-
-                AjaxLink edit = new AjaxLink("edit") {
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        editPanel.open(target, subsidy);
-                    }
-                };
-                item.add(edit);
-
-                edit.add(new Label("editLabel", new LoadableDetachableModel<String>() {
-                    @Override
-                    protected String load() {
-                        return RequestStatus.SUBSIDY_NM_PAY_ERROR.equals(subsidy.getStatus())
-                                ? getString("edit") : getString("view");
-                    }
-                }));
             }
         };
         filterForm.add(data);

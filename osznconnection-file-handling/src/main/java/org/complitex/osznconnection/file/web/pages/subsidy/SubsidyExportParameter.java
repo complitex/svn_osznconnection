@@ -19,7 +19,7 @@ class SubsidyExportParameter implements Serializable {
     private String type;
 
     private List<DomainObject> balanceHolders = new ArrayList<>();
-    private List<Long> districts = new ArrayList<>();
+    private List<DomainObject> districts = new ArrayList<>();
     private List<DomainObject> organizations = new ArrayList<>();
 
     public int getStep() {
@@ -62,11 +62,11 @@ class SubsidyExportParameter implements Serializable {
         this.balanceHolders = balanceHolders;
     }
 
-    public List<Long> getDistricts() {
+    public List<DomainObject> getDistricts() {
         return districts;
     }
 
-    public void setDistricts(List<Long> districts) {
+    public void setDistricts(List<DomainObject> districts) {
         this.districts = districts;
     }
 

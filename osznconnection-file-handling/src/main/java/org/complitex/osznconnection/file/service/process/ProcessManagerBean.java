@@ -1,6 +1,7 @@
 package org.complitex.osznconnection.file.service.process;
 
 import com.google.common.collect.ImmutableMap;
+import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.entity.IExecutorObject;
 import org.complitex.dictionary.entity.Log;
 import org.complitex.dictionary.service.ConfigBean;
@@ -27,8 +28,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static org.complitex.osznconnection.file.entity.FileHandlingConfig.*;
 import static org.complitex.osznconnection.file.service.process.ProcessType.*;
-import static org.complitex.osznconnection.file.service.process.ProcessType.FILL_ACTUAL_PAYMENT;
-import static org.complitex.osznconnection.file.service.process.ProcessType.SAVE_ACTUAL_PAYMENT;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -284,6 +283,16 @@ public class ProcessManagerBean {
         return requestFiles;
     }
 
+    private List<RequestFile> getSubsidyFiles(List<DomainObject> balanceHolders, List<DomainObject> districts,
+                                                       List<DomainObject> organizations){
+        ArrayList<RequestFile> requestFiles = new ArrayList<>();
+
+
+
+
+        return requestFiles;
+    }
+
     private List<RequestFile> getDwellingCharacteristicsFiles(List<Long> ids) {
         List<RequestFile> requestFiles = new ArrayList<RequestFile>();
 
@@ -426,6 +435,12 @@ public class ProcessManagerBean {
     public void saveSubsidy(List<Long> ids, Map processParameters) {
         execute(SAVE_SUBSIDY, SubsidySaveTaskBean.class, getSubsidyFiles(ids), null, SAVE_THREAD_SIZE,
                 SAVE_MAX_ERROR_COUNT, processParameters);
+    }
+
+    @Asynchronous
+    public void exportSubsidy(List<DomainObject> balanceHolders, List<DomainObject> districts, List<DomainObject> organizations) {
+        execute(EXPORT_SUBSIDY, SubsidyExportTaskBean.class, getSubsidyFiles(balanceHolders, districts, organizations),
+                null, SAVE_THREAD_SIZE, SAVE_MAX_ERROR_COUNT, null);
     }
 
     @Asynchronous

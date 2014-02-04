@@ -16,7 +16,7 @@ import java.util.List;
 
 @Stateless
 @TransactionManagement(TransactionManagementType.BEAN)
-public class FacilityServiceTypeSaveTaskBean extends AbstractSaveTaskBean implements ITaskBean {
+public class FacilityServiceTypeSaveTaskBean extends AbstractSaveTaskBean implements ITaskBean{
 
     @EJB
     private FacilityServiceTypeBean facilityServiceTypeBean;
