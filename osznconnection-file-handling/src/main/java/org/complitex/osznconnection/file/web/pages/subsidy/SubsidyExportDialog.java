@@ -72,8 +72,8 @@ public class SubsidyExportDialog extends Panel {
                                 "var year = $(\"#ui-datepicker-div .ui-datepicker-year :selected\").val();" +
                                 "$(this).datepicker('setDate', new Date(year, month, 1));")));
 
-        WebMarkupContainer actionContainer = new WebMarkupContainer("action_container");
-        structureContainer.setOutputMarkupId(true);
+        final WebMarkupContainer actionContainer = new WebMarkupContainer("action_container");
+        actionContainer.setOutputMarkupId(true).setOutputMarkupPlaceholderTag(true);
         form.add(actionContainer);
 
         //Вариант выгрузки
@@ -121,6 +121,21 @@ public class SubsidyExportDialog extends Panel {
             public boolean isVisible() {
                 return model.getObject().getExportType() == 0;
             }
+
+            @Override
+            protected void onAdd(AjaxRequestTarget target) {
+                target.add(actionContainer.setVisible(false));
+            }
+
+            @Override
+            protected void onSelect(AjaxRequestTarget target, DomainObject domainObject) {
+                target.add(actionContainer.setVisible(true));
+            }
+
+            @Override
+            protected void onCancel(AjaxRequestTarget target) {
+                target.add(actionContainer.setVisible(true));
+            }
         });
 
         //Район
@@ -138,6 +153,21 @@ public class SubsidyExportDialog extends Panel {
             @Override
             public boolean isVisible() {
                 return model.getObject().getExportType() == 2;
+            }
+
+            @Override
+            protected void onAdd(AjaxRequestTarget target) {
+                target.add(actionContainer.setVisible(false));
+            }
+
+            @Override
+            protected void onSelect(AjaxRequestTarget target, DomainObject domainObject) {
+                target.add(actionContainer.setVisible(true));
+            }
+
+            @Override
+            protected void onCancel(AjaxRequestTarget target) {
+                target.add(actionContainer.setVisible(true));
             }
         });
 
