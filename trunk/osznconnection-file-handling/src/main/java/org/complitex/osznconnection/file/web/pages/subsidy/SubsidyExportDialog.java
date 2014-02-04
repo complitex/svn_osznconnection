@@ -21,9 +21,11 @@ import org.complitex.dictionary.web.component.DatePicker;
 import org.complitex.organization.web.component.OrganizationMultiselectPanel;
 import org.complitex.organization.web.component.OrganizationPicker;
 import org.complitex.organization_type.strategy.OrganizationTypeStrategy;
+import org.complitex.osznconnection.file.service.process.ProcessManagerBean;
 import org.odlabs.wiquery.ui.datepicker.scope.DefaultJsScopeUiDatePickerDateTextEvent;
 import org.odlabs.wiquery.ui.dialog.Dialog;
 
+import javax.ejb.EJB;
 import java.util.Arrays;
 import java.util.List;
 
@@ -33,6 +35,9 @@ import java.util.List;
  */
 public class SubsidyExportDialog extends Panel {
     private static final TextTemplate CENTER_DIALOG_JS = new PackageTextTemplate(OrganizationPicker.class, "CenterDialog.js");
+
+    @EJB
+    private ProcessManagerBean processManagerBean;
 
     private Dialog dialog;
 
@@ -139,7 +144,7 @@ public class SubsidyExportDialog extends Panel {
         });
 
         //Район
-        exportContainer.add(new DistrictSelectPanel("districts", new PropertyModel<List<Long>>(model, "districts")){
+        exportContainer.add(new DistrictSelectPanel("districts", new PropertyModel<List<DomainObject>>(model, "districts")){
             @Override
             public boolean isVisible() {
                 return model.getObject().getExportType() == 1;

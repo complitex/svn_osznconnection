@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.osznconnection.file.service.process;
 
 import com.google.common.collect.Lists;
@@ -31,13 +27,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-/**
- *
- * @author Artem
- */
-public abstract class AbstractSaveTaskBean<T extends AbstractAccountRequest> {
-
+public abstract class AbstractSaveTaskBean<T extends AbstractAccountRequest>{
     private final Logger log = LoggerFactory.getLogger(getClass());
+
     @EJB
     private RequestFileBean requestFileBean;
     @EJB
