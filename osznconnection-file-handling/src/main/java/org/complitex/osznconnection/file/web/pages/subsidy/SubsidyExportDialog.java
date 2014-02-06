@@ -21,6 +21,7 @@ import org.complitex.dictionary.web.component.DatePicker;
 import org.complitex.organization.web.component.OrganizationMultiselectPanel;
 import org.complitex.organization.web.component.OrganizationPicker;
 import org.complitex.organization_type.strategy.OrganizationTypeStrategy;
+import org.complitex.osznconnection.file.entity.ExportType;
 import org.complitex.osznconnection.file.service.process.ProcessManagerBean;
 import org.odlabs.wiquery.ui.datepicker.scope.DefaultJsScopeUiDatePickerDateTextEvent;
 import org.odlabs.wiquery.ui.dialog.Dialog;
@@ -28,6 +29,11 @@ import org.odlabs.wiquery.ui.dialog.Dialog;
 import javax.ejb.EJB;
 import java.util.Arrays;
 import java.util.List;
+
+import static org.complitex.dictionary.util.DomainObjectUtil.getIds;
+import static org.complitex.osznconnection.file.entity.ExportType.BALANCE_HOLDER;
+import static org.complitex.osznconnection.file.entity.ExportType.DISTRICT;
+import static org.complitex.osznconnection.file.entity.ExportType.SERVICING_ORGANIZATION;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -124,7 +130,7 @@ public class SubsidyExportDialog extends Panel {
 
             @Override
             public boolean isVisible() {
-                return model.getObject().getExportType() == 0;
+                return model.getObject().getExportType().equals(BALANCE_HOLDER);
             }
 
             @Override
@@ -147,7 +153,7 @@ public class SubsidyExportDialog extends Panel {
         exportContainer.add(new DistrictSelectPanel("districts", new PropertyModel<List<DomainObject>>(model, "districts")){
             @Override
             public boolean isVisible() {
-                return model.getObject().getExportType() == 1;
+                return model.getObject().getExportType().equals(ExportType.DISTRICT);
             }
         });
 
@@ -157,7 +163,7 @@ public class SubsidyExportDialog extends Panel {
                 Arrays.asList(OrganizationTypeStrategy.SERVICING_ORGANIZATION_TYPE)){
             @Override
             public boolean isVisible() {
-                return model.getObject().getExportType() == 2;
+                return model.getObject().getExportType().equals(ExportType.SERVICING_ORGANIZATION);
             }
 
             @Override
@@ -220,7 +226,19 @@ public class SubsidyExportDialog extends Panel {
         actionContainer.add(new AjaxButton("export") {
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                switch (model.getObject().getExportType()){
+                    case BALANCE_HOLDER:
+                        processManagerBean.exportSubsidy(getIds(model.getObject().getBalanceHolders()), BALANCE_HOLDER);
+                        break;
+                    case DISTRICT:
+                        processManagerBean.exportSubsidy(getIds(model.getObject().getDistricts()), DISTRICT);
+                        break;
+                    case SERVICING_ORGANIZATION:
+                        processManagerBean.exportSubsidy(getIds(model.getObject().getServicingOrganizations()), SERVICING_ORGANIZATION);
+                        break;
+                }
 
+                dialog.close(target);
             }
 
             @Override

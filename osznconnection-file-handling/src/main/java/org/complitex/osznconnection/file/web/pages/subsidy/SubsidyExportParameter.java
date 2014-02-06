@@ -2,6 +2,7 @@ package org.complitex.osznconnection.file.web.pages.subsidy;
 
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.util.DateUtil;
+import org.complitex.osznconnection.file.entity.ExportType;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -14,13 +15,13 @@ import java.util.List;
 */
 class SubsidyExportParameter implements Serializable {
     private int step = 0;
-    private Integer exportType = 0;
+    private ExportType exportType;
     private Date date = DateUtil.getFirstDayOfCurrentMonth();
     private String type;
 
     private List<DomainObject> balanceHolders = new ArrayList<>();
     private List<DomainObject> districts = new ArrayList<>();
-    private List<DomainObject> organizations = new ArrayList<>();
+    private List<DomainObject> servicingOrganizations = new ArrayList<>();
 
     public int getStep() {
         return step;
@@ -30,11 +31,11 @@ class SubsidyExportParameter implements Serializable {
         this.step = step;
     }
 
-    public Integer getExportType() {
+    public ExportType getExportType() {
         return exportType;
     }
 
-    public void setExportType(Integer exportType) {
+    public void setExportType(ExportType exportType) {
         this.exportType = exportType;
     }
 
@@ -70,11 +71,11 @@ class SubsidyExportParameter implements Serializable {
         this.districts = districts;
     }
 
-    public List<DomainObject> getOrganizations() {
-        return organizations;
+    public List<DomainObject> getServicingOrganizations() {
+        return servicingOrganizations;
     }
 
-    public void setOrganizations(List<DomainObject> organizations) {
-        this.organizations = organizations;
+    public void setServicingOrganizations(List<DomainObject> servicingOrganizations) {
+        this.servicingOrganizations = servicingOrganizations;
     }
 }

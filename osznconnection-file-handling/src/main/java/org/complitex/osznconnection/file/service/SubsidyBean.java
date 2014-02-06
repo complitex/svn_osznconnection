@@ -7,6 +7,7 @@ import org.complitex.address.entity.AddressEntity;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.entity.example.SubsidyExample;
+import org.complitex.osznconnection.file.entity.ExportType;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -176,5 +177,9 @@ public class SubsidyBean extends AbstractRequestBean {
 
     public List<Subsidy> getSubsidies(long requestFileId) {
         return sqlSession().selectList(MAPPING_NAMESPACE + ".selectSubsidies", requestFileId);
+    }
+
+    public List<RequestFile<Subsidy>> getRequestFileForExport(List<Long> ids, ExportType type){
+        return sqlSession().selectList("selectSubsidyRequestFilesForExport", ImmutableMap.of("ids", ids, "type", type));
     }
 }
