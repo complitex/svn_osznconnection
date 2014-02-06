@@ -20,6 +20,7 @@ public enum RequestFileDirectoryType {
     LOAD_FACILITY_SERVICE_TYPE_DIR(OsznOrganizationStrategy.LOAD_FACILITY_SERVICE_TYPE_DIR),
     SAVE_FACILITY_SERVICE_TYPE_DIR(OsznOrganizationStrategy.SAVE_FACILITY_SERVICE_TYPE_DIR),
     SAVE_FACILITY_FORM2_DIR(OsznOrganizationStrategy.SAVE_FACILITY_FORM2_DIR),
+    EXPORT_SUBSIDY_DIR(OsznOrganizationStrategy.EXPORT_SUBSIDY_DIR),
     REFERENCES_DIR(OsznOrganizationStrategy.REFERENCES_DIR);
     
     private long attributeTypeId;

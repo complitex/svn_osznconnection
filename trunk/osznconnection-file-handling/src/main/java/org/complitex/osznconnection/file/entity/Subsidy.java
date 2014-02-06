@@ -1,10 +1,22 @@
 package org.complitex.osznconnection.file.entity;
 
+import java.util.List;
+
 /**
  *
  * @author Artem
  */
 public class Subsidy extends AbstractAccountRequest<SubsidyDBF> {
+    private List<SubsidyMasterData> masterDataList;
+
+    public List<SubsidyMasterData> getMasterDataList() {
+        return masterDataList;
+    }
+
+    public void setMasterDataList(List<SubsidyMasterData> masterDataList) {
+        this.masterDataList = masterDataList;
+    }
+
     @Override
     public RequestFileType getRequestFileType() {
         return RequestFileType.SUBSIDY;

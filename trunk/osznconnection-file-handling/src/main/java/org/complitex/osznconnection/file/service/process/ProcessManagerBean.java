@@ -1,7 +1,6 @@
 package org.complitex.osznconnection.file.service.process;
 
 import com.google.common.collect.ImmutableMap;
-import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.entity.IExecutorObject;
 import org.complitex.dictionary.entity.Log;
 import org.complitex.dictionary.service.ConfigBean;
@@ -11,11 +10,13 @@ import org.complitex.dictionary.service.executor.IExecutorListener;
 import org.complitex.dictionary.service.executor.ITaskBean;
 import org.complitex.dictionary.util.EjbBeanLocator;
 import org.complitex.osznconnection.file.Module;
+import org.complitex.osznconnection.file.entity.ExportType;
 import org.complitex.osznconnection.file.entity.FileHandlingConfig;
 import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.entity.RequestFileGroup;
 import org.complitex.osznconnection.file.service.RequestFileBean;
 import org.complitex.osznconnection.file.service.RequestFileGroupBean;
+import org.complitex.osznconnection.file.service.SubsidyBean;
 import org.complitex.osznconnection.file.service.exception.StorageNotFoundException;
 import org.complitex.osznconnection.file.service.warning.ReportWarningRenderer;
 import org.slf4j.Logger;
@@ -36,22 +37,32 @@ import static org.complitex.osznconnection.file.service.process.ProcessType.*;
 @Singleton(name = "ProcessManagerBean")
 @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 public class ProcessManagerBean {
-
     private final Logger log = LoggerFactory.getLogger(ProcessManagerBean.class);
+
     @Resource
     private SessionContext sessionContext;
+
     @EJB
     private ExecutorBean executorBean;
+
     @EJB
     private ConfigBean configBean;
+
     @EJB
     private LogBean logBean;
+
     @EJB
     private ReportWarningRenderer reportWarningRenderer;
+
     @EJB
     private RequestFileGroupBean requestFileGroupBean;
+
     @EJB
     private RequestFileBean requestFileBean;
+
+    @EJB
+    private SubsidyBean subsidyBean;
+
     private Map<String, Map<ProcessType, Process>> processStatusMap = new ConcurrentHashMap<String, Map<ProcessType, Process>>();
 
     private Process getProcess(ProcessType processType) {
@@ -283,16 +294,6 @@ public class ProcessManagerBean {
         return requestFiles;
     }
 
-    private List<RequestFile> getSubsidyFiles(List<DomainObject> balanceHolders, List<DomainObject> districts,
-                                                       List<DomainObject> organizations){
-        ArrayList<RequestFile> requestFiles = new ArrayList<>();
-
-
-
-
-        return requestFiles;
-    }
-
     private List<RequestFile> getDwellingCharacteristicsFiles(List<Long> ids) {
         List<RequestFile> requestFiles = new ArrayList<RequestFile>();
 
@@ -438,8 +439,8 @@ public class ProcessManagerBean {
     }
 
     @Asynchronous
-    public void exportSubsidy(List<DomainObject> balanceHolders, List<DomainObject> districts, List<DomainObject> organizations) {
-        execute(EXPORT_SUBSIDY, SubsidyExportTaskBean.class, getSubsidyFiles(balanceHolders, districts, organizations),
+    public void exportSubsidy(List<Long> ids, ExportType type) {
+        execute(EXPORT_SUBSIDY, SubsidyExportTaskBean.class, subsidyBean.getRequestFileForExport(ids, type),
                 null, SAVE_THREAD_SIZE, SAVE_MAX_ERROR_COUNT, null);
     }
 

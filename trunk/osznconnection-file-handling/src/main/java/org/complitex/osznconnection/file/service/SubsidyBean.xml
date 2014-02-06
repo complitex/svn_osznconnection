@@ -85,6 +85,14 @@
             <result column="SUBS" property="SUBS"/>
             <result column="KVT" property="KVT"/>
         </association>
+
+        <collection property="masterDataList"
+                    resultMap="org.complitex.osznconnection.file.service.SubsidyMasterDataBean.subsidyMasterDataRequestMap"/>
+    </resultMap>
+
+    <resultMap id="subsidyRequestFileResultMap" type="org.complitex.osznconnection.file.entity.RequestFile"
+               extends="org.complitex.osznconnection.file.service.RequestFileBean.requestFileResultMap">
+        <collection property="requests" resultMap="subsidyResultMap" columnPrefix="s_"/>
     </resultMap>
 
     <insert id="insertSubsidyList" parameterType="list">
@@ -328,6 +336,34 @@
             AND `first_name` = #{firstName}
             AND `middle_name` = #{middleName}
             AND `last_name` = #{lastName}
+    </select>
+
+    <select id="selectSubsidyRequestFilesForExport" resultMap="subsidyRequestFileResultMap" parameterType="map">
+        select rf.`id`, s.`id` s_id,
+        smd.servicing_organization_id as servicingOrganizationId, smd.DOM, smd.REG, smd.LS, smd.DELO, smd.TOT, smd.PERIOD,
+        smd.FIO, smd.ADRES, smd.NKW, smd.KWART, smd.OTOPL, smd.PODOGR, smd.WODA, smd.GAZ, smd.ELEKTR, smd.STOKI,
+        smd.TOT_O, smd.KWART_O, smd.OTOPL_O, smd.GORWODA_O, smd.WODA_O, smd.GAZ_O, smd.ELEKTR_O, smd.STOKI_O,
+        smd.BEGIN0, smd.END0, smd.PR_KV
+
+        from `request_file` rf
+          left join `subsidy` s on s.`request_file_id` = rf.`id`
+          left join `subsidy_master_data_part` smdp on smdp.`subsidy_id` = s.`id`
+          left join `subsidy_master_data` smd on smdp.`subsidy_master_data_id` = smd.`id`
+
+        <if test="type == 'BALANCE_HOLDER'">
+            where rf.`user_organization_id` in
+        </if>
+        <if test="type == 'DISTRICT'">
+            left join `organization_attribute` oa on (oa.`object_id` = rf.`organization_id` and oa.`attribute_type_id` = 902)
+            where oa.`value_id` in
+        </if>
+        <if test="type == 'SERVICING_ORGANIZATION'">
+            where rf.`organization_id` in
+        </if>
+
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
     </select>
 
 </mapper>

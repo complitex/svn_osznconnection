@@ -32,7 +32,7 @@ public class SubsidyExportTaskBean implements ITaskBean<RequestFile<Subsidy>> {
 
     @Override
     public boolean execute(RequestFile<Subsidy> object, Map commandParameters) throws ExecuteException {
-        return false;
+        return true;
     }
 
     @Override

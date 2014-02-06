@@ -63,6 +63,7 @@ public class RequestFileBean extends AbstractBean {
         return sqlSession().selectOne(NS + ".findById", fileId);
     }
 
+    //todo move methods to own bean
     public List<RequestFile> getRequestFiles(RequestFileFilter filter) {
         sessionBean.prepareFilterForPermissionCheck(filter);
 
