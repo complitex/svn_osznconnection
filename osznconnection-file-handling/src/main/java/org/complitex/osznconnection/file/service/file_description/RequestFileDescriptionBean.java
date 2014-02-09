@@ -52,6 +52,7 @@ public class RequestFileDescriptionBean extends AbstractBean {
             put(RequestFileType.PAYMENT, PaymentDBF.class).
             put(RequestFileType.BENEFIT, BenefitDBF.class).
             put(RequestFileType.SUBSIDY, SubsidyDBF.class).
+            put(RequestFileType.SUBSIDY_J_FILE, SubsidyMasterDataDBF.class).
             put(RequestFileType.SUBSIDY_TARIF, SubsidyTarifDBF.class).
             put(RequestFileType.DWELLING_CHARACTERISTICS, DwellingCharacteristicsDBF.class).
             put(RequestFileType.FACILITY_STREET_TYPE, FacilityStreetTypeDBF.class).

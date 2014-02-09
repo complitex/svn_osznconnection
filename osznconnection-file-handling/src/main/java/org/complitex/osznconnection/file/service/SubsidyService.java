@@ -45,7 +45,6 @@ public class SubsidyService {
         //round Pn
         nSum = nSum.setScale(2, RoundingMode.HALF_UP);
 
-
         return new SubsidySum(nSum, sbSum, smSum);
     }
 

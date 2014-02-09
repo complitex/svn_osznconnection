@@ -1,6 +1,5 @@
 package org.complitex.osznconnection.file.entity;
 
-import org.complitex.dictionary.entity.IExecutorObject;
 import org.complitex.dictionary.entity.LogChangeList;
 import org.complitex.dictionary.util.DateUtil;
 
@@ -15,7 +14,7 @@ import java.util.List;
  *
  * Информация о файле запроса: имя, дата загрузки, организация, дата, количество записей, размер файла, статус.
  */
-public class RequestFile<T extends AbstractAccountRequest> implements IExecutorObject {
+public class RequestFile<T extends AbstractAccountRequest> extends AbstractExecutorObject {
     private Long id;
     private Long groupId;
     private Date loaded = DateUtil.getCurrentDate();
@@ -38,10 +37,6 @@ public class RequestFile<T extends AbstractAccountRequest> implements IExecutorO
     private String absolutePath;
 
     private List<T> requests;
-
-    private boolean cancel = false;
-
-    private String errorMessage;
 
     private BigDecimal sum;
 
@@ -269,27 +264,9 @@ public class RequestFile<T extends AbstractAccountRequest> implements IExecutorO
                 ", filledRecordCount=" + filledRecordCount +
                 ", absolutePath='" + absolutePath + '\'' +
                 ", requests=" + requests +
-                ", cancel=" + cancel +
-                ", errorMessage='" + errorMessage + '\'' +
+                ", cancel=" + isCanceled() +
+                ", errorMessage='" + getErrorMessage() + '\'' +
                 '}';
-    }
-
-    @Override
-    public void cancel() {
-        cancel = true;
-    }
-
-    @Override
-    public boolean isCanceled() {
-        return cancel;
-    }
-
-    public String getErrorMessage() {
-        return errorMessage;
-    }
-
-    public void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
     }
 
     public Long getUserOrganizationId() {

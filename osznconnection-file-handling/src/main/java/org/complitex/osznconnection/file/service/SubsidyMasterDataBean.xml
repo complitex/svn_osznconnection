@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.complitex.osznconnection.file.service.SubsidyMasterDataBean">
     <resultMap id="subsidyMasterDataRequestMap" type="org.complitex.osznconnection.file.entity.SubsidyMasterData">
-        <id property="id" column="id"/>
+        <id property="id" column="smd_id"/>
 
         <result property="servicingOrganizationId" column="servicing_organization_id"/>
 
@@ -33,7 +33,7 @@
             <result property="STOKI_O" column="STOKI_O"/>
             <result property="BEGIN0" column="BEGIN0"/>
             <result property="END0" column="END0"/>
-            <result property="PR_KV" column="PR_KV"/>
+            <result property="PR_KV" column="PR_KV" javaType="java.lang.Integer"/>
         </association>
     </resultMap>
 
@@ -65,7 +65,7 @@
     </update>
 
     <select id="selectSubsidyMasterDataList" resultMap="subsidyMasterDataRequestMap" parameterType="long">
-        select * from `subsidy_master_data` s
+        select s.`id` smd_id, * from `subsidy_master_data` s
           left join `subsidy_master_data_part` p on p.`subsidy_master_data_id` = s.`id`
         where p.`subsidy_id` = #{subsidyId}
     </select>

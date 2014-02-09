@@ -199,6 +199,41 @@
         </fields>
     </file-description>
 
+    <file-description type="SUBSIDY_J_FILE">
+        <formatters>
+            <date-pattern pattern="dd.MM.yyyy"/>
+        </formatters>
+        <fields>
+            <field length="3" type="java.lang.Integer" name="DOM"/>
+            <field length="3" type="java.lang.Integer" name="REG"/>
+            <field length="6" type="java.lang.Integer" name="LS"/>
+            <field length="8"  type="java.lang.String" name="DELO"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="TOT"/>
+            <field length="8" type="java.util.Date" name="PERIOD"/>
+            <field length="30" type="java.lang.String" name="FIO"/>
+            <field length="34" type="java.lang.String" name="ADRES"/>
+            <field length="9" type="java.lang.String" name="NKW"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="KWART"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="OTOPL"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="PODOGR"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="WODA"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="GAZ"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="ELEKTR"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="STOKI"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="TOT_O"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="KWART_O"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="OTOPL_O"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="GORWODA_O"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="WODA_O"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="GAZ_O"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="ELEKTR_O"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="STOKI_O"/>
+            <field length="8" type="java.util.Date" name="BEGIN0"/>
+            <field length="8" type="java.util.Date" name="END0"/>
+            <field length="1" type="java.lang.Integer" name="PR_KV"/>
+        </fields>
+    </file-description>
+
     <file-description type="SUBSIDY_TARIF">
         <formatters>
             <date-pattern pattern="dd.MM.yyyy"/>
