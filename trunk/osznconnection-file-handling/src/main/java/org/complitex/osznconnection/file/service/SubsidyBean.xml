@@ -85,14 +85,6 @@
             <result column="SUBS" property="SUBS"/>
             <result column="KVT" property="KVT"/>
         </association>
-
-        <collection property="masterDataList"
-                    resultMap="org.complitex.osznconnection.file.service.SubsidyMasterDataBean.subsidyMasterDataRequestMap"/>
-    </resultMap>
-
-    <resultMap id="subsidyRequestFileResultMap" type="org.complitex.osznconnection.file.entity.RequestFile"
-               extends="org.complitex.osznconnection.file.service.RequestFileBean.requestFileResultMap">
-        <collection property="requests" resultMap="subsidyResultMap" columnPrefix="s_"/>
     </resultMap>
 
     <insert id="insertSubsidyList" parameterType="list">
@@ -338,17 +330,25 @@
             AND `last_name` = #{lastName}
     </select>
 
-    <select id="selectSubsidyRequestFilesForExport" resultMap="subsidyRequestFileResultMap" parameterType="map">
-        select rf.`id`, s.`id` s_id,
-        smd.servicing_organization_id as servicingOrganizationId, smd.DOM, smd.REG, smd.LS, smd.DELO, smd.TOT, smd.PERIOD,
-        smd.FIO, smd.ADRES, smd.NKW, smd.KWART, smd.OTOPL, smd.PODOGR, smd.WODA, smd.GAZ, smd.ELEKTR, smd.STOKI,
-        smd.TOT_O, smd.KWART_O, smd.OTOPL_O, smd.GORWODA_O, smd.WODA_O, smd.GAZ_O, smd.ELEKTR_O, smd.STOKI_O,
+    <!--SubsidyMasterDataFile-->
+
+    <resultMap id="subsidyMasterDataFileResultMap" type="org.complitex.osznconnection.file.entity.SubsidyMasterDataFile">
+        <id column="servicingOrganizationId" property="id"/>
+
+        <collection property="masterDataList"
+                    resultMap="org.complitex.osznconnection.file.service.SubsidyMasterDataBean.subsidyMasterDataRequestMap"/>
+    </resultMap>
+
+    <select id="selectSubsidyMasterDataFiles" resultMap="subsidyMasterDataFileResultMap" parameterType="map">
+        select smd.`id` smd_id, smd.servicing_organization_id as servicingOrganizationId, smd.DOM, smd.REG, smd.LS, smd.DELO,
+        smd.TOT, smd.PERIOD, smd.FIO, smd.ADRES, smd.NKW, smd.KWART, smd.OTOPL, smd.PODOGR, smd.WODA, smd.GAZ, smd.ELEKTR,
+        smd.STOKI, smd.TOT_O, smd.KWART_O, smd.OTOPL_O, smd.GORWODA_O, smd.WODA_O, smd.GAZ_O, smd.ELEKTR_O, smd.STOKI_O,
         smd.BEGIN0, smd.END0, smd.PR_KV
 
-        from `request_file` rf
-          left join `subsidy` s on s.`request_file_id` = rf.`id`
-          left join `subsidy_master_data_part` smdp on smdp.`subsidy_id` = s.`id`
-          left join `subsidy_master_data` smd on smdp.`subsidy_master_data_id` = smd.`id`
+        from `subsidy_master_data` smd
+          left join `subsidy_master_data_part` smdp on smdp.`subsidy_master_data_id` = smd.`id`
+          left join `subsidy` s on s.`id` = smdp.`subsidy_id`
+          left join `request_file` rf on rf.`id` = s.`request_file_id`
 
         <if test="type == 'BALANCE_HOLDER'">
             where rf.`user_organization_id` in

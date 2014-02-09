@@ -96,20 +96,21 @@ public class SubsidyExportDialog extends Panel {
         };
         form.add(exportTypeContainer);
 
-        exportTypeContainer.add(new RadioChoice<>("exportType", Arrays.asList(0,1,2), new IChoiceRenderer<Integer>() {
+        exportTypeContainer.add(new RadioChoice<>("exportType", Arrays.asList(BALANCE_HOLDER, DISTRICT, SERVICING_ORGANIZATION),
+                new IChoiceRenderer<ExportType>() {
             @Override
-            public Object getDisplayValue(Integer object) {
+            public Object getDisplayValue(ExportType object) {
                 switch (object){
-                    case 0: return getString("export_type_holder");
-                    case 1: return getString("export_type_district");
-                    case 2: return getString("export_type_organization");
+                    case BALANCE_HOLDER: return getString("export_type_holder");
+                    case DISTRICT: return getString("export_type_district");
+                    case SERVICING_ORGANIZATION: return getString("export_type_organization");
                 }
 
                 return null;
             }
 
             @Override
-            public String getIdValue(Integer object, int index) {
+            public String getIdValue(ExportType object, int index) {
                 return object.toString();
             }
         }));
@@ -226,15 +227,17 @@ public class SubsidyExportDialog extends Panel {
         actionContainer.add(new AjaxButton("export") {
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                SubsidyExportParameter p = model.getObject();
+
                 switch (model.getObject().getExportType()){
                     case BALANCE_HOLDER:
-                        processManagerBean.exportSubsidy(getIds(model.getObject().getBalanceHolders()), BALANCE_HOLDER);
+                        processManagerBean.exportSubsidy(getIds(p.getBalanceHolders()), BALANCE_HOLDER, p.getDate());
                         break;
                     case DISTRICT:
-                        processManagerBean.exportSubsidy(getIds(model.getObject().getDistricts()), DISTRICT);
+                        processManagerBean.exportSubsidy(getIds(p.getDistricts()), DISTRICT, p.getDate());
                         break;
                     case SERVICING_ORGANIZATION:
-                        processManagerBean.exportSubsidy(getIds(model.getObject().getServicingOrganizations()), SERVICING_ORGANIZATION);
+                        processManagerBean.exportSubsidy(getIds(p.getServicingOrganizations()), SERVICING_ORGANIZATION, p.getDate());
                         break;
                 }
 

@@ -439,8 +439,8 @@ public class ProcessManagerBean {
     }
 
     @Asynchronous
-    public void exportSubsidy(List<Long> ids, ExportType type) {
-        execute(EXPORT_SUBSIDY, SubsidyExportTaskBean.class, subsidyBean.getRequestFileForExport(ids, type),
+    public void exportSubsidy(List<Long> ids, ExportType type, Date date) {
+        execute(EXPORT_SUBSIDY, SubsidyExportTaskBean.class, subsidyBean.getSubsidyMasterDataFiles(ids, type, date),
                 null, SAVE_THREAD_SIZE, SAVE_MAX_ERROR_COUNT, null);
     }
 
