@@ -127,7 +127,7 @@ public class SubsidyExportDialog extends Panel {
         //Балансодержатель
         exportContainer.add(new OrganizationMultiselectPanel("balance_holder",
                 new PropertyModel<List<DomainObject>>(model, "balanceHolders"),
-                Arrays.asList(OrganizationTypeStrategy.USER_ORGANIZATION_TYPE)){
+                Arrays.asList(OrganizationTypeStrategy.USER_ORGANIZATION_TYPE), true){
 
             @Override
             public boolean isVisible() {

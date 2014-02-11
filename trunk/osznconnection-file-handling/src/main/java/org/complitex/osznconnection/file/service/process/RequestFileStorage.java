@@ -114,7 +114,7 @@ public class RequestFileStorage {
         return absolutePath.substring(root.getAbsolutePath().length());
     }
 
-    public String getRequestFilesStorageDirectory(long userOrganizationId, long osznId, RequestFileDirectoryType fileDirectoryType)
+    public String getRequestFilesStorageDirectory(Long userOrganizationId, Long osznId, RequestFileDirectoryType fileDirectoryType)
             throws StorageNotFoundException {
         OsznOrganizationStrategy osznOrganizationStrategy =
                 EjbBeanLocator.getBean(OsznOrganizationStrategy.OSZN_ORGANIZATION_STRATEGY_NAME);
@@ -127,14 +127,17 @@ public class RequestFileStorage {
             rootRequestFilesPath = rootRequestFilesPath.substring(0, rootRequestFilesPath.length());
         }
 
+        String relativeRequestFilesPath = "";
+
         //relative request files path:
-        long osznRelativePathAttributeTypeId = fileDirectoryType.getAttributeTypeId();
-        String relativeRequestFilesPath = osznOrganizationStrategy.getRelativeRequestFilesPath(osznId,
-                osznRelativePathAttributeTypeId);
-        if (relativeRequestFilesPath == null) {
-            throw new StorageNotFoundException(new NullPointerException("Относительный путь к файлам запросов не задан."), "''");
-        } else if (relativeRequestFilesPath.startsWith(File.separator)) {
-            relativeRequestFilesPath = relativeRequestFilesPath.substring(1);
+        if (osznId != null) {
+            relativeRequestFilesPath = osznOrganizationStrategy.getRelativeRequestFilesPath(osznId,
+                    fileDirectoryType.getAttributeTypeId());
+            if (relativeRequestFilesPath == null) {
+                throw new StorageNotFoundException(new NullPointerException("Относительный путь к файлам запросов не задан."), "''");
+            } else if (relativeRequestFilesPath.startsWith(File.separator)) {
+                relativeRequestFilesPath = relativeRequestFilesPath.substring(1);
+            }
         }
 
         return rootRequestFilesPath + File.separator + relativeRequestFilesPath;

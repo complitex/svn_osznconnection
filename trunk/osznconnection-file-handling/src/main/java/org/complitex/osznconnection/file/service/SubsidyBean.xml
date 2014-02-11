@@ -340,10 +340,10 @@
     </resultMap>
 
     <select id="selectSubsidyMasterDataFiles" resultMap="subsidyMasterDataFileResultMap" parameterType="map">
-        select smd.`id` smd_id, smd.servicing_organization_id as servicingOrganizationId, smd.DOM, smd.REG, smd.LS, smd.DELO,
+        select smd.`id` smd_id, smd.servicing_organization_id, smd.DOM, smd.REG, smd.LS, smd.DELO,
         smd.TOT, smd.PERIOD, smd.FIO, smd.ADRES, smd.NKW, smd.KWART, smd.OTOPL, smd.PODOGR, smd.WODA, smd.GAZ, smd.ELEKTR,
         smd.STOKI, smd.TOT_O, smd.KWART_O, smd.OTOPL_O, smd.GORWODA_O, smd.WODA_O, smd.GAZ_O, smd.ELEKTR_O, smd.STOKI_O,
-        smd.BEGIN0, smd.END0, smd.PR_KV
+        smd.BEGIN0, smd.END0, smd.PR_KV, rf.`user_organization_id`
 
         from `subsidy_master_data` smd
           left join `subsidy_master_data_part` smdp on smdp.`subsidy_master_data_id` = smd.`id`
@@ -364,6 +364,8 @@
         <foreach collection="ids" item="id" open="(" close=")" separator=",">
             #{id}
         </foreach>
+
+        and #{date} between smd.BEGIN0 and smd.END0
     </select>
 
 </mapper>
