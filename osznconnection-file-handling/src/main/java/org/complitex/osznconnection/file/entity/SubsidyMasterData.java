@@ -12,6 +12,7 @@ import java.util.Map;
 public class SubsidyMasterData implements ILongId{
     private Long id;
     private Long servicingOrganizationId;
+    private Long userOrganizationId;
 
     private Long subsidyId;
 
@@ -38,6 +39,14 @@ public class SubsidyMasterData implements ILongId{
 
     public void setServicingOrganizationId(Long servicingOrganizationId) {
         this.servicingOrganizationId = servicingOrganizationId;
+    }
+
+    public Long getUserOrganizationId() {
+        return userOrganizationId;
+    }
+
+    public void setUserOrganizationId(Long userOrganizationId) {
+        this.userOrganizationId = userOrganizationId;
     }
 
     public Long getSubsidyId() {

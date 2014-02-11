@@ -122,7 +122,7 @@ public class OsznOrganizationStrategy extends AbstractOrganizationStrategy<Domai
      */
     public final static long SAVE_FACILITY_FORM2_DIR = 928;
 
-    public final static long EXPORT_SUBSIDY_DIR = 930;
+    public final static long ROOT_EXPORT_DIRECTORY = 930;
 
 
     /**
@@ -139,7 +139,7 @@ public class OsznOrganizationStrategy extends AbstractOrganizationStrategy<Domai
             ImmutableList.of(LOAD_PAYMENT_BENEFIT_FILES_DIR, SAVE_PAYMENT_BENEFIT_FILES_DIR,
             LOAD_ACTUAL_PAYMENT_DIR, SAVE_ACTUAL_PAYMENT_DIR, LOAD_SUBSIDY_DIR, SAVE_SUBSIDY_DIR, 
             LOAD_DWELLING_CHARACTERISTICS_DIR, SAVE_DWELLING_CHARACTERISTICS_DIR, REFERENCES_DIR,
-            LOAD_FACILITY_SERVICE_TYPE_DIR, SAVE_FACILITY_SERVICE_TYPE_DIR, SAVE_FACILITY_FORM2_DIR, EXPORT_SUBSIDY_DIR);
+            LOAD_FACILITY_SERVICE_TYPE_DIR, SAVE_FACILITY_SERVICE_TYPE_DIR, SAVE_FACILITY_FORM2_DIR, ROOT_EXPORT_DIRECTORY);
 
     private static final List<Long> CUSTOM_ATTRIBUTE_TYPES = ImmutableList.<Long>builder().
             add(DATA_SOURCE).
@@ -455,6 +455,11 @@ public class OsznOrganizationStrategy extends AbstractOrganizationStrategy<Domai
     public String getRootRequestFilesStoragePath(long userOrganizationId) {
         DomainObject userOrganization = findById(userOrganizationId, true);
         return AttributeUtil.getStringValue(userOrganization, ROOT_REQUEST_FILE_DIRECTORY);
+    }
+
+    public String getRootExportStoragePath(long userOrganizationId) {
+        DomainObject userOrganization = findById(userOrganizationId, true);
+        return AttributeUtil.getStringValue(userOrganization, ROOT_EXPORT_DIRECTORY);
     }
 
     @Transactional

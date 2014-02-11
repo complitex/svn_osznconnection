@@ -86,6 +86,6 @@ public class SubsidyService {
                 FilterWrapper.of(new OrganizationCorrection(null, null, code, requestFile.getOrganizationId(),
                         requestFile.getUserOrganizationId(), null)));
 
-        return !list.isEmpty() ? organizationStrategy.getUniqueCode(list.get(0).getObjectId()) : code;
+        return !list.isEmpty() ? organizationStrategy.getCode(list.get(0).getObjectId()) : code;
     }
 }

@@ -3,20 +3,20 @@ package org.complitex.osznconnection.file.service.process;
 import com.google.common.collect.Lists;
 import com.linuxense.javadbf.DBFField;
 import com.linuxense.javadbf.DBFWriter;
+import org.apache.commons.lang.StringUtils;
 import org.complitex.dictionary.entity.Log;
+import org.complitex.dictionary.service.SessionBean;
 import org.complitex.dictionary.service.executor.ExecuteException;
 import org.complitex.dictionary.service.executor.ITaskBean;
 import org.complitex.osznconnection.file.Module;
-import org.complitex.osznconnection.file.entity.RequestFile;
-import org.complitex.osznconnection.file.entity.RequestFileType;
-import org.complitex.osznconnection.file.entity.SubsidyMasterData;
-import org.complitex.osznconnection.file.entity.SubsidyMasterDataFile;
+import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.service.SubsidyService;
 import org.complitex.osznconnection.file.service.exception.SaveException;
 import org.complitex.osznconnection.file.service.file_description.RequestFileDescription;
 import org.complitex.osznconnection.file.service.file_description.RequestFileDescriptionBean;
 import org.complitex.osznconnection.file.service.file_description.RequestFileFieldDescription;
 import org.complitex.osznconnection.file.service.file_description.convert.DBFFieldTypeConverter;
+import org.complitex.osznconnection.organization.strategy.OsznOrganizationStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +24,8 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -42,11 +44,20 @@ public class SubsidyExportTaskBean implements ITaskBean<SubsidyMasterDataFile> {
     @EJB
     private RequestFileDescriptionBean requestFileDescriptionBean;
 
+    @EJB
+    private OsznOrganizationStrategy organizationStrategy;
+
+    @EJB
+    private SessionBean sessionBean;
+
+    private final SimpleDateFormat MONTH = new SimpleDateFormat("MM");
+
     @Override
     public boolean execute(SubsidyMasterDataFile masterDataFile, Map commandParameters) throws ExecuteException {
-
         try {
-            export(masterDataFile);
+            if (!masterDataFile.getMasterDataList().isEmpty()) {
+                export(masterDataFile);
+            }
         } catch (Exception e) {
             throw new ExecuteException(e, "Ошибка экспорта");
         }
@@ -60,8 +71,16 @@ public class SubsidyExportTaskBean implements ITaskBean<SubsidyMasterDataFile> {
         try {
             RequestFileDescription description = requestFileDescriptionBean.getFileDescription(RequestFileType.SUBSIDY_J_FILE);
 
+            SubsidyMasterData data = masterDataFile.getMasterDataList().get(0);
+
+            String root = organizationStrategy.getRootExportStoragePath(data.getUserOrganizationId());
+
+            String fileName = StringUtils.leftPad(organizationStrategy.getCode(data.getServicingOrganizationId()), 4, '0')
+                    + MONTH.format(data.getDbfFields().get(SubsidyMasterDataDBF.BEGIN0.name()))
+                    + ".dbf";
+
             //Удаляем файл если такой есть и создаем новый.
-            writer = new DBFWriter(RequestFileStorage.INSTANCE.deleteAndCreateFile("c:\\tmp\\" + masterDataFile.getId() + ".dbf"));
+            writer = new DBFWriter(RequestFileStorage.INSTANCE.deleteAndCreateFile(root + File.pathSeparator + fileName));
             writer.setCharactersetName("cp866");
 
             //Создание полей
@@ -116,7 +135,7 @@ public class SubsidyExportTaskBean implements ITaskBean<SubsidyMasterDataFile> {
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void onError(SubsidyMasterDataFile masterDataFile) {
-        //todo on error
+        //oh error
     }
 
     @Override

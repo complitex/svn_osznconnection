@@ -5,6 +5,7 @@
         <id property="id" column="smd_id"/>
 
         <result property="servicingOrganizationId" column="servicing_organization_id"/>
+        <result property="userOrganizationId" column="user_organization_id"/>
 
         <association property="dbfFields" javaType="map">
             <result property="DOM" column="DOM"/>
