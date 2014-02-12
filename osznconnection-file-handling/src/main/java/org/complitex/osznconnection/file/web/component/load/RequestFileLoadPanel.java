@@ -28,7 +28,7 @@ import org.odlabs.wiquery.ui.dialog.Dialog;
 import javax.ejb.EJB;
 import java.util.List;
 
-public final class RequestFileLoadPanel extends Panel {
+public abstract class RequestFileLoadPanel extends Panel {
 
     @EJB(name = IOrganizationStrategy.BEAN_NAME, beanInterface = IOrganizationStrategy.class)
     private OsznOrganizationStrategy organizationStrategy;
@@ -44,8 +44,7 @@ public final class RequestFileLoadPanel extends Panel {
         RANGE, EXACT, HIDDEN
     }
 
-    public RequestFileLoadPanel(String id, IModel<String> title, final IRequestFileLoader loader,
-            final MonthParameterViewMode monthParameterViewMode) {
+    public RequestFileLoadPanel(String id, IModel<String> title, final MonthParameterViewMode monthParameterViewMode) {
         super(id);
 
         dialog = new Dialog("dialog") {
@@ -99,7 +98,7 @@ public final class RequestFileLoadPanel extends Panel {
 
             @Override
             protected List<DomainObject> load() {
-                return (List<DomainObject>) organizationStrategy.getUserOrganizations(getLocale());
+                return organizationStrategy.getUserOrganizations(getLocale());
             }
         };
         final OrganizationModel userOrganizationModel = new OrganizationModel() {
@@ -187,7 +186,8 @@ public final class RequestFileLoadPanel extends Panel {
                     dateParameter = new DateParameter(year.getModelObject(),
                             monthRange.getMonthFrom(), monthRange.getMonthTo());
                 }
-                loader.load(currentUserOrganizationId, oszn.getId(), dateParameter, target);
+
+                load(currentUserOrganizationId, oszn.getId(), dateParameter, target);
 
                 target.add(messages);
                 dialog.close(target);
@@ -219,4 +219,6 @@ public final class RequestFileLoadPanel extends Panel {
     public TemplateSession getSession() {
         return (TemplateSession) super.getSession();
     }
+
+    protected abstract void load(Long userOrganizationId, Long osznId, DateParameter dateParameter, AjaxRequestTarget target);
 }

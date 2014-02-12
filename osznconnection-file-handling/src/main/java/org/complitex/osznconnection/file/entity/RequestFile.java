@@ -81,6 +81,11 @@ public class RequestFile<T extends AbstractAccountRequest> extends AbstractExecu
                 || RequestFileStatus.SAVING.equals(status);
     }
 
+    @Override
+    public String getObjectName() {
+        return getFullName();
+    }
+
     public Long getId() {
         return id;
     }

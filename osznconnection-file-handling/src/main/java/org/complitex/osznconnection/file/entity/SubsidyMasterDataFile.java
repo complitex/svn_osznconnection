@@ -13,6 +13,10 @@ public class SubsidyMasterDataFile extends AbstractExecutorObject {
 
     private List<SubsidyMasterData> masterDataList;
 
+    private String objectName;
+
+    private RequestFileStatus status;
+
     public Long getId() {
         return id;
     }
@@ -37,5 +41,26 @@ public class SubsidyMasterDataFile extends AbstractExecutorObject {
     @Override
     public LogChangeList getLogChangeList() {
         return null;
+    }
+
+    public String getObjectName() {
+        return objectName;
+    }
+
+    public void setObjectName(String objectName) {
+        this.objectName = objectName;
+    }
+
+    @Override
+    public boolean isProcessing() {
+        return RequestFileStatus.EXPORTING.equals(status);
+    }
+
+    public RequestFileStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(RequestFileStatus status) {
+        this.status = status;
     }
 }

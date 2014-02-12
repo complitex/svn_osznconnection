@@ -80,9 +80,8 @@ public class SubsidyTarifFileList extends TemplatePage {
     }
 
     private void init() {
-        final RequestFileProcessingManager processingManager =
-                new RequestFileProcessingManager(ProcessType.LOAD_SUBSIDY_TARIF);
-        final RequestFileMessagesManager messagesManager = new RequestFileMessagesManager(this) {
+        final ProcessingManager processingManager = new ProcessingManager(ProcessType.LOAD_SUBSIDY_TARIF);
+        final MessagesManager messagesManager = new MessagesManager(this) {
 
             @Override
             public void showMessages(AjaxRequestTarget target) {
@@ -209,7 +208,7 @@ public class SubsidyTarifFileList extends TemplatePage {
                 }));
 
                 //Статус
-                item.add(new RequestFileItemStatusLabel("status", processingManager, timerManager));
+                item.add(new ItemStatusLabel("status", processingManager, timerManager));
             }
         };
         dataViewContainer.add(dataView);
@@ -265,16 +264,19 @@ public class SubsidyTarifFileList extends TemplatePage {
         });
 
         //Диалог загрузки
-        requestFileLoadPanel = new RequestFileLoadPanel("load_panel",
-                new ResourceModel("load_panel_title"),
-                new RequestFileLoader(messagesManager, timerManager, ProcessType.LOAD_SUBSIDY_TARIF, form) {
+        requestFileLoadPanel = new RequestFileLoadPanel("load_panel", new ResourceModel("load_panel_title"),
+                MonthParameterViewMode.HIDDEN) {
+            @Override
+            protected void load(Long userOrganizationId, Long osznId, DateParameter dateParameter, AjaxRequestTarget target) {
+                processManagerBean.loadSubsidyTarif(userOrganizationId, osznId, dateParameter.getMonth(), dateParameter.getYear());
 
-                    @Override
-                    public void load(long userOrganizationId, long osznId, DateParameter dateParameter) {
-                        processManagerBean.loadSubsidyTarif(userOrganizationId, osznId,
-                                dateParameter.getMonth(), dateParameter.getYear());
-                    }
-                }, MonthParameterViewMode.HIDDEN);
+                messagesManager.resetCompletedStatus(ProcessType.LOAD_SUBSIDY_TARIF);
+
+                selectManager.clearSelection();
+                timerManager.addTimer();
+                target.add(form);
+            }
+        };
 
         add(requestFileLoadPanel);
 

@@ -199,7 +199,7 @@ public final class ActualPaymentList extends TemplatePage {
 
             @Override
             protected void correctAddress(ActualPayment actualPayment, AddressEntity addressEntity, Long cityId,
-                                          Long streetTypeId, Long streetId, Long buildingId, Long apartmentId,
+                                          Long streetTypeId, Long streetId, Long buildingId, Long apartmentId, Long roomId,
                                           Long userOrganizationId)
                     throws DuplicateCorrectionException, MoreOneCorrectionException, NotFoundCorrectionException {
                 addressService.correctLocalAddress(actualPayment, addressEntity, cityId, streetTypeId, streetId, buildingId,

@@ -233,21 +233,6 @@ public class GroupList extends ScrollListPage {
         }
 
         @Override
-        protected boolean isProcessing(RequestFileGroup object) {
-            return object.isProcessing();
-        }
-
-        @Override
-        protected RequestFileStatus getStatus(RequestFileGroup object) {
-            return object.getStatus();
-        }
-
-        @Override
-        protected String getFullName(RequestFileGroup object) {
-            return object.getFullName();
-        }
-
-        @Override
         protected Date getLoaded(RequestFileGroup object) {
             return object.getLoaded();
         }
@@ -304,7 +289,7 @@ public class GroupList extends ScrollListPage {
 
         @Override
         protected void logSuccessfulDeletion(RequestFileGroup group) {
-            logger().info("Request file group (ID : {}, full name: '{}') has been deleted.", group.getId(), getFullName(group));
+            logger().info("Request file group (ID : {}, full name: '{}') has been deleted.", group.getId(), group.getFullName());
             logBean.info(Module.NAME, GroupList.class, RequestFileGroup.class, null, group.getId(),
                     Log.EVENT.REMOVE, group.getLogChangeList(), "Файлы удалены успешно. Имя объекта: {0}",
                     group.getLogObjectName());
@@ -312,7 +297,7 @@ public class GroupList extends ScrollListPage {
 
         @Override
         protected void logFailDeletion(RequestFileGroup group, Exception e) {
-            logger().error("Cannot delete request file group (ID : " + group.getId() + ", full name: '" + getFullName(group) + "').", e);
+            logger().error("Cannot delete request file group (ID : " + group.getId() + ", full name: '" + group.getFullName() + "').", e);
             logBean.error(Module.NAME, GroupList.class, RequestFileGroup.class, null, group.getId(),
                     Log.EVENT.REMOVE, group.getLogChangeList(), "Ошибка удаления. Имя объекта: {0}",
                     group.getLogObjectName());

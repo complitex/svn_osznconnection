@@ -205,7 +205,7 @@ public final class FacilityServiceTypeList extends TemplatePage {
 
                     @Override
                     protected void correctAddress(FacilityServiceType facilityServiceType, AddressEntity entity,
-                            Long cityId, Long streetTypeId, Long streetId, Long buildingId, Long apartmentId,
+                            Long cityId, Long streetTypeId, Long streetId, Long buildingId, Long apartmentId, Long roomId,
                             Long userOrganizationId) throws DuplicateCorrectionException, MoreOneCorrectionException,
                             NotFoundCorrectionException {
                         addressService.correctLocalAddress(facilityServiceType, entity, cityId, streetTypeId, streetId,

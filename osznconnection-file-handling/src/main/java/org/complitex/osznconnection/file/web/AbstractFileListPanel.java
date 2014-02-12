@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.osznconnection.file.web;
 
 import org.apache.wicket.Component;
@@ -20,7 +16,6 @@ import org.complitex.dictionary.web.component.scroll.ScrollListBehavior;
 import org.complitex.osznconnection.file.Module;
 import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.entity.RequestFileFilter;
-import org.complitex.osznconnection.file.entity.RequestFileStatus;
 import org.complitex.osznconnection.file.entity.RequestFileType;
 import org.complitex.osznconnection.file.service.RequestFileBean;
 import org.complitex.osznconnection.file.service.file_description.RequestFileDescriptionBean;
@@ -32,10 +27,6 @@ import javax.ejb.EJB;
 import java.util.Date;
 import java.util.List;
 
-/**
- *
- * @author Artem
- */
 public abstract class AbstractFileListPanel extends AbstractProcessableListPanel<RequestFile, RequestFileFilter> {
 
     @EJB
@@ -84,7 +75,7 @@ public abstract class AbstractFileListPanel extends AbstractProcessableListPanel
     @Override
     protected void logSuccessfulDeletion(RequestFile requestFile) {
         final long requestFileId = requestFile.getId();
-        logger().info("Request file (ID : {}, full name: '{}') has been deleted.", requestFileId, getFullName(requestFile));
+        logger().info("Request file (ID : {}, full name: '{}') has been deleted.", requestFileId, requestFile.getFullName());
         logBean.info(Module.NAME, getWebPage().getClass(), RequestFile.class, null, requestFileId,
                 Log.EVENT.REMOVE, requestFile.getLogChangeList(), "Файл удален успешно. Имя объекта: {0}",
                 requestFile.getLogObjectName());
@@ -93,7 +84,7 @@ public abstract class AbstractFileListPanel extends AbstractProcessableListPanel
     @Override
     protected void logFailDeletion(RequestFile requestFile, Exception e) {
         final long requestFileId = requestFile.getId();
-        logger().error("Cannot delete request file (ID : " + requestFileId + ", full name: '" + getFullName(requestFile) + "').", e);
+        logger().error("Cannot delete request file (ID : " + requestFileId + ", full name: '" + requestFile.getFullName() + "').", e);
         logBean.error(Module.NAME, getWebPage().getClass(), RequestFile.class, null, requestFileId,
                 Log.EVENT.REMOVE, requestFile.getLogChangeList(), "Ошибка удаления. Имя объекта: {0}",
                 requestFile.getLogObjectName());
@@ -111,21 +102,6 @@ public abstract class AbstractFileListPanel extends AbstractProcessableListPanel
     @Override
     protected List<RequestFile> getObjects(RequestFileFilter filter) {
         return requestFileBean.getRequestFiles(filter);
-    }
-
-    @Override
-    protected boolean isProcessing(RequestFile object) {
-        return object.isProcessing();
-    }
-
-    @Override
-    protected RequestFileStatus getStatus(RequestFile object) {
-        return object.getStatus();
-    }
-
-    @Override
-    protected String getFullName(RequestFile object) {
-        return object.getFullName();
     }
 
     @Override

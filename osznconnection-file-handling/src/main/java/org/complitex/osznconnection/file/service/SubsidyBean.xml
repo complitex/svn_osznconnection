@@ -350,15 +350,12 @@
           left join `subsidy` s on s.`id` = smdp.`subsidy_id`
           left join `request_file` rf on rf.`id` = s.`request_file_id`
 
-        <if test="type == 'BALANCE_HOLDER'">
-            where rf.`user_organization_id` in
-        </if>
         <if test="type == 'DISTRICT'">
             left join `organization_attribute` oa on (oa.`object_id` = rf.`organization_id` and oa.`attribute_type_id` = 902)
             where oa.`value_id` in
         </if>
-        <if test="type == 'SERVICING_ORGANIZATION'">
-            where rf.`organization_id` in
+        <if test="type == 'SERVICING_ORGANIZATION' or type == 'BALANCE_HOLDER'">
+            where smd.`servicing_organization_id` in
         </if>
 
         <foreach collection="ids" item="id" open="(" close=")" separator=",">

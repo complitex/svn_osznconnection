@@ -57,6 +57,7 @@ public class OsznOrganizationEditComponent extends OrganizationEditComponent {
     private WebMarkupContainer loadSaveDirsContainer;
     private WebMarkupContainer edrpouContainer;
     private WebMarkupContainer rootDirectoryContainer;
+    private WebMarkupContainer rootExportDirectoryContainer;
     private IModel<RemoteDataSource> dataSourceModel;
 
     public OsznOrganizationEditComponent(String id, boolean disabled) {
@@ -361,6 +362,7 @@ public class OsznOrganizationEditComponent extends OrganizationEditComponent {
             rootDirectoryContainer = new WebMarkupContainer("rootDirectoryContainer");
             rootDirectoryContainer.setOutputMarkupPlaceholderTag(true);
             add(rootDirectoryContainer);
+
             final long attributeTypeId = OsznOrganizationStrategy.ROOT_REQUEST_FILE_DIRECTORY;
             Attribute attribute = organization.getAttribute(attributeTypeId);
             if (attribute == null) {
@@ -382,6 +384,35 @@ public class OsznOrganizationEditComponent extends OrganizationEditComponent {
 
             //initial visibility
             rootDirectoryContainer.setVisible(isUserOrganization());
+        }
+
+        //Root Export directory for loading and saving request files. It is user organization only attribute.
+        {
+            rootExportDirectoryContainer = new WebMarkupContainer("rootExportDirectoryContainer");
+            rootExportDirectoryContainer.setOutputMarkupPlaceholderTag(true);
+            add(rootExportDirectoryContainer);
+
+            final long attributeTypeId = OsznOrganizationStrategy.ROOT_EXPORT_DIRECTORY;
+            Attribute attribute = organization.getAttribute(attributeTypeId);
+            if (attribute == null) {
+                attribute = new Attribute();
+                attribute.setAttributeTypeId(attributeTypeId);
+                attribute.setObjectId(organization.getId());
+                attribute.setAttributeId(1L);
+                attribute.setLocalizedValues(stringBean.newStringCultures());
+            }
+            final EntityAttributeType attributeType =
+                    osznOrganizationStrategy.getEntity().getAttributeType(attributeTypeId);
+            rootExportDirectoryContainer.add(new Label("label",
+                    DomainObjectInputPanel.labelModel(attributeType.getAttributeNames(), getLocale())));
+            rootExportDirectoryContainer.add(new WebMarkupContainer("required").setVisible(attributeType.isMandatory()));
+
+            rootExportDirectoryContainer.add(
+                    DomainObjectInputPanel.newInputComponent("organization", getStrategyName(),
+                            organization, attribute, getLocale(), isDisabled));
+
+            //initial visibility
+            rootExportDirectoryContainer.setVisible(isUserOrganization());
         }
     }
 
@@ -436,6 +467,16 @@ public class OsznOrganizationEditComponent extends OrganizationEditComponent {
             boolean rootDirectoryContainerVisibleNow = rootDirectoryContainer.isVisible();
             if (rootDirectoryContainerWasVisible ^ rootDirectoryContainerVisibleNow) {
                 target.add(rootDirectoryContainer);
+            }
+        }
+
+        //root export directory.
+        {
+            boolean rootExportDirectoryContainerWasVisible = rootDirectoryContainer.isVisible();
+            rootExportDirectoryContainer.setVisible(isUserOrganization());
+            boolean rootExportDirectoryContainerVisibleNow = rootDirectoryContainer.isVisible();
+            if (rootExportDirectoryContainerWasVisible ^ rootExportDirectoryContainerVisibleNow) {
+                target.add(rootExportDirectoryContainer);
             }
         }
     }
@@ -521,6 +562,7 @@ public class OsznOrganizationEditComponent extends OrganizationEditComponent {
 
             //root directory
             organization.removeAttribute(OsznOrganizationStrategy.ROOT_REQUEST_FILE_DIRECTORY);
+            organization.removeAttribute(OsznOrganizationStrategy.ROOT_EXPORT_DIRECTORY);
         }
 
         if (!isCalculationCenter()) {

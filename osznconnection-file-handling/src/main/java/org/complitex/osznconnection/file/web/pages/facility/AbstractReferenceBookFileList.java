@@ -84,9 +84,8 @@ public abstract class AbstractReferenceBookFileList extends TemplatePage {
     }
 
     protected void init() {
-        final RequestFileProcessingManager processingManager =
-                new RequestFileProcessingManager(getLoadProcessType());
-        final RequestFileMessagesManager messagesManager = new RequestFileMessagesManager(this) {
+        final ProcessingManager processingManager = new ProcessingManager(getLoadProcessType());
+        final MessagesManager messagesManager = new MessagesManager(this) {
 
             @Override
             public void showMessages(AjaxRequestTarget target) {
@@ -218,7 +217,7 @@ public abstract class AbstractReferenceBookFileList extends TemplatePage {
                 }));
 
                 //Статус
-                item.add(new RequestFileItemStatusLabel("status", processingManager, timerManager));
+                item.add(new ItemStatusLabel("status", processingManager, timerManager));
             }
         };
         dataViewContainer.add(dataView);
@@ -276,15 +275,19 @@ public abstract class AbstractReferenceBookFileList extends TemplatePage {
         });
 
         //Диалог загрузки
-        requestFileLoadPanel = new RequestFileLoadPanel("load_panel",
-                new ResourceModel("load_panel_title"),
-                new RequestFileLoader(messagesManager, timerManager, getLoadProcessType(), form) {
+        requestFileLoadPanel = new RequestFileLoadPanel("load_panel", new ResourceModel("load_panel_title"),
+                MonthParameterViewMode.EXACT) {
+            @Override
+            protected void load(Long userOrganizationId, Long osznId, DateParameter dateParameter, AjaxRequestTarget target) {
+                AbstractReferenceBookFileList.this.load(userOrganizationId, osznId, dateParameter);
 
-                    @Override
-                    public void load(long userOrganizationId, long osznId, DateParameter dateParameter) {
-                        AbstractReferenceBookFileList.this.load(userOrganizationId, osznId, dateParameter);
-                    }
-                }, MonthParameterViewMode.EXACT);
+                messagesManager.resetCompletedStatus(getLoadProcessType());
+
+                selectManager.clearSelection();
+                timerManager.addTimer();
+                target.add(form);
+            }
+        };
 
         add(requestFileLoadPanel);
 

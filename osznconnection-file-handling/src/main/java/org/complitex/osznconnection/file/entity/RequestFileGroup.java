@@ -127,6 +127,11 @@ public class RequestFileGroup implements IExecutorObject{
         return null;
     }
 
+    @Override
+    public String getObjectName() {
+        return getFullName();
+    }
+
     public Long getId() {
         return id;
     }

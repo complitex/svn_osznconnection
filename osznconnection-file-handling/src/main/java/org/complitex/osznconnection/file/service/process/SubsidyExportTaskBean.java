@@ -56,7 +56,11 @@ public class SubsidyExportTaskBean implements ITaskBean<SubsidyMasterDataFile> {
     public boolean execute(SubsidyMasterDataFile masterDataFile, Map commandParameters) throws ExecuteException {
         try {
             if (!masterDataFile.getMasterDataList().isEmpty()) {
+                masterDataFile.setStatus(RequestFileStatus.EXPORTING);
+
                 export(masterDataFile);
+
+                masterDataFile.setStatus(RequestFileStatus.EXPORTED);
             }
         } catch (Exception e) {
             throw new ExecuteException(e, "Ошибка экспорта");
@@ -75,12 +79,19 @@ public class SubsidyExportTaskBean implements ITaskBean<SubsidyMasterDataFile> {
 
             String root = organizationStrategy.getRootExportStoragePath(data.getUserOrganizationId());
 
-            String fileName = StringUtils.leftPad(organizationStrategy.getCode(data.getServicingOrganizationId()), 4, '0')
+            String fileName = organizationStrategy.getCode(organizationStrategy.getBalanceHolder(data.getServicingOrganizationId()))
+                    + File.separator
+                    + StringUtils.leftPad(organizationStrategy.getCode(data.getServicingOrganizationId()), 4, '0')
                     + MONTH.format(data.getDbfFields().get(SubsidyMasterDataDBF.BEGIN0.name()))
-                    + ".dbf";
+                    + ".DBF";
+            masterDataFile.setObjectName(fileName);
+
+            if (root == null){
+                throw new RuntimeException("Корневой каталог для экспорта файлов не задан");
+            }
 
             //Удаляем файл если такой есть и создаем новый.
-            writer = new DBFWriter(RequestFileStorage.INSTANCE.deleteAndCreateFile(root + File.pathSeparator + fileName));
+            writer = new DBFWriter(RequestFileStorage.INSTANCE.deleteAndCreateFile(root + File.separator + masterDataFile.getObjectName()));
             writer.setCharactersetName("cp866");
 
             //Создание полей
@@ -105,7 +116,7 @@ public class SubsidyExportTaskBean implements ITaskBean<SubsidyMasterDataFile> {
                 writer.rollback();
             }
 
-            throw new SaveException(e, new RequestFile());
+            throw new SaveException(e, masterDataFile);
         }
     }
 
@@ -135,7 +146,7 @@ public class SubsidyExportTaskBean implements ITaskBean<SubsidyMasterDataFile> {
     @Override
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void onError(SubsidyMasterDataFile masterDataFile) {
-        //oh error
+        masterDataFile.setStatus(RequestFileStatus.EXPORT_ERROR);
     }
 
     @Override

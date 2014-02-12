@@ -139,13 +139,14 @@ public class OsznOrganizationStrategy extends AbstractOrganizationStrategy<Domai
             ImmutableList.of(LOAD_PAYMENT_BENEFIT_FILES_DIR, SAVE_PAYMENT_BENEFIT_FILES_DIR,
             LOAD_ACTUAL_PAYMENT_DIR, SAVE_ACTUAL_PAYMENT_DIR, LOAD_SUBSIDY_DIR, SAVE_SUBSIDY_DIR, 
             LOAD_DWELLING_CHARACTERISTICS_DIR, SAVE_DWELLING_CHARACTERISTICS_DIR, REFERENCES_DIR,
-            LOAD_FACILITY_SERVICE_TYPE_DIR, SAVE_FACILITY_SERVICE_TYPE_DIR, SAVE_FACILITY_FORM2_DIR, ROOT_EXPORT_DIRECTORY);
+            LOAD_FACILITY_SERVICE_TYPE_DIR, SAVE_FACILITY_SERVICE_TYPE_DIR, SAVE_FACILITY_FORM2_DIR);
 
     private static final List<Long> CUSTOM_ATTRIBUTE_TYPES = ImmutableList.<Long>builder().
             add(DATA_SOURCE).
             addAll(LOAD_SAVE_FILE_DIR_ATTRIBUTES).
             add(EDRPOU).
             add(ROOT_REQUEST_FILE_DIRECTORY).
+            add(ROOT_EXPORT_DIRECTORY).
             build();
 
     private static final List<Long> ATTRIBUTE_TYPES_WITH_CUSTOM_STRING_PROCESSING =
@@ -153,6 +154,7 @@ public class OsznOrganizationStrategy extends AbstractOrganizationStrategy<Domai
             add(DATA_SOURCE).
             addAll(LOAD_SAVE_FILE_DIR_ATTRIBUTES).
             add(ROOT_REQUEST_FILE_DIRECTORY).
+            add(ROOT_EXPORT_DIRECTORY).
             build();
 
     @EJB
@@ -496,5 +498,13 @@ public class OsznOrganizationStrategy extends AbstractOrganizationStrategy<Domai
         });
 
         return new ServiceAssociationList(serviceAssociations);
+    }
+
+    public DomainObject getBalanceHolder(Long organizationId){
+        DomainObject organization = findById(organizationId, true);
+
+        Attribute parent = organization.getAttribute(USER_ORGANIZATION_PARENT);
+
+        return parent == null || parent.getValueId() == null ? organization : getBalanceHolder(parent.getValueId());
     }
 }

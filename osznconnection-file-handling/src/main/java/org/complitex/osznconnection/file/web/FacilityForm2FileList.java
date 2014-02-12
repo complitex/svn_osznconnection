@@ -71,9 +71,8 @@ public final class FacilityForm2FileList extends ScrollListPage {
     }
 
     private void init() {
-        final RequestFileProcessingManager processingManager =
-                new RequestFileProcessingManager(getFillProcessType(), getSaveProcessType());
-        final RequestFileMessagesManager messagesManager = new RequestFileMessagesManager(this) {
+        final ProcessingManager processingManager = new ProcessingManager(getFillProcessType(), getSaveProcessType());
+        final MessagesManager messagesManager = new MessagesManager(this) {
 
             @Override
             public void showMessages(AjaxRequestTarget target) {
@@ -193,7 +192,7 @@ public final class FacilityForm2FileList extends ScrollListPage {
                 }));
 
                 //Статус
-                item.add(new RequestFileItemStatusLabel("status", processingManager, timerManager));
+                item.add(new ItemStatusLabel("status", processingManager, timerManager));
             }
         };
         dataViewContainer.add(dataView);
