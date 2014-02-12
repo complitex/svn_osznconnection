@@ -25,14 +25,14 @@ import static com.google.common.collect.Lists.*;
 public final class TimerManager implements Serializable {
 
     private final int timer;
-    private final MessagesManager<?> messagesManager;
-    private final ProcessingManager<?> processingManager;
+    private final MessagesManager messagesManager;
+    private final ProcessingManager processingManager;
     private final AtomicInteger timerIndex;
     private final Form<?> form;
     private final WebMarkupContainer dataViewContainer;
     private final Collection<Component> updateComponents;
 
-    public TimerManager(int timer, MessagesManager<?> messagesManager, ProcessingManager<?> processingManager,
+    public TimerManager(int timer, MessagesManager messagesManager, ProcessingManager processingManager,
             Form<?> form, WebMarkupContainer dataViewContainer) {
         this.timer = timer;
         this.messagesManager = messagesManager;

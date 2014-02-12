@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.osznconnection.file.web.component.process;
 
 import org.apache.wicket.markup.html.basic.Label;
@@ -11,16 +7,11 @@ import org.complitex.dictionary.entity.IExecutorObject;
 import org.complitex.dictionary.util.StringUtil;
 import org.complitex.osznconnection.file.entity.RequestFileStatus;
 
-/**
- *
- * @author Artem
- */
-public abstract class ItemStatusLabel<M extends IExecutorObject> extends Label {
-
-    private final ProcessingManager<M> processingManager;
+public class ItemStatusLabel extends Label {
+    private final ProcessingManager processingManager;
     private final TimerManager timerManager;
 
-    public ItemStatusLabel(String id, ProcessingManager<M> processingManager, TimerManager timerManager) {
+    public ItemStatusLabel(String id, ProcessingManager processingManager, TimerManager timerManager) {
         super(id);
         this.processingManager = processingManager;
         this.timerManager = timerManager;
@@ -30,22 +21,31 @@ public abstract class ItemStatusLabel<M extends IExecutorObject> extends Label {
     protected void onInitialize() {
         super.onInitialize();
 
-        final Item<M> item = findParent(Item.class);
+        final Item item = findParent(Item.class);
 
         setDefaultModel(new LoadableDetachableModel<String>() {
 
             @Override
             protected String load() {
-                String dots = "";
-                if (processingManager.isProcessing(item.getModelObject()) && processingManager.isGlobalProcessing()) {
-                    dots += StringUtil.getDots(timerManager.getTimerIndex() % 5);
+                if (item.getModelObject() instanceof IExecutorObject) {
+                    IExecutorObject object = (IExecutorObject) item.getModelObject();
+
+                    String dots = "";
+                    if (object.isProcessing() && processingManager.isGlobalProcessing()) {
+                        dots += StringUtil.getDots(timerManager.getTimerIndex() % 5);
+                    }
+
+                    if (object.getStatus() instanceof RequestFileStatus) {
+                        final RequestFileStatus status = (RequestFileStatus) object.getStatus();
+
+                        return (status != null ? RequestFileStatusRenderer.render(status, getLocale()) : "") + dots;
+                    }else {
+                        return "";
+                    }
                 }
 
-                final RequestFileStatus status = getStatus(item.getModelObject());
-                return (status != null ? RequestFileStatusRenderer.render(status, getLocale()) : "") + dots;
+                return "";
             }
         });
     }
-
-    protected abstract RequestFileStatus getStatus(M object);
 }

@@ -15,10 +15,10 @@ import org.complitex.dictionary.web.component.css.CssAttributeBehavior;
  */
 public final class SelectAllCheckBoxPanel extends Panel {
 
-    public SelectAllCheckBoxPanel(String id, final ProcessingManager<?> processingManager) {
+    public SelectAllCheckBoxPanel(String id, final ProcessingManager processingManager) {
         super(id);
 
-        CheckBox selectAll = new CheckBox("selectAll", new Model<Boolean>(false)) {
+        CheckBox selectAll = new CheckBox("selectAll", new Model<>(false)) {
 
             @Override
             public boolean isEnabled() {

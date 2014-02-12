@@ -198,7 +198,7 @@ public final class DwellingCharacteristicsList extends TemplatePage {
 
                     @Override
                     protected void correctAddress(DwellingCharacteristics dwellingCharacteristics, AddressEntity entity,
-                            Long cityId, Long streetTypeId, Long streetId, Long buildingId, Long apartmentId,
+                            Long cityId, Long streetTypeId, Long streetId, Long buildingId, Long apartmentId, Long roomId,
                             Long userOrganizationId) throws DuplicateCorrectionException, MoreOneCorrectionException,
                             NotFoundCorrectionException {
 

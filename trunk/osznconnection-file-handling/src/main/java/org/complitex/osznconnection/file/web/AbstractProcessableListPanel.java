@@ -1,6 +1,5 @@
 package org.complitex.osznconnection.file.web;
 
-import com.google.common.collect.ImmutableSet;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
@@ -55,10 +54,6 @@ import java.lang.reflect.Type;
 import java.text.MessageFormat;
 import java.util.*;
 
-/**
- *
- * @author Artem
- */
 public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F extends AbstractFilter> extends Panel {
 
     protected abstract class Column implements Serializable {
@@ -75,8 +70,8 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
     private RequestFileLoadPanel requestFileLoadPanel;
     private RequestFileHistoryPanel requestFileHistoryPanel;
     private final ModificationManager modificationManager;
-    private final ProcessingManager<M> processingManager;
-    private final MessagesManager<M> messagesManager;
+    private final ProcessingManager processingManager;
+    private final MessagesManager messagesManager;
     private Form<F> form;
     private ProcessDataView<M> dataView;
     private DataProvider<M> dataProvider;
@@ -93,30 +88,11 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
         add(new DataRowHoverBehavior());
 
         this.modificationManager = new ModificationManager(this, hasFieldDescription());
-        this.processingManager = new ProcessingManager<M>() {
 
-            @Override
-            public boolean isProcessing(M object) {
-                return AbstractProcessableListPanel.this.isProcessing(object);
-            }
+        this.processingManager = new ProcessingManager(getLoadProcessType(), getBindProcessType(),
+                getFillProcessType(),getSaveProcessType());
 
-            @Override
-            protected Set<ProcessType> getSupportedProcessTypes() {
-                return ImmutableSet.of(getLoadProcessType(), getBindProcessType(), getFillProcessType(),
-                        getSaveProcessType());
-            }
-        };
-        this.messagesManager = new MessagesManager<M>(this) {
-
-            @Override
-            protected RequestFileStatus getStatus(M object) {
-                return AbstractProcessableListPanel.this.getStatus(object);
-            }
-
-            @Override
-            protected String getFullName(M object) {
-                return AbstractProcessableListPanel.this.getFullName(object);
-            }
+        this.messagesManager = new MessagesManager(this) {
 
             @Override
             public void showMessages(AjaxRequestTarget target) {
@@ -209,12 +185,6 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
     protected abstract int getSize(F filter);
 
     protected abstract List<M> getObjects(F filter);
-
-    protected abstract boolean isProcessing(M object);
-
-    protected abstract RequestFileStatus getStatus(M object);
-
-    protected abstract String getFullName(M object);
 
     protected abstract Date getLoaded(M object);
 
@@ -446,13 +416,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
                 };
                 item.add(history);
 
-                history.add(new ItemStatusLabel<M>("status", processingManager, timerManager) {
-
-                    @Override
-                    protected RequestFileStatus getStatus(M object) {
-                        return AbstractProcessableListPanel.this.getStatus(object);
-                    }
-                });
+                history.add(new ItemStatusLabel("status", processingManager, timerManager));
 
                 //Дополнительные поля
                 for (Column column : columns) {
@@ -512,13 +476,9 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
 
             @Override
             public void onClick(AjaxRequestTarget target) {
-                messagesManager.resetCompletedStatus(getBindProcessType());
-
                 bind(selectManager.getSelectedFileIds(), buildCommandParameters());
 
-                selectManager.clearSelection();
-                timerManager.addTimer();
-                target.add(form);
+                startTimer(target, getBindProcessType());
             }
         });
 
@@ -527,13 +487,9 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
 
             @Override
             public void onClick(AjaxRequestTarget target) {
-                messagesManager.resetCompletedStatus(getFillProcessType());
-
                 fill(selectManager.getSelectedFileIds(), buildCommandParameters());
 
-                selectManager.clearSelection();
-                timerManager.addTimer();
-                target.add(form);
+                startTimer(target, getFillProcessType());
             }
         });
 
@@ -542,17 +498,13 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
 
             @Override
             public void onClick(AjaxRequestTarget target) {
-                messagesManager.resetCompletedStatus(getSaveProcessType());
-
                 save(selectManager.getSelectedFileIds(), buildCommandParameters());
 
-                selectManager.clearSelection();
-                timerManager.addTimer();
-                target.add(form);
+                startTimer(target, getSaveProcessType());
             }
         });
 
-        //Выгрузить
+        //Экспортировать
         buttons.add(new AjaxLink<Void>("export") {
 
             @Override
@@ -575,16 +527,15 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
                     final M object = getById(objectId);
 
                     if (object != null) {
-                        final String objectName = getFullName(object);
                         try {
                             delete(object);
 
                             selectManager.remove(objectId);
 
-                            info(MessageFormat.format(getString("info.deleted"), objectName));
+                            info(MessageFormat.format(getString("info.deleted"), object.getObjectName()));
                             logSuccessfulDeletion(object);
                         } catch (Exception e) {
-                            error(MessageFormat.format(getString("error.delete"), objectName));
+                            error(MessageFormat.format(getString("error.delete"), object.getObjectName()));
                             logFailDeletion(object, e);
                             break;
                         }
@@ -676,15 +627,15 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
         });
 
         //Диалог загрузки
-        requestFileLoadPanel = new RequestFileLoadPanel("load_panel",
-                new ResourceModel("load_panel_title"),
-                new RequestFileLoader(messagesManager, timerManager, getLoadProcessType(), form) {
+        requestFileLoadPanel = new RequestFileLoadPanel("load_panel", new ResourceModel("load_panel_title"),
+                getLoadMonthParameterViewMode()) {
+            @Override
+            protected void load(Long userOrganizationId, Long osznId, DateParameter dateParameter, AjaxRequestTarget target) {
+                AbstractProcessableListPanel.this.load(userOrganizationId, osznId, dateParameter);
 
-                    @Override
-                    public void load(long userOrganizationId, long osznId, DateParameter dateParameter) {
-                        AbstractProcessableListPanel.this.load(userOrganizationId, osznId, dateParameter);
-                    }
-                }, getLoadMonthParameterViewMode());
+                startTimer(target, getLoadProcessType());
+            }
+        };
         add(requestFileLoadPanel);
 
         add(requestFileHistoryPanel = new RequestFileHistoryPanel("history_panel"));
@@ -729,8 +680,8 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
         });
     }
 
-    protected void startTimer(AjaxRequestTarget target){
-        messagesManager.resetCompletedStatus(getExportProcessType());
+    protected void startTimer(AjaxRequestTarget target, ProcessType processType){
+        messagesManager.resetCompletedStatus(processType);
 
         selectManager.clearSelection();
         timerManager.addTimer();

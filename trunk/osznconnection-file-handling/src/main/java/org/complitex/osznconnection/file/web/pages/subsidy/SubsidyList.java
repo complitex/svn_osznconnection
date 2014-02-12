@@ -210,7 +210,7 @@ public final class SubsidyList extends TemplatePage {
 
             @Override
             protected void correctAddress(Subsidy subsidy, AddressEntity entity, Long cityId, Long streetTypeId, Long streetId,
-                    Long buildingId, Long apartmentId, Long userOrganizationId)
+                    Long buildingId, Long apartmentId, Long roomId, Long userOrganizationId)
                     throws DuplicateCorrectionException, MoreOneCorrectionException, NotFoundCorrectionException {
                 addressService.correctLocalAddress(subsidy, entity, cityId, streetTypeId, streetId, buildingId, userOrganizationId);
                 subsidyBean.markCorrected(subsidy, entity);

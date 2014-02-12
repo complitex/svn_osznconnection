@@ -22,10 +22,10 @@ public final class ItemCheckBoxPanel<M extends IExecutorObject> extends Panel {
 
     private final static String IMAGE_AJAX_LOADER = "images/ajax-loader2.gif";
     private final static String IMAGE_AJAX_WAITING = "images/ajax-waiting.gif";
-    private final ProcessingManager<M> processingManager;
+    private final ProcessingManager processingManager;
     private final SelectManager selectManager;
 
-    public ItemCheckBoxPanel(String id, ProcessingManager<M> processingManager, SelectManager selectManager) {
+    public ItemCheckBoxPanel(String id, ProcessingManager processingManager, SelectManager selectManager) {
         super(id);
         this.processingManager = processingManager;
         this.selectManager = selectManager;
@@ -35,14 +35,14 @@ public final class ItemCheckBoxPanel<M extends IExecutorObject> extends Panel {
     protected void onInitialize() {
         super.onInitialize();
 
-        final Item<M> item = findParent(Item.class);
+        final Item<IExecutorObject> item = findParent(Item.class);
 
         //Выбор файлов
         CheckBox checkBox = new CheckBox("selected", selectManager.newSelectCheckboxModel(item.getModelObject().getId())) {
 
             @Override
             public boolean isVisible() {
-                return !processingManager.isProcessing(item.getModelObject())
+                return !item.getModelObject().isProcessing()
                         && !processingManager.isGlobalWaiting(item.getModelObject());
             }
 
@@ -66,7 +66,7 @@ public final class ItemCheckBoxPanel<M extends IExecutorObject> extends Panel {
 
             @Override
             public boolean isVisible() {
-                return processingManager.isProcessing(item.getModelObject());
+                return item.getModelObject().isProcessing();
             }
         });
 
@@ -76,7 +76,7 @@ public final class ItemCheckBoxPanel<M extends IExecutorObject> extends Panel {
             @Override
             public boolean isVisible() {
                 return processingManager.isGlobalWaiting(item.getModelObject())
-                        && !processingManager.isProcessing(item.getModelObject());
+                        && !item.getModelObject().isProcessing();
             }
         });
     }

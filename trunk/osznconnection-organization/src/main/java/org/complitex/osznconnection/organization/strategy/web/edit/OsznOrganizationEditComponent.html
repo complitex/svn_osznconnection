@@ -56,6 +56,16 @@
                         <div wicket:id="input"></div>
                     </td>
                 </tr>
+
+                <!-- Root Export directory for loading and saving request files. Only for user organizations. -->
+                <tr wicket:id="rootExportDirectoryContainer">
+                    <th>
+                        <span wicket:id="label"></span><b wicket:id="required" class="blue">*</b>:
+                    </th>
+                    <td>
+                        <div wicket:id="input"></div>
+                    </td>
+                </tr>
                 
                 <!-- Reference to `service_association` helper table. It is user organization only attribute. -->
                 <tr wicket:id="serviceAssociationsContainer">

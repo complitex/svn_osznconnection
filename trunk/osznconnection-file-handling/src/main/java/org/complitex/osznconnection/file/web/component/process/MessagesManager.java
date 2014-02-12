@@ -1,13 +1,10 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.osznconnection.file.web.component.process;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.complitex.dictionary.entity.IExecutorObject;
 import org.complitex.dictionary.util.EjbBeanLocator;
+import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.entity.RequestFileStatus;
 import org.complitex.osznconnection.file.service.process.ProcessManagerBean;
 import org.complitex.osznconnection.file.service.process.ProcessType;
@@ -18,11 +15,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- *
- * @author Artem
- */
-public abstract class MessagesManager<M extends IExecutorObject> implements Serializable {
+public abstract class MessagesManager implements Serializable {
 
     private final Map<ProcessType, Boolean> completedDisplayed = new EnumMap<ProcessType, Boolean>(ProcessType.class);
     private final Component component;
@@ -38,21 +31,31 @@ public abstract class MessagesManager<M extends IExecutorObject> implements Seri
     protected void addMessages(String keyPrefix, AjaxRequestTarget target, ProcessType processType,
             RequestFileStatus processedStatus, RequestFileStatus errorStatus) {
         ProcessManagerBean processManagerBean = processManagerBean();
-        List<M> list = processManagerBean.getProcessed(processType, getClass());
+        List<IExecutorObject> list = processManagerBean.getProcessed(processType, getClass());
 
-        for (M object : list) {
-            if (RequestFileStatus.SKIPPED.equals(getStatus(object))) {
-                if (object.getId() != null) {
+        for (IExecutorObject object : list) {
+            boolean highlight = object instanceof RequestFile && object.getId() != null;
+
+
+            if (RequestFileStatus.SKIPPED.equals(object.getStatus())) {
+                if (highlight) {
                     HighlightManager.highlightProcessed(target, object.getId());
                 }
-                component.info(getString(keyPrefix + ".skipped", getFullName(object)));
-            } else if (processedStatus.equals(getStatus(object))) {
-                HighlightManager.highlightProcessed(target, object.getId());
-                component.info(getString(keyPrefix + ".processed", getFullName(object)));
-            } else if (errorStatus.equals(getStatus(object))) {
-                HighlightManager.highlightError(target, object.getId());
+                component.info(getString(keyPrefix + ".skipped", object.getObjectName()));
+            } else if (processedStatus.equals(object.getStatus())) {
+                if (highlight) {
+                    HighlightManager.highlightProcessed(target, object.getId());
+                }
+
+                component.info(getString(keyPrefix + ".processed", object.getObjectName()));
+            } else if (errorStatus.equals(object.getStatus())) {
+                if (highlight) {
+                    HighlightManager.highlightError(target, object.getId());
+                }
+
+
                 String message = object.getErrorMessage() != null ? ": " + object.getErrorMessage() : "";
-                component.error(getString(keyPrefix + ".error", getFullName(object)) + message);
+                component.error(getString(keyPrefix + ".error", object.getObjectName()) + message);
             }
         }
     }
@@ -60,10 +63,6 @@ public abstract class MessagesManager<M extends IExecutorObject> implements Seri
     private String getString(String key, Object... parameters) {
         return MessageFormat.format(component.getString(key), parameters);
     }
-
-    protected abstract RequestFileStatus getStatus(M object);
-
-    protected abstract String getFullName(M object);
 
     public abstract void showMessages(AjaxRequestTarget target);
 

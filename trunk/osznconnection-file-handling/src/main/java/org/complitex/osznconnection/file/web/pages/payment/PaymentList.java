@@ -195,7 +195,7 @@ public final class PaymentList extends TemplatePage {
 
             @Override
             protected void correctAddress(Payment payment, AddressEntity entity, Long cityId, Long streetTypeId, Long streetId,
-                    Long buildingId, Long apartmentId, Long userOrganizationId)
+                    Long buildingId, Long apartmentId, Long roomId, Long userOrganizationId)
                     throws DuplicateCorrectionException, MoreOneCorrectionException, NotFoundCorrectionException {
                 addressService.correctLocalAddress(payment, entity, cityId, streetTypeId, streetId, buildingId, userOrganizationId);
                 paymentBean.markCorrected(payment, entity);

@@ -58,7 +58,12 @@ public class SubsidyFileListPanel extends AbstractFileListPanel {
         add(organizationCorrectionDialog = new OrganizationCorrectionDialog("organization_correction_dialog",
                 Arrays.asList(getDataViewContainer(), getMessages())));
 
-        add(subsidyExportDialog = new SubsidyExportDialog("subsidy_export_dialog"));
+        add(subsidyExportDialog = new SubsidyExportDialog("subsidy_export_dialog"){
+            @Override
+            protected void onExport(AjaxRequestTarget target) {
+                SubsidyFileListPanel.this.startTimer(target, ProcessType.EXPORT_SUBSIDY);
+            }
+        });
 
         addColumn(new Column() {
             @Override

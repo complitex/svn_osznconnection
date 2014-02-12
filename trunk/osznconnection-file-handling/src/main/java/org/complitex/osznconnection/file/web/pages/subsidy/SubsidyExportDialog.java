@@ -125,9 +125,9 @@ public class SubsidyExportDialog extends Panel {
         form.add(exportContainer);
 
         //Балансодержатель
-        exportContainer.add(new OrganizationMultiselectPanel("balance_holder",
+        exportContainer.add(new OrganizationMultiselectPanel("balanceHolders",
                 new PropertyModel<List<DomainObject>>(model, "balanceHolders"),
-                Arrays.asList(OrganizationTypeStrategy.USER_ORGANIZATION_TYPE), true){
+                Arrays.asList(OrganizationTypeStrategy.SERVICING_ORGANIZATION_TYPE), true){
 
             @Override
             public boolean isVisible() {
@@ -159,8 +159,8 @@ public class SubsidyExportDialog extends Panel {
         });
 
         //Организация
-        exportContainer.add(new OrganizationMultiselectPanel("organization",
-                new PropertyModel<List<DomainObject>>(model, "organizations"),
+        exportContainer.add(new OrganizationMultiselectPanel("servicingOrganizations",
+                new PropertyModel<List<DomainObject>>(model, "servicingOrganizations"),
                 Arrays.asList(OrganizationTypeStrategy.SERVICING_ORGANIZATION_TYPE)){
             @Override
             public boolean isVisible() {
@@ -242,6 +242,8 @@ public class SubsidyExportDialog extends Panel {
                 }
 
                 dialog.close(target);
+
+                onExport(target);
             }
 
             @Override
@@ -258,5 +260,8 @@ public class SubsidyExportDialog extends Panel {
 
     public void open(AjaxRequestTarget target){
         dialog.open(target);
+    }
+
+    protected void onExport(AjaxRequestTarget target){
     }
 }
