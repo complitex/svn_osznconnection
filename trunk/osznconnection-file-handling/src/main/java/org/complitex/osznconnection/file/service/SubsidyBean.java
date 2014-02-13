@@ -7,7 +7,9 @@ import org.complitex.address.entity.AddressEntity;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.entity.example.SubsidyExample;
+import org.complitex.osznconnection.organization.strategy.OsznOrganizationStrategy;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -21,6 +23,9 @@ import java.util.*;
 public class SubsidyBean extends AbstractRequestBean {
     public static final String MAPPING_NAMESPACE = SubsidyBean.class.getName();
     private static final Map<Long, Set<SubsidyDBF>> UPDATE_FIELD_MAP = ImmutableMap.of();
+
+    @EJB
+    private OsznOrganizationStrategy organizationStrategy;
 
     public enum OrderBy {
 
@@ -176,6 +181,17 @@ public class SubsidyBean extends AbstractRequestBean {
     }
 
     public List<SubsidyMasterDataFile> getSubsidyMasterDataFiles(List<Long> ids, ExportType type, Date date){
+        //add child organizations
+        if (ExportType.BALANCE_HOLDER.equals(type)){
+            List<Long> list = new ArrayList<>();
+
+            for (Long id : ids){
+                list.addAll(organizationStrategy.getTreeChildrenOrganizationIds(id));
+            }
+
+            ids.addAll(list);
+        }
+
         return sqlSession().selectList("selectSubsidyMasterDataFiles", ImmutableMap.of("ids", ids, "type", type.name(),
                 "date", date));
     }
