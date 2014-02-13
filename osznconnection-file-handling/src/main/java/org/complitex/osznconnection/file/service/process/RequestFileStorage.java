@@ -105,6 +105,9 @@ public class RequestFileStorage {
         if (file.exists()) {
             file.delete();
         }
+
+        file.getParentFile().mkdir();
+
         return file;
     }
 
