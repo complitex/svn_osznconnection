@@ -22,6 +22,7 @@ import org.complitex.organization.web.component.OrganizationMultiselectPanel;
 import org.complitex.organization.web.component.OrganizationPicker;
 import org.complitex.organization_type.strategy.OrganizationTypeStrategy;
 import org.complitex.osznconnection.file.entity.ExportType;
+import org.complitex.osznconnection.file.entity.RequestFileType;
 import org.complitex.osznconnection.file.service.process.ProcessManagerBean;
 import org.odlabs.wiquery.ui.datepicker.scope.DefaultJsScopeUiDatePickerDateTextEvent;
 import org.odlabs.wiquery.ui.dialog.Dialog;
@@ -31,9 +32,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.complitex.dictionary.util.DomainObjectUtil.getIds;
-import static org.complitex.osznconnection.file.entity.ExportType.BALANCE_HOLDER;
-import static org.complitex.osznconnection.file.entity.ExportType.DISTRICT;
-import static org.complitex.osznconnection.file.entity.ExportType.SERVICING_ORGANIZATION;
+import static org.complitex.osznconnection.file.entity.ExportType.*;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -76,6 +75,24 @@ public class SubsidyExportDialog extends Panel {
         };
         form.add(structureContainer);
 
+        structureContainer.add(new RadioChoice<>("requestFileType", Arrays.asList(RequestFileType.SUBSIDY_J_FILE,
+                RequestFileType.SUBSIDY_S_FILE), new IChoiceRenderer<RequestFileType>() {
+            @Override
+            public Object getDisplayValue(RequestFileType object) {
+                switch (object){
+                    case SUBSIDY_J_FILE: return getString("SUBSIDY_J_FILE");
+                    case SUBSIDY_S_FILE: return getString("SUBSIDY_S_FILE");
+                }
+
+                return null;
+            }
+
+            @Override
+            public String getIdValue(RequestFileType object, int index) {
+                return object.ordinal() + "";
+            }
+        }));
+
         structureContainer.add(new DatePicker<>("date")
                 .setChangeMonth(true)
                 .setOnSelectEvent(new DefaultJsScopeUiDatePickerDateTextEvent(
@@ -111,7 +128,7 @@ public class SubsidyExportDialog extends Panel {
 
             @Override
             public String getIdValue(ExportType object, int index) {
-                return object.toString();
+                return object.ordinal() + "";
             }
         }));
 
@@ -231,13 +248,16 @@ public class SubsidyExportDialog extends Panel {
 
                 switch (model.getObject().getExportType()){
                     case BALANCE_HOLDER:
-                        processManagerBean.exportSubsidy(getIds(p.getBalanceHolders()), BALANCE_HOLDER, p.getDate());
+                        processManagerBean.exportSubsidy(getIds(p.getBalanceHolders()), BALANCE_HOLDER,
+                                p.getRequestFileType(), p.getDate());
                         break;
                     case DISTRICT:
-                        processManagerBean.exportSubsidy(getIds(p.getDistricts()), DISTRICT, p.getDate());
+                        processManagerBean.exportSubsidy(getIds(p.getDistricts()), DISTRICT,
+                                p.getRequestFileType(), p.getDate());
                         break;
                     case SERVICING_ORGANIZATION:
-                        processManagerBean.exportSubsidy(getIds(p.getServicingOrganizations()), SERVICING_ORGANIZATION, p.getDate());
+                        processManagerBean.exportSubsidy(getIds(p.getServicingOrganizations()), SERVICING_ORGANIZATION,
+                                p.getRequestFileType(), p.getDate());
                         break;
                 }
 

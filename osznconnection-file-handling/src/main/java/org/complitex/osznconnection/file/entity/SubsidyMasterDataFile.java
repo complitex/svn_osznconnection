@@ -17,6 +17,8 @@ public class SubsidyMasterDataFile extends AbstractExecutorObject {
 
     private RequestFileStatus status;
 
+    private RequestFileType type;
+
     public Long getId() {
         return id;
     }
@@ -62,5 +64,13 @@ public class SubsidyMasterDataFile extends AbstractExecutorObject {
 
     public void setStatus(RequestFileStatus status) {
         this.status = status;
+    }
+
+    public RequestFileType getType() {
+        return type;
+    }
+
+    public void setType(RequestFileType type) {
+        this.type = type;
     }
 }

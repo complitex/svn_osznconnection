@@ -43,7 +43,7 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class FileDescription {
 
-    @XmlElement(required = true)
+    @XmlElement(required = false)
     protected Formatters formatters;
     @XmlElement(required = true)
     protected Fields fields;

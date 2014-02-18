@@ -10,10 +10,7 @@ import org.complitex.dictionary.service.executor.IExecutorListener;
 import org.complitex.dictionary.service.executor.ITaskBean;
 import org.complitex.dictionary.util.EjbBeanLocator;
 import org.complitex.osznconnection.file.Module;
-import org.complitex.osznconnection.file.entity.ExportType;
-import org.complitex.osznconnection.file.entity.FileHandlingConfig;
-import org.complitex.osznconnection.file.entity.RequestFile;
-import org.complitex.osznconnection.file.entity.RequestFileGroup;
+import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.service.RequestFileBean;
 import org.complitex.osznconnection.file.service.RequestFileGroupBean;
 import org.complitex.osznconnection.file.service.SubsidyBean;
@@ -439,9 +436,15 @@ public class ProcessManagerBean {
     }
 
     @Asynchronous
-    public void exportSubsidy(List<Long> ids, ExportType type, Date date) {
-        execute(EXPORT_SUBSIDY, SubsidyExportTaskBean.class, subsidyBean.getSubsidyMasterDataFiles(ids, type, date),
-                null, SAVE_THREAD_SIZE, SAVE_MAX_ERROR_COUNT, null);
+    public void exportSubsidy(List<Long> ids, ExportType type, RequestFileType requestFileType, Date date) {
+        List<SubsidyMasterDataFile> list = subsidyBean.getSubsidyMasterDataFiles(ids, type, date);
+
+        //set type
+        for (SubsidyMasterDataFile f : list){
+            f.setType(requestFileType);
+        }
+
+        execute(EXPORT_SUBSIDY, SubsidyExportTaskBean.class, list, null, SAVE_THREAD_SIZE, SAVE_MAX_ERROR_COUNT, null);
     }
 
     @Asynchronous

@@ -19,7 +19,7 @@
     
     <xsd:complexType name="FileDescription">
         <xsd:sequence>
-            <xsd:element name="formatters" minOccurs="1" maxOccurs="1" type="Formatters"/>
+            <xsd:element name="formatters" minOccurs="0" maxOccurs="1" type="Formatters"/>
             <xsd:element name="fields" minOccurs="1" maxOccurs="1" type="Fields"/>
         </xsd:sequence>
         <xsd:attribute name="type" type="NonEmptyString" use="required"/>
