@@ -7,7 +7,12 @@
                 <table>
                     <tr>
                         <th><wicket:message key="type"/>:</th>
-                        <td><input type="radio" checked="true"/><wicket:message key="j_file"/></td>
+                        <td>
+                            <div wicket:id="requestFileType">
+                                <input type="radio"/><br/>
+                                <input type="radio"/>
+                            </div>
+                        </td>
                     </tr>
                     <tr>
                         <th><wicket:message key="date"/>:</th>

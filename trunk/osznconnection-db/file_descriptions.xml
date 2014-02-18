@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<file-descriptions>
+<file-descriptions >
     <file-description type="ACTUAL_PAYMENT">
-        <formatters>
-            <date-pattern pattern="dd.MM.yyyy"/>
-        </formatters>
         <fields>
             <field length="30" type="java.lang.String" name="SUR_NAM"/>
             <field length="15" type="java.lang.String" name="F_NAM"/>
@@ -47,9 +44,6 @@
     </file-description>
 
     <file-description type="PAYMENT">
-        <formatters>
-            <date-pattern pattern="dd.MM.yyyy"/>
-        </formatters>
         <fields>
             <field length="15" type="java.lang.String" name="OWN_NUM"/>
             <field length="2" type="java.lang.Integer" name="REE_NUM"/>
@@ -112,9 +106,6 @@
     </file-description>
 
     <file-description type="BENEFIT">
-        <formatters>
-            <date-pattern pattern="dd.MM.yyyy"/>
-        </formatters>
         <fields>
             <field length="15" type="java.lang.String" name="OWN_NUM"/>
             <field length="2" type="java.lang.Integer" name="REE_NUM"/>
@@ -141,9 +132,6 @@
     </file-description>
 
     <file-description type="SUBSIDY">
-        <formatters>
-            <date-pattern pattern="dd.MM.yyyy"/>
-        </formatters>
         <fields>
             <field length="30" type="java.lang.String" name="FIO"/>
             <field length="5" type="java.lang.String" name="ID_RAJ"/>
@@ -200,14 +188,11 @@
     </file-description>
 
     <file-description type="SUBSIDY_J_FILE">
-        <formatters>
-            <date-pattern pattern="dd.MM.yyyy"/>
-        </formatters>
         <fields>
             <field length="3" type="java.lang.Integer" name="DOM"/>
             <field length="3" type="java.lang.Integer" name="REG"/>
             <field length="6" type="java.lang.Integer" name="LS"/>
-            <field length="8"  type="java.lang.String" name="DELO"/>
+            <field length="8"  type="java.lang.String" name="DELO"/> <!--todo fix DELO to integer-->
             <field length="8" scale="2" type="java.math.BigDecimal" name="TOT"/>
             <field length="8" type="java.util.Date" name="PERIOD"/>
             <field length="30" type="java.lang.String" name="FIO"/>
@@ -234,10 +219,86 @@
         </fields>
     </file-description>
 
+    <file-description type="SUBSIDY_S_FILE">
+        <fields>
+            <field length="4" type="java.lang.Integer" name="JEK"/>
+            <field length="6" type="java.lang.Integer" name="P_ACCOUNT"/>
+            <field length="8" type="java.util.Date" name="DT"/>
+            <field length="8" type="java.util.Date" name="DDPP"/>
+            <field length="8" type="java.lang.String" name="N_DEL"/> <!--todo fix N_DEL to integer-->
+            <field length="20" type="java.lang.String" name="FIO"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="NA"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="OPTOT"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="OP"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="KWART"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="KWARTG"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="NAKWART"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="WODA"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="WODAG"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="NAWODA"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="WODAG1"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="NAWODA1"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="OTOPL"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="OTOPLG"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="NAOTOPL"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="GORWODA"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="GORWODAG"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="NAGORWODA"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="STOKI"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="STOKIG"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="NASTOKI"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="GAZ"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="GAZG"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="NAGAZ"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="NAELEKTR"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="ELEKTR"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="ELEKTRG"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="NARADIO"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="NATELEANT"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="MUSOR"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="MUSORG"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="ODS"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="ODSG"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="LIFT"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="LIFTG"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="VC"/>
+            <field length="2" type="java.lang.String" name="PR"/>
+            <field length="8" scale="2" type="java.math.BigDecimal" name="TOTRASKLAD"/>
+            <field length="4" type="java.lang.Integer" name="I_GAZ"/>
+            <field length="4" type="java.lang.Integer" name="I_WODA"/>
+            <field length="4" type="java.lang.Integer" name="I_GORWODA"/>
+            <field length="4" type="java.lang.Integer" name="I_STOKI"/>
+            <field length="4" type="java.lang.Integer" name="I_OTOPL"/>
+            <field length="4" type="java.lang.Integer" name="I_KWART"/>
+            <field length="4" type="java.lang.Integer" name="I_ELEKTR"/>
+            <field length="4" type="java.lang.Integer" name="I_MUSOR"/>
+            <field length="4" type="java.lang.Integer" name="I_LIFT"/>
+            <field length="4" type="java.lang.Integer" name="I_NASOS"/>
+            <field length="4" type="java.lang.Integer" name="I_ODS"/>
+            <field length="3" type="java.lang.Integer" name="DOM"/>
+            <field length="6" type="java.lang.String" name="NACHSU"/>
+            <field length="3" type="java.lang.Integer" name="REG"/>
+            <field length="8" type="java.lang.Integer" name="NDWODA"/>
+            <field length="8" type="java.lang.Integer" name="NDGORW"/>
+            <field length="8" type="java.lang.Integer" name="NDSTOKI"/>
+            <field length="8" type="java.lang.Integer" name="NDOTOPL"/>
+            <field length="8" type="java.lang.Integer" name="NDELEC"/>
+            <field length="8" type="java.lang.Integer" name="NDMUSOR"/>
+            <field length="8" type="java.lang.Integer" name="NDLIFT"/>
+            <field length="8" type="java.lang.Integer" name="NDODS"/>
+            <field length="8" type="java.lang.Integer" name="NDGAZ"/>
+            <field length="1" type="java.lang.Integer" name="PLE"/>
+            <field length="8" type="java.util.Date" name="BEG0"/>
+            <field length="8" type="java.util.Date" name="END0"/>
+            <field length="1" type="java.lang.Integer" name="PR_KV"/>
+            <field length="8" type="java.util.Date" name="BEG_IH"/>
+            <field length="8" type="java.util.Date" name="END_IH"/>
+            <field length="2" type="java.lang.Integer" name="COUNTM"/>
+            <field length="7" scale="2" type="java.math.BigDecimal" name="NADL"/>
+        </fields>
+    </file-description>
+
     <file-description type="SUBSIDY_TARIF">
-        <formatters>
-            <date-pattern pattern="dd.MM.yyyy"/>
-        </formatters>
         <fields>
             <field length="10" type="java.lang.String" name="T11_DATA_T"/>
             <field length="10" type="java.lang.String" name="T11_DATA_E"/>
@@ -260,10 +321,8 @@
             <field scale="10" length="19" type="java.math.BigDecimal" name="T11_K_NADL"/>
         </fields>
     </file-description>
+
     <file-description type="DWELLING_CHARACTERISTICS">
-        <formatters>
-            <date-pattern pattern="dd.MM.yyyy"/>
-        </formatters>
         <fields>
             <field length="4" type="java.lang.Integer" name="COD"/>
             <field length="12" type="java.lang.Integer" name="CDPR"/>
@@ -285,9 +344,6 @@
         </fields>
     </file-description>
     <file-description type="FACILITY_SERVICE_TYPE">
-        <formatters>
-            <date-pattern pattern="dd.MM.yyyy"/>
-        </formatters>
         <fields>
             <field length="4" type="java.lang.Integer" name="COD"/>
             <field length="12" type="java.lang.Integer" name="CDPR"/>
@@ -314,19 +370,15 @@
             <field length="10" type="java.lang.Integer" name="TARIF"/>
         </fields>
     </file-description>
+
     <file-description type="FACILITY_STREET_TYPE">
-        <formatters>
-            <date-pattern pattern="dd.MM.yyyy"/>
-        </formatters>
         <fields>
             <field length="3" type="java.lang.Integer" name="KLKUL_CODE"/>
             <field length="7" type="java.lang.String" name="KLKUL_NAME"/>
         </fields>
     </file-description>
+
     <file-description type="FACILITY_STREET">
-        <formatters>
-            <date-pattern pattern="dd.MM.yyyy"/>
-        </formatters>
         <fields>
             <field length="5" type="java.lang.Integer" name="KL_CODERN"/>
             <field length="5" type="java.lang.Integer" name="KL_CODEUL"/>
@@ -334,10 +386,8 @@
             <field length="3" type="java.lang.Integer" name="KL_CODEKUL"/>
         </fields>
     </file-description>
+
     <file-description type="FACILITY_TARIF">
-        <formatters>
-            <date-pattern pattern="dd.MM.yyyy"/>
-        </formatters>
         <fields>
             <field length="10" type="java.lang.Integer" name="TAR_CODE"/>
             <field length="10" type="java.lang.Integer" name="TAR_CDPLG"/>
@@ -361,9 +411,6 @@
     </file-description>
 
     <file-description type="FACILITY_FORM2">
-        <formatters>
-            <date-pattern pattern="dd.MM.yyyy"/>
-        </formatters>
         <fields>
             <field length="12" type="java.lang.Integer" name="CDPR"/>
             <field length="10" type="java.lang.String" name="IDCODE"/>

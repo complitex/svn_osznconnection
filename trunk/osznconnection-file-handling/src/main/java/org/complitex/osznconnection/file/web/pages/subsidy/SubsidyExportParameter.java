@@ -3,6 +3,7 @@ package org.complitex.osznconnection.file.web.pages.subsidy;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.util.DateUtil;
 import org.complitex.osznconnection.file.entity.ExportType;
+import org.complitex.osznconnection.file.entity.RequestFileType;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import java.util.List;
 */
 class SubsidyExportParameter implements Serializable {
     private int step = 0;
+    private RequestFileType requestFileType;
     private ExportType exportType;
     private Date date = DateUtil.getFirstDayOfCurrentMonth();
     private String type;
@@ -29,6 +31,14 @@ class SubsidyExportParameter implements Serializable {
 
     public void setStep(int step) {
         this.step = step;
+    }
+
+    public RequestFileType getRequestFileType() {
+        return requestFileType;
+    }
+
+    public void setRequestFileType(RequestFileType requestFileType) {
+        this.requestFileType = requestFileType;
     }
 
     public ExportType getExportType() {

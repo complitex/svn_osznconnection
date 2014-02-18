@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.osznconnection.file.service.file_description;
 
 import com.google.common.collect.ImmutableMap;
@@ -40,19 +36,20 @@ import static org.complitex.dictionary.util.ResourceUtil.getString;
 @Stateless
 @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
 public class RequestFileDescriptionBean extends AbstractBean {
-
     private final Logger log = LoggerFactory.getLogger(RequestFileDescriptionBean.class);
     private static final String MAPPING_NAMESPACE = RequestFileDescriptionBean.class.getName();
     private static final String RESOURCE_BUNDLE = RequestFileDescriptionBean.class.getName();
     private final static Map<RequestFileType, RequestFileDescription> cache = Collections.synchronizedMap(
             new EnumMap<RequestFileType, RequestFileDescription>(RequestFileType.class));
+
     private final static Map<RequestFileType, Class<? extends Enum<?>>> REQUEST_FILE_TYPE_MAP =
             ImmutableMap.<RequestFileType, Class<? extends Enum<?>>>builder().
             put(RequestFileType.ACTUAL_PAYMENT, ActualPaymentDBF.class).
             put(RequestFileType.PAYMENT, PaymentDBF.class).
             put(RequestFileType.BENEFIT, BenefitDBF.class).
             put(RequestFileType.SUBSIDY, SubsidyDBF.class).
-            put(RequestFileType.SUBSIDY_J_FILE, SubsidyMasterDataDBF.class).
+            put(RequestFileType.SUBSIDY_J_FILE, SubsidyJFileDBF.class).
+            put(RequestFileType.SUBSIDY_S_FILE, SubsidySFileDBF.class).
             put(RequestFileType.SUBSIDY_TARIF, SubsidyTarifDBF.class).
             put(RequestFileType.DWELLING_CHARACTERISTICS, DwellingCharacteristicsDBF.class).
             put(RequestFileType.FACILITY_STREET_TYPE, FacilityStreetTypeDBF.class).
@@ -61,6 +58,8 @@ public class RequestFileDescriptionBean extends AbstractBean {
             put(RequestFileType.FACILITY_TARIF, FacilityTarifDBF.class).
             put(RequestFileType.FACILITY_FORM2, FacilityForm2DBF.class).
             build();
+
+    private final static String DATE_PATTERN = "dd.MM.yyyy";
 
     @Transactional
     private void insert(RequestFileDescription fileDescription) {
@@ -112,7 +111,7 @@ public class RequestFileDescriptionBean extends AbstractBean {
         // parsing xml step.
         FileDescriptions fileDescriptions = null;
         try {
-            Schema schema = null;
+            Schema schema;
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             try {
                 final String schemaPath = RequestFileDescriptionBean.class.getPackage().getName().replace('.', '/')
@@ -161,6 +160,7 @@ public class RequestFileDescriptionBean extends AbstractBean {
             // there are must be one and only one description for each file type.
             FileDescription fileDescription = null;
             boolean tooManyDescriptionsFound = false;
+
             for (FileDescription fd : fileDescriptions.getFileDescriptionList()) {
                 if (requestFileType.name().equals(fd.getType())) {
                     if (fileDescription == null) {
@@ -177,16 +177,20 @@ public class RequestFileDescriptionBean extends AbstractBean {
             } else if (tooManyDescriptionsFound) {
                 errors.add(new ValidationError(getFormatString(RESOURCE_BUNDLE, "file_description_too_many", locale, requestFileType)));
             } else {
-                final RequestFileDescription requestFileDescription = new RequestFileDescription(requestFileType.name(),
-                        fileDescription.getFormatters().getDatePattern().getPattern());
+                String pattern = fileDescription.getFormatters() != null
+                        ? fileDescription.getFormatters().getDatePattern().getPattern()
+                        : DATE_PATTERN;
+
+                RequestFileDescription requestFileDescription = new RequestFileDescription(requestFileType.name(), pattern);
                 requestFileDescriptions.add(requestFileDescription);
 
                 // there are must be one and only one field description in each file type.
-                final Fields fields = fileDescription.getFields();
-                final Class<? extends Enum<?>> dbfClass = REQUEST_FILE_TYPE_MAP.get(requestFileType);
+                Fields fields = fileDescription.getFields();
+                Class<? extends Enum<?>> dbfClass = REQUEST_FILE_TYPE_MAP.get(requestFileType);
                 for (Enum<?> dbfField : dbfClass.getEnumConstants()) {
-                    final String fieldName = dbfField.name();
+                    String fieldName = dbfField.name();
                     Field fieldDescription = null;
+
                     boolean tooManyFieldDescriptionsFound = false;
                     for (Field field : fields.getFieldList()) {
                         if (fieldName.equals(field.getName())) {
@@ -219,7 +223,7 @@ public class RequestFileDescriptionBean extends AbstractBean {
 
         //there are must be only expected request file types.
         for (FileDescription fd : fileDescriptions.getFileDescriptionList()) {
-            final String fileType = fd.getType();
+            String fileType = fd.getType();
 
             RequestFileType expectedRequestFileType = null;
             for (RequestFileType requestFileType : REQUEST_FILE_TYPE_MAP.keySet()) {
@@ -235,10 +239,11 @@ public class RequestFileDescriptionBean extends AbstractBean {
             } else {
                 //there are must be only expected request file's field descriptions.
                 for (Field f : fd.getFields().getFieldList()) {
-                    final String fieldName = f.getName();
+                    String fieldName = f.getName();
 
                     boolean expectedField = false;
-                    final Class<? extends Enum<?>> dbfClass = REQUEST_FILE_TYPE_MAP.get(expectedRequestFileType);
+                    Class<? extends Enum<?>> dbfClass = REQUEST_FILE_TYPE_MAP.get(expectedRequestFileType);
+
                     for (Enum<?> dbfField : dbfClass.getEnumConstants()) {
                         if (dbfField.name().equals(fieldName)) {
                             expectedField = true;

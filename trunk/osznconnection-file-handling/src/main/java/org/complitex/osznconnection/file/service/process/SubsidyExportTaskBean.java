@@ -1,5 +1,6 @@
 package org.complitex.osznconnection.file.service.process;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.linuxense.javadbf.DBFField;
 import com.linuxense.javadbf.DBFWriter;
@@ -52,6 +53,33 @@ public class SubsidyExportTaskBean implements ITaskBean<SubsidyMasterDataFile> {
 
     private final SimpleDateFormat MONTH = new SimpleDateFormat("MM");
 
+    private Map<String, String> S_FILE_MAP = ImmutableMap.<String, String>builder()
+            .put("P_ACCOUNT", "LS")
+            .put("DT", "BEGIN0")
+            .put("DDPP", "BEGIN0")
+            .put("N_DEL", "DELO")
+            .put("OPTOT", "TOT")
+            .put("KWARTG", "OTOPL")
+            .put("NAKWART", "KWART_O")
+            .put("WODAG", "WODA")
+            .put("NAWODA", "WODA_O")
+            .put("OTOPLG", "OTOPL")
+            .put("NAOTOPL", "OTOPL_O")
+            .put("GORWODA", "PODOGR")
+            .put("GORWODAG", "PODOGR")
+            .put("NAGORWODA", "GORWODA_O")
+            .put("STOKIG", "STOKI")
+            .put("NASTOKI", "STOKI_O")
+            .put("GAZG", "GAZ")
+            .put("NAGAZ", "GAZ_O")
+            .put("NAELEKTR", "ELEKTR_O")
+            .put("ELEKTRG", "ELEKTR")
+            .put("TOTRASKLAD", "TOT")
+            .put("BEG_IH", "BEGIN0")
+            .put("END_IH", "END0")
+            .put("COUNTM", "NUMM")
+            .build();
+
     @Override
     public boolean execute(SubsidyMasterDataFile masterDataFile, Map commandParameters) throws ExecuteException {
         try {
@@ -73,17 +101,26 @@ public class SubsidyExportTaskBean implements ITaskBean<SubsidyMasterDataFile> {
         DBFWriter writer = null;
 
         try {
-            RequestFileDescription description = requestFileDescriptionBean.getFileDescription(RequestFileType.SUBSIDY_J_FILE);
+            RequestFileDescription description = requestFileDescriptionBean.getFileDescription(masterDataFile.getType());
 
             SubsidyMasterData data = masterDataFile.getMasterDataList().get(0);
 
             String root = organizationStrategy.getRootExportStoragePath(data.getUserOrganizationId());
 
-            String fileName = organizationStrategy.getCode(organizationStrategy.getBalanceHolder(data.getServicingOrganizationId()))
-                    + File.separator
-                    + StringUtils.leftPad(organizationStrategy.getCode(data.getServicingOrganizationId()), 4, '0')
-                    + MONTH.format(data.getDbfFields().get(SubsidyMasterDataDBF.BEGIN0.name()))
-                    + ".DBF";
+            String prefix = "[?]";
+
+            switch (masterDataFile.getType()){
+                case SUBSIDY_J_FILE: prefix = "J"; break;
+                case SUBSIDY_S_FILE: prefix = "S"; break;
+            }
+
+            String fileName =
+                    organizationStrategy.getCode(organizationStrategy.getBalanceHolder(data.getServicingOrganizationId())) +
+                    File.separator +
+                    prefix +
+                    StringUtils.leftPad(organizationStrategy.getCode(data.getServicingOrganizationId()), 4, '0') +
+                    MONTH.format(data.getDbfFields().get(SubsidyMasterDataDBF.BEGIN0.name())) +
+                    ".DBF";
             masterDataFile.setObjectName(fileName);
 
             if (root == null){
@@ -100,6 +137,13 @@ public class SubsidyExportTaskBean implements ITaskBean<SubsidyMasterDataFile> {
 
             //Сохранение строк
             for (SubsidyMasterData masterData : masterDataFile.getMasterDataList()) {
+                //s_file fields
+                if (RequestFileType.SUBSIDY_S_FILE.equals(masterDataFile.getType())){
+                    for (String s : S_FILE_MAP.keySet()){
+                        masterData.getDbfFields().put(s, masterData.getDbfFields().get(S_FILE_MAP.get(s)));
+                    }
+                }
+
                 Object[] rowData = new Object[fields.length];
 
                 for (int i = 0; i < fields.length; ++i) {
