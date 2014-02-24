@@ -507,4 +507,13 @@ public class OsznOrganizationStrategy extends AbstractOrganizationStrategy<Domai
 
         return parent == null || parent.getValueId() == null ? organization : getBalanceHolder(parent.getValueId());
     }
+
+    @Override
+    public String displayAttribute(Attribute attribute, Locale locale) {
+        if (attribute.getAttributeTypeId().equals(USER_ORGANIZATION_PARENT)){
+            return displayShortNameAndCode(attribute.getValueId(), locale);
+        }
+
+        return super.displayAttribute(attribute, locale);
+    }
 }
