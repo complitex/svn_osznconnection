@@ -66,7 +66,7 @@
     </update>
 
     <select id="selectSubsidyMasterDataList" resultMap="subsidyMasterDataRequestMap" parameterType="long">
-        select s.`id` smd_id, * from `subsidy_master_data` s
+        select s.`id` smd_id, s.* from `subsidy_master_data` s
           left join `subsidy_master_data_part` p on p.`subsidy_master_data_id` = s.`id`
         where p.`subsidy_id` = #{subsidyId}
     </select>
