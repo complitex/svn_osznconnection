@@ -364,8 +364,9 @@ public final class SubsidyList extends TemplatePage {
                 setResponsePage(SubsidyFileList.class, params);
             }
         };
+
         filterForm.add(back);
 
-        content.add(new PagingNavigator("navigator", data, getPreferencesPage() + fileId, content));
+        filterForm.add(new PagingNavigator("navigator", data, getPreferencesPage() + fileId, content));
     }
 }

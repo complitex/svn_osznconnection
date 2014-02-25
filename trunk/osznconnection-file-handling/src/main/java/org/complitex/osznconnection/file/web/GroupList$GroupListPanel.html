@@ -64,9 +64,7 @@
                 </thead>
                 <tbody wicket:id="objects_container">
                 <tr wicket:id="objects">
-                    <td>
-                        <div wicket:id="itemCheckBoxPanel"></div>
-                    </td>
+                    <td><span wicket:id="itemCheckBoxPanel"></span></td>
                     <td><span wicket:id="id"></span></td>
                     <td><span wicket:id="loaded"></span></td>
                     <td><span wicket:id="organization"></span></td>
@@ -86,10 +84,14 @@
                         </a>
                     </td>
                 </tr>
+
+                <tr>
+                    <td colspan="16">
+                        <div wicket:id="paging"></div>
+                    </td>
+                </tr>
                 </tbody>
             </table>
-
-            <div wicket:id="paging"></div>
 
             <div class="buttons_section">
                 <table width="100%">
