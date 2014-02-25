@@ -157,7 +157,8 @@
         p.`request_warning_id` param_request_warning_id, p.`order` param_order, p.`type` param_type, p.`value` param_value
         FROM (
             SELECT s.id, s.`status`, s.`request_file_id`,
-              TO_CYRILLIC(s.`last_name`), TO_CYRILLIC(s.`first_name`), TO_CYRILLIC(s.`middle_name`),
+              TO_CYRILLIC(s.`last_name`) last_name, TO_CYRILLIC(s.`first_name`) first_name,
+              TO_CYRILLIC(s.`middle_name`) middle_name,
 
               TO_CYRILLIC(s.`FIO`) FIO_CYR, TO_CYRILLIC(s.`NP_NAME`) NP_NAME_CYR, TO_CYRILLIC(s.`CAT_V`) CAT_V_CYR,
               TO_CYRILLIC(s.`NAME_V`) NAME_V_CYR, TO_CYRILLIC(s.`BLD`) BLD_CYR, TO_CYRILLIC(s.`CORP`) CORP_CYR,
@@ -248,7 +249,8 @@
 
         s.`FIO`, s.`NP_NAME`, s.`CAT_V`, s.`NAME_V`, s.`BLD`, s.`CORP`, s.`FLAT`,
 
-        TO_CYRILLIC(s.`last_name`), TO_CYRILLIC(s.`first_name`), TO_CYRILLIC(s.`middle_name`),
+        TO_CYRILLIC(s.`last_name`) last_name, TO_CYRILLIC(s.`first_name`) first_name,
+        TO_CYRILLIC(s.`middle_name`) middle_name,
 
         s.`VULCOD`, s.`DAT1`, s.`RASH`,
         f.`organization_id`, f.`user_organization_id`, f.`begin_date`,

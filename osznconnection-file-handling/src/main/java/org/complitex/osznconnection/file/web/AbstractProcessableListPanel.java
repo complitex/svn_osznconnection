@@ -32,7 +32,6 @@ import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.organization.web.component.OrganizationPicker;
 import org.complitex.organization_type.strategy.OrganizationTypeStrategy;
 import org.complitex.osznconnection.file.entity.RequestFile;
-import org.complitex.osznconnection.file.entity.RequestFileStatus;
 import org.complitex.osznconnection.file.service.process.ProcessManagerBean;
 import org.complitex.osznconnection.file.service.process.ProcessType;
 import org.complitex.osznconnection.file.web.component.DataRowHoverBehavior;
@@ -53,6 +52,8 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.text.MessageFormat;
 import java.util.*;
+
+import static org.complitex.osznconnection.file.entity.RequestFileStatus.*;
 
 public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F extends AbstractFilter> extends Panel {
 
@@ -96,16 +97,11 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
 
             @Override
             public void showMessages(AjaxRequestTarget target) {
-                addMessages("load_process", target, getLoadProcessType(),
-                        RequestFileStatus.LOADED, RequestFileStatus.LOAD_ERROR);
-                addMessages("bind_process", target, getBindProcessType(),
-                        RequestFileStatus.BOUND, RequestFileStatus.BIND_ERROR);
-                addMessages("fill_process", target, getFillProcessType(),
-                        RequestFileStatus.FILLED, RequestFileStatus.FILL_ERROR);
-                addMessages("save_process", target, getSaveProcessType(),
-                        RequestFileStatus.SAVED, RequestFileStatus.SAVE_ERROR);
-                addMessages("export_process", target, getExportProcessType(),
-                        RequestFileStatus.EXPORTED, RequestFileStatus.EXPORT_ERROR);
+                addMessages("load_process", target, getLoadProcessType(), LOADED, LOAD_ERROR);
+                addMessages("bind_process", target, getBindProcessType(), BOUND, BIND_ERROR);
+                addMessages("fill_process", target, getFillProcessType(), FILLED, FILL_ERROR);
+                addMessages("save_process", target, getSaveProcessType(), SAVED, SAVE_ERROR);
+                addMessages("export_process", target, getExportProcessType(), EXPORTED, EXPORT_ERROR);
 
                 addCompetedMessages("load_process", getLoadProcessType());
                 addCompetedMessages("bind_process", getBindProcessType());
@@ -263,7 +259,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
         final IModel<F> model = new CompoundPropertyModel<>(filter);
 
         //Фильтр форма
-        form = new Form<F>("form", model);
+        form = new Form<>("form", model);
         form.setOutputMarkupId(true);
         add(form);
 
@@ -427,9 +423,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
         dataViewContainer.add(dataView);
 
         //Постраничная навигация
-        ProcessPagingNavigator pagingNavigator = new ProcessPagingNavigator("paging", dataView, getPreferencePage(),
-                selectManager, form);
-        form.add(pagingNavigator);
+        dataViewContainer.add(new ProcessPagingNavigator("paging", dataView, getPreferencePage(), selectManager, form));
 
         //Сортировка
         form.add(new ArrowOrderByBorder("header.id", "id", dataProvider, dataView, form));
