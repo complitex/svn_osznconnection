@@ -304,7 +304,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
         form.add(new OsznFilter("organization"));
 
         // Организация пользователя
-        form.add(new OrganizationPicker("userOrganization", null, OrganizationTypeStrategy.USER_ORGANIZATION_TYPE));
+        form.add(new OrganizationPicker("userOrganization", OrganizationTypeStrategy.USER_ORGANIZATION_TYPE));
 
         //Месяц
         form.add(new MonthDropDownChoice("month").setNullValid(true));
