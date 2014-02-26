@@ -326,9 +326,9 @@
             AND `BLD` = #{dbfFields.BLD}
             AND `CORP` = #{dbfFields.CORP}
             AND `FLAT` = #{dbfFields.FLAT}
-            AND `first_name` = #{firstName}
-            AND `middle_name` = #{middleName}
-            AND `last_name` = #{lastName}
+            AND TO_CYRILLIC(`first_name`) = #{firstName}
+            AND TO_CYRILLIC(`middle_name`) = #{middleName}
+            AND TO_CYRILLIC(`last_name`) = #{lastName}
     </select>
 
     <!--SubsidyMasterDataFile-->

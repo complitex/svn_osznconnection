@@ -194,11 +194,13 @@ public class PersonAccountLocalBean extends AbstractBean {
             throws MoreOneAccountException {
         List<PersonAccount> accounts = findAccountsLikeName(subsidy.getFirstName(),
                 subsidy.getMiddleName(), subsidy.getLastName(),
-                subsidy.getStringField(SubsidyDBF.NP_NAME), subsidy.getStringField(SubsidyDBF.NAME_V),
-                subsidy.getStringField(SubsidyDBF.BLD), subsidy.getStringField(SubsidyDBF.CORP),
-                subsidy.getStringField(SubsidyDBF.FLAT), subsidy.getOrganizationId(), calculationCenterId,
+                subsidy.getCity(), subsidy.getStreet(),
+                subsidy.getBuildingNumber(), subsidy.getBuildingCorp(),
+                subsidy.getApartment(), subsidy.getOrganizationId(), calculationCenterId,
                 subsidy.getStringField(SubsidyDBF.RASH), userOrganizationId, false, sqlSession());
-        String currentStreetType = subsidy.getStringField(SubsidyDBF.CAT_V);
+
+        String currentStreetType = subsidy.getStreetType();
+
         if (currentStreetType != null) {
             currentStreetType = currentStreetType.toUpperCase();
         }
@@ -593,11 +595,13 @@ public class PersonAccountLocalBean extends AbstractBean {
                 PersonAccount newPersonAccount = newPersonAccount(subsidy, newAccountNumber, calculationCenterId, userOrganizationId);
                 List<PersonAccount> accounts = findAccountsLikeName(subsidy.getFirstName(),
                         subsidy.getMiddleName(), subsidy.getLastName(),
-                        subsidy.getStringField(SubsidyDBF.NP_NAME), subsidy.getStringField(SubsidyDBF.NAME_V),
-                        subsidy.getStringField(SubsidyDBF.BLD), subsidy.getStringField(SubsidyDBF.CORP),
-                        subsidy.getStringField(SubsidyDBF.FLAT), subsidy.getOrganizationId(), calculationCenterId,
+                        subsidy.getCity(), subsidy.getStreet(),
+                        subsidy.getBuildingNumber(), subsidy.getBuildingCorp(),
+                        subsidy.getApartment(), subsidy.getOrganizationId(), calculationCenterId,
                         subsidy.getStringField(SubsidyDBF.RASH), userOrganizationId, false, session);
-                String currentStreetType = subsidy.getStringField(SubsidyDBF.CAT_V);
+
+                String currentStreetType = subsidy.getStreetType();
+
                 if (currentStreetType != null) {
                     currentStreetType = currentStreetType.toUpperCase();
                 }
