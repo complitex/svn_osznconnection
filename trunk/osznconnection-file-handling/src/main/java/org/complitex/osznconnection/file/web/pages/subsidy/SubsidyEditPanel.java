@@ -91,8 +91,14 @@ public class SubsidyEditPanel extends Panel {
         for (RequestFileFieldDescription d : description.getFields()){
             index++;
 
-            LabelTextField textField = new LabelTextField<Object>(d.getName(), d.getLength(),
-                    new PropertyModel<>(subsidyModel, "dbfFields[" + d.getName() + "]"), index){
+            String name = d.getName();
+
+            if (SubsidyDBF.FIO.name().equals(name)){
+                name = "FIO_CYR";
+            }
+
+            LabelTextField textField = new LabelTextField<Object>(name, d.getLength(),
+                    new PropertyModel<>(subsidyModel, "dbfFields[" + name + "]"), index){
                 @Override
                 public boolean isEnabled() {
                     return getIndex() > 11 && SUBSIDY_NM_PAY_ERROR.equals(subsidyModel.getObject().getStatus());
