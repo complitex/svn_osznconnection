@@ -121,17 +121,15 @@
     
     <sql id="filter">
         <if test="rash != null">AND s.`RASH` LIKE CONCAT('%',#{rash},'%')</if>
-        <if test="firstName != null">AND s.`first_name` LIKE CONCAT('%',#{firstName},'%')</if>
-        <if test="middleName != null">AND s.`middle_name` LIKE CONCAT('%',#{middleName},'%')</if>
-        <if test="lastName != null">AND s.`last_name` LIKE CONCAT('%',#{lastName},'%')</if>
+        <if test="firstName != null">AND TO_CYRILLIC(s.`first_name`) LIKE CONCAT('%',#{firstName},'%')</if>
+        <if test="middleName != null">AND TO_CYRILLIC(s.`middle_name`) LIKE CONCAT('%',#{middleName},'%')</if>
+        <if test="lastName != null">AND TO_CYRILLIC(s.`last_name`) LIKE CONCAT('%',#{lastName},'%')</if>
 
-        <if test="city != null">AND s.`NP_NAME` LIKE CONCAT('%', #{city}, '%')</if>
-        <if test="street != null">AND s.`NAME_V` LIKE CONCAT('%', #{street}, '%')</if>
-        <if test="building != null">AND s.`BLD` LIKE CONCAT('%', #{building}, '%'</if>
-        <if test="corp != null">AND s.`CORP` LIKE CONCAT('%', #{corp}, '%')</if>
-        <if test="apartment != null">AND s.`FLAT` LIKE CONCAT('%', #{apartment}, '%')</if>
-
-        <if test="apartment != null">AND s.`FLAT` LIKE CONCAT('%', #{apartment}, '%')</if>
+        <if test="city != null">AND TO_CYRILLIC(s.`NP_NAME`) LIKE CONCAT('%', #{city}, '%')</if>
+        <if test="street != null">AND TO_CYRILLIC(s.`NAME_V`) LIKE CONCAT('%', #{street}, '%')</if>
+        <if test="building != null">AND TO_CYRILLIC(s.`BLD`) LIKE CONCAT('%', #{building}, '%'</if>
+        <if test="corp != null">AND TO_CYRILLIC(s.`CORP`) LIKE CONCAT('%', #{corp}, '%')</if>
+        <if test="apartment != null">AND TO_CYRILLIC(s.`FLAT`) LIKE CONCAT('%', #{apartment}, '%')</if>
 
         <if test="DAT1 != null">AND s.`DAT1`  = #{DAT1}</if>
         <if test="DAT2 != null">AND s.`DAT2`  = #{DAT2}</if>

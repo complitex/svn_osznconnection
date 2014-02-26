@@ -288,28 +288,33 @@
         <choose>
             <!--account number -->
             <when test="status == 212 or status == 213">
-                SELECT `FIO` `id`, COUNT(1) `count`, `first_name`, `middle_name`, `last_name`, `FIO` FROM `subsidy`
+                SELECT TO_CYRILLIC(`FIO`) `id`, COUNT(1) `count`,
+                    TO_CYRILLIC(`first_name`) first_name, TO_CYRILLIC(`middle_name`) middle_name,
+                    TO_CYRILLIC(`last_name`) last_name, TO_CYRILLIC(`FIO`) FIO FROM `subsidy`
                 WHERE `request_file_id` = #{id} AND `status` = #{status}
                 GROUP BY 1
             </when>
 
             <!--city-->
             <when test="status == 200 or status == 205 or status == 221">
-                SELECT `NP_NAME` `id`, COUNT(1) `count`, `NP_NAME` FROM `subsidy`
+                SELECT TO_CYRILLIC(`NP_NAME`) `id`, COUNT(1) `count`, TO_CYRILLIC(`NP_NAME`) NP_NAME FROM `subsidy`
                 WHERE `request_file_id` = #{id} AND `status` = #{status}
                 GROUP BY 1
             </when>
 
             <!--street-->
             <when test="status == 201 or status == 237 or status == 208 or status == 207 or status == 223 or status == 224">
-                SELECT CONCAT(`NP_NAME`, `CAT_V`, `NAME_V`) `id`, COUNT(1) `count`, `NP_NAME`, `CAT_V`, `NAME_V` FROM `subsidy`
+                SELECT TO_CYRILLIC(CONCAT(`NP_NAME`, `CAT_V`, `NAME_V`)) `id`, COUNT(1) `count`,
+                  TO_CYRILLIC(`NP_NAME`) NP_NAME, TO_CYRILLIC(`CAT_V`) CAT_V, TO_CYRILLIC(`NAME_V`) NAME_V FROM `subsidy`
                 WHERE `request_file_id` = #{id} AND `status` = #{status}
                 GROUP BY 1
             </when>
 
             <!--building-->
             <when test="status == 202 or status == 209 or status == 225">
-                SELECT CONCAT(`NP_NAME`, `CAT_V`, `NAME_V`, `BLD`) `id`, COUNT(1) `count`, `NP_NAME`, `CAT_V`, `NAME_V`, `BLD`
+                SELECT TO_CYRILLIC(CONCAT(`NP_NAME`, `CAT_V`, `NAME_V`, `BLD`)) `id`, COUNT(1) `count`,
+                  TO_CYRILLIC(`NP_NAME`) NP_NAME, TO_CYRILLIC(`CAT_V`) CAT_V, TO_CYRILLIC(`NAME_V`) NAME_V,
+                  TO_CYRILLIC(`BLD`) BLD
                 FROM `subsidy`
                 WHERE `request_file_id` = #{id} AND `status` = #{status}
                 GROUP BY 1
@@ -317,16 +322,18 @@
 
             <!--building corp-->
             <when test="status == 226">
-                SELECT CONCAT(`NP_NAME`, `CAT_V`, `NAME_V`, `BLD`, `CORP`) `id`, COUNT(1) `count`, `NP_NAME`, `CAT_V`, `NAME_V`,
-                `BLD`, `CORP` FROM `subsidy`
+                SELECT TO_CYRILLIC(CONCAT(`NP_NAME`, `CAT_V`, `NAME_V`, `BLD`, `CORP`)) `id`, COUNT(1) `count`,
+                    TO_CYRILLIC(`NP_NAME`) NP_NAME, TO_CYRILLIC(`CAT_V`) CAT_V, TO_CYRILLIC(`NAME_V`) NAME_V,
+                    TO_CYRILLIC(`BLD`) BLD, TO_CYRILLIC(`CORP`) CORP FROM `subsidy`
                 WHERE `request_file_id` = #{id} AND `status` = #{status}
                 GROUP BY 1
             </when>
 
             <!-- apartment -->
             <when test="status == 227">
-                SELECT CONCAT(`NP_NAME`, `CAT_V`, `NAME_V`, `BLD`, `CORP`, `FLAT`) `id`, COUNT(1) `count`, `NP_NAME`, `CAT_V`, `NAME_V`,
-                `BLD`, `CORP`, `FLAT` FROM `subsidy`
+                SELECT TO_CYRILLIC(CONCAT(`NP_NAME`, `CAT_V`, `NAME_V`, `BLD`, `CORP`, `FLAT`)) `id`, COUNT(1) `count`,
+                    TO_CYRILLIC(`NP_NAME`) NP_NAME, TO_CYRILLIC(`CAT_V`) CAT_V, TO_CYRILLIC(`NAME_V`) NAME_V,
+                    TO_CYRILLIC(`BLD`) BLD, TO_CYRILLIC(`CORP`) CORP, TO_CYRILLIC(`FLAT`) FLAT FROM `subsidy`
                 WHERE `request_file_id` = #{id} AND `status` = #{status}
                 GROUP BY 1
             </when>
