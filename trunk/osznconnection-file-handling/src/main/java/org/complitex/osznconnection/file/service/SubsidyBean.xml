@@ -303,6 +303,14 @@
     
     <select id="selectSubsidies" resultMap="subsidyResultMap" parameterType="long">
         SELECT s.*, f.`organization_id`, f.`user_organization_id`, f.`begin_date`,
+
+            TO_CYRILLIC(s.`FIO`) FIO_CYR, TO_CYRILLIC(s.`NP_NAME`) NP_NAME_CYR, TO_CYRILLIC(s.`CAT_V`) CAT_V_CYR,
+            TO_CYRILLIC(s.`NAME_V`) NAME_V_CYR, TO_CYRILLIC(s.`BLD`) BLD_CYR, TO_CYRILLIC(s.`CORP`) CORP_CYR,
+            TO_CYRILLIC(s.`FLAT`) FLAT_CYR,
+
+            TO_CYRILLIC(s.`last_name`) last_name, TO_CYRILLIC(s.`first_name`) first_name,
+            TO_CYRILLIC(s.`middle_name`) middle_name,
+
             w.`id` warning_id, w.`request_id` warning_reqiest_id, w.`request_file_type` warning_request_file_type, w.`status` warning_status,
             p.`request_warning_id` param_request_warning_id, p.`order` param_order, p.`type` param_type, p.`value` param_value
         FROM `subsidy` s
