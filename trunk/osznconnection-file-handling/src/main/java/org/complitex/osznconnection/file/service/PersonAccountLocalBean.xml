@@ -117,9 +117,12 @@
             <if test="puAccountNumber != null">
                 AND pa.`pu_account_number` = #{puAccountNumber}
             </if>
-             <if test="not admin">
-                AND pa.`oszn_id` IN ${outerOrganizationsString}
+            <if test="not admin">
                 AND pa.`user_organization_id` IN ${userOrganizationsString}
+                <if test="outerOrganizationsString != null">
+                    AND pa.`oszn_id` IN ${outerOrganizationsString}
+
+                </if>
             </if>
         </where>
     </sql>
@@ -134,8 +137,7 @@
     </insert>
 
      <update id="updateAccountNumber" parameterType="org.complitex.osznconnection.file.entity.PersonAccount">
-        UPDATE `person_account` SET `account_number` = #{accountNumber}
-                WHERE `id` = #{id}
+        UPDATE `person_account` SET `account_number` = #{accountNumber} WHERE `id` = #{id}
      </update>
      <update id="updateAccountNumberAndStreetType" parameterType="org.complitex.osznconnection.file.entity.PersonAccount">
          UPDATE `person_account` SET `account_number` = #{accountNumber}, `street_type` = UPPER(#{streetType})
