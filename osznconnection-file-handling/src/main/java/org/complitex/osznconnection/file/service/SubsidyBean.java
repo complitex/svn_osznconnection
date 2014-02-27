@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.complitex.address.entity.AddressEntity;
 import org.complitex.dictionary.mybatis.Transactional;
+import org.complitex.dictionary.service.SessionBean;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.entity.example.SubsidyExample;
 import org.complitex.osznconnection.organization.strategy.OsznOrganizationStrategy;
@@ -26,6 +27,9 @@ public class SubsidyBean extends AbstractRequestBean {
 
     @EJB
     private OsznOrganizationStrategy organizationStrategy;
+
+    @EJB
+    private SessionBean sessionBean;
 
     public enum OrderBy {
 
@@ -181,6 +185,9 @@ public class SubsidyBean extends AbstractRequestBean {
     }
 
     public List<SubsidyMasterDataFile> getSubsidyMasterDataFiles(List<Long> ids, ExportType type, Date date){
+        //user organization string
+        String userOrganizationString = sessionBean.getCurrentUserOrganizationsString();
+
         //add child organizations
         if (ExportType.BALANCE_HOLDER.equals(type)){
             List<Long> list = new ArrayList<>();
@@ -193,6 +200,6 @@ public class SubsidyBean extends AbstractRequestBean {
         }
 
         return sqlSession().selectList("selectSubsidyMasterDataFiles", ImmutableMap.of("ids", ids, "type", type.name(),
-                "date", date));
+                "date", date, "userOrganizationString", userOrganizationString));
     }
 }

@@ -609,6 +609,8 @@ CREATE TABLE `subsidy_master_data` (
   `GAZ_O` DECIMAL(8,2) COMMENT 'обязательный платеж за газ (OB5)',
   `ELEKTR_O` DECIMAL(8,2) COMMENT 'обязательный платеж за электроэнергию (OB6)',
   `STOKI_O` DECIMAL(8,2) COMMENT 'обязательный платеж за отведение гор.воды (OB8)',
+  `VC` TINYINT(1) DEFAULT 0 COMMENT 'Всегда 0',
+  `PLE` TINYINT(1) DEFAULT 0 COMMENT 'Всегда 0',
   `BEGIN0` DATE COMMENT 'начало действия субсидии (YYYYMMDD)',
   `END0` DATE COMMENT 'конец действия субсидии (YYYYMMDD)',
   `PR_KV` TINYINT(1) COMMENT 'признак назначения субсидии на текущий период (1 — да, 0 - нет)',

@@ -363,7 +363,7 @@
             #{id}
         </foreach>
 
-        and #{date} between smd.BEGIN0 and smd.END0
+        and #{date} between smd.BEGIN0 and smd.END0 and rf.`user_organization_id` in ${userOrganizationString}
     </select>
 
 </mapper>

@@ -178,53 +178,54 @@
               left join `organization_string_culture` sc_name on sc_name.`id` = oa_name.`value_id`
             </if>
 
-        <include refid="org.complitex.osznconnection.file.service.RequestFileBean.requestFilesFilterWhere"/>
+            <include refid="org.complitex.osznconnection.file.service.RequestFileBean.requestFilesFilterWhere"/>
+
             <if test="sortProperty == 'servicing_organization'">
               and (oa.`value_type_id` = 901 or oa.`value_type_id` is null)
               and (oa_name.`value_type_id` = 900 or oa_name.`value_type_id` is null)
             </if>
 
-        <if test="sum != null">
-            group by `sum` having `sum` = #{sum}
-        </if>
+            <if test="sum != null">
+                group by `sum` having `sum` = #{sum}
+            </if>
 
-            <if test="sortProperty != null">
-                <choose>
-                    <when test="sortProperty == 'name'">
-                        ORDER BY `directory` 
+                <if test="sortProperty != null">
+                    <choose>
+                        <when test="sortProperty == 'name'">
+                            ORDER BY `directory`
+                                <choose>
+                                    <when test="ascending">ASC</when>
+                                    <otherwise>DESC</otherwise>
+                                </choose>,
+                                `name`
+                                <choose>
+                                    <when test="ascending">ASC</when>
+                                    <otherwise>DESC</otherwise>
+                                </choose>
+                        </when>
+                        <when test="sortProperty == 'servicing_organization'">
+                            order by sc_name.`value`
                             <choose>
-                                <when test="ascending">ASC</when>
-                                <otherwise>DESC</otherwise>
-                            </choose>,
-                            `name` 
+                                <when test="ascending">asc</when>
+                                <otherwise>desc</otherwise>
+                            </choose>
+                        </when>
+                        <when test="sortProperty == 'sum'">
+                            order by `sum`
+                            <choose>
+                                <when test="ascending">asc</when>
+                                <otherwise>desc</otherwise>
+                            </choose>
+                        </when>
+                        <otherwise>
+                            ORDER BY rf.`${sortProperty}`
                             <choose>
                                 <when test="ascending">ASC</when>
                                 <otherwise>DESC</otherwise>
                             </choose>
-                    </when>
-                    <when test="sortProperty == 'servicing_organization'">
-                        order by sc_name.`value`
-                        <choose>
-                            <when test="ascending">asc</when>
-                            <otherwise>desc</otherwise>
-                        </choose>
-                    </when>
-                    <when test="sortProperty == 'sum'">
-                        order by `sum`
-                        <choose>
-                            <when test="ascending">asc</when>
-                            <otherwise>desc</otherwise>
-                        </choose>
-                    </when>
-                    <otherwise>
-                        ORDER BY rf.`${sortProperty}`
-                        <choose>
-                            <when test="ascending">ASC</when>
-                            <otherwise>DESC</otherwise>
-                        </choose>
-                    </otherwise>
-                </choose>
-            </if>
+                        </otherwise>
+                    </choose>
+                </if>
         LIMIT #{first}, #{count}
     </sql>
 

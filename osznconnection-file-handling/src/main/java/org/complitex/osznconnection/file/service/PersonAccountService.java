@@ -196,7 +196,7 @@ public class PersonAccountService extends AbstractBean {
         if (subsidy.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED) {
             //check servicing organization
             if (subsidyService.getServicingOrganizationCode(subsidy.getRequestFileId())
-                    .equals(accountDetail.getServiceProviderCode())){
+                    .equals(accountDetail.getZheu())){
                 personAccountLocalBean.saveOrUpdate(subsidy, calculationContext.getCalculationCenterId(),
                         calculationContext.getUserOrganizationId());
             }else {

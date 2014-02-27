@@ -213,6 +213,8 @@
             <field length="8" scale="2" type="java.math.BigDecimal" name="GAZ_O"/>
             <field length="8" scale="2" type="java.math.BigDecimal" name="ELEKTR_O"/>
             <field length="8" scale="2" type="java.math.BigDecimal" name="STOKI_O"/>
+            <field length="1" type="java.lang.Integer" name="VC"/>
+            <field length="1" type="java.lang.Integer" name="PLE"/>
             <field length="8" type="java.util.Date" name="BEGIN0"/>
             <field length="8" type="java.util.Date" name="END0"/>
             <field length="1" type="java.lang.Integer" name="PR_KV"/>

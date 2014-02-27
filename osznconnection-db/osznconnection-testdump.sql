@@ -46,122 +46,392 @@ insert into organization_attribute(attribute_id, object_id, attribute_type_id, v
   (2,3,914,2,914),(3,3,914,3,914),(4,3,914,4,914),(5,3,914,5,914),(6,3,914,6,914),(7,3,914,7,914),(8,3,914,8,914),
 (1,4,900,22,900), (1,4,901,23,901), (1,4,903,3,903), (1,4,904,1,904), (1,4,914,9,914), (1,4,926,27,926), (1,4,927,25,927);
 
--- Request file descriptions --
-INSERT INTO `request_file_description` VALUES (1,'ACTUAL_PAYMENT','dd.MM.yyyy'),(2,'PAYMENT','dd.MM.yyyy'),
-(3,'BENEFIT','dd.MM.yyyy'),(4,'SUBSIDY','dd.MM.yyyy'),(5,'SUBSIDY_J_FILE','dd.MM.yyyy'),(6,'SUBSIDY_TARIF','dd.MM.yyyy'),
-(7,'DWELLING_CHARACTERISTICS','dd.MM.yyyy'),(8,'FACILITY_STREET_TYPE','dd.MM.yyyy'),(9,'FACILITY_STREET','dd.MM.yyyy'),
-(10,'FACILITY_SERVICE_TYPE','dd.MM.yyyy'),(11,'FACILITY_TARIF','dd.MM.yyyy'),(12,'FACILITY_FORM2','dd.MM.yyyy');
+-- Request File Descriptions --
+INSERT INTO `request_file_description` VALUES (1,'ACTUAL_PAYMENT','dd.MM.yyyy');
+INSERT INTO `request_file_description` VALUES (2,'PAYMENT','dd.MM.yyyy');
+INSERT INTO `request_file_description` VALUES (3,'BENEFIT','dd.MM.yyyy');
+INSERT INTO `request_file_description` VALUES (4,'SUBSIDY','dd.MM.yyyy');
+INSERT INTO `request_file_description` VALUES (5,'SUBSIDY_J_FILE','dd.MM.yyyy');
+INSERT INTO `request_file_description` VALUES (6,'SUBSIDY_S_FILE','dd.MM.yyyy');
+INSERT INTO `request_file_description` VALUES (7,'SUBSIDY_TARIF','dd.MM.yyyy');
+INSERT INTO `request_file_description` VALUES (8,'DWELLING_CHARACTERISTICS','dd.MM.yyyy');
+INSERT INTO `request_file_description` VALUES (9,'FACILITY_STREET_TYPE','dd.MM.yyyy');
+INSERT INTO `request_file_description` VALUES (10,'FACILITY_STREET','dd.MM.yyyy');
+INSERT INTO `request_file_description` VALUES (11,'FACILITY_SERVICE_TYPE','dd.MM.yyyy');
+INSERT INTO `request_file_description` VALUES (12,'FACILITY_TARIF','dd.MM.yyyy');
+INSERT INTO `request_file_description` VALUES (13,'FACILITY_FORM2','dd.MM.yyyy');
 
-
-
-INSERT INTO `request_file_field_description` VALUES (1,1,'SUR_NAM','java.lang.String',30,NULL),(2,1,'F_NAM','java.lang.String',15,NULL),
-(3,1,'M_NAM','java.lang.String',20,NULL),(4,1,'INDX','java.lang.String',6,NULL),(5,1,'N_NAME','java.lang.String',30,NULL),
-(6,1,'N_CODE','java.lang.String',5,NULL),(7,1,'VUL_CAT','java.lang.String',7,NULL),(8,1,'VUL_NAME','java.lang.String',30,NULL),
-(9,1,'VUL_CODE','java.lang.String',5,NULL),(10,1,'BLD_NUM','java.lang.String',7,NULL),(11,1,'CORP_NUM','java.lang.String',2,NULL),
-(12,1,'FLAT','java.lang.String',9,NULL),(13,1,'OWN_NUM','java.lang.String',15,NULL),(14,1,'APP_NUM','java.lang.String',8,NULL),
-(15,1,'DAT_BEG','java.util.Date',8,NULL),(16,1,'DAT_END','java.util.Date',8,NULL),(17,1,'CM_AREA','java.math.BigDecimal',7,2),
-(18,1,'NM_AREA','java.math.BigDecimal',7,2),(19,1,'BLC_AREA','java.math.BigDecimal',5,2),(20,1,'FROG','java.math.BigDecimal',5,1),
-(21,1,'DEBT','java.math.BigDecimal',10,2),(22,1,'NUMB','java.lang.Integer',2,NULL),(23,1,'P1','java.math.BigDecimal',10,4),
-(24,1,'N1','java.math.BigDecimal',10,4),(25,1,'P2','java.math.BigDecimal',10,4),(26,1,'N2','java.math.BigDecimal',10,4),
-(27,1,'P3','java.math.BigDecimal',10,4),(28,1,'N3','java.math.BigDecimal',10,4),(29,1,'P4','java.math.BigDecimal',10,4),
-(30,1,'N4','java.math.BigDecimal',10,4),(31,1,'P5','java.math.BigDecimal',10,4),(32,1,'N5','java.math.BigDecimal',10,4),
-(33,1,'P6','java.math.BigDecimal',10,4),(34,1,'N6','java.math.BigDecimal',10,4),(35,1,'P7','java.math.BigDecimal',10,4),
-(36,1,'N7','java.math.BigDecimal',10,4),(37,1,'P8','java.math.BigDecimal',10,4),(38,1,'N8','java.math.BigDecimal',10,4),
-(39,2,'OWN_NUM','java.lang.String',15,NULL),(40,2,'REE_NUM','java.lang.Integer',2,NULL),(41,2,'OPP','java.lang.String',8,NULL),
-(42,2,'NUMB','java.lang.Integer',2,NULL),(43,2,'MARK','java.lang.Integer',2,NULL),(44,2,'CODE','java.lang.Integer',4,NULL),
-(45,2,'ENT_COD','java.lang.Integer',10,NULL),(46,2,'FROG','java.math.BigDecimal',5,1),(47,2,'FL_PAY','java.math.BigDecimal',9,2),
-(48,2,'NM_PAY','java.math.BigDecimal',9,2),(49,2,'DEBT','java.math.BigDecimal',9,2),(50,2,'CODE2_1','java.lang.Integer',6,NULL),
-(51,2,'CODE2_2','java.lang.Integer',6,NULL),(52,2,'CODE2_3','java.lang.Integer',6,NULL),(53,2,'CODE2_4','java.lang.Integer',6,NULL),
-(54,2,'CODE2_5','java.lang.Integer',6,NULL),(55,2,'CODE2_6','java.lang.Integer',6,NULL),(56,2,'CODE2_7','java.lang.Integer',6,NULL),
-(57,2,'CODE2_8','java.lang.Integer',6,NULL),(58,2,'NORM_F_1','java.math.BigDecimal',10,4),(59,2,'NORM_F_2','java.math.BigDecimal',10,4),
-(60,2,'NORM_F_3','java.math.BigDecimal',10,4),(61,2,'NORM_F_4','java.math.BigDecimal',10,4),(62,2,'NORM_F_5','java.math.BigDecimal',10,4),
-(63,2,'NORM_F_6','java.math.BigDecimal',10,4),(64,2,'NORM_F_7','java.math.BigDecimal',10,4),(65,2,'NORM_F_8','java.math.BigDecimal',10,4),
-(66,2,'OWN_NUM_SR','java.lang.String',15,NULL),(67,2,'DAT1','java.util.Date',8,NULL),(68,2,'DAT2','java.util.Date',8,NULL),
-(69,2,'OZN_PRZ','java.lang.Integer',1,NULL),(70,2,'DAT_F_1','java.util.Date',8,NULL),(71,2,'DAT_F_2','java.util.Date',8,NULL),
-(72,2,'DAT_FOP_1','java.util.Date',8,NULL),(73,2,'DAT_FOP_2','java.util.Date',8,NULL),(74,2,'ID_RAJ','java.lang.String',5,NULL),
-(75,2,'SUR_NAM','java.lang.String',30,NULL),(76,2,'F_NAM','java.lang.String',15,NULL),(77,2,'M_NAM','java.lang.String',20,NULL),
-(78,2,'IND_COD','java.lang.String',10,NULL),(79,2,'INDX','java.lang.String',6,NULL),(80,2,'N_NAME','java.lang.String',30,NULL),
-(81,2,'VUL_NAME','java.lang.String',30,NULL),(82,2,'BLD_NUM','java.lang.String',7,NULL),(83,2,'CORP_NUM','java.lang.String',2,NULL),
-(84,2,'FLAT','java.lang.String',9,NULL),(85,2,'CODE3_1','java.lang.Integer',6,NULL),(86,2,'CODE3_2','java.lang.Integer',6,NULL),
-(87,2,'CODE3_3','java.lang.Integer',6,NULL),(88,2,'CODE3_4','java.lang.Integer',6,NULL),(89,2,'CODE3_5','java.lang.Integer',6,NULL),
-(90,2,'CODE3_6','java.lang.Integer',6,NULL),(91,2,'CODE3_7','java.lang.Integer',6,NULL),(92,2,'CODE3_8','java.lang.Integer',6,NULL),
-(93,2,'OPP_SERV','java.lang.String',8,NULL),(94,2,'RESERV1','java.lang.Integer',10,NULL),(95,2,'RESERV2','java.lang.String',10,NULL),
-(96,3,'OWN_NUM','java.lang.String',15,NULL),(97,3,'REE_NUM','java.lang.Integer',2,NULL),(98,3,'OWN_NUM_SR','java.lang.String',15,NULL),
-(99,3,'FAM_NUM','java.lang.Integer',2,NULL),(100,3,'SUR_NAM','java.lang.String',30,NULL),(101,3,'F_NAM','java.lang.String',15,NULL),
-(102,3,'M_NAM','java.lang.String',20,NULL),(103,3,'IND_COD','java.lang.String',10,NULL),(104,3,'PSP_SER','java.lang.String',6,NULL),
-(105,3,'PSP_NUM','java.lang.String',6,NULL),(106,3,'OZN','java.lang.Integer',1,NULL),(107,3,'CM_AREA','java.math.BigDecimal',10,2),
-(108,3,'HEAT_AREA','java.math.BigDecimal',10,2),(109,3,'OWN_FRM','java.lang.Integer',6,NULL),(110,3,'HOSTEL','java.lang.Integer',2,NULL),
-(111,3,'PRIV_CAT','java.lang.Integer',3,NULL),(112,3,'ORD_FAM','java.lang.Integer',2,NULL),(113,3,'OZN_SQ_ADD','java.lang.Integer',1,NULL),
-(114,3,'OZN_ABS','java.lang.Integer',1,NULL),(115,3,'RESERV1','java.math.BigDecimal',10,2),(116,3,'RESERV2','java.lang.String',10,NULL),
-(117,4,'FIO','java.lang.String',30,NULL),(118,4,'ID_RAJ','java.lang.String',5,NULL),(119,4,'NP_CODE','java.lang.String',5,NULL),
-(120,4,'NP_NAME','java.lang.String',30,NULL),(121,4,'CAT_V','java.lang.String',7,NULL),(122,4,'VULCOD','java.lang.String',8,NULL),
-(123,4,'NAME_V','java.lang.String',30,NULL),(124,4,'BLD','java.lang.String',7,NULL),(125,4,'CORP','java.lang.String',2,NULL),
-(126,4,'FLAT','java.lang.String',9,NULL),(127,4,'RASH','java.lang.String',15,NULL),(128,4,'NUMB','java.lang.String',8,NULL),
-(129,4,'DAT1','java.util.Date',8,NULL),(130,4,'DAT2','java.util.Date',8,NULL),(131,4,'NM_PAY','java.math.BigDecimal',9,2),
-(132,4,'P1','java.math.BigDecimal',9,4),(133,4,'P2','java.math.BigDecimal',9,4),(134,4,'P3','java.math.BigDecimal',9,4),
-(135,4,'P4','java.math.BigDecimal',9,4),(136,4,'P5','java.math.BigDecimal',9,4),(137,4,'P6','java.math.BigDecimal',9,4),
-(138,4,'P7','java.math.BigDecimal',9,4),(139,4,'P8','java.math.BigDecimal',9,4),(140,4,'SM1','java.math.BigDecimal',9,2),
-(141,4,'SM2','java.math.BigDecimal',9,2),(142,4,'SM3','java.math.BigDecimal',9,2),(143,4,'SM4','java.math.BigDecimal',9,2),
-(144,4,'SM5','java.math.BigDecimal',9,2),(145,4,'SM6','java.math.BigDecimal',9,2),(146,4,'SM7','java.math.BigDecimal',9,2),
-(147,4,'SM8','java.math.BigDecimal',9,2),(148,4,'SB1','java.math.BigDecimal',9,2),(149,4,'SB2','java.math.BigDecimal',9,2),
-(150,4,'SB3','java.math.BigDecimal',9,2),(151,4,'SB4','java.math.BigDecimal',9,2),(152,4,'SB5','java.math.BigDecimal',9,2),
-(153,4,'SB6','java.math.BigDecimal',9,2),(154,4,'SB7','java.math.BigDecimal',9,2),(155,4,'SB8','java.math.BigDecimal',9,2),
-(156,4,'OB1','java.math.BigDecimal',9,2),(157,4,'OB2','java.math.BigDecimal',9,2),(158,4,'OB3','java.math.BigDecimal',9,2),
-(159,4,'OB4','java.math.BigDecimal',9,2),(160,4,'OB5','java.math.BigDecimal',9,2),(161,4,'OB6','java.math.BigDecimal',9,2),
-(162,4,'OB7','java.math.BigDecimal',9,2),(163,4,'OB8','java.math.BigDecimal',9,2),(164,4,'SUMMA','java.math.BigDecimal',13,2),
-(165,4,'NUMM','java.lang.Integer',2,NULL),(166,4,'SUBS','java.math.BigDecimal',13,2),(167,4,'KVT','java.lang.Integer',3,NULL),
-(168,5,'DOM','java.lang.Integer',3,NULL),(169,5,'REG','java.lang.Integer',3,NULL),(170,5,'LS','java.lang.Integer',6,NULL),
-(171,5,'DELO','java.lang.String',8,NULL),(172,5,'TOT','java.math.BigDecimal',8,2),(173,5,'PERIOD','java.util.Date',8,NULL),
-(174,5,'FIO','java.lang.String',30,NULL),(175,5,'ADRES','java.lang.String',34,NULL),(176,5,'NKW','java.lang.String',9,NULL),
-(177,5,'KWART','java.math.BigDecimal',8,2),(178,5,'OTOPL','java.math.BigDecimal',8,2),(179,5,'PODOGR','java.math.BigDecimal',8,2),
-(180,5,'WODA','java.math.BigDecimal',8,2),(181,5,'GAZ','java.math.BigDecimal',8,2),(182,5,'ELEKTR','java.math.BigDecimal',8,2),
-(183,5,'STOKI','java.math.BigDecimal',8,2),(184,5,'TOT_O','java.math.BigDecimal',8,2),(185,5,'KWART_O','java.math.BigDecimal',8,2),
-(186,5,'OTOPL_O','java.math.BigDecimal',8,2),(187,5,'GORWODA_O','java.math.BigDecimal',8,2),(188,5,'WODA_O','java.math.BigDecimal',8,2),
-(189,5,'GAZ_O','java.math.BigDecimal',8,2),(190,5,'ELEKTR_O','java.math.BigDecimal',8,2),(191,5,'STOKI_O','java.math.BigDecimal',8,2),
-(192,5,'BEGIN0','java.util.Date',8,NULL),(193,5,'END0','java.util.Date',8,NULL),(194,5,'PR_KV','java.lang.Integer',1,NULL),
-(195,6,'T11_DATA_T','java.lang.String',10,NULL),(196,6,'T11_DATA_E','java.lang.String',10,NULL),
-(197,6,'T11_DATA_R','java.lang.String',10,NULL),(198,6,'T11_MARK','java.lang.Integer',3,NULL),
-(199,6,'T11_TARN','java.lang.Integer',6,NULL),(200,6,'T11_CODE1','java.lang.Integer',3,NULL),
-(201,6,'T11_CODE2','java.lang.Integer',6,NULL),(202,6,'T11_COD_NA','java.lang.String',40,NULL),
-(203,6,'T11_CODE3','java.lang.Integer',6,NULL),(204,6,'T11_NORM_U','java.math.BigDecimal',19,10),
-(205,6,'T11_NOR_US','java.math.BigDecimal',19,10),(206,6,'T11_CODE_N','java.lang.Integer',3,NULL),
-(207,6,'T11_COD_ND','java.lang.Integer',3,NULL),(208,6,'T11_CD_UNI','java.lang.Integer',3,NULL),
-(209,6,'T11_CS_UNI','java.math.BigDecimal',19,10),(210,6,'T11_NORM','java.math.BigDecimal',19,10),
-(211,6,'T11_NRM_DO','java.math.BigDecimal',19,10),(212,6,'T11_NRM_MA','java.math.BigDecimal',19,10),
-(213,6,'T11_K_NADL','java.math.BigDecimal',19,10),(214,7,'COD','java.lang.Integer',4,NULL),
-(215,7,'CDPR','java.lang.Integer',12,NULL),(216,7,'NCARD','java.lang.Integer',7,NULL),(217,7,'IDCODE','java.lang.String',10,NULL),
-(218,7,'PASP','java.lang.String',14,NULL),(219,7,'FIO','java.lang.String',50,NULL),(220,7,'IDPIL','java.lang.String',10,NULL),
-(221,7,'PASPPIL','java.lang.String',14,NULL),(222,7,'FIOPIL','java.lang.String',50,NULL),(223,7,'INDEX','java.lang.Integer',6,NULL),
-(224,7,'CDUL','java.lang.Integer',5,NULL),(225,7,'HOUSE','java.lang.String',7,NULL),(226,7,'BUILD','java.lang.String',2,NULL),
-(227,7,'APT','java.lang.String',4,NULL),(228,7,'VL','java.lang.Integer',3,NULL),(229,7,'PLZAG','java.math.BigDecimal',6,2),
-(230,7,'PLOPAL','java.math.BigDecimal',6,2),(231,8,'KLKUL_CODE','java.lang.Integer',3,NULL),
-(232,8,'KLKUL_NAME','java.lang.String',7,NULL),(233,9,'KL_CODERN','java.lang.Integer',5,NULL),
-(234,9,'KL_CODEUL','java.lang.Integer',5,NULL),(235,9,'KL_NAME','java.lang.String',50,NULL),
-(236,9,'KL_CODEKUL','java.lang.Integer',3,NULL),(237,10,'COD','java.lang.Integer',4,NULL),
-(238,10,'CDPR','java.lang.Integer',12,NULL),(239,10,'NCARD','java.lang.Integer',10,NULL),
-(240,10,'IDCODE','java.lang.String',10,NULL),(241,10,'PASP','java.lang.String',14,NULL),
-(242,10,'FIO','java.lang.String',50,NULL),(243,10,'IDPIL','java.lang.String',10,NULL),(244,10,'PASPPIL','java.lang.String',14,NULL),
-(245,10,'FIOPIL','java.lang.String',50,NULL),(246,10,'INDEX','java.lang.Integer',6,NULL),(247,10,'CDUL','java.lang.Integer',5,NULL),
-(248,10,'HOUSE','java.lang.String',7,NULL),(249,10,'BUILD','java.lang.String',2,NULL),(250,10,'APT','java.lang.String',4,NULL),
-(251,10,'KAT','java.lang.Integer',4,NULL),(252,10,'LGCODE','java.lang.Integer',4,NULL),(253,10,'YEARIN','java.lang.Integer',4,NULL),
-(254,10,'MONTHIN','java.lang.Integer',2,NULL),(255,10,'YEAROUT','java.lang.Integer',4,NULL),
-(256,10,'MONTHOUT','java.lang.Integer',2,NULL),(257,10,'RAH','java.lang.String',25,NULL),
-(258,10,'RIZN','java.lang.Integer',6,NULL),(259,10,'TARIF','java.lang.Integer',10,NULL),(260,11,'TAR_CODE','java.lang.Integer',10,NULL),
-(261,11,'TAR_CDPLG','java.lang.Integer',10,NULL),(262,11,'TAR_SERV','java.lang.Integer',10,NULL),
-(263,11,'TAR_DATEB','java.util.Date',8,NULL),(264,11,'TAR_DATEE','java.util.Date',8,NULL),
-(265,11,'TAR_COEF','java.math.BigDecimal',11,2),(266,11,'TAR_COST','java.math.BigDecimal',14,7),
-(267,11,'TAR_UNIT','java.lang.Integer',10,NULL),(268,11,'TAR_METER','java.lang.Integer',3,NULL),
-(269,11,'TAR_NMBAS','java.math.BigDecimal',11,2),(270,11,'TAR_NMSUP','java.math.BigDecimal',11,2),
-(271,11,'TAR_NMUBS','java.math.BigDecimal',11,4),(272,11,'TAR_NMUSP','java.math.BigDecimal',11,4),
-(273,11,'TAR_NMUMX','java.math.BigDecimal',11,4),(274,11,'TAR_TPNMB','java.lang.Integer',10,NULL),
-(275,11,'TAR_TPNMS','java.lang.Integer',10,NULL),(276,11,'TAR_NMUPL','java.lang.Integer',3,NULL),
-(277,11,'TAR_PRIV','java.lang.Integer',10,NULL),(278,12,'CDPR','java.lang.Integer',12,NULL),
-(279,12,'IDCODE','java.lang.String',10,NULL),(280,12,'FIO','java.lang.String',50,NULL),(281,12,'PPOS','java.lang.String',15,NULL),
-(282,12,'RS','java.lang.String',25,NULL),(283,12,'YEARIN','java.lang.Integer',4,NULL),(284,12,'MONTHIN','java.lang.Integer',2,NULL),
-(285,12,'LGCODE','java.lang.Integer',4,NULL),(286,12,'DATA1','java.util.Date',8,NULL),(287,12,'DATA2','java.util.Date',8,NULL),
-(288,12,'LGKOL','java.lang.Integer',2,NULL),(289,12,'LGKAT','java.lang.String',3,NULL),(290,12,'LGPRC','java.lang.Integer',3,NULL),
-(291,12,'SUMM','java.math.BigDecimal',8,2),(292,12,'FACT','java.math.BigDecimal',19,6),(293,12,'TARIF','java.math.BigDecimal',14,7),
-  (294,12,'FLAG','java.lang.Integer',1,NULL);
+-- Request File Descriptions Fields--
+INSERT INTO `request_file_field_description` VALUES (1,1,'SUR_NAM','java.lang.String',30,NULL);
+INSERT INTO `request_file_field_description` VALUES (2,1,'F_NAM','java.lang.String',15,NULL);
+INSERT INTO `request_file_field_description` VALUES (3,1,'M_NAM','java.lang.String',20,NULL);
+INSERT INTO `request_file_field_description` VALUES (4,1,'INDX','java.lang.String',6,NULL);
+INSERT INTO `request_file_field_description` VALUES (5,1,'N_NAME','java.lang.String',30,NULL);
+INSERT INTO `request_file_field_description` VALUES (6,1,'N_CODE','java.lang.String',5,NULL);
+INSERT INTO `request_file_field_description` VALUES (7,1,'VUL_CAT','java.lang.String',7,NULL);
+INSERT INTO `request_file_field_description` VALUES (8,1,'VUL_NAME','java.lang.String',30,NULL);
+INSERT INTO `request_file_field_description` VALUES (9,1,'VUL_CODE','java.lang.String',5,NULL);
+INSERT INTO `request_file_field_description` VALUES (10,1,'BLD_NUM','java.lang.String',7,NULL);
+INSERT INTO `request_file_field_description` VALUES (11,1,'CORP_NUM','java.lang.String',2,NULL);
+INSERT INTO `request_file_field_description` VALUES (12,1,'FLAT','java.lang.String',9,NULL);
+INSERT INTO `request_file_field_description` VALUES (13,1,'OWN_NUM','java.lang.String',15,NULL);
+INSERT INTO `request_file_field_description` VALUES (14,1,'APP_NUM','java.lang.String',8,NULL);
+INSERT INTO `request_file_field_description` VALUES (15,1,'DAT_BEG','java.util.Date',8,NULL);
+INSERT INTO `request_file_field_description` VALUES (16,1,'DAT_END','java.util.Date',8,NULL);
+INSERT INTO `request_file_field_description` VALUES (17,1,'CM_AREA','java.math.BigDecimal',7,2);
+INSERT INTO `request_file_field_description` VALUES (18,1,'NM_AREA','java.math.BigDecimal',7,2);
+INSERT INTO `request_file_field_description` VALUES (19,1,'BLC_AREA','java.math.BigDecimal',5,2);
+INSERT INTO `request_file_field_description` VALUES (20,1,'FROG','java.math.BigDecimal',5,1);
+INSERT INTO `request_file_field_description` VALUES (21,1,'DEBT','java.math.BigDecimal',10,2);
+INSERT INTO `request_file_field_description` VALUES (22,1,'NUMB','java.lang.Integer',2,NULL);
+INSERT INTO `request_file_field_description` VALUES (23,1,'P1','java.math.BigDecimal',10,4);
+INSERT INTO `request_file_field_description` VALUES (24,1,'N1','java.math.BigDecimal',10,4);
+INSERT INTO `request_file_field_description` VALUES (25,1,'P2','java.math.BigDecimal',10,4);
+INSERT INTO `request_file_field_description` VALUES (26,1,'N2','java.math.BigDecimal',10,4);
+INSERT INTO `request_file_field_description` VALUES (27,1,'P3','java.math.BigDecimal',10,4);
+INSERT INTO `request_file_field_description` VALUES (28,1,'N3','java.math.BigDecimal',10,4);
+INSERT INTO `request_file_field_description` VALUES (29,1,'P4','java.math.BigDecimal',10,4);
+INSERT INTO `request_file_field_description` VALUES (30,1,'N4','java.math.BigDecimal',10,4);
+INSERT INTO `request_file_field_description` VALUES (31,1,'P5','java.math.BigDecimal',10,4);
+INSERT INTO `request_file_field_description` VALUES (32,1,'N5','java.math.BigDecimal',10,4);
+INSERT INTO `request_file_field_description` VALUES (33,1,'P6','java.math.BigDecimal',10,4);
+INSERT INTO `request_file_field_description` VALUES (34,1,'N6','java.math.BigDecimal',10,4);
+INSERT INTO `request_file_field_description` VALUES (35,1,'P7','java.math.BigDecimal',10,4);
+INSERT INTO `request_file_field_description` VALUES (36,1,'N7','java.math.BigDecimal',10,4);
+INSERT INTO `request_file_field_description` VALUES (37,1,'P8','java.math.BigDecimal',10,4);
+INSERT INTO `request_file_field_description` VALUES (38,1,'N8','java.math.BigDecimal',10,4);
+INSERT INTO `request_file_field_description` VALUES (39,2,'OWN_NUM','java.lang.String',15,NULL);
+INSERT INTO `request_file_field_description` VALUES (40,2,'REE_NUM','java.lang.Integer',2,NULL);
+INSERT INTO `request_file_field_description` VALUES (41,2,'OPP','java.lang.String',8,NULL);
+INSERT INTO `request_file_field_description` VALUES (42,2,'NUMB','java.lang.Integer',2,NULL);
+INSERT INTO `request_file_field_description` VALUES (43,2,'MARK','java.lang.Integer',2,NULL);
+INSERT INTO `request_file_field_description` VALUES (44,2,'CODE','java.lang.Integer',4,NULL);
+INSERT INTO `request_file_field_description` VALUES (45,2,'ENT_COD','java.lang.Integer',10,NULL);
+INSERT INTO `request_file_field_description` VALUES (46,2,'FROG','java.math.BigDecimal',5,1);
+INSERT INTO `request_file_field_description` VALUES (47,2,'FL_PAY','java.math.BigDecimal',9,2);
+INSERT INTO `request_file_field_description` VALUES (48,2,'NM_PAY','java.math.BigDecimal',9,2);
+INSERT INTO `request_file_field_description` VALUES (49,2,'DEBT','java.math.BigDecimal',9,2);
+INSERT INTO `request_file_field_description` VALUES (50,2,'CODE2_1','java.lang.Integer',6,NULL);
+INSERT INTO `request_file_field_description` VALUES (51,2,'CODE2_2','java.lang.Integer',6,NULL);
+INSERT INTO `request_file_field_description` VALUES (52,2,'CODE2_3','java.lang.Integer',6,NULL);
+INSERT INTO `request_file_field_description` VALUES (53,2,'CODE2_4','java.lang.Integer',6,NULL);
+INSERT INTO `request_file_field_description` VALUES (54,2,'CODE2_5','java.lang.Integer',6,NULL);
+INSERT INTO `request_file_field_description` VALUES (55,2,'CODE2_6','java.lang.Integer',6,NULL);
+INSERT INTO `request_file_field_description` VALUES (56,2,'CODE2_7','java.lang.Integer',6,NULL);
+INSERT INTO `request_file_field_description` VALUES (57,2,'CODE2_8','java.lang.Integer',6,NULL);
+INSERT INTO `request_file_field_description` VALUES (58,2,'NORM_F_1','java.math.BigDecimal',10,4);
+INSERT INTO `request_file_field_description` VALUES (59,2,'NORM_F_2','java.math.BigDecimal',10,4);
+INSERT INTO `request_file_field_description` VALUES (60,2,'NORM_F_3','java.math.BigDecimal',10,4);
+INSERT INTO `request_file_field_description` VALUES (61,2,'NORM_F_4','java.math.BigDecimal',10,4);
+INSERT INTO `request_file_field_description` VALUES (62,2,'NORM_F_5','java.math.BigDecimal',10,4);
+INSERT INTO `request_file_field_description` VALUES (63,2,'NORM_F_6','java.math.BigDecimal',10,4);
+INSERT INTO `request_file_field_description` VALUES (64,2,'NORM_F_7','java.math.BigDecimal',10,4);
+INSERT INTO `request_file_field_description` VALUES (65,2,'NORM_F_8','java.math.BigDecimal',10,4);
+INSERT INTO `request_file_field_description` VALUES (66,2,'OWN_NUM_SR','java.lang.String',15,NULL);
+INSERT INTO `request_file_field_description` VALUES (67,2,'DAT1','java.util.Date',8,NULL);
+INSERT INTO `request_file_field_description` VALUES (68,2,'DAT2','java.util.Date',8,NULL);
+INSERT INTO `request_file_field_description` VALUES (69,2,'OZN_PRZ','java.lang.Integer',1,NULL);
+INSERT INTO `request_file_field_description` VALUES (70,2,'DAT_F_1','java.util.Date',8,NULL);
+INSERT INTO `request_file_field_description` VALUES (71,2,'DAT_F_2','java.util.Date',8,NULL);
+INSERT INTO `request_file_field_description` VALUES (72,2,'DAT_FOP_1','java.util.Date',8,NULL);
+INSERT INTO `request_file_field_description` VALUES (73,2,'DAT_FOP_2','java.util.Date',8,NULL);
+INSERT INTO `request_file_field_description` VALUES (74,2,'ID_RAJ','java.lang.String',5,NULL);
+INSERT INTO `request_file_field_description` VALUES (75,2,'SUR_NAM','java.lang.String',30,NULL);
+INSERT INTO `request_file_field_description` VALUES (76,2,'F_NAM','java.lang.String',15,NULL);
+INSERT INTO `request_file_field_description` VALUES (77,2,'M_NAM','java.lang.String',20,NULL);
+INSERT INTO `request_file_field_description` VALUES (78,2,'IND_COD','java.lang.String',10,NULL);
+INSERT INTO `request_file_field_description` VALUES (79,2,'INDX','java.lang.String',6,NULL);
+INSERT INTO `request_file_field_description` VALUES (80,2,'N_NAME','java.lang.String',30,NULL);
+INSERT INTO `request_file_field_description` VALUES (81,2,'VUL_NAME','java.lang.String',30,NULL);
+INSERT INTO `request_file_field_description` VALUES (82,2,'BLD_NUM','java.lang.String',7,NULL);
+INSERT INTO `request_file_field_description` VALUES (83,2,'CORP_NUM','java.lang.String',2,NULL);
+INSERT INTO `request_file_field_description` VALUES (84,2,'FLAT','java.lang.String',9,NULL);
+INSERT INTO `request_file_field_description` VALUES (85,2,'CODE3_1','java.lang.Integer',6,NULL);
+INSERT INTO `request_file_field_description` VALUES (86,2,'CODE3_2','java.lang.Integer',6,NULL);
+INSERT INTO `request_file_field_description` VALUES (87,2,'CODE3_3','java.lang.Integer',6,NULL);
+INSERT INTO `request_file_field_description` VALUES (88,2,'CODE3_4','java.lang.Integer',6,NULL);
+INSERT INTO `request_file_field_description` VALUES (89,2,'CODE3_5','java.lang.Integer',6,NULL);
+INSERT INTO `request_file_field_description` VALUES (90,2,'CODE3_6','java.lang.Integer',6,NULL);
+INSERT INTO `request_file_field_description` VALUES (91,2,'CODE3_7','java.lang.Integer',6,NULL);
+INSERT INTO `request_file_field_description` VALUES (92,2,'CODE3_8','java.lang.Integer',6,NULL);
+INSERT INTO `request_file_field_description` VALUES (93,2,'OPP_SERV','java.lang.String',8,NULL);
+INSERT INTO `request_file_field_description` VALUES (94,2,'RESERV1','java.lang.Integer',10,NULL);
+INSERT INTO `request_file_field_description` VALUES (95,2,'RESERV2','java.lang.String',10,NULL);
+INSERT INTO `request_file_field_description` VALUES (96,3,'OWN_NUM','java.lang.String',15,NULL);
+INSERT INTO `request_file_field_description` VALUES (97,3,'REE_NUM','java.lang.Integer',2,NULL);
+INSERT INTO `request_file_field_description` VALUES (98,3,'OWN_NUM_SR','java.lang.String',15,NULL);
+INSERT INTO `request_file_field_description` VALUES (99,3,'FAM_NUM','java.lang.Integer',2,NULL);
+INSERT INTO `request_file_field_description` VALUES (100,3,'SUR_NAM','java.lang.String',30,NULL);
+INSERT INTO `request_file_field_description` VALUES (101,3,'F_NAM','java.lang.String',15,NULL);
+INSERT INTO `request_file_field_description` VALUES (102,3,'M_NAM','java.lang.String',20,NULL);
+INSERT INTO `request_file_field_description` VALUES (103,3,'IND_COD','java.lang.String',10,NULL);
+INSERT INTO `request_file_field_description` VALUES (104,3,'PSP_SER','java.lang.String',6,NULL);
+INSERT INTO `request_file_field_description` VALUES (105,3,'PSP_NUM','java.lang.String',6,NULL);
+INSERT INTO `request_file_field_description` VALUES (106,3,'OZN','java.lang.Integer',1,NULL);
+INSERT INTO `request_file_field_description` VALUES (107,3,'CM_AREA','java.math.BigDecimal',10,2);
+INSERT INTO `request_file_field_description` VALUES (108,3,'HEAT_AREA','java.math.BigDecimal',10,2);
+INSERT INTO `request_file_field_description` VALUES (109,3,'OWN_FRM','java.lang.Integer',6,NULL);
+INSERT INTO `request_file_field_description` VALUES (110,3,'HOSTEL','java.lang.Integer',2,NULL);
+INSERT INTO `request_file_field_description` VALUES (111,3,'PRIV_CAT','java.lang.Integer',3,NULL);
+INSERT INTO `request_file_field_description` VALUES (112,3,'ORD_FAM','java.lang.Integer',2,NULL);
+INSERT INTO `request_file_field_description` VALUES (113,3,'OZN_SQ_ADD','java.lang.Integer',1,NULL);
+INSERT INTO `request_file_field_description` VALUES (114,3,'OZN_ABS','java.lang.Integer',1,NULL);
+INSERT INTO `request_file_field_description` VALUES (115,3,'RESERV1','java.math.BigDecimal',10,2);
+INSERT INTO `request_file_field_description` VALUES (116,3,'RESERV2','java.lang.String',10,NULL);
+INSERT INTO `request_file_field_description` VALUES (117,4,'FIO','java.lang.String',30,NULL);
+INSERT INTO `request_file_field_description` VALUES (118,4,'ID_RAJ','java.lang.String',5,NULL);
+INSERT INTO `request_file_field_description` VALUES (119,4,'NP_CODE','java.lang.String',5,NULL);
+INSERT INTO `request_file_field_description` VALUES (120,4,'NP_NAME','java.lang.String',30,NULL);
+INSERT INTO `request_file_field_description` VALUES (121,4,'CAT_V','java.lang.String',7,NULL);
+INSERT INTO `request_file_field_description` VALUES (122,4,'VULCOD','java.lang.String',8,NULL);
+INSERT INTO `request_file_field_description` VALUES (123,4,'NAME_V','java.lang.String',30,NULL);
+INSERT INTO `request_file_field_description` VALUES (124,4,'BLD','java.lang.String',7,NULL);
+INSERT INTO `request_file_field_description` VALUES (125,4,'CORP','java.lang.String',2,NULL);
+INSERT INTO `request_file_field_description` VALUES (126,4,'FLAT','java.lang.String',9,NULL);
+INSERT INTO `request_file_field_description` VALUES (127,4,'RASH','java.lang.String',15,NULL);
+INSERT INTO `request_file_field_description` VALUES (128,4,'NUMB','java.lang.String',8,NULL);
+INSERT INTO `request_file_field_description` VALUES (129,4,'DAT1','java.util.Date',8,NULL);
+INSERT INTO `request_file_field_description` VALUES (130,4,'DAT2','java.util.Date',8,NULL);
+INSERT INTO `request_file_field_description` VALUES (131,4,'NM_PAY','java.math.BigDecimal',9,2);
+INSERT INTO `request_file_field_description` VALUES (132,4,'P1','java.math.BigDecimal',9,4);
+INSERT INTO `request_file_field_description` VALUES (133,4,'P2','java.math.BigDecimal',9,4);
+INSERT INTO `request_file_field_description` VALUES (134,4,'P3','java.math.BigDecimal',9,4);
+INSERT INTO `request_file_field_description` VALUES (135,4,'P4','java.math.BigDecimal',9,4);
+INSERT INTO `request_file_field_description` VALUES (136,4,'P5','java.math.BigDecimal',9,4);
+INSERT INTO `request_file_field_description` VALUES (137,4,'P6','java.math.BigDecimal',9,4);
+INSERT INTO `request_file_field_description` VALUES (138,4,'P7','java.math.BigDecimal',9,4);
+INSERT INTO `request_file_field_description` VALUES (139,4,'P8','java.math.BigDecimal',9,4);
+INSERT INTO `request_file_field_description` VALUES (140,4,'SM1','java.math.BigDecimal',9,2);
+INSERT INTO `request_file_field_description` VALUES (141,4,'SM2','java.math.BigDecimal',9,2);
+INSERT INTO `request_file_field_description` VALUES (142,4,'SM3','java.math.BigDecimal',9,2);
+INSERT INTO `request_file_field_description` VALUES (143,4,'SM4','java.math.BigDecimal',9,2);
+INSERT INTO `request_file_field_description` VALUES (144,4,'SM5','java.math.BigDecimal',9,2);
+INSERT INTO `request_file_field_description` VALUES (145,4,'SM6','java.math.BigDecimal',9,2);
+INSERT INTO `request_file_field_description` VALUES (146,4,'SM7','java.math.BigDecimal',9,2);
+INSERT INTO `request_file_field_description` VALUES (147,4,'SM8','java.math.BigDecimal',9,2);
+INSERT INTO `request_file_field_description` VALUES (148,4,'SB1','java.math.BigDecimal',9,2);
+INSERT INTO `request_file_field_description` VALUES (149,4,'SB2','java.math.BigDecimal',9,2);
+INSERT INTO `request_file_field_description` VALUES (150,4,'SB3','java.math.BigDecimal',9,2);
+INSERT INTO `request_file_field_description` VALUES (151,4,'SB4','java.math.BigDecimal',9,2);
+INSERT INTO `request_file_field_description` VALUES (152,4,'SB5','java.math.BigDecimal',9,2);
+INSERT INTO `request_file_field_description` VALUES (153,4,'SB6','java.math.BigDecimal',9,2);
+INSERT INTO `request_file_field_description` VALUES (154,4,'SB7','java.math.BigDecimal',9,2);
+INSERT INTO `request_file_field_description` VALUES (155,4,'SB8','java.math.BigDecimal',9,2);
+INSERT INTO `request_file_field_description` VALUES (156,4,'OB1','java.math.BigDecimal',9,2);
+INSERT INTO `request_file_field_description` VALUES (157,4,'OB2','java.math.BigDecimal',9,2);
+INSERT INTO `request_file_field_description` VALUES (158,4,'OB3','java.math.BigDecimal',9,2);
+INSERT INTO `request_file_field_description` VALUES (159,4,'OB4','java.math.BigDecimal',9,2);
+INSERT INTO `request_file_field_description` VALUES (160,4,'OB5','java.math.BigDecimal',9,2);
+INSERT INTO `request_file_field_description` VALUES (161,4,'OB6','java.math.BigDecimal',9,2);
+INSERT INTO `request_file_field_description` VALUES (162,4,'OB7','java.math.BigDecimal',9,2);
+INSERT INTO `request_file_field_description` VALUES (163,4,'OB8','java.math.BigDecimal',9,2);
+INSERT INTO `request_file_field_description` VALUES (164,4,'SUMMA','java.math.BigDecimal',13,2);
+INSERT INTO `request_file_field_description` VALUES (165,4,'NUMM','java.lang.Integer',2,NULL);
+INSERT INTO `request_file_field_description` VALUES (166,4,'SUBS','java.math.BigDecimal',13,2);
+INSERT INTO `request_file_field_description` VALUES (167,4,'KVT','java.lang.Integer',3,NULL);
+INSERT INTO `request_file_field_description` VALUES (168,5,'DOM','java.lang.Integer',3,NULL);
+INSERT INTO `request_file_field_description` VALUES (169,5,'REG','java.lang.Integer',3,NULL);
+INSERT INTO `request_file_field_description` VALUES (170,5,'LS','java.lang.Integer',6,NULL);
+INSERT INTO `request_file_field_description` VALUES (171,5,'DELO','java.lang.String',8,NULL);
+INSERT INTO `request_file_field_description` VALUES (172,5,'TOT','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (173,5,'PERIOD','java.util.Date',8,NULL);
+INSERT INTO `request_file_field_description` VALUES (174,5,'FIO','java.lang.String',30,NULL);
+INSERT INTO `request_file_field_description` VALUES (175,5,'ADRES','java.lang.String',34,NULL);
+INSERT INTO `request_file_field_description` VALUES (176,5,'NKW','java.lang.String',9,NULL);
+INSERT INTO `request_file_field_description` VALUES (177,5,'KWART','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (178,5,'OTOPL','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (179,5,'PODOGR','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (180,5,'WODA','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (181,5,'GAZ','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (182,5,'ELEKTR','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (183,5,'STOKI','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (184,5,'TOT_O','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (185,5,'KWART_O','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (186,5,'OTOPL_O','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (187,5,'GORWODA_O','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (188,5,'WODA_O','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (189,5,'GAZ_O','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (190,5,'ELEKTR_O','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (191,5,'STOKI_O','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (192,5,'VC','java.lang.Integer',1,NULL);
+INSERT INTO `request_file_field_description` VALUES (193,5,'PLE','java.lang.Integer',1,NULL);
+INSERT INTO `request_file_field_description` VALUES (194,5,'BEGIN0','java.util.Date',8,NULL);
+INSERT INTO `request_file_field_description` VALUES (195,5,'END0','java.util.Date',8,NULL);
+INSERT INTO `request_file_field_description` VALUES (196,5,'PR_KV','java.lang.Integer',1,NULL);
+INSERT INTO `request_file_field_description` VALUES (197,6,'JEK','java.lang.Integer',4,NULL);
+INSERT INTO `request_file_field_description` VALUES (198,6,'P_ACCOUNT','java.lang.Integer',6,NULL);
+INSERT INTO `request_file_field_description` VALUES (199,6,'DT','java.util.Date',8,NULL);
+INSERT INTO `request_file_field_description` VALUES (200,6,'DDPP','java.util.Date',8,NULL);
+INSERT INTO `request_file_field_description` VALUES (201,6,'N_DEL','java.lang.String',8,NULL);
+INSERT INTO `request_file_field_description` VALUES (202,6,'FIO','java.lang.String',20,NULL);
+INSERT INTO `request_file_field_description` VALUES (203,6,'NA','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (204,6,'OPTOT','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (205,6,'OP','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (206,6,'KWART','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (207,6,'KWARTG','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (208,6,'NAKWART','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (209,6,'WODA','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (210,6,'WODAG','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (211,6,'NAWODA','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (212,6,'WODAG1','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (213,6,'NAWODA1','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (214,6,'OTOPL','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (215,6,'OTOPLG','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (216,6,'NAOTOPL','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (217,6,'GORWODA','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (218,6,'GORWODAG','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (219,6,'NAGORWODA','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (220,6,'STOKI','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (221,6,'STOKIG','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (222,6,'NASTOKI','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (223,6,'GAZ','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (224,6,'GAZG','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (225,6,'NAGAZ','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (226,6,'NAELEKTR','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (227,6,'ELEKTR','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (228,6,'ELEKTRG','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (229,6,'NARADIO','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (230,6,'NATELEANT','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (231,6,'MUSOR','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (232,6,'MUSORG','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (233,6,'ODS','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (234,6,'ODSG','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (235,6,'LIFT','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (236,6,'LIFTG','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (237,6,'VC','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (238,6,'PR','java.lang.String',2,NULL);
+INSERT INTO `request_file_field_description` VALUES (239,6,'TOTRASKLAD','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (240,6,'I_GAZ','java.lang.Integer',4,NULL);
+INSERT INTO `request_file_field_description` VALUES (241,6,'I_WODA','java.lang.Integer',4,NULL);
+INSERT INTO `request_file_field_description` VALUES (242,6,'I_GORWODA','java.lang.Integer',4,NULL);
+INSERT INTO `request_file_field_description` VALUES (243,6,'I_STOKI','java.lang.Integer',4,NULL);
+INSERT INTO `request_file_field_description` VALUES (244,6,'I_OTOPL','java.lang.Integer',4,NULL);
+INSERT INTO `request_file_field_description` VALUES (245,6,'I_KWART','java.lang.Integer',4,NULL);
+INSERT INTO `request_file_field_description` VALUES (246,6,'I_ELEKTR','java.lang.Integer',4,NULL);
+INSERT INTO `request_file_field_description` VALUES (247,6,'I_MUSOR','java.lang.Integer',4,NULL);
+INSERT INTO `request_file_field_description` VALUES (248,6,'I_LIFT','java.lang.Integer',4,NULL);
+INSERT INTO `request_file_field_description` VALUES (249,6,'I_NASOS','java.lang.Integer',4,NULL);
+INSERT INTO `request_file_field_description` VALUES (250,6,'I_ODS','java.lang.Integer',4,NULL);
+INSERT INTO `request_file_field_description` VALUES (251,6,'DOM','java.lang.Integer',3,NULL);
+INSERT INTO `request_file_field_description` VALUES (252,6,'NACHSU','java.lang.String',6,NULL);
+INSERT INTO `request_file_field_description` VALUES (253,6,'REG','java.lang.Integer',3,NULL);
+INSERT INTO `request_file_field_description` VALUES (254,6,'NDWODA','java.lang.Integer',8,NULL);
+INSERT INTO `request_file_field_description` VALUES (255,6,'NDGORW','java.lang.Integer',8,NULL);
+INSERT INTO `request_file_field_description` VALUES (256,6,'NDSTOKI','java.lang.Integer',8,NULL);
+INSERT INTO `request_file_field_description` VALUES (257,6,'NDOTOPL','java.lang.Integer',8,NULL);
+INSERT INTO `request_file_field_description` VALUES (258,6,'NDELEC','java.lang.Integer',8,NULL);
+INSERT INTO `request_file_field_description` VALUES (259,6,'NDMUSOR','java.lang.Integer',8,NULL);
+INSERT INTO `request_file_field_description` VALUES (260,6,'NDLIFT','java.lang.Integer',8,NULL);
+INSERT INTO `request_file_field_description` VALUES (261,6,'NDODS','java.lang.Integer',8,NULL);
+INSERT INTO `request_file_field_description` VALUES (262,6,'NDGAZ','java.lang.Integer',8,NULL);
+INSERT INTO `request_file_field_description` VALUES (263,6,'PLE','java.lang.Integer',1,NULL);
+INSERT INTO `request_file_field_description` VALUES (264,6,'BEG0','java.util.Date',8,NULL);
+INSERT INTO `request_file_field_description` VALUES (265,6,'END0','java.util.Date',8,NULL);
+INSERT INTO `request_file_field_description` VALUES (266,6,'PR_KV','java.lang.Integer',1,NULL);
+INSERT INTO `request_file_field_description` VALUES (267,6,'BEG_IH','java.util.Date',8,NULL);
+INSERT INTO `request_file_field_description` VALUES (268,6,'END_IH','java.util.Date',8,NULL);
+INSERT INTO `request_file_field_description` VALUES (269,6,'COUNTM','java.lang.Integer',2,NULL);
+INSERT INTO `request_file_field_description` VALUES (270,6,'NADL','java.math.BigDecimal',7,2);
+INSERT INTO `request_file_field_description` VALUES (271,7,'T11_DATA_T','java.lang.String',10,NULL);
+INSERT INTO `request_file_field_description` VALUES (272,7,'T11_DATA_E','java.lang.String',10,NULL);
+INSERT INTO `request_file_field_description` VALUES (273,7,'T11_DATA_R','java.lang.String',10,NULL);
+INSERT INTO `request_file_field_description` VALUES (274,7,'T11_MARK','java.lang.Integer',3,NULL);
+INSERT INTO `request_file_field_description` VALUES (275,7,'T11_TARN','java.lang.Integer',6,NULL);
+INSERT INTO `request_file_field_description` VALUES (276,7,'T11_CODE1','java.lang.Integer',3,NULL);
+INSERT INTO `request_file_field_description` VALUES (277,7,'T11_CODE2','java.lang.Integer',6,NULL);
+INSERT INTO `request_file_field_description` VALUES (278,7,'T11_COD_NA','java.lang.String',40,NULL);
+INSERT INTO `request_file_field_description` VALUES (279,7,'T11_CODE3','java.lang.Integer',6,NULL);
+INSERT INTO `request_file_field_description` VALUES (280,7,'T11_NORM_U','java.math.BigDecimal',19,10);
+INSERT INTO `request_file_field_description` VALUES (281,7,'T11_NOR_US','java.math.BigDecimal',19,10);
+INSERT INTO `request_file_field_description` VALUES (282,7,'T11_CODE_N','java.lang.Integer',3,NULL);
+INSERT INTO `request_file_field_description` VALUES (283,7,'T11_COD_ND','java.lang.Integer',3,NULL);
+INSERT INTO `request_file_field_description` VALUES (284,7,'T11_CD_UNI','java.lang.Integer',3,NULL);
+INSERT INTO `request_file_field_description` VALUES (285,7,'T11_CS_UNI','java.math.BigDecimal',19,10);
+INSERT INTO `request_file_field_description` VALUES (286,7,'T11_NORM','java.math.BigDecimal',19,10);
+INSERT INTO `request_file_field_description` VALUES (287,7,'T11_NRM_DO','java.math.BigDecimal',19,10);
+INSERT INTO `request_file_field_description` VALUES (288,7,'T11_NRM_MA','java.math.BigDecimal',19,10);
+INSERT INTO `request_file_field_description` VALUES (289,7,'T11_K_NADL','java.math.BigDecimal',19,10);
+INSERT INTO `request_file_field_description` VALUES (290,8,'COD','java.lang.Integer',4,NULL);
+INSERT INTO `request_file_field_description` VALUES (291,8,'CDPR','java.lang.Integer',12,NULL);
+INSERT INTO `request_file_field_description` VALUES (292,8,'NCARD','java.lang.Integer',7,NULL);
+INSERT INTO `request_file_field_description` VALUES (293,8,'IDCODE','java.lang.String',10,NULL);
+INSERT INTO `request_file_field_description` VALUES (294,8,'PASP','java.lang.String',14,NULL);
+INSERT INTO `request_file_field_description` VALUES (295,8,'FIO','java.lang.String',50,NULL);
+INSERT INTO `request_file_field_description` VALUES (296,8,'IDPIL','java.lang.String',10,NULL);
+INSERT INTO `request_file_field_description` VALUES (297,8,'PASPPIL','java.lang.String',14,NULL);
+INSERT INTO `request_file_field_description` VALUES (298,8,'FIOPIL','java.lang.String',50,NULL);
+INSERT INTO `request_file_field_description` VALUES (299,8,'INDEX','java.lang.Integer',6,NULL);
+INSERT INTO `request_file_field_description` VALUES (300,8,'CDUL','java.lang.Integer',5,NULL);
+INSERT INTO `request_file_field_description` VALUES (301,8,'HOUSE','java.lang.String',7,NULL);
+INSERT INTO `request_file_field_description` VALUES (302,8,'BUILD','java.lang.String',2,NULL);
+INSERT INTO `request_file_field_description` VALUES (303,8,'APT','java.lang.String',4,NULL);
+INSERT INTO `request_file_field_description` VALUES (304,8,'VL','java.lang.Integer',3,NULL);
+INSERT INTO `request_file_field_description` VALUES (305,8,'PLZAG','java.math.BigDecimal',6,2);
+INSERT INTO `request_file_field_description` VALUES (306,8,'PLOPAL','java.math.BigDecimal',6,2);
+INSERT INTO `request_file_field_description` VALUES (307,9,'KLKUL_CODE','java.lang.Integer',3,NULL);
+INSERT INTO `request_file_field_description` VALUES (308,9,'KLKUL_NAME','java.lang.String',7,NULL);
+INSERT INTO `request_file_field_description` VALUES (309,10,'KL_CODERN','java.lang.Integer',5,NULL);
+INSERT INTO `request_file_field_description` VALUES (310,10,'KL_CODEUL','java.lang.Integer',5,NULL);
+INSERT INTO `request_file_field_description` VALUES (311,10,'KL_NAME','java.lang.String',50,NULL);
+INSERT INTO `request_file_field_description` VALUES (312,10,'KL_CODEKUL','java.lang.Integer',3,NULL);
+INSERT INTO `request_file_field_description` VALUES (313,11,'COD','java.lang.Integer',4,NULL);
+INSERT INTO `request_file_field_description` VALUES (314,11,'CDPR','java.lang.Integer',12,NULL);
+INSERT INTO `request_file_field_description` VALUES (315,11,'NCARD','java.lang.Integer',10,NULL);
+INSERT INTO `request_file_field_description` VALUES (316,11,'IDCODE','java.lang.String',10,NULL);
+INSERT INTO `request_file_field_description` VALUES (317,11,'PASP','java.lang.String',14,NULL);
+INSERT INTO `request_file_field_description` VALUES (318,11,'FIO','java.lang.String',50,NULL);
+INSERT INTO `request_file_field_description` VALUES (319,11,'IDPIL','java.lang.String',10,NULL);
+INSERT INTO `request_file_field_description` VALUES (320,11,'PASPPIL','java.lang.String',14,NULL);
+INSERT INTO `request_file_field_description` VALUES (321,11,'FIOPIL','java.lang.String',50,NULL);
+INSERT INTO `request_file_field_description` VALUES (322,11,'INDEX','java.lang.Integer',6,NULL);
+INSERT INTO `request_file_field_description` VALUES (323,11,'CDUL','java.lang.Integer',5,NULL);
+INSERT INTO `request_file_field_description` VALUES (324,11,'HOUSE','java.lang.String',7,NULL);
+INSERT INTO `request_file_field_description` VALUES (325,11,'BUILD','java.lang.String',2,NULL);
+INSERT INTO `request_file_field_description` VALUES (326,11,'APT','java.lang.String',4,NULL);
+INSERT INTO `request_file_field_description` VALUES (327,11,'KAT','java.lang.Integer',4,NULL);
+INSERT INTO `request_file_field_description` VALUES (328,11,'LGCODE','java.lang.Integer',4,NULL);
+INSERT INTO `request_file_field_description` VALUES (329,11,'YEARIN','java.lang.Integer',4,NULL);
+INSERT INTO `request_file_field_description` VALUES (330,11,'MONTHIN','java.lang.Integer',2,NULL);
+INSERT INTO `request_file_field_description` VALUES (331,11,'YEAROUT','java.lang.Integer',4,NULL);
+INSERT INTO `request_file_field_description` VALUES (332,11,'MONTHOUT','java.lang.Integer',2,NULL);
+INSERT INTO `request_file_field_description` VALUES (333,11,'RAH','java.lang.String',25,NULL);
+INSERT INTO `request_file_field_description` VALUES (334,11,'RIZN','java.lang.Integer',6,NULL);
+INSERT INTO `request_file_field_description` VALUES (335,11,'TARIF','java.lang.Integer',10,NULL);
+INSERT INTO `request_file_field_description` VALUES (336,12,'TAR_CODE','java.lang.Integer',10,NULL);
+INSERT INTO `request_file_field_description` VALUES (337,12,'TAR_CDPLG','java.lang.Integer',10,NULL);
+INSERT INTO `request_file_field_description` VALUES (338,12,'TAR_SERV','java.lang.Integer',10,NULL);
+INSERT INTO `request_file_field_description` VALUES (339,12,'TAR_DATEB','java.util.Date',8,NULL);
+INSERT INTO `request_file_field_description` VALUES (340,12,'TAR_DATEE','java.util.Date',8,NULL);
+INSERT INTO `request_file_field_description` VALUES (341,12,'TAR_COEF','java.math.BigDecimal',11,2);
+INSERT INTO `request_file_field_description` VALUES (342,12,'TAR_COST','java.math.BigDecimal',14,7);
+INSERT INTO `request_file_field_description` VALUES (343,12,'TAR_UNIT','java.lang.Integer',10,NULL);
+INSERT INTO `request_file_field_description` VALUES (344,12,'TAR_METER','java.lang.Integer',3,NULL);
+INSERT INTO `request_file_field_description` VALUES (345,12,'TAR_NMBAS','java.math.BigDecimal',11,2);
+INSERT INTO `request_file_field_description` VALUES (346,12,'TAR_NMSUP','java.math.BigDecimal',11,2);
+INSERT INTO `request_file_field_description` VALUES (347,12,'TAR_NMUBS','java.math.BigDecimal',11,4);
+INSERT INTO `request_file_field_description` VALUES (348,12,'TAR_NMUSP','java.math.BigDecimal',11,4);
+INSERT INTO `request_file_field_description` VALUES (349,12,'TAR_NMUMX','java.math.BigDecimal',11,4);
+INSERT INTO `request_file_field_description` VALUES (350,12,'TAR_TPNMB','java.lang.Integer',10,NULL);
+INSERT INTO `request_file_field_description` VALUES (351,12,'TAR_TPNMS','java.lang.Integer',10,NULL);
+INSERT INTO `request_file_field_description` VALUES (352,12,'TAR_NMUPL','java.lang.Integer',3,NULL);
+INSERT INTO `request_file_field_description` VALUES (353,12,'TAR_PRIV','java.lang.Integer',10,NULL);
+INSERT INTO `request_file_field_description` VALUES (354,13,'CDPR','java.lang.Integer',12,NULL);
+INSERT INTO `request_file_field_description` VALUES (355,13,'IDCODE','java.lang.String',10,NULL);
+INSERT INTO `request_file_field_description` VALUES (356,13,'FIO','java.lang.String',50,NULL);
+INSERT INTO `request_file_field_description` VALUES (357,13,'PPOS','java.lang.String',15,NULL);
+INSERT INTO `request_file_field_description` VALUES (358,13,'RS','java.lang.String',25,NULL);
+INSERT INTO `request_file_field_description` VALUES (359,13,'YEARIN','java.lang.Integer',4,NULL);
+INSERT INTO `request_file_field_description` VALUES (360,13,'MONTHIN','java.lang.Integer',2,NULL);
+INSERT INTO `request_file_field_description` VALUES (361,13,'LGCODE','java.lang.Integer',4,NULL);
+INSERT INTO `request_file_field_description` VALUES (362,13,'DATA1','java.util.Date',8,NULL);
+INSERT INTO `request_file_field_description` VALUES (363,13,'DATA2','java.util.Date',8,NULL);
+INSERT INTO `request_file_field_description` VALUES (364,13,'LGKOL','java.lang.Integer',2,NULL);
+INSERT INTO `request_file_field_description` VALUES (365,13,'LGKAT','java.lang.String',3,NULL);
+INSERT INTO `request_file_field_description` VALUES (366,13,'LGPRC','java.lang.Integer',3,NULL);
+INSERT INTO `request_file_field_description` VALUES (367,13,'SUMM','java.math.BigDecimal',8,2);
+INSERT INTO `request_file_field_description` VALUES (368,13,'FACT','java.math.BigDecimal',19,6);
+INSERT INTO `request_file_field_description` VALUES (369,13,'TARIF','java.math.BigDecimal',14,7);
+INSERT INTO `request_file_field_description` VALUES (370,13,'FLAG','java.lang.Integer',1,NULL);
 
 -- Request files --
 INSERT INTO `request_file_group`(`id`, `status`) VALUES (1, 110);

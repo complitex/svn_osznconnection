@@ -29,6 +29,8 @@ public enum SubsidyJFileDBF {
     GAZ_O,
     ELEKTR_O,
     STOKI_O,
+    VC,
+    PLE,
     BEGIN0,
     END0,
     PR_KV
