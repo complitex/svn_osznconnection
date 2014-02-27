@@ -2,12 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.complitex.osznconnection.file.service_provider.ServiceProviderAdapter">
     <resultMap id="accountDetailMap" type="org.complitex.osznconnection.file.entity.AccountDetail">
-        <result column="acc_code" property="accountNumber"/>
-        <result column="erc_code" property="megabankAccountNumber"/>
-        <result column="zheu_code" property="serviceProviderAccountNumber"/>
-        <result column="owner_fio" property="ownerName"/>
+        <result column="acc_code" property="accCode"/>
+        <result column="erc_code" property="ercCode"/>
+        <result column="zheu_code" property="zheuCode"/>
+        <result column="owner_fio" property="ownerFio"/>
         <result column="owner_inn" property="ownerINN"/>
-        <result column="zheu" property="serviceProviderCode"/>
+        <result column="zheu" property="zheu"/>
     </resultMap>
 
     <select id="acquireAccountDetailsByAddress" statementType="CALLABLE" parameterType="map">
@@ -26,19 +26,19 @@
     </select>
 
     <resultMap id="accountDetailResultMap" type="org.complitex.osznconnection.file.entity.AccountDetail">
-        <result column="acc_code" property="accountNumber" />
-        <result column="erc_code" property="megabankAccountNumber"/>
-        <result column="zheu_code" property="serviceProviderAccountNumber"/>
+        <result column="acc_code" property="accCode" />
+        <result column="erc_code" property="ercCode"/>
+        <result column="zheu_code" property="zheuCode"/>
         <result column="street_sort" property="streetType"/>
         <result column="street_name" property="street"/>
         <result column="house_name" property="buildingNumber"/>
         <result column="house_part" property="buildingCorp"/>
         <result column="flat" property="apartment"/>
-        <result column="owner_fio" property="ownerName"/>
+        <result column="owner_fio" property="ownerFio"/>
         <result column="owner_inn" property="ownerINN"/>
         <result column="house_code" property="houseCode"/>
         <result column="district_code" property="districtCode"/>
-        <result column="zheu" property="serviceProviderCode"/>
+        <result column="zheu" property="zheu"/>
     </resultMap>
 
     <select id="getAttrsByAccCode" statementType="CALLABLE" parameterType="map">

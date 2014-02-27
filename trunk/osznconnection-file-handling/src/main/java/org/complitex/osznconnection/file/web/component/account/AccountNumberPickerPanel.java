@@ -54,13 +54,13 @@ public class AccountNumberPickerPanel extends Panel {
             @Override
             protected void populateItem(ListItem<AccountDetail> item) {
                 AccountDetail detail = item.getModelObject();
-                item.add(new Radio<>("radio", item.getModel(), radioGroup).setEnabled(!Strings.isEmpty(detail.getAccountNumber())));
-                item.add(new Label("accountNumber", valueOf(detail.getAccountNumber())));
-                item.add(new Label("serviceProviderCode", valueOf(detail.getServiceProviderCode())));
-                item.add(new Label("name", valueOf(detail.getOwnerName())));
+                item.add(new Radio<>("radio", item.getModel(), radioGroup).setEnabled(!Strings.isEmpty(detail.getAccCode())));
+                item.add(new Label("accountNumber", valueOf(detail.getAccCode())));
+                item.add(new Label("serviceProviderCode", valueOf(detail.getZheu())));
+                item.add(new Label("name", valueOf(detail.getOwnerFio())));
                 item.add(new Label("address", displayAddress(detail)));
-                item.add(new Label("megabankAccount", valueOf(detail.getMegabankAccountNumber())));
-                item.add(new Label("puAccountNumberInfo", valueOf(detail.getServiceProviderAccountNumber())));
+                item.add(new Label("megabankAccount", valueOf(detail.getErcCode())));
+                item.add(new Label("puAccountNumberInfo", valueOf(detail.getZheuCode())));
                 item.add(new Label("inn", valueOf(detail.getOwnerINN())));
             }
         };

@@ -138,7 +138,7 @@ public class SubsidyFillTaskBean implements ITaskBean{
 
             Integer numm = (Integer) subsidy.getField(SubsidyDBF.NUMM);
 
-            for (int i=0; i < numm; ++i){
+            for (int i=0; i <= numm; ++i){
                 Date date = DateUtil.addMonth(subsidy.getDate(), -i);
 
                 addSubsidyMasterData(subsidy, accountDetail, date);
@@ -154,7 +154,7 @@ public class SubsidyFillTaskBean implements ITaskBean{
         SubsidyMasterData subsidyMasterData = new SubsidyMasterData();
 
         //fill from remote call
-        subsidyMasterData.putField(SubsidyMasterDataDBF.LS, accountDetail.getServiceProviderCode());
+        subsidyMasterData.putField(SubsidyMasterDataDBF.LS, accountDetail.getZheuCode());
         subsidyMasterData.putField(SubsidyMasterDataDBF.DOM, accountDetail.getHouseCode());
         subsidyMasterData.putField(SubsidyMasterDataDBF.REG, accountDetail.getDistrictCode());
 
@@ -162,7 +162,10 @@ public class SubsidyFillTaskBean implements ITaskBean{
         subsidyMasterData.setSubsidyId(subsidy.getId());
 
         subsidyMasterData.putField(SubsidyMasterDataDBF.DELO, subsidy.getField(SubsidyDBF.NUMB));
-        subsidyMasterData.putField(SubsidyMasterDataDBF.FIO, subsidy.getField(SubsidyDBF.FIO));
+        subsidyMasterData.putField(SubsidyMasterDataDBF.TOT, subsidy.getField(SubsidyDBF.SUBS));
+        subsidyMasterData.putField(SubsidyMasterDataDBF.PERIOD, DateUtil.getFirstDayOfMonth(date));
+        subsidyMasterData.putField(SubsidyMasterDataDBF.FIO, subsidy.getFio());
+        subsidyMasterData.putField(SubsidyMasterDataDBF.ADRES, subsidy.getAddress());
         subsidyMasterData.putField(SubsidyMasterDataDBF.NKW, subsidy.getField(SubsidyDBF.FLAT));
         subsidyMasterData.putField(SubsidyMasterDataDBF.KWART, subsidy.getField(SubsidyDBF.SB1));
         subsidyMasterData.putField(SubsidyMasterDataDBF.OTOPL, subsidy.getField(SubsidyDBF.SB2));

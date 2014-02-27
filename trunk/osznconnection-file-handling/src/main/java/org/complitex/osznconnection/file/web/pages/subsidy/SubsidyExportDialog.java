@@ -91,7 +91,7 @@ public class SubsidyExportDialog extends Panel {
             public String getIdValue(RequestFileType object, int index) {
                 return object.ordinal() + "";
             }
-        }));
+        }).setRequired(true));
 
         structureContainer.add(new DatePicker<>("date")
                 .setChangeMonth(true)
@@ -130,7 +130,7 @@ public class SubsidyExportDialog extends Panel {
             public String getIdValue(ExportType object, int index) {
                 return object.ordinal() + "";
             }
-        }));
+        }).setRequired(true));
 
         //Выгрузка
         WebMarkupContainer exportContainer = new WebMarkupContainer("export_container"){

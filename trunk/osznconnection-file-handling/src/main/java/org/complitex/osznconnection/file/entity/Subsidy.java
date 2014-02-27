@@ -9,12 +9,22 @@ import java.util.List;
 public class Subsidy extends AbstractAccountRequest<SubsidyDBF> {
     private List<SubsidyMasterData> masterDataList;
 
+    public String getAddress(){
+        return getStreet() + ' ' + getStreetType() + ' ' + getBuildingNumber() +
+                (getBuildingCorp() != null && !getBuildingCorp().isEmpty() ? "/" + getBuildingCorp() : "") +
+                " кв. " + getApartment();
+    }
+
     public List<SubsidyMasterData> getMasterDataList() {
         return masterDataList;
     }
 
     public void setMasterDataList(List<SubsidyMasterData> masterDataList) {
         this.masterDataList = masterDataList;
+    }
+
+    public String getFio(){
+        return getStringField(SubsidyDBF.FIO, "_CYR");
     }
 
     @Override

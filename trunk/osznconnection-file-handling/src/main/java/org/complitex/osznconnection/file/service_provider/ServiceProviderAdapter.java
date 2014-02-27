@@ -102,24 +102,24 @@ public class ServiceProviderAdapter extends AbstractBean {
         }
 
         for (AccountDetail accountDetail : accountDetails) {
-            if (spAccountNumber.equals(accountDetail.getServiceProviderAccountNumber())){
-                request.setAccountNumber(accountDetail.getAccountNumber());
+            if (spAccountNumber.equals(accountDetail.getZheuCode())){
+                request.setAccountNumber(accountDetail.getAccCode());
                 request.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
 
                 return accountDetail;
             }
 
-            if (spAccountNumber.length() > accountDetail.getServiceProviderAccountNumber().length()) {
-                int diff = spAccountNumber.length() - accountDetail.getServiceProviderAccountNumber().length();
+            if (spAccountNumber.length() > accountDetail.getZheuCode().length()) {
+                int diff = spAccountNumber.length() - accountDetail.getZheuCode().length();
                 String spAccountNumberEnd = spAccountNumber.substring(diff);
                 String spAccountNumberBegin = spAccountNumber.substring(0, diff);
 
-                if (spAccountNumberEnd.equals(accountDetail.getServiceProviderAccountNumber())){
-                    if (spAccountNumberBegin.contains(accountDetail.getServiceProviderCode())
-                            || accountDetail.getOwnerName().toUpperCase().startsWith(lastName.toUpperCase())
-                            || spAccountNumber.equals(accountDetail.getMegabankAccountNumber())
-                            || spAccountNumber.equals(accountDetail.getAccountNumber())){
-                        request.setAccountNumber(accountDetail.getAccountNumber());
+                if (spAccountNumberEnd.equals(accountDetail.getZheuCode())){
+                    if (spAccountNumberBegin.contains(accountDetail.getZheu())
+                            || accountDetail.getOwnerFio().toUpperCase().startsWith(lastName.toUpperCase())
+                            || spAccountNumber.equals(accountDetail.getErcCode())
+                            || spAccountNumber.equals(accountDetail.getAccCode())){
+                        request.setAccountNumber(accountDetail.getAccCode());
                         request.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
 
                         return accountDetail;
@@ -133,7 +133,7 @@ public class ServiceProviderAdapter extends AbstractBean {
             // и получена только одна запись из МН для данного адреса, то запись считаем связанной
             if (updatePUAccount && 0 == Integer.valueOf(spAccountNumber)) {
 
-                request.setAccountNumber(accountDetails.get(0).getAccountNumber());
+                request.setAccountNumber(accountDetails.get(0).getAccCode());
                 request.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
 
                 return accountDetails.get(0);
@@ -155,12 +155,12 @@ public class ServiceProviderAdapter extends AbstractBean {
                 district, streetType, street, buildingNumber, buildingCorp, apartment, date);
 
         for (AccountDetail accountDetail : accountDetails) {
-            List<BenefitData> benefitDataList = getBenefitData(calculationContext, accountDetail.getAccountNumber(), date);
+            List<BenefitData> benefitDataList = getBenefitData(calculationContext, accountDetail.getAccCode(), date);
 
             for (BenefitData d : benefitDataList){
                 if (inn != null && inn.equals(d.getInn())
                         || (passport != null && passport.matches(d.getPassportSerial() + "\\s*" + d.getPassportNumber()))){
-                    request.setAccountNumber(accountDetail.getAccountNumber());
+                    request.setAccountNumber(accountDetail.getAccCode());
                     request.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
 
                     return;

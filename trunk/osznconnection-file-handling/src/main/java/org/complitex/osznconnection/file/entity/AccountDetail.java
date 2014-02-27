@@ -7,13 +7,13 @@ import java.io.Serializable;
  * @author Artem
  */
 public class AccountDetail implements Serializable {
-    private String accountNumber;
-    private String ownerName;
+    private String accCode;
+    private String ownerFio;
     private String ownerINN;
-    private String megabankAccountNumber;
+    private String ercCode;
     private String serviceProviderAccountNumberInfo;
-    private String serviceProviderCode;
-    private String serviceProviderAccountNumber;
+    private String zheu;
+    private String zheuCode;
     private String street;
     private String streetType;
     private String buildingNumber;
@@ -22,12 +22,12 @@ public class AccountDetail implements Serializable {
     private String houseCode;
     private String districtCode;
 
-    public String getAccountNumber() {
-        return accountNumber;
+    public String getAccCode() {
+        return accCode;
     }
 
-    public void setAccountNumber(String accountNumber) {
-        this.accountNumber = accountNumber;
+    public void setAccCode(String accCode) {
+        this.accCode = accCode;
     }
 
     public String getOwnerINN() {
@@ -38,12 +38,12 @@ public class AccountDetail implements Serializable {
         this.ownerINN = ownerINN;
     }
 
-    public String getOwnerName() {
-        return ownerName;
+    public String getOwnerFio() {
+        return ownerFio;
     }
 
-    public void setOwnerName(String ownerName) {
-        this.ownerName = ownerName;
+    public void setOwnerFio(String ownerFio) {
+        this.ownerFio = ownerFio;
     }
 
     public String getApartment() {
@@ -70,12 +70,12 @@ public class AccountDetail implements Serializable {
         this.buildingNumber = buildingNumber;
     }
 
-    public String getMegabankAccountNumber() {
-        return megabankAccountNumber;
+    public String getErcCode() {
+        return ercCode;
     }
 
-    public void setMegabankAccountNumber(String megabankAccountNumber) {
-        this.megabankAccountNumber = megabankAccountNumber;
+    public void setErcCode(String ercCode) {
+        this.ercCode = ercCode;
     }
 
     public String getServiceProviderAccountNumberInfo() {
@@ -86,20 +86,20 @@ public class AccountDetail implements Serializable {
         this.serviceProviderAccountNumberInfo = serviceProviderAccountNumberInfo;
     }
 
-    public String getServiceProviderCode() {
-        return serviceProviderCode;
+    public String getZheu() {
+        return zheu;
     }
 
-    public void setServiceProviderCode(String serviceProviderCode) {
-        this.serviceProviderCode = serviceProviderCode;
+    public void setZheu(String zheu) {
+        this.zheu = zheu;
     }
 
-    public String getServiceProviderAccountNumber() {
-        return serviceProviderAccountNumber;
+    public String getZheuCode() {
+        return zheuCode;
     }
 
-    public void setServiceProviderAccountNumber(String serviceProviderAccountNumber) {
-        this.serviceProviderAccountNumber = serviceProviderAccountNumber;
+    public void setZheuCode(String zheuCode) {
+        this.zheuCode = zheuCode;
     }
 
     public String getStreet() {
@@ -136,8 +136,8 @@ public class AccountDetail implements Serializable {
 
     @Override
     public String toString() {
-        return "{ Account : " + accountNumber + ", owner name : " + ownerName + ", owner INN : " + ownerINN
-                + ", megabankAccountNumber : " + megabankAccountNumber + ", puAccountNumberInfo : " + serviceProviderAccountNumberInfo
+        return "{ Account : " + accCode + ", owner name : " + ownerFio + ", owner INN : " + ownerINN
+                + ", ercCode : " + ercCode + ", puAccountNumberInfo : " + serviceProviderAccountNumberInfo
                 + ", street type : " + streetType + ", street : " + street + ", building number : "
                 + buildingNumber + ", building corp : " + buildingCorp + ", apartment : " + apartment + "}";
     }
