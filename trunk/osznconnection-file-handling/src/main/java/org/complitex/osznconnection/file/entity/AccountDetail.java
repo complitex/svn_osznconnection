@@ -1,6 +1,9 @@
 package org.complitex.osznconnection.file.entity;
 
+import org.complitex.address.util.AddressRenderer;
+
 import java.io.Serializable;
+import java.util.Locale;
 
 /**
  * Класс хранящий детальную информацию о клиентах ЦН(л/c, ФИО, ИНН).
@@ -21,6 +24,13 @@ public class AccountDetail implements Serializable {
     private String apartment;
     private String houseCode;
     private String districtCode;
+
+    private String address;
+
+    public String displayAddress(Locale locale) {
+        return AddressRenderer.displayAddress(getStreetType(), getStreet(), getBuildingNumber(), getBuildingCorp(),
+                getApartment(), locale);
+    }
 
     public String getAccCode() {
         return accCode;
@@ -132,6 +142,14 @@ public class AccountDetail implements Serializable {
 
     public void setDistrictCode(String districtCode) {
         this.districtCode = districtCode;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     @Override

@@ -6,6 +6,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -20,7 +21,9 @@ import org.complitex.dictionary.util.CloneUtil;
 import org.complitex.dictionary.web.component.ShowMode;
 import org.complitex.dictionary.web.component.search.SearchComponentState;
 import org.complitex.dictionary.web.component.search.WiQuerySearchComponent;
-import org.complitex.osznconnection.file.entity.*;
+import org.complitex.osznconnection.file.entity.AbstractRequest;
+import org.complitex.osznconnection.file.entity.AccountDetail;
+import org.complitex.osznconnection.file.entity.RequestStatus;
 import org.complitex.osznconnection.file.service.AddressService;
 import org.complitex.osznconnection.file.service.LookupBean;
 import org.complitex.osznconnection.file.service.StatusRenderService;
@@ -28,9 +31,6 @@ import org.complitex.osznconnection.file.service_provider.exception.DBException;
 import org.complitex.osznconnection.file.service_provider.exception.UnknownAccountNumberTypeException;
 import org.complitex.osznconnection.file.web.component.account.AccountNumberPickerPanel;
 import org.odlabs.wiquery.core.javascript.JsStatement;
-import org.odlabs.wiquery.ui.accordion.Accordion;
-import org.odlabs.wiquery.ui.accordion.AccordionActive;
-import org.odlabs.wiquery.ui.accordion.AccordionAnimated;
 import org.odlabs.wiquery.ui.core.JsScopeUiEvent;
 import org.odlabs.wiquery.ui.dialog.Dialog;
 import org.slf4j.LoggerFactory;
@@ -61,7 +61,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
     private AccountNumberPickerPanel accountNumberPickerPanel;
     private FeedbackPanel messages;
     private Dialog dialog;
-    private Accordion accordion;
+    private WebMarkupContainer container;
     private SearchComponentState addressSearchComponentState;
     private WiQuerySearchComponent addressSearchComponent;
     private T request;
@@ -79,7 +79,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
     private void init(final Component... toUpdate) {
         dialog = new Dialog("dialog");
         dialog.setModal(true);
-        dialog.setWidth(720);
+        dialog.setWidth(800);
         dialog.setOpenEvent(JsScopeUiEvent.quickScope(new JsStatement().self().chain("parents", "'.ui-dialog:first'").
                 chain("find", "'.ui-dialog-titlebar-close'").
                 chain("hide").render()));
@@ -90,11 +90,9 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
         messages.setOutputMarkupId(true);
         dialog.add(messages);
 
-        accordion = new Accordion("accordion");
-        accordion.setAnimated(new AccordionAnimated(false));
-        accordion.setOutputMarkupPlaceholderTag(true);
-        accordion.setAutoHeight(false);
-        dialog.add(accordion);
+        container = new WebMarkupContainer("container");
+        container.setOutputMarkupPlaceholderTag(true);
+        dialog.add(container);
 
         //lookup by address
         addressSearchComponentState = new SearchComponentState();
@@ -107,7 +105,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
             protected void onUpdate(AjaxRequestTarget target) {
             }
         });
-        accordion.add(apartment);
+        container.add(apartment);
 
         IndicatingAjaxLink<Void> lookupByAddress = new IndicatingAjaxLink<Void>("lookupByAddress") {
 
@@ -164,12 +162,12 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
                 }
             }
         };
-        accordion.add(lookupByAddress);
+        container.add(lookupByAddress);
         addressSearchComponent = new WiQuerySearchComponent("addressSearchComponent", addressSearchComponentState,
                 ImmutableList.of("city", "street", "building"), null, ShowMode.ACTIVE, true);
         addressSearchComponent.setOutputMarkupPlaceholderTag(true);
         addressSearchComponent.setVisible(false);
-        accordion.add(addressSearchComponent);
+        container.add(addressSearchComponent);
 
         //lookup by account number
         accountNumberModel = new Model<>();
@@ -180,7 +178,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
             protected void onUpdate(AjaxRequestTarget target) {
             }
         });
-        accordion.add(accountNumber);
+        container.add(accountNumber);
         IndicatingAjaxLink<Void> lookupByAccount = new IndicatingAjaxLink<Void>("lookupByAccount") {
 
             @Override
@@ -232,7 +230,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
                 }
             }
         };
-        accordion.add(lookupByAccount);
+        container.add(lookupByAccount);
 
         //account number picker panel
         accountDetailModel = new Model<>();
@@ -335,14 +333,13 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
             accountNumberModel.setObject(null);
         }
 
-        //set active accordion item
+        //set active container item
         if (immediatelySearchByAddress) {
             lastAccordionActive = 0;
             target.appendJavaScript("(function(){ $('#lookupByAddress .lookupByAddressButton').click(); })()");
         }
-        accordion.setActive(new AccordionActive(lastAccordionActive));
 
-        target.add(accordion);
+        target.add(container);
         target.add(messages);
         dialog.open(target);
     }

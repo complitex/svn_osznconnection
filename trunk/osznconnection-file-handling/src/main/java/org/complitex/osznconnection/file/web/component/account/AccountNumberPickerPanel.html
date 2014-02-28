@@ -14,54 +14,41 @@
             <thead>
             <tr>
                 <th></th>
-                <th>
-                    <wicket:message key="accountNumber"/>
-                </th>
-                <th>
-                    <wicket:message key="zheu"/>
-                </th>
-                <th>
-                    <wicket:message key="puAccountNumberInfo"/>
-                </th>
-                <th>
-                    <wicket:message key="name"/>
-                </th>
-                <th>
-                    <wicket:message key="address"/>
-                </th>
-                <th>
-                    <wicket:message key="inn"/>
-                </th>
-                <th>
-                    <wicket:message key="megabankAccount"/>
-                </th>
+                <th wicket:id="accCodeHeader"><wicket:message key="accCode"/></th>
+                <th wicket:id="zheuHeader"><wicket:message key="zheu"/></th>
+                <th wicket:id="zheuCodeHeader"><wicket:message key="zheuCode"/></th>
+                <th wicket:id="ownerFioHeader"><wicket:message key="ownerFio"/></th>
+                <th wicket:id="addressHeader"><wicket:message key="address"/></th>
+                <th wicket:id="ownerInnHeader"><wicket:message key="ownerInn"/></th>
+                <th wicket:id="ercCodeHeader"><wicket:message key="ercCode"/></th>
+                <th><input class="btnSmall" wicket:id="filter_reset" type="button" wicket:message="value:reset"/></th>
+            </tr>
+            <tr>
+                <th></th>
+                <th><input type="text" wicket:id="accCodeFilter"/></th>
+                <th><input type="text" wicket:id="zheuFilter"/></th>
+                <th><input type="text" wicket:id="zheuCodeFilter"/></th>
+                <th><input type="text" wicket:id="ownerFioFilter"/></th>
+                <th><input type="text" wicket:id="addressFilter"/></th>
+                <th><input type="text" wicket:id="ownerInnFilter"/></th>
+                <th><input type="text" wicket:id="ercCodeFilter"/></th>
+                <th><input wicket:id="find" class="btnSmall" type="submit" wicket:message="value:filter" tabindex="0"/></th>
             </tr>
             </thead>
             <tbody wicket:id="radioGroup">
             <tr wicket:id="accountDetails">
-                <td>
-                    <input type="radio" wicket:id="radio"/>
-                </td>
-                <td>
-                    <span wicket:id="accountNumber"></span>
-                </td>
-                <td>
-                    <span wicket:id="zheu"></span>
-                </td>
-                <td>
-                    <span wicket:id="puAccountNumberInfo"></span>
-                </td>
-                <td>
-                    <span wicket:id="name"></span>
-                </td>
-                <td>
-                    <span wicket:id="address"></span>
-                </td>
-                <td>
-                    <span wicket:id="inn"></span>
-                </td>
-                <td>
-                    <span wicket:id="megabankAccount"></span>
+                <td><input type="radio" wicket:id="radio"/></td>
+                <td><span wicket:id="accCode"></span></td>
+                <td><span wicket:id="zheu"></span></td>
+                <td><span wicket:id="zheuCode"></span></td>
+                <td><span wicket:id="name"></span></td>
+                <td><span wicket:id="address"></span></td>
+                <td><span wicket:id="ownerInn"></span></td>
+                <td colspan="2"><span wicket:id="ercCode"></span></td>
+            </tr>
+            <tr>
+                <td colspan="9">
+                    <span wicket:id="navigator"></span>
                 </td>
             </tr>
             </tbody>
