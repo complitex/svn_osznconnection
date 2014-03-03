@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.osznconnection.file.web.component.account;
 
 import com.google.common.base.Predicate;
@@ -9,6 +5,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormChoiceComponentUpdatingBehavior;
+import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Radio;
@@ -39,6 +36,13 @@ import static org.apache.wicket.model.Model.of;
  * @author Artem
  */
 public class AccountNumberPickerPanel extends Panel {
+    private static class TextFieldUpdating extends OnChangeAjaxBehavior{
+        @Override
+        protected void onUpdate(AjaxRequestTarget target) {
+            //update model
+        }
+    }
+
 
     private IModel<List<? extends AccountDetail>> accountDetailsModel;
     private IModel<AccountDetail> accountDetailModel;
@@ -66,13 +70,13 @@ public class AccountNumberPickerPanel extends Panel {
 
         final IModel<AccountDetail> filterModel = Model.of(new AccountDetail());
 
-        add(new TextField<>("accCodeFilter", new PropertyModel<>(filterModel, "accCode")));
-        add(new TextField<>("zheuFilter", new PropertyModel<>(filterModel, "zheu")));
-        add(new TextField<>("zheuCodeFilter", new PropertyModel<>(filterModel, "zheuCode")));
-        add(new TextField<>("ownerFioFilter", new PropertyModel<>(filterModel, "ownerFio")));
-        add(new TextField<>("addressFilter", new PropertyModel<>(filterModel, "address")));
-        add(new TextField<>("ownerInnFilter", new PropertyModel<>(filterModel, "ownerINN")));
-        add(new TextField<>("ercCodeFilter", new PropertyModel<>(filterModel, "ercCode")));
+        add(new TextField<>("accCodeFilter", new PropertyModel<>(filterModel, "accCode")).add(new TextFieldUpdating()));
+        add(new TextField<>("zheuFilter", new PropertyModel<>(filterModel, "zheu")).add(new TextFieldUpdating()));
+        add(new TextField<>("zheuCodeFilter", new PropertyModel<>(filterModel, "zheuCode")).add(new TextFieldUpdating()));
+        add(new TextField<>("ownerFioFilter", new PropertyModel<>(filterModel, "ownerFio")).add(new TextFieldUpdating()));
+        add(new TextField<>("addressFilter", new PropertyModel<>(filterModel, "address")).add(new TextFieldUpdating()));
+        add(new TextField<>("ownerInnFilter", new PropertyModel<>(filterModel, "ownerINN")).add(new TextFieldUpdating()));
+        add(new TextField<>("ercCodeFilter", new PropertyModel<>(filterModel, "ercCode")).add(new TextFieldUpdating()));
 
         add(new AjaxLink("find") {
             @Override
@@ -85,12 +89,13 @@ public class AccountNumberPickerPanel extends Panel {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 filterModel.setObject(new AccountDetail());
+
+                target.add(AccountNumberPickerPanel.this);
             }
         });
 
         DataProvider<AccountDetail> dataProvider = new DataProvider<AccountDetail>() {
-            @Override
-            protected Iterable<? extends AccountDetail> getData(int first, int count) {
+            private List<AccountDetail> getList(){
                 Iterable<? extends AccountDetail> it = Iterables.filter(accountDetailsModel.getObject(),
                         new Predicate<AccountDetail>() {
                             private boolean apply(String f, String input){
@@ -112,21 +117,28 @@ public class AccountNumberPickerPanel extends Panel {
                             }
                         });
 
-                List<AccountDetail> list = Lists.newArrayList(it).subList(first, count);
+                return Lists.newArrayList(it);
+            }
+
+            @Override
+            protected Iterable<? extends AccountDetail> getData(int first, int count) {
+                List<AccountDetail> list = getList().subList(first, first + count);
 
                 Collections.sort(list, new Comparator<AccountDetail>() {
                     @Override
                     public int compare(AccountDetail o1, AccountDetail o2) {
-                        boolean asc = getSort().isAscending();
+                        if (getSort() != null) {
+                            boolean asc = getSort().isAscending();
 
-                        switch (getSort().getProperty()){
-                            case "accCode": return StringUtil.compare(o1.getAccCode(), o2.getAccCode(), asc);
-                            case "zheu": return StringUtil.compare(o1.getZheu(), o2.getZheu(), asc);
-                            case "zheuCode": return StringUtil.compare(o1.getZheuCode(), o2.getZheuCode(), asc);
-                            case "ownerFio": return StringUtil.compare(o1.getOwnerFio(), o2.getOwnerFio(), asc);
-                            case "address": return StringUtil.compare(o1.displayAddress(getLocale()), o2.displayAddress(getLocale()), asc);
-                            case "ownerInn": return StringUtil.compare(o1.getOwnerINN(), o2.getOwnerINN(), asc);
-                            case "ercCode": return StringUtil.compare(o1.getErcCode(), o2.getErcCode(), asc);
+                            switch (getSort().getProperty()){
+                                case "accCode": return StringUtil.compare(o1.getAccCode(), o2.getAccCode(), asc);
+                                case "zheu": return StringUtil.compare(o1.getZheu(), o2.getZheu(), asc);
+                                case "zheuCode": return StringUtil.compare(o1.getZheuCode(), o2.getZheuCode(), asc);
+                                case "ownerFio": return StringUtil.compare(o1.getOwnerFio(), o2.getOwnerFio(), asc);
+                                case "address": return StringUtil.compare(o1.displayAddress(getLocale()), o2.displayAddress(getLocale()), asc);
+                                case "ownerInn": return StringUtil.compare(o1.getOwnerINN(), o2.getOwnerINN(), asc);
+                                case "ercCode": return StringUtil.compare(o1.getErcCode(), o2.getErcCode(), asc);
+                            }
                         }
 
                         return 0;
@@ -138,7 +150,7 @@ public class AccountNumberPickerPanel extends Panel {
 
             @Override
             protected int getSize() {
-                return accountDetailsModel.getObject().size();
+                return getList().size();
             }
         };
 
@@ -167,6 +179,6 @@ public class AccountNumberPickerPanel extends Panel {
         add(new ArrowOrderByBorder("ownerInnHeader", "ownerInn", dataProvider, accountDetails, this));
         add(new ArrowOrderByBorder("ercCodeHeader", "ercCode", dataProvider, accountDetails, this));
 
-        radioGroup.add(new PagingNavigator("navigator", accountDetails, AccountNumberPickerPanel.class.getName(), this));
+        radioGroup.add(new PagingNavigator("navigator", accountDetails, this));
     }
 }
