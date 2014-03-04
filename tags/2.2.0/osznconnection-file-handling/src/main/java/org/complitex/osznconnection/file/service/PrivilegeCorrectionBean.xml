@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.complitex.osznconnection.file.service.PrivilegeCorrectionBean">
+    <resultMap id="privilegeCorrectionResultMap" type="org.complitex.osznconnection.file.entity.PrivilegeCorrection"
+               extends="org.complitex.dictionary.entity.Correction.correction">
+    </resultMap>
+
+     <select id="findInternalPrivilege" resultType="long" parameterType="map">
+        SELECT c.`object_id` FROM `privilege_correction` c WHERE c.`organization_id` = #{organizationId} AND c.`external_id` = #{code}
+    </select>
+
+    <select id="findPrivilegeCode" resultType="string" parameterType="map">
+        SELECT c.`external_id` FROM `privilege_correction` c WHERE
+            c.`organization_id` = #{organizationId} AND c.`object_id` = #{objectId}
+            AND c.`user_organization_id` = #{userOrganizationId}
+    </select>
+
+    <select id="selectPrivilegeCorrections" parameterType="org.complitex.dictionary.entity.FilterWrapper"
+            resultMap="privilegeCorrectionResultMap">
+        select * from `privilege_correction` c
+        <include refid="org.complitex.dictionary.entity.Correction.selectCorrectionWhere"/>
+    </select>
+
+    <select id="selectPrivilegeCorrectionsCount" parameterType="org.complitex.dictionary.entity.FilterWrapper"
+            resultType="int">
+        select count(*) from `privilege_correction` c
+        <include refid="org.complitex.dictionary.entity.Correction.selectCorrectionWhere"/>
+    </select>
+
+    <select id="selectPrivilegeCorrection" parameterType="long" resultMap="privilegeCorrectionResultMap">
+        select * from `privilege_correction` where `id` = #{id}
+    </select>
+</mapper>

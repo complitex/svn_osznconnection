@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.complitex.osznconnection.file.service.FacilityReferenceBookBean">
+
+    <insert id="insertFacilityReferences" parameterType="map">
+        INSERT INTO `${table}`
+        (
+        <trim suffixOverrides=",">
+            `request_file_id`, `status`,
+            <foreach collection="request.dbfFields.keys" item="key">
+                `${key}`,
+            </foreach>
+        </trim>
+        )
+        values
+        (
+        <trim suffixOverrides=",">
+            #{request.requestFileId}, #{request.status},
+            <foreach collection="request.dbfFields.keys" item="key">
+                #{request.dbfFields.${key}},
+            </foreach>
+        </trim>
+        )
+    </insert>
+    
+    <select id="findStreetTypeNames" parameterType="map" resultType="string">
+        SELECT `KLKUL_NAME` FROM `facility_street_type_reference` st
+            JOIN `request_file` rf ON st.`request_file_id` = rf.`id`
+            WHERE st.`KLKUL_CODE` = #{streetTypeCode} AND rf.`organization_id` = #{osznId} 
+                AND rf.`user_organization_id` = #{userOrganizationId}
+            ORDER By rf.`begin_date` desc limit 1
+    </select>
+
+    <delete id="deleteFacilityReferences" parameterType="map">
+        DELETE FROM `${table}` WHERE `request_file_id` = #{requestFileId}
+    </delete>
+
+    <!--FacilityStreetType-->
+
+    <resultMap id="facilityStreetTypeResultMap" type="org.complitex.osznconnection.file.entity.FacilityStreetType">
+        <id column="id" property="id"/>
+        <result column="request_file_id" property="requestFileId"/>
+
+        <association property="dbfFields" javaType="map">
+            <result column="KLKUL_CODE" property="KLKUL_CODE"/>
+            <result column="KLKUL_NAME" property="KLKUL_NAME"/>
+        </association>
+    </resultMap>
+
+    <sql id="selectFacilityStreetTypesWhere">
+        <where>
+            `request_file_id` = #{object.requestFileId}
+            <if test="object.dbfFields.KLKUL_CODE != null">and `KLKUL_CODE` = #{object.dbfFields.KLKUL_CODE}</if>
+            <if test="object.dbfFields.KLKUL_NAME != null">and `KLKUL_NAME` like concat('%', #{object.dbfFields.KLKUL_NAME}, '%')</if>
+        </where>
+    </sql>
+
+    <select id="selectFacilityStreetTypes" parameterType="org.complitex.dictionary.entity.FilterWrapper"
+            resultMap="facilityStreetTypeResultMap">
+        select * from `facility_street_type_reference` <include refid="selectFacilityStreetTypesWhere"/>
+          order by ${sortProperty} <if test="sortProperty == 'KLKUL_CODE'">+ 0</if> ${asc} limit #{first}, #{count}
+    </select>
+
+    <select id="selectFacilityStreetTypesCount" parameterType="org.complitex.dictionary.entity.FilterWrapper"
+            resultType="int">
+        select count(*) from `facility_street_type_reference` <include refid="selectFacilityStreetTypesWhere"/>
+    </select>
+
+    <!--FacilityStreet-->
+
+    <resultMap id="facilityStreetResultMap" type="org.complitex.osznconnection.file.entity.FacilityStreet">
+        <id column="id" property="id"/>
+        <result column="request_file_id" property="requestFileId"/>
+
+        <result column="street_type" property="streetType"/>
+        <result column="street_type_code" property="streetTypeCode"/>
+
+        <association property="dbfFields" javaType="map">
+            <result column="KL_CODERN" property="KL_CODERN"/>
+            <result column="KL_CODEUL" property="KL_CODEUL"/>
+            <result column="KL_NAME" property="KL_NAME"/>
+            <result column="KL_CODEKUL" property="KL_CODEKUL"/>
+        </association>
+    </resultMap>
+
+    <sql id="selectFacilityStreetsWhere">
+        <where>
+            `request_file_id` = #{object.requestFileId}
+            <if test="object.dbfFields.KL_CODERN != null">and `KL_CODERN` = #{object.dbfFields.KL_CODERN}</if>
+            <if test="object.dbfFields.KL_CODEUL != null">and `KL_CODEUL` = #{object.dbfFields.KL_CODEUL}</if>
+            <if test="object.dbfFields.KL_NAME != null">and `KL_NAME` like concat('%', #{object.dbfFields.KL_NAME}, '%')</if>
+            <if test="object.dbfFields.KL_CODEKUL != null">and `KL_CODEKUL` = #{object.dbfFields.KL_CODEKUL}</if>
+        </where>
+    </sql>
+
+    <select id="selectFacilityStreets" parameterType="org.complitex.dictionary.entity.FilterWrapper"
+        resultMap="facilityStreetResultMap">
+        select * from `facility_street_reference` <include refid="selectFacilityStreetsWhere"/>
+          order by ${sortProperty} <if test="sortProperty != 'KL_NAME'">+ 0</if> ${asc} limit #{first}, #{count}
+    </select>
+
+    <select id="selectFacilityStreetsCount" parameterType="org.complitex.dictionary.entity.FilterWrapper" resultType="int">
+        select count(*) from `facility_street_reference` <include refid="selectFacilityStreetsWhere"/>
+    </select>
+
+    <select id="selectFacilityStreetByCode" parameterType="map" resultMap="facilityStreetResultMap">
+        select * from `facility_street_reference` s join `request_file` rf on s.`request_file_id` = rf.`id`
+          where s.`KL_CODEUL` = #{streetCode} and rf.`organization_id` = #{osznId}
+              and rf.`user_organization_id` = #{userOrganizationId}
+            order by rf.`begin_date` desc limit 1
+    </select>
+
+    <select id="selectFacilityStreetByRequestFile" parameterType="map" resultMap="facilityStreetResultMap">
+        select s.`KL_NAME`, st.`KLKUL_NAME` as street_type, s.`KL_CODEKUL` as street_type_code
+        from `request_file` f
+            join`facility_street_reference` s
+            left join `request_file` s_f ON s.`request_file_id` = s_f.`id`
+            left join `facility_street_type_reference` st on st.`KLKUL_CODE` = s.`KL_CODEKUL`
+            left join `request_file` st_f on st.`request_file_id` = st_f.`id`
+        where f.`id` = #{requestFileId} and s.`KL_CODEUL` = #{streetCode}
+              and f.`organization_id` = s_f.`organization_id` and f.`user_organization_id` = s_f.`user_organization_id`
+              and f.`begin_date` >= s_f.`begin_date` and (s_f.`end_date` is null or s_f.`end_date` >= f.`begin_date`)
+              and f.`organization_id` = st_f.`organization_id` and f.`user_organization_id` = st_f.`user_organization_id`
+              and f.`begin_date` >= st_f.`begin_date` and (st_f.`end_date` is null or st_f.`end_date` >= f.`begin_date`)
+        order by s_f.`begin_date` desc, st_f.`begin_date` desc limit 1;
+    </select>
+
+    <!--FacilityTarif-->
+
+    <resultMap id="facilityTarifResultMap" type="org.complitex.osznconnection.file.entity.FacilityTarif">
+        <id column="id" property="id"/>
+        <result column="request_file_id" property="requestFileId"/>
+
+        <association property="dbfFields" javaType="map">
+            <result column="TAR_CODE" property="TAR_CODE"/>
+            <result column="TAR_CDPLG" property="TAR_CDPLG"/>
+            <result column="TAR_SERV" property="TAR_SERV"/>
+            <result column="TAR_DATEB" property="TAR_DATEB"/>
+            <result column="TAR_DATEE" property="TAR_DATEE"/>
+            <result column="TAR_COEF" property="TAR_COEF"/>
+            <result column="TAR_COST" property="TAR_COST"/>
+            <result column="TAR_UNIT" property="TAR_UNIT"/>
+            <result column="TAR_METER" property="TAR_METER"/>
+            <result column="TAR_NMBAS" property="TAR_NMBAS"/>
+            <result column="TAR_NMSUP" property="TAR_NMSUP"/>
+            <result column="TAR_NMUBS" property="TAR_NMUBS"/>
+            <result column="TAR_NMUSP" property="TAR_NMUSP"/>
+            <result column="TAR_NMUMX" property="TAR_NMUMX"/>
+            <result column="TAR_TPNMB" property="TAR_TPNMB"/>
+            <result column="TAR_TPNMS" property="TAR_TPNMS"/>
+            <result column="TAR_NMUPL" property="TAR_NMUPL"/>
+            <result column="TAR_PRIV" property="TAR_PRIV"/>
+        </association>
+    </resultMap>
+
+    <sql id="selectFacilityTarifsWhere">
+        <where>
+            `request_file_id` = #{object.requestFileId}
+            <if test="object.dbfFields.TAR_CODE != null">and `TAR_CODE` = #{object.dbfFields.TAR_CODE}</if>
+            <if test="object.dbfFields.TAR_CDPLG != null">and `TAR_CDPLG` = #{object.dbfFields.TAR_CDPLG}</if>
+            <if test="object.dbfFields.TAR_SERV != null">and `TAR_SERV` = #{object.dbfFields.TAR_SERV}</if>
+            <if test="object.dbfFields.TAR_DATEB != null">and `TAR_DATEB` = #{object.dbfFields.TAR_DATEB}</if>
+            <if test="object.dbfFields.TAR_DATEE != null">and `TAR_DATEE` = #{object.dbfFields.TAR_DATEE}</if>
+            <if test="object.dbfFields.TAR_COEF != null">and `TAR_COEF` = #{object.dbfFields.TAR_COEF}</if>
+            <if test="object.dbfFields.TAR_COST != null">and `TAR_COST` = #{object.dbfFields.TAR_COST}</if>
+            <if test="object.dbfFields.TAR_UNIT != null">and `TAR_UNIT` = #{object.dbfFields.TAR_UNIT}</if>
+            <if test="object.dbfFields.TAR_METER != null">and `TAR_METER` = #{object.dbfFields.TAR_METER}</if>
+            <if test="object.dbfFields.TAR_NMBAS != null">and `TAR_NMBAS` = #{object.dbfFields.TAR_NMBAS}</if>
+            <if test="object.dbfFields.TAR_NMSUP != null">and `TAR_NMSUP` = #{object.dbfFields.TAR_NMSUP}</if>
+            <if test="object.dbfFields.TAR_NMUBS != null">and `TAR_NMUBS` = #{object.dbfFields.TAR_NMUBS}</if>
+            <if test="object.dbfFields.TAR_NMUSP != null">and `TAR_NMUSP` = #{object.dbfFields.TAR_NMUSP}</if>
+            <if test="object.dbfFields.TAR_NMUMX != null">and `TAR_NMUMX` = #{object.dbfFields.TAR_NMUMX}</if>
+            <if test="object.dbfFields.TAR_TPNMB != null">and `TAR_TPNMB` = #{object.dbfFields.TAR_TPNMB}</if>
+            <if test="object.dbfFields.TAR_TPNMS != null">and `TAR_TPNMS` = #{object.dbfFields.TAR_TPNMS}</if>
+            <if test="object.dbfFields.TAR_NMUPL != null">and `TAR_NMUPL` = #{object.dbfFields.TAR_NMUPL}</if>
+            <if test="object.dbfFields.TAR_PRIV != null">and `TAR_PRIV` = #{object.dbfFields.TAR_PRIV}</if>
+        </where>
+    </sql>
+
+    <select id="selectFacilityTarifs" parameterType="org.complitex.dictionary.entity.FilterWrapper"
+            resultMap="facilityTarifResultMap">
+        select * from `facility_tarif_reference` <include refid="selectFacilityTarifsWhere"/>
+          order by ${sortProperty} <if test="sortProperty != 'TAR_DATEB' and  sortProperty != 'TAR_DATEE'">+ 0</if>
+            ${asc} limit #{first}, #{count}
+    </select>
+
+    <select id="selectFacilityTarifsCount" parameterType="org.complitex.dictionary.entity.FilterWrapper" resultType="int">
+        select count(*) from `facility_tarif_reference` <include refid="selectFacilityTarifsWhere"/>
+    </select>
+</mapper>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:wicket="http://wicket.apache.org">
+    <head>
+        <wicket:head>
+            <title wicket:id="title"></title>
+        </wicket:head>
+    </head>
+    <body>
+        <wicket:extend>
+            <h1 style="padding-bottom: 20px;"><wicket:message key="title"/></h1>
+            
+            <div wicket:id="messages"></div>
+            
+            <form wicket:id="form">
+                <div style="padding-bottom: 30px;">
+                    <span wicket:id="referenceBookPicker">
+                        <input type="radio"/>
+                    </span>
+                </div>
+                <div>
+                    <input type="button" class="btnMiddle" wicket:id="submit" wicket:message="value:submit"/>
+                </div>
+            </form>
+        </wicket:extend>
+    </body>
+</html>

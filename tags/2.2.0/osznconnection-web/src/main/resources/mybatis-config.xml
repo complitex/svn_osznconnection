@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <settings>
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+    </settings>
+
+    <typeAliases>
+        <typeAlias type="org.complitex.dictionary.entity.Locale" alias="Locale"/>
+        <typeAlias type="org.complitex.dictionary.entity.StringCulture" alias="StringCulture"/>
+        <typeAlias type="org.complitex.dictionary.entity.Parameter" alias="Parameter"/>
+        <typeAlias type="org.complitex.dictionary.entity.DomainObject" alias="DomainObject"/>
+        <typeAlias type="org.complitex.dictionary.entity.Attribute" alias="Attribute"/>
+        <typeAlias type="org.complitex.dictionary.entity.example.DomainObjectExample" alias="DomainObjectExample"/>
+    </typeAliases>
+
+    <typeHandlers>
+        <typeHandler handler="org.complitex.osznconnection.file.mybatis.EnumCodeTypeHandler"
+                     javaType="org.complitex.osznconnection.file.entity.RequestStatus"/>
+        <typeHandler handler="org.complitex.osznconnection.file.mybatis.EnumCodeTypeHandler"
+                     javaType="org.complitex.osznconnection.file.entity.RequestFileStatus"/>
+        <typeHandler handler="org.complitex.osznconnection.file.mybatis.EnumCodeTypeHandler"
+                     javaType="org.complitex.osznconnection.file.entity.RequestFileType"/>
+        <typeHandler handler="org.complitex.osznconnection.file.mybatis.EnumCodeTypeHandler"
+                     javaType="org.complitex.osznconnection.file.entity.RequestWarningStatus"/>
+    </typeHandlers>
+
+    <environments default="local">
+        <environment id="local">
+            <transactionManager type="MANAGED"/>
+            <dataSource type="JNDI">
+                <property name="data_source" value="jdbc/osznconnectionResource"/>
+            </dataSource>
+        </environment>
+
+        <environment id="remote">
+            <transactionManager type="MANAGED"/>
+            <dataSource type="JNDI">
+                <property name="data_source" value="${remoteDataSource}"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+    <mappers>
+        <mapper resource="org/complitex/dictionary/entity/Locale.xml"/>
+        <mapper resource="org/complitex/dictionary/entity/Sequence.xml"/>
+        <mapper resource="org/complitex/dictionary/entity/StringCulture.xml"/>
+        <mapper resource="org/complitex/dictionary/entity/description/Entity.xml"/>
+        <mapper resource="org/complitex/dictionary/entity/Attribute.xml"/>
+        <mapper resource="org/complitex/dictionary/entity/DomainObject.xml"/>
+
+        <mapper resource="org/complitex/dictionary/service/LogBean.xml"/>
+        <mapper resource="org/complitex/dictionary/service/SessionBean.xml"/>
+        <mapper resource="org/complitex/dictionary/service/PreferenceBean.xml"/>
+        <mapper resource="org/complitex/dictionary/service/PermissionBean.xml"/>
+        <mapper resource="org/complitex/dictionary/service/NameBean.xml"/>
+        <mapper resource="org/complitex/dictionary/service/ConfigBean.xml"/>
+
+        <mapper resource="org/complitex/address/strategy/building/Building.xml"/>
+        <mapper resource="org/complitex/address/strategy/building_address/BuildingAddress.xml"/>
+        <mapper resource="org/complitex/address/strategy/street/Street.xml"/>
+        <mapper resource="org/complitex/address/strategy/city/City.xml"/>
+        <mapper resource="org/complitex/address/strategy/district/District.xml"/>
+
+        <mapper resource="org/complitex/address/strategy/building/BuildingImportBean.xml"/>
+
+        <mapper resource="org/complitex/dictionary/entity/Correction.xml"/>
+        <mapper resource="org/complitex/correction/service/AddressCorrectionBean.xml"/>
+        <mapper resource="org/complitex/correction/service/OrganizationCorrectionBean.xml"/>
+
+        <mapper resource="org/complitex/admin/service/UserBean.xml"/>
+        <mapper resource="org/complitex/admin/service/UserProfileBean.xml"/>
+        <mapper resource="org/complitex/logging/service/LogListBean.xml"/>
+
+        <mapper resource="org/complitex/organization/strategy/Organization.xml"/>
+        <mapper resource="org/complitex/organization/service/OrganizationImportBean.xml"/>
+        
+        <mapper resource="org/complitex/osznconnection/organization/strategy/OsznOrganization.xml"/>
+
+        <mapper resource="org/complitex/osznconnection/file/service/AbstractRequestBean.xml"/>
+        <mapper resource="org/complitex/osznconnection/file/service/PaymentBean.xml"/>
+        <mapper resource="org/complitex/osznconnection/file/service/ActualPaymentBean.xml"/>
+        <mapper resource="org/complitex/osznconnection/file/service/SubsidyBean.xml"/>
+        <mapper resource="org/complitex/osznconnection/file/service/DwellingCharacteristicsBean.xml"/>
+        <mapper resource="org/complitex/osznconnection/file/service/FacilityServiceTypeBean.xml"/>
+        <mapper resource="org/complitex/osznconnection/file/service/FacilityForm2Bean.xml"/>
+        <mapper resource="org/complitex/osznconnection/file/service/FacilityReferenceBookBean.xml"/>
+        <mapper resource="org/complitex/osznconnection/file/service/OwnershipCorrectionBean.xml"/>
+        <mapper resource="org/complitex/osznconnection/file/service/PrivilegeCorrectionBean.xml"/>
+        <mapper resource="org/complitex/osznconnection/file/service/RequestFileBean.xml"/>
+        <mapper resource="org/complitex/osznconnection/file/service/RequestFileGroupBean.xml"/>
+        <mapper resource="org/complitex/osznconnection/file/service/BenefitBean.xml"/>
+        <mapper resource="org/complitex/osznconnection/file/service/SubsidyTarifBean.xml"/>
+        <mapper resource="org/complitex/osznconnection/file/service/PersonAccountLocalBean.xml"/>
+        <mapper resource="org/complitex/osznconnection/file/service/RequestFileHistoryBean.xml"/>
+        <mapper resource="org/complitex/osznconnection/file/service/SubsidyMasterDataBean.xml"/>
+
+        <mapper resource="org/complitex/osznconnection/file/service/status/details/StatusDetailBean.xml"/>
+        <mapper resource="org/complitex/osznconnection/file/service/warning/RequestWarningBean.xml"/>
+        
+        <mapper resource="org/complitex/osznconnection/file/service/file_description/RequestFileDescriptionBean.xml"/>
+
+        <!--remote mappers-->
+        <mapper resource="org/complitex/osznconnection/file/service_provider/ServiceProviderAdapter.xml"/>
+        <mapper resource="org/complitex/correction/service/AddressSyncAdapter.xml"/>
+    </mappers>
+</configuration>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.complitex.osznconnection.file.service.SubsidyMasterDataBean">
+    <resultMap id="subsidyMasterDataRequestMap" type="org.complitex.osznconnection.file.entity.SubsidyMasterData">
+        <id property="id" column="smd_id"/>
+
+        <result property="servicingOrganizationId" column="servicing_organization_id"/>
+        <result property="userOrganizationId" column="user_organization_id"/>
+
+        <association property="dbfFields" javaType="map">
+            <result property="DOM" column="DOM"/>
+            <result property="REG" column="REG"/>
+            <result property="LS" column="LS"/>
+            <result property="DELO" column="DELO"/>
+            <result property="TOT" column="TOT"/>
+            <result property="PERIOD" column="PERIOD"/>
+            <result property="FIO" column="FIO"/>
+            <result property="ADRES" column="ADRES"/>
+            <result property="NKW" column="NKW"/>
+            <result property="KWART" column="KWART"/>
+            <result property="OTOPL" column="OTOPL"/>
+            <result property="PODOGR" column="PODOGR"/>
+            <result property="WODA" column="WODA"/>
+            <result property="GAZ" column="GAZ"/>
+            <result property="ELEKTR" column="ELEKTR"/>
+            <result property="STOKI" column="STOKI"/>
+            <result property="TOT_O" column="TOT_O"/>
+            <result property="KWART_O" column="KWART_O"/>
+            <result property="OTOPL_O" column="OTOPL_O"/>
+            <result property="GORWODA_O" column="GORWODA_O"/>
+            <result property="WODA_O" column="WODA_O"/>
+            <result property="GAZ_O" column="GAZ_O"/>
+            <result property="ELEKTR_O" column="ELEKTR_O"/>
+            <result property="STOKI_O" column="STOKI_O"/>
+            <result property="BEGIN0" column="BEGIN0"/>
+            <result property="END0" column="END0"/>
+            <result property="PR_KV" column="PR_KV" javaType="java.lang.Integer"/>
+        </association>
+    </resultMap>
+
+    <insert id="insertSubsidyMasterData" parameterType="org.complitex.osznconnection.file.entity.SubsidyMasterData"
+            keyProperty="id" useGeneratedKeys="true">
+        insert into `subsidy_master_data`
+            (`servicing_organization_id`,
+            <foreach collection="dbfFields.keys" item="key" separator=",">
+                `${key}`
+            </foreach>)
+        values
+            (#{servicingOrganizationId},
+            <foreach collection="dbfFields.keys" item="key" separator=",">
+                #{dbfFields.${key}}
+            </foreach>)
+    </insert>
+
+    <insert id="insertSubsidyMasterDataPart" parameterType="org.complitex.osznconnection.file.entity.SubsidyMasterData">
+        insert into `subsidy_master_data_part` (`subsidy_id`, `subsidy_master_data_id`)
+          values (#{subsidyId}, #{id})
+    </insert>
+
+    <update id="updateSubsidyMasterData" parameterType="org.complitex.osznconnection.file.entity.SubsidyMasterData">
+        update `subsidy_master_data` set
+            <foreach collection="dbfFieldMap.entrySet()" item="item" index="key" separator=",">
+                `${key}` = #{item}
+            </foreach>
+        where `id` = #{id}
+    </update>
+
+    <select id="selectSubsidyMasterDataList" resultMap="subsidyMasterDataRequestMap" parameterType="long">
+        select s.`id` smd_id, s.* from `subsidy_master_data` s
+          left join `subsidy_master_data_part` p on p.`subsidy_master_data_id` = s.`id`
+        where p.`subsidy_id` = #{subsidyId}
+    </select>
+
+    <delete id="deleteSubsidyMasterDataList" parameterType="long">
+        delete s, p from `subsidy_master_data` s
+            left join `subsidy_master_data_part` p on p.`subsidy_master_data_id` = s.`id`
+        where p.`subsidy_id` = #{subsidyId}
+    </delete>
+</mapper>

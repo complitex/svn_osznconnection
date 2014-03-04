@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"  xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
+<head>
+    <title></title>
+</head>
+
+<body>
+<wicket:panel>
+    <div wicket:id="dialog" wicket:message="title:title">
+        <form wicket:id="form">
+            <div wicket:id="messages"></div>
+            <div>
+                <table>
+                    <tr>
+                        <th>FIO:</th><td wicket:id="FIO_CYR" colspan="3"></td>
+                        <th>ID_RAJ:</th><td wicket:id="ID_RAJ"></td>
+                        <th>NP_CODE:</th><td wicket:id="NP_CODE"></td>
+                    </tr>
+                    <tr>
+                        <th>NP_NAME:</th><td wicket:id="NP_NAME"></td>
+                        <th>CAT_V:</th><td wicket:id="CAT_V"></td>
+                        <th>VULCOD:</th><td wicket:id="VULCOD"></td>
+                        <th>NAME_V:</th><td wicket:id="NAME_V"></td>
+                    </tr>
+                    <tr>
+                        <th>BLD:</th><td wicket:id="BLD"></td>
+                        <th>CORP:</th><td wicket:id="CORP"></td>
+                        <th>FLAT:</th><td wicket:id="FLAT"></td>
+                        <th>RASH:</th><td wicket:id="RASH"></td>
+                    </tr>
+                    <tr>
+                        <th>NUMB:</th><td wicket:id="NUMB"></td>
+                        <th>DAT1:</th><td wicket:id="DAT1"></td>
+                        <th>DAT2:</th><td wicket:id="DAT2"></td>
+                        <th>NUMM:</th><td wicket:id="NUMM"></td>
+                    </tr>
+                    <tr>
+                        <th>P1:</th><td wicket:id="P1"></td>
+                        <th>SM1:</th><td wicket:id="SM1"></td>
+                        <th>SB1:</th><td wicket:id="SB1"></td>
+                        <th>OB1:</th><td wicket:id="OB1"></td>
+                    </tr>
+                    <tr>
+                        <th>P2:</th><td wicket:id="P2"></td>
+                        <th>SM2:</th><td wicket:id="SM2"></td>
+                        <th>SB2:</th><td wicket:id="SB2"></td>
+                        <th>OB2:</th><td wicket:id="OB2"></td>
+                    </tr>
+                    <tr>
+                        <th>P3:</th><td wicket:id="P3"></td>
+                        <th>SM3:</th><td wicket:id="SM3"></td>
+                        <th>SB3:</th><td wicket:id="SB3"></td>
+                        <th>OB3:</th><td wicket:id="OB3"></td>
+                    </tr>
+                    <tr>
+                        <th>P4:</th><td wicket:id="P4"></td>
+                        <th>SM4:</th><td wicket:id="SM4"></td>
+                        <th>SB4:</th><td wicket:id="SB4"></td>
+                        <th>OB4:</th><td wicket:id="OB4"></td>
+                    </tr>
+                    <tr>
+                        <th>P5:</th><td wicket:id="P5"></td>
+                        <th>SM5:</th><td wicket:id="SM5"></td>
+                        <th>SB5:</th><td wicket:id="SB5"></td>
+                        <th>OB5:</th><td wicket:id="OB5"></td>
+                    </tr>
+                    <tr>
+                        <th>P6:</th><td wicket:id="P6"></td>
+                        <th>SM6:</th><td wicket:id="SM6"></td>
+                        <th>SB6:</th><td wicket:id="SB6"></td>
+                        <th>OB6:</th><td wicket:id="OB6"></td>
+                    </tr>
+                    <tr>
+                        <th>P7:</th><td wicket:id="P7"></td>
+                        <th>SM7:</th><td wicket:id="SM7"></td>
+                        <th>SB7:</th><td wicket:id="SB7"></td>
+                        <th>OB7:</th><td wicket:id="OB7"></td>
+                    </tr>
+                    <tr>
+                        <th>P8:</th><td wicket:id="P8"></td>
+                        <th>SM8:</th><td wicket:id="SM8"></td>
+                        <th>SB8:</th><td wicket:id="SB8"></td>
+                        <th>OB8:</th><td wicket:id="OB8"></td>
+                    </tr>
+                    <tr>
+                        <th>NM_PAY:</th>
+                        <td>
+                            <span wicket:id="NM_PAY"></span>
+                            <span wicket:id="nmPayDiff"></span>
+                        </td>
+                        <th>SUMMA:</th>
+                        <td>
+                            <span wicket:id="SUMMA"></span>
+                            <span wicket:id="summaDiff"></span>
+                        </td>
+                        <th>SUBS:</th>
+                        <td><span wicket:id="SUBS"></span>
+                            <span wicket:id="subsDiff"></span>
+                        </td>
+                        <th>KVT:</th>
+                        <td wicket:id="KVT"></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div style="clear: left; padding-top: 20px">
+                <input type="button" wicket:message="value:save" wicket:id="save" class="btnMiddle"/>
+                <input type="button" wicket:message="value:cancel" wicket:id="cancel" class="btnMiddle"/>
+                <a href="#" wicket:id="recalculate" style="float: right; color: #007AAE;"><wicket:message key="recalculate"/></a>
+            </div>
+        </form>
+    </div>
+</wicket:panel>
+</body>
+</html>

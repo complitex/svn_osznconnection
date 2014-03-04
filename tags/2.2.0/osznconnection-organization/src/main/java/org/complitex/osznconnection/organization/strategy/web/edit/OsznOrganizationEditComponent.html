@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:wicket>
+    <head>
+        <title></title>
+    </head>
+    <body>
+        <wicket:panel>
+            <table class="tbForm">
+                <tr>
+                    <th>
+                        <wicket:message key="organization_type"/>:
+                    </th>
+                    <td>
+                        <select wicket:id="organizationType" multiple="multiple">
+                            <option></option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+            <table class="tbForm">
+                <tr wicket:id="districtContainer">
+                    <th>
+                        <wicket:message key="district"/>
+                        <span wicket:id="districtRequiredContainer"><b class="blue">*</b></span>:
+                    </th>
+                    <td>
+                        <span wicket:id="district"></span>
+                    </td>
+                </tr>
+                <tr wicket:id="parentContainer">
+                    <th>
+                        <wicket:message key="parent"/>:
+                    </th>
+                    <td>
+                        <span wicket:id="parent"></span>
+                    </td>
+                </tr>
+                
+                <!-- EDRPOU. Only for user organizations. -->
+                <tr wicket:id="edrpouContainer">
+                    <th>
+                        <span wicket:id="label"></span><b wicket:id="required" class="blue">*</b>:
+                    </th>
+                    <td>
+                        <div wicket:id="input"></div>
+                    </td>
+                </tr>
+                
+                <!-- Root directory for loading and saving request files. Only for user organizations. -->
+                <tr wicket:id="rootDirectoryContainer">
+                    <th>
+                        <span wicket:id="label"></span><b wicket:id="required" class="blue">*</b>:
+                    </th>
+                    <td>
+                        <div wicket:id="input"></div>
+                    </td>
+                </tr>
+
+                <!-- Root Export directory for loading and saving request files. Only for user organizations. -->
+                <tr wicket:id="rootExportDirectoryContainer">
+                    <th>
+                        <span wicket:id="label"></span><b wicket:id="required" class="blue">*</b>:
+                    </th>
+                    <td>
+                        <div wicket:id="input"></div>
+                    </td>
+                </tr>
+                
+                <!-- Reference to `service_association` helper table. It is user organization only attribute. -->
+                <tr wicket:id="serviceAssociationsContainer">
+                    <th style="vertical-align: top; padding-top: 20px;">
+                        <wicket:message key="serviceAssociationsLabel"/><b class="blue">*</b>:
+                    </th>
+                    <td style="padding-top: 20px;">
+                        <table cellpadding="0" cellspacing="0" border="0">
+                            <thead>
+                                <tr>
+                                    <td align="center">
+                                        <wicket:message key="serviceProviderTypeHeader"/>
+                                    </td>
+                                    <td align="center">
+                                        <wicket:message key="calculationCenterHeader"/>
+                                    </td>
+                                </tr>
+                            </thead>
+                            <tbody wicket:id="serviceAssociationsUpdateContainer">
+                                <tr wicket:id="serviceAssociations">
+                                    <wicket:container wicket:id="fakeContainer"/>
+                                    <td>
+                                        <select wicket:id="serviceProviderType">
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select wicket:id="calculationCenter">
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <a wicket:id="removeServiceAssociation">
+                                            <wicket:message key="removeServiceAssociation"/>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div>
+                            <a wicket:id="addServiceAssociation">
+                                <wicket:message key="addServiceAssociation"/>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- Reference to jdbc data source. Only for calculation centers. -->
+                <tr wicket:id="dataSourceContainer">
+                    <th>
+                        <span wicket:id="dataSourceLabel"></span><b class="blue">*</b>:
+                    </th>
+                    <td>
+                        <select wicket:id="dataSource">
+                            <option></option>
+                        </select>
+                    </td>
+                </tr>
+
+                <!-- Oszn Load/Save directories section. It is oszn only attributes. -->
+                <tr wicket:id="loadSaveDirsContainer">
+                    <td colspan="2">
+                        <fieldset style="margin-top: 10px;">
+                            <legend>
+                                <span style="font-weight: bold;">
+                                    <wicket:message key="loadSaveDirsLabel"/>
+                                </span>
+                            </legend>
+                            <div style="margin-top: 10px;">
+                                <table class="tbForm">
+                                    <tr wicket:id="dir">
+                                        <th>
+                                            <span wicket:id="label"></span><b wicket:id="required" class="blue">*</b>:
+                                        </th>
+                                        <td>
+                                            <div wicket:id="input"></div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </fieldset>
+                    </td>
+                </tr>
+            </table>
+        </wicket:panel>
+    </body>
+</html>

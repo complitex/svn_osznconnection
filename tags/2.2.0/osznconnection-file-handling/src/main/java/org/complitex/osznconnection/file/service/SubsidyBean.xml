@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.complitex.osznconnection.file.service.SubsidyBean">
+
+    <resultMap id="subsidyResultMap" type="org.complitex.osznconnection.file.entity.Subsidy"
+                extends="org.complitex.osznconnection.file.service.AbstractRequestBean.abstractRequest">
+
+        <result column="internal_city_id" property="internalCityId"/>
+        <result column="internal_street_id" property="internalStreetId"/>
+        <result column="internal_street_type_id" property="internalStreetTypeId"/>
+        <result column="internal_building_id" property="internalBuildingId"/>
+
+        <result column="outgoing_city" property="outgoingCity"/>
+        <result column="outgoing_district" property="outgoingDistrict"/>
+        <result column="outgoing_street" property="outgoingStreet"/>
+        <result column="outgoing_street_type" property="outgoingStreetType"/>
+        <result column="outgoing_building_number" property="outgoingBuildingNumber"/>
+        <result column="outgoing_building_corp" property="outgoingBuildingCorp"/>
+        <result column="outgoing_apartment" property="outgoingApartment"/>
+        
+        <result column="last_name" property="lastName"/>
+        <result column="first_name" property="firstName"/>
+        <result column="middle_name" property="middleName"/>
+
+        <result column="begin_date" property="date"/>
+
+        <association property="dbfFields" javaType="map">
+            <result column="FIO_CYR" property="FIO_CYR"/>
+            <result column="NP_NAME_CYR" property="NP_NAME_CYR"/>
+            <result column="CAT_V_CYR" property="CAT_V_CYR"/>
+            <result column="NAME_V_CYR" property="NAME_V_CYR"/>
+            <result column="BLD_CYR" property="BLD_CYR"/>
+            <result column="CORP_CYR" property="CORP_CYR"/>
+            <result column="FLAT_CYR" property="FLAT_CYR"/>
+
+            <result column="FIO" property="FIO"/>
+            <result column="ID_RAJ" property="ID_RAJ"/>
+            <result column="NP_CODE" property="NP_CODE"/>
+            <result column="NP_NAME" property="NP_NAME"/>
+            <result column="CAT_V" property="CAT_V"/>
+            <result column="VULCOD" property="VULCOD"/>
+            <result column="NAME_V" property="NAME_V"/>
+            <result column="BLD" property="BLD"/>
+            <result column="CORP" property="CORP"/>
+            <result column="FLAT" property="FLAT"/>
+            <result column="RASH" property="RASH"/>
+            <result column="NUMB" property="NUMB"/>
+            <result column="DAT1" property="DAT1"/>
+            <result column="DAT2" property="DAT2"/>
+            <result column="NM_PAY" property="NM_PAY"/>
+            <result column="P1" property="P1"/>
+            <result column="P2" property="P2"/>
+            <result column="P3" property="P3"/>
+            <result column="P4" property="P4"/>
+            <result column="P5" property="P5"/>
+            <result column="P6" property="P6"/>
+            <result column="P7" property="P7"/>
+            <result column="P8" property="P8"/>
+            <result column="SM1" property="SM1"/>
+            <result column="SM2" property="SM2"/>
+            <result column="SM3" property="SM3"/>
+            <result column="SM4" property="SM4"/>
+            <result column="SM5" property="SM5"/>
+            <result column="SM6" property="SM6"/>
+            <result column="SM7" property="SM7"/>
+            <result column="SM8" property="SM8"/>
+            <result column="SB1" property="SB1"/>
+            <result column="SB2" property="SB2"/>
+            <result column="SB3" property="SB3"/>
+            <result column="SB4" property="SB4"/>
+            <result column="SB5" property="SB5"/>
+            <result column="SB6" property="SB6"/>
+            <result column="SB7" property="SB7"/>
+            <result column="SB8" property="SB8"/>
+            <result column="OB1" property="OB1"/>
+            <result column="OB2" property="OB2"/>
+            <result column="OB3" property="OB3"/>
+            <result column="OB4" property="OB4"/>
+            <result column="OB5" property="OB5"/>
+            <result column="OB6" property="OB6"/>
+            <result column="OB7" property="OB7"/>
+            <result column="OB8" property="OB8"/>
+            <result column="SUMMA" property="SUMMA"/>
+            <result column="NUMM" property="NUMM"/>
+            <result column="SUBS" property="SUBS"/>
+            <result column="KVT" property="KVT"/>
+        </association>
+    </resultMap>
+
+    <insert id="insertSubsidyList" parameterType="list">
+        INSERT INTO `subsidy`
+        (
+        <trim suffixOverrides=",">
+            `request_file_id`, `account_number`,
+            `internal_city_id`, `internal_street_id`, `internal_street_type_id`, `internal_building_id`,
+            `outgoing_city`, `outgoing_street`, `outgoing_street_type`, `outgoing_building_number`, `outgoing_building_corp`, `outgoing_apartment`,
+            `status`, 
+            `last_name`, `first_name`, `middle_name`,
+            <foreach collection="list[0].dbfFields.keys" item="key">
+                `${key}`,
+            </foreach>
+        </trim>
+        )
+        values
+        <foreach collection="list" separator="," item="item">
+            (
+            <trim suffixOverrides=",">
+                #{item.requestFileId}, #{item.accountNumber},
+                #{item.internalCityId}, #{item.internalStreetId}, #{item.internalStreetTypeId}, #{item.internalBuildingId},
+                #{item.outgoingCity}, #{item.outgoingStreet}, #{item.outgoingStreetType}, #{item.outgoingBuildingNumber}, #{item.outgoingBuildingCorp},
+                #{item.outgoingApartment},
+                #{item.status},
+                #{item.lastName}, #{item.firstName}, #{item.middleName},
+                <foreach collection="item.dbfFields.keys" item="key">
+                    #{item.dbfFields.${key}},
+                </foreach>
+            </trim>
+            )
+        </foreach>
+    </insert>
+    
+    <sql id="filter">
+        <if test="rash != null">AND s.`RASH` LIKE CONCAT('%',#{rash},'%')</if>
+        <if test="firstName != null">AND TO_CYRILLIC(s.`first_name`) LIKE CONCAT('%',#{firstName},'%')</if>
+        <if test="middleName != null">AND TO_CYRILLIC(s.`middle_name`) LIKE CONCAT('%',#{middleName},'%')</if>
+        <if test="lastName != null">AND TO_CYRILLIC(s.`last_name`) LIKE CONCAT('%',#{lastName},'%')</if>
+
+        <if test="city != null">AND TO_CYRILLIC(s.`NP_NAME`) LIKE CONCAT('%', #{city}, '%')</if>
+        <if test="street != null">AND TO_CYRILLIC(s.`NAME_V`) LIKE CONCAT('%', #{street}, '%')</if>
+        <if test="building != null">AND TO_CYRILLIC(s.`BLD`) LIKE CONCAT('%', #{building}, '%'</if>
+        <if test="corp != null">AND TO_CYRILLIC(s.`CORP`) LIKE CONCAT('%', #{corp}, '%')</if>
+        <if test="apartment != null">AND TO_CYRILLIC(s.`FLAT`) LIKE CONCAT('%', #{apartment}, '%')</if>
+
+        <if test="DAT1 != null">AND s.`DAT1`  = #{DAT1}</if>
+        <if test="DAT2 != null">AND s.`DAT2`  = #{DAT2}</if>
+        <if test="NUMM != null">AND s.`NUMM`  = #{NUMM}</if>
+        <if test="NM_PAY != null">AND s.`NM_PAY`  = #{NM_PAY}</if>
+        <if test="SUMMA != null">AND s.`SUMMA`  = #{SUMMA}</if>
+        <if test="SUBS != null">AND s.`SUBS`  = #{SUBS}</if>
+
+        <if test="status != null">
+            AND s.`status` = #{status}
+        </if>
+    </sql>
+
+    <select id="count" resultType="int" parameterType="org.complitex.osznconnection.file.entity.example.SubsidyExample">
+        SELECT COUNT(1) FROM `subsidy` s WHERE s.`request_file_id` = #{requestFileId}
+        <include refid="org.complitex.osznconnection.file.service.SubsidyBean.filter"/>
+    </select>
+
+    <select id="find" parameterType="org.complitex.osznconnection.file.entity.example.SubsidyExample"
+            resultMap="subsidyResultMap">
+        SELECT t.*,  
+        w.`id` warning_id, w.`request_id` warning_reqiest_id, w.`request_file_type` warning_request_file_type, w.`status` warning_status,
+        p.`request_warning_id` param_request_warning_id, p.`order` param_order, p.`type` param_type, p.`value` param_value
+        FROM (
+            SELECT s.id, s.`status`, s.`request_file_id`,
+              TO_CYRILLIC(s.`last_name`) last_name, TO_CYRILLIC(s.`first_name`) first_name,
+              TO_CYRILLIC(s.`middle_name`) middle_name,
+
+              TO_CYRILLIC(s.`FIO`) FIO_CYR, TO_CYRILLIC(s.`NP_NAME`) NP_NAME_CYR, TO_CYRILLIC(s.`CAT_V`) CAT_V_CYR,
+              TO_CYRILLIC(s.`NAME_V`) NAME_V_CYR, TO_CYRILLIC(s.`BLD`) BLD_CYR, TO_CYRILLIC(s.`CORP`) CORP_CYR,
+              TO_CYRILLIC(s.`FLAT`) FLAT_CYR,
+
+              s.`FIO`, s.`NP_NAME`, s.`CAT_V`, s.`NAME_V`, s.`BLD`, s.`CORP`, s.`FLAT`,
+
+              s.ID_RAJ, s.NP_CODE, s.VULCOD, s.RASH, s.NUMB,
+              s.DAT1, s.DAT2, s.NM_PAY,
+              s.P1, s.P2, s.P3, s.P4, s.P5, s.P6, s.P7, s.P8,
+              s.SM1, s.SM2, s.SM3, s.SM4, s.SM5, s.SM6, s.SM7, s.SM8,
+              s.SB1, s.SB2, s.SB3, s.SB4, s.SB5, s.SB6, s.SB7, s.SB8,
+              s.OB1, s.OB2, s.OB3, s.OB4, s.OB5, s.OB6, s.OB7, s.OB8,
+              s.SUMMA, s.NUMM, s.SUBS, s.KVT,
+              f.`organization_id`, f.`user_organization_id`,
+              f.`begin_date`,
+              s.`internal_city_id`, s.`internal_street_id`, s.`internal_street_type_id`, s.`internal_building_id`,
+              s.`outgoing_city`, s.`outgoing_district`, s.`outgoing_street`, s.`outgoing_street_type`, s.`outgoing_building_number`,
+              s.`outgoing_building_corp`, s.`outgoing_apartment`, s.`account_number`
+            FROM `subsidy` s
+            JOIN `request_file` f ON f.`id` = s.`request_file_id`
+                WHERE s.`request_file_id` = #{requestFileId}
+                <include refid="org.complitex.osznconnection.file.service.SubsidyBean.filter"/>
+                <if test="orderByClause != null">
+                    <choose>
+                        <when test="orderByClause == 'RASH' or orderByClause == 'BLD' or orderByClause == 'CORP'
+                                or orderByClause == 'FLAT' or orderByClause == 'id'">
+                            ORDER BY `${orderByClause}`+0
+                        </when>
+                        <otherwise>
+                            ORDER BY `${orderByClause}`
+                        </otherwise>
+                    </choose>
+                    <choose>
+                        <when test="asc">
+                            ASC
+                        </when>
+                        <otherwise>
+                            DESC
+                        </otherwise>
+                    </choose>
+                </if>
+                <if test="size != 0">
+                    limit #{start},#{size}
+                </if>
+        ) t
+        LEFT JOIN `request_warning` w ON (w.`request_id` = t.`id` AND w.`request_file_type` = 5)
+        LEFT JOIN `request_warning_parameter` p ON w.`id` = p.`request_warning_id`
+    </select>
+    
+    <select id="countByFile" resultType="int" parameterType="map">
+        SELECT COUNT(1) FROM `subsidy` s
+        WHERE s.`request_file_id` = #{requestFileId} AND s.`status` IN
+        <foreach collection="statuses" item="status" open="(" close=")" separator=",">
+            #{status}
+        </foreach>
+    </select>
+    
+    <update id="update" parameterType="org.complitex.osznconnection.file.entity.Subsidy">
+        UPDATE `subsidy` SET
+        `account_number` = #{accountNumber},
+        `internal_city_id` = #{internalCityId},
+        `internal_street_id` = #{internalStreetId}, `internal_street_type_id` = #{internalStreetTypeId},
+        `internal_building_id` = #{internalBuildingId},
+        `outgoing_city` = #{outgoingCity}, `outgoing_district` = #{outgoingDistrict},
+        `outgoing_street` = #{outgoingStreet}, `outgoing_street_type` = #{outgoingStreetType},
+        `outgoing_building_number` = #{outgoingBuildingNumber}, `outgoing_building_corp` = #{outgoingBuildingCorp},
+        `outgoing_apartment` = #{outgoingApartment},
+        `status` = #{status}
+        <if test="updateFieldMap != null">
+            <foreach collection="updateFieldMap.entrySet()" item="item" index="key">
+                ,`${key}` = #{item}
+            </foreach>
+        </if>
+        WHERE `id` = #{id}
+    </update>
+    
+    <select id="findIdsForOperation" parameterType="long" resultType="long">
+        SELECT s.`id` FROM `subsidy` s WHERE s.`request_file_id` = #{requestFileId}
+    </select>
+    
+    <select id="findForOperation" parameterType="map" resultMap="subsidyResultMap">
+        SELECT s.`id`, s.`status`, s.`request_file_id`,
+
+        TO_CYRILLIC(s.`FIO`) FIO_CYR, TO_CYRILLIC(s.`NP_NAME`) NP_NAME_CYR, TO_CYRILLIC(s.`CAT_V`) CAT_V_CYR,
+        TO_CYRILLIC(s.`NAME_V`) NAME_V_CYR, TO_CYRILLIC(s.`BLD`) BLD_CYR, TO_CYRILLIC(s.`CORP`) CORP_CYR,
+        TO_CYRILLIC(s.`FLAT`) FLAT_CYR,
+
+        s.`FIO`, s.`NP_NAME`, s.`CAT_V`, s.`NAME_V`, s.`BLD`, s.`CORP`, s.`FLAT`,
+
+        TO_CYRILLIC(s.`last_name`) last_name, TO_CYRILLIC(s.`first_name`) first_name,
+        TO_CYRILLIC(s.`middle_name`) middle_name,
+
+        s.`VULCOD`, s.`DAT1`, s.`RASH`,
+        f.`organization_id`, f.`user_organization_id`, f.`begin_date`,
+        s.`internal_city_id`, s.`internal_street_id`, s.`internal_street_type_id`, s.`internal_building_id`,
+        s.`outgoing_city`, s.`outgoing_district`, s.`outgoing_street`, s.`outgoing_street_type`, s.`outgoing_building_number`,
+        s.`outgoing_building_corp`, s.`outgoing_apartment`,
+        s.`account_number`
+        FROM `subsidy` s
+        JOIN `request_file` f ON s.`request_file_id` = f.`id`
+        WHERE s.`request_file_id` = #{requestFileId} AND s.`id` IN
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </select>
+    
+    <update id="clearBeforeBinding" parameterType="map">
+        UPDATE `subsidy` SET
+        `account_number` = NULL,
+        `internal_city_id` = NULL, `internal_street_id` = NULL, `internal_street_type_id` = NULL, `internal_building_id` = NULL,
+        `outgoing_city` = NULL, `outgoing_district` = NULL, `outgoing_street` = NULL, `outgoing_street_type` = NULL,
+        `outgoing_building_number` = NULL, `outgoing_building_corp` = NULL, `outgoing_apartment` = NULL,
+        `status` = #{status}
+        <if test="updateFieldMap != null">
+            <foreach collection="updateFieldMap.entrySet()" item="item" index="key">
+                ,`${key}` = #{item}
+            </foreach>
+        </if>
+        WHERE `request_file_id` = #{fileId}
+    </update>
+    
+    <update id="markCorrected" parameterType="map">
+        UPDATE `subsidy`
+        SET `status` = 204
+            WHERE
+                `request_file_id` = #{fileId}
+                <if test="city != null">
+                    AND TO_CYRILLIC(`NP_NAME`) = #{city}
+                </if>
+                <if test="street != null">
+                    AND TO_CYRILLIC(`NAME_V`) = #{street}
+                </if>
+                <if test="streetType != null">
+                    AND TO_CYRILLIC(`CAT_V`) = #{streetType}
+                </if>
+                <if test="buildingNumber != null">
+                    AND TO_CYRILLIC(`BLD`) = #{buildingNumber}
+                </if>
+                <if test="buildingCorp != null">
+                    AND TO_CYRILLIC(`CORP`) = #{buildingCorp}
+                </if>
+    </update>
+    
+    <select id="selectSubsidies" resultMap="subsidyResultMap" parameterType="long">
+        SELECT s.*, f.`organization_id`, f.`user_organization_id`, f.`begin_date`,
+
+            TO_CYRILLIC(s.`FIO`) FIO_CYR, TO_CYRILLIC(s.`NP_NAME`) NP_NAME_CYR, TO_CYRILLIC(s.`CAT_V`) CAT_V_CYR,
+            TO_CYRILLIC(s.`NAME_V`) NAME_V_CYR, TO_CYRILLIC(s.`BLD`) BLD_CYR, TO_CYRILLIC(s.`CORP`) CORP_CYR,
+            TO_CYRILLIC(s.`FLAT`) FLAT_CYR,
+
+            TO_CYRILLIC(s.`last_name`) last_name, TO_CYRILLIC(s.`first_name`) first_name,
+            TO_CYRILLIC(s.`middle_name`) middle_name,
+
+            w.`id` warning_id, w.`request_id` warning_reqiest_id, w.`request_file_type` warning_request_file_type, w.`status` warning_status,
+            p.`request_warning_id` param_request_warning_id, p.`order` param_order, p.`type` param_type, p.`value` param_value
+        FROM `subsidy` s
+            left join `request_file` f ON s.`request_file_id` = f.`id`
+            LEFT JOIN `request_warning` w ON (w.`request_id` = s.`id` AND w.`request_file_type` = 5)
+            LEFT JOIN `request_warning_parameter` p ON w.`id` = p.`request_warning_id`
+        WHERE s.`request_file_id` = #{id}
+    </select>
+    
+    <delete id="deleteSubsidies" parameterType="long">
+        DELETE FROM `subsidy` WHERE `request_file_id` = #{id};
+    </delete>
+    
+    <select id="updateAccountNumberForSimislarSubs" parameterType="org.complitex.osznconnection.file.entity.Subsidy">
+        UPDATE `subsidy` SET `account_number` = #{accountNumber}, `status` = #{status}
+        WHERE `request_file_id` = #{requestFileId} 
+            AND `RASH` = #{dbfFields.RASH}
+            AND `NP_NAME` = #{dbfFields.NP_NAME}
+            AND `VULCOD` = #{dbfFields.VULCOD}
+            AND `CAT_V` = #{dbfFields.CAT_V}
+            AND `BLD` = #{dbfFields.BLD}
+            AND `CORP` = #{dbfFields.CORP}
+            AND `FLAT` = #{dbfFields.FLAT}
+            AND TO_CYRILLIC(`first_name`) = #{firstName}
+            AND TO_CYRILLIC(`middle_name`) = #{middleName}
+            AND TO_CYRILLIC(`last_name`) = #{lastName}
+    </select>
+
+    <!--SubsidyMasterDataFile-->
+
+    <resultMap id="subsidyMasterDataFileResultMap" type="org.complitex.osznconnection.file.entity.SubsidyMasterDataFile">
+        <id column="servicingOrganizationId" property="id"/>
+
+        <collection property="masterDataList"
+                    resultMap="org.complitex.osznconnection.file.service.SubsidyMasterDataBean.subsidyMasterDataRequestMap"/>
+    </resultMap>
+
+    <select id="selectSubsidyMasterDataFiles" resultMap="subsidyMasterDataFileResultMap" parameterType="map">
+        select smd.`id` smd_id, smd.servicing_organization_id, smd.DOM, smd.REG, smd.LS, smd.DELO,
+        smd.TOT, smd.PERIOD, smd.FIO, smd.ADRES, smd.NKW, smd.KWART, smd.OTOPL, smd.PODOGR, smd.WODA, smd.GAZ, smd.ELEKTR,
+        smd.STOKI, smd.TOT_O, smd.KWART_O, smd.OTOPL_O, smd.GORWODA_O, smd.WODA_O, smd.GAZ_O, smd.ELEKTR_O, smd.STOKI_O,
+        smd.BEGIN0, smd.END0, smd.PR_KV, rf.`user_organization_id`
+
+        from `subsidy_master_data` smd
+          left join `subsidy_master_data_part` smdp on smdp.`subsidy_master_data_id` = smd.`id`
+          left join `subsidy` s on s.`id` = smdp.`subsidy_id`
+          left join `request_file` rf on rf.`id` = s.`request_file_id`
+
+        <if test="type == 'DISTRICT'">
+            left join `organization_attribute` oa on (oa.`object_id` = rf.`organization_id` and oa.`attribute_type_id` = 902)
+            where oa.`value_id` in
+        </if>
+        <if test="type == 'SERVICING_ORGANIZATION' or type == 'BALANCE_HOLDER'">
+            where smd.`servicing_organization_id` in
+        </if>
+
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+
+        and #{date} between smd.BEGIN0 and smd.END0 and rf.`user_organization_id` in ${userOrganizationString}
+    </select>
+
+</mapper>

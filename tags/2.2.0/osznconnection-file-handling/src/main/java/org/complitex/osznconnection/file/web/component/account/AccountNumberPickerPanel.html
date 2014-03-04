@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns:wicket>
+<head>
+    <title></title>
+</head>
+<body>
+<wicket:panel>
+    <div>
+        <h3>
+            <wicket:message key="choose_account_number"/>
+        </h3>
+        <table cellpadding="0" cellspacing="0" border="0" class="tbColor">
+            <thead>
+            <tr>
+                <th></th>
+                <th wicket:id="accCodeHeader"><wicket:message key="accCode"/></th>
+                <th wicket:id="zheuHeader"><wicket:message key="zheu"/></th>
+                <th wicket:id="zheuCodeHeader"><wicket:message key="zheuCode"/></th>
+                <th wicket:id="ownerFioHeader"><wicket:message key="ownerFio"/></th>
+                <th wicket:id="addressHeader"><wicket:message key="address"/></th>
+                <th wicket:id="ownerInnHeader"><wicket:message key="ownerInn"/></th>
+                <th wicket:id="ercCodeHeader"><wicket:message key="ercCode"/></th>
+                <th><input class="btnSmall" wicket:id="filter_reset" type="button" wicket:message="value:reset"/></th>
+            </tr>
+            <tr class="table_input">
+                <th></th>
+                <th><input type="text" wicket:id="accCodeFilter"/></th>
+                <th><input type="text" wicket:id="zheuFilter"/></th>
+                <th><input type="text" wicket:id="zheuCodeFilter"/></th>
+                <th><input type="text" wicket:id="ownerFioFilter"/></th>
+                <th><input type="text" wicket:id="addressFilter"/></th>
+                <th><input type="text" wicket:id="ownerInnFilter"/></th>
+                <th><input type="text" wicket:id="ercCodeFilter"/></th>
+                <th><input wicket:id="find" class="btnSmall" type="submit" wicket:message="value:filter" tabindex="0"/></th>
+            </tr>
+            </thead>
+            <tbody wicket:id="radioGroup">
+            <tr wicket:id="accountDetails">
+                <td><input type="radio" wicket:id="radio"/></td>
+                <td><span wicket:id="accCode"></span></td>
+                <td><span wicket:id="zheu"></span></td>
+                <td><span wicket:id="zheuCode"></span></td>
+                <td><span wicket:id="name"></span></td>
+                <td><span wicket:id="address"></span></td>
+                <td><span wicket:id="ownerInn"></span></td>
+                <td colspan="2"><span wicket:id="ercCode"></span></td>
+            </tr>
+            <tr>
+                <td colspan="9">
+                    <span wicket:id="navigator"></span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</wicket:panel>
+</body>
+</html>
