@@ -26,8 +26,8 @@ public class PersonAccountExample extends AbstractFilter {
     private Long userOrganizationId;
     private String puAccountNumber;
 
-    private int start;
-    private int size;
+    private long start;
+    private long size;
     private String orderByClause;
     private boolean asc;
     private Long localeId;
@@ -192,19 +192,19 @@ public class PersonAccountExample extends AbstractFilter {
         this.orderByClause = orderByClause;
     }
 
-    public int getSize() {
+    public long getSize() {
         return size;
     }
 
-    public void setSize(int size) {
+    public void setSize(long size) {
         this.size = size;
     }
 
-    public int getStart() {
+    public long getStart() {
         return start;
     }
 
-    public void setStart(int start) {
+    public void setStart(long start) {
         this.start = start;
     }
 }

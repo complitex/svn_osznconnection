@@ -121,8 +121,8 @@ public class AccountNumberPickerPanel extends Panel {
             }
 
             @Override
-            protected Iterable<? extends AccountDetail> getData(int first, int count) {
-                List<AccountDetail> list = getList().subList(first, first + count);
+            protected Iterable<? extends AccountDetail> getData(long first, long count) {
+                List<AccountDetail> list = getList().subList((int)first, (int)(first + count));
 
                 Collections.sort(list, new Comparator<AccountDetail>() {
                     @Override

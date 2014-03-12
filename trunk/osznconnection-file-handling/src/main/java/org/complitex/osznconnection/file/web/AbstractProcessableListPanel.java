@@ -7,7 +7,9 @@ import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.ISortStateLocator;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
-import org.apache.wicket.markup.html.IHeaderResponse;
+import org.apache.wicket.markup.head.CssHeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -42,9 +44,9 @@ import org.complitex.osznconnection.file.web.component.load.RequestFileLoadPanel
 import org.complitex.osznconnection.file.web.component.load.RequestFileLoadPanel.MonthParameterViewMode;
 import org.complitex.osznconnection.file.web.component.process.*;
 import org.complitex.osznconnection.file.web.pages.util.GlobalOptions;
-import org.complitex.resources.WebCommonResourceInitializer;
 import org.complitex.template.web.component.toolbar.ToolbarButton;
 import org.complitex.template.web.template.TemplateSession;
+import org.odlabs.wiquery.ui.effects.HighlightEffectJavaScriptResourceReference;
 
 import javax.ejb.EJB;
 import java.io.Serializable;
@@ -243,11 +245,11 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
     }
 
     public static void renderResources(IHeaderResponse response) {
-        response.renderJavaScriptReference(WebCommonResourceInitializer.HIGHLIGHT_JS);
-        response.renderJavaScriptReference(new PackageResourceReference(AbstractProcessableListPanel.class,
-                AbstractProcessableListPanel.class.getSimpleName() + ".js"));
-        response.renderCSSReference(new PackageResourceReference(AbstractProcessableListPanel.class,
-                AbstractProcessableListPanel.class.getSimpleName() + ".css"));
+        response.render(JavaScriptHeaderItem.forReference(HighlightEffectJavaScriptResourceReference.get()));
+        response.render(JavaScriptHeaderItem.forReference(new PackageResourceReference(AbstractProcessableListPanel.class,
+                AbstractProcessableListPanel.class.getSimpleName() + ".js")));
+        response.render(CssHeaderItem.forReference(new PackageResourceReference(AbstractProcessableListPanel.class,
+                AbstractProcessableListPanel.class.getSimpleName() + ".css")));
     }
 
     private void init() {
@@ -318,7 +320,7 @@ public abstract class AbstractProcessableListPanel<M extends IExecutorObject, F 
         dataProvider = new DataProvider<M>() {
 
             @Override
-            protected Iterable<M> getData(int first, int count) {
+            protected Iterable<M> getData(long first, long count) {
                 final F filter = model.getObject();
 
                 getSession().putPreferenceObject(getPreferencePage(), PreferenceKey.FILTER_OBJECT, filter);

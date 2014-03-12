@@ -145,7 +145,7 @@ public final class FacilityServiceTypeList extends TemplatePage {
         final DataProvider<FacilityServiceType> dataProvider = new DataProvider<FacilityServiceType>() {
 
             @Override
-            protected Iterable<? extends FacilityServiceType> getData(int first, int count) {
+            protected Iterable<? extends FacilityServiceType> getData(long first, long count) {
                 example.getObject().setAsc(getSort().isAscending());
                 if (!Strings.isEmpty(getSort().getProperty())) {
                     example.getObject().setOrderByClause(getSort().getProperty());

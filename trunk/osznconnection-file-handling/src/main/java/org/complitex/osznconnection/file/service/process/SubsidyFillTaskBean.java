@@ -25,6 +25,7 @@ import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -127,8 +128,12 @@ public class SubsidyFillTaskBean implements ITaskBean{
 
         String districtName = addressService.resolveOutgoingDistrict(subsidy.getOrganizationId(), subsidy.getUserOrganizationId());
 
-        List<AccountDetail> accountDetails = serviceProviderAdapter.acquireAccountDetailsByAccount(calculationContext,
-                subsidy, districtName, subsidy.getAccountNumber() + "");
+//  todo TEST
+//        List<AccountDetail> accountDetails = serviceProviderAdapter.acquireAccountDetailsByAccount(calculationContext,
+//                subsidy, districtName, subsidy.getAccountNumber() + "");
+
+        List<AccountDetail> accountDetails = new ArrayList<>();
+        accountDetails.add(new AccountDetail());
 
         if (!accountDetails.isEmpty()){
             //clear
@@ -187,7 +192,7 @@ public class SubsidyFillTaskBean implements ITaskBean{
         subsidyMasterData.putField(SubsidyMasterDataDBF.BEGIN0, DateUtil.getFirstDayOfMonth(date));
         subsidyMasterData.putField(SubsidyMasterDataDBF.END0, DateUtil.getLastDayOfMonth(date));
 
-        //servicing organization
+        //servicing organization | todo handle empty servicing organization id exception
         subsidyMasterData.setServicingOrganizationId(subsidyService.getServicingOrganizationId(subsidy.getRequestFileId()));
 
         subsidyMasterDataBean.save(subsidyMasterData);

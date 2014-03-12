@@ -1,6 +1,7 @@
 package org.complitex.osznconnection.file.web.component.lookup;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
@@ -13,6 +14,8 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.string.Strings;
+import org.apache.wicket.util.template.PackageTextTemplate;
+import org.apache.wicket.util.template.TextTemplate;
 import org.complitex.address.strategy.street.StreetStrategy;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.strategy.IStrategy;
@@ -21,6 +24,7 @@ import org.complitex.dictionary.util.CloneUtil;
 import org.complitex.dictionary.web.component.ShowMode;
 import org.complitex.dictionary.web.component.search.SearchComponentState;
 import org.complitex.dictionary.web.component.search.WiQuerySearchComponent;
+import org.complitex.organization.web.component.OrganizationPicker;
 import org.complitex.osznconnection.file.entity.AbstractRequest;
 import org.complitex.osznconnection.file.entity.AccountDetail;
 import org.complitex.osznconnection.file.entity.RequestStatus;
@@ -30,17 +34,17 @@ import org.complitex.osznconnection.file.service.StatusRenderService;
 import org.complitex.osznconnection.file.service_provider.exception.DBException;
 import org.complitex.osznconnection.file.service_provider.exception.UnknownAccountNumberTypeException;
 import org.complitex.osznconnection.file.web.component.account.AccountNumberPickerPanel;
-import org.odlabs.wiquery.core.javascript.JsStatement;
-import org.odlabs.wiquery.ui.core.JsScopeUiEvent;
 import org.odlabs.wiquery.ui.dialog.Dialog;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.apache.wicket.util.string.Strings.isEmpty;
 
 public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Panel {
+    private static final TextTemplate CENTER_DIALOG_JS = new PackageTextTemplate(OrganizationPicker.class, "CenterDialog.js");
 
     @EJB
     private StrategyFactory strategyFactory;
@@ -79,11 +83,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
     private void init(final Component... toUpdate) {
         dialog = new Dialog("dialog");
         dialog.setModal(true);
-        dialog.setWidth(800);
-        dialog.setOpenEvent(JsScopeUiEvent.quickScope(new JsStatement().self().chain("parents", "'.ui-dialog:first'").
-                chain("find", "'.ui-dialog-titlebar-close'").
-                chain("hide").render()));
-        dialog.setCloseOnEscape(false);
+        dialog.setWidth(1000);
         add(dialog);
 
         messages = new FeedbackPanel("messages");
@@ -228,6 +228,8 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
                 if (wasVisible || becameVisible) {
                     target.add(accountNumberPickerPanel);
                 }
+
+                target.appendJavaScript(CENTER_DIALOG_JS.asString(ImmutableMap.of("dialogId", dialog.getMarkupId())));
             }
         };
         container.add(lookupByAccount);
@@ -346,7 +348,25 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
 
     protected final List<AccountDetail> acquireAccountDetailsByAccount(T request, String district, String account,
             long userOrganizationId) throws DBException, UnknownAccountNumberTypeException {
-        return lookupBean.acquireAccountDetailsByAccount(request, district, account, userOrganizationId);
+
+        //todo test
+        List<AccountDetail> list = new ArrayList<>();
+        for (int i=0; i < 20; ++i){
+            AccountDetail accountDetail = new AccountDetail();
+            accountDetail.setAccCode("accCode " + i);
+            accountDetail.setZheu("zheu " + i);
+            accountDetail.setZheuCode("zheuCode " + i);
+            accountDetail.setOwnerFio("ownerFio " + i);
+            accountDetail.setAddress("address " + i);
+            accountDetail.setOwnerINN("ownerInn " + i);
+            accountDetail.setErcCode("ercCode " + i);
+
+            list.add(accountDetail);
+        }
+
+        return list;
+
+        //return lookupBean.acquireAccountDetailsByAccount(request, district, account, userOrganizationId);
     }
 
     protected abstract void resolveOutgoingAddress(T request, long userOrganizationId);

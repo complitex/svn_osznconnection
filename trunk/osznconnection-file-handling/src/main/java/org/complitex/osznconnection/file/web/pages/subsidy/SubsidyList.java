@@ -3,7 +3,8 @@ package org.complitex.osznconnection.file.web.pages.subsidy;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.IAjaxCallDecorator;
+import org.apache.wicket.ajax.CancelEventIfAjaxListener;
+import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.authorization.UnauthorizedInstantiationException;
@@ -31,7 +32,6 @@ import org.complitex.correction.service.exception.MoreOneCorrectionException;
 import org.complitex.correction.service.exception.NotFoundCorrectionException;
 import org.complitex.correction.web.component.AddressCorrectionPanel;
 import org.complitex.dictionary.service.SessionBean;
-import org.complitex.dictionary.web.component.ajax.AjaxCancelEventBubbleCallDecorator;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
@@ -143,7 +143,7 @@ public final class SubsidyList extends TemplatePage {
         final DataProvider<Subsidy> dataProvider = new DataProvider<Subsidy>() {
 
             @Override
-            protected Iterable<? extends Subsidy> getData(int first, int count) {
+            protected Iterable<? extends Subsidy> getData(long first, long count) {
                 example.getObject().setAsc(getSort().isAscending());
                 if (!Strings.isEmpty(getSort().getProperty())) {
                     example.getObject().setOrderByClause(getSort().getProperty());
@@ -292,8 +292,10 @@ public final class SubsidyList extends TemplatePage {
                     }
 
                     @Override
-                    protected IAjaxCallDecorator getAjaxCallDecorator() {
-                        return new AjaxCancelEventBubbleCallDecorator();
+                    protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+                        super.updateAjaxAttributes(attributes);
+
+                        attributes.getAjaxCallListeners().add(new CancelEventIfAjaxListener());
                     }
 
                 };
@@ -313,8 +315,10 @@ public final class SubsidyList extends TemplatePage {
                     }
 
                     @Override
-                    protected IAjaxCallDecorator getAjaxCallDecorator() {
-                        return new AjaxCancelEventBubbleCallDecorator();
+                    protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+                        super.updateAjaxAttributes(attributes);
+
+                        attributes.getAjaxCallListeners().add(new CancelEventIfAjaxListener());
                     }
                 };
                 item.add(lookup);
@@ -328,8 +332,10 @@ public final class SubsidyList extends TemplatePage {
                     }
 
                     @Override
-                    protected IAjaxCallDecorator getAjaxCallDecorator() {
-                        return new AjaxCancelEventBubbleCallDecorator();
+                    protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+                        super.updateAjaxAttributes(attributes);
+
+                        attributes.getAjaxCallListeners().add(new CancelEventIfAjaxListener());
                     }
                 });
             }
