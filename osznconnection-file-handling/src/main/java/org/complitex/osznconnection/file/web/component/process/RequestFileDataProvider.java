@@ -4,7 +4,6 @@
  */
 package org.complitex.osznconnection.file.web.component.process;
 
-import java.util.List;
 import org.apache.wicket.model.IModel;
 import org.complitex.dictionary.util.EjbBeanLocator;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
@@ -12,6 +11,8 @@ import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.entity.RequestFileFilter;
 import org.complitex.osznconnection.file.service.RequestFileBean;
 import org.complitex.template.web.template.TemplatePage;
+
+import java.util.List;
 
 /**
  *
@@ -35,7 +36,7 @@ public class RequestFileDataProvider extends DataProvider<RequestFile> {
     }
 
     @Override
-    protected Iterable<? extends RequestFile> getData(int first, int count) {
+    protected Iterable<? extends RequestFile> getData(long first, long count) {
         final RequestFileFilter filter = model.getObject();
 
         //store preference, but before clear data order related properties.

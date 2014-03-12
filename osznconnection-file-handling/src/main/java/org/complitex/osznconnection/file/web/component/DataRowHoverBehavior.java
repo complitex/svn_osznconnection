@@ -1,13 +1,11 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.osznconnection.file.web.component;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.behavior.Behavior;
-import org.apache.wicket.markup.html.IHeaderResponse;
+import org.apache.wicket.markup.head.CssHeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.request.resource.PackageResourceReference;
 
 /**
@@ -21,10 +19,10 @@ public final class DataRowHoverBehavior extends Behavior {
 
     @Override
     public void renderHead(Component component, IHeaderResponse response) {
-        response.renderCSSReference(new PackageResourceReference(DataRowHoverBehavior.class,
-                DataRowHoverBehavior.class.getSimpleName() + ".css"));
-        response.renderJavaScriptReference(new PackageResourceReference(DataRowHoverBehavior.class,
-                DataRowHoverBehavior.class.getSimpleName() + ".js"));
+        response.render(CssHeaderItem.forReference(new PackageResourceReference(DataRowHoverBehavior.class,
+                DataRowHoverBehavior.class.getSimpleName() + ".css")));
+        response.render(JavaScriptHeaderItem.forReference(new PackageResourceReference(DataRowHoverBehavior.class,
+                DataRowHoverBehavior.class.getSimpleName() + ".js")));
     }
 
     public void deactivateDataRow(AjaxRequestTarget target) {

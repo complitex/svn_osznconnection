@@ -1,22 +1,20 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.osznconnection.file.web.component.process;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.util.time.Duration;
-import static com.google.common.collect.Iterables.*;
-import static com.google.common.collect.Lists.*;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static com.google.common.collect.Iterables.filter;
+import static com.google.common.collect.Lists.newArrayList;
 
 /**
  *
@@ -67,7 +65,7 @@ public final class TimerManager implements Serializable {
                 messagesManager.showMessages(target);
 
                 if (!processingManager.isGlobalProcessing() && waitForStopTimer.incrementAndGet() > 2) {
-                    this.stop();
+                    this.stop(target);
                     target.add(form);
                 } else {
                     if (!updateComponents.isEmpty()) {

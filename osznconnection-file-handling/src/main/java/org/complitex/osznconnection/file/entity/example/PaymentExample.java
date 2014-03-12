@@ -14,8 +14,8 @@ public class PaymentExample extends AbstractRequestExample {
     private String building;
     private String corp;
     private String apartment;
-    private int start;
-    private int size;
+    private long start;
+    private long size;
     private String orderByClause;
     private boolean asc;
     private String account;
@@ -100,19 +100,19 @@ public class PaymentExample extends AbstractRequestExample {
         this.orderByClause = orderByClause;
     }
 
-    public int getSize() {
+    public long getSize() {
         return size;
     }
 
-    public void setSize(int size) {
+    public void setSize(long size) {
         this.size = size;
     }
 
-    public int getStart() {
+    public long getStart() {
         return start;
     }
 
-    public void setStart(int start) {
+    public void setStart(long start) {
         this.start = start;
     }
 

@@ -132,7 +132,7 @@ public final class BenefitList extends TemplatePage {
         final DataProvider<Benefit> dataProvider = new DataProvider<Benefit>() {
 
             @Override
-            protected Iterable<? extends Benefit> getData(int first, int count) {
+            protected Iterable<? extends Benefit> getData(long first, long count) {
                 example.getObject().setAsc(getSort().isAscending());
                 if (!Strings.isEmpty(getSort().getProperty())) {
                     example.getObject().setOrderByClause(getSort().getProperty());

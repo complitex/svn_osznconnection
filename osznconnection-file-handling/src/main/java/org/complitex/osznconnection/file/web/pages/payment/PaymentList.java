@@ -136,7 +136,7 @@ public final class PaymentList extends TemplatePage {
         final DataProvider<Payment> dataProvider = new DataProvider<Payment>() {
 
             @Override
-            protected Iterable<? extends Payment> getData(int first, int count) {
+            protected Iterable<? extends Payment> getData(long first, long count) {
                 example.getObject().setAsc(getSort().isAscending());
                 if (!Strings.isEmpty(getSort().getProperty())) {
                     example.getObject().setOrderByClause(getSort().getProperty());

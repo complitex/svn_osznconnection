@@ -1,12 +1,7 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.osznconnection.file.web.component.process;
 
-import org.apache.wicket.Component;
-import org.apache.wicket.ajax.IAjaxCallDecorator;
-import org.apache.wicket.ajax.calldecorator.AjaxCallDecorator;
+import org.apache.wicket.ajax.attributes.AjaxCallListener;
+import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 
 /**
@@ -20,13 +15,14 @@ public abstract class DeleteButton extends AjaxLink<Void> {
     }
 
     @Override
-    protected IAjaxCallDecorator getAjaxCallDecorator() {
-        return new AjaxCallDecorator() {
+    protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+        super.updateAjaxAttributes(attributes);
 
+        attributes.getAjaxCallListeners().add(new AjaxCallListener(){
             @Override
-            public CharSequence decorateScript(Component c, CharSequence script) {
-                return "if(confirm('" + getString("delete_caution") + "')){" + script + "}";
+            public AjaxCallListener onBefore(CharSequence before) {
+                return super.onBefore("if(confirm('" + getString("delete_caution") + "')){" + before + "}");
             }
-        };
+        });
     }
 }

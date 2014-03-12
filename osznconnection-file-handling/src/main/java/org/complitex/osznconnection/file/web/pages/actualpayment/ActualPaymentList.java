@@ -140,7 +140,7 @@ public final class ActualPaymentList extends TemplatePage {
         final DataProvider<ActualPayment> dataProvider = new DataProvider<ActualPayment>() {
 
             @Override
-            protected Iterable<? extends ActualPayment> getData(int first, int count) {
+            protected Iterable<? extends ActualPayment> getData(long first, long count) {
                 example.getObject().setAsc(getSort().isAscending());
                 if (!Strings.isEmpty(getSort().getProperty())) {
                     example.getObject().setOrderByClause(getSort().getProperty());

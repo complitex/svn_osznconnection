@@ -36,13 +36,13 @@ public class SubsidyMasterDataList extends TemplatePage {
         add(new Label("title", new ResourceModel("title")));
         add(new Label("label", new ResourceModel("title")));
 
-        List<IColumn<SubsidyMasterData>> columns = new ArrayList<>();
+        List<IColumn<SubsidyMasterData, String>> columns = new ArrayList<>();
 
-        columns.add(new PropertyColumn<SubsidyMasterData>(Model.of("ID"), "id"));
-        columns.add(new PropertyColumn<SubsidyMasterData>(Model.of("SERVICING"), "servicingOrganizationId"));
+        columns.add(new PropertyColumn<SubsidyMasterData, String>(Model.of("ID"), "id"));
+        columns.add(new PropertyColumn<SubsidyMasterData, String>(Model.of("SERVICING"), "servicingOrganizationId"));
 
         for (final SubsidyMasterDataDBF key : SubsidyMasterDataDBF.values()){
-            columns.add(new AbstractColumn<SubsidyMasterData>(Model.of(key.name())) {
+            columns.add(new AbstractColumn<SubsidyMasterData, String>(Model.of(key.name())) {
                 @Override
                 public void populateItem(Item<ICellPopulator<SubsidyMasterData>> cellItem, String componentId,
                                          IModel<SubsidyMasterData> rowModel) {
@@ -51,9 +51,9 @@ public class SubsidyMasterDataList extends TemplatePage {
             });
         }
 
-        DataTable dataTable = new DataTable<>("data_table", columns,
+        DataTable<SubsidyMasterData, String> dataTable = new DataTable<>("data_table", columns,
                 new ListDataProvider<>(subsidyMasterDataBean.getSubsidyMasterDataList(subsidyId)), 10);
-        dataTable.addTopToolbar(new HeadersToolbar(dataTable, null));
+        dataTable.addTopToolbar(new HeadersToolbar<>(dataTable, null));
         add(dataTable);
 
         add(new AjaxLink("back") {

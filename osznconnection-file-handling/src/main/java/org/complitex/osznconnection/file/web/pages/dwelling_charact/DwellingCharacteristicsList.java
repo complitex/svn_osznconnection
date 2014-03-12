@@ -139,7 +139,7 @@ public final class DwellingCharacteristicsList extends TemplatePage {
         final DataProvider<DwellingCharacteristics> dataProvider = new DataProvider<DwellingCharacteristics>() {
 
             @Override
-            protected Iterable<? extends DwellingCharacteristics> getData(int first, int count) {
+            protected Iterable<? extends DwellingCharacteristics> getData(long first, long count) {
                 example.getObject().setAsc(getSort().isAscending());
                 if (!Strings.isEmpty(getSort().getProperty())) {
                     example.getObject().setOrderByClause(getSort().getProperty());
