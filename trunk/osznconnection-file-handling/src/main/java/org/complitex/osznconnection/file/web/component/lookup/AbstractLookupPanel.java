@@ -24,7 +24,7 @@ import org.complitex.dictionary.util.CloneUtil;
 import org.complitex.dictionary.web.component.ShowMode;
 import org.complitex.dictionary.web.component.search.SearchComponentState;
 import org.complitex.dictionary.web.component.search.WiQuerySearchComponent;
-import org.complitex.organization.web.component.OrganizationPicker;
+import org.complitex.dictionary.web.component.organization.OrganizationPicker;
 import org.complitex.osznconnection.file.entity.AbstractRequest;
 import org.complitex.osznconnection.file.entity.AccountDetail;
 import org.complitex.osznconnection.file.entity.RequestStatus;

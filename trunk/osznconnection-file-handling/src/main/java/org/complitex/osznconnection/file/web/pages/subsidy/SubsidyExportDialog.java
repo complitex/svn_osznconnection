@@ -19,7 +19,7 @@ import org.complitex.address.web.component.DistrictSelectPanel;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.web.component.DatePicker;
 import org.complitex.organization.web.component.OrganizationMultiselectPanel;
-import org.complitex.organization.web.component.OrganizationPicker;
+import org.complitex.dictionary.web.component.organization.OrganizationPicker;
 import org.complitex.organization_type.strategy.OrganizationTypeStrategy;
 import org.complitex.osznconnection.file.entity.ExportType;
 import org.complitex.osznconnection.file.entity.RequestFileType;

@@ -14,7 +14,7 @@ import org.complitex.dictionary.converter.BigDecimalConverter;
 import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
 import org.complitex.dictionary.web.component.ajax.AjaxLinkPanel;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
-import org.complitex.organization.web.component.OrganizationPicker;
+import org.complitex.dictionary.web.component.organization.OrganizationPicker;
 import org.complitex.organization_type.strategy.OrganizationTypeStrategy;
 import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.entity.RequestFileType;
