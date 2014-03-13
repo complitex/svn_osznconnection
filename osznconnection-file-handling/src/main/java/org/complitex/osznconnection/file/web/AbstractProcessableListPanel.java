@@ -31,7 +31,7 @@ import org.complitex.dictionary.web.component.YearDropDownChoice;
 import org.complitex.dictionary.web.component.ajax.AjaxFeedbackPanel;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
-import org.complitex.organization.web.component.OrganizationPicker;
+import org.complitex.dictionary.web.component.organization.OrganizationPicker;
 import org.complitex.organization_type.strategy.OrganizationTypeStrategy;
 import org.complitex.osznconnection.file.entity.RequestFile;
 import org.complitex.osznconnection.file.service.process.ProcessManagerBean;
