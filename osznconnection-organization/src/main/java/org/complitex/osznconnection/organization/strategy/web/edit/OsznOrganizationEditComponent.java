@@ -580,11 +580,4 @@ public class OsznOrganizationEditComponent extends OrganizationEditComponent {
     protected String getStrategyName() {
         return OsznOrganizationStrategy.OSZN_ORGANIZATION_STRATEGY_NAME;
     }
-
-    @Override
-    protected boolean isOrganizationTypeEnabled() {
-        Long organizationId = getDomainObject().getId();
-        return !(organizationId != null && (organizationId.equals(OsznOrganizationStrategy.MODULE_ID)))
-                && super.isOrganizationTypeEnabled();
-    }
 }
