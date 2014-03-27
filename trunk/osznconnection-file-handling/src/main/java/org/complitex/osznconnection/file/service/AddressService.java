@@ -12,15 +12,16 @@ import org.complitex.address.strategy.street.StreetStrategy;
 import org.complitex.address.strategy.street_type.StreetTypeStrategy;
 import org.complitex.correction.entity.*;
 import org.complitex.correction.service.AddressCorrectionBean;
+import org.complitex.correction.service.exception.DuplicateCorrectionException;
+import org.complitex.correction.service.exception.MoreOneCorrectionException;
+import org.complitex.correction.service.exception.NotFoundCorrectionException;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.dictionary.service.LocaleBean;
+import org.complitex.dictionary.service.ModuleBean;
 import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
 import org.complitex.osznconnection.file.entity.*;
-import org.complitex.correction.service.exception.DuplicateCorrectionException;
-import org.complitex.correction.service.exception.MoreOneCorrectionException;
-import org.complitex.correction.service.exception.NotFoundCorrectionException;
 import org.complitex.osznconnection.file.service_provider.ServiceProviderAdapter;
 import org.complitex.osznconnection.organization.strategy.OsznOrganizationStrategy;
 import org.slf4j.Logger;
@@ -33,7 +34,6 @@ import java.util.Locale;
 import java.util.Set;
 
 import static org.complitex.dictionary.util.StringUtil.removeWhiteSpaces;
-import static org.complitex.osznconnection.organization.strategy.OsznOrganizationStrategy.MODULE_ID;
 
 @Stateless(name = "OsznAddressService")
 public class AddressService extends AbstractBean {
@@ -68,6 +68,9 @@ public class AddressService extends AbstractBean {
 
     @EJB
     private OsznOrganizationStrategy organizationStrategy;
+
+    @EJB
+    private ModuleBean moduleBean;
 
     /**
      * Разрешить переход "ОСЗН адрес -> локальная адресная база"
@@ -549,6 +552,7 @@ public class AddressService extends AbstractBean {
                                     Long userOrganizationId)
             throws DuplicateCorrectionException, MoreOneCorrectionException, NotFoundCorrectionException {
         Long osznId = request.getOrganizationId();
+        Long moduleId = moduleBean.getModuleId();
 
         switch (entity) {
             case CITY: {
@@ -557,7 +561,7 @@ public class AddressService extends AbstractBean {
 
                 if (cityCorrections.isEmpty()) {
                     CityCorrection cityCorrection = new CityCorrection(null, cityObjectId, request.getCity().toUpperCase(),
-                            osznId, userOrganizationId, MODULE_ID);
+                            osznId, userOrganizationId, moduleId);
                     addressCorrectionBean.save(cityCorrection);
                 } else {
                     throw new DuplicateCorrectionException();
@@ -573,7 +577,7 @@ public class AddressService extends AbstractBean {
                     StreetTypeCorrection streetTypeCorrection = new StreetTypeCorrection(request.getStreetTypeCode(),
                             streetTypeObjectId,
                             request.getStreetType().toUpperCase(),
-                            osznId, userOrganizationId, MODULE_ID);
+                            osznId, userOrganizationId, moduleId);
                     addressCorrectionBean.save(streetTypeCorrection);
                 } else {
                     throw new DuplicateCorrectionException();
@@ -591,7 +595,7 @@ public class AddressService extends AbstractBean {
                 if (streetCorrections.isEmpty()) {
                     StreetCorrection streetCorrection = new StreetCorrection(request.getInternalCityId(), streetTypeId,
                             request.getStreetCode(), streetObjectId, request.getStreet().toUpperCase(),
-                            osznId, userOrganizationId, MODULE_ID);
+                            osznId, userOrganizationId, moduleId);
 
                     addressCorrectionBean.save(streetCorrection);
                 } else {
@@ -610,7 +614,7 @@ public class AddressService extends AbstractBean {
                             buildingObjectId,
                             request.getBuildingNumber().toUpperCase(),
                             request.getBuildingCorp() != null ? request.getBuildingCorp().toUpperCase() : null,
-                            osznId, userOrganizationId, MODULE_ID);
+                            osznId, userOrganizationId, moduleId);
 
                     addressCorrectionBean.save(buildingCorrection);
                 } else {

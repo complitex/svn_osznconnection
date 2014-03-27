@@ -31,8 +31,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static org.complitex.osznconnection.organization.strategy.OsznOrganizationStrategy.MODULE_ID;
-
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 03.12.13 18:51
@@ -97,7 +95,7 @@ public class SubsidyFileListPanel extends AbstractFileListPanel {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         organizationCorrectionDialog.open(target, code, rf.getOrganizationId(),
-                                rf.getUserOrganizationId(), MODULE_ID);
+                                rf.getUserOrganizationId());
                     }
 
                     @Override

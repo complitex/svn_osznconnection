@@ -15,7 +15,6 @@ import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
 import org.complitex.dictionary.strategy.web.AbstractComplexAttributesPanel;
 import org.complitex.dictionary.strategy.web.validate.IValidator;
 import org.complitex.dictionary.util.AttributeUtil;
-import org.complitex.dictionary.util.ResourceUtil;
 import org.complitex.organization.strategy.AbstractOrganizationStrategy;
 import org.complitex.osznconnection.organization.strategy.entity.OsznOrganization;
 import org.complitex.osznconnection.organization.strategy.entity.RemoteDataSource;
@@ -40,8 +39,6 @@ import static org.complitex.osznconnection.organization_type.strategy.OsznOrgani
  */
 @Stateless(name = IOrganizationStrategy.BEAN_NAME)
 public class OsznOrganizationStrategy extends AbstractOrganizationStrategy<DomainObject> {
-    public final static Long MODULE_ID = 0L;
-
     /**
      * Reference to jdbc data source. It is calculation center only attribute.
      */
@@ -194,11 +191,6 @@ public class OsznOrganizationStrategy extends AbstractOrganizationStrategy<Domai
         return pageParameters;
     }
 
-    @Override
-    public Long getModuleId() {
-        return MODULE_ID;
-    }
-
     @Transactional
     @Override
     public List<DomainObject> getAllOuterOrganizations(Locale locale) {
@@ -331,15 +323,6 @@ public class OsznOrganizationStrategy extends AbstractOrganizationStrategy<Domai
     @Transactional
     private void saveServiceAssociation(ServiceAssociation serviceAssociation) {
         sqlSession().insert(MAPPING_NAMESPACE + ".insertServiceAssociation", serviceAssociation);
-    }
-
-    @Transactional
-    @Override
-    protected void deleteChecks(long objectId, Locale locale) throws DeleteException {
-        if (MODULE_ID == objectId) {
-            throw new DeleteException(ResourceUtil.getString(RESOURCE_BUNDLE, "delete_reserved_instance_error", locale));
-        }
-        super.deleteChecks(objectId, locale);
     }
 
     @Transactional

@@ -13,16 +13,12 @@ import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.entity.Log;
 import org.complitex.dictionary.mybatis.Transactional;
-import org.complitex.dictionary.service.AbstractBean;
-import org.complitex.dictionary.service.ConfigBean;
-import org.complitex.dictionary.service.LocaleBean;
-import org.complitex.dictionary.service.LogBean;
+import org.complitex.dictionary.service.*;
 import org.complitex.dictionary.service.executor.ExecuteException;
 import org.complitex.dictionary.util.ResourceUtil;
 import org.complitex.osznconnection.file.Module;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.service.process.FacilityStreetLoadTaskBean;
-import org.complitex.osznconnection.organization.strategy.OsznOrganizationStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,6 +61,9 @@ public class FacilityReferenceBookBean extends AbstractBean {
 
     @EJB
     private LocaleBean localeBean;
+
+    @EJB
+    private ModuleBean moduleBean;
 
     @Transactional
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
@@ -159,6 +158,7 @@ public class FacilityReferenceBookBean extends AbstractBean {
     public void updateStreetCorrections(FacilityStreet street, Long userOrganizationId, Long osznId,
             final String streetTypeReferenceFileName) throws ExecuteException {
         Locale locale = localeBean.getSystemLocale(); //todo locale?
+        Long moduleId = moduleBean.getModuleId();
 
         String streetName = street.getStringField(FacilityStreetDBF.KL_NAME);
         String streetCode = street.getStringField(FacilityStreetDBF.KL_CODEUL);
@@ -212,7 +212,7 @@ public class FacilityReferenceBookBean extends AbstractBean {
             if (streetTypeIds.size() == 1) {
                 streetTypeId = streetTypeIds.get(0);
                 streetTypeCorrection = new StreetTypeCorrection(streetTypeCode, streetTypeId, streetTypeName.toUpperCase(),
-                         osznId, userOrganizationId, OsznOrganizationStrategy.MODULE_ID);
+                         osznId, userOrganizationId, moduleId);
 
                 addressCorrectionBean.save(streetTypeCorrection);
             } else if (streetTypeIds.size() > 1) {
@@ -257,7 +257,7 @@ public class FacilityReferenceBookBean extends AbstractBean {
 
                 StreetCorrection streetCorrection =  new StreetCorrection(cityId, streetTypeId,
                         streetCode.toUpperCase(), streetId, streetName.toUpperCase(),
-                        osznId, userOrganizationId, OsznOrganizationStrategy.MODULE_ID);
+                        osznId, userOrganizationId, moduleId);
 
                 addressCorrectionBean.save(streetCorrection);
             } else {
