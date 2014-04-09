@@ -22,9 +22,9 @@ import org.complitex.dictionary.strategy.IStrategy;
 import org.complitex.dictionary.strategy.StrategyFactory;
 import org.complitex.dictionary.util.CloneUtil;
 import org.complitex.dictionary.web.component.ShowMode;
+import org.complitex.dictionary.web.component.organization.OrganizationPicker;
 import org.complitex.dictionary.web.component.search.SearchComponentState;
 import org.complitex.dictionary.web.component.search.WiQuerySearchComponent;
-import org.complitex.dictionary.web.component.organization.OrganizationPicker;
 import org.complitex.osznconnection.file.entity.AbstractRequest;
 import org.complitex.osznconnection.file.entity.AccountDetail;
 import org.complitex.osznconnection.file.entity.RequestStatus;
@@ -38,7 +38,6 @@ import org.odlabs.wiquery.ui.dialog.Dialog;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.apache.wicket.util.string.Strings.isEmpty;
@@ -348,25 +347,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
 
     protected final List<AccountDetail> acquireAccountDetailsByAccount(T request, String district, String account,
             long userOrganizationId) throws DBException, UnknownAccountNumberTypeException {
-
-        //todo test
-        List<AccountDetail> list = new ArrayList<>();
-        for (int i=0; i < 20; ++i){
-            AccountDetail accountDetail = new AccountDetail();
-            accountDetail.setAccCode("accCode " + i);
-            accountDetail.setZheu("zheu " + i);
-            accountDetail.setZheuCode("zheuCode " + i);
-            accountDetail.setOwnerFio("ownerFio " + i);
-            accountDetail.setAddress("address " + i);
-            accountDetail.setOwnerINN("ownerInn " + i);
-            accountDetail.setErcCode("ercCode " + i);
-
-            list.add(accountDetail);
-        }
-
-        return list;
-
-        //return lookupBean.acquireAccountDetailsByAccount(request, district, account, userOrganizationId);
+        return lookupBean.acquireAccountDetailsByAccount(request, district, account, userOrganizationId);
     }
 
     protected abstract void resolveOutgoingAddress(T request, long userOrganizationId);
