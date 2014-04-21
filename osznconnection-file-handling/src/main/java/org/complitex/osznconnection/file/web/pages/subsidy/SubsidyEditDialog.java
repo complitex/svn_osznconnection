@@ -36,7 +36,7 @@ import static org.complitex.osznconnection.file.entity.RequestStatus.SUBSIDY_NM_
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 05.12.13 18:06
  */
-public class SubsidyEditPanel extends Panel {
+public class SubsidyEditDialog extends Panel {
     @EJB
     private RequestFileDescriptionBean requestFileDescriptionBean;
 
@@ -59,13 +59,12 @@ public class SubsidyEditPanel extends Panel {
 
     private AjaxSubmitLink link;
 
-    public SubsidyEditPanel(String id, final Component toUpdate) {
+    public SubsidyEditDialog(String id, final Component toUpdate) {
         super(id);
 
         dialog = new Dialog("dialog");
         dialog.setModal(true);
         dialog.setWidth(750);
-        dialog.setCloseOnEscape(false);
         add(dialog);
 
         form = new Form("form"){
@@ -74,7 +73,7 @@ public class SubsidyEditPanel extends Panel {
                 super.onBeforeRender();
 
                 if (subsidyModel.getObject().getUserOrganizationId() != null) {
-                    SubsidyEditPanel.this.validate(null);
+                    SubsidyEditDialog.this.validate(null);
                 }
             }
         };
@@ -85,7 +84,7 @@ public class SubsidyEditPanel extends Panel {
         messages.setOutputMarkupId(true);
         form.add(messages);
 
-        final RequestFileDescription description = requestFileDescriptionBean.getFileDescription (RequestFileType.SUBSIDY);
+        final RequestFileDescription description = requestFileDescriptionBean.getFileDescription(RequestFileType.SUBSIDY);
 
         int index = -1;
         for (RequestFileFieldDescription d : description.getFields()){
