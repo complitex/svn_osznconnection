@@ -18,7 +18,7 @@ public class RequestFileFieldDescription implements Serializable {
     private final String type;
     private final int length;
     private final Integer scale;
-    private final Class<?> fieldType;
+    private final Class fieldType;
 
     public RequestFileFieldDescription(String name, String type, int length, Integer scale) {
         this.name = name;
@@ -32,7 +32,7 @@ public class RequestFileFieldDescription implements Serializable {
         }
 
         try {
-            fieldType = Thread.currentThread().getContextClassLoader().loadClass(type);
+            fieldType = Class.forName(type);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -70,7 +70,7 @@ public class RequestFileFieldDescription implements Serializable {
         this.requestFileDescriptionId = requestFileDescriptionId;
     }
 
-    public Class<?> getFieldType() {
+    public Class getFieldType() {
         return fieldType;
     }
 }
