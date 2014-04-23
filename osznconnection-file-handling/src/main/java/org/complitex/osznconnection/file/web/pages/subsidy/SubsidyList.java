@@ -57,8 +57,8 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.complitex.dictionary.util.StringUtil.decimal;
 
@@ -162,27 +162,27 @@ public final class SubsidyList extends TemplatePage {
         };
         dataProvider.setSort("", SortOrder.ASCENDING);
 
-        filterForm.add(new TextField<String>("rashFilter", new PropertyModel<String>(example, "rash")));
-        filterForm.add(new TextField<String>("firstNameFilter", new PropertyModel<String>(example, "firstName")));
-        filterForm.add(new TextField<String>("middleNameFilter", new PropertyModel<String>(example, "middleName")));
-        filterForm.add(new TextField<String>("lastNameFilter", new PropertyModel<String>(example, "lastName")));
-        filterForm.add(new TextField<String>("cityFilter", new PropertyModel<String>(example, "city")));
-        filterForm.add(new TextField<String>("streetFilter", new PropertyModel<String>(example, "street")));
-        filterForm.add(new TextField<String>("buildingFilter", new PropertyModel<String>(example, "building")));
-        filterForm.add(new TextField<String>("corpFilter", new PropertyModel<String>(example, "corp")));
-        filterForm.add(new TextField<String>("apartmentFilter", new PropertyModel<String>(example, "apartment")));
+        filterForm.add(new TextField<>("rashFilter", new PropertyModel<String>(example, "rash")));
+        filterForm.add(new TextField<>("firstNameFilter", new PropertyModel<String>(example, "firstName")));
+        filterForm.add(new TextField<>("middleNameFilter", new PropertyModel<String>(example, "middleName")));
+        filterForm.add(new TextField<>("lastNameFilter", new PropertyModel<String>(example, "lastName")));
+        filterForm.add(new TextField<>("cityFilter", new PropertyModel<String>(example, "city")));
+        filterForm.add(new TextField<>("streetFilter", new PropertyModel<String>(example, "street")));
+        filterForm.add(new TextField<>("buildingFilter", new PropertyModel<String>(example, "building")));
+        filterForm.add(new TextField<>("corpFilter", new PropertyModel<String>(example, "corp")));
+        filterForm.add(new TextField<>("apartmentFilter", new PropertyModel<String>(example, "apartment")));
 
-        filterForm.add(new TextField<Date>("DAT1", new PropertyModel<Date>(example, "DAT1")));
-        filterForm.add(new TextField<Date>("DAT2", new PropertyModel<Date>(example, "DAT2")));
-        filterForm.add(new TextField<Integer>("NUMM", new PropertyModel<Integer>(example, "NUMM")));
-        filterForm.add(new TextField<BigDecimal>("NM_PAY", new PropertyModel<BigDecimal>(example, "NM_PAY")));
-        filterForm.add(new TextField<BigDecimal>("SUMMA", new PropertyModel<BigDecimal>(example, "SUMMA")));
-        filterForm.add(new TextField<BigDecimal>("SUBS", new PropertyModel<BigDecimal>(example, "SUBS")));
+        filterForm.add(new TextField<>("DAT1", new PropertyModel<Date>(example, "DAT1")));
+        filterForm.add(new TextField<>("DAT2", new PropertyModel<Date>(example, "DAT2")));
+        filterForm.add(new TextField<>("NUMM", new PropertyModel<Integer>(example, "NUMM")));
+        filterForm.add(new TextField<>("NM_PAY", new PropertyModel<BigDecimal>(example, "NM_PAY")));
+        filterForm.add(new TextField<>("SUMMA", new PropertyModel<BigDecimal>(example, "SUMMA")));
+        filterForm.add(new TextField<>("SUBS", new PropertyModel<BigDecimal>(example, "SUBS")));
 
-        filterForm.add(new DropDownChoice<RequestStatus>("statusFilter", new PropertyModel<RequestStatus>(example, "status"),
+        filterForm.add(new DropDownChoice<>("statusFilter", new PropertyModel<RequestStatus>(example, "status"),
                 Arrays.asList(RequestStatus.values()), new StatusRenderer()).setNullValid(true));
 
-        AjaxLink<Void> reset = new AjaxLink<Void>("reset") {
+        AjaxLink reset = new AjaxLink("reset") {
 
             @Override
             public void onClick(AjaxRequestTarget target) {
@@ -374,7 +374,7 @@ public final class SubsidyList extends TemplatePage {
 
         //Фильтр сумм
         final SubsidyFilterDialog filterDialog = new SubsidyFilterDialog("sum_filter_dialog",
-                Model.ofMap(new HashMap<String, Object>()), filterForm);
+                new PropertyModel<Map<String, Object>>(example, "sumMap"), filterForm);
         add(filterDialog);
 
         filterForm.add(new AjaxLink("sum_filter") {

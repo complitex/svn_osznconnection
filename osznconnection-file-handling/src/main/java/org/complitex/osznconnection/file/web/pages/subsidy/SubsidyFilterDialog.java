@@ -38,12 +38,10 @@ public class SubsidyFilterDialog extends Panel{
             "NM_PAY","SUMMA","SUBS","KVT");
 
     private Dialog dialog;
-    private Component updateOnSubmit;
     private Form form;
 
-    public SubsidyFilterDialog(String id, IModel<Map<String, Object>> model, Component updateOnSubmit) {
+    public SubsidyFilterDialog(String id, IModel<Map<String, Object>> model, final Component updateOnSubmit) {
         super(id);
-        this.updateOnSubmit = updateOnSubmit;
 
         dialog = new Dialog("dialog");
         dialog.setModal(true);
@@ -73,7 +71,13 @@ public class SubsidyFilterDialog extends Panel{
         form.add(new AjaxButton("filter") {
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                target.add(updateOnSubmit);
+                dialog.close(target);
+            }
 
+            @Override
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
+                target.add(messages);
             }
         });
 
@@ -86,6 +90,7 @@ public class SubsidyFilterDialog extends Panel{
     }
 
     public void open(AjaxRequestTarget target){
+        target.add(form);
         dialog.open(target);
     }
 }
