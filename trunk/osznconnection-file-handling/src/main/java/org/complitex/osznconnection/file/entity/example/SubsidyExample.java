@@ -2,6 +2,8 @@ package org.complitex.osznconnection.file.entity.example;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -26,6 +28,8 @@ public class SubsidyExample extends AbstractRequestExample {
     private Date DAT1, DAT2;
     private Integer NUMM;
     private BigDecimal NM_PAY, SUMMA, SUBS;
+
+    private Map<String, Object> sumMap = new HashMap<>();
 
     public String getRash() {
         return rash;
@@ -177,5 +181,13 @@ public class SubsidyExample extends AbstractRequestExample {
 
     public void setSUBS(BigDecimal SUBS) {
         this.SUBS = SUBS;
+    }
+
+    public Map<String, Object> getSumMap() {
+        return sumMap;
+    }
+
+    public void setSumMap(Map<String, Object> sumMap) {
+        this.sumMap = sumMap;
     }
 }
