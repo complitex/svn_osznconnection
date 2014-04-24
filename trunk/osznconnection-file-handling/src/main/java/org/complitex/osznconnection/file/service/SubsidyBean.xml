@@ -141,6 +141,19 @@
         <if test="status != null">
             AND s.`status` = #{status}
         </if>
+
+        <if test="!sumFilter.map.isEmpty">and (</if>
+           <foreach collection="sumFilter.map" index="key" item="value" separator="or">
+               <if test="value != null">
+                   <if test="sumFilter.abs">ABS(</if> s.${key} <if test="sumFilter.abs">)</if>
+
+                   <if test="sumFilter.compare == 0">=</if>
+                   <if test="sumFilter.compare == -1"><![CDATA[<=]]></if>
+                   <if test="sumFilter.compare == 1"><![CDATA[>=]]></if>
+                   #{value}
+               </if>
+           </foreach>
+        <if test="!sumFilter.map.isEmpty">)</if>
     </sql>
 
     <select id="count" resultType="int" parameterType="org.complitex.osznconnection.file.entity.example.SubsidyExample">

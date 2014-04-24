@@ -15,8 +15,7 @@
         </collection>
     </resultMap>
 
-    <select id="getWarnings" resultMap="org.complitex.osznconnection.file.service.warning.RequestWarningBean.requestWarning"
-            parameterType="map">
+    <select id="getWarnings" resultMap="requestWarning" parameterType="map">
         SELECT w.`id` warning_id, w.`request_id` warning_request_id, w.`request_file_type` warning_request_file_type,
                 w.`status` warning_status, p.`request_warning_id` param_request_warning_id, p.`order` param_order, p.`type` param_type,
                 p.`value` param_value

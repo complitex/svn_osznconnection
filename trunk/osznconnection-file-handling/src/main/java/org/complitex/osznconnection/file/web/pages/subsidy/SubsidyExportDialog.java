@@ -75,7 +75,7 @@ public class SubsidyExportDialog extends Panel {
         };
         form.add(structureContainer);
 
-        structureContainer.add(new RadioChoice<RequestFileType>("requestFileType", Arrays.asList(RequestFileType.SUBSIDY_J_FILE,
+        structureContainer.add(new RadioChoice<>("requestFileType", Arrays.asList(RequestFileType.SUBSIDY_J_FILE,
                 RequestFileType.SUBSIDY_S_FILE), new IChoiceRenderer<RequestFileType>() {
             @Override
             public Object getDisplayValue(RequestFileType object) {
@@ -113,7 +113,7 @@ public class SubsidyExportDialog extends Panel {
         };
         form.add(exportTypeContainer);
 
-        exportTypeContainer.add(new RadioChoice<ExportType>("exportType", Arrays.asList(BALANCE_HOLDER, DISTRICT, SERVICING_ORGANIZATION),
+        exportTypeContainer.add(new RadioChoice<>("exportType", Arrays.asList(BALANCE_HOLDER, DISTRICT, SERVICING_ORGANIZATION),
                 new IChoiceRenderer<ExportType>() {
             @Override
             public Object getDisplayValue(ExportType object) {

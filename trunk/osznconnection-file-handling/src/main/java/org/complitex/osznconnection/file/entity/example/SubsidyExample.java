@@ -10,7 +10,6 @@ import java.util.Map;
  * @author Artem
  */
 public class SubsidyExample extends AbstractRequestExample {
-
     private String rash;
     private String firstName;
     private String middleName;
@@ -29,7 +28,7 @@ public class SubsidyExample extends AbstractRequestExample {
     private Integer NUMM;
     private BigDecimal NM_PAY, SUMMA, SUBS;
 
-    private Map<String, Object> sumMap = new HashMap<>();
+    private SubsidySumFilter sumFilter = new SubsidySumFilter();
 
     public String getRash() {
         return rash;
@@ -183,11 +182,11 @@ public class SubsidyExample extends AbstractRequestExample {
         this.SUBS = SUBS;
     }
 
-    public Map<String, Object> getSumMap() {
-        return sumMap;
+    public SubsidySumFilter getSumFilter() {
+        return sumFilter;
     }
 
-    public void setSumMap(Map<String, Object> sumMap) {
-        this.sumMap = sumMap;
+    public void setSumFilter(SubsidySumFilter sumFilter) {
+        this.sumFilter = sumFilter;
     }
 }
