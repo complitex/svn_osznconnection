@@ -4,14 +4,20 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.RadioChoice;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.ResourceModel;
 import org.complitex.dictionary.web.component.form.TextFieldPanel;
 import org.complitex.osznconnection.file.entity.RequestFileType;
+import org.complitex.osznconnection.file.entity.example.SubsidyExample;
+import org.complitex.osznconnection.file.entity.example.SubsidySumFilter;
 import org.complitex.osznconnection.file.service.file_description.RequestFileDescription;
 import org.complitex.osznconnection.file.service.file_description.RequestFileDescriptionBean;
 import org.complitex.osznconnection.file.service.file_description.RequestFileFieldDescription;
@@ -40,15 +46,21 @@ public class SubsidyFilterDialog extends Panel{
     private Dialog dialog;
     private Form form;
 
-    public SubsidyFilterDialog(String id, IModel<Map<String, Object>> model, final Component updateOnSubmit) {
+    public SubsidyFilterDialog(String id, IModel<SubsidySumFilter> model, final Component updateOnSubmit) {
         super(id);
 
         dialog = new Dialog("dialog");
+        dialog.setTitle(new ResourceModel("filter_title"));
         dialog.setModal(true);
-        dialog.setWidth(750);
+        dialog.setWidth(670);
         add(dialog);
 
-        form = new Form<>("form", CompoundPropertyModel.of(model));
+        form = new Form<SubsidySumFilter>("form", CompoundPropertyModel.of(model)){
+            @Override
+            protected void beforeUpdateFormComponentModels() {
+                getModelObject().getMap().clear();
+            }
+        };
         form.setOutputMarkupId(true);
         dialog.add(form);
 
@@ -56,12 +68,27 @@ public class SubsidyFilterDialog extends Panel{
         messages.setOutputMarkupId(true);
         form.add(messages);
 
+        form.add(new CheckBox("abs", new PropertyModel<Boolean>(model, "abs")));
+
+        form.add(new RadioChoice<>("compare", new PropertyModel<Integer>(model, "compare"),
+                Arrays.asList(-1, 0, 1), new IChoiceRenderer<Integer>() {
+            @Override
+            public String getDisplayValue(Integer object) {
+                return getString("compare" + object);
+            }
+
+            @Override
+            public String getIdValue(Integer object, int index) {
+                return object + "";
+            }
+        }).setSuffix(""));
+
         RequestFileDescription description = requestFileDescriptionBean.getFileDescription(RequestFileType.SUBSIDY);
 
         for (RequestFileFieldDescription d : description.getFields()){
             if (FIELDS.contains(d.getName())) {
-                TextFieldPanel<Object> textField = new TextFieldPanel<>(d.getName(), new PropertyModel<>(model, d.getName()),
-                        d.getFieldType(), d.getLength());
+                TextFieldPanel<Object> textField = new TextFieldPanel<>(d.getName(), new PropertyModel<>(model,
+                        "map[" + d.getName() + "]"), d.getFieldType(), d.getLength());
                 textField.setOutputMarkupId(true);
 
                 form.add(textField);

@@ -3,6 +3,15 @@
         <form wicket:id="form">
             <div wicket:id="messages"></div>
 
+            <div>
+                <input type="checkbox" id="abs" wicket:id="abs"/>
+                <label for="abs"><wicket:message key="abs"/></label>
+
+                <span wicket:id="compare">
+                    <input type="radio"/> <input type="radio"/> <input type="radio"/>
+                </span>
+            </div>
+
             <table>
                 <tr>
                     <th>P1:</th><td wicket:id="P1"></td>
@@ -61,7 +70,7 @@
             </table>
 
             <div style="margin-top: 10px">
-                <input type="button" wicket:id="filter" class="btnMiddle" wicket:message="value:filter"/>
+                <input type="button" wicket:id="filter" class="btnMiddle" wicket:message="value:apply"/>
                 <input type="button" wicket:id="close" class="btnMiddle" wicket:message="value:close"/>
             </div>
         </form>
