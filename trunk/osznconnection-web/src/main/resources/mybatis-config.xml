@@ -101,6 +101,6 @@
 
         <!--remote mappers-->
         <mapper resource="org/complitex/osznconnection/file/service_provider/ServiceProviderAdapter.xml"/>
-        <mapper resource="org/complitex/correction/service/AddressSyncAdapter.xml"/>
+        <mapper resource="org/complitex/address/service/AddressSyncAdapter.xml"/>
     </mappers>
 </configuration>
