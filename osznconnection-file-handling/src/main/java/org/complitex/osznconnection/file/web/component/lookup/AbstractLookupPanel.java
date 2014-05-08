@@ -7,11 +7,12 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
-import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.string.Strings;
 import org.apache.wicket.util.template.PackageTextTemplate;
@@ -34,7 +35,9 @@ import org.complitex.osznconnection.file.service.StatusRenderService;
 import org.complitex.osznconnection.file.service_provider.exception.DBException;
 import org.complitex.osznconnection.file.service_provider.exception.UnknownAccountNumberTypeException;
 import org.complitex.osznconnection.file.web.component.account.AccountNumberPickerPanel;
+import org.odlabs.wiquery.ui.accordion.Accordion;
 import org.odlabs.wiquery.ui.dialog.Dialog;
+import org.odlabs.wiquery.ui.options.HeightStyleEnum;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
@@ -64,7 +67,8 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
     private AccountNumberPickerPanel accountNumberPickerPanel;
     private FeedbackPanel messages;
     private Dialog dialog;
-    private WebMarkupContainer container;
+    private Accordion container;
+    private Label header;
     private SearchComponentState addressSearchComponentState;
     private WiQuerySearchComponent addressSearchComponent;
     private T request;
@@ -81,6 +85,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
 
     private void init(final Component... toUpdate) {
         dialog = new Dialog("dialog");
+        dialog.setOutputMarkupId(true);
         dialog.setModal(true);
         dialog.setWidth(1000);
         add(dialog);
@@ -89,8 +94,20 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
         messages.setOutputMarkupId(true);
         dialog.add(messages);
 
-        container = new WebMarkupContainer("container");
-        container.setOutputMarkupPlaceholderTag(true);
+        header = new Label("header", new LoadableDetachableModel<String>() {
+
+            @Override
+            protected String load() {
+                return request != null ? getTitle(request) : "";
+            }
+        });
+        header.setOutputMarkupId(true);
+        dialog.add(header);
+
+        container = new Accordion("container");
+        container.setHeightStyle(HeightStyleEnum.CONTENT);
+        container.setActive(0);
+
         dialog.add(container);
 
         //lookup by address
@@ -311,6 +328,10 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
 
     protected abstract boolean isInternalAddressCorrect(T request);
 
+    protected String getTitle(T request){
+        return "";
+    }
+
     public void open(AjaxRequestTarget target, T request, Long cityId, Long streetId, Long buildingId, String apartment,
             String serviceProviderAccountNumber, boolean immediatelySearchByAddress) {
         this.request = CloneUtil.cloneObject(request);
@@ -337,11 +358,12 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
         //set active container item
         if (immediatelySearchByAddress) {
             lastAccordionActive = 0;
-            target.appendJavaScript("(function(){ $('#lookupByAddress .lookupByAddressButton').click(); })()");
+            target.appendJavaScript("(function(){ $('#lookupByAddress.lookupByAddressButton').click(); })()");
         }
 
         target.add(container);
         target.add(messages);
+        target.add(header);
         dialog.open(target);
     }
 
