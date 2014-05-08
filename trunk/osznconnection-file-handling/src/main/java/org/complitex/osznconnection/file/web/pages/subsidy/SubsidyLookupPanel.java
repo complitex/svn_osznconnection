@@ -55,4 +55,9 @@ public class SubsidyLookupPanel extends AbstractLookupPanel<Subsidy> {
     protected void updateAccountNumber(Subsidy subsidy, String accountNumber, long userOrganizationId) {
         personAccountService.updateAccountNumber(subsidy, accountNumber, userOrganizationId);
     }
+
+    @Override
+    protected String getTitle(Subsidy subsidy) {
+        return subsidy.getFio() + " " + subsidy.getAddress();
+    }
 }
