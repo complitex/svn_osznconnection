@@ -3,6 +3,7 @@ package org.complitex.osznconnection.file.service;
 import org.complitex.correction.entity.OrganizationCorrection;
 import org.complitex.correction.service.OrganizationCorrectionBean;
 import org.complitex.dictionary.entity.FilterWrapper;
+import org.complitex.dictionary.util.DateUtil;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.organization.strategy.OsznOrganizationStrategy;
 import org.complitex.osznconnection.organization.strategy.entity.OsznOrganization;
@@ -12,6 +13,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -48,7 +50,7 @@ public class SubsidyService {
         return new SubsidySum(nSum, sbSum, smSum);
     }
 
-    public boolean validate(AbstractRequest request){
+    public boolean validateSum(AbstractRequest request){
         SubsidySum subsidySum = getSubsidySum(request);
 
         int numm = ((Number)request.getField("NUMM")).intValue();
@@ -60,6 +62,13 @@ public class SubsidyService {
                 && summa.compareTo(subsidySum.getSmSum()) == 0
                 && subs.compareTo(subsidySum.getSbSum()) == 0
                 && (numm <= 0 || summa.compareTo(subs.multiply(new BigDecimal(numm))) == 0);
+    }
+
+    public boolean validateDate(AbstractRequest request){
+        Date dat1 = (Date) request.getField("DAT1");
+        Date dat2 = (Date) request.getField("DAT2");
+
+        return dat1.before(dat2) && DateUtil.getMonthDiff(dat1, dat2) <= 6;
     }
 
     public Long getServicingOrganizationId(Long subsidyRequestFileId){

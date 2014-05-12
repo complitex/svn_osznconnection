@@ -269,7 +269,7 @@ public class SubsidyEditDialog extends Panel {
 
         //save
         boolean enabled = subsidyModel.getObject().getUserOrganizationId() == null
-                || subsidyService.validate(subsidyModel.getObject());
+                || subsidyService.validateSum(subsidyModel.getObject());
         link.add(AttributeModifier.replace("style", "opacity:" + (enabled ? "1" : "0.5")));
         link.setEnabled(enabled);
 
