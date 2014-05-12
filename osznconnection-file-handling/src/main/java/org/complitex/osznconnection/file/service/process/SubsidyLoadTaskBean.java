@@ -56,8 +56,13 @@ public class SubsidyLoadTaskBean implements ITaskBean {
             public void save(List<AbstractRequest> batch) {
                 //check sum
                 for (AbstractRequest request : batch) {
-                    if (!subsidyService.validate(request)){
+                    if (!subsidyService.validateSum(request)){
                         request.setStatus(RequestStatus.SUBSIDY_NM_PAY_ERROR);
+                        requestFile.setStatus(RequestFileStatus.LOAD_ERROR);
+                    }
+
+                    if (!subsidyService.validateDate(request)){
+                        request.setStatus(RequestStatus.WRONG_DATES);
                         requestFile.setStatus(RequestFileStatus.LOAD_ERROR);
                     }
                 }

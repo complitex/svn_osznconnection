@@ -84,7 +84,9 @@ public enum RequestStatus implements IEnumCode {
     PAYMENT_NOT_EXISTS(220),
 
     SUBSIDY_NM_PAY_ERROR(250),
-    SERVICING_ORGANIZATION_NOT_FOUND(251);
+    SERVICING_ORGANIZATION_NOT_FOUND(251),
+
+    WRONG_DATES(252);
 
     private int code;
 
