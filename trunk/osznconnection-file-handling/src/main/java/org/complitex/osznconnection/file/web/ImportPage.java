@@ -23,6 +23,7 @@ import org.complitex.dictionary.service.LocaleBean;
 import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
 import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
 import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
+import org.complitex.dictionary.web.component.ajax.AjaxFeedbackPanel;
 import org.complitex.organization.entity.OrganizationImportFile;
 import org.complitex.osznconnection.file.entity.CorrectionImportFile;
 import org.complitex.osznconnection.file.entity.OwnershipImportFile;
@@ -65,12 +66,13 @@ public class ImportPage extends TemplatePage {
 
     public ImportPage() {
         final WebMarkupContainer container = new WebMarkupContainer("container");
+        container.setOutputMarkupId(true);
         add(container);
 
         dictionaryModel = new ListModel<>();
         correctionModel = new ListModel<>();
 
-        container.add(new FeedbackPanel("messages"));
+        container.add(new AjaxFeedbackPanel("messages"));
 
         Form form = new Form("form");
         container.add(form);
@@ -188,6 +190,11 @@ public class ImportPage extends TemplatePage {
 
             @Override
             protected void onPostProcessTarget(AjaxRequestTarget target) {
+                String warn;
+                while ((warn = importService.getWarnQueue().poll()) != null){
+                    getSession().warn(warn);
+                }
+
                 if (!importService.isProcessing()) {
 
                     dictionaryModel.setObject(null);
