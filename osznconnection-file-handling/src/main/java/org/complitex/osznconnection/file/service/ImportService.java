@@ -29,6 +29,8 @@ import javax.transaction.UserTransaction;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -78,6 +80,8 @@ public class ImportService {
     private String errorMessage;
     private Map<IImportFile, ImportMessage> dictionaryMap = new LinkedHashMap<>();
     private Map<IImportFile, ImportMessage> correctionMap = new LinkedHashMap<>();
+    private Queue<String> warnQueue = new ConcurrentLinkedQueue<>();
+
     private IImportListener dictionaryListener = new IImportListener() {
 
         @Override
@@ -98,6 +102,7 @@ public class ImportService {
 
         @Override
         public void warn(IImportFile importFile, String message) {
+            warnQueue.add(message);
         }
     };
     private IImportListener correctionListener = new IImportListener() {
@@ -120,6 +125,7 @@ public class ImportService {
 
         @Override
         public void warn(IImportFile importFile, String message) {
+            warnQueue.add(message);
         }
     };
 
@@ -141,6 +147,10 @@ public class ImportService {
 
     public ImportMessage getDictionaryMessage(IImportFile importFile) {
         return dictionaryMap.get(importFile);
+    }
+
+    public Queue<String> getWarnQueue(){
+        return warnQueue;
     }
 
     public ImportMessage getCorrectionMessage(IImportFile importFile) {
