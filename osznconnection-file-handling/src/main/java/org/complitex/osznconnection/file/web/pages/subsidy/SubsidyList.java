@@ -38,10 +38,7 @@ import org.complitex.dictionary.web.component.paging.PagingNavigator;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.entity.example.SubsidyExample;
 import org.complitex.osznconnection.file.entity.example.SubsidySumFilter;
-import org.complitex.osznconnection.file.service.AddressService;
-import org.complitex.osznconnection.file.service.RequestFileBean;
-import org.complitex.osznconnection.file.service.StatusRenderService;
-import org.complitex.osznconnection.file.service.SubsidyBean;
+import org.complitex.osznconnection.file.service.*;
 import org.complitex.osznconnection.file.service.status.details.StatusDetailBean;
 import org.complitex.osznconnection.file.service.status.details.SubsidyExampleConfigurator;
 import org.complitex.osznconnection.file.service.status.details.SubsidyStatusDetailRenderer;
@@ -59,7 +56,6 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import static org.complitex.dictionary.util.StringUtil.decimal;
 
@@ -69,6 +65,9 @@ public final class SubsidyList extends TemplatePage {
 
     @EJB
     private SubsidyBean subsidyBean;
+
+    @EJB
+    private SubsidyService subsidyService;
 
     @EJB
     private RequestFileBean requestFileBean;
@@ -117,7 +116,8 @@ public final class SubsidyList extends TemplatePage {
         final DataRowHoverBehavior dataRowHoverBehavior = new DataRowHoverBehavior();
         add(dataRowHoverBehavior);
 
-        String label = getStringFormat("label", subsidyFile.getDirectory(), File.separator, subsidyFile.getName());
+        String label = getStringFormat("label", subsidyFile.getDirectory(), File.separator, subsidyFile.getName(),
+                subsidyService.displayServicingOrganization(subsidyFile, getLocale()));
 
         add(new Label("title", label));
         add(new Label("label", label));
