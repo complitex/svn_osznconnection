@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * @author Anatoly Ivanov java@inheaven.ru
@@ -96,5 +97,15 @@ public class SubsidyService {
                         requestFile.getUserOrganizationId(), null)));
 
         return !list.isEmpty() ? organizationStrategy.getCode(list.get(0).getObjectId()) : code;
+    }
+
+    public String displayServicingOrganization(RequestFile subsidyRequestFile, Locale locale){
+        Long organizationId = getServicingOrganizationId(subsidyRequestFile);
+
+        if (organizationId != null){
+            return organizationStrategy.displayShortNameAndCode(organizationStrategy.findById(organizationId, true), locale);
+        }else {
+            return subsidyRequestFile.getName().substring(0, subsidyRequestFile.getName().length() - 8);
+        }
     }
 }
