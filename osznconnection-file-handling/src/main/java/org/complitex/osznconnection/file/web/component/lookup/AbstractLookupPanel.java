@@ -26,6 +26,7 @@ import org.complitex.dictionary.web.component.ShowMode;
 import org.complitex.dictionary.web.component.organization.OrganizationPicker;
 import org.complitex.dictionary.web.component.search.SearchComponentState;
 import org.complitex.dictionary.web.component.search.WiQuerySearchComponent;
+import org.complitex.dictionary.web.component.wiquery.ExtendedDialog;
 import org.complitex.osznconnection.file.entity.AbstractRequest;
 import org.complitex.osznconnection.file.entity.AccountDetail;
 import org.complitex.osznconnection.file.entity.RequestStatus;
@@ -36,7 +37,6 @@ import org.complitex.osznconnection.file.service_provider.exception.DBException;
 import org.complitex.osznconnection.file.service_provider.exception.UnknownAccountNumberTypeException;
 import org.complitex.osznconnection.file.web.component.account.AccountNumberPickerPanel;
 import org.odlabs.wiquery.ui.accordion.Accordion;
-import org.odlabs.wiquery.ui.dialog.Dialog;
 import org.odlabs.wiquery.ui.options.HeightStyleEnum;
 import org.slf4j.LoggerFactory;
 
@@ -66,7 +66,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
     private IModel<AccountDetail> accountDetailModel;
     private AccountNumberPickerPanel accountNumberPickerPanel;
     private FeedbackPanel messages;
-    private Dialog dialog;
+    private ExtendedDialog dialog;
     private Accordion container;
     private Label header;
     private SearchComponentState addressSearchComponentState;
@@ -84,7 +84,12 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
     }
 
     private void init(final Component... toUpdate) {
-        dialog = new Dialog("dialog");
+        dialog = new ExtendedDialog("dialog"){
+            @Override
+            protected void onClose(AjaxRequestTarget target) {
+                AbstractLookupPanel.this.onClose(target);
+            }
+        };
         dialog.setOutputMarkupId(true);
         dialog.setModal(true);
         dialog.setWidth(1000);
@@ -292,10 +297,13 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
         });
     }
 
-    protected void closeDialog(AjaxRequestTarget target) {
+    protected final void closeDialog(AjaxRequestTarget target) {
+        dialog.close(target);
+    }
+
+    protected void onClose(AjaxRequestTarget target){
         addressSearchComponent.setVisible(false);
         target.add(addressSearchComponent);
-        dialog.close(target);
     }
 
     protected final Long getObjectId(DomainObject object) {

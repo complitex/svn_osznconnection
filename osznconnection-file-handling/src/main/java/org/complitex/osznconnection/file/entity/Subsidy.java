@@ -1,6 +1,9 @@
 package org.complitex.osznconnection.file.entity;
 
+import org.complitex.address.util.AddressRenderer;
+
 import java.util.List;
+import java.util.Locale;
 
 /**
  *
@@ -9,10 +12,9 @@ import java.util.List;
 public class Subsidy extends AbstractAccountRequest<SubsidyDBF> {
     private List<SubsidyMasterData> masterDataList;
 
-    public String getAddress(){
-        return getStreet() + ' ' + getStreetType() + ' ' + getBuildingNumber() +
-                (getBuildingCorp() != null && !getBuildingCorp().isEmpty() ? "/" + getBuildingCorp() : "") +
-                " кв. " + getApartment();
+    public String getAddress(Locale locale){
+        return AddressRenderer.displayAddress(getStreetType(), getStreet(), getBuildingNumber(), getBuildingCorp(),
+                getApartment(), locale);
     }
 
     public List<SubsidyMasterData> getMasterDataList() {

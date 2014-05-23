@@ -59,9 +59,7 @@ public class SubsidyLoadTaskBean implements ITaskBean {
                     if (!subsidyService.validateSum(request)){
                         request.setStatus(RequestStatus.SUBSIDY_NM_PAY_ERROR);
                         requestFile.setStatus(RequestFileStatus.LOAD_ERROR);
-                    }
-
-                    if (!subsidyService.validateDate(request)){
+                    }else if (!subsidyService.validateDate(request)){
                         request.setStatus(RequestStatus.WRONG_DATES);
                         requestFile.setStatus(RequestFileStatus.LOAD_ERROR);
                     }

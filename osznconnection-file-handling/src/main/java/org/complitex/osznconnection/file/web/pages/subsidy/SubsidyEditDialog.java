@@ -14,6 +14,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.complitex.dictionary.web.component.LabelTextField;
+import org.complitex.dictionary.web.component.wiquery.ExtendedDialog;
 import org.complitex.osznconnection.file.entity.*;
 import org.complitex.osznconnection.file.entity.example.SubsidyExample;
 import org.complitex.osznconnection.file.service.RequestFileBean;
@@ -22,14 +23,15 @@ import org.complitex.osznconnection.file.service.SubsidyService;
 import org.complitex.osznconnection.file.service.file_description.RequestFileDescription;
 import org.complitex.osznconnection.file.service.file_description.RequestFileDescriptionBean;
 import org.complitex.osznconnection.file.service.file_description.RequestFileFieldDescription;
-import org.odlabs.wiquery.ui.dialog.Dialog;
 
 import javax.ejb.EJB;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.math.RoundingMode.HALF_UP;
 import static org.complitex.osznconnection.file.entity.RequestStatus.SUBSIDY_NM_PAY_ERROR;
+import static org.complitex.osznconnection.file.entity.SubsidyDBF.*;
 
 
 /**
@@ -49,7 +51,7 @@ public class SubsidyEditDialog extends Panel {
     @EJB
     private RequestFileBean requestFileBean;
 
-    private Dialog dialog;
+    private ExtendedDialog dialog;
     private IModel<Subsidy> subsidyModel = Model.of(new Subsidy());
     private Form form;
 
@@ -62,7 +64,13 @@ public class SubsidyEditDialog extends Panel {
     public SubsidyEditDialog(String id, final Component toUpdate) {
         super(id);
 
-        dialog = new Dialog("dialog");
+        dialog = new ExtendedDialog("dialog"){
+            @Override
+            protected void onClose(AjaxRequestTarget target) {
+                target.add(toUpdate);
+            }
+        };
+
         dialog.setModal(true);
         dialog.setWidth(750);
         add(dialog);
@@ -173,7 +181,6 @@ public class SubsidyEditDialog extends Panel {
 
                 getSession().info(subsidy.getField(SubsidyDBF.RASH) + " " + subsidy.getField(SubsidyDBF.FIO) + ": "
                         + getString("info_updated"));
-                target.add(toUpdate);
             }
 
             @Override
@@ -196,6 +203,22 @@ public class SubsidyEditDialog extends Panel {
             }
         });
 
+        form.add(new AjaxLink("proportionally") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                Subsidy subsidy = subsidyModel.getObject();
+
+                for (int i = 1; i <= 8; ++i){
+                    int numm = ((Number)subsidy.getField(NUMM)).intValue();
+                    BigDecimal sb = ((BigDecimal)subsidy.getField("SM" + i)).divide(new BigDecimal(numm), 2, HALF_UP);
+
+                    subsidy.setField("SB" + i, sb);
+
+                    target.add(textFieldMap.get("SB" + i));
+                }
+            }
+        });
+
         form.add(new AjaxLink("recalculate") {
             @Override
             public void onClick(AjaxRequestTarget target) {
@@ -203,9 +226,9 @@ public class SubsidyEditDialog extends Panel {
 
                 SubsidySum subsidySum = subsidyService.getSubsidySum(subsidy);
 
-                subsidy.setField(SubsidyDBF.NM_PAY, subsidySum.getNSum());
-                subsidy.setField(SubsidyDBF.SUMMA, subsidySum.getSmSum());
-                subsidy.setField(SubsidyDBF.SUBS, subsidySum.getSbSum());
+                subsidy.setField(NM_PAY, subsidySum.getNSum());
+                subsidy.setField(SUMMA, subsidySum.getSmSum());
+                subsidy.setField(SUBS, subsidySum.getSbSum());
 
                 validate(target);
             }
