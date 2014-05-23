@@ -25,10 +25,7 @@ import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
@@ -170,7 +167,7 @@ public class SubsidyFillTaskBean implements ITaskBean{
         subsidyMasterData.putField(SubsidyMasterDataDBF.TOT, subsidy.getField(SubsidyDBF.SUBS));
         subsidyMasterData.putField(SubsidyMasterDataDBF.PERIOD, DateUtil.getFirstDayOfMonth(date));
         subsidyMasterData.putField(SubsidyMasterDataDBF.FIO, subsidy.getFio());
-        subsidyMasterData.putField(SubsidyMasterDataDBF.ADRES, subsidy.getAddress());
+        subsidyMasterData.putField(SubsidyMasterDataDBF.ADRES, subsidy.getAddress(Locale.getDefault()));
         subsidyMasterData.putField(SubsidyMasterDataDBF.NKW, subsidy.getField(SubsidyDBF.FLAT));
         subsidyMasterData.putField(SubsidyMasterDataDBF.KWART, subsidy.getField(SubsidyDBF.SB1));
         subsidyMasterData.putField(SubsidyMasterDataDBF.OTOPL, subsidy.getField(SubsidyDBF.SB2));

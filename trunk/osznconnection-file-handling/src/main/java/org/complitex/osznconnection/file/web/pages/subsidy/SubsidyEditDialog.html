@@ -88,19 +88,26 @@
                         <th>NM_PAY:</th>
                         <td>
                             <span wicket:id="NM_PAY"></span>
-                            <span wicket:id="nmPayDiff"></span>
                         </td>
                         <th>SUMMA:</th>
                         <td>
                             <span wicket:id="SUMMA"></span>
-                            <span wicket:id="summaDiff"></span>
                         </td>
                         <th>SUBS:</th>
                         <td><span wicket:id="SUBS"></span>
-                            <span wicket:id="subsDiff"></span>
                         </td>
                         <th>KVT:</th>
                         <td wicket:id="KVT"></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td><span wicket:id="nmPayDiff"></span></td>
+                        <td></td>
+                        <td><span wicket:id="summaDiff"></span></td>
+                        <td></td>
+                        <td><span wicket:id="subsDiff"></span></td>
+                        <td></td>
+                        <td></td>
                     </tr>
                 </table>
             </div>
@@ -108,7 +115,12 @@
             <div style="clear: left; padding-top: 20px">
                 <input type="button" wicket:message="value:save" wicket:id="save" class="btnMiddle"/>
                 <input type="button" wicket:message="value:cancel" wicket:id="cancel" class="btnMiddle"/>
-                <a href="#" wicket:id="recalculate" style="float: right; color: #007AAE;"><wicket:message key="recalculate"/></a>
+                <span style="float: right; color: #007AAE;">
+                    <a href="#" wicket:id="proportionally" style="margin-left: 5px"><wicket:message key="proportionally"/></a>
+                    &nbsp;
+                    <a href="#" wicket:id="recalculate"><wicket:message key="recalculate"/></a>
+                </span>
+
             </div>
         </form>
     </div>

@@ -214,8 +214,8 @@ public final class PaymentList extends TemplatePage {
                 content, statusDetailPanel) {
 
             @Override
-            protected void closeDialog(AjaxRequestTarget target) {
-                super.closeDialog(target);
+            protected void onClose(AjaxRequestTarget target) {
+                super.onClose(target);
                 dataRowHoverBehavior.deactivateDataRow(target);
             }
         };
