@@ -8,68 +8,99 @@
 <wicket:panel>
     <div wicket:id="dialog" style="display: none" wicket:message="title:title">
         <div wicket:id="messages"></div>
-
         <div wicket:id="header" style="margin-bottom: 20px"></div>
 
-        <div wicket:id="container">
-            <h3>
-                <a href="#lookupByAddress">
-                    <wicket:message key="lookup_by_address"/>
-                </a>
-            </h3>
-            <div id="lookupByAddress">
-                <table cellpadding="0" cellspacing="0" border="0">
-                    <tr>
-                        <td>
-                            <span wicket:id="addressSearchComponent"></span>
-                        </td>
-                        <td>
-                            <table cellpadding="0" cellspacing="5" border="0">
-                                <tr>
-                                    <td align="center">
-                                        <wicket:message key="apartment_label"/>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <input wicket:id="apartment" type="text" size="5"/>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                        <td>
-                            <input type="button" class="btnSmall" style="margin-top: 22px"
-                                   wicket:id="lookupByAddress" wicket:message="value:lookupByAddress"/>
-                        </td>
-                    </tr>
-                </table>
+        <form action="#" wicket:id="form">
+            <div wicket:id="accordion">
+                <h3>
+                    <a href="#lookupByAddress">
+                        <wicket:message key="lookup_by_address"/>
+                    </a>
+                </h3>
+                <div id="lookupByAddress">
+                    <table cellpadding="0" cellspacing="0" border="0">
+                        <tr>
+                            <td>
+                                <span wicket:id="addressSearchComponent"></span>
+                            </td>
+                            <td>
+                                <table cellpadding="0" cellspacing="5" border="0">
+                                    <tr>
+                                        <td align="center">
+                                            <wicket:message key="apartment_label"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <input wicket:id="apartment" type="text" size="5"/>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td>
+                                <input type="button" class="btnSmall" style="margin-top: 22px"
+                                       wicket:id="lookupByAddress" wicket:message="value:lookup"/>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+
+                <h3><wicket:message key="lookup_by_account"/></h3>
+                <div id="lookupByAccount">
+                    <table class="tbForm">
+                        <tr>
+                            <th>
+                                <wicket:message key="lookup_by_account_label"/>:
+                            </th>
+                            <td>
+                                <input type="text" wicket:id="accountNumber"/>
+                            </td>
+                            <td>
+                                <input type="button" class="btnSmall" wicket:id="lookupByAccount" wicket:message="value:lookup"/>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <h3><wicket:message key="lookup_by_fio"/></h3>
+                <div id="lookupByFio">
+                    <table class="tbForm">
+                        <tr>
+                            <th>
+                                <wicket:message key="lastName"/>:
+                            </th>
+                            <td>
+                                <input type="text" wicket:id="lastName"/>
+                            </td>
+                            <th>
+                                <wicket:message key="firstName"/>:
+                            </th>
+                            <td>
+                                <input type="text" wicket:id="firstName"/>
+                            </td>
+                            <th>
+                                <wicket:message key="middleName"/>:
+                            </th>
+                            <td>
+                                <input type="text" wicket:id="middleName"/>
+                            </td>
+
+                            <td>
+                                <input type="button" class="btnSmall" wicket:id="lookupByFio" wicket:message="value:lookup"/>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
             </div>
 
+            <div wicket:id="accountNumberPickerPanel"></div>
 
-            <h3><wicket:message key="lookup_by_account"/></h3>
-            <div id="lookupByAccount">
-                <table class="tbForm">
-                    <tr>
-                        <th>
-                            <wicket:message key="lookup_by_account_label"/>:
-                        </th>
-                        <td>
-                            <input type="text" wicket:id="accountNumber"/>
-                        </td>
-                        <td>
-                            <input type="button" class="btnSmall" wicket:id="lookupByAccount" wicket:message="value:lookupByAccount"/>
-                        </td>
-                    </tr>
-                </table>
+            <div style="margin-top: 17px;">
+                <input type="button" wicket:message="value:save" wicket:id="save" class="btnMiddle"/>
+                <input type="button" wicket:message="value:cancel" wicket:id="cancel" class="btnMiddle"/>
             </div>
-        </div>
-
-        <div wicket:id="accountNumberPickerPanel"></div>
-
-        <div style="margin-top: 17px;">
-            <input type="button" wicket:message="value:save" wicket:id="save" class="btnMiddle"/>
-            <input type="button" wicket:message="value:cancel" wicket:id="cancel" class="btnMiddle"/>
-        </div>
+        </form>
     </div>
 </wicket:panel>
 </body>
