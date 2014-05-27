@@ -22,7 +22,7 @@ import java.util.*;
  */
 @Stateless
 public class SubsidyBean extends AbstractRequestBean {
-    public static final String MAPPING_NAMESPACE = SubsidyBean.class.getName();
+    public static final String NS = SubsidyBean.class.getName();
     private static final Map<Long, Set<SubsidyDBF>> UPDATE_FIELD_MAP = ImmutableMap.of();
 
     @EJB
@@ -62,7 +62,7 @@ public class SubsidyBean extends AbstractRequestBean {
 
     @Transactional
     public void delete(long requestFileId) {
-        sqlSession().delete(MAPPING_NAMESPACE + ".deleteSubsidies", requestFileId);
+        sqlSession().delete(NS + ".deleteSubsidies", requestFileId);
     }
 
     @Transactional
@@ -71,22 +71,22 @@ public class SubsidyBean extends AbstractRequestBean {
         if (abstractRequests.isEmpty()) {
             return;
         }
-        sqlSession().insert(MAPPING_NAMESPACE + ".insertSubsidyList", abstractRequests);
+        sqlSession().insert(NS + ".insertSubsidyList", abstractRequests);
     }
 
     @Transactional
     public int count(SubsidyExample example) {
-        return sqlSession().selectOne(MAPPING_NAMESPACE + ".count", example);
+        return sqlSession().selectOne(NS + ".count", example);
     }
 
     @Transactional
     public List<Subsidy> find(SubsidyExample example) {
-        return sqlSession().selectList(MAPPING_NAMESPACE + ".find", example);
+        return sqlSession().selectList(NS + ".find", example);
     }
 
     @Transactional
     public void updateAccountNumberForSimilarSubs(Subsidy subsidy) {
-        sqlSession().update(MAPPING_NAMESPACE + ".updateAccountNumberForSimislarSubs", subsidy);
+        sqlSession().update(NS + ".updateAccountNumberForSimislarSubs", subsidy);
     }
 
     public boolean isSubsidyFileBound(long fileId) {
@@ -105,12 +105,12 @@ public class SubsidyBean extends AbstractRequestBean {
         Map<String, Object> params = Maps.newHashMap();
         params.put("requestFileId", fileId);
         params.put("statuses", statuses);
-        return sqlSession().selectOne(MAPPING_NAMESPACE + ".countByFile", params);
+        return sqlSession().selectOne(NS + ".countByFile", params);
     }
 
     @Transactional
     public void update(Subsidy subsidy) {
-        sqlSession().update(MAPPING_NAMESPACE + ".update", subsidy);
+        sqlSession().update(NS + ".update", subsidy);
     }
 
     @Transactional
@@ -120,7 +120,7 @@ public class SubsidyBean extends AbstractRequestBean {
 
     @Transactional
     private List<Long> findIdsForOperation(long fileId) {
-        return sqlSession().selectList(MAPPING_NAMESPACE + ".findIdsForOperation", fileId);
+        return sqlSession().selectList(NS + ".findIdsForOperation", fileId);
     }
 
     @Transactional
@@ -128,7 +128,7 @@ public class SubsidyBean extends AbstractRequestBean {
         Map<String, Object> params = Maps.newHashMap();
         params.put("requestFileId", fileId);
         params.put("ids", ids);
-        return sqlSession().selectList(MAPPING_NAMESPACE + ".findForOperation", params);
+        return sqlSession().selectList(NS + ".findForOperation", params);
     }
 
     @Transactional
@@ -141,7 +141,7 @@ public class SubsidyBean extends AbstractRequestBean {
             }
         }
 
-        sqlSession().update(MAPPING_NAMESPACE + ".clearBeforeBinding",
+        sqlSession().update(NS + ".clearBeforeBinding",
                 ImmutableMap.of("status", RequestStatus.LOADED, "fileId", fileId, "updateFieldMap", updateFieldMap));
         clearWarnings(fileId, RequestFileType.SUBSIDY);
     }
@@ -177,11 +177,11 @@ public class SubsidyBean extends AbstractRequestBean {
                 params.put("city", subsidy.getCity());
         }
 
-        sqlSession().update(MAPPING_NAMESPACE + ".markCorrected", params);
+        sqlSession().update(NS + ".markCorrected", params);
     }
 
     public List<Subsidy> getSubsidies(long requestFileId) {
-        return sqlSession().selectList(MAPPING_NAMESPACE + ".selectSubsidies", requestFileId);
+        return sqlSession().selectList(NS + ".selectSubsidies", requestFileId);
     }
 
     public List<SubsidyMasterDataFile> getSubsidyMasterDataFiles(List<Long> ids, ExportType type, Date date){
