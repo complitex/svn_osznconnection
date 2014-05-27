@@ -6,6 +6,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
+import org.apache.wicket.core.util.lang.WicketObjects;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
@@ -26,10 +27,9 @@ import org.complitex.osznconnection.file.service.file_description.RequestFileFie
 
 import javax.ejb.EJB;
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
+import java.math.RoundingMode;
+import java.util.*;
 
-import static java.math.RoundingMode.HALF_UP;
 import static org.complitex.osznconnection.file.entity.RequestStatus.SUBSIDY_NM_PAY_ERROR;
 import static org.complitex.osznconnection.file.entity.SubsidyDBF.*;
 
@@ -208,13 +208,37 @@ public class SubsidyEditDialog extends Panel {
             public void onClick(AjaxRequestTarget target) {
                 Subsidy subsidy = subsidyModel.getObject();
 
+                BigDecimal summa = (BigDecimal)subsidy.getField(SubsidyDBF.SUMMA);
+
+                BigDecimal sumSBn = new BigDecimal(0);
                 for (int i = 1; i <= 8; ++i){
-                    int numm = ((Number)subsidy.getField(NUMM)).intValue();
-                    BigDecimal sb = ((BigDecimal)subsidy.getField("SM" + i)).divide(new BigDecimal(numm), 2, HALF_UP);
+                    sumSBn = sumSBn.add((BigDecimal)subsidy.getField("SB" + i));
+                }
 
-                    subsidy.setField("SB" + i, sb);
+                for (int i = 1; i <= 8; ++i){
+                    BigDecimal sm = summa.multiply((BigDecimal) subsidy.getField("SB" + i))
+                            .divide(sumSBn, 2, RoundingMode.HALF_UP);
+                    subsidy.setField("SM" + i, sm);
 
-                    target.add(textFieldMap.get("SB" + i));
+                    target.add(textFieldMap.get("SM" + i));
+                }
+
+                //check sum
+                BigDecimal sumSMn = new BigDecimal(0);
+                for (int i = 1; i <= 8; ++i){
+                    sumSMn = sumSMn.add((BigDecimal)subsidy.getField("SM" + i));
+                }
+
+                int diff = summa.subtract(sumSMn).multiply(new BigDecimal(100)).intValue();
+
+                if (diff != 0){
+                    BigDecimal one = new BigDecimal(diff < 0 ? "-0.01" : "0.01");
+
+                    for (int i = 0; i < Math.abs(diff); ++i){
+                        int index = (i % 8) + 1;
+
+                        subsidy.setField("SM" + index, ((BigDecimal)subsidy.getField("SM" + index)).add(one));
+                    }
                 }
             }
         });
@@ -241,7 +265,7 @@ public class SubsidyEditDialog extends Panel {
     }
 
     public void open(AjaxRequestTarget target, Subsidy subsidy){
-        subsidyModel.setObject(subsidy);
+        subsidyModel.setObject((Subsidy) WicketObjects.cloneObject(subsidy));
 
         target.add(form);
         dialog.open(target);
