@@ -2,6 +2,8 @@ package org.complitex.osznconnection.file.entity;
 
 import org.complitex.address.util.AddressRenderer;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -10,6 +12,10 @@ import java.util.Locale;
  * @author Artem
  */
 public class Subsidy extends AbstractAccountRequest<SubsidyDBF> {
+    public final static List<String> CYR = Collections.unmodifiableList(Arrays.asList(
+            "FIO", "NP_NAME", "CAT_V", "NAME_V", "BLD", "CORP", "FLAT"
+    ));
+
     private List<SubsidyMasterData> masterDataList;
 
     public String getAddress(Locale locale){

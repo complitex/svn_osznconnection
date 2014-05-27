@@ -1,6 +1,7 @@
 package org.complitex.osznconnection.file.service_provider;
 
 import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableMap;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.entity.Log.EVENT;
 import org.complitex.dictionary.oracle.OracleErrors;
@@ -43,7 +44,7 @@ public class ServiceProviderAdapter extends AbstractBean {
 
     private final Logger log = LoggerFactory.getLogger(ServiceProviderAdapter.class);
     private static final String RESOURCE_BUNDLE = ServiceProviderAdapter.class.getName();
-    private static final String MAPPING_NAMESPACE = ServiceProviderAdapter.class.getName();
+    private static final String NS = ServiceProviderAdapter.class.getName();
 
     @EJB
     private OwnershipCorrectionBean ownershipCorrectionBean;
@@ -205,7 +206,7 @@ public class ServiceProviderAdapter extends AbstractBean {
             startTime = System.nanoTime();
         }
         try {
-            sqlSession(calculationContext.getDataSource()).selectOne(MAPPING_NAMESPACE + ".acquireAccountDetailsByAddress", params);
+            sqlSession(calculationContext.getDataSource()).selectOne(NS + ".acquireAccountDetailsByAddress", params);
         } catch (Exception e) {
             if (!OracleErrors.isCursorClosedError(e) && !(e.getCause() instanceof NullPointerException)) {
                 throw new DBException(e);
@@ -291,23 +292,16 @@ public class ServiceProviderAdapter extends AbstractBean {
         params.put("pAccCode", account);
         params.put("pAccCodeType", accountType);
 
-        long startTime = 0;
 
-        if (log.isDebugEnabled()) {
-            startTime = System.nanoTime();
-        }
 
         try {
-            sqlSession(calculationCenterInfo.getDataSource()).selectOne(MAPPING_NAMESPACE + ".getAttrsByAccCode", params);
+            sqlSession(calculationCenterInfo.getDataSource()).selectOne(NS + ".getAttrsByAccCode", params);
         } catch (Exception e) {
             if (!OracleErrors.isCursorClosedError(e) && !(e.getCause() instanceof NullPointerException)) {
                 throw new DBException(e);
             }
         } finally {
             log.info("acquireAccountDetailsByAccount. Calculation center: {}, parameters : {}", calculationCenterInfo, params);
-            if (log.isDebugEnabled()) {
-                log.debug("acquireAccountDetailsByAccount. Time of operation: {} sec.", (System.nanoTime() - startTime) / 1000000000F);
-            }
         }
 
         Integer resultCode = (Integer) params.get("resultCode");
@@ -363,6 +357,29 @@ public class ServiceProviderAdapter extends AbstractBean {
         return accountCorrectionDetails;
     }
 
+    @SuppressWarnings("unchecked")
+    public List<AccountDetail> getAccountDetailsByFio(String dataSource, String districtName, String servicingOrganizationCode,
+                                                      String lastName, String firstName, String middleName, Date date)
+            throws DBException {
+        Map<String, Object> map = new HashMap<>();
+        map.put("districtName", districtName);
+        map.put("servicingOrganizationCode", servicingOrganizationCode);
+        map.put("lastName", lastName);
+        map.put("firstName", firstName);
+        map.put("middleName", middleName);
+        map.put("date", date);
+
+        try {
+            sqlSession(dataSource).selectOne(NS + ".getAttrsByFIO", map);
+        } catch (Exception e) {
+            if (!OracleErrors.isCursorClosedError(e) && !(e.getCause() instanceof NullPointerException)) {
+                throw new DBException(e);
+            }
+        }
+
+        return (List<AccountDetail>) map.get("accountDetails");
+    }
+
     /**
      * Обработать payment и заполнить некоторые поля в соответствующих данному payment benefit записях.
      * Процедура COMP.Z$RUNTIME_SZ_UTL.GETCHARGEANDPARAMS.
@@ -397,7 +414,7 @@ public class ServiceProviderAdapter extends AbstractBean {
             startTime = System.nanoTime();
         }
         try {
-            sqlSession(calculationContext.getDataSource()).selectOne(MAPPING_NAMESPACE + ".processPaymentAndBenefit", params);
+            sqlSession(calculationContext.getDataSource()).selectOne(NS + ".processPaymentAndBenefit", params);
         } catch (Exception e) {
             if (!OracleErrors.isCursorClosedError(e)) {
                 throw new DBException(e);
@@ -698,7 +715,7 @@ public class ServiceProviderAdapter extends AbstractBean {
             startTime = System.nanoTime();
         }
         try {
-            sqlSession(calculationContext.getDataSource()).selectOne(MAPPING_NAMESPACE + ".getBenefitData", params);
+            sqlSession(calculationContext.getDataSource()).selectOne(NS + ".getBenefitData", params);
         } catch (Exception e) {
             if (!OracleErrors.isCursorClosedError(e)) {
                 throw new DBException(e);
@@ -767,7 +784,7 @@ public class ServiceProviderAdapter extends AbstractBean {
         params.put("dat1", date);
 
         try {
-            sqlSession(calculationContext.getDataSource()).selectOne(MAPPING_NAMESPACE + ".getBenefitData", params);
+            sqlSession(calculationContext.getDataSource()).selectOne(NS + ".getBenefitData", params);
         } catch (Exception e) {
             if (!OracleErrors.isCursorClosedError(e)) {
                 throw new DBException(e);
@@ -1009,7 +1026,7 @@ public class ServiceProviderAdapter extends AbstractBean {
             startTime = System.nanoTime();
         }
         try {
-            sqlSession(calculationContext.getDataSource()).selectOne(MAPPING_NAMESPACE + ".processBenefit", params);
+            sqlSession(calculationContext.getDataSource()).selectOne(NS + ".processBenefit", params);
         } catch (Exception e) {
             if (!OracleErrors.isCursorClosedError(e)) {
                 throw new DBException(e);
@@ -1296,7 +1313,7 @@ public class ServiceProviderAdapter extends AbstractBean {
             startTime = System.nanoTime();
         }
         try {
-            sqlSession(calculationCenterInfo.getDataSource()).selectOne(MAPPING_NAMESPACE + ".processActualPayment", params);
+            sqlSession(calculationCenterInfo.getDataSource()).selectOne(NS + ".processActualPayment", params);
         } catch (Exception e) {
             if (!OracleErrors.isCursorClosedError(e)) {
                 throw new DBException(e);

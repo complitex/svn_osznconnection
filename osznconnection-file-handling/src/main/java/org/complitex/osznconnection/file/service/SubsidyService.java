@@ -87,8 +87,10 @@ public class SubsidyService {
     }
 
     public String getServicingOrganizationCode(Long requestFileId){
-        RequestFile requestFile = requestFileBean.findById(requestFileId);
+        return getServicingOrganizationCode(requestFileBean.findById(requestFileId));
+    }
 
+    public String getServicingOrganizationCode(RequestFile requestFile){
         String fileName = requestFile.getName();
         String code = fileName.substring(0, fileName.length()-8);
 

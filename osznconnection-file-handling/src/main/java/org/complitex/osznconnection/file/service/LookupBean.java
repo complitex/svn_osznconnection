@@ -130,4 +130,13 @@ public class LookupBean extends AbstractBean {
         return adapter.acquireAccountDetailsByAccount(calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId),
                 request, district, account);
     }
+
+    public List<AccountDetail> getAccountDetailsByFio(Long userOrganizationId, String districtName,
+                                                      String servicingOrganizationCode, String lastName, String firstName,
+                                                      String middleName, Date date) throws DBException {
+        String dataSource = calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId).getDataSource();
+
+        return adapter.getAccountDetailsByFio(dataSource, districtName, servicingOrganizationCode,
+                lastName, firstName, middleName, date);
+    }
 }

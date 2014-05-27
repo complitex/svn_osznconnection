@@ -100,8 +100,9 @@ public class SubsidyEditDialog extends Panel {
 
             String name = d.getName();
 
-            if (SubsidyDBF.FIO.name().equals(name)){
-                name = "FIO_CYR";
+            //CYR
+            if (Subsidy.CYR.contains(name)){
+                name += "_CYR";
             }
 
             LabelTextField textField = new LabelTextField<Object>(name, d.getLength(),

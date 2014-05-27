@@ -52,6 +52,22 @@
         ]]>
     </select>
 
+     <!-- getAttrsByFIO-->
+
+    <select id="getAttrsByFIO" statementType="CALLABLE" parameterType="map">
+        <![CDATA[
+        {#{resultCode, mode=OUT, javaType=int, jdbcType=NUMERIC} = call COMP.Z$RUNTIME_SZ_UTL.GETATTRSBYFIO (
+        #{districtName, mode=IN, javaType=string, jdbcType=VARCHAR},
+        #{servicingOrganizationCode, mode=IN, javaType=string, jdbcType=VARCHAR},
+        #{lastName, mode=IN, javaType=string, jdbcType=VARCHAR},
+        #{firstName, mode=IN, javaType=string, jdbcType=VARCHAR},
+        #{middleName, mode=IN, javaType=string, jdbcType=VARCHAR},
+        #{date, mode=IN, javaType=date, jdbcType=DATE},
+        #{accountDetails, mode=OUT, jdbcType=CURSOR, resultMap=accountDetailResultMap})
+        }
+        ]]>
+    </select>
+
     <resultMap id="paymentAndBenefitDataResultMap" type="org.complitex.osznconnection.file.entity.PaymentAndBenefitData">
         <result property="lodgerCount" column="lodg_cnt"/>
         <result property="userCount" column="usr_cnt"/>

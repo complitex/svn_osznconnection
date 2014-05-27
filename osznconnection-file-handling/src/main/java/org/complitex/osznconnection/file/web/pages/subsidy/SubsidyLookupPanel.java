@@ -6,6 +6,7 @@ import org.complitex.osznconnection.file.entity.Subsidy;
 import org.complitex.osznconnection.file.entity.SubsidyDBF;
 import org.complitex.osznconnection.file.service.LookupBean;
 import org.complitex.osznconnection.file.service.PersonAccountService;
+import org.complitex.osznconnection.file.service.SubsidyService;
 import org.complitex.osznconnection.file.service_provider.exception.DBException;
 import org.complitex.osznconnection.file.web.component.lookup.AbstractLookupPanel;
 
@@ -19,6 +20,9 @@ public class SubsidyLookupPanel extends AbstractLookupPanel<Subsidy> {
 
     @EJB
     private PersonAccountService personAccountService;
+
+    @EJB
+    private SubsidyService subsidyService;
 
     public SubsidyLookupPanel(String id, long userOrganizationId, Component... toUpdate) {
         super(id, userOrganizationId, toUpdate);
@@ -59,5 +63,10 @@ public class SubsidyLookupPanel extends AbstractLookupPanel<Subsidy> {
     @Override
     protected String getTitle(Subsidy subsidy) {
         return subsidy.getFio() + ", " + subsidy.getAddress(getLocale());
+    }
+
+    @Override
+    protected String getServicingOrganizationCode(Subsidy request) {
+        return subsidyService.getServicingOrganizationCode(request.getId());
     }
 }
