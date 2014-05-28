@@ -110,7 +110,6 @@ public class PersonAccountLocalBean extends AbstractBean {
         return firstAccountNumber;
     }
 
-    @Transactional
     public String findLocalAccountNumber(Payment payment, long calculationCenterId, long userOrganizationId)
             throws MoreOneAccountException {
         List<PersonAccount> accounts = findAccounts(payment.getStringField(PaymentDBF.F_NAM),
@@ -134,7 +133,6 @@ public class PersonAccountLocalBean extends AbstractBean {
         }
     }
 
-    @Transactional
     public String findLocalAccountNumber(ActualPayment actualPayment, long calculationCenterId, long userOrganizationId)
             throws MoreOneAccountException {
         List<PersonAccount> accounts = findAccounts(actualPayment.getStringField(ActualPaymentDBF.F_NAM),
@@ -189,7 +187,6 @@ public class PersonAccountLocalBean extends AbstractBean {
         }
     }
 
-    @Transactional
     public String findLocalAccountNumber(Subsidy subsidy, long calculationCenterId, long userOrganizationId)
             throws MoreOneAccountException {
         List<PersonAccount> accounts = findAccountsLikeName(subsidy.getFirstName(),
@@ -245,7 +242,6 @@ public class PersonAccountLocalBean extends AbstractBean {
         }
     }
 
-    @Transactional
     public String findLocalAccountNumber(DwellingCharacteristics dwellingCharacteristics, long calculationCenterId,
                                          long userOrganizationId) throws MoreOneAccountException {
         List<PersonAccount> accounts = findAccountsLikeName(dwellingCharacteristics.getFirstName(),
@@ -309,7 +305,6 @@ public class PersonAccountLocalBean extends AbstractBean {
         }
     }
 
-    @Transactional
     public String findLocalAccountNumber(FacilityServiceType facilityServiceType, long calculationCenterId, long userOrganizationId)
             throws MoreOneAccountException {
         List<PersonAccount> accounts = findAccountsLikeName(facilityServiceType.getFirstName(),
@@ -432,6 +427,7 @@ public class PersonAccountLocalBean extends AbstractBean {
         personAccount.setPuAccountNumber(payment.getStringField(PaymentDBF.OWN_NUM_SR));
         personAccount.setAccountNumber(accountNumber);
         personAccount.setUserOrganizationId(userOrganizationId);
+
         return personAccount;
     }
 
@@ -571,17 +567,18 @@ public class PersonAccountLocalBean extends AbstractBean {
         personAccount.setFirstName(subsidy.getFirstName());
         personAccount.setMiddleName(subsidy.getMiddleName());
         personAccount.setLastName(subsidy.getLastName());
-        personAccount.setCity(subsidy.getStringField(SubsidyDBF.NP_NAME));
-        personAccount.setStreet(subsidy.getStringField(SubsidyDBF.NAME_V));
-        personAccount.setBuildingNumber(subsidy.getStringField(SubsidyDBF.BLD));
-        personAccount.setBuildingCorp(subsidy.getStringField(SubsidyDBF.CORP));
-        personAccount.setApartment(subsidy.getStringField(SubsidyDBF.FLAT));
-        personAccount.setStreetType(subsidy.getStringField(SubsidyDBF.CAT_V));
+        personAccount.setCity(subsidy.getCity());
+        personAccount.setStreet(subsidy.getStreet());
+        personAccount.setBuildingNumber(subsidy.getBuildingNumber());
+        personAccount.setBuildingCorp(subsidy.getBuildingCorp());
+        personAccount.setApartment(subsidy.getApartment());
+        personAccount.setStreetType(subsidy.getStreetType());
         personAccount.setOsznId(subsidy.getOrganizationId());
         personAccount.setCalculationCenterId(calculationCenterId);
         personAccount.setPuAccountNumber(subsidy.getStringField(SubsidyDBF.RASH));
         personAccount.setAccountNumber(accountNumber);
         personAccount.setUserOrganizationId(userOrganizationId);
+
         return personAccount;
     }
 
@@ -592,7 +589,7 @@ public class PersonAccountLocalBean extends AbstractBean {
             @Override
             public void doInTransaction(SqlSession session) {
                 String newAccountNumber = subsidy.getAccountNumber();
-                PersonAccount newPersonAccount = newPersonAccount(subsidy, newAccountNumber, calculationCenterId, userOrganizationId);
+
                 List<PersonAccount> accounts = findAccountsLikeName(subsidy.getFirstName(),
                         subsidy.getMiddleName(), subsidy.getLastName(),
                         subsidy.getCity(), subsidy.getStreet(),
@@ -607,7 +604,7 @@ public class PersonAccountLocalBean extends AbstractBean {
                 }
 
                 if (accounts.isEmpty()) {
-                    insert(newPersonAccount, session);
+                    insert(newPersonAccount(subsidy, newAccountNumber, calculationCenterId, userOrganizationId), session);
                 } else if (accounts.size() == 1) {
                     PersonAccount account = accounts.get(0);
                     if (!Strings.isEmpty(account.getStreetType())) {
@@ -615,7 +612,7 @@ public class PersonAccountLocalBean extends AbstractBean {
                             account.setAccountNumber(newAccountNumber);
                             updateAccountNumber(account, session);
                         } else {
-                            insert(newPersonAccount, session);
+                            insert(newPersonAccount(subsidy, newAccountNumber, calculationCenterId, userOrganizationId), session);
                         }
                     } else {
                         account.setAccountNumber(newAccountNumber);

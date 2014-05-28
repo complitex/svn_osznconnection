@@ -32,10 +32,9 @@ import javax.transaction.UserTransaction;
 import java.util.List;
 import java.util.Map;
 
-/**
- *
- * @author Artem
- */
+import static org.complitex.osznconnection.file.entity.RequestStatus.ACCOUNT_NUMBER_RESOLVED;
+import static org.complitex.osznconnection.file.entity.RequestStatus.MORE_ONE_ACCOUNTS_LOCALLY;
+
 @Stateless
 @TransactionManagement(TransactionManagementType.BEAN)
 public class SubsidyBindTaskBean implements ITaskBean {
@@ -62,86 +61,29 @@ public class SubsidyBindTaskBean implements ITaskBean {
     @EJB
     private RequestFileBean requestFileBean;
 
-    private boolean resolveAddress(Subsidy subsidy, CalculationContext calculationContext) {
-        long startTime = 0;
-        if (log.isDebugEnabled()) {
-            startTime = System.nanoTime();
-        }
-        addressService.resolveAddress(subsidy, calculationContext);
-        if (log.isDebugEnabled()) {
-            log.debug("Resolving of subsidy address (id = {}) took {} sec.", subsidy.getId(),
-                    (System.nanoTime() - startTime) / 1000000000F);
-        }
-        return subsidy.getStatus().isAddressResolved();
-    }
-
-    private void resolveLocalAccount(Subsidy subsidy, CalculationContext calculationContext) {
-        long startTime = 0;
-        if (log.isDebugEnabled()) {
-            startTime = System.nanoTime();
-        }
-
-        personAccountService.resolveLocalAccount(subsidy, calculationContext);
-
-        if (log.isDebugEnabled()) {
-            log.debug("Resolving of subsidy (id = {}) for local account took {} sec.", subsidy.getId(),
-                    (System.nanoTime() - startTime) / 1000000000F);
-        }
-    }
-
-    private boolean resolveRemoteAccountNumber(Subsidy subsidy,
-            CalculationContext calculationContext, Boolean updatePuAccount) throws DBException {
-        long startTime = 0;
-        if (log.isDebugEnabled()) {
-            startTime = System.nanoTime();
-        }
-
-        personAccountService.resolveRemoteAccount(subsidy, calculationContext, updatePuAccount);
-
-        if (log.isDebugEnabled()) {
-            log.debug("Resolving of subsidy (id = {}) for remote account number took {} sec.", subsidy.getId(),
-                    (System.nanoTime() - startTime) / 1000000000F);
-        }
-
-        return subsidy.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED;
-    }
-
     private void bind(Subsidy subsidy, CalculationContext calculationContext, Boolean updatePuAccount)
             throws DBException {
         //resolve local account
-        resolveLocalAccount(subsidy, calculationContext);
+        personAccountService.resolveLocalAccount(subsidy, calculationContext);
 
         //resolve remote account
-        if (subsidy.getStatus() != RequestStatus.ACCOUNT_NUMBER_RESOLVED
-                && subsidy.getStatus() != RequestStatus.MORE_ONE_ACCOUNTS_LOCALLY) {
-            if (resolveAddress(subsidy, calculationContext)) {
-                resolveRemoteAccountNumber(subsidy, calculationContext, updatePuAccount);
+        if ((subsidy.getStatus() != ACCOUNT_NUMBER_RESOLVED) && (subsidy.getStatus() != MORE_ONE_ACCOUNTS_LOCALLY)) {
+            addressService.resolveAddress(subsidy, calculationContext);
+
+            if (subsidy.getStatus().isAddressResolved()){
+                personAccountService.resolveRemoteAccount(subsidy, calculationContext, updatePuAccount);
             }
         }
 
         // обновляем subsidy запись
-        long startTime = 0;
-        if (log.isDebugEnabled()) {
-            startTime = System.nanoTime();
-        }
         subsidyBean.update(subsidy);
-        if (log.isDebugEnabled()) {
-            log.debug("Updating of subsidy (id = {}) took {} sec.", subsidy.getId(),
-                    (System.nanoTime() - startTime) / 1000000000F);
-        }
     }
 
     private void bindSubsidyFile(RequestFile subsidyFile, CalculationContext calculationContext,
             Boolean updatePuAccount) throws BindException, DBException, CanceledByUserException {
         //извлечь из базы все id подлежащие связыванию для файла subsidy и доставать записи порциями по BATCH_SIZE штук.
-        long startTime = 0;
-        if (log.isDebugEnabled()) {
-            startTime = System.nanoTime();
-        }
         List<Long> notResolvedSubsidyIds = subsidyBean.findIdsForBinding(subsidyFile.getId());
-        if (log.isDebugEnabled()) {
-            log.debug("Finding of subsidy ids for binding took {} sec.", (System.nanoTime() - startTime) / 1000000000F);
-        }
+
         List<Long> batch = Lists.newArrayList();
 
         int batchSize = configBean.getInteger(FileHandlingConfig.BIND_BATCH_SIZE, true);
