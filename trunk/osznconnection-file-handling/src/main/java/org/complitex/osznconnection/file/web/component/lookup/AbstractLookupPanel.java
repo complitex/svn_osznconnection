@@ -8,6 +8,7 @@ import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.extensions.ajax.markup.html.AjaxIndicatorAppender;
+import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxLink;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
@@ -51,8 +52,6 @@ import static org.apache.wicket.util.string.Strings.firstPathComponent;
 import static org.apache.wicket.util.string.Strings.isEmpty;
 
 public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Panel {
-    private static final TextTemplate CENTER_DIALOG_JS = new PackageTextTemplate(OrganizationPicker.class, "CenterDialog.js");
-
     @EJB
     private StrategyFactory strategyFactory;
 
@@ -184,6 +183,8 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
                 if (wasVisible || becameVisible) {
                     target.add(accountNumberPickerPanel);
                 }
+
+                dialog.center(target);
             }
         };
         accordion.add(lookupByAddress);
@@ -251,7 +252,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
                     target.add(accountNumberPickerPanel);
                 }
 
-                target.appendJavaScript(CENTER_DIALOG_JS.asString(ImmutableMap.of("dialogId", dialog.getMarkupId())));
+                dialog.center(target);
             }
         };
         accordion.add(lookupByAccount);
@@ -266,7 +267,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
         final TextField<String> middleName = new TextField<>("middleName", Model.of(""));
         accordion.add(middleName);
 
-        accordion.add(new AjaxSubmitLink("lookupByFio") {
+        accordion.add(new IndicatingAjaxButton("lookupByFio") {
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 String district = resolveOutgoingDistrict(request, userOrganizationId);
@@ -284,8 +285,10 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
                 } catch (DBException e) {
                     e.printStackTrace();
                 }
+
+                dialog.center(target);
             }
-        }.add(new AjaxIndicatorAppender()));
+        });
 
 
         //account number picker panel
