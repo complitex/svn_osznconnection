@@ -1,0 +1,4 @@
+table tr.data-row:hover td, table tr.data-row-hover td {
+    background-color: #CBD2D8 !important;
+    color: #007AAE !important;
+}

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+         xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <artifactId>osznconnection</artifactId>
+        <groupId>org.complitex.osznconnection</groupId>
+        <version>3.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>osznconnection-file-handling</artifactId>
+
+    <name>Osznconnection - File Handling</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.complitex</groupId>
+            <artifactId>complitex-admin</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.complitex</groupId>
+            <artifactId>complitex-logging</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.complitex</groupId>
+            <artifactId>complitex-address</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.complitex</groupId>
+            <artifactId>complitex-correction</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.complitex.osznconnection</groupId>
+            <artifactId>osznconnection-organization</artifactId>
+        </dependency>
+       <dependency>
+            <groupId>org.complitex.osznconnection</groupId>
+            <artifactId>osznconnection-service-provider-type</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>p6spy</groupId>
+            <artifactId>p6spy</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Oracle driver -->
+        <dependency>
+            <groupId>com.oracle</groupId>
+            <artifactId>ojdbc14_g</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.oracle</groupId>
+            <artifactId>orai18n</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <suiteXmlFiles>
+                        <suiteXmlFile>testng.xml</suiteXmlFile>
+                    </suiteXmlFiles>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

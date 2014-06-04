@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"  xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
+<head>
+    <title></title>
+</head>
+
+<body>
+<wicket:panel>
+    <div wicket:id="dialog" wicket:message="title:dialog_title">
+        <div wicket:id="container">
+            <table style="max-height: 500px"  border="0" cellspacing="0" cellpadding="0" class="tbColor">
+                <tr>
+                    <th><wicket:message key="date"/></th>
+                    <th><wicket:message key="status"/></th>
+                </tr>
+                <tr wicket:id="list">
+                    <td wicket:id="date"></td>
+                    <td wicket:id="status"></td>
+                </tr>
+            </table>
+        </div>
+
+        <div style="clear: left; padding-top: 20px">
+            <input type="button" wicket:message="value:cancel" wicket:id="cancel" class="btnMiddle"/>
+        </div>
+    </div>
+</wicket:panel>
+</body>
+</html>

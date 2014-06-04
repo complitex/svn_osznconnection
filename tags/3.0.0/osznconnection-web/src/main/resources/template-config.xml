@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<template xmlns="http://www.complitex.org/web/template"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://www.complitex.org/web/template http://www.complitex.org/web/template/complitex-template.xsd">
+    <web-components>
+        <domain-object-permission-panel>
+            org.complitex.organization.web.component.DomainObjectPermissionPanel
+        </domain-object-permission-panel>
+        <organization-permission-panel>
+            org.complitex.organization.web.component.OrganizationPermissionPanel
+        </organization-permission-panel>
+        <user-organization-picker>
+            org.complitex.organization.web.component.UserOrganizationPicker
+        </user-organization-picker>
+    </web-components>
+    <sidebar>
+        <menu class="org.complitex.osznconnection.file.web.AdminTemplateMenu"/>
+        <menu class="org.complitex.osznconnection.file.web.menu.SubsidyRequestMenu"/>
+        <!--<menu class="org.complitex.osznconnection.file.web.menu.FacilityRequestMenu"/>-->
+        <menu class="org.complitex.address.menu.AddressMenu"/>
+        <menu class="org.complitex.osznconnection.file.web.menu.CorrectionMenu"/>
+        <menu class="org.complitex.osznconnection.organization.web.OsznOrganizationTemplateMenu"/>
+        <menu class="org.complitex.osznconnection.organization_type.menu.OsznOrganizationTypeMenu"/>
+        <!--<menu class="org.complitex.osznconnection.file.web.pages.ownership.OwnershipTemplateMenu"/>-->
+        <!--<menu class="org.complitex.osznconnection.file.web.pages.privilege.PrivilegeTemplateMenu"/>-->
+        <menu class="org.complitex.address.menu.AddressDescriptionMenu"/>
+        <menu class="org.complitex.organization.web.OrganizationDescriptionTemplateMenu"/>
+        <!--<menu class="org.complitex.osznconnection.file.web.pages.ownership.OwnershipDescriptionTemplateMenu"/>-->
+        <!--<menu class="org.complitex.osznconnection.file.web.pages.privilege.PrivilegeDescriptionTemplateMenu"/>-->
+    </sidebar>
+</template>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.complitex.osznconnection.file.service.RequestFileHistoryBean">
+    <resultMap id="requestFileHistoryResultMap" type="org.complitex.osznconnection.file.entity.RequestFileHistory">
+        <id property="id" column="id"/>
+        <result property="requestFileId" column="request_file_id"/>
+        <result property="status" column="status"/>
+        <result property="date" column="date"/>
+    </resultMap>
+
+    <insert id="insertRequestFileHistory" parameterType="org.complitex.osznconnection.file.entity.RequestFileHistory">
+        insert into `request_file_history` (`request_file_id`, `status`, `date`) value (#{requestFileId}, #{status}, #{date});
+    </insert>
+
+    <select id="selectRequestFileHistories" resultMap="requestFileHistoryResultMap" parameterType="long">
+        select * from (select * from `request_file_history` where `request_file_id` = #{requestFileId} order by `id` desc) h
+          group by ((h.`status` - 100) div 10) order by h.`id` desc
+    </select>
+
+    <select id="selectLastRequestFileHistory" resultMap="requestFileHistoryResultMap" parameterType="long">
+        select * from `request_file_history` where `request_file_id` = #{requestFileId} order by `id` desc limit 1
+    </select>
+</mapper>

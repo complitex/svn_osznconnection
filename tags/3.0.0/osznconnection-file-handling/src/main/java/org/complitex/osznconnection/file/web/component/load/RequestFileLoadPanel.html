@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"  xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
+    <head>
+        <title></title>
+    </head>
+    <body>
+        <wicket:panel>
+            <div wicket:id="dialog" style="display: none;">
+                <div wicket:id="content">
+                    <div wicket:id="messages"></div>
+
+                    <form action="" wicket:id="form">
+                        <table class="tbForm">
+                            <tr>
+                                <th><wicket:message key="oszn"/><b class="blue">*</b>:</th>
+                                <td><select wicket:id="oszn"></select></td>
+                            </tr>
+                            <tr wicket:id="userOrganizationContainer">
+                                <th><wicket:message key="userOrganization"/><b class="blue">*</b>:</th>
+                                <td><select wicket:id="userOrganization" style="width: 440px"></select></td>
+                            </tr>
+                            <tr>
+                                <th> <wicket:message key="year"/><b class="blue">*</b>:</th>
+                                <td><select wicket:id="year"></select></td>
+                            </tr>
+                        </table>
+
+                        <div wicket:id="monthParameterContainer">
+                            <div wicket:id="monthComponent"></div>
+                        </div>
+
+                        <input type="button" class="btnBig" wicket:message="value:load" wicket:id="load"/>
+                        <input type="button" class="btnMiddle" wicket:message="value:cancel" wicket:id="cancel"/>
+                    </form>
+                </div>
+            </div>
+        </wicket:panel>
+    </body>
+</html>
