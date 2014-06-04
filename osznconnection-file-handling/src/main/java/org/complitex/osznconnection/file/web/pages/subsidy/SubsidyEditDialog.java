@@ -242,6 +242,11 @@ public class SubsidyEditDialog extends Panel {
                     }
                 }
             }
+
+            @Override
+            public boolean isVisible() {
+                return SUBSIDY_NM_PAY_ERROR.equals(subsidyModel.getObject().getStatus());
+            }
         });
 
         form.add(new AjaxLink("recalculate") {
