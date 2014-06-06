@@ -31,18 +31,18 @@ public class DwellingCharacteristicsLookupPanel extends AbstractLookupPanel<Dwel
     @Override
     protected void initInternalAddress(DwellingCharacteristics dwellingCharacteristics, Long cityId, Long streetId, Long streetTypeId,
             Long buildingId, String apartment) {
-        dwellingCharacteristics.setInternalCityId(cityId);
-        dwellingCharacteristics.setInternalStreetId(streetId);
-        dwellingCharacteristics.setInternalStreetTypeId(streetTypeId);
-        dwellingCharacteristics.setInternalBuildingId(buildingId);
+        dwellingCharacteristics.setCityObjectId(cityId);
+        dwellingCharacteristics.setStreetObjectId(streetId);
+        dwellingCharacteristics.setStreetTypeObjectId(streetTypeId);
+        dwellingCharacteristics.setBuildingObjectId(buildingId);
         dwellingCharacteristics.setField(DwellingCharacteristicsDBF.APT, apartment != null ? apartment : "");
     }
 
     @Override
     protected boolean isInternalAddressCorrect(DwellingCharacteristics dwellingCharacteristics) {
-        return dwellingCharacteristics.getInternalCityId() != null && dwellingCharacteristics.getInternalCityId() > 0
-                && dwellingCharacteristics.getInternalStreetId() != null && dwellingCharacteristics.getInternalStreetId() > 0
-                && dwellingCharacteristics.getInternalBuildingId() != null && dwellingCharacteristics.getInternalBuildingId() > 0;
+        return dwellingCharacteristics.getCityObjectId() != null && dwellingCharacteristics.getCityObjectId() > 0
+                && dwellingCharacteristics.getStreetObjectId() != null && dwellingCharacteristics.getStreetObjectId() > 0
+                && dwellingCharacteristics.getBuildingObjectId() != null && dwellingCharacteristics.getBuildingObjectId() > 0;
     }
 
     @Override

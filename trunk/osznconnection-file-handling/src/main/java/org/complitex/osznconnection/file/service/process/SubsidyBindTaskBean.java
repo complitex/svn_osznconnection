@@ -1,6 +1,7 @@
 package org.complitex.osznconnection.file.service.process;
 
 import com.google.common.collect.Lists;
+import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.entity.IExecutorObject;
 import org.complitex.dictionary.entity.Log;
 import org.complitex.dictionary.entity.Log.EVENT;
@@ -9,14 +10,13 @@ import org.complitex.dictionary.service.executor.ExecuteException;
 import org.complitex.dictionary.service.executor.ITaskBean;
 import org.complitex.osznconnection.file.Module;
 import org.complitex.osznconnection.file.entity.*;
-import org.complitex.osznconnection.file.service.AddressService;
-import org.complitex.osznconnection.file.service.PersonAccountService;
-import org.complitex.osznconnection.file.service.RequestFileBean;
-import org.complitex.osznconnection.file.service.SubsidyBean;
+import org.complitex.osznconnection.file.service.*;
 import org.complitex.osznconnection.file.service.exception.AlreadyProcessingException;
 import org.complitex.osznconnection.file.service.exception.BindException;
 import org.complitex.osznconnection.file.service.exception.CanceledByUserException;
+import org.complitex.osznconnection.file.service.exception.MoreOneAccountException;
 import org.complitex.osznconnection.file.service_provider.CalculationCenterBean;
+import org.complitex.osznconnection.file.service_provider.ServiceProviderAdapter;
 import org.complitex.osznconnection.file.service_provider.exception.DBException;
 import org.complitex.osznconnection.file.web.pages.util.GlobalOptions;
 import org.slf4j.Logger;
@@ -61,18 +61,21 @@ public class SubsidyBindTaskBean implements ITaskBean {
     @EJB
     private RequestFileBean requestFileBean;
 
-    private void bind(Subsidy subsidy, CalculationContext calculationContext, Boolean updatePuAccount)
-            throws DBException {
-        //resolve local account
-        personAccountService.resolveLocalAccount(subsidy, calculationContext);
+    @EJB
+    private SubsidyService subsidyService;
 
-        //resolve remote account
-        if ((subsidy.getStatus() != ACCOUNT_NUMBER_RESOLVED) && (subsidy.getStatus() != MORE_ONE_ACCOUNTS_LOCALLY)) {
-            addressService.resolveAddress(subsidy, calculationContext);
+    @EJB
+    private ServiceProviderAdapter serviceProviderAdapter;
 
-            if (subsidy.getStatus().isAddressResolved()){
-                personAccountService.resolveRemoteAccount(subsidy, calculationContext, updatePuAccount);
-            }
+    private void bind(Subsidy subsidy, CalculationContext calculationContext, boolean updatePuAccount) throws DBException {
+        //resolve address
+        addressService.resolveAddress(subsidy, calculationContext);
+
+        //resolve account number
+        if (subsidy.getStatus().isAddressResolved()){
+            personAccountService.resolveAccountNumber(subsidy, subsidy.getStringField(SubsidyDBF.RASH),
+                    subsidyService.getServicingOrganizationCode(subsidy.getRequestFileId()),
+                    calculationContext, updatePuAccount);
         }
 
         // обновляем subsidy запись

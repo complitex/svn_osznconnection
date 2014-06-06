@@ -256,8 +256,8 @@ public final class ActualPaymentList extends TemplatePage {
                                 actualPayment.getStringField(ActualPaymentDBF.N_NAME), actualPayment.getStringField(ActualPaymentDBF.VUL_CAT),
                                 actualPayment.getStringField(ActualPaymentDBF.VUL_NAME), actualPayment.getStringField(ActualPaymentDBF.BLD_NUM),
                                 actualPayment.getStringField(ActualPaymentDBF.CORP_NUM), actualPayment.getStringField(ActualPaymentDBF.FLAT),
-                                actualPayment.getInternalCityId(), actualPayment.getInternalStreetTypeId(), actualPayment.getInternalStreetId(),
-                                actualPayment.getInternalBuildingId(), null);
+                                actualPayment.getCityObjectId(), actualPayment.getStreetTypeObjectId(), actualPayment.getStreetObjectId(),
+                                actualPayment.getBuildingObjectId(), null);
                     }
                 };
                 addressCorrectionLink.setVisible(actualPayment.getStatus().isAddressCorrectable());
@@ -267,8 +267,8 @@ public final class ActualPaymentList extends TemplatePage {
 
                     @Override
                     public void onClick(AjaxRequestTarget target) {
-                        lookupPanel.open(target, actualPayment, actualPayment.getInternalCityId(), actualPayment.getInternalStreetId(),
-                                actualPayment.getInternalBuildingId(), actualPayment.getStringField(ActualPaymentDBF.FLAT),
+                        lookupPanel.open(target, actualPayment, actualPayment.getCityObjectId(), actualPayment.getStreetObjectId(),
+                                actualPayment.getBuildingObjectId(), actualPayment.getStringField(ActualPaymentDBF.FLAT),
                                 actualPayment.getStringField(ActualPaymentDBF.OWN_NUM),
                                 actualPayment.getStatus().isImmediatelySearchByAddress());
                     }

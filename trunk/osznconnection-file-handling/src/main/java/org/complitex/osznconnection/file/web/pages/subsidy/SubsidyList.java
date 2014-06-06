@@ -287,8 +287,8 @@ public final class SubsidyList extends TemplatePage {
                                 subsidy.getStringField(SubsidyDBF.NP_NAME,"_CYR"), subsidy.getStringField(SubsidyDBF.CAT_V,"_CYR"),
                                 subsidy.getStringField(SubsidyDBF.NAME_V,"_CYR"), subsidy.getStringField(SubsidyDBF.BLD,"_CYR"),
                                 subsidy.getStringField(SubsidyDBF.CORP,"_CYR"), subsidy.getStringField(SubsidyDBF.FLAT,"_CYR"),
-                                subsidy.getInternalCityId(), subsidy.getInternalStreetTypeId(), subsidy.getInternalStreetId(),
-                                subsidy.getInternalBuildingId(), null);
+                                subsidy.getCityObjectId(), subsidy.getStreetTypeObjectId(), subsidy.getStreetObjectId(),
+                                subsidy.getBuildingObjectId(), null);
 
                         target.add(item.add(AttributeModifier.append("class", "data-row-hover")));
                     }
@@ -308,8 +308,8 @@ public final class SubsidyList extends TemplatePage {
 
                     @Override
                     public void onClick(AjaxRequestTarget target) {
-                        lookupPanel.open(target, subsidy, subsidy.getInternalCityId(), subsidy.getInternalStreetId(),
-                                subsidy.getInternalBuildingId(), subsidy.getStringField(SubsidyDBF.FLAT),
+                        lookupPanel.open(target, subsidy, subsidy.getCityObjectId(), subsidy.getStreetObjectId(),
+                                subsidy.getBuildingObjectId(), subsidy.getStringField(SubsidyDBF.FLAT),
                                 subsidy.getStringField(SubsidyDBF.RASH),
                                 subsidy.getStatus().isImmediatelySearchByAddress());
 

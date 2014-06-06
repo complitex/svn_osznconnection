@@ -27,7 +27,7 @@ import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
 import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
 import org.complitex.dictionary.web.model.OrganizationModel;
 import org.complitex.osznconnection.file.entity.PersonAccount;
-import org.complitex.osznconnection.file.service.PersonAccountLocalBean;
+import org.complitex.osznconnection.file.service.PersonAccountBean;
 import org.complitex.osznconnection.organization.strategy.OsznOrganizationStrategy;
 import org.complitex.template.web.component.toolbar.DeleteItemButton;
 import org.complitex.template.web.component.toolbar.ToolbarButton;
@@ -47,7 +47,7 @@ public final class PersonAccountEdit extends FormTemplatePage {
     public static final String CORRECTION_ID = "correction_id";
 
     @EJB
-    private PersonAccountLocalBean personAccountLocalBean;
+    private PersonAccountBean personAccountBean;
 
     @EJB(name = IOrganizationStrategy.BEAN_NAME, beanInterface = IOrganizationStrategy.class)
     private OsznOrganizationStrategy organizationStrategy;
@@ -55,15 +55,15 @@ public final class PersonAccountEdit extends FormTemplatePage {
     @EJB
     private SessionBean sessionBean;
 
-    private Long correctionId;
     private PersonAccount personAccount;
 
     public PersonAccountEdit(PageParameters params) {
-        this.correctionId = params.get(CORRECTION_ID).toOptionalLong();
-        personAccount = personAccountLocalBean.findById(this.correctionId);
+        Long correctionId = params.get(CORRECTION_ID).toOptionalLong();
+
+        personAccount = personAccountBean.getPersonAccount(correctionId);
 
         //Проверка доступа к данным
-        if (!sessionBean.isAuthorized(personAccount.getOsznId(), personAccount.getUserOrganizationId())) {
+        if (!sessionBean.isAuthorized(personAccount.getOrganizationId(), personAccount.getUserOrganizationId())) {
             throw new UnauthorizedInstantiationException(this.getClass());
         }
 
@@ -72,7 +72,7 @@ public final class PersonAccountEdit extends FormTemplatePage {
 
     private void saveOrUpdate() {
         try {
-            personAccountLocalBean.update(personAccount);
+            personAccountBean.save(personAccount);
             back(true);
         } catch (Exception e) {
             error(getString("db_error"));
@@ -82,7 +82,7 @@ public final class PersonAccountEdit extends FormTemplatePage {
 
     private void delete() {
         try {
-            personAccountLocalBean.delete(personAccount);
+            personAccountBean.delete(personAccount);
             back(false);
         } catch (Exception e) {
             error(getString("db_error"));
@@ -137,12 +137,12 @@ public final class PersonAccountEdit extends FormTemplatePage {
 
             @Override
             public Long getOrganizationId() {
-                return model.getObject().getOsznId();
+                return model.getObject().getOrganizationId();
             }
 
             @Override
             public void setOrganizationId(Long organizationId) {
-                model.getObject().setOsznId(organizationId);
+                model.getObject().setOrganizationId(organizationId);
             }
 
             @Override

@@ -14,11 +14,11 @@ public abstract class AbstractAddressRequest<E extends Enum> extends AbstractReq
     private String buildingCorp;
     private String apartment;
 
-    private Long internalCityId;
-    private Long internalStreetId;
-    private Long internalStreetTypeId;
-    private Long internalBuildingId;
-    private Long internalApartmentId;
+    private Long cityObjectId;
+    private Long streetTypeObjectId;
+    private Long streetObjectId;
+    private Long buildingObjectId;
+    private Long apartmentObjectId;
 
     private String outgoingCity;
     private String outgoingDistrict;
@@ -93,44 +93,44 @@ public abstract class AbstractAddressRequest<E extends Enum> extends AbstractReq
         this.apartment = apartment;
     }
 
-    public Long getInternalCityId() {
-        return internalCityId;
+    public Long getCityObjectId() {
+        return cityObjectId;
     }
 
-    public void setInternalCityId(Long internalCityId) {
-        this.internalCityId = internalCityId;
+    public void setCityObjectId(Long cityObjectId) {
+        this.cityObjectId = cityObjectId;
     }
 
-    public Long getInternalStreetId() {
-        return internalStreetId;
+    public Long getStreetTypeObjectId() {
+        return streetTypeObjectId;
     }
 
-    public void setInternalStreetId(Long internalStreetId) {
-        this.internalStreetId = internalStreetId;
+    public void setStreetTypeObjectId(Long streetTypeObjectId) {
+        this.streetTypeObjectId = streetTypeObjectId;
     }
 
-    public Long getInternalStreetTypeId() {
-        return internalStreetTypeId;
+    public Long getStreetObjectId() {
+        return streetObjectId;
     }
 
-    public void setInternalStreetTypeId(Long internalStreetTypeId) {
-        this.internalStreetTypeId = internalStreetTypeId;
+    public void setStreetObjectId(Long streetObjectId) {
+        this.streetObjectId = streetObjectId;
     }
 
-    public Long getInternalBuildingId() {
-        return internalBuildingId;
+    public Long getBuildingObjectId() {
+        return buildingObjectId;
     }
 
-    public void setInternalBuildingId(Long internalBuildingId) {
-        this.internalBuildingId = internalBuildingId;
+    public void setBuildingObjectId(Long buildingObjectId) {
+        this.buildingObjectId = buildingObjectId;
     }
 
-    public Long getInternalApartmentId() {
-        return internalApartmentId;
+    public Long getApartmentObjectId() {
+        return apartmentObjectId;
     }
 
-    public void setInternalApartmentId(Long internalApartmentId) {
-        this.internalApartmentId = internalApartmentId;
+    public void setApartmentObjectId(Long apartmentObjectId) {
+        this.apartmentObjectId = apartmentObjectId;
     }
 
     public String getOutgoingCity() {

@@ -5,6 +5,7 @@
 package org.complitex.osznconnection.file.service.process;
 
 import com.google.common.collect.Lists;
+import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.entity.IExecutorObject;
 import org.complitex.dictionary.entity.Log;
 import org.complitex.dictionary.entity.Log.EVENT;
@@ -20,7 +21,9 @@ import org.complitex.osznconnection.file.service.RequestFileBean;
 import org.complitex.osznconnection.file.service.exception.AlreadyProcessingException;
 import org.complitex.osznconnection.file.service.exception.BindException;
 import org.complitex.osznconnection.file.service.exception.CanceledByUserException;
+import org.complitex.osznconnection.file.service.exception.MoreOneAccountException;
 import org.complitex.osznconnection.file.service_provider.CalculationCenterBean;
+import org.complitex.osznconnection.file.service_provider.ServiceProviderAdapter;
 import org.complitex.osznconnection.file.service_provider.exception.DBException;
 import org.complitex.osznconnection.file.web.pages.util.GlobalOptions;
 import org.slf4j.Logger;
@@ -35,6 +38,10 @@ import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import java.util.List;
 import java.util.Map;
+
+import static org.complitex.osznconnection.file.entity.FacilityServiceTypeDBF.IDCODE;
+import static org.complitex.osznconnection.file.entity.RequestStatus.ACCOUNT_NUMBER_RESOLVED;
+import static org.complitex.osznconnection.file.entity.RequestStatus.MORE_ONE_ACCOUNTS_LOCALLY;
 
 /**
  *
@@ -66,69 +73,69 @@ public class FacilityServiceTypeBindTaskBean implements ITaskBean {
     @EJB
     private RequestFileBean requestFileBean;
 
+    @EJB
+    private ServiceProviderAdapter serviceProviderAdapter;
+
     private boolean resolveAddress(FacilityServiceType facilityServiceType, CalculationContext calculationContext) {
-        long startTime = 0;
-        if (log.isDebugEnabled()) {
-            startTime = System.nanoTime();
-        }
         addressService.resolveAddress(facilityServiceType, calculationContext);
-        if (log.isDebugEnabled()) {
-            log.debug("Resolving of facility service type address (id = {}) took {} sec.", facilityServiceType.getId(),
-                    (System.nanoTime() - startTime) / 1000000000F);
-        }
+
         return facilityServiceType.getStatus().isAddressResolved();
     }
 
     private void resolveLocalAccount(FacilityServiceType facilityServiceType, CalculationContext calculationContext) {
-        long startTime = 0;
-        if (log.isDebugEnabled()) {
-            startTime = System.nanoTime();
-        }
-        personAccountService.resolveLocalAccount(facilityServiceType, calculationContext);
-        if (log.isDebugEnabled()) {
-            log.debug("Resolving of facility service type (id = {}) for local account took {} sec.",
-                    facilityServiceType.getId(), (System.nanoTime() - startTime) / 1000000000F);
+        try {
+            String accountNumber = personAccountService.getAccountNumber(facilityServiceType,
+                    facilityServiceType.getStringField(IDCODE),
+                    calculationContext.getCalculationCenterId());
+
+            if (!Strings.isEmpty(accountNumber)) {
+                facilityServiceType.setAccountNumber(accountNumber);
+                facilityServiceType.setStatus(ACCOUNT_NUMBER_RESOLVED);
+            }
+        } catch (MoreOneAccountException e) {
+            facilityServiceType.setStatus(MORE_ONE_ACCOUNTS_LOCALLY);
         }
     }
 
     private boolean resolveRemoteAccountNumber(FacilityServiceType facilityServiceType,
             CalculationContext calculationContext, Boolean updatePuAccount) throws DBException {
-        long startTime = 0;
-        if (log.isDebugEnabled()) {
-            startTime = System.nanoTime();
+        serviceProviderAdapter.acquireFacilityPersonAccount(calculationContext, facilityServiceType,
+                facilityServiceType.getOutgoingDistrict(), facilityServiceType.getOutgoingStreetType(),
+                facilityServiceType.getOutgoingStreet(),
+                facilityServiceType.getOutgoingBuildingNumber(), facilityServiceType.getOutgoingBuildingCorp(),
+                facilityServiceType.getOutgoingApartment(), facilityServiceType.getDate(),
+                facilityServiceType.getStringField(FacilityServiceTypeDBF.IDPIL),
+                facilityServiceType.getStringField(FacilityServiceTypeDBF.PASPPIL));
+
+
+        if (facilityServiceType.getStatus() == ACCOUNT_NUMBER_RESOLVED) {
+            try {
+                personAccountService.save(facilityServiceType, facilityServiceType.getStringField(IDCODE),
+                        calculationContext.getCalculationCenterId());
+            } catch (MoreOneAccountException e) {
+                throw new DBException(e);
+            }
         }
-        personAccountService.resolveRemoteAccount(facilityServiceType, calculationContext);
-        if (log.isDebugEnabled()) {
-            log.debug("Resolving of facility service type (id = {}) for remote account number took {} sec.",
-                    facilityServiceType.getId(), (System.nanoTime() - startTime) / 1000000000F);
-        }
-        return facilityServiceType.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED;
+
+        return facilityServiceType.getStatus() == ACCOUNT_NUMBER_RESOLVED;
     }
 
     private void bind(FacilityServiceType facilityServiceType, CalculationContext calculationContext, Boolean updatePuAccount)
             throws DBException {
+        //resolve address
+        resolveAddress(facilityServiceType, calculationContext);
 
-        //resolve local account.
-        resolveLocalAccount(facilityServiceType, calculationContext);
-        if (facilityServiceType.getStatus() != RequestStatus.ACCOUNT_NUMBER_RESOLVED
-                && facilityServiceType.getStatus() != RequestStatus.MORE_ONE_ACCOUNTS_LOCALLY) {
-            if (resolveAddress(facilityServiceType, calculationContext)) {
+        if (facilityServiceType.getStatus().isAddressResolved()){
+            //resolve local account.
+            resolveLocalAccount(facilityServiceType, calculationContext);
+
+            if (facilityServiceType.getStatus().isNotIn(ACCOUNT_NUMBER_RESOLVED, MORE_ONE_ACCOUNTS_LOCALLY)) {
                 resolveRemoteAccountNumber(facilityServiceType, calculationContext, updatePuAccount);
             }
         }
 
         // обновляем facility service type запись
-        {
-            long startTime = 0;
-            if (log.isDebugEnabled()) {
-                startTime = System.nanoTime();
-            }
-            facilityServiceTypeBean.update(facilityServiceType);
-            if (log.isDebugEnabled()) {
-                log.debug("Updating of facility service type (id = {}) took {} sec.", facilityServiceType.getId(),
-                        (System.nanoTime() - startTime) / 1000000000F);
-            }
-        }
+        facilityServiceTypeBean.update(facilityServiceType);
     }
 
     private void bindFacilityServiceTypeFile(RequestFile facilityServiceTypeFile, CalculationContext calculationContext,
@@ -218,6 +225,7 @@ public class FacilityServiceTypeBindTaskBean implements ITaskBean {
     public void onError(IExecutorObject executorObject) {
         RequestFile requestFile = (RequestFile) executorObject;
         requestFile.setStatus(RequestFileStatus.BIND_ERROR);
+
         requestFileBean.save(requestFile);
     }
 

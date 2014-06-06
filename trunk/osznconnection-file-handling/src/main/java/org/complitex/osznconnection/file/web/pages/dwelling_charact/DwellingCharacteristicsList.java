@@ -265,10 +265,10 @@ public final class DwellingCharacteristicsList extends TemplatePage {
                                 dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.HOUSE),
                                 dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.BUILD),
                                 dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.APT),
-                                dwellingCharacteristics.getInternalCityId(),
-                                dwellingCharacteristics.getInternalStreetTypeId(),
-                                dwellingCharacteristics.getInternalStreetId(),
-                                dwellingCharacteristics.getInternalBuildingId(), null);
+                                dwellingCharacteristics.getCityObjectId(),
+                                dwellingCharacteristics.getStreetTypeObjectId(),
+                                dwellingCharacteristics.getStreetObjectId(),
+                                dwellingCharacteristics.getBuildingObjectId(), null);
                     }
                 };
                 addressCorrectionLink.setVisible(dwellingCharacteristics.getStatus().isAddressCorrectable());
@@ -278,8 +278,8 @@ public final class DwellingCharacteristicsList extends TemplatePage {
 
                     @Override
                     public void onClick(AjaxRequestTarget target) {
-                        lookupPanel.open(target, dwellingCharacteristics, dwellingCharacteristics.getInternalCityId(),
-                                dwellingCharacteristics.getInternalStreetId(), dwellingCharacteristics.getInternalBuildingId(),
+                        lookupPanel.open(target, dwellingCharacteristics, dwellingCharacteristics.getCityObjectId(),
+                                dwellingCharacteristics.getStreetObjectId(), dwellingCharacteristics.getBuildingObjectId(),
                                 dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.APT),
                                 dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.IDCODE),
                                 dwellingCharacteristics.getStatus().isImmediatelySearchByAddress());
