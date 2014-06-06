@@ -1,6 +1,7 @@
 package org.complitex.osznconnection.file.service.process;
 
 import com.google.common.collect.Lists;
+import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.entity.IExecutorObject;
 import org.complitex.dictionary.entity.Log;
 import org.complitex.dictionary.service.ConfigBean;
@@ -12,7 +13,9 @@ import org.complitex.osznconnection.file.service.*;
 import org.complitex.osznconnection.file.service.exception.AlreadyProcessingException;
 import org.complitex.osznconnection.file.service.exception.BindException;
 import org.complitex.osznconnection.file.service.exception.CanceledByUserException;
+import org.complitex.osznconnection.file.service.exception.MoreOneAccountException;
 import org.complitex.osznconnection.file.service_provider.CalculationCenterBean;
+import org.complitex.osznconnection.file.service_provider.ServiceProviderAdapter;
 import org.complitex.osznconnection.file.service_provider.exception.DBException;
 import org.complitex.osznconnection.file.web.pages.util.GlobalOptions;
 import org.slf4j.Logger;
@@ -28,6 +31,8 @@ import javax.transaction.UserTransaction;
 import java.util.List;
 import java.util.Map;
 
+import static org.complitex.osznconnection.file.entity.PaymentDBF.OWN_NUM_SR;
+
 /**
  * @author Anatoly A. Ivanov java@inheaven.ru
  *         Date: 01.11.10 12:56
@@ -35,24 +40,34 @@ import java.util.Map;
 @Stateless
 @TransactionManagement(TransactionManagementType.BEAN)
 public class GroupBindTaskBean implements ITaskBean {
-
     private final Logger log = LoggerFactory.getLogger(GroupBindTaskBean.class);
+
     @Resource
     private UserTransaction userTransaction;
+
     @EJB
     protected ConfigBean configBean;
+
     @EJB
     private AddressService addressService;
-    @EJB
-    private PersonAccountService personAccountService;
+
     @EJB
     private PaymentBean paymentBean;
+
     @EJB
     private BenefitBean benefitBean;
+
     @EJB
     private CalculationCenterBean calculationCenterBean;
+
     @EJB
     private RequestFileGroupBean requestFileGroupBean;
+
+    @EJB
+    private PersonAccountService personAccountService;
+
+    @EJB
+    private ServiceProviderAdapter serviceProviderAdapter;
 
     @Override
     public boolean execute(IExecutorObject executorObject, Map commandParameters) throws ExecuteException {
@@ -134,7 +149,6 @@ public class GroupBindTaskBean implements ITaskBean {
     /**
      * Разрешить адрес по схеме "ОСЗН адрес -> локальная адресная база -> адрес центра начислений"
      * @param payment Запись запроса начислений
-     * @param adapter Адаптер центра начислений
      * @return Разрешен ли адрес
      */
     private boolean resolveAddress(Payment payment, CalculationContext calculationContext) {
@@ -149,19 +163,18 @@ public class GroupBindTaskBean implements ITaskBean {
      * @return Разрешен ли номер л/с
      */
     private void resolveLocalAccount(Payment payment, CalculationContext calculationContext) {
-        personAccountService.resolveLocalAccount(payment, calculationContext);
-    }
+        try {
+            String accountNumber = personAccountService.getAccountNumber(payment, payment.getStringField(OWN_NUM_SR),
+                    calculationContext.getCalculationCenterId());
 
-    /**
-     * Разрешить номер л/с в центре начислений
-     * @param payment Запись запроса начислений
-     * @param adapter Адаптер центра начислений
-     * @return Разрешен ли номер л/с
-     */
-    private boolean resolveRemoteAccountNumber(Payment payment, CalculationContext calculationContext, Boolean updatePuAccount)
-            throws DBException {
-        personAccountService.resolveRemoteAccount(payment, calculationContext, updatePuAccount);
-        return payment.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED;
+            if (!Strings.isEmpty(accountNumber)) {
+                payment.setAccountNumber(accountNumber);
+                payment.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
+                benefitBean.updateAccountNumber(payment.getId(), accountNumber);
+            }
+        } catch (MoreOneAccountException e) {
+            payment.setStatus(RequestStatus.MORE_ONE_ACCOUNTS_LOCALLY);
+        }
     }
 
     /*
@@ -172,13 +185,16 @@ public class GroupBindTaskBean implements ITaskBean {
      * Если адрес разрешен, то пытаемся разрешить номер л/c в ЦН.
      */
     private void bind(Payment payment, CalculationContext calculationContext, Boolean updatePuAccount) throws DBException {
-        //resolve local account.
-        resolveLocalAccount(payment, calculationContext);
+        //resolve address
+        addressService.resolveAddress(payment, calculationContext);
 
-        if (payment.getStatus() != RequestStatus.ACCOUNT_NUMBER_RESOLVED
-                && payment.getStatus() != RequestStatus.MORE_ONE_ACCOUNTS_LOCALLY) {
-            if (resolveAddress(payment, calculationContext)) {
-                resolveRemoteAccountNumber(payment, calculationContext, updatePuAccount);
+        //resolve account number
+        if (payment.getStatus().isAddressResolved()){
+            personAccountService.resolveAccountNumber(payment, payment.getStringField(PaymentDBF.OWN_NUM_SR), null,
+                    calculationContext, updatePuAccount);
+
+            if (payment.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED) {
+                benefitBean.updateAccountNumber(payment.getId(), payment.getAccountNumber());
             }
         }
 

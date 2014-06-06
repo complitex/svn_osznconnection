@@ -14,26 +14,23 @@ import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.*;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.Strings;
-import org.complitex.address.util.AddressRenderer;
 import org.complitex.dictionary.entity.DomainObject;
+import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.service.LocaleBean;
 import org.complitex.dictionary.strategy.organization.IOrganizationStrategy;
-import org.complitex.dictionary.web.component.DisableAwareDropDownChoice;
-import org.complitex.dictionary.web.component.DomainObjectDisableAwareRenderer;
 import org.complitex.dictionary.web.component.datatable.ArrowOrderByBorder;
 import org.complitex.dictionary.web.component.datatable.DataProvider;
+import org.complitex.dictionary.web.component.organization.OrganizationPicker;
 import org.complitex.dictionary.web.component.paging.PagingNavigator;
 import org.complitex.dictionary.web.component.scroll.ScrollBookmarkablePageLink;
-import org.complitex.dictionary.web.model.OrganizationModel;
 import org.complitex.osznconnection.file.entity.PersonAccount;
-import org.complitex.osznconnection.file.entity.example.PersonAccountExample;
-import org.complitex.osznconnection.file.service.PersonAccountLocalBean;
+import org.complitex.osznconnection.file.service.PersonAccountBean;
 import org.complitex.osznconnection.organization.strategy.OsznOrganizationStrategy;
+import org.complitex.osznconnection.organization_type.strategy.OsznOrganizationTypeStrategy;
 import org.complitex.template.web.pages.ScrollListPage;
 import org.complitex.template.web.security.SecurityRole;
 
 import javax.ejb.EJB;
-import java.util.List;
 
 /**
  * Список записей в локальной таблице номеров л/c.
@@ -43,7 +40,7 @@ import java.util.List;
 public class PersonAccountList extends ScrollListPage {
 
     @EJB
-    private PersonAccountLocalBean personAccountLocalBean;
+    private PersonAccountBean personAccountBean;
 
     @EJB(name = IOrganizationStrategy.BEAN_NAME, beanInterface = IOrganizationStrategy.class)
     private OsznOrganizationStrategy organizationStrategy;
@@ -51,7 +48,6 @@ public class PersonAccountList extends ScrollListPage {
     @EJB
 
     private LocaleBean localeBean;
-    private IModel<PersonAccountExample> example;
 
     public PersonAccountList() {
         init();
@@ -60,14 +56,6 @@ public class PersonAccountList extends ScrollListPage {
     public PersonAccountList(PageParameters params) {
         super(params);
         init();
-    }
-
-    private void clearExample() {
-        example.setObject(newExample());
-    }
-
-    private PersonAccountExample newExample() {
-        return new PersonAccountExample();
     }
 
     private void init() {
@@ -81,146 +69,61 @@ public class PersonAccountList extends ScrollListPage {
         final Form<Void> filterForm = new Form<Void>("filterForm");
         content.add(filterForm);
 
-        example = new Model<PersonAccountExample>((PersonAccountExample) getFilterObject(newExample()));
+        final IModel<FilterWrapper<PersonAccount>>  filterModel = newFilterModel(new PersonAccount());
 
         final DataProvider<PersonAccount> dataProvider = new DataProvider<PersonAccount>() {
 
             @Override
             protected Iterable<? extends PersonAccount> getData(long first, long count) {
-                final PersonAccountExample exampleObject = example.getObject();
+                final FilterWrapper<PersonAccount> filterWrapper = filterModel.getObject();
 
-                //store preference, but before clear data order related properties.
-                {
-                    exampleObject.setAsc(false);
-                    exampleObject.setOrderByClause(null);
-                    setFilterObject(exampleObject);
-                }
-
-                exampleObject.setAsc(getSort().isAscending());
+                filterWrapper.setAscending(getSort().isAscending());
                 if (!Strings.isEmpty(getSort().getProperty())) {
-                    exampleObject.setOrderByClause(getSort().getProperty());
+                    filterWrapper.setSortProperty(getSort().getProperty());
                 }
-                exampleObject.setStart(first);
-                exampleObject.setSize(count);
-                exampleObject.setLocaleId(localeBean.convert(getLocale()).getId());
-                return personAccountLocalBean.find(exampleObject);
+
+                filterWrapper.setFirst(first);
+                filterWrapper.setCount(count);
+                filterWrapper.setLocale(localeBean.convert(getLocale()));
+
+                return personAccountBean.getPersonAccounts(filterWrapper);
             }
 
             @Override
             protected int getSize() {
-                example.getObject().setAsc(getSort().isAscending());
-                return personAccountLocalBean.count(example.getObject());
+                return personAccountBean.getPersonAccountsCount(filterModel.getObject());
             }
         };
         dataProvider.setSort("", SortOrder.ASCENDING);
 
-        filterForm.add(new TextField<String>("puAccountNumberFilter", new PropertyModel<String>(example, "puAccountNumber")));
-        filterForm.add(new TextField<String>("firstNameFilter", new PropertyModel<String>(example, "firstName")));
-        filterForm.add(new TextField<String>("middleNameFilter", new PropertyModel<String>(example, "middleName")));
-        filterForm.add(new TextField<String>("lastNameFilter", new PropertyModel<String>(example, "lastName")));
-        filterForm.add(new TextField<String>("cityFilter", new PropertyModel<String>(example, "city")));
-        filterForm.add(new TextField<String>("streetFilter", new PropertyModel<String>(example, "street")));
-        filterForm.add(new TextField<String>("buildingNumberFilter", new PropertyModel<String>(example, "buildingNumber")));
-        filterForm.add(new TextField<String>("buildingCorpFilter", new PropertyModel<String>(example, "buildingCorp")));
-        filterForm.add(new TextField<String>("apartmentFilter", new PropertyModel<String>(example, "apartment")));
-        filterForm.add(new TextField<String>("accountNumberFilter", new PropertyModel<String>(example, "accountNumber")));
+        filterForm.add(new TextField<>("puAccountNumberFilter", new PropertyModel<String>(filterModel, "object.puAccountNumber")));
+        filterForm.add(new TextField<>("firstNameFilter", new PropertyModel<String>(filterModel, "object.firstName")));
+        filterForm.add(new TextField<>("middleNameFilter", new PropertyModel<String>(filterModel, "object.middleName")));
+        filterForm.add(new TextField<>("lastNameFilter", new PropertyModel<String>(filterModel, "object.lastName")));
+        filterForm.add(new TextField<>("cityFilter", new PropertyModel<String>(filterModel, "object.cityObjectId")));
+        filterForm.add(new TextField<>("streetFilter", new PropertyModel<String>(filterModel, "object.streetObjectId")));
+        filterForm.add(new TextField<>("buildingFilter", new PropertyModel<String>(filterModel, "object.buildingObjectId")));
+        filterForm.add(new TextField<>("apartmentFilter", new PropertyModel<String>(filterModel, "object.apartmentObjectId")));
+        filterForm.add(new TextField<>("accountNumberFilter", new PropertyModel<String>(filterModel, "object.accountNumber")));
 
-        final IModel<List<DomainObject>> osznsModel = new LoadableDetachableModel<List<DomainObject>>() {
 
-            @Override
-            protected List<DomainObject> load() {
-                return organizationStrategy.getAllOSZNs(getLocale());
-            }
-        };
-        final IModel<DomainObject> osznModel = new OrganizationModel() {
+        filterForm.add(new OrganizationPicker("osznFilter", new PropertyModel<DomainObject>(filterModel, "object.organizationId"),
+                OsznOrganizationTypeStrategy.SERVICING_ORGANIZATION_TYPE));
 
-            @Override
-            public Long getOrganizationId() {
-                return example.getObject().getOsznId();
-            }
+        filterForm.add(new OrganizationPicker("calculationCenterFilter", new PropertyModel<DomainObject>(filterModel, "object.calculationCenterId"),
+                OsznOrganizationTypeStrategy.CALCULATION_CENTER_TYPE));
 
-            @Override
-            public void setOrganizationId(Long organizationId) {
-                example.getObject().setOsznId(organizationId);
-            }
+        filterForm.add(new OrganizationPicker("userOrganizationFilter", new PropertyModel<DomainObject>(filterModel, "object.userOrganizationId"),
+                OsznOrganizationTypeStrategy.USER_ORGANIZATION_TYPE));
 
-            @Override
-            public List<DomainObject> getOrganizations() {
-                return osznsModel.getObject();
-            }
-        };
-        final DomainObjectDisableAwareRenderer organizationRenderer = new DomainObjectDisableAwareRenderer() {
-
-            @Override
-            public Object getDisplayValue(DomainObject object) {
-                return organizationStrategy.displayDomainObject(object, getLocale());
-            }
-        };
-        filterForm.add(new DisableAwareDropDownChoice<DomainObject>("osznFilter",
-                osznModel, osznsModel, organizationRenderer).setNullValid(true));
-
-        final IModel<List<DomainObject>> calculationCentresModel = new LoadableDetachableModel<List<DomainObject>>() {
-
-            @Override
-            protected List<DomainObject> load() {
-                return organizationStrategy.getAllCalculationCentres(getLocale());
-            }
-        };
-        final IModel<DomainObject> calculationCenterModel = new OrganizationModel() {
-
-            @Override
-            public Long getOrganizationId() {
-                return example.getObject().getCalculationCenterId();
-            }
-
-            @Override
-            public void setOrganizationId(Long organizationId) {
-                example.getObject().setCalculationCenterId(organizationId);
-            }
-
-            @Override
-            public List<DomainObject> getOrganizations() {
-                return calculationCentresModel.getObject();
-            }
-        };
-        DisableAwareDropDownChoice<DomainObject> calculationCenterFilter = new DisableAwareDropDownChoice<DomainObject>("calculationCenterFilter",
-                calculationCenterModel, calculationCentresModel, organizationRenderer);
-        filterForm.add(calculationCenterFilter);
-
-        final IModel<List<DomainObject>> allUserOrganizationsModel = new LoadableDetachableModel<List<DomainObject>>() {
-
-            @Override
-            protected List<DomainObject> load() {
-                return (List<DomainObject>) organizationStrategy.getUserOrganizations(getLocale());
-            }
-        };
-        final IModel<DomainObject> userOrganizationModel = new OrganizationModel() {
-
-            @Override
-            public Long getOrganizationId() {
-                return example.getObject().getUserOrganizationId();
-            }
-
-            @Override
-            public void setOrganizationId(Long userOrganizationId) {
-                example.getObject().setUserOrganizationId(userOrganizationId);
-            }
-
-            @Override
-            public List<DomainObject> getOrganizations() {
-                return allUserOrganizationsModel.getObject();
-            }
-        };
-
-        filterForm.add(new DisableAwareDropDownChoice<DomainObject>("userOrganizationFilter",
-                userOrganizationModel, allUserOrganizationsModel, organizationRenderer).setNullValid(true));
 
         AjaxLink<Void> reset = new AjaxLink<Void>("reset") {
 
             @Override
             public void onClick(AjaxRequestTarget target) {
                 filterForm.clearInput();
-                clearExample();
+                filterModel.setObject(FilterWrapper.of(new PersonAccount()));
+
                 target.add(content);
             }
         };
@@ -247,18 +150,16 @@ public class PersonAccountList extends ScrollListPage {
                 item.add(new Label("firstName", personAccount.getFirstName()));
                 item.add(new Label("middleName", personAccount.getMiddleName()));
                 item.add(new Label("lastName", personAccount.getLastName()));
-                item.add(new Label("city", personAccount.getCity()));
-                item.add(new Label("street", AddressRenderer.displayStreet(personAccount.getStreetType(), personAccount.getStreet(), getLocale())));
-                item.add(new Label("buildingNumber", personAccount.getBuildingNumber()));
-                item.add(new Label("buildingCorp", !Strings.isEmpty(personAccount.getBuildingCorp()) ? personAccount.getBuildingCorp()
-                        : ""));
-                item.add(new Label("apartment", personAccount.getApartment()));
+                item.add(new Label("city", personAccount.getCityObjectId()));
+                item.add(new Label("street", personAccount.getStreetTypeObjectId() + " " + personAccount.getStreetObjectId()));
+                item.add(new Label("buildingNumber", personAccount.getBuildingObjectId()));
+                item.add(new Label("apartment", personAccount.getApartmentObjectId()));
                 item.add(new Label("accountNumber", personAccount.getAccountNumber()));
-                item.add(new Label("oszn", personAccount.getOszn()));
-                item.add(new Label("calculationCenter", personAccount.getCalculationCenter()));
+                item.add(new Label("oszn", personAccount.getOrganizationName()));
+                item.add(new Label("calculationCenter", personAccount.getCalculationCenterName()));
 
                 //user organization
-                item.add(new Label("userOrganization", personAccount.getUserOrganization()));
+                item.add(new Label("userOrganization", personAccount.getUserOrganizationName()));
 
                 item.add(new ScrollBookmarkablePageLink<PersonAccountEdit>("edit", PersonAccountEdit.class,
                         new PageParameters().set(PersonAccountEdit.CORRECTION_ID, personAccount.getId()),
@@ -267,25 +168,18 @@ public class PersonAccountList extends ScrollListPage {
         };
         filterForm.add(data);
 
-        filterForm.add(new ArrowOrderByBorder("puAccountNumberHeader", PersonAccountLocalBean.OrderBy.PU_ACCOUNT_NUMBER.getOrderBy(),
-                dataProvider, data, content));
-        filterForm.add(new ArrowOrderByBorder("lastNameHeader", PersonAccountLocalBean.OrderBy.LAST_NAME.getOrderBy(), dataProvider, data, content));
-        filterForm.add(new ArrowOrderByBorder("firstNameHeader", PersonAccountLocalBean.OrderBy.FIRST_NAME.getOrderBy(), dataProvider, data, content));
-        filterForm.add(new ArrowOrderByBorder("middleNameHeader", PersonAccountLocalBean.OrderBy.MIDDLE_NAME.getOrderBy(), dataProvider, data, content));
-        filterForm.add(new ArrowOrderByBorder("cityHeader", PersonAccountLocalBean.OrderBy.CITY.getOrderBy(), dataProvider, data, content));
-        filterForm.add(new ArrowOrderByBorder("streetHeader", PersonAccountLocalBean.OrderBy.STREET.getOrderBy(), dataProvider, data, content));
-        filterForm.add(new ArrowOrderByBorder("buildingNumberHeader", PersonAccountLocalBean.OrderBy.BUILDING_NUMBER.getOrderBy(), dataProvider,
-                data, content));
-        filterForm.add(new ArrowOrderByBorder("buildingCorpHeader", PersonAccountLocalBean.OrderBy.BUILDING_CORP.getOrderBy(), dataProvider,
-                data, content));
-        filterForm.add(new ArrowOrderByBorder("apartmentHeader", PersonAccountLocalBean.OrderBy.APARTMENT.getOrderBy(), dataProvider, data, content));
-        filterForm.add(new ArrowOrderByBorder("accountNumberHeader", PersonAccountLocalBean.OrderBy.ACCOUNT_NUMBER.getOrderBy(), dataProvider,
-                data, content));
-        filterForm.add(new ArrowOrderByBorder("osznHeader", PersonAccountLocalBean.OrderBy.OSZN.getOrderBy(), dataProvider, data, content));
-        filterForm.add(new ArrowOrderByBorder("calculationCenterHeader", PersonAccountLocalBean.OrderBy.CALCULATION_CENTER.getOrderBy(),
-                dataProvider, data, content));
-        filterForm.add(new ArrowOrderByBorder("userOrganizationHeader", PersonAccountLocalBean.OrderBy.USER_ORGANIZATION.getOrderBy(),
-                dataProvider, data, content));
+        filterForm.add(new ArrowOrderByBorder("puAccountNumberHeader", "id", dataProvider, data, content));
+        filterForm.add(new ArrowOrderByBorder("lastNameHeader", "last_name", dataProvider, data, content));
+        filterForm.add(new ArrowOrderByBorder("firstNameHeader", "first_name", dataProvider, data, content));
+        filterForm.add(new ArrowOrderByBorder("middleNameHeader", "middle_name", dataProvider, data, content));
+        filterForm.add(new ArrowOrderByBorder("cityHeader", "id", dataProvider, data, content));
+        filterForm.add(new ArrowOrderByBorder("streetHeader", "id", dataProvider, data, content));
+        filterForm.add(new ArrowOrderByBorder("buildingHeader", "id", dataProvider, data, content));
+        filterForm.add(new ArrowOrderByBorder("apartmentHeader", "id", dataProvider, data, content));
+        filterForm.add(new ArrowOrderByBorder("accountNumberHeader", "id", dataProvider, data, content));
+        filterForm.add(new ArrowOrderByBorder("osznHeader", "id", dataProvider, data, content));
+        filterForm.add(new ArrowOrderByBorder("calculationCenterHeader", "id", dataProvider, data, content));
+        filterForm.add(new ArrowOrderByBorder("userOrganizationHeader", "id",dataProvider, data, content));
 
         content.add(new PagingNavigator("navigator", data, getPreferencesPage(), content));
     }

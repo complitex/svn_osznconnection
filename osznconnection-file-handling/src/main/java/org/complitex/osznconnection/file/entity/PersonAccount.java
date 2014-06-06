@@ -3,31 +3,52 @@ package org.complitex.osznconnection.file.entity;
 import java.io.Serializable;
 
 /**
- * Запись в локальной таблице номеров л/c person_account.
- * @author Artem
+ * Запись в локальной таблице номеров л/c person_account
  */
 public class PersonAccount implements Serializable {
-
     private Long id;
+
     private String firstName;
     private String middleName;
     private String lastName;
-    private String city;
-    private String streetType;
-    private String street;
-    private String buildingNumber;
-    private String buildingCorp;
-    private String apartment;
-    private String accountNumber;
-    private Long osznId;
-    private Long calculationCenterId;
-    private String oszn;
-    private String calculationCenter;
-    private String userOrganization;
+
+    private Long cityObjectId;
+    private Long streetTypeObjectId;
+    private Long streetObjectId;
+    private Long buildingObjectId;
+    private Long apartmentObjectId;
+
+    private Long organizationId;
     private Long userOrganizationId;
+    private Long calculationCenterId;
+
+    private String accountNumber;
     private String puAccountNumber;
 
+    private String organizationName;
+    private String userOrganizationName;
+    private String calculationCenterName;
+
     public PersonAccount() {
+    }
+
+    public PersonAccount(AbstractAccountRequest request, String puAccountNumber, Long calculationCenterId) {
+        firstName = request.getFirstName();
+        middleName = request.getMiddleName();
+        lastName = request.getLastName();
+
+        cityObjectId = request.getCityObjectId();
+        streetObjectId = request.getStreetObjectId();
+        streetTypeObjectId = request.getStreetTypeObjectId();
+        buildingObjectId = request.getBuildingObjectId();
+        apartmentObjectId = request.getApartmentObjectId();
+
+        this.accountNumber = request.getAccountNumber();
+        organizationId = request.getOrganizationId();
+        userOrganizationId = request.getUserOrganizationId();
+
+        this.puAccountNumber = puAccountNumber;
+        this.calculationCenterId = calculationCenterId;
     }
 
     public Long getId() {
@@ -38,60 +59,12 @@ public class PersonAccount implements Serializable {
         this.id = id;
     }
 
-    public String getAccountNumber() {
-        return accountNumber;
-    }
-
-    public void setAccountNumber(String accountNumber) {
-        this.accountNumber = accountNumber;
-    }
-
-    public String getApartment() {
-        return apartment;
-    }
-
-    public void setApartment(String apartment) {
-        this.apartment = apartment;
-    }
-
-    public String getBuildingCorp() {
-        return buildingCorp;
-    }
-
-    public void setBuildingCorp(String buildingCorp) {
-        this.buildingCorp = buildingCorp;
-    }
-
-    public String getBuildingNumber() {
-        return buildingNumber;
-    }
-
-    public void setBuildingNumber(String buildingNumber) {
-        this.buildingNumber = buildingNumber;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
     public String getFirstName() {
         return firstName;
     }
 
     public void setFirstName(String firstName) {
         this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
     }
 
     public String getMiddleName() {
@@ -102,60 +75,60 @@ public class PersonAccount implements Serializable {
         this.middleName = middleName;
     }
 
-    public String getStreet() {
-        return street;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setStreet(String street) {
-        this.street = street;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
-    public Long getCalculationCenterId() {
-        return calculationCenterId;
+    public Long getCityObjectId() {
+        return cityObjectId;
     }
 
-    public void setCalculationCenterId(Long calculationCenterId) {
-        this.calculationCenterId = calculationCenterId;
+    public void setCityObjectId(Long cityObjectId) {
+        this.cityObjectId = cityObjectId;
     }
 
-    public Long getOsznId() {
-        return osznId;
+    public Long getStreetObjectId() {
+        return streetObjectId;
     }
 
-    public void setOsznId(Long osznId) {
-        this.osznId = osznId;
+    public void setStreetObjectId(Long streetObjectId) {
+        this.streetObjectId = streetObjectId;
     }
 
-    public String getCalculationCenter() {
-        return calculationCenter;
+    public Long getStreetTypeObjectId() {
+        return streetTypeObjectId;
     }
 
-    public void setCalculationCenter(String calculationCenter) {
-        this.calculationCenter = calculationCenter;
+    public void setStreetTypeObjectId(Long streetTypeObjectId) {
+        this.streetTypeObjectId = streetTypeObjectId;
     }
 
-    public String getOszn() {
-        return oszn;
+    public Long getBuildingObjectId() {
+        return buildingObjectId;
     }
 
-    public void setOszn(String oszn) {
-        this.oszn = oszn;
+    public void setBuildingObjectId(Long buildingObjectId) {
+        this.buildingObjectId = buildingObjectId;
     }
 
-    public String getStreetType() {
-        return streetType;
+    public Long getApartmentObjectId() {
+        return apartmentObjectId;
     }
 
-    public void setStreetType(String streetType) {
-        this.streetType = streetType;
+    public void setApartmentObjectId(Long apartmentObjectId) {
+        this.apartmentObjectId = apartmentObjectId;
     }
 
-    public String getPuAccountNumber() {
-        return puAccountNumber;
+    public Long getOrganizationId() {
+        return organizationId;
     }
 
-    public void setPuAccountNumber(String puAccountNumber) {
-        this.puAccountNumber = puAccountNumber;
+    public void setOrganizationId(Long organizationId) {
+        this.organizationId = organizationId;
     }
 
     public Long getUserOrganizationId() {
@@ -166,11 +139,51 @@ public class PersonAccount implements Serializable {
         this.userOrganizationId = userOrganizationId;
     }
 
-    public String getUserOrganization() {
-        return userOrganization;
+    public Long getCalculationCenterId() {
+        return calculationCenterId;
     }
 
-    public void setUserOrganization(String userOrganization) {
-        this.userOrganization = userOrganization;
+    public void setCalculationCenterId(Long calculationCenterId) {
+        this.calculationCenterId = calculationCenterId;
+    }
+
+    public String getAccountNumber() {
+        return accountNumber;
+    }
+
+    public void setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
+    }
+
+    public String getPuAccountNumber() {
+        return puAccountNumber;
+    }
+
+    public void setPuAccountNumber(String puAccountNumber) {
+        this.puAccountNumber = puAccountNumber;
+    }
+
+    public String getOrganizationName() {
+        return organizationName;
+    }
+
+    public void setOrganizationName(String organizationName) {
+        this.organizationName = organizationName;
+    }
+
+    public String getUserOrganizationName() {
+        return userOrganizationName;
+    }
+
+    public void setUserOrganizationName(String userOrganizationName) {
+        this.userOrganizationName = userOrganizationName;
+    }
+
+    public String getCalculationCenterName() {
+        return calculationCenterName;
+    }
+
+    public void setCalculationCenterName(String calculationCenterName) {
+        this.calculationCenterName = calculationCenterName;
     }
 }

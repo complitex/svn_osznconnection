@@ -35,18 +35,18 @@ public class ActualPaymentLookupPanel extends AbstractLookupPanel<ActualPayment>
     @Override
     protected void initInternalAddress(ActualPayment actualPayment, Long cityId, Long streetId, Long streetTypeId,
             Long buildingId, String apartment) {
-        actualPayment.setInternalCityId(cityId);
-        actualPayment.setInternalStreetId(streetId);
-        actualPayment.setInternalStreetTypeId(streetTypeId);
-        actualPayment.setInternalBuildingId(buildingId);
+        actualPayment.setCityObjectId(cityId);
+        actualPayment.setStreetObjectId(streetId);
+        actualPayment.setStreetTypeObjectId(streetTypeId);
+        actualPayment.setBuildingObjectId(buildingId);
         actualPayment.setField(ActualPaymentDBF.FLAT, apartment != null ? apartment : "");
     }
 
     @Override
     protected boolean isInternalAddressCorrect(ActualPayment actualPayment) {
-        return actualPayment.getInternalCityId() != null && actualPayment.getInternalCityId() > 0
-                && actualPayment.getInternalStreetId() != null && actualPayment.getInternalStreetId() > 0
-                && actualPayment.getInternalBuildingId() != null && actualPayment.getInternalBuildingId() > 0;
+        return actualPayment.getCityObjectId() != null && actualPayment.getCityObjectId() > 0
+                && actualPayment.getStreetObjectId() != null && actualPayment.getStreetObjectId() > 0
+                && actualPayment.getBuildingObjectId() != null && actualPayment.getBuildingObjectId() > 0;
     }
 
     @Override

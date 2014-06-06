@@ -194,17 +194,17 @@ public class OsznOrganizationStrategy extends AbstractOrganizationStrategy<Domai
     @Transactional
     @Override
     public List<DomainObject> getAllOuterOrganizations(Locale locale) {
-        return getOrganizations(Arrays.asList(OSZN, CALCULATION_CENTER, SERVICING_ORGANIZATION_TYPE), locale);
+        return getOrganizations(Arrays.asList(OSZN_TYPE, CALCULATION_CENTER_TYPE, SERVICING_ORGANIZATION_TYPE), locale);
     }
 
     @Transactional
     public List<DomainObject> getAllOSZNs(Locale locale) {
-        return getOrganizations(Arrays.asList(OSZN), locale);
+        return getOrganizations(Arrays.asList(OSZN_TYPE), locale);
     }
 
     @Transactional
       public List<DomainObject> getAllCalculationCentres(Locale locale) {
-        return getOrganizations(Arrays.asList(CALCULATION_CENTER), locale);
+        return getOrganizations(Arrays.asList(CALCULATION_CENTER_TYPE), locale);
     }
 
     @Override

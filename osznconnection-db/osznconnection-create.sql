@@ -903,27 +903,52 @@ CREATE TABLE `person_account` (
     `first_name`VARCHAR(100) NOT NULL COMMENT 'Имя',
     `middle_name` VARCHAR(100) NOT NULL COMMENT 'Отчество',
     `last_name` VARCHAR(100) NOT NULL COMMENT 'Фамилия',
+
     `city` VARCHAR(100) NOT NULL COMMENT 'Населенный пункт',
     `street_type` VARCHAR(50) NOT NULL DEFAULT '' COMMENT 'Тип улицы',
     `street` VARCHAR(100) NOT NULL COMMENT 'Улица',
     `building_num` VARCHAR(100) NOT NULL COMMENT 'Номер дома',
     `building_corp` VARCHAR(100) NOT NULL DEFAULT '' COMMENT 'Корпус',
     `apartment` VARCHAR(100) NOT NULL COMMENT 'Номер квартиры',
+
+    `city_object_id` BIGINT(20) COMMENT 'Идентификатор населенного пункта',
+    `street_object_id` BIGINT(20) COMMENT 'Идентификатор улицы',
+    `street_type_object_id` BIGINT(20) COMMENT 'Идентификатор типа улицы',
+    `building_object_id` BIGINT(20) COMMENT 'Идентификатор дома',
+    `apartment_object_id` BIGINT (20) COMMENT 'Идентификатор квартиры',
+
     `account_number` VARCHAR(100) NOT NULL COMMENT 'Счет абонента',
-    `oszn_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор отдела соц. защиты населения',
-    `calc_center_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор центра начислений',
     `pu_account_number` VARCHAR(100) NOT NULL COMMENT 'Личный счет в обслуживающей организации',
+    `organization_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор отдела соц. защиты населения',
     `user_organization_id` BIGINT(20),
+    `calc_center_id` BIGINT(20) NOT NULL COMMENT 'Идентификатор центра начислений',
+
     PRIMARY KEY (`id`),
-    UNIQUE KEY `uk_person_account` (`first_name`, `middle_name`, `last_name`, `city`, `street_type`, `street`, `building_num`,
-        `building_corp`, `apartment`, `oszn_id`, `calc_center_id`, `pu_account_number`, `user_organization_id`),
-    KEY `key_oszn_id` (`oszn_id`),
+
+    UNIQUE KEY `unique_person_account` (`first_name`, `middle_name`, `last_name`, `city_object_id`, `street_object_id`,
+      `building_object_id`, `apartment_object_id`,`pu_account_number`,`organization_id`, `user_organization_id`,
+      `calc_center_id`),
+
+    KEY `key_city_object_id` (`city_object_id`),
+    KEY `key_street_object_id` (`street_object_id`),
+    KEY `key_street_type_object_id` (`street_type_object_id`),
+    KEY `key_building_object_id` (`building_object_id`),
+    KEY `key_apartment_object_id` (`apartment_object_id`),
+
+    KEY `key_organization_id` (`organization_id`),
     KEY `key_calc_center_id` (`calc_center_id`),
     KEY `key_user_organization_id` (`user_organization_id`),
+
+    CONSTRAINT `fk_person_account__city` FOREIGN KEY (`city_object_id`) REFERENCES `city` (`object_id`),
+    CONSTRAINT `fk_person_account__street` FOREIGN KEY (`street_object_id`) REFERENCES `street` (`object_id`),
+    CONSTRAINT `fk_person_account__street_type` FOREIGN KEY (`street_type_object_id`) REFERENCES `street_type` (`object_id`),
+    CONSTRAINT `fk_person_account__building` FOREIGN KEY (`building_object_id`) REFERENCES `building` (`object_id`),
+    CONSTRAINT `fk_person_account__apartment` FOREIGN KEY (`apartment_object_id`) REFERENCES `apartment` (`object_id`),
+
     CONSTRAINT `fk_person_account__user_organization` FOREIGN KEY (`user_organization_id`) REFERENCES `organization` (`object_id`),
-    CONSTRAINT `fk_person_account__osnz_organization` FOREIGN KEY (`oszn_id`) REFERENCES `organization` (`object_id`),
+    CONSTRAINT `fk_person_account__organization` FOREIGN KEY (`organization_id`) REFERENCES `organization` (`object_id`),
     CONSTRAINT `fk_person_account__calc_center_organization` FOREIGN KEY (`calc_center_id`) REFERENCES `organization` (`object_id`)
-) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Счет абонента';
+) ENGINE=InnoDB CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT 'Соответствие лицевого счета';
 
 DROP TABLE IF EXISTS `ownership_correction`;
 

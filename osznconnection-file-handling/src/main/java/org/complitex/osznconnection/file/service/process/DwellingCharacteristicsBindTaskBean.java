@@ -5,6 +5,7 @@
 package org.complitex.osznconnection.file.service.process;
 
 import com.google.common.collect.Lists;
+import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.entity.IExecutorObject;
 import org.complitex.dictionary.entity.Log;
 import org.complitex.dictionary.entity.Log.EVENT;
@@ -20,7 +21,9 @@ import org.complitex.osznconnection.file.service.RequestFileBean;
 import org.complitex.osznconnection.file.service.exception.AlreadyProcessingException;
 import org.complitex.osznconnection.file.service.exception.BindException;
 import org.complitex.osznconnection.file.service.exception.CanceledByUserException;
+import org.complitex.osznconnection.file.service.exception.MoreOneAccountException;
 import org.complitex.osznconnection.file.service_provider.CalculationCenterBean;
+import org.complitex.osznconnection.file.service_provider.ServiceProviderAdapter;
 import org.complitex.osznconnection.file.service_provider.exception.DBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +38,7 @@ import javax.transaction.UserTransaction;
 import java.util.List;
 import java.util.Map;
 
+import static org.complitex.osznconnection.file.entity.DwellingCharacteristicsDBF.IDCODE;
 import static org.complitex.osznconnection.file.entity.RequestStatus.ACCOUNT_NUMBER_RESOLVED;
 import static org.complitex.osznconnection.file.entity.RequestStatus.MORE_ONE_ACCOUNTS_LOCALLY;
 
@@ -68,76 +72,69 @@ public class DwellingCharacteristicsBindTaskBean implements ITaskBean {
     @EJB
     private RequestFileBean requestFileBean;
 
+    @EJB
+    private ServiceProviderAdapter serviceProviderAdapter;
+
 
     private boolean resolveAddress(DwellingCharacteristics dwellingCharacteristics, CalculationContext calculationContext) {
-        long startTime = 0;
-        if (log.isDebugEnabled()) {
-            startTime = System.nanoTime();
-        }
-
         addressService.resolveAddress(dwellingCharacteristics, calculationContext);
-
-        if (log.isDebugEnabled()) {
-            log.debug("Resolving of dwelling characteristics address (id = {}) took {} sec.", dwellingCharacteristics.getId(),
-                    (System.nanoTime() - startTime) / 1000000000F);
-        }
 
         return dwellingCharacteristics.getStatus().isAddressResolved();
     }
 
     private void resolveLocalAccount(DwellingCharacteristics dwellingCharacteristics, CalculationContext calculationContext) {
-        long startTime = 0;
-        if (log.isDebugEnabled()) {
-            startTime = System.nanoTime();
-        }
+        try {
+            String accountNumber = personAccountService.getAccountNumber(dwellingCharacteristics,
+                    dwellingCharacteristics.getStringField(IDCODE),
+                    calculationContext.getCalculationCenterId());
 
-        personAccountService.resolveLocalAccount(dwellingCharacteristics, calculationContext);
-
-        if (log.isDebugEnabled()) {
-            log.debug("Resolving of dwelling characteristics (id = {}) for local account took {} sec.",
-                    dwellingCharacteristics.getId(), (System.nanoTime() - startTime) / 1000000000F);
+            if (!Strings.isEmpty(accountNumber)) {
+                dwellingCharacteristics.setAccountNumber(accountNumber);
+                dwellingCharacteristics.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
+            }
+        } catch (MoreOneAccountException e) {
+            dwellingCharacteristics.setStatus(RequestStatus.MORE_ONE_ACCOUNTS_LOCALLY);
         }
     }
 
     private boolean resolveRemoteAccountNumber(DwellingCharacteristics dwellingCharacteristics,
             CalculationContext calculationContext) throws DBException {
-        long startTime = 0;
-        if (log.isDebugEnabled()) {
-            startTime = System.nanoTime();
+        serviceProviderAdapter.acquireFacilityPersonAccount(calculationContext, dwellingCharacteristics,
+                dwellingCharacteristics.getOutgoingDistrict(), dwellingCharacteristics.getOutgoingStreetType(),
+                dwellingCharacteristics.getOutgoingStreet(),
+                dwellingCharacteristics.getOutgoingBuildingNumber(), dwellingCharacteristics.getOutgoingBuildingCorp(),
+                dwellingCharacteristics.getOutgoingApartment(), dwellingCharacteristics.getDate(),
+                dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.IDPIL),
+                dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.PASPPIL));
+
+        if (dwellingCharacteristics.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED) {
+            try {
+                personAccountService.save(dwellingCharacteristics, dwellingCharacteristics.getStringField(IDCODE),
+                        calculationContext.getCalculationCenterId());
+            } catch (MoreOneAccountException e) {
+                throw new DBException(e);
+            }
         }
 
-        personAccountService.resolveRemoteAccount(dwellingCharacteristics, calculationContext);
-
-        if (log.isDebugEnabled()) {
-            log.debug("Resolving of dwelling characteristics (id = {}) for remote account number took {} sec.",
-                    dwellingCharacteristics.getId(), (System.nanoTime() - startTime) / 1000000000F);
-        }
         return dwellingCharacteristics.getStatus() == ACCOUNT_NUMBER_RESOLVED;
     }
 
     private void bind(DwellingCharacteristics dwellingCharacteristics, CalculationContext calculationContext)
             throws DBException {
-        //resolve local account.
-        resolveLocalAccount(dwellingCharacteristics, calculationContext);
+        //resolve address
+        resolveAddress(dwellingCharacteristics, calculationContext);
 
-        if (dwellingCharacteristics.getStatus().isNotIn(ACCOUNT_NUMBER_RESOLVED, MORE_ONE_ACCOUNTS_LOCALLY)) {
-            if (resolveAddress(dwellingCharacteristics, calculationContext)) {
+        if (dwellingCharacteristics.getStatus().isAddressResolved()){
+            //resolve local account.
+            resolveLocalAccount(dwellingCharacteristics, calculationContext);
+
+            if (dwellingCharacteristics.getStatus().isNotIn(ACCOUNT_NUMBER_RESOLVED, MORE_ONE_ACCOUNTS_LOCALLY)) {
                 resolveRemoteAccountNumber(dwellingCharacteristics, calculationContext);
             }
         }
 
         // обновляем dwelling characteristics запись
-        {
-            long startTime = 0;
-            if (log.isDebugEnabled()) {
-                startTime = System.nanoTime();
-            }
-            dwellingCharacteristicsBean.update(dwellingCharacteristics);
-            if (log.isDebugEnabled()) {
-                log.debug("Updating of dwelling characteristics (id = {}) took {} sec.", dwellingCharacteristics.getId(),
-                        (System.nanoTime() - startTime) / 1000000000F);
-            }
-        }
+        dwellingCharacteristicsBean.update(dwellingCharacteristics);
     }
 
     private void bindDwellingCharacteristicsFile(RequestFile dwellingCharacteristicsFile, CalculationContext calculationContext)

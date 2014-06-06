@@ -5,6 +5,7 @@
 package org.complitex.osznconnection.file.service.process;
 
 import com.google.common.collect.Lists;
+import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.entity.IExecutorObject;
 import org.complitex.dictionary.entity.Log;
 import org.complitex.dictionary.entity.Log.EVENT;
@@ -20,7 +21,9 @@ import org.complitex.osznconnection.file.service.RequestFileBean;
 import org.complitex.osznconnection.file.service.exception.AlreadyProcessingException;
 import org.complitex.osznconnection.file.service.exception.BindException;
 import org.complitex.osznconnection.file.service.exception.CanceledByUserException;
+import org.complitex.osznconnection.file.service.exception.MoreOneAccountException;
 import org.complitex.osznconnection.file.service_provider.CalculationCenterBean;
+import org.complitex.osznconnection.file.service_provider.ServiceProviderAdapter;
 import org.complitex.osznconnection.file.service_provider.exception.DBException;
 import org.complitex.osznconnection.file.web.pages.util.GlobalOptions;
 import org.slf4j.Logger;
@@ -37,6 +40,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import static org.complitex.osznconnection.file.entity.RequestStatus.ACCOUNT_NUMBER_RESOLVED;
+import static org.complitex.osznconnection.file.entity.RequestStatus.MORE_ONE_ACCOUNTS_LOCALLY;
+
 /**
  *
  * @author Artem
@@ -44,97 +50,97 @@ import java.util.Map;
 @Stateless
 @TransactionManagement(TransactionManagementType.BEAN)
 public class ActualPaymentBindTaskBean implements ITaskBean {
-
     private final Logger log = LoggerFactory.getLogger(ActualPaymentBindTaskBean.class);
+
     @Resource
     private UserTransaction userTransaction;
+
     @EJB
     protected ConfigBean configBean;
+
     @EJB
     private AddressService addressService;
+
     @EJB
     private PersonAccountService personAccountService;
+
     @EJB
     private CalculationCenterBean calculationCenterBean;
+
     @EJB
     private ActualPaymentBean actualPaymentBean;
+
     @EJB
     private RequestFileBean requestFileBean;
 
+    @EJB
+    private ServiceProviderAdapter serviceProviderAdapter;
+
     private boolean resolveAddress(ActualPayment actualPayment, CalculationContext calculationContext) {
-        long startTime = 0;
-        if (log.isDebugEnabled()) {
-            startTime = System.nanoTime();
-        }
         addressService.resolveAddress(actualPayment, calculationContext);
-        if (log.isDebugEnabled()) {
-            log.debug("Resolving of actualPayment address (id = {}) took {} sec.", actualPayment.getId(),
-                    (System.nanoTime() - startTime) / 1000000000F);
-        }
+
         return actualPayment.getStatus().isAddressResolved();
     }
 
     private void resolveLocalAccount(ActualPayment actualPayment, CalculationContext calculationContext) {
-        long startTime = 0;
-        if (log.isDebugEnabled()) {
-            startTime = System.nanoTime();
-        }
-        personAccountService.resolveLocalAccount(actualPayment, calculationContext);
-        if (log.isDebugEnabled()) {
-            log.debug("Resolving of actualPayment (id = {}) for local account took {} sec.", actualPayment.getId(),
-                    (System.nanoTime() - startTime) / 1000000000F);
+        try {
+            String accountNumber = personAccountService.getAccountNumber(actualPayment,
+                    actualPayment.getStringField(ActualPaymentDBF.OWN_NUM),
+                    calculationContext.getCalculationCenterId());
+
+            if (!Strings.isEmpty(accountNumber)) {
+                actualPayment.setAccountNumber(accountNumber);
+                actualPayment.setStatus(ACCOUNT_NUMBER_RESOLVED);
+            }
+        } catch (MoreOneAccountException e) {
+            actualPayment.setStatus(MORE_ONE_ACCOUNTS_LOCALLY);
         }
     }
 
-    private boolean resolveRemoteAccountNumber(ActualPayment actualPayment, Date date,
-            CalculationContext calculationContext, Boolean updatePuAccount) throws DBException {
-        long startTime = 0;
-        if (log.isDebugEnabled()) {
-            startTime = System.nanoTime();
+    private boolean resolveRemoteAccountNumber(ActualPayment actualPayment, Date date, CalculationContext calculationContext,
+                                               Boolean updatePuAccount) throws DBException {
+
+        serviceProviderAdapter.acquireAccountDetail(calculationContext, actualPayment,
+                actualPayment.getStringField(ActualPaymentDBF.SUR_NAM),
+                actualPayment.getStringField(ActualPaymentDBF.OWN_NUM), actualPayment.getOutgoingDistrict(),
+                actualPayment.getOutgoingStreetType(), actualPayment.getOutgoingStreet(),
+                actualPayment.getOutgoingBuildingNumber(), actualPayment.getOutgoingBuildingCorp(),
+                actualPayment.getOutgoingApartment(), date, updatePuAccount);
+
+        if (actualPayment.getStatus() == ACCOUNT_NUMBER_RESOLVED) {
+            try {
+                personAccountService.save(actualPayment, actualPayment.getStringField(ActualPaymentDBF.OWN_NUM),
+                        calculationContext.getCalculationCenterId());
+            } catch (MoreOneAccountException e) {
+                throw new DBException(e);
+            }
         }
-        personAccountService.resolveRemoteAccount(actualPayment, date, calculationContext, updatePuAccount);
-        if (log.isDebugEnabled()) {
-            log.debug("Resolving of actualPayment (id = {}) for remote account number took {} sec.", actualPayment.getId(),
-                    (System.nanoTime() - startTime) / 1000000000F);
-        }
-        return actualPayment.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED;
+
+        return actualPayment.getStatus() == ACCOUNT_NUMBER_RESOLVED;
     }
 
     private void bind(ActualPayment actualPayment, Date date, CalculationContext calculationContext, Boolean updatePuAccount)
             throws DBException {
-        //resolve local account.
-        resolveLocalAccount(actualPayment, calculationContext);
+        //resolve address
+        resolveAddress(actualPayment, calculationContext);
 
-        if (actualPayment.getStatus() != RequestStatus.ACCOUNT_NUMBER_RESOLVED
-                && actualPayment.getStatus() != RequestStatus.MORE_ONE_ACCOUNTS_LOCALLY) {
-            if (resolveAddress(actualPayment, calculationContext)) {
+        if (actualPayment.getStatus().isAddressResolved()){
+            //resolve local account.
+            resolveLocalAccount(actualPayment, calculationContext);
+
+            if (actualPayment.getStatus().isNotIn(ACCOUNT_NUMBER_RESOLVED, MORE_ONE_ACCOUNTS_LOCALLY)) {
                 resolveRemoteAccountNumber(actualPayment, date, calculationContext, updatePuAccount);
             }
         }
 
         // обновляем actualPayment запись
-        long startTime = 0;
-        if (log.isDebugEnabled()) {
-            startTime = System.nanoTime();
-        }
         actualPaymentBean.update(actualPayment);
-        if (log.isDebugEnabled()) {
-            log.debug("Updating of actualPayment (id = {}) took {} sec.", actualPayment.getId(),
-                    (System.nanoTime() - startTime) / 1000000000F);
-        }
     }
 
     private void bindActualPaymentFile(RequestFile actualPaymentFile, CalculationContext calculationContext,
-            Boolean updatePuAccount) throws BindException, DBException, CanceledByUserException {
+                                       Boolean updatePuAccount) throws BindException, DBException, CanceledByUserException {
         //извлечь из базы все id подлежащие связыванию для файла actualPayment и доставать записи порциями по BATCH_SIZE штук.
-        long startTime = 0;
-        if (log.isDebugEnabled()) {
-            startTime = System.nanoTime();
-        }
         List<Long> notResolvedPaymentIds = actualPaymentBean.findIdsForBinding(actualPaymentFile.getId());
-        if (log.isDebugEnabled()) {
-            log.debug("Finding of actualPayment ids for binding took {} sec.", (System.nanoTime() - startTime) / 1000000000F);
-        }
         List<Long> batch = Lists.newArrayList();
 
         int batchSize = configBean.getInteger(FileHandlingConfig.BIND_BATCH_SIZE, true);

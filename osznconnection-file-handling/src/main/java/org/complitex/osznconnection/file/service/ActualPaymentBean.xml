@@ -5,10 +5,10 @@
     <resultMap id="actualPaymentResultMap" type="org.complitex.osznconnection.file.entity.ActualPayment"
                 extends="org.complitex.osznconnection.file.service.AbstractRequestBean.abstractRequest">
 
-        <result column="internal_city_id" property="internalCityId"/>
-        <result column="internal_street_id" property="internalStreetId"/>
-        <result column="internal_street_type_id" property="internalStreetTypeId"/>
-        <result column="internal_building_id" property="internalBuildingId"/>
+        <result column="internal_city_id" property="cityObjectId"/>
+        <result column="internal_street_type_id" property="streetTypeObjectId"/>
+        <result column="internal_street_id" property="streetObjectId"/>
+        <result column="internal_building_id" property="buildingObjectId"/>
 
         <result column="outgoing_city" property="outgoingCity"/>
         <result column="outgoing_district" property="outgoingDistrict"/>
@@ -87,7 +87,7 @@
         (
         <trim suffixOverrides=",">
             #{requestFileId}, #{accountNumber},
-            #{internalCityId}, #{internalStreetId}, #{internalStreetTypeId}, #{internalBuildingId},
+            #{cityObjectId}, #{streetObjectId}, #{streetTypeObjectId}, #{buildingObjectId},
             #{outgoingCity}, #{outgoingStreet}, #{outgoingStreetType}, #{outgoingBuildingNumber}, #{outgoingBuildingCorp}, #{outgoingApartment},
             #{status},
             <foreach collection="dbfFields.keys" item="key">
@@ -115,7 +115,7 @@
             (
             <trim suffixOverrides=",">
                 #{item.requestFileId}, #{item.accountNumber},
-                #{item.internalCityId}, #{item.internalStreetId}, #{item.internalStreetTypeId}, #{item.internalBuildingId},
+                #{item.cityObjectId}, #{item.streetObjectId}, #{item.streetTypeObjectId}, #{item.buildingObjectId},
                 #{item.outgoingCity}, #{item.outgoingStreet}, #{item.outgoingStreetType}, #{item.outgoingBuildingNumber}, #{item.outgoingBuildingCorp},
                 #{item.outgoingApartment},
                 #{item.status},
@@ -131,9 +131,9 @@
         update `actual_payment`
         <set>
             `request_file_id` = #{requestFileId}, `account_number` = #{accountNumber},
-            `internal_city_id` = #{internalCityId},
-            `internal_street_id` = #{internalStreetId}, `internal_street_type_id` = #{internalStreetTypeId},
-            `internal_building_id` = #{internalBuildingId}, `internal_apartment_id` = #{internalApartmentId},
+            `internal_city_id` = #{cityObjectId},
+            `internal_street_id` = #{streetObjectId}, `internal_street_type_id` = #{streetTypeObjectId},
+            `internal_building_id` = #{buildingObjectId}, `internal_apartment_id` = #{apartmentObjectId},
             `outgoing_city` = #{outgoingCity}, `outgoing_district` = #{outgoingDistrict},
             `outgoing_street` = #{outgoingStreet}, `outgoing_street_type` = #{outgoingStreetType},
             `outgoing_building_number` = #{outgoingBuildingNumber}, `outgoing_building_corp` = #{outgoingBuildingCorp},
@@ -233,9 +233,9 @@
     <update id="update" parameterType="org.complitex.osznconnection.file.entity.ActualPayment">
         UPDATE `actual_payment` SET
         `account_number` = #{accountNumber},
-        `internal_city_id` = #{internalCityId},
-        `internal_street_id` = #{internalStreetId}, `internal_street_type_id` = #{internalStreetTypeId},
-        `internal_building_id` = #{internalBuildingId},
+        `internal_city_id` = #{cityObjectId},
+        `internal_street_id` = #{streetObjectId}, `internal_street_type_id` = #{streetTypeObjectId},
+        `internal_building_id` = #{buildingObjectId},
         `outgoing_city` = #{outgoingCity}, `outgoing_district` = #{outgoingDistrict},
         `outgoing_street` = #{outgoingStreet}, `outgoing_street_type` = #{outgoingStreetType},
         `outgoing_building_number` = #{outgoingBuildingNumber}, `outgoing_building_corp` = #{outgoingBuildingCorp},

@@ -18,12 +18,12 @@ public class OsznOrganizationTypeStrategy extends OrganizationTypeStrategy {
     /**
      * Organization type ids
      */
-    public static final long OSZN = 2;
-    public static final long CALCULATION_CENTER = 3;
+    public static final long OSZN_TYPE = 2;
+    public static final long CALCULATION_CENTER_TYPE = 3;
 
     @Override
     protected Collection<Long> getReservedInstanceIds() {
-        return ImmutableList.of(USER_ORGANIZATION_TYPE, OSZN, CALCULATION_CENTER);
+        return ImmutableList.of(USER_ORGANIZATION_TYPE, OSZN_TYPE, CALCULATION_CENTER_TYPE);
     }
 
     @Override

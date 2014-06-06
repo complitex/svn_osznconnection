@@ -272,10 +272,10 @@ public final class FacilityServiceTypeList extends TemplatePage {
                                 facilityServiceType.getStringField(FacilityServiceTypeDBF.HOUSE),
                                 facilityServiceType.getStringField(FacilityServiceTypeDBF.BUILD),
                                 facilityServiceType.getStringField(FacilityServiceTypeDBF.APT),
-                                facilityServiceType.getInternalCityId(),
-                                facilityServiceType.getInternalStreetTypeId(),
-                                facilityServiceType.getInternalStreetId(),
-                                facilityServiceType.getInternalBuildingId(),
+                                facilityServiceType.getCityObjectId(),
+                                facilityServiceType.getStreetTypeObjectId(),
+                                facilityServiceType.getStreetObjectId(),
+                                facilityServiceType.getBuildingObjectId(),
                                 null);
                     }
                 };
@@ -286,8 +286,8 @@ public final class FacilityServiceTypeList extends TemplatePage {
 
                     @Override
                     public void onClick(AjaxRequestTarget target) {
-                        lookupPanel.open(target, facilityServiceType, facilityServiceType.getInternalCityId(),
-                                facilityServiceType.getInternalStreetId(), facilityServiceType.getInternalBuildingId(),
+                        lookupPanel.open(target, facilityServiceType, facilityServiceType.getCityObjectId(),
+                                facilityServiceType.getStreetObjectId(), facilityServiceType.getBuildingObjectId(),
                                 facilityServiceType.getStringField(FacilityServiceTypeDBF.APT),
                                 facilityServiceType.getStringField(FacilityServiceTypeDBF.IDCODE),
                                 facilityServiceType.getStatus().isImmediatelySearchByAddress());

@@ -1,21 +1,22 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.complitex.osznconnection.file.service;
 
-import org.apache.wicket.util.string.Strings;
+import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.osznconnection.file.entity.*;
-import org.complitex.osznconnection.file.service.PersonAccountLocalBean.MoreOneAccountException;
+import org.complitex.osznconnection.file.service.exception.MoreOneAccountException;
 import org.complitex.osznconnection.file.service_provider.CalculationCenterBean;
 import org.complitex.osznconnection.file.service_provider.ServiceProviderAdapter;
 import org.complitex.osznconnection.file.service_provider.exception.DBException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import java.util.Date;
+import java.util.List;
+
+import static org.complitex.osznconnection.file.entity.PaymentDBF.OWN_NUM_SR;
 
 /**
  * Разрешает номер л/c
@@ -23,9 +24,10 @@ import java.util.Date;
  */
 @Stateless
 public class PersonAccountService extends AbstractBean {
+    private final Logger log = LoggerFactory.getLogger(PersonAccountService.class);
 
     @EJB
-    private PersonAccountLocalBean personAccountLocalBean;
+    private PersonAccountBean personAccountBean;
 
     @EJB
     private BenefitBean benefitBean;
@@ -58,185 +60,71 @@ public class PersonAccountService extends AbstractBean {
     private RequestFileBean requestFileBean;
 
     @EJB
-    private ServiceProviderAdapter adapter;
+    private ServiceProviderAdapter serviceProviderAdapter;
 
-    /**
-     * Попытаться разрешить номер личного счета локально, т.е. из локальной таблицы person_account
-     * Если успешно, то проставить account number, статус в RequestStatus.ACCOUNT_NUMBER_RESOLVED и обновить
-     * account number для всех benefit записей, соответствующих данному payment.
-     */
-    @Transactional
-    public void resolveLocalAccount(Payment payment, CalculationContext calculationContext) {
+    public String getAccountNumber(AbstractAccountRequest request, String puPersonAccount, Long calculationCenterId)
+            throws MoreOneAccountException {
+        List<PersonAccount> personAccounts = personAccountBean.getPersonAccounts(FilterWrapper.of(new PersonAccount(request,
+                puPersonAccount, calculationCenterId)));
+
+        if (personAccounts.size() == 1){
+            return personAccounts.get(0).getAccountNumber();
+        }else if (personAccounts.size() > 1){
+            throw new MoreOneAccountException();
+        }
+
+        return null;
+    }
+
+    public void save(AbstractAccountRequest request, String puPersonAccount, Long calculationCenterId)
+            throws MoreOneAccountException {
+        List<PersonAccount> personAccounts = personAccountBean.getPersonAccounts(FilterWrapper.of(new PersonAccount(request,
+                puPersonAccount, calculationCenterId)));
+
+        if (personAccounts.size() == 1){
+            PersonAccount personAccount = personAccounts.get(0);
+
+            if (!personAccount.getAccountNumber().equals(request.getAccountNumber())){
+                personAccountBean.save(personAccount);
+            }
+        }else if (personAccounts.size() > 1){
+            throw new MoreOneAccountException();
+        }
+    }
+
+    public void resolveAccountNumber(AbstractAccountRequest request, String puPersonAccount,
+                                     String servicingOrganizationCode, CalculationContext calculationContext,
+                                     boolean updatePuAccount) throws DBException {
         try {
-            String accountNumber = personAccountLocalBean.findLocalAccountNumber(payment,
-                    calculationContext.getCalculationCenterId(),
-                    calculationContext.getUserOrganizationId());
+            //resolve local account
+            String accountNumber = getAccountNumber(request, puPersonAccount, calculationContext.getCalculationCenterId());
 
-            if (!Strings.isEmpty(accountNumber)) {
-                payment.setAccountNumber(accountNumber);
-                payment.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
-                benefitBean.updateAccountNumber(payment.getId(), accountNumber);
+            if (accountNumber != null) {
+                request.setAccountNumber(accountNumber);
+                request.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
+
+                return;
+            }
+
+            //resolve remote account
+            AccountDetail accountDetail = serviceProviderAdapter.acquireAccountDetail(calculationContext, request,
+                    request.getLastName(), puPersonAccount,
+                    request.getOutgoingDistrict(), request.getOutgoingStreetType(), request.getOutgoingStreet(),
+                    request.getOutgoingBuildingNumber(), request.getOutgoingBuildingCorp(),
+                    request.getOutgoingApartment(), request.getDate(), updatePuAccount);
+
+            if (request.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED) {
+                //check servicing organization
+                if (servicingOrganizationCode != null && !servicingOrganizationCode.equals(accountDetail.getZheu())){
+                    request.setStatus(RequestStatus.SERVICING_ORGANIZATION_NOT_FOUND);
+
+                    return;
+                }
+
+                save(request, puPersonAccount, calculationContext.getCalculationCenterId());
             }
         } catch (MoreOneAccountException e) {
-            payment.setStatus(RequestStatus.MORE_ONE_ACCOUNTS_LOCALLY);
-        }
-    }
-
-    @Transactional
-    public void resolveLocalAccount(ActualPayment actualPayment, CalculationContext calculationContext) {
-        try {
-            String accountNumber = personAccountLocalBean.findLocalAccountNumber(actualPayment,
-                    calculationContext.getCalculationCenterId(),
-                    calculationContext.getUserOrganizationId());
-
-            if (!Strings.isEmpty(accountNumber)) {
-                actualPayment.setAccountNumber(accountNumber);
-                actualPayment.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
-            }
-        } catch (MoreOneAccountException e) {
-            actualPayment.setStatus(RequestStatus.MORE_ONE_ACCOUNTS_LOCALLY);
-        }
-    }
-
-    @Transactional
-    public void resolveLocalAccount(Subsidy subsidy, CalculationContext calculationContext) {
-        try {
-            String accountNumber = personAccountLocalBean.findLocalAccountNumber(subsidy,
-                    calculationContext.getCalculationCenterId(),
-                    calculationContext.getUserOrganizationId());
-
-            if (!Strings.isEmpty(accountNumber)) {
-                subsidy.setAccountNumber(accountNumber);
-                subsidy.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
-            }
-        } catch (MoreOneAccountException e) {
-            subsidy.setStatus(RequestStatus.MORE_ONE_ACCOUNTS_LOCALLY);
-        }
-    }
-
-    @Transactional
-    public void resolveLocalAccount(DwellingCharacteristics dwellingCharacteristics,
-                                    CalculationContext calculationContext) {
-        try {
-            String accountNumber = personAccountLocalBean.findLocalAccountNumber(dwellingCharacteristics,
-                    calculationContext.getCalculationCenterId(), calculationContext.getUserOrganizationId());
-
-            if (!Strings.isEmpty(accountNumber)) {
-                dwellingCharacteristics.setAccountNumber(accountNumber);
-                dwellingCharacteristics.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
-            }
-        } catch (MoreOneAccountException e) {
-            dwellingCharacteristics.setStatus(RequestStatus.MORE_ONE_ACCOUNTS_LOCALLY);
-        }
-    }
-
-    @Transactional
-    public void resolveLocalAccount(FacilityServiceType facilityServiceType, CalculationContext calculationContext) {
-        try {
-            String accountNumber = personAccountLocalBean.findLocalAccountNumber(facilityServiceType,
-                    calculationContext.getCalculationCenterId(),
-                    calculationContext.getUserOrganizationId());
-
-            if (!Strings.isEmpty(accountNumber)) {
-                facilityServiceType.setAccountNumber(accountNumber);
-                facilityServiceType.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
-            }
-        } catch (MoreOneAccountException e) {
-            facilityServiceType.setStatus(RequestStatus.MORE_ONE_ACCOUNTS_LOCALLY);
-        }
-    }
-
-    /**
-     * Попытаться разрешить номер л/с в ЦН.
-     * См. org.complitex.osznconnection.file.calculation.adapter.DefaultCalculationCenterAdapter.acquireAccountDetail()
-     * Если успешно, то обновить account number для всех benefit записей,
-     * соответствующих данному payment и записать в локальную таблицу номеров л/c(person_account) найденный номер.
-     */
-    @Transactional
-    public void resolveRemoteAccount(Payment payment, CalculationContext calculationContext,
-                                     Boolean updatePUAccount) throws DBException {
-        adapter.acquireAccountDetail(calculationContext, payment,
-                payment.getStringField(PaymentDBF.SUR_NAM),
-                payment.getStringField(PaymentDBF.OWN_NUM_SR), payment.getOutgoingDistrict(), payment.getOutgoingStreetType(),
-                payment.getOutgoingStreet(), payment.getOutgoingBuildingNumber(), payment.getOutgoingBuildingCorp(),
-                payment.getOutgoingApartment(), payment.getDate(), updatePUAccount);
-
-        if (payment.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED) {
-            benefitBean.updateAccountNumber(payment.getId(), payment.getAccountNumber());
-            personAccountLocalBean.saveOrUpdate(payment, calculationContext.getCalculationCenterId(),
-                    calculationContext.getUserOrganizationId());
-        }
-    }
-
-    @Transactional
-    public void resolveRemoteAccount(ActualPayment actualPayment, Date date, CalculationContext calculationContext,
-                                     Boolean updatePUAccount) throws DBException {
-        adapter.acquireAccountDetail(calculationContext, actualPayment,
-                actualPayment.getStringField(ActualPaymentDBF.SUR_NAM),
-                actualPayment.getStringField(ActualPaymentDBF.OWN_NUM), actualPayment.getOutgoingDistrict(),
-                actualPayment.getOutgoingStreetType(), actualPayment.getOutgoingStreet(),
-                actualPayment.getOutgoingBuildingNumber(), actualPayment.getOutgoingBuildingCorp(),
-                actualPayment.getOutgoingApartment(), date, updatePUAccount);
-
-        if (actualPayment.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED) {
-            personAccountLocalBean.saveOrUpdate(actualPayment, calculationContext.getCalculationCenterId(),
-                    calculationContext.getUserOrganizationId());
-        }
-    }
-
-    @Transactional
-    public void resolveRemoteAccount(Subsidy subsidy, CalculationContext calculationContext, Boolean updatePUAccount)
-            throws DBException {
-        AccountDetail accountDetail = adapter.acquireAccountDetail(calculationContext, subsidy,
-                subsidy.getLastName(), subsidy.getStringField(SubsidyDBF.RASH),
-                subsidy.getOutgoingDistrict(), subsidy.getOutgoingStreetType(), subsidy.getOutgoingStreet(),
-                subsidy.getOutgoingBuildingNumber(), subsidy.getOutgoingBuildingCorp(),
-                subsidy.getOutgoingApartment(), subsidy.getDate(), updatePUAccount);
-
-        if (subsidy.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED) {
-            //check servicing organization
-            if (subsidyService.getServicingOrganizationCode(subsidy.getRequestFileId())
-                    .equals(accountDetail.getZheu())){
-                personAccountLocalBean.saveOrUpdate(subsidy, calculationContext.getCalculationCenterId(),
-                        calculationContext.getUserOrganizationId());
-            }else {
-                subsidy.setStatus(RequestStatus.SERVICING_ORGANIZATION_NOT_FOUND);
-            }
-        }
-    }
-
-    @Transactional
-    public void resolveRemoteAccount(DwellingCharacteristics dwellingCharacteristics, CalculationContext calculationContext)
-            throws DBException {
-        adapter.acquireFacilityPersonAccount(calculationContext, dwellingCharacteristics,
-                dwellingCharacteristics.getOutgoingDistrict(), dwellingCharacteristics.getOutgoingStreetType(),
-                dwellingCharacteristics.getOutgoingStreet(),
-                dwellingCharacteristics.getOutgoingBuildingNumber(), dwellingCharacteristics.getOutgoingBuildingCorp(),
-                dwellingCharacteristics.getOutgoingApartment(), dwellingCharacteristics.getDate(),
-                dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.IDPIL),
-                dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.PASPPIL));
-
-        if (dwellingCharacteristics.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED) {
-            personAccountLocalBean.saveOrUpdate(dwellingCharacteristics, calculationContext.getCalculationCenterId(),
-                    calculationContext.getUserOrganizationId());
-        }
-    }
-
-    @Transactional
-    public void resolveRemoteAccount(FacilityServiceType facilityServiceType, CalculationContext calculationContext)
-            throws DBException {
-        adapter.acquireFacilityPersonAccount(calculationContext, facilityServiceType,
-                facilityServiceType.getOutgoingDistrict(), facilityServiceType.getOutgoingStreetType(),
-                facilityServiceType.getOutgoingStreet(),
-                facilityServiceType.getOutgoingBuildingNumber(), facilityServiceType.getOutgoingBuildingCorp(),
-                facilityServiceType.getOutgoingApartment(), facilityServiceType.getDate(),
-                facilityServiceType.getStringField(FacilityServiceTypeDBF.IDPIL),
-                facilityServiceType.getStringField(FacilityServiceTypeDBF.PASPPIL));
-
-
-        if (facilityServiceType.getStatus() == RequestStatus.ACCOUNT_NUMBER_RESOLVED) {
-            personAccountLocalBean.saveOrUpdate(facilityServiceType, calculationContext.getCalculationCenterId(),
-                    calculationContext.getUserOrganizationId());
+            request.setStatus(RequestStatus.MORE_ONE_ACCOUNTS_LOCALLY);
         }
     }
 
@@ -257,8 +145,12 @@ public class PersonAccountService extends AbstractBean {
         }
 
         final CalculationContext calculationContext = calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId);
-        personAccountLocalBean.saveOrUpdate(payment, calculationContext.getCalculationCenterId(),
-                calculationContext.getUserOrganizationId());
+
+        try {
+            save(payment, payment.getStringField(PaymentDBF.OWN_NUM_SR), calculationContext.getCalculationCenterId());
+        } catch (MoreOneAccountException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Transactional
@@ -276,8 +168,12 @@ public class PersonAccountService extends AbstractBean {
         }
 
         final CalculationContext calculationContext = calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId);
-        personAccountLocalBean.saveOrUpdate(actualPayment, calculationContext.getCalculationCenterId(),
-                calculationContext.getUserOrganizationId());
+        try {
+            save(actualPayment, actualPayment.getStringField(ActualPaymentDBF.OWN_NUM),
+                    calculationContext.getCalculationCenterId());
+        } catch (MoreOneAccountException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Transactional
@@ -295,8 +191,11 @@ public class PersonAccountService extends AbstractBean {
         }
 
         final CalculationContext calculationContext = calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId);
-        personAccountLocalBean.saveOrUpdate(subsidy, calculationContext.getCalculationCenterId(),
-                calculationContext.getUserOrganizationId());
+        try {
+            save(subsidy, subsidy.getStringField(SubsidyDBF.RASH), calculationContext.getCalculationCenterId());
+        } catch (MoreOneAccountException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Transactional
@@ -314,8 +213,12 @@ public class PersonAccountService extends AbstractBean {
         }
 
         final CalculationContext calculationContext = calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId);
-        personAccountLocalBean.saveOrUpdate(dwellingCharacteristics, calculationContext.getCalculationCenterId(),
-                calculationContext.getUserOrganizationId());
+        try {
+            save(dwellingCharacteristics, dwellingCharacteristics.getStringField(DwellingCharacteristicsDBF.IDCODE),
+                    calculationContext.getCalculationCenterId());
+        } catch (MoreOneAccountException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Transactional
@@ -333,7 +236,11 @@ public class PersonAccountService extends AbstractBean {
         }
 
         final CalculationContext calculationContext = calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId);
-        personAccountLocalBean.saveOrUpdate(facilityServiceType, calculationContext.getCalculationCenterId(),
-                calculationContext.getUserOrganizationId());
+        try {
+            save(facilityServiceType, facilityServiceType.getStringField(FacilityServiceTypeDBF.IDCODE),
+                    calculationContext.getCalculationCenterId());
+        } catch (MoreOneAccountException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

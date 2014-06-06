@@ -478,7 +478,7 @@ public class OsznOrganizationEditComponent extends OrganizationEditComponent {
 
     public boolean isCalculationCenter() {
         for (DomainObject organizationType : getOrganizationTypesModel().getObject()) {
-            if (organizationType.getId().equals(OsznOrganizationTypeStrategy.CALCULATION_CENTER)) {
+            if (organizationType.getId().equals(OsznOrganizationTypeStrategy.CALCULATION_CENTER_TYPE)) {
                 return true;
             }
         }
@@ -487,7 +487,7 @@ public class OsznOrganizationEditComponent extends OrganizationEditComponent {
 
     public boolean isOszn() {
         for (DomainObject organizationType : getOrganizationTypesModel().getObject()) {
-            if (organizationType.getId().equals(OsznOrganizationTypeStrategy.OSZN)) {
+            if (organizationType.getId().equals(OsznOrganizationTypeStrategy.OSZN_TYPE)) {
                 return true;
             }
         }
