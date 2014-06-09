@@ -80,14 +80,15 @@ public class PersonAccountService extends AbstractBean {
             throws MoreOneAccountException {
         List<PersonAccount> personAccounts = personAccountBean.getPersonAccounts(FilterWrapper.of(new PersonAccount(request,
                 puPersonAccount, calculationCenterId)));
-
-        if (personAccounts.size() == 1){
+        if (personAccounts.isEmpty()){
+            personAccountBean.save(new PersonAccount(request, puPersonAccount, calculationCenterId));
+        }else if (personAccounts.size() == 1){
             PersonAccount personAccount = personAccounts.get(0);
 
             if (!personAccount.getAccountNumber().equals(request.getAccountNumber())){
                 personAccountBean.save(personAccount);
             }
-        }else if (personAccounts.size() > 1){
+        }else {
             throw new MoreOneAccountException();
         }
     }
@@ -190,9 +191,9 @@ public class PersonAccountService extends AbstractBean {
             requestFileBean.save(subsidyFile);
         }
 
-        final CalculationContext calculationContext = calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId);
         try {
-            save(subsidy, subsidy.getStringField(SubsidyDBF.RASH), calculationContext.getCalculationCenterId());
+            save(subsidy, subsidy.getStringField(SubsidyDBF.RASH), calculationCenterBean.getContextWithAnyCalculationCenter(
+                    userOrganizationId).getCalculationCenterId());
         } catch (MoreOneAccountException e) {
             throw new RuntimeException(e);
         }

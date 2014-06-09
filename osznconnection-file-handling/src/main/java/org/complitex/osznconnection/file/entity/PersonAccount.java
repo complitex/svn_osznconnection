@@ -18,6 +18,8 @@ public class PersonAccount implements Serializable {
     private Long buildingObjectId;
     private Long apartmentObjectId;
 
+    private String apartment;
+
     private Long organizationId;
     private Long userOrganizationId;
     private Long calculationCenterId;
@@ -42,6 +44,8 @@ public class PersonAccount implements Serializable {
         streetTypeObjectId = request.getStreetTypeObjectId();
         buildingObjectId = request.getBuildingObjectId();
         apartmentObjectId = request.getApartmentObjectId();
+
+        apartment = request.getApartment();
 
         this.accountNumber = request.getAccountNumber();
         organizationId = request.getOrganizationId();
@@ -121,6 +125,14 @@ public class PersonAccount implements Serializable {
 
     public void setApartmentObjectId(Long apartmentObjectId) {
         this.apartmentObjectId = apartmentObjectId;
+    }
+
+    public String getApartment() {
+        return apartment;
+    }
+
+    public void setApartment(String apartment) {
+        this.apartment = apartment;
     }
 
     public Long getOrganizationId() {

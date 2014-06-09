@@ -14,6 +14,8 @@
         <result property="buildingObjectId" column="building_object_id"/>
         <result property="apartmentObjectId" column="apartment_object_id"/>
 
+        <result property="apartment" column="apartment"/>
+
         <result property="accountNumber" column="account_number"/>
         <result property="puAccountNumber" column="pu_account_number"/>
 
@@ -29,10 +31,10 @@
     <insert id="insertPersonAccount" parameterType="org.complitex.osznconnection.file.entity.PersonAccount"
             keyProperty="id" useGeneratedKeys="true">
         insert into `person_account` (`first_name`, `middle_name`, `last_name`, `city_object_id`, `street_type_object_id`,
-        `street_object_id`, `building_object_id`, `apartment_object_id`, `account_number`,  `pu_account_number`,
+        `street_object_id`, `building_object_id`, `apartment_object_id`, `apartment`, `account_number`,  `pu_account_number`,
         `organization_id`, `user_organization_id`, `calc_center_id`)
         values (#{firstName}, #{middleName}, #{lastName} ,#{cityObjectId}, #{streetTypeObjectId}, #{streetObjectId},
-        #{buildingObjectId}, #{apartmentObjectId}, #{accountNumber}, #{puAccountNumber}, #{organizationId},
+        #{buildingObjectId}, #{apartmentObjectId}, #{apartment}, #{accountNumber}, #{puAccountNumber}, #{organizationId},
         #{userOrganizationId}, #{calculationCenterId})
     </insert>
 
@@ -72,6 +74,8 @@
             <if test="object.streetObjectId != null or required">and pa.`street_object_id` = #{object.streetObjectId}</if>
             <if test="object.buildingObjectId != null or required">and pa.`building_object_id` = #{object.buildingObjectId}</if>
             <if test="object.apartmentObjectId != null or required">and pa.`apartment_object_id` = #{object.apartmentObjectId}</if>
+
+            <if test="object.apartment != null or required">and pa.`apartment` = #{object.apartment}</if>
 
             <if test="object.accountNumber != null">and pa.`account_number` = #{object.accountNumber}</if>
             <if test="object.puAccountNumber != null or required">and pa.`pu_account_number` = #{object.puAccountNumber}</if>
