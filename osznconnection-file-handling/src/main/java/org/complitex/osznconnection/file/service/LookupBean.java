@@ -31,25 +31,7 @@ public class LookupBean extends AbstractBean {
     private CalculationCenterBean calculationCenterBean;
 
     @EJB
-    private RequestFileBean requestFileBean;
-
-    @EJB
-    private ActualPaymentBean actualPaymentBean;
-
-    @EJB
     private ServiceProviderAdapter adapter;
-
-    @EJB
-    private AddressCorrectionBean addressCorrectionBean;
-
-    @EJB
-    private OsznOrganizationStrategy organizationStrategy;
-
-    @EJB
-    private DistrictStrategy districtStrategy;
-
-    @EJB
-    private LocaleBean localeBean;
 
     /**
      * Разрешить исходящий в ЦН адрес по схеме "локальная адресная база -> адрес центра начислений"
@@ -70,57 +52,10 @@ public class LookupBean extends AbstractBean {
      */
     @Transactional
     @TransactionAttribute(TransactionAttributeType.NEVER)
-    private List<AccountDetail> acquireAccountDetailsByAddress(AbstractRequest request, String district, String streetType, String street,
+    public List<AccountDetail> acquireAccountDetailsByAddress(AbstractRequest request, String district, String streetType, String street,
             String buildingNumber, String buildingCorp, String apartment, Date date, long userOrganizationId) throws DBException {
         return adapter.acquireAccountDetailsByAddress(calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId), request,
                 district, streetType, street, buildingNumber, buildingCorp, apartment, date);
-    }
-
-    @Transactional
-    @TransactionAttribute(TransactionAttributeType.NEVER)
-    public List<AccountDetail> acquireAccountDetailsByAddress(Payment payment, long userOrganizationId) throws DBException {
-        return acquireAccountDetailsByAddress(payment, payment.getOutgoingDistrict(), payment.getOutgoingStreetType(),
-                payment.getOutgoingStreet(), payment.getOutgoingBuildingNumber(), payment.getOutgoingBuildingCorp(),
-                payment.getOutgoingApartment(), (Date) payment.getField(PaymentDBF.DAT1), userOrganizationId);
-    }
-
-    @Transactional
-    @TransactionAttribute(TransactionAttributeType.NEVER)
-    public List<AccountDetail> acquireAccountDetailsByAddress(ActualPayment actualPayment, long userOrganizationId) throws DBException {
-        RequestFile actualPaymentFile = requestFileBean.findById(actualPayment.getRequestFileId());
-        return acquireAccountDetailsByAddress(actualPayment, actualPayment.getOutgoingDistrict(), actualPayment.getOutgoingStreetType(),
-                actualPayment.getOutgoingStreet(), actualPayment.getOutgoingBuildingNumber(), actualPayment.getOutgoingBuildingCorp(),
-                actualPayment.getOutgoingApartment(), actualPaymentBean.getFirstDay(actualPayment, actualPaymentFile), userOrganizationId);
-    }
-
-    @Transactional
-    @TransactionAttribute(TransactionAttributeType.NEVER)
-    public List<AccountDetail> acquireAccountDetailsByAddress(Subsidy subsidy, long userOrganizationId) throws DBException {
-        return acquireAccountDetailsByAddress(subsidy, subsidy.getOutgoingDistrict(), subsidy.getOutgoingStreetType(),
-                subsidy.getOutgoingStreet(), subsidy.getOutgoingBuildingNumber(), subsidy.getOutgoingBuildingCorp(),
-                subsidy.getOutgoingApartment(), (Date) subsidy.getField(SubsidyDBF.DAT1), userOrganizationId);
-    }
-
-    @Transactional
-    @TransactionAttribute(TransactionAttributeType.NEVER)
-    public List<AccountDetail> acquireAccountDetailsByAddress(DwellingCharacteristics dwellingCharacteristics, long userOrganizationId)
-            throws DBException {
-        return acquireAccountDetailsByAddress(dwellingCharacteristics, dwellingCharacteristics.getOutgoingDistrict(),
-                dwellingCharacteristics.getOutgoingStreetType(),
-                dwellingCharacteristics.getOutgoingStreet(), dwellingCharacteristics.getOutgoingBuildingNumber(),
-                dwellingCharacteristics.getOutgoingBuildingCorp(),
-                dwellingCharacteristics.getOutgoingApartment(), dwellingCharacteristics.getDate(), userOrganizationId);
-    }
-
-    @Transactional
-    @TransactionAttribute(TransactionAttributeType.NEVER)
-    public List<AccountDetail> acquireAccountDetailsByAddress(FacilityServiceType facilityServiceType, long userOrganizationId)
-            throws DBException {
-        return acquireAccountDetailsByAddress(facilityServiceType, facilityServiceType.getOutgoingDistrict(),
-                facilityServiceType.getOutgoingStreetType(),
-                facilityServiceType.getOutgoingStreet(), facilityServiceType.getOutgoingBuildingNumber(),
-                facilityServiceType.getOutgoingBuildingCorp(),
-                facilityServiceType.getOutgoingApartment(), facilityServiceType.getDate(), userOrganizationId);
     }
 
     @Transactional

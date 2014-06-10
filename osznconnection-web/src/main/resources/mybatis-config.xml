@@ -26,6 +26,11 @@
                      javaType="org.complitex.osznconnection.file.entity.RequestWarningStatus"/>
     </typeHandlers>
 
+    <!--cursor plugin-->
+    <plugins>
+        <plugin interceptor="org.complitex.dictionary.mybatis.CursorResultSetHandlerPlugin"/>
+    </plugins>
+
     <environments default="local">
         <environment id="local">
             <transactionManager type="MANAGED"/>

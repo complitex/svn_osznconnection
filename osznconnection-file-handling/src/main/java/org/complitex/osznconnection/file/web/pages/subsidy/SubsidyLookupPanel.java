@@ -11,6 +11,7 @@ import org.complitex.osznconnection.file.service_provider.exception.DBException;
 import org.complitex.osznconnection.file.web.component.lookup.AbstractLookupPanel;
 
 import javax.ejb.EJB;
+import java.util.Date;
 import java.util.List;
 
 public class SubsidyLookupPanel extends AbstractLookupPanel<Subsidy> {
@@ -52,7 +53,9 @@ public class SubsidyLookupPanel extends AbstractLookupPanel<Subsidy> {
 
     @Override
     protected List<AccountDetail> acquireAccountDetailsByAddress(Subsidy subsidy, long userOrganizationId) throws DBException {
-        return lookupBean.acquireAccountDetailsByAddress(subsidy, userOrganizationId);
+        return lookupBean.acquireAccountDetailsByAddress(subsidy, subsidy.getOutgoingDistrict(), subsidy.getOutgoingStreetType(),
+                subsidy.getOutgoingStreet(), subsidy.getOutgoingBuildingNumber(), subsidy.getOutgoingBuildingCorp(),
+                subsidy.getOutgoingApartment(), (Date) subsidy.getField(SubsidyDBF.DAT1), userOrganizationId);
     }
 
     @Override

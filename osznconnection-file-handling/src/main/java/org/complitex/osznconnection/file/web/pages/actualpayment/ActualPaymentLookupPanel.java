@@ -8,8 +8,11 @@ import org.apache.wicket.Component;
 import org.complitex.osznconnection.file.entity.AccountDetail;
 import org.complitex.osznconnection.file.entity.ActualPayment;
 import org.complitex.osznconnection.file.entity.ActualPaymentDBF;
+import org.complitex.osznconnection.file.entity.RequestFile;
+import org.complitex.osznconnection.file.service.ActualPaymentBean;
 import org.complitex.osznconnection.file.service.LookupBean;
 import org.complitex.osznconnection.file.service.PersonAccountService;
+import org.complitex.osznconnection.file.service.RequestFileBean;
 import org.complitex.osznconnection.file.service_provider.exception.DBException;
 import org.complitex.osznconnection.file.web.component.lookup.AbstractLookupPanel;
 
@@ -27,6 +30,12 @@ public class ActualPaymentLookupPanel extends AbstractLookupPanel<ActualPayment>
 
     @EJB
     private PersonAccountService personAccountService;
+
+    @EJB
+    private RequestFileBean requestFileBean;
+
+    @EJB
+    private ActualPaymentBean actualPaymentBean;
 
     public ActualPaymentLookupPanel(String id, long userOrganizationId, Component... toUpdate) {
         super(id, userOrganizationId, toUpdate);
@@ -55,8 +64,15 @@ public class ActualPaymentLookupPanel extends AbstractLookupPanel<ActualPayment>
     }
 
     @Override
-    protected List<AccountDetail> acquireAccountDetailsByAddress(ActualPayment actualPayment, long userOrganizationId) throws DBException {
-        return lookupBean.acquireAccountDetailsByAddress(actualPayment, userOrganizationId);
+    protected List<AccountDetail> acquireAccountDetailsByAddress(ActualPayment actualPayment, long userOrganizationId)
+            throws DBException {
+        RequestFile actualPaymentFile = requestFileBean.findById(actualPayment.getRequestFileId());
+
+        return lookupBean.acquireAccountDetailsByAddress(actualPayment, actualPayment.getOutgoingDistrict(),
+                actualPayment.getOutgoingStreetType(), actualPayment.getOutgoingStreet(),
+                actualPayment.getOutgoingBuildingNumber(), actualPayment.getOutgoingBuildingCorp(),
+                actualPayment.getOutgoingApartment(), actualPaymentBean.getFirstDay(actualPayment, actualPaymentFile),
+                userOrganizationId);
     }
 
     @Override

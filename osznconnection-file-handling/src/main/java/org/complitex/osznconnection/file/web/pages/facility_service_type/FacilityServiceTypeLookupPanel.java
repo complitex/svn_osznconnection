@@ -34,7 +34,7 @@ public class FacilityServiceTypeLookupPanel extends AbstractLookupPanel<Facility
 
     @Override
     protected void initInternalAddress(FacilityServiceType facilityServiceType, Long cityId, Long streetId,
-            Long streetTypeId, Long buildingId, String apartment) {
+                                       Long streetTypeId, Long buildingId, String apartment) {
         facilityServiceType.setCityObjectId(cityId);
         facilityServiceType.setStreetObjectId(streetId);
         facilityServiceType.setStreetTypeObjectId(streetTypeId);
@@ -56,13 +56,16 @@ public class FacilityServiceTypeLookupPanel extends AbstractLookupPanel<Facility
 
     @Override
     protected List<AccountDetail> acquireAccountDetailsByAddress(FacilityServiceType facilityServiceType,
-            long userOrganizationId) throws DBException {
-        return lookupBean.acquireAccountDetailsByAddress(facilityServiceType, userOrganizationId);
+                                                                 long userOrganizationId) throws DBException {
+        return lookupBean.acquireAccountDetailsByAddress(facilityServiceType, facilityServiceType.getOutgoingDistrict(),
+                facilityServiceType.getOutgoingStreetType(), facilityServiceType.getOutgoingStreet(),
+                facilityServiceType.getOutgoingBuildingNumber(), facilityServiceType.getOutgoingBuildingCorp(),
+                facilityServiceType.getOutgoingApartment(), facilityServiceType.getDate(), userOrganizationId);
     }
 
     @Override
     protected void updateAccountNumber(FacilityServiceType facilityServiceType, String accountNumber,
-            long userOrganizationId) {
+                                       long userOrganizationId) {
         personAccountService.updateAccountNumber(facilityServiceType, accountNumber, userOrganizationId);
     }
 }
