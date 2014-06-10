@@ -1,6 +1,7 @@
 package org.complitex.osznconnection.file.web.pages.dwelling_charact;
 
 import org.apache.wicket.Component;
+import org.complitex.dictionary.entity.Cursor;
 import org.complitex.osznconnection.file.entity.AccountDetail;
 import org.complitex.osznconnection.file.entity.DwellingCharacteristics;
 import org.complitex.osznconnection.file.entity.DwellingCharacteristicsDBF;
@@ -51,10 +52,9 @@ public class DwellingCharacteristicsLookupPanel extends AbstractLookupPanel<Dwel
     }
 
     @Override
-    protected List<AccountDetail> acquireAccountDetailsByAddress(DwellingCharacteristics dwellingCharacteristics,
-                                                                 long userOrganizationId)
-            throws DBException {
-        return lookupBean.acquireAccountDetailsByAddress(dwellingCharacteristics, dwellingCharacteristics.getOutgoingDistrict(),
+    protected Cursor<AccountDetail> getAccountDetails(DwellingCharacteristics dwellingCharacteristics,
+                                                      long userOrganizationId) throws DBException {
+        return lookupBean.getAccountDetails(dwellingCharacteristics.getOutgoingDistrict(),
                 dwellingCharacteristics.getOutgoingStreetType(), dwellingCharacteristics.getOutgoingStreet(),
                 dwellingCharacteristics.getOutgoingBuildingNumber(), dwellingCharacteristics.getOutgoingBuildingCorp(),
                 dwellingCharacteristics.getOutgoingApartment(), dwellingCharacteristics.getDate(), userOrganizationId);

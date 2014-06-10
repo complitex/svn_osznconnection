@@ -2,6 +2,7 @@ package org.complitex.osznconnection.file.service;
 
 import org.complitex.address.strategy.district.DistrictStrategy;
 import org.complitex.correction.service.AddressCorrectionBean;
+import org.complitex.dictionary.entity.Cursor;
 import org.complitex.dictionary.mybatis.Transactional;
 import org.complitex.dictionary.service.AbstractBean;
 import org.complitex.dictionary.service.LocaleBean;
@@ -47,14 +48,10 @@ public class LookupBean extends AbstractBean {
      * Получить детальную информацию о клиентах ЦН.
      * Вся работа по поиску делегируется адаптеру взаимодействия с ЦН.
      * См. org.complitex.osznconnection.file.calculation.adapter.DefaultCalculationCenterAdapter.acquireAccountCorrectionDetails()
-     * @param request
-     * @return
      */
-    @Transactional
-    @TransactionAttribute(TransactionAttributeType.NEVER)
-    public List<AccountDetail> acquireAccountDetailsByAddress(AbstractRequest request, String district, String streetType, String street,
+    public Cursor<AccountDetail> getAccountDetails(String district, String streetType, String street,
             String buildingNumber, String buildingCorp, String apartment, Date date, long userOrganizationId) throws DBException {
-        return adapter.acquireAccountDetailsByAddress(calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId), request,
+        return adapter.getAccountDetails(calculationCenterBean.getContextWithAnyCalculationCenter(userOrganizationId).getDataSource(),
                 district, streetType, street, buildingNumber, buildingCorp, apartment, date);
     }
 
