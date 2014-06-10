@@ -30,7 +30,7 @@ public class DwellingCharacteristicsLookupPanel extends AbstractLookupPanel<Dwel
 
     @Override
     protected void initInternalAddress(DwellingCharacteristics dwellingCharacteristics, Long cityId, Long streetId, Long streetTypeId,
-            Long buildingId, String apartment) {
+                                       Long buildingId, String apartment) {
         dwellingCharacteristics.setCityObjectId(cityId);
         dwellingCharacteristics.setStreetObjectId(streetId);
         dwellingCharacteristics.setStreetTypeObjectId(streetTypeId);
@@ -51,9 +51,13 @@ public class DwellingCharacteristicsLookupPanel extends AbstractLookupPanel<Dwel
     }
 
     @Override
-    protected List<AccountDetail> acquireAccountDetailsByAddress(DwellingCharacteristics dwellingCharacteristics, long userOrganizationId)
+    protected List<AccountDetail> acquireAccountDetailsByAddress(DwellingCharacteristics dwellingCharacteristics,
+                                                                 long userOrganizationId)
             throws DBException {
-        return lookupBean.acquireAccountDetailsByAddress(dwellingCharacteristics, userOrganizationId);
+        return lookupBean.acquireAccountDetailsByAddress(dwellingCharacteristics, dwellingCharacteristics.getOutgoingDistrict(),
+                dwellingCharacteristics.getOutgoingStreetType(), dwellingCharacteristics.getOutgoingStreet(),
+                dwellingCharacteristics.getOutgoingBuildingNumber(), dwellingCharacteristics.getOutgoingBuildingCorp(),
+                dwellingCharacteristics.getOutgoingApartment(), dwellingCharacteristics.getDate(), userOrganizationId);
     }
 
     @Override
