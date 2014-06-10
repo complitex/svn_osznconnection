@@ -3,6 +3,7 @@ package org.complitex.osznconnection.file.service_provider;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableMap;
 import org.apache.wicket.util.string.Strings;
+import org.complitex.dictionary.entity.Cursor;
 import org.complitex.dictionary.entity.Log.EVENT;
 import org.complitex.dictionary.oracle.OracleErrors;
 import org.complitex.dictionary.service.AbstractBean;
@@ -95,14 +96,38 @@ public class ServiceProviderAdapter extends AbstractBean {
         spAccountNumber = spAccountNumber.replaceFirst("^0+(?!$)", "");
 
         //z$runtime_sz_utl.getAccAttrs()
-        List<AccountDetail> accountDetails = acquireAccountDetailsByAddress(calculationContext, request,
-                district, streetType, street, buildingNumber, buildingCorp, apartment, date);
+        Cursor<AccountDetail> cursor = getAccountDetails(calculationContext.getDataSource(), district, streetType,
+                street, buildingNumber, buildingCorp, apartment, date);
 
-        if (accountDetails == null || accountDetails.isEmpty()) {
+        if (cursor.isEmpty()) {
+            switch (cursor.getResultCode()){
+                case 0:
+                    request.setStatus(RequestStatus.ACCOUNT_NUMBER_NOT_FOUND);
+                    break;
+                case -2:
+                    request.setStatus(RequestStatus.APARTMENT_NOT_FOUND);
+                    break;
+                case -3:
+                    request.setStatus(RequestStatus.BUILDING_CORP_NOT_FOUND);
+                    break;
+                case -4:
+                    request.setStatus(RequestStatus.BUILDING_NOT_FOUND);
+                    break;
+                case -5:
+                    request.setStatus(RequestStatus.STREET_NOT_FOUND);
+                    break;
+                case -6:
+                    request.setStatus(RequestStatus.STREET_TYPE_NOT_FOUND);
+                    break;
+                case -7:
+                    request.setStatus(RequestStatus.DISTRICT_NOT_FOUND);
+                    break;
+            }
+
             return null;
         }
 
-        for (AccountDetail accountDetail : accountDetails) {
+        for (AccountDetail accountDetail : cursor.getList()) {
             if (spAccountNumber.equals(accountDetail.getZheuCode())){
                 request.setAccountNumber(accountDetail.getAccCode());
                 request.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
@@ -129,15 +154,15 @@ public class ServiceProviderAdapter extends AbstractBean {
             }
         }
 
-        if (accountDetails.size() == 1) {
+        if (cursor.getList().size() == 1) {
             // если установлена опция перезаписи номера л/с ПУ номером л/с МН и номер л/с ПУ в файле запроса равен 0
             // и получена только одна запись из МН для данного адреса, то запись считаем связанной
             if (updatePUAccount && 0 == Integer.valueOf(spAccountNumber)) {
 
-                request.setAccountNumber(accountDetails.get(0).getAccCode());
+                request.setAccountNumber(cursor.getList().get(0).getAccCode());
                 request.setStatus(RequestStatus.ACCOUNT_NUMBER_RESOLVED);
 
-                return accountDetails.get(0);
+                return cursor.getList().get(0);
             } else {
                 request.setStatus(RequestStatus.ACCOUNT_NUMBER_MISMATCH);
             }
@@ -152,10 +177,10 @@ public class ServiceProviderAdapter extends AbstractBean {
                                              String district, String streetType, String street, String buildingNumber,
                                              String buildingCorp, String apartment, Date date, String inn,
                                              String passport) throws DBException {
-        List<AccountDetail> accountDetails = acquireAccountDetailsByAddress(calculationContext, request,
+        Cursor<AccountDetail> accountDetails = getAccountDetails(calculationContext.getDataSource(),
                 district, streetType, street, buildingNumber, buildingCorp, apartment, date);
 
-        for (AccountDetail accountDetail : accountDetails) {
+        for (AccountDetail accountDetail : accountDetails.getList()) {
             List<BenefitData> benefitDataList = getBenefitData(calculationContext, accountDetail.getAccCode(), date);
 
             for (BenefitData d : benefitDataList){
@@ -186,12 +211,9 @@ public class ServiceProviderAdapter extends AbstractBean {
      * @return AccountDetails
      */
     @SuppressWarnings("unchecked")
-    public List<AccountDetail> acquireAccountDetailsByAddress(CalculationContext calculationContext,
-                                                              AbstractRequest request, String district, String streetType,
-                                                              String street, String buildingNumber, String buildingCorp,
-                                                              String apartment, Date date) throws DBException {
-        List<AccountDetail> accountDetails;
-
+    public Cursor<AccountDetail> getAccountDetails(String dataSource, String district, String streetType,
+                                                   String street, String buildingNumber, String buildingCorp,
+                                                   String apartment, Date date) throws DBException {
         Map<String, Object> params = newHashMap();
         params.put("pDistrName", district);
         params.put("pStSortName", streetType);
@@ -201,81 +223,16 @@ public class ServiceProviderAdapter extends AbstractBean {
         params.put("pFlatNum", apartment);
         params.put("date", date);
 
-        long startTime = 0;
-        if (log.isDebugEnabled()) {
-            startTime = System.nanoTime();
-        }
-        try {
-            sqlSession(calculationContext.getDataSource()).selectOne(NS + ".acquireAccountDetailsByAddress", params);
-        } catch (Exception e) {
-            if (!OracleErrors.isCursorClosedError(e) && !(e.getCause() instanceof NullPointerException)) {
-                throw new DBException(e);
-            }
-        } finally {
-            log.info("acquireAccountDetailsByAddress. Calculation center: {}, parameters : {}", calculationContext, params);
+        log.info("getAccountDetails in: dataSource: {}, parameters : {}", dataSource, params);
 
-            if (log.isDebugEnabled()) {
-                log.debug("acquireAccountDetailsByAddress. Time of operation: {} sec.", (System.nanoTime() - startTime) / 1000000000F);
-            }
-        }
+        sqlSession(dataSource).selectOne(NS + ".acquireAccountDetailsByAddress", params);
 
-        Integer resultCode = (Integer) params.get("resultCode");
-        if (resultCode == null) {
-            log.error("acquireAccountDetailsByAddress. Result code is null. Request id: {}, request class: {}, calculation center: {}",
-                    new Object[]{request.getId(), request.getClass(), calculationContext});
-            logBean.error(Module.NAME, getClass(), request.getClass(), request.getId(), EVENT.GETTING_DATA,
-                    ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_unexpected", localeBean.getSystemLocale(),
-                            "GETACCATTRS", "null", calculationContext));
-            request.setStatus(RequestStatus.BINDING_INVALID_FORMAT);
-        } else {
-            switch (resultCode) {
-                case 1:
-                    accountDetails = (List<AccountDetail>) params.get("details");
+        Cursor<AccountDetail> cursor = new Cursor<>((Integer) params.get("resultCode"),
+                (List<AccountDetail>) params.get("details"));
 
-                    if (accountDetails == null || accountDetails.isEmpty()) {
-                        log.error("acquireAccountDetailsByAddress. Result code is 1 but account details data is null " +
-                                "or empty. Request id: {}, request class: {}, calculation center: {}",
-                                new Object[]{request.getId(), request.getClass(), calculationContext});
-                        logBean.error(Module.NAME, getClass(), request.getClass(), request.getId(), EVENT.GETTING_DATA,
-                                ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_inconsistent", localeBean.getSystemLocale(),
-                                        "GETACCATTRS", calculationContext));
-                        request.setStatus(RequestStatus.BINDING_INVALID_FORMAT);
-                    }
+        log.info("getAccountDetails out: {}", cursor);
 
-                    return accountDetails;
-                case 0:
-                    request.setStatus(RequestStatus.ACCOUNT_NUMBER_NOT_FOUND);
-                    break;
-                case -2:
-                    request.setStatus(RequestStatus.APARTMENT_NOT_FOUND);
-                    break;
-                case -3:
-                    request.setStatus(RequestStatus.BUILDING_CORP_NOT_FOUND);
-                    break;
-                case -4:
-                    request.setStatus(RequestStatus.BUILDING_NOT_FOUND);
-                    break;
-                case -5:
-                    request.setStatus(RequestStatus.STREET_NOT_FOUND);
-                    break;
-                case -6:
-                    request.setStatus(RequestStatus.STREET_TYPE_NOT_FOUND);
-                    break;
-                case -7:
-                    request.setStatus(RequestStatus.DISTRICT_NOT_FOUND);
-                    break;
-                default:
-                    log.error("acquireAccountDetailsByAddress. Unexpected result code: {}. Request id: {}, request class: {}, "
-                            + "calculation center: {}",
-                            new Object[]{resultCode, request.getId(), request.getClass(), calculationContext});
-                    logBean.error(Module.NAME, getClass(), request.getClass(), request.getId(), EVENT.GETTING_DATA,
-                            ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_unexpected", localeBean.getSystemLocale(),
-                                    "GETACCATTRS", resultCode, calculationContext));
-                    request.setStatus(RequestStatus.BINDING_INVALID_FORMAT);
-            }
-        }
-
-        return null;
+        return cursor;
     }
 
     @SuppressWarnings("unchecked")
@@ -292,8 +249,6 @@ public class ServiceProviderAdapter extends AbstractBean {
         params.put("pAccCode", account);
         params.put("pAccCodeType", accountType);
 
-
-
         try {
             sqlSession(calculationCenterInfo.getDataSource()).selectOne(NS + ".getAttrsByAccCode", params);
         } catch (Exception e) {
@@ -308,7 +263,7 @@ public class ServiceProviderAdapter extends AbstractBean {
 
         if (resultCode == null) {
             log.error("acquireAccountDetailsByAccount. Result code is null. Request id: {}, request class: {}, calculation center: {}",
-                    new Object[]{request.getId(), request.getClass(), calculationCenterInfo});
+                    request.getId(), request.getClass(), calculationCenterInfo);
             logBean.error(Module.NAME, getClass(), request.getClass(), request.getId(), EVENT.GETTING_DATA,
                     ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_unexpected", localeBean.getSystemLocale(),
                             "GETATTRSBYACCCODE", "null", calculationCenterInfo));
@@ -321,7 +276,7 @@ public class ServiceProviderAdapter extends AbstractBean {
                     if (accountCorrectionDetails == null || accountCorrectionDetails.isEmpty()) {
                         log.error("acquireAccountDetailsByAccount. Result code is 1 but account details data is null or empty. "
                                 + "Request id: {}, request class: {}, calculation center: {}",
-                                new Object[]{request.getId(), request.getClass(), calculationCenterInfo});
+                                request.getId(), request.getClass(), calculationCenterInfo);
                         logBean.error(Module.NAME, getClass(), request.getClass(), request.getId(), EVENT.GETTING_DATA,
                                 ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_inconsistent",
                                         localeBean.getSystemLocale(), "GETATTRSBYACCCODE", calculationCenterInfo));
@@ -332,9 +287,9 @@ public class ServiceProviderAdapter extends AbstractBean {
                     request.setStatus(RequestStatus.ACCOUNT_NUMBER_NOT_FOUND);
                     break;
                 case -1:
-                    log.error("acquireAccountDetailsByAccount. Result code is -1 but account type code is {}. Request id: {}, request class: {}"
-                            + ", calculation center: {}",
-                            new Object[]{accountType, request.getId(), request.getClass(), calculationCenterInfo});
+                    log.error("acquireAccountDetailsByAccount. Result code is -1 but account type code is {}. " +
+                                    "Request id: {}, request class: {}, calculation center: {}",
+                            accountType, request.getId(), request.getClass(), calculationCenterInfo);
                     logBean.error(Module.NAME, getClass(), request.getClass(), request.getId(), EVENT.GETTING_DATA,
                             ResourceUtil.getFormatString(RESOURCE_BUNDLE, "wrong_account_type_code", localeBean.getSystemLocale(),
                                     "GETATTRSBYACCCODE", accountType, calculationCenterInfo));
@@ -345,8 +300,7 @@ public class ServiceProviderAdapter extends AbstractBean {
                     break;
                 default:
                     log.error("acquireAccountDetailsByAccount. Unexpected result code: {}. Request id: {}, request class: {}"
-                            + ", calculation center: {}",
-                            new Object[]{resultCode, request.getId(), request.getClass(), calculationCenterInfo});
+                            + ", calculation center: {}", resultCode, request.getId(), request.getClass(), calculationCenterInfo);
                     logBean.error(Module.NAME, getClass(), request.getClass(), request.getId(), EVENT.GETTING_DATA,
                             ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_unexpected", localeBean.getSystemLocale(),
                                     "GETATTRSBYACCCODE", resultCode, calculationCenterInfo));
@@ -369,13 +323,8 @@ public class ServiceProviderAdapter extends AbstractBean {
         map.put("middleName", middleName);
         map.put("date", date);
 
-        try {
-            sqlSession(dataSource).selectOne(NS + ".getAttrsByFIO", map);
-        } catch (Exception e) {
-            if (!OracleErrors.isCursorClosedError(e) && !(e.getCause() instanceof NullPointerException)) {
-                throw new DBException(e);
-            }
-        }
+
+        sqlSession(dataSource).selectOne(NS + ".getAttrsByFIO", map);
 
         return (List<AccountDetail>) map.get("accountDetails");
     }
@@ -389,14 +338,18 @@ public class ServiceProviderAdapter extends AbstractBean {
      * в ЦН по причине того что курсор в этом случае закрыт, и драйвер с соотвествии со стандартом JDBC рассматривает
      * закрытый курсор как ошибку и выбрасывает исключение.
      *
-     * @param benefits
      */
     public void processPaymentAndBenefit(CalculationContext calculationContext, Payment payment,
                                          List<Benefit> benefits) throws DBException {
 
         /* Set OPP field */
         char[] opp = new char[8];
-        for (int i = 0; i < 8; opp[i++] = '0');
+
+        for (int i = 0; i < 8; i++){
+            opp[i] = '0';
+
+        }
+
         for (long spt : calculationContext.getServiceProviderTypeIds()) {
             if (spt >= 1 && spt <= 8) {
                 int i = 8 - (int) spt;
@@ -409,22 +362,9 @@ public class ServiceProviderAdapter extends AbstractBean {
         params.put("accountNumber", payment.getAccountNumber());
         params.put("dat1", payment.getField(PaymentDBF.DAT1));
 
-        long startTime = 0;
-        if (log.isDebugEnabled()) {
-            startTime = System.nanoTime();
-        }
-        try {
-            sqlSession(calculationContext.getDataSource()).selectOne(NS + ".processPaymentAndBenefit", params);
-        } catch (Exception e) {
-            if (!OracleErrors.isCursorClosedError(e)) {
-                throw new DBException(e);
-            }
-        } finally {
-            log.info("processPaymentAndBenefit. Calculation center: {}, parameters : {}", calculationContext, params);
-            if (log.isDebugEnabled()) {
-                log.debug("processPaymentAndBenefit. Time of operation: {} sec.", (System.nanoTime() - startTime) / 1000000000F);
-            }
-        }
+        sqlSession(calculationContext.getDataSource()).selectOne(NS + ".processPaymentAndBenefit", params);
+
+        log.info("processPaymentAndBenefit. Calculation center: {}, parameters : {}", calculationContext, params);
 
         Integer resultCode = (Integer) params.get("resultCode");
         if (resultCode == null) {
@@ -437,7 +377,9 @@ public class ServiceProviderAdapter extends AbstractBean {
         } else {
             switch (resultCode) {
                 case 1:
+                    @SuppressWarnings("unchecked")
                     List<PaymentAndBenefitData> paymentAndBenefitDatas = (List<PaymentAndBenefitData>) params.get("data");
+
                     if (paymentAndBenefitDatas != null && !paymentAndBenefitDatas.isEmpty()) {
                         PaymentAndBenefitData data = paymentAndBenefitDatas.get(0);
                         if (paymentAndBenefitDatas.size() > 1) {
@@ -463,7 +405,7 @@ public class ServiceProviderAdapter extends AbstractBean {
                     break;
                 default:
                     log.error("processPaymentAndBenefit. Unexpected result code: {}. Payment id: {}, calculation center: {}",
-                            new Object[]{resultCode, payment.getId(), calculationContext});
+                            resultCode, payment.getId(), calculationContext);
                     logBean.error(Module.NAME, getClass(), Payment.class, payment.getId(), EVENT.GETTING_DATA,
                             ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_unexpected", localeBean.getSystemLocale(),
                                     "GETCHARGEANDPARAMS", resultCode, calculationContext));
@@ -485,7 +427,6 @@ public class ServiceProviderAdapter extends AbstractBean {
      * поле OWN_FRM проставляется из таблицы коррекций для форм власти(ownership). На данный момент для всех форм власти в ЦН существуют коррекции,
      * поэтому ситуации с не найденной коррекцией нет.
      *
-     * @param benefits
      */
     protected void processPaymentAndBenefitData(CalculationContext calculationContext, Payment payment,
                                                 List<Benefit> benefits, PaymentAndBenefitData data) {
@@ -590,11 +531,9 @@ public class ServiceProviderAdapter extends AbstractBean {
 
             log.error("Couldn't find subsidy tarif code by calculation center's tarif: '{}', "
                     + "calculation center id: {} and user organization id: {}",
-                    new Object[]{
-                            errorTarif,
-                            calculationContext.getCalculationCenterId(),
-                            calculationContext.getUserOrganizationId()
-                    });
+                    errorTarif,
+                    calculationContext.getCalculationCenterId(),
+                    calculationContext.getUserOrganizationId());
 
             RequestWarning warning = new RequestWarning(payment.getId(), RequestFileType.PAYMENT, RequestWarningStatus.SUBSIDY_TARIF_NOT_FOUND);
             warning.addParameter(new RequestWarningParameter(0, errorTarif));
@@ -629,7 +568,7 @@ public class ServiceProviderAdapter extends AbstractBean {
                 if (osznOwnershipCode == null) {
                     log.error("Couldn't find in corrections oszn's ownership code by internal ownership object id: {}"
                             + ", oszn id: {} and user organization id: {}",
-                            new Object[]{internalOwnershipId, osznId, calculationContext.getUserOrganizationId()});
+                            internalOwnershipId, osznId, calculationContext.getUserOrganizationId());
 
                     for (Benefit benefit : benefits) {
                         RequestWarning warning = new RequestWarning(benefit.getId(), RequestFileType.BENEFIT,
@@ -647,7 +586,7 @@ public class ServiceProviderAdapter extends AbstractBean {
                         ownershipCodeAsInt = Integer.valueOf(osznOwnershipCode);
                     } catch (NumberFormatException e) {
                         log.error("Couldn't transform OWN_FRM value '{}' from correction to integer value. Oszn id: {}, internal ownership id: {}",
-                                new Object[]{osznOwnershipCode, osznId, internalOwnershipId});
+                                osznOwnershipCode, osznId, internalOwnershipId);
 
                         for (Benefit benefit : benefits) {
                             RequestWarning warning = new RequestWarning(benefit.getId(), RequestFileType.BENEFIT,
@@ -695,11 +634,6 @@ public class ServiceProviderAdapter extends AbstractBean {
         return ownershipCorrectionBean.findOwnershipCode(internalOwnership, osznId, userOrganizationId);
     }
 
-    /**
-     * Получить тариф.
-     * @param T11_CS_UNI
-     * @return
-     */
     protected String getSubsidyTarifCode(BigDecimal T11_CS_UNI, long osznId, long userOrganizationId) {
         return subsidyTarifBean.getCode2(T11_CS_UNI, osznId, userOrganizationId);
     }
@@ -730,7 +664,7 @@ public class ServiceProviderAdapter extends AbstractBean {
         Integer resultCode = (Integer) params.get("resultCode");
         if (resultCode == null) {
             log.error("getBenefitData. Result code is null. Benefit id: {}, dat1: {}, calculation center: {}",
-                    new Object[]{benefit.getId(), dat1, calculationContext});
+                    benefit.getId(), dat1, calculationContext);
             logBean.error(Module.NAME, getClass(), Benefit.class, benefit.getId(), EVENT.GETTING_DATA,
                     ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_unexpected", localeBean.getSystemLocale(),
                             "GETPRIVS", "null", calculationContext));
@@ -738,6 +672,7 @@ public class ServiceProviderAdapter extends AbstractBean {
         } else {
             switch (resultCode) {
                 case 1:
+                    @SuppressWarnings("unchecked")
                     List<BenefitData> benefitData = (List<BenefitData>) params.get("benefitData");
                     if (benefitData != null && !benefitData.isEmpty()) {
                         if (checkOrderFam(calculationContext, "getBenefitData", benefitData, newArrayList(benefit), dat1)
@@ -754,7 +689,7 @@ public class ServiceProviderAdapter extends AbstractBean {
                     } else {
                         log.error("getBenefitData. Result code is 1 but benefit data is null or empty. Benefit id: {}, dat1: {}, "
                                 + "calculation center: {}",
-                                new Object[]{benefit.getId(), dat1, calculationContext});
+                                benefit.getId(), dat1, calculationContext);
                         logBean.error(Module.NAME, getClass(), Benefit.class, benefit.getId(), EVENT.GETTING_DATA,
                                 ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_inconsistent", localeBean.getSystemLocale(),
                                         "GETPRIVS", calculationContext));
@@ -766,7 +701,7 @@ public class ServiceProviderAdapter extends AbstractBean {
                     break;
                 default:
                     log.error("getBenefitData. Unexpected result code: {}. Benefit id: {}, dat1: {}, calculation center: {}",
-                            new Object[]{resultCode, benefit.getId(), dat1, calculationContext});
+                            resultCode, benefit.getId(), dat1, calculationContext);
                     logBean.error(Module.NAME, getClass(), Benefit.class, benefit.getId(), EVENT.GETTING_DATA,
                             ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_unexpected", localeBean.getSystemLocale(),
                                     "GETPRIVS", resultCode, calculationContext));
@@ -858,7 +793,7 @@ public class ServiceProviderAdapter extends AbstractBean {
         for (BenefitData data : benefitData) {
             if (Strings.isEmpty(data.getOrderFamily())) {
                 log.error(method + ". Order fam is null. Account number: {}, dat1: {}, calculation center: {}",
-                        new Object[]{accountNumber, dat1, calculationContext});
+                        accountNumber, dat1, calculationContext);
                 for (Benefit benefit : benefits) {
                     benefit.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
                     logBean.error(Module.NAME, getClass(), Benefit.class, benefit.getId(), EVENT.GETTING_DATA,
@@ -875,8 +810,7 @@ public class ServiceProviderAdapter extends AbstractBean {
             BenefitData dublicate = orderFams.get(orderFam);
             if (dublicate != null) {
                 log.error(method + ". Order fam is not unique. At least two benefit data have the same order fam. First: {}, second {}. "
-                        + "Account number: {}, dat1: {}, calculation center: {}",
-                        new Object[]{data, dublicate, accountNumber, dat1, calculationContext});
+                        + "Account number: {}, dat1: {}, calculation center: {}", data, dublicate, accountNumber, dat1, calculationContext);
                 for (Benefit benefit : benefits) {
                     benefit.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
                     logBean.error(Module.NAME, getClass(), Benefit.class, benefit.getId(), EVENT.GETTING_DATA,
@@ -897,7 +831,7 @@ public class ServiceProviderAdapter extends AbstractBean {
         for (BenefitData data : benefitData) {
             if (Strings.isEmpty(data.getCode())) {
                 log.error(method + ". BenefitData's code is null. Account number: {}, dat1: {}, calculation center: {}",
-                        new Object[]{accountNumber, dat1, calculationContext});
+                        accountNumber, dat1, calculationContext);
                 for (Benefit benefit : benefits) {
                     benefit.setStatus(RequestStatus.PROCESSING_INVALID_FORMAT);
                     logBean.error(Module.NAME, getClass(), Benefit.class, benefit.getId(), EVENT.GETTING_DATA,
@@ -914,7 +848,7 @@ public class ServiceProviderAdapter extends AbstractBean {
         String accountNumber = benefits.get(0).getAccountNumber();
         log.error(method + ". Inn, name and passport of benefit data are null. "
                 + "Account number: {}, dat1: {}, calculation center: {}",
-                new Object[]{accountNumber, dat1, calculationCenterInfo});
+                accountNumber, dat1, calculationCenterInfo);
         for (Benefit benefit : benefits) {
             logBean.error(Module.NAME, getClass(), Benefit.class, benefit.getId(), EVENT.GETTING_DATA,
                     ResourceUtil.getFormatString(RESOURCE_BUNDLE, "benefit_id_empty", localeBean.getSystemLocale(),
@@ -1041,7 +975,7 @@ public class ServiceProviderAdapter extends AbstractBean {
         Integer resultCode = (Integer) params.get("resultCode");
         if (resultCode == null) {
             log.error("processBenefit. Result code is null. Account number: {}, dat1: {}, calculation center: {}",
-                    new Object[]{accountNumber, dat1, calculationContext});
+                    accountNumber, dat1, calculationContext);
             for (Benefit benefit : benefits) {
                 logBean.error(Module.NAME, getClass(), Benefit.class, benefit.getId(), EVENT.GETTING_DATA,
                         ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_unexpected", localeBean.getSystemLocale(),
@@ -1060,7 +994,7 @@ public class ServiceProviderAdapter extends AbstractBean {
                     } else {
                         log.error("processBenefit. Result code is 1 but benefit data is null or empty. Account number: {}, dat1: {},"
                                 + " calculation center: {}",
-                                new Object[]{accountNumber, dat1, calculationContext});
+                                accountNumber, dat1, calculationContext);
                         for (Benefit benefit : benefits) {
                             logBean.error(Module.NAME, getClass(), Benefit.class, benefit.getId(), EVENT.GETTING_DATA,
                                     ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_inconsistent", localeBean.getSystemLocale(),
@@ -1074,7 +1008,7 @@ public class ServiceProviderAdapter extends AbstractBean {
                     break;
                 default:
                     log.error("processBenefit. Unexpected result code: {}. Account number: {}, dat1: {}, calculation center: {}",
-                            new Object[]{resultCode, accountNumber, dat1, calculationContext});
+                            resultCode, accountNumber, dat1, calculationContext);
                     for (Benefit benefit : benefits) {
                         logBean.error(Module.NAME, getClass(), Benefit.class, benefit.getId(), EVENT.GETTING_DATA,
                                 ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_unexpected", localeBean.getSystemLocale(),
@@ -1189,7 +1123,7 @@ public class ServiceProviderAdapter extends AbstractBean {
                         benefitCodeAsInt = Integer.valueOf(osznBenefitCode);
                     } catch (NumberFormatException e) {
                         log.error("Couldn't transform privilege code '{}' from correction to integer value. Oszn id: {}, "
-                                + "internal privilege id: {}", new Object[]{osznBenefitCode, osznId, internalPrivilegeId});
+                                + "internal privilege id: {}", osznBenefitCode, osznId, internalPrivilegeId);
 
                         for (Benefit benefit : foundBenefits) {
                             RequestWarning warning = new RequestWarning(benefit.getId(), RequestFileType.BENEFIT,
@@ -1362,7 +1296,7 @@ public class ServiceProviderAdapter extends AbstractBean {
                     break;
                 default:
                     log.error("processActualPayment. Unexpected result code: {}. ActualPayment id: {}, calculation center: {}",
-                            new Object[]{resultCode, actualPayment.getId(), calculationCenterInfo});
+                            resultCode, actualPayment.getId(), calculationCenterInfo);
                     logBean.error(Module.NAME, getClass(), ActualPayment.class, actualPayment.getId(), EVENT.GETTING_DATA,
                             ResourceUtil.getFormatString(RESOURCE_BUNDLE, "result_code_unexpected", localeBean.getSystemLocale(),
                                     "GETFACTCHARGEANDTARIF", resultCode, calculationCenterInfo));

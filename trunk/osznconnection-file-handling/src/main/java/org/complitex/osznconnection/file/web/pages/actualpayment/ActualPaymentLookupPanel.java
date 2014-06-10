@@ -5,6 +5,7 @@
 package org.complitex.osznconnection.file.web.pages.actualpayment;
 
 import org.apache.wicket.Component;
+import org.complitex.dictionary.entity.Cursor;
 import org.complitex.osznconnection.file.entity.AccountDetail;
 import org.complitex.osznconnection.file.entity.ActualPayment;
 import org.complitex.osznconnection.file.entity.ActualPaymentDBF;
@@ -64,11 +65,11 @@ public class ActualPaymentLookupPanel extends AbstractLookupPanel<ActualPayment>
     }
 
     @Override
-    protected List<AccountDetail> acquireAccountDetailsByAddress(ActualPayment actualPayment, long userOrganizationId)
+    protected Cursor<AccountDetail> getAccountDetails(ActualPayment actualPayment, long userOrganizationId)
             throws DBException {
         RequestFile actualPaymentFile = requestFileBean.findById(actualPayment.getRequestFileId());
 
-        return lookupBean.acquireAccountDetailsByAddress(actualPayment, actualPayment.getOutgoingDistrict(),
+        return lookupBean.getAccountDetails(actualPayment.getOutgoingDistrict(),
                 actualPayment.getOutgoingStreetType(), actualPayment.getOutgoingStreet(),
                 actualPayment.getOutgoingBuildingNumber(), actualPayment.getOutgoingBuildingCorp(),
                 actualPayment.getOutgoingApartment(), actualPaymentBean.getFirstDay(actualPayment, actualPaymentFile),

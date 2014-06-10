@@ -22,6 +22,7 @@ import org.apache.wicket.util.string.Strings;
 import org.apache.wicket.util.template.PackageTextTemplate;
 import org.apache.wicket.util.template.TextTemplate;
 import org.complitex.address.strategy.street.StreetStrategy;
+import org.complitex.dictionary.entity.Cursor;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.strategy.IStrategy;
 import org.complitex.dictionary.strategy.StrategyFactory;
@@ -156,13 +157,16 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
                     if (outgoingAddressResolved) {
                         if (request.getStatus() == RequestStatus.ACCOUNT_NUMBER_NOT_FOUND) {
                             try {
-                                List<AccountDetail> accountDetails = acquireAccountDetailsByAddress(request, userOrganizationId);
+                                Cursor<AccountDetail> accountDetails = getAccountDetails(request, userOrganizationId);
+
+                                //todo fix cursor status
+
                                 if (accountDetails == null || accountDetails.isEmpty()) {
                                     error(statusRenderService.displayStatus(request.getStatus(), getLocale()));
                                 } else {
-                                    accountDetailsModel.setObject(accountDetails);
-                                    if (accountDetails.size() == 1) {
-                                        accountDetailModel.setObject(accountDetails.get(0));
+                                    accountDetailsModel.setObject(accountDetails.getList());
+                                    if (accountDetails.getList().size() == 1) {
+                                        accountDetailModel.setObject(accountDetails.getList().get(0));
                                     }
                                 }
                             } catch (DBException e) {
@@ -417,7 +421,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
 
     protected abstract void resolveOutgoingAddress(T request, long userOrganizationId);
 
-    protected abstract List<AccountDetail> acquireAccountDetailsByAddress(T request, long userOrganizationId) throws DBException;
+    protected abstract Cursor<AccountDetail> getAccountDetails(T request, long userOrganizationId) throws DBException;
 
     protected abstract void updateAccountNumber(T request, String accountNumber, long userOrganizationId);
 

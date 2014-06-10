@@ -5,6 +5,7 @@
 package org.complitex.osznconnection.file.web.pages.payment;
 
 import org.apache.wicket.Component;
+import org.complitex.dictionary.entity.Cursor;
 import org.complitex.osznconnection.file.entity.AccountDetail;
 import org.complitex.osznconnection.file.entity.Payment;
 import org.complitex.osznconnection.file.entity.PaymentDBF;
@@ -62,8 +63,8 @@ public class PaymentLookupPanel extends AbstractLookupPanel<Payment> {
     }
 
     @Override
-    protected List<AccountDetail> acquireAccountDetailsByAddress(Payment payment, long userOrganizationId) throws DBException {
-        return lookupBean. acquireAccountDetailsByAddress(payment, payment.getOutgoingDistrict(), payment.getOutgoingStreetType(),
+    protected Cursor<AccountDetail> getAccountDetails(Payment payment, long userOrganizationId) throws DBException {
+        return lookupBean.getAccountDetails(payment.getOutgoingDistrict(), payment.getOutgoingStreetType(),
                 payment.getOutgoingStreet(), payment.getOutgoingBuildingNumber(), payment.getOutgoingBuildingCorp(),
                 payment.getOutgoingApartment(), (Date) payment.getField(PaymentDBF.DAT1), userOrganizationId);
     }

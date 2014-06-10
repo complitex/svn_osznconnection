@@ -5,6 +5,7 @@
 package org.complitex.osznconnection.file.web.pages.facility_service_type;
 
 import org.apache.wicket.Component;
+import org.complitex.dictionary.entity.Cursor;
 import org.complitex.osznconnection.file.entity.AccountDetail;
 import org.complitex.osznconnection.file.entity.FacilityServiceType;
 import org.complitex.osznconnection.file.entity.FacilityServiceTypeDBF;
@@ -55,9 +56,9 @@ public class FacilityServiceTypeLookupPanel extends AbstractLookupPanel<Facility
     }
 
     @Override
-    protected List<AccountDetail> acquireAccountDetailsByAddress(FacilityServiceType facilityServiceType,
-                                                                 long userOrganizationId) throws DBException {
-        return lookupBean.acquireAccountDetailsByAddress(facilityServiceType, facilityServiceType.getOutgoingDistrict(),
+    protected Cursor<AccountDetail> getAccountDetails(FacilityServiceType facilityServiceType,
+                                                      long userOrganizationId) throws DBException {
+        return lookupBean.getAccountDetails( facilityServiceType.getOutgoingDistrict(),
                 facilityServiceType.getOutgoingStreetType(), facilityServiceType.getOutgoingStreet(),
                 facilityServiceType.getOutgoingBuildingNumber(), facilityServiceType.getOutgoingBuildingCorp(),
                 facilityServiceType.getOutgoingApartment(), facilityServiceType.getDate(), userOrganizationId);

@@ -34,7 +34,7 @@ public class AcquireAccountCorrectionDetailsTest extends AbstractTest {
 
     private void testByAddress(CalculationContext calculationCenterInfo, ServiceProviderAdapter adapter) throws DBException {
         Payment payment = newPayment();
-        System.out.println(adapter.acquireAccountDetailsByAddress(calculationCenterInfo, payment,
+        System.out.println(adapter.getAccountDetails(calculationCenterInfo.getDataSource(),
                 payment.getOutgoingDistrict(), payment.getOutgoingStreetType(),
                 payment.getOutgoingStreet(), payment.getOutgoingBuildingNumber(), payment.getOutgoingBuildingCorp(),
                 payment.getOutgoingApartment(), (Date) payment.getField(PaymentDBF.DAT1)));

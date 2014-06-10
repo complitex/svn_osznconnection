@@ -1,6 +1,7 @@
 package org.complitex.osznconnection.file.web.pages.subsidy;
 
 import org.apache.wicket.Component;
+import org.complitex.dictionary.entity.Cursor;
 import org.complitex.osznconnection.file.entity.AccountDetail;
 import org.complitex.osznconnection.file.entity.Subsidy;
 import org.complitex.osznconnection.file.entity.SubsidyDBF;
@@ -52,8 +53,8 @@ public class SubsidyLookupPanel extends AbstractLookupPanel<Subsidy> {
     }
 
     @Override
-    protected List<AccountDetail> acquireAccountDetailsByAddress(Subsidy subsidy, long userOrganizationId) throws DBException {
-        return lookupBean.acquireAccountDetailsByAddress(subsidy, subsidy.getOutgoingDistrict(), subsidy.getOutgoingStreetType(),
+    protected Cursor<AccountDetail> getAccountDetails(Subsidy subsidy, long userOrganizationId) throws DBException {
+        return lookupBean.getAccountDetails(subsidy.getOutgoingDistrict(), subsidy.getOutgoingStreetType(),
                 subsidy.getOutgoingStreet(), subsidy.getOutgoingBuildingNumber(), subsidy.getOutgoingBuildingCorp(),
                 subsidy.getOutgoingApartment(), (Date) subsidy.getField(SubsidyDBF.DAT1), userOrganizationId);
     }

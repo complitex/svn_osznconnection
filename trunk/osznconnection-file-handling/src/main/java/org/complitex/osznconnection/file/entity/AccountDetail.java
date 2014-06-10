@@ -154,9 +154,22 @@ public class AccountDetail implements Serializable {
 
     @Override
     public String toString() {
-        return "{ Account : " + accCode + ", owner name : " + ownerFio + ", owner INN : " + ownerINN
-                + ", ercCode : " + ercCode + ", puAccountNumberInfo : " + serviceProviderAccountNumberInfo
-                + ", street type : " + streetType + ", street : " + street + ", building number : "
-                + buildingNumber + ", building corp : " + buildingCorp + ", apartment : " + apartment + "}";
+        return "AccountDetail{" +
+                "accCode='" + accCode + '\'' +
+                ", ownerFio='" + ownerFio + '\'' +
+                ", ownerINN='" + ownerINN + '\'' +
+                ", ercCode='" + ercCode + '\'' +
+                ", serviceProviderAccountNumberInfo='" + serviceProviderAccountNumberInfo + '\'' +
+                ", zheu='" + zheu + '\'' +
+                ", zheuCode='" + zheuCode + '\'' +
+                ", street='" + street + '\'' +
+                ", streetType='" + streetType + '\'' +
+                ", buildingNumber='" + buildingNumber + '\'' +
+                ", buildingCorp='" + buildingCorp + '\'' +
+                ", apartment='" + apartment + '\'' +
+                ", houseCode='" + houseCode + '\'' +
+                ", districtCode='" + districtCode + '\'' +
+                ", address='" + address + '\'' +
+                '}';
     }
 }
