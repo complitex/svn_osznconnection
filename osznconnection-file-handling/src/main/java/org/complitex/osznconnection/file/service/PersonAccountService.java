@@ -13,10 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import java.util.Date;
 import java.util.List;
-
-import static org.complitex.osznconnection.file.entity.PaymentDBF.OWN_NUM_SR;
 
 /**
  * Разрешает номер л/c
@@ -65,7 +62,7 @@ public class PersonAccountService extends AbstractBean {
     public String getAccountNumber(AbstractAccountRequest request, String puPersonAccount, Long calculationCenterId)
             throws MoreOneAccountException {
         List<PersonAccount> personAccounts = personAccountBean.getPersonAccounts(FilterWrapper.of(new PersonAccount(request,
-                puPersonAccount, calculationCenterId)));
+                puPersonAccount, calculationCenterId, false)));
 
         if (personAccounts.size() == 1){
             return personAccounts.get(0).getAccountNumber();
@@ -79,9 +76,9 @@ public class PersonAccountService extends AbstractBean {
     public void save(AbstractAccountRequest request, String puPersonAccount, Long calculationCenterId)
             throws MoreOneAccountException {
         List<PersonAccount> personAccounts = personAccountBean.getPersonAccounts(FilterWrapper.of(new PersonAccount(request,
-                puPersonAccount, calculationCenterId)));
+                puPersonAccount, calculationCenterId, false)));
         if (personAccounts.isEmpty()){
-            personAccountBean.save(new PersonAccount(request, puPersonAccount, calculationCenterId));
+            personAccountBean.save(new PersonAccount(request, puPersonAccount, calculationCenterId, true));
         }else if (personAccounts.size() == 1){
             PersonAccount personAccount = personAccounts.get(0);
 

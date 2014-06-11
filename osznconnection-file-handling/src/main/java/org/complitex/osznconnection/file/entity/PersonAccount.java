@@ -12,13 +12,18 @@ public class PersonAccount implements Serializable {
     private String middleName;
     private String lastName;
 
+    private String city;
+    private String streetType;
+    private String street;
+    private String buildingNumber;
+    private String buildingCorp;
+    private String apartment;
+
     private Long cityObjectId;
     private Long streetTypeObjectId;
     private Long streetObjectId;
     private Long buildingObjectId;
     private Long apartmentObjectId;
-
-    private String apartment;
 
     private Long organizationId;
     private Long userOrganizationId;
@@ -34,18 +39,26 @@ public class PersonAccount implements Serializable {
     public PersonAccount() {
     }
 
-    public PersonAccount(AbstractAccountRequest request, String puAccountNumber, Long calculationCenterId) {
+    public PersonAccount(AbstractAccountRequest request, String puAccountNumber, Long calculationCenterId, boolean addressNames) {
         firstName = request.getFirstName();
         middleName = request.getMiddleName();
         lastName = request.getLastName();
+
+        if (addressNames) {
+            city = request.getCity();
+            streetType = request.getStreetType();
+            street = request.getStreet();
+            buildingNumber = request.getBuildingNumber();
+            buildingCorp = request.getBuildingCorp();
+        }
+
+        apartment = request.getApartment();
 
         cityObjectId = request.getCityObjectId();
         streetObjectId = request.getStreetObjectId();
         streetTypeObjectId = request.getStreetTypeObjectId();
         buildingObjectId = request.getBuildingObjectId();
         apartmentObjectId = request.getApartmentObjectId();
-
-        apartment = request.getApartment();
 
         this.accountNumber = request.getAccountNumber();
         organizationId = request.getOrganizationId();
@@ -85,6 +98,46 @@ public class PersonAccount implements Serializable {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getStreetType() {
+        return streetType;
+    }
+
+    public void setStreetType(String streetType) {
+        this.streetType = streetType;
+    }
+
+    public String getStreet() {
+        return street;
+    }
+
+    public void setStreet(String street) {
+        this.street = street;
+    }
+
+    public String getBuildingNumber() {
+        return buildingNumber;
+    }
+
+    public void setBuildingNumber(String buildingNumber) {
+        this.buildingNumber = buildingNumber;
+    }
+
+    public String getBuildingCorp() {
+        return buildingCorp;
+    }
+
+    public void setBuildingCorp(String buildingCorp) {
+        this.buildingCorp = buildingCorp;
     }
 
     public Long getCityObjectId() {
