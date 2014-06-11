@@ -8,13 +8,18 @@
         <result property="middleName" column="middle_name"/>
         <result property="lastName" column="last_name"/>
 
+        <result property="city" column="city"/>
+        <result property="streetType" column="street_type"/>
+        <result property="street" column="street"/>
+        <result property="buildingNumber" column="building_number"/>
+        <result property="buildingCorp" column="building_corp"/>
+        <result property="apartment" column="apartment"/>
+
         <result property="cityObjectId" column="city_object_id"/>
         <result property="streetTypeObjectId" column="street_type_object_id"/>
         <result property="streetObjectId" column="street_object_id"/>
         <result property="buildingObjectId" column="building_object_id"/>
         <result property="apartmentObjectId" column="apartment_object_id"/>
-
-        <result property="apartment" column="apartment"/>
 
         <result property="accountNumber" column="account_number"/>
         <result property="puAccountNumber" column="pu_account_number"/>
@@ -30,12 +35,14 @@
 
     <insert id="insertPersonAccount" parameterType="org.complitex.osznconnection.file.entity.PersonAccount"
             keyProperty="id" useGeneratedKeys="true">
-        insert into `person_account` (`first_name`, `middle_name`, `last_name`, `city_object_id`, `street_type_object_id`,
-        `street_object_id`, `building_object_id`, `apartment_object_id`, `apartment`, `account_number`,  `pu_account_number`,
-        `organization_id`, `user_organization_id`, `calc_center_id`)
-        values (#{firstName}, #{middleName}, #{lastName} ,#{cityObjectId}, #{streetTypeObjectId}, #{streetObjectId},
-        #{buildingObjectId}, #{apartmentObjectId}, #{apartment}, #{accountNumber}, #{puAccountNumber}, #{organizationId},
-        #{userOrganizationId}, #{calculationCenterId})
+        insert into `person_account` (`first_name`, `middle_name`, `last_name`,
+          `city`, `street_type`, `street`, `building_number`, `building_corp`, `apartment`,
+          `city_object_id`, `street_type_object_id`, `street_object_id`, `building_object_id`, `apartment_object_id`,
+          `account_number`,  `pu_account_number`, `organization_id`, `user_organization_id`, `calc_center_id`)
+        values (#{firstName}, #{middleName}, #{lastName},
+            #{city}, #{streetType}, #{street}, #{buildingNumber}, #{buildingCorp}, #{apartment},
+            #{cityObjectId}, #{streetTypeObjectId}, #{streetObjectId}, #{buildingObjectId}, #{apartmentObjectId},
+            #{accountNumber}, #{puAccountNumber}, #{organizationId}, #{userOrganizationId}, #{calculationCenterId})
     </insert>
 
     <update id="updatePersonAccount" parameterType="org.complitex.osznconnection.file.entity.PersonAccount">
@@ -52,7 +59,7 @@
 
     <sql id="selectPersonAccountsWhere">
         <where>
-            <if test="object.firstName != null or required">
+            <if test="object.firstName != null">
                 <choose>
                     <when test="object.middleName != null and object.middleName.length() == 1">
                         and SUBSTRING(pa.`first_name`, 0, 1) = #{object.firstName}
@@ -60,7 +67,7 @@
                     <otherwise>and pa.`first_name` = #{object.firstName}</otherwise>
                 </choose>
             </if>
-            <if test="object.middleName != null or required">
+            <if test="object.middleName != null">
                 <choose>
                     <when test="object.middleName != null and object.middleName.length() == 1">
                         and SUBSTRING(pa.`middle_name`, 0, 1) = #{object.middleName}
@@ -68,21 +75,26 @@
                     <otherwise>and pa.`middle_name` = #{object.middleName}</otherwise>
                 </choose>
             </if>
-            <if test="object.lastName != null or required">and pa.`last_name` = #{object.lastName}</if>
+            <if test="object.lastName != null">and pa.`last_name` = #{object.lastName}</if>
 
-            <if test="object.cityObjectId != null or required">and pa.`city_object_id` = #{object.cityObjectId}</if>
-            <if test="object.streetObjectId != null or required">and pa.`street_object_id` = #{object.streetObjectId}</if>
-            <if test="object.buildingObjectId != null or required">and pa.`building_object_id` = #{object.buildingObjectId}</if>
-            <if test="object.apartmentObjectId != null or required">and pa.`apartment_object_id` = #{object.apartmentObjectId}</if>
+            <if test="object.city != null">and pa.`city` = #{object.city}</if>
+            <if test="object.streetType != null">and pa.`street_type` = #{object.streetType}</if>
+            <if test="object.street != null">and pa.`street` = #{object.street}</if>
+            <if test="object.buildingNumber != null">and pa.`building_number` = #{object.buildingNumber}</if>
+            <if test="object.buildingCorp != null">and pa.`building_corp` = #{object.buildingCorp}</if>
+            <if test="object.apartment != null">and pa.`apartment` = #{object.apartment}</if>
 
-            <if test="object.apartment != null or required">and pa.`apartment` = #{object.apartment}</if>
+            <if test="object.cityObjectId != null">and pa.`city_object_id` = #{object.cityObjectId}</if>
+            <if test="object.streetObjectId != null">and pa.`street_object_id` = #{object.streetObjectId}</if>
+            <if test="object.buildingObjectId != null">and pa.`building_object_id` = #{object.buildingObjectId}</if>
+            <if test="object.apartmentObjectId != null">and pa.`apartment_object_id` = #{object.apartmentObjectId}</if>
 
             <if test="object.accountNumber != null">and pa.`account_number` = #{object.accountNumber}</if>
-            <if test="object.puAccountNumber != null or required">and pa.`pu_account_number` = #{object.puAccountNumber}</if>
+            <if test="object.puAccountNumber != null">and pa.`pu_account_number` = #{object.puAccountNumber}</if>
 
-            <if test="object.organizationId != null or required">and pa.`organization_id` = #{object.organizationId}</if>
-            <if test="object.userOrganizationId != null or required">AND pa.`user_organization_id` = #{object.userOrganizationId}</if>
-            <if test="object.calculationCenterId != null or required">and pa.`calc_center_id` = #{object.calculationCenterId}</if>
+            <if test="object.organizationId != null">and pa.`organization_id` = #{object.organizationId}</if>
+            <if test="object.userOrganizationId != null">AND pa.`user_organization_id` = #{object.userOrganizationId}</if>
+            <if test="object.calculationCenterId != null">and pa.`calc_center_id` = #{object.calculationCenterId}</if>
 
             <if test="not admin">
                 and pa.`user_organization_id` IN ${object.userOrganizationsString}

@@ -904,13 +904,18 @@ CREATE TABLE `person_account` (
     `middle_name` VARCHAR(100) NOT NULL COMMENT 'Отчество',
     `last_name` VARCHAR(100) NOT NULL COMMENT 'Фамилия',
 
+    `city` VARCHAR(100) COMMENT 'Населенный пункт',
+    `street_type` VARCHAR(50) COMMENT 'Тип улицы',
+    `street` VARCHAR(100) COMMENT 'Улица',
+    `building_number` VARCHAR(20) COMMENT 'Номер дома',
+    `building_corp` VARCHAR(20) COMMENT 'Корпус',
+    `apartment` VARCHAR(20) COMMENT 'Номер квартиры',
+
     `city_object_id` BIGINT(20) COMMENT 'Идентификатор населенного пункта',
     `street_object_id` BIGINT(20) COMMENT 'Идентификатор улицы',
     `street_type_object_id` BIGINT(20) COMMENT 'Идентификатор типа улицы',
     `building_object_id` BIGINT(20) COMMENT 'Идентификатор дома',
     `apartment_object_id` BIGINT (20) COMMENT 'Идентификатор квартиры',
-
-    `apartment` VARCHAR(20) NOT NULL COMMENT 'Номер квартиры',
 
     `account_number` VARCHAR(100) NOT NULL COMMENT 'Счет абонента',
     `pu_account_number` VARCHAR(100) NOT NULL COMMENT 'Личный счет в обслуживающей организации',
