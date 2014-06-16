@@ -14,6 +14,9 @@ import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.*;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.Strings;
+import org.complitex.address.strategy.city.CityStrategy;
+import org.complitex.address.strategy.street.StreetStrategy;
+import org.complitex.address.strategy.street_type.StreetTypeStrategy;
 import org.complitex.dictionary.entity.DomainObject;
 import org.complitex.dictionary.entity.FilterWrapper;
 import org.complitex.dictionary.service.LocaleBean;
@@ -38,7 +41,6 @@ import javax.ejb.EJB;
  */
 @AuthorizeInstantiation(SecurityRole.AUTHORIZED)
 public class PersonAccountList extends ScrollListPage {
-
     @EJB
     private PersonAccountBean personAccountBean;
 
@@ -96,16 +98,17 @@ public class PersonAccountList extends ScrollListPage {
         };
         dataProvider.setSort("", SortOrder.ASCENDING);
 
+        filterForm.add(new TextField<>("accountNumberFilter", new PropertyModel<String>(filterModel, "object.accountNumber")));
         filterForm.add(new TextField<>("puAccountNumberFilter", new PropertyModel<String>(filterModel, "object.puAccountNumber")));
         filterForm.add(new TextField<>("firstNameFilter", new PropertyModel<String>(filterModel, "object.firstName")));
         filterForm.add(new TextField<>("middleNameFilter", new PropertyModel<String>(filterModel, "object.middleName")));
         filterForm.add(new TextField<>("lastNameFilter", new PropertyModel<String>(filterModel, "object.lastName")));
-        filterForm.add(new TextField<>("cityFilter", new PropertyModel<String>(filterModel, "object.cityObjectId")));
-        filterForm.add(new TextField<>("streetFilter", new PropertyModel<String>(filterModel, "object.streetObjectId")));
-        filterForm.add(new TextField<>("buildingFilter", new PropertyModel<String>(filterModel, "object.buildingObjectId")));
-        filterForm.add(new TextField<>("apartmentFilter", new PropertyModel<String>(filterModel, "object.apartmentObjectId")));
-        filterForm.add(new TextField<>("accountNumberFilter", new PropertyModel<String>(filterModel, "object.accountNumber")));
-
+        filterForm.add(new TextField<>("cityFilter", new PropertyModel<String>(filterModel, "object.city")));
+        filterForm.add(new TextField<>("streetTypeFilter", new PropertyModel<String>(filterModel, "object.streetType")));
+        filterForm.add(new TextField<>("streetFilter", new PropertyModel<String>(filterModel, "object.street")));
+        filterForm.add(new TextField<>("buildingNumberFilter", new PropertyModel<String>(filterModel, "object.buildingNumber")));
+        filterForm.add(new TextField<>("buildingCorpFilter", new PropertyModel<String>(filterModel, "object.buildingCorp")));
+        filterForm.add(new TextField<>("apartmentFilter", new PropertyModel<String>(filterModel, "object.apartment")));
 
         filterForm.add(new OrganizationPicker("osznFilter", new PropertyModel<DomainObject>(filterModel, "object.organizationId"),
                 OsznOrganizationTypeStrategy.SERVICING_ORGANIZATION_TYPE));
@@ -146,15 +149,17 @@ public class PersonAccountList extends ScrollListPage {
             @Override
             protected void populateItem(Item<PersonAccount> item) {
                 PersonAccount personAccount = item.getModelObject();
+                item.add(new Label("accountNumber", personAccount.getAccountNumber()));
                 item.add(new Label("puAccountNumber", personAccount.getPuAccountNumber()));
                 item.add(new Label("firstName", personAccount.getFirstName()));
                 item.add(new Label("middleName", personAccount.getMiddleName()));
                 item.add(new Label("lastName", personAccount.getLastName()));
-                item.add(new Label("city", personAccount.getCityObjectId()));
-                item.add(new Label("street", personAccount.getStreetTypeObjectId() + " " + personAccount.getStreetObjectId()));
-                item.add(new Label("buildingNumber", personAccount.getBuildingObjectId()));
-                item.add(new Label("apartment", personAccount.getApartmentObjectId()));
-                item.add(new Label("accountNumber", personAccount.getAccountNumber()));
+                item.add(new Label("city", personAccount.getCity()));
+                item.add(new Label("streetType", personAccount.getStreetType()));
+                item.add(new Label("street", personAccount.getStreet()));
+                item.add(new Label("buildingNumber", personAccount.getBuildingNumber()));
+                item.add(new Label("buildingCorp", personAccount.getBuildingCorp()));
+                item.add(new Label("apartment", personAccount.getApartment()));
                 item.add(new Label("oszn", personAccount.getOrganizationName()));
                 item.add(new Label("calculationCenter", personAccount.getCalculationCenterName()));
 
@@ -168,15 +173,17 @@ public class PersonAccountList extends ScrollListPage {
         };
         filterForm.add(data);
 
+        filterForm.add(new ArrowOrderByBorder("accountNumberHeader", "id", dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("puAccountNumberHeader", "id", dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("lastNameHeader", "last_name", dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("firstNameHeader", "first_name", dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("middleNameHeader", "middle_name", dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("cityHeader", "id", dataProvider, data, content));
+        filterForm.add(new ArrowOrderByBorder("streetTypeHeader", "id", dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("streetHeader", "id", dataProvider, data, content));
-        filterForm.add(new ArrowOrderByBorder("buildingHeader", "id", dataProvider, data, content));
+        filterForm.add(new ArrowOrderByBorder("buildingNumberHeader", "id", dataProvider, data, content));
+        filterForm.add(new ArrowOrderByBorder("buildingCorpHeader", "id", dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("apartmentHeader", "id", dataProvider, data, content));
-        filterForm.add(new ArrowOrderByBorder("accountNumberHeader", "id", dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("osznHeader", "id", dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("calculationCenterHeader", "id", dataProvider, data, content));
         filterForm.add(new ArrowOrderByBorder("userOrganizationHeader", "id",dataProvider, data, content));
