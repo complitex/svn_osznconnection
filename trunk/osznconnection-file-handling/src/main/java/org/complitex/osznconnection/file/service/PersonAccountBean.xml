@@ -77,11 +77,12 @@
             </if>
             <if test="object.lastName != null">and pa.`last_name` = #{object.lastName}</if>
 
-            <if test="object.city != null">and pa.`city` = #{object.city}</if>
-            <if test="object.streetType != null">and pa.`street_type` = #{object.streetType}</if>
-            <if test="object.street != null">and pa.`street` = #{object.street}</if>
-            <if test="object.buildingNumber != null">and pa.`building_number` = #{object.buildingNumber}</if>
-            <if test="object.buildingCorp != null">and pa.`building_corp` = #{object.buildingCorp}</if>
+            <if test="object.city != null">and pa.`city` like concat('%', #{object.city}, `%`)</if>
+            <if test="object.streetType != null">and pa.`street_type` like concat('%', #{object.streetType}, '%')</if>
+            <if test="object.street != null">and pa.`street` like concat('%', #{object.street}, '%')</if>
+            <if test="object.buildingNumber != null">and pa.`building_number` like concat('%', #{object.buildingNumber}, '%')</if>
+            <if test="object.buildingCorp != null">and pa.`building_corp` like concat('%', #{object.buildingCorp}, '%')</if>
+
             <if test="object.apartment != null">and pa.`apartment` = #{object.apartment}</if>
 
             <if test="object.cityObjectId != null">and pa.`city_object_id` = #{object.cityObjectId}</if>
