@@ -51,6 +51,7 @@ import java.util.List;
 
 import static org.apache.wicket.util.string.Strings.firstPathComponent;
 import static org.apache.wicket.util.string.Strings.isEmpty;
+import static org.complitex.osznconnection.file.entity.RequestStatus.*;
 
 public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Panel {
     @EJB
@@ -155,14 +156,34 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
                         LoggerFactory.getLogger(getClass()).error("", e);
                     }
                     if (outgoingAddressResolved) {
-                        if (request.getStatus() == RequestStatus.ACCOUNT_NUMBER_NOT_FOUND) {
+                        if (request.getStatus() == ACCOUNT_NUMBER_NOT_FOUND) {
                             try {
                                 Cursor<AccountDetail> accountDetails = getAccountDetails(request, userOrganizationId);
 
-                                //todo fix cursor status
-
-                                if (accountDetails == null || accountDetails.isEmpty()) {
-                                    error(statusRenderService.displayStatus(request.getStatus(), getLocale()));
+                                if (accountDetails.isEmpty()) {
+                                    switch (accountDetails.getResultCode()){
+                                        case 0:
+                                            error(statusRenderService.displayStatus(ACCOUNT_NUMBER_NOT_FOUND, getLocale()));
+                                            break;
+                                        case -2:
+                                            error(statusRenderService.displayStatus(APARTMENT_NOT_FOUND, getLocale()));
+                                            break;
+                                        case -3:
+                                            error(statusRenderService.displayStatus(BUILDING_CORP_NOT_FOUND, getLocale()));
+                                            break;
+                                        case -4:
+                                            error(statusRenderService.displayStatus(BUILDING_NOT_FOUND, getLocale()));
+                                            break;
+                                        case -5:
+                                            error(statusRenderService.displayStatus(STREET_NOT_FOUND, getLocale()));
+                                            break;
+                                        case -6:
+                                            error(statusRenderService.displayStatus(STREET_TYPE_NOT_FOUND, getLocale()));
+                                            break;
+                                        case -7:
+                                            error(statusRenderService.displayStatus(DISTRICT_NOT_FOUND, getLocale()));
+                                            break;
+                                    }
                                 } else {
                                     accountDetailsModel.setObject(accountDetails.getList());
                                     if (accountDetails.getList().size() == 1) {
@@ -228,6 +249,7 @@ public abstract class AbstractLookupPanel<T extends AbstractRequest> extends Pan
                         try {
                             List<AccountDetail> accountDetails = acquireAccountDetailsByAccount(request, outgoingDistrict,
                                     accountNumberModel.getObject(), userOrganizationId);
+
                             if (accountDetails == null || accountDetails.isEmpty()) {
                                 error(statusRenderService.displayStatus(request.getStatus(), getLocale()));
                             } else {
