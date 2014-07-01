@@ -15,7 +15,6 @@ import org.complitex.osznconnection.file.service.exception.*;
 import org.complitex.osznconnection.file.service.file_description.RequestFileDescription;
 import org.complitex.osznconnection.file.service.file_description.RequestFileDescriptionBean;
 import org.complitex.osznconnection.file.service.file_description.RequestFileFieldDescription;
-import org.complitex.osznconnection.file.service.file_description.convert.ConversionException;
 import org.complitex.osznconnection.file.service.file_description.convert.DBFFieldTypeConverter;
 import org.complitex.osznconnection.file.web.pages.util.GlobalOptions;
 import org.slf4j.Logger;
@@ -149,27 +148,15 @@ public abstract class AbstractSaveTaskBean<T extends AbstractAccountRequest>{
 
                 for (int i = 0; i < fields.length; ++i) {
                     String fieldName = fields[i].getName();
-                    Object value = request.getDbfFields().get(fieldName);
-
-                    final String stringValue = value != null ? value.toString() : null;
 
                     RequestFileFieldDescription fieldDescription = description.getField(fieldName);
                     if (fieldDescription == null) {
                         log.error("Couldn't find field description. Request file type: {}, request id: '{}', field name: '{}'.",
-                                new Object[]{request.getRequestFileType().name(), request.getId(), fieldName});
+                                request.getRequestFileType().name(), request.getId(), fieldName);
                         throw new SaveException(new FieldNotFoundException(fieldName), requestFile);
                     }
-                    Class<?> expectedType = fieldDescription.getFieldType();
 
-                    try {
-                        rowData[i] = description.getTypeConverter().toObject(stringValue, expectedType);
-                    } catch (ConversionException e) {
-                        log.error("Couldn't perform type conversion. Request file type: {}, request id: '{}', field name: '{}', "
-                                + "string value of field: '{}', expected java type a field value to be converted to: {}.",
-                                new Object[]{request.getRequestFileType().name(), request.getId(), fieldName,
-                                    stringValue, expectedType});
-                        throw new SaveException(e, requestFile);
-                    }
+                    rowData[i] = request.getDbfFields().get(fieldName);
 
                     // перезаписываем номер л/с ПУ номером л/с МН при наличии установленной опции
                     if (updatePuAccount && fieldName.equals(getPuAccountFieldName())) {
