@@ -191,18 +191,15 @@ public class OsznOrganizationStrategy extends AbstractOrganizationStrategy<Domai
         return pageParameters;
     }
 
-    @Transactional
     @Override
     public List<DomainObject> getAllOuterOrganizations(Locale locale) {
         return getOrganizations(Arrays.asList(OSZN_TYPE, CALCULATION_CENTER_TYPE, SERVICING_ORGANIZATION_TYPE), locale);
     }
 
-    @Transactional
     public List<DomainObject> getAllOSZNs(Locale locale) {
         return getOrganizations(Arrays.asList(OSZN_TYPE), locale);
     }
 
-    @Transactional
       public List<DomainObject> getAllCalculationCentres(Locale locale) {
         return getOrganizations(Arrays.asList(CALCULATION_CENTER_TYPE), locale);
     }
@@ -239,7 +236,6 @@ public class OsznOrganizationStrategy extends AbstractOrganizationStrategy<Domai
         }
     }
 
-    @Transactional
     @Override
     public OsznOrganization findById(Long id, boolean runAsAdmin) {
         DomainObject object = super.findById(id, runAsAdmin);
@@ -273,7 +269,6 @@ public class OsznOrganizationStrategy extends AbstractOrganizationStrategy<Domai
         return new OsznOrganization(object, serviceAssociationList);
     }
 
-    @Transactional
     @Override
     public void insert(DomainObject object, Date insertDate) {
         OsznOrganization osznOrganization = (OsznOrganization) object;
@@ -285,7 +280,6 @@ public class OsznOrganizationStrategy extends AbstractOrganizationStrategy<Domai
         super.insert(object, insertDate);
     }
 
-    @Transactional
     private void addServiceAssociationAttributes(OsznOrganization osznOrganization) {
         osznOrganization.removeAttribute(SERVICE_ASSOCIATIONS);
 
@@ -302,7 +296,6 @@ public class OsznOrganizationStrategy extends AbstractOrganizationStrategy<Domai
         }
     }
 
-    @Transactional
     @Override
     public void update(DomainObject oldObject, DomainObject newObject, Date updateDate) {
         OsznOrganization newOrganization = (OsznOrganization) newObject;
@@ -320,12 +313,10 @@ public class OsznOrganizationStrategy extends AbstractOrganizationStrategy<Domai
         super.update(oldObject, newObject, updateDate);
     }
 
-    @Transactional
     private void saveServiceAssociation(ServiceAssociation serviceAssociation) {
         sqlSession().insert(MAPPING_NAMESPACE + ".insertServiceAssociation", serviceAssociation);
     }
 
-    @Transactional
     @Override
     public void delete(long objectId, Locale locale) throws DeleteException {
         deleteChecks(objectId, locale);
@@ -447,7 +438,6 @@ public class OsznOrganizationStrategy extends AbstractOrganizationStrategy<Domai
         return AttributeUtil.getStringValue(userOrganization, ROOT_EXPORT_DIRECTORY);
     }
 
-    @Transactional
     @Override
     protected Long insertStrings(long attributeTypeId, List<StringCulture> strings) {
         /* if it's data source or one of load/save request file directory attributes 

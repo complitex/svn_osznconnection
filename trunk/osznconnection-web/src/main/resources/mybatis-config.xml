@@ -103,6 +103,8 @@
         <mapper resource="org/complitex/osznconnection/file/service/warning/RequestWarningBean.xml"/>
         
         <mapper resource="org/complitex/osznconnection/file/service/file_description/RequestFileDescriptionBean.xml"/>
+        
+        <mapper resource="org/complitex/address/service/AddressSyncBean.xml"/>
 
         <!--remote mappers-->
         <mapper resource="org/complitex/osznconnection/file/service_provider/ServiceProviderAdapter.xml"/>
