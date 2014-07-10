@@ -24,6 +24,9 @@
                      javaType="org.complitex.osznconnection.file.entity.RequestFileType"/>
         <typeHandler handler="org.complitex.osznconnection.file.mybatis.EnumCodeTypeHandler"
                      javaType="org.complitex.osznconnection.file.entity.RequestWarningStatus"/>
+
+        <typeHandler handler="org.complitex.dictionary.mybatis.FixedIdBaseTypeHandler"
+                     javaType="org.complitex.address.entity.AddressSyncStatus"/>
     </typeHandlers>
 
     <!--cursor plugin-->

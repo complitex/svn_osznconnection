@@ -1,7 +1,6 @@
 package org.complitex.osznconnection.file.service_provider;
 
 import com.google.common.base.Predicate;
-import com.google.common.collect.ImmutableMap;
 import org.apache.wicket.util.string.Strings;
 import org.complitex.dictionary.entity.Cursor;
 import org.complitex.dictionary.entity.Log.EVENT;
@@ -233,16 +232,11 @@ public class ServiceProviderAdapter extends AbstractBean {
         params.put("pFlatNum", apartment);
         params.put("date", date);
 
-        log.info("getAccountDetails in: dataSource: {}, parameters : {}", dataSource, params);
-
         sqlSession(dataSource).selectOne(NS + ".acquireAccountDetailsByAddress", params);
 
-        Cursor<AccountDetail> cursor = new Cursor<>((Integer) params.get("resultCode"),
-                (List<AccountDetail>) params.get("details"));
+        log.info("getAccountDetails out: {}", params);
 
-        log.info("getAccountDetails out: {}", cursor);
-
-        return cursor;
+        return new Cursor<>((Integer) params.get("resultCode"), (List<AccountDetail>) params.get("details"));
     }
 
     @SuppressWarnings("unchecked")
