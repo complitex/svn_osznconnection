@@ -97,10 +97,10 @@
             <if test="object.userOrganizationId != null">AND pa.`user_organization_id` = #{object.userOrganizationId}</if>
             <if test="object.calculationCenterId != null">and pa.`calc_center_id` = #{object.calculationCenterId}</if>
 
-            <if test="not admin">
+           <!-- <if test="not admin">
                 and pa.`user_organization_id` IN ${object.userOrganizationsString}
                 <if test="outerOrganizationsString != null">and pa.`organization_id` in ${object.outerOrganizationsString}</if>
-            </if>
+            </if>-->
         </where>
     </sql>
 
