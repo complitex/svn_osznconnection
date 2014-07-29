@@ -27,6 +27,8 @@
 
         <typeHandler handler="org.complitex.dictionary.mybatis.FixedIdBaseTypeHandler"
                      javaType="org.complitex.address.entity.AddressSyncStatus"/>
+        <typeHandler handler="org.complitex.dictionary.mybatis.FixedIdBaseTypeHandler"
+                     javaType="org.complitex.address.entity.AddressEntity"/>
     </typeHandlers>
 
     <!--cursor plugin-->
