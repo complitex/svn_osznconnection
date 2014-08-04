@@ -34,6 +34,17 @@
     <!--cursor plugin-->
     <plugins>
         <plugin interceptor="org.complitex.dictionary.mybatis.CursorResultSetHandlerPlugin"/>
+
+        <plugin interceptor="org.complitex.dictionary.mybatis.plugin.EhcacheClearCachePlugin">
+            <property name="excludeNamespaces" value="
+            org.complitex.dictionary.entity.Locale,
+            org.complitex.dictionary.entity.description.Entity"/>
+        </plugin>
+        <plugin interceptor="org.complitex.dictionary.mybatis.plugin.SelectStatementPlugin">
+            <property name="excludeNamespaces" value="
+            org.complitex.dictionary.entity.Locale,
+            org.complitex.dictionary.entity.description.Entity"/>
+        </plugin>
     </plugins>
 
     <environments default="local">
