@@ -26,10 +26,7 @@ import javax.annotation.Resource;
 import javax.ejb.*;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -166,17 +163,17 @@ public class ImportService {
         errorMessage = null;
     }
 
-    private <T extends IImportFile> void processDictionary(T importFile, long localeId) throws ImportFileNotFoundException,
+    private <T extends IImportFile> void processDictionary(T importFile, Locale locale) throws ImportFileNotFoundException,
             ImportObjectLinkException, ImportFileReadException, ImportDuplicateException, RootOrganizationNotFound,
             ImportDistrictLinkException {
         if (importFile instanceof AddressImportFile) { //Address
-            addressImportService.process(importFile, dictionaryListener, localeId, DateUtil.getCurrentDate());
+            addressImportService.process(importFile, dictionaryListener, locale, DateUtil.getCurrentDate());
         } else if (importFile instanceof OwnershipImportFile) { // Ownership
             ownershipImportService.process(dictionaryListener);
         } else if (importFile instanceof PrivilegeImportFile) { //Privilege
             privilegeImportService.process(dictionaryListener);
         } else if (importFile instanceof OrganizationImportFile){ //Organization
-            organizationImportService.process(dictionaryListener, localeId, DateUtil.getCurrentDate());
+            organizationImportService.process(dictionaryListener, locale, DateUtil.getCurrentDate());
         }
     }
 
@@ -213,7 +210,7 @@ public class ImportService {
     }
 
     @Asynchronous
-    public <T extends IImportFile> void process(List<T> dictionaryFiles, List<T> correctionFiles, Long orgId, long localeId) {
+    public <T extends IImportFile> void process(List<T> dictionaryFiles, List<T> correctionFiles, Long orgId, Locale locale) {
         if (processing) {
             return;
         }
@@ -227,7 +224,7 @@ public class ImportService {
             for (T t : dictionaryFiles) {
                 userTransaction.begin();
 
-                processDictionary(t, localeId);
+                processDictionary(t, locale);
 
                 userTransaction.commit();
             }
