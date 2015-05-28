@@ -1,0 +1,1 @@
+Xml схему для описания структуры файлов запрсов можно найти по адресу http://code.google.com/p/osznconnection/source/browse/trunk/osznconnection-file-handling/src/main/java/org/complitex/osznconnection/file/service/file_description/request_file_description.xsd
